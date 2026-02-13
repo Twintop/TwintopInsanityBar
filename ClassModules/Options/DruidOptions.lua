@@ -1106,7 +1106,7 @@ local function BalanceConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function BalanceConstructBarColorsAndBehaviorPanel(parent)
+local function BalanceConstructAstralPowerBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1118,60 +1118,9 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 11, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceAstralPower"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
-
-	yCoord = yCoord - 70
-	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.enableFormSwitching
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
-	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
-	f:SetChecked(spec.displayBar.enableFormSwitching)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		TRB.Data.cache.colors.border = {}
-		TRB.Data.cache.colors.backdrop = {}
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
-		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 1)
-	end)
-
-	yCoord = yCoord - 60
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 	yCoord = yCoord - 30
@@ -1263,12 +1212,6 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, false)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
-
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 1, yCoord, {
 		endOfKey = "eclipse",
 		sectionHeader = L["DruidBalanceHeaderEndOfEclipseConfiguration"],
@@ -1283,6 +1226,101 @@ local function BalanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 1, BALANCE_MAX_ASTRAL_POWER)
+end
+
+local function BalanceConstructManaBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.balance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceAstralPower"])
+
+	yCoord = yCoord - 90
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
+end
+
+local function BalanceConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.balance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
+end
+
+local function BalanceConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.balance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
+end
+
+local function BalanceConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.balance
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
+
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		TRB.Data.cache.colors.border = {}
+		TRB.Data.cache.colors.backdrop = {}
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 1)
+	end)
 end
 
 local function BalanceConstructThresholdPanel(parent)
@@ -1569,12 +1607,16 @@ local function BalanceConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = BalanceConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = BalanceConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = BalanceConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = 120, constructor = BalanceConstructAudioAndTrackingPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) BalanceConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = BalanceConstructResetDefaultsPanel },
+		{ key = "astralPowerBar", label = L["TabAstralPower"], width = oUi.tabWidth.small, constructor = BalanceConstructAstralPowerBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = BalanceConstructManaBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BalanceConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BalanceConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BalanceConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BalanceConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BalanceConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = BalanceConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BalanceConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BalanceConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -1679,7 +1721,7 @@ local function FeralConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function FeralConstructBarColorsAndBehaviorPanel(parent)
+local function FeralConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1691,58 +1733,9 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 11, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 70
-	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.enableFormSwitching
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
-	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
-	f:SetChecked(spec.displayBar.enableFormSwitching)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
-		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 2)
-	end)
-
-	yCoord = yCoord - 60
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
 	--[[
@@ -1825,6 +1818,29 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], FERAL_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
+end
+
+local function FeralConstructComboPointsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.feral
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.feral
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ComboPointColorsHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.comboPoints = {}
@@ -1893,17 +1909,82 @@ local function FeralConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
+end
 
-	yCoord = yCoord - 40
+local function FeralConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.feral
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.feral
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 2, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], FERAL_MAX_ENERGY)
+local function FeralConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
+	local spec = TRB.Data.settings.druid.feral
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.feral
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
+end
+
+local function FeralConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.feral
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.feral
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
+
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 2)
+	end)
 end
 
 local function FeralConstructThresholdPanel(parent)
@@ -2258,12 +2339,16 @@ local function FeralConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = FeralConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = FeralConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = FeralConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = 120, constructor = FeralConstructAudioAndTrackingPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) FeralConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = FeralConstructResetDefaultsPanel },
+		{ key = "energyBar", label = L["TabEnergy"], width = oUi.tabWidth.small, constructor = FeralConstructEnergyBarPanel },
+		{ key = "comboPointsBar", label = L["TabComboPoints"], width = oUi.tabWidth.small, constructor = FeralConstructComboPointsBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FeralConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FeralConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FeralConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FeralConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FeralConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = FeralConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FeralConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FeralConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -2367,7 +2452,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function GuardianConstructBarColorsAndBehaviorPanel(parent)
+local function GuardianConstructRageBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2378,22 +2463,97 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 	local controls = interfaceSettingsFrame.controls.guardian
 	local yCoord = 5
 	local f = nil
-	local title = ""
-
-	controls.buttons.exportButton_Druid_Guardian_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Druid_Guardian_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 11, 3, true, false, false, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord)
 
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
+
 	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 11, 3, yCoord, {
+		endOfKey = "berserk",
+		activeColorKey = "berserk",
+		endColorKey = "berserkEnd",
+		checkboxLabel = L["DruidGuardianCheckboxBerserk"],
+		checkboxTooltip = L["DruidGuardianCheckboxBerserkTooltip"],
+		activeColorLabel = L["DruidGuardianColorPickerIncarnation"],
+		endCheckboxLabel = L["DruidGuardianCheckboxBerserkEnd"],
+		endCheckboxTooltip = L["DruidGuardianCheckboxBerserkEndTooltip"],
+		endColorLabel = L["DruidGuardianColorPickerBerserkEnd"],
+	})
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+	end)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], false, false)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 3, yCoord, {
+		endOfKey = "berserk",
+		sectionHeader = L["DruidGuardianEndOfBerserkConfigurationHeader"],
+		gcdRadioLabel = L["DruidGuardianCheckboxBerserkGcds"],
+		gcdSliderLabel = L["DruidGuardianBerserkGcds"],
+		timeRadioLabel = L["DruidGuardianCheckboxBerserkTime"],
+		timeSliderLabel = L["DruidGuardianBerserkTime"],
+	})
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
+
+	yCoord = yCoord - 25
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+end
+
+local function GuardianConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
+end
 
-	yCoord = yCoord - 30
+local function GuardianConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
+end
+
+local function GuardianConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.guardian
+	local yCoord = 5
+	local f = nil
+
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, false, nil, true)
 
 	yCoord = yCoord - 70
@@ -2427,53 +2587,6 @@ local function GuardianConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Data.cache.values.frame = {}
 		TRB.Functions.BarText:CreateBarTextFrames(11, 3)
 	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 11, 3, yCoord, {
-		endOfKey = "berserk",
-		activeColorKey = "berserk",
-		endColorKey = "berserkEnd",
-		checkboxLabel = L["DruidGuardianCheckboxBerserk"],
-		checkboxTooltip = L["DruidGuardianCheckboxBerserkTooltip"],
-		activeColorLabel = L["DruidGuardianColorPickerIncarnation"],
-		endCheckboxLabel = L["DruidGuardianCheckboxBerserkEnd"],
-		endCheckboxTooltip = L["DruidGuardianCheckboxBerserkEndTooltip"],
-		endColorLabel = L["DruidGuardianColorPickerBerserkEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], false, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 3, yCoord, {
-		endOfKey = "berserk",
-		sectionHeader = L["DruidGuardianEndOfBerserkConfigurationHeader"],
-		gcdRadioLabel = L["DruidGuardianCheckboxBerserkGcds"],
-		gcdSliderLabel = L["DruidGuardianBerserkGcds"],
-		timeRadioLabel = L["DruidGuardianCheckboxBerserkTime"],
-		timeSliderLabel = L["DruidGuardianBerserkTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
-
-	yCoord = yCoord - 25
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
-
-	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
 end
 
 local function GuardianConstructThresholdPanel(parent)
@@ -2689,11 +2802,14 @@ local function GuardianConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = GuardianConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = GuardianConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = GuardianConstructFontAndTextPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) GuardianConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = GuardianConstructResetDefaultsPanel },
+		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = GuardianConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = GuardianConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = GuardianConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = GuardianConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = GuardianConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) GuardianConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = GuardianConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -2797,7 +2913,7 @@ local function RestorationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function RestorationConstructBarColorsAndBehaviorPanel(parent)
+local function RestorationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2809,57 +2925,9 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 11, 4, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 4, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 70
-	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.enableFormSwitching
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
-	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
-	f:SetChecked(spec.displayBar.enableFormSwitching)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		TRB.Data.cache.colors.border = {}
-		TRB.Data.cache.colors.backdrop = {}
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
-		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 4)
-	end)
-
-	yCoord = yCoord - 60
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
@@ -2910,9 +2978,6 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], false, true)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 4, yCoord)
-	
-	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 4, yCoord, {
 		endOfKey = "incarnation",
 		sectionHeader = L["DruidRestorationEndOfIncarnationConfigurationHeader"],
@@ -2921,6 +2986,84 @@ local function RestorationConstructBarColorsAndBehaviorPanel(parent)
 		timeRadioLabel = L["DruidRestorationCheckboxIncarnationTime"],
 		timeSliderLabel = L["DruidRestorationIncarnationTime"],
 	})
+end
+
+local function RestorationConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.restoration
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.restoration
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 4, yCoord)
+end
+
+local function RestorationConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.restoration
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.restoration
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 4, yCoord, false)
+end
+
+local function RestorationConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.restoration
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.restoration
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+
+	yCoord = yCoord - 70
+	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.enableFormSwitching
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxEnableFormSwitching"])
+	f.tooltip = L["DruidCheckboxEnableFormSwitchingTooltip"]
+	f:SetChecked(spec.displayBar.enableFormSwitching)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- Clear all caches before rebuilding
+		TRB.Functions.Character:ResetCaches()
+		TRB.Data.cache.colors.border = {}
+		TRB.Data.cache.colors.backdrop = {}
+		-- Destroy and recreate bar groups to add/remove secondary bar
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+			TRB.Functions.Class:CheckCharacter()
+		end
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+		TRB.Functions.Character:ResetColorCaches()
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(11, 4)
+	end)
 end
 
 local function RestorationConstructThresholdPanel(parent)
@@ -3054,10 +3197,13 @@ local function RestorationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = RestorationConstructBarColorsAndBehaviorPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = RestorationConstructFontAndTextPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) RestorationConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = RestorationConstructResetDefaultsPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = RestorationConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = RestorationConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = RestorationConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = RestorationConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) RestorationConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = RestorationConstructResetDefaultsPanel },
 	}, yCoord)
 end
 

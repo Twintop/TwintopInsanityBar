@@ -726,40 +726,20 @@ local function DevastationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function DevastationConstructBarColorsAndBehaviorPanel(parent)
+local function DevastationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.evoker.devastation
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.devastation
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], L["ResourceEssence"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 1, yCoord, true, L["ResourceEssence"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
 
 	-- Dragonrage color options
@@ -802,6 +782,31 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
 	end)
+
+	-- Dragonrage configuration options
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 1, yCoord, {
+		endOfKey = "dragonrage",
+		sectionHeader = L["EvokerDevastationEndOfDragonrageConfigurationHeader"],
+		gcdRadioLabel = L["EvokerDevastationCheckboxDragonrageGcds"],
+		gcdSliderLabel = L["EvokerDevastationDragonrageGcds"],
+		timeRadioLabel = L["EvokerDevastationCheckboxDragonrageTime"],
+		timeSliderLabel = L["EvokerDevastationDragonrageTime"],
+	})
+end
+
+local function DevastationConstructEssenceBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.devastation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devastation
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], L["ResourceEssence"])
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
@@ -849,22 +854,49 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.comboPoints.sameColor)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
-	end)		
+	end)
+end
 
-	yCoord = yCoord - 40
+local function DevastationConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.devastation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devastation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 1, yCoord)
+end
 
-	-- Dragonrage configuration options
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 1, yCoord, {
-		endOfKey = "dragonrage",
-		sectionHeader = L["EvokerDevastationEndOfDragonrageConfigurationHeader"],
-		gcdRadioLabel = L["EvokerDevastationCheckboxDragonrageGcds"],
-		gcdSliderLabel = L["EvokerDevastationDragonrageGcds"],
-		timeRadioLabel = L["EvokerDevastationCheckboxDragonrageTime"],
-		timeSliderLabel = L["EvokerDevastationDragonrageTime"],
-	})
+local function DevastationConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
+	local spec = TRB.Data.settings.evoker.devastation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devastation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 1, yCoord, true, L["ResourceEssence"])
+end
+
+local function DevastationConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.devastation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devastation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
 end
 
 local function DevastationConstructFontAndTextPanel(parent)
@@ -994,11 +1026,15 @@ local function DevastationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = DevastationConstructBarColorsAndBehaviorPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = DevastationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = 120, constructor = DevastationConstructAudioAndTrackingPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) DevastationConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = DevastationConstructResetDefaultsPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = DevastationConstructEssenceBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevastationConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevastationConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevastationConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevastationConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = DevastationConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevastationConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DevastationConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -1103,40 +1139,20 @@ local function PreservationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function PreservationConstructBarColorsAndBehaviorPanel(parent)
+local function PreservationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.evoker.preservation
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.preservation
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], L["ResourceEssence"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 2, yCoord, true, L["ResourceEssence"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
@@ -1165,6 +1181,20 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
 	end)
+end
+
+local function PreservationConstructEssenceBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.preservation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.preservation
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], L["ResourceEssence"])
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
@@ -1213,9 +1243,48 @@ local function PreservationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function PreservationConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.preservation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.preservation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 2, yCoord)
+end
+
+local function PreservationConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.preservation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.preservation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 2, yCoord, true, L["ResourceEssence"])
+end
+
+local function PreservationConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.preservation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.preservation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
 end
 
 local function PreservationConstructThresholdPanel(parent)
@@ -1370,11 +1439,15 @@ local function PreservationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = PreservationConstructBarColorsAndBehaviorPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = PreservationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = 120, constructor = PreservationConstructAudioAndTrackingPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) PreservationConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = PreservationConstructResetDefaultsPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = PreservationConstructManaBarPanel },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = PreservationConstructEssenceBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = PreservationConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = PreservationConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = PreservationConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = PreservationConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = PreservationConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) PreservationConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = PreservationConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -1482,40 +1555,20 @@ local function AugmentationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
+local function AugmentationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.evoker.augmentation
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.augmentation
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], L["ResourceEssence"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, L["ResourceEssence"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
@@ -1576,6 +1629,30 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
+		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
+		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
+		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
+		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
+	})
+end
+
+local function AugmentationConstructEssenceBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.augmentation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.augmentation
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], L["ResourceEssence"])
+
+	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1622,20 +1699,48 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function AugmentationConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.augmentation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.augmentation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 3, yCoord)
+end
 
+local function AugmentationConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
-		endOfKey = "ebonMight",
-		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
-		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
-		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
-		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
-		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
-	})
+	local spec = TRB.Data.settings.evoker.augmentation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.augmentation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, L["ResourceEssence"])
+end
+
+local function AugmentationConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.augmentation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.augmentation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)
@@ -1767,11 +1872,15 @@ local function AugmentationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = AugmentationConstructBarColorsAndBehaviorPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = AugmentationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = 120, constructor = AugmentationConstructAudioAndTrackingPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) AugmentationConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = AugmentationConstructResetDefaultsPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = AugmentationConstructManaBarPanel },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = AugmentationConstructEssenceBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = AugmentationConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarVisibilityPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = AugmentationConstructFontAndTextPanel },
+		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = AugmentationConstructAudioAndTrackingPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) AugmentationConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = AugmentationConstructResetDefaultsPanel },
 	}, yCoord)
 end
 

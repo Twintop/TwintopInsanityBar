@@ -704,37 +704,20 @@ local function HavocConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function HavocConstructBarColorsAndBehaviorPanel(parent)
+local function HavocConstructFuryBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.havoc
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.havoc
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 1, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
@@ -760,9 +743,6 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, false)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 1, yCoord)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 12, 1, yCoord, {
 		endOfKey = "metamorphosis",
 		sectionHeader = L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"],
@@ -777,6 +757,54 @@ local function HavocConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 1, HAVOC_MAX_FURY)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+end
+
+local function HavocConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.havoc
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.havoc
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 1, yCoord)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+end
+
+local function HavocConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.havoc
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.havoc
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+end
+
+local function HavocConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.havoc
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.havoc
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 end
@@ -1015,11 +1043,14 @@ local function HavocConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = HavocConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = HavocConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = HavocConstructFontAndTextPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = HavocConstructResetDefaultsPanel },
+		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = HavocConstructFuryBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HavocConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HavocConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HavocConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HavocConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = HavocConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -1123,40 +1154,20 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
+local function VengeanceConstructFuryBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.vengeance
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], L["ResourceSoulFragments"], false)
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, L["ResourceSoulFragments"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
@@ -1181,6 +1192,37 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, false)
+
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 12, 2, yCoord, {
+		endOfKey = "metamorphosis",
+		sectionHeader = L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"],
+		gcdRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisGcds"],
+		gcdSliderLabel = L["DemonHunterVengeanceMetamorphosisGcds"],
+		timeRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisTime"],
+		timeSliderLabel = L["DemonHunterVengeanceMetamorphosisTime"],
+	})
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+end
+
+local function VengeanceConstructSoulFragmentsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.vengeance
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.vengeance
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], L["ResourceSoulFragments"], false)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceHeaderSoulFragmentColors"], oUi.xCoord, yCoord)
@@ -1231,23 +1273,53 @@ local function VengeanceConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
-	yCoord = yCoord - 40
+	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+end
+
+local function VengeanceConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.vengeance
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.vengeance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 2, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 12, 2, yCoord, {
-		endOfKey = "metamorphosis",
-		sectionHeader = L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"],
-		gcdRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisGcds"],
-		gcdSliderLabel = L["DemonHunterVengeanceMetamorphosisGcds"],
-		timeRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisTime"],
-		timeSliderLabel = L["DemonHunterVengeanceMetamorphosisTime"],
-	})
+	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
+local function VengeanceConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
+	local spec = TRB.Data.settings.demonhunter.vengeance
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.vengeance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, L["ResourceSoulFragments"])
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+end
+
+local function VengeanceConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.vengeance
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.vengeance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 end
@@ -1473,11 +1545,15 @@ local function VengeanceConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = VengeanceConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = VengeanceConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = VengeanceConstructFontAndTextPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = VengeanceConstructResetDefaultsPanel },
+		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = VengeanceConstructFuryBarPanel },
+		{ key = "soulFragmentsBar", label = L["TabSoulFragments"], width = oUi.tabWidth.small, constructor = VengeanceConstructSoulFragmentsBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = VengeanceConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = VengeanceConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = VengeanceConstructResetDefaultsPanel },
 	}, yCoord)
 end
 
@@ -1543,40 +1619,20 @@ local function DevourerConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function DevourerConstructBarColorsAndBehaviorPanel(parent)
+local function DevourerConstructFuryBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.devourer
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.devourer
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_DemonHunter_Devourer_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_DemonHunter_Devourer_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], L["ResourceSoulFragments"], false)
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 30
@@ -1622,6 +1678,79 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], true, false)
+
+
+	--[[yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_GCD", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfMetamorphosisModeGCDs
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisGcds"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfMetamorphosis.mode == "gcd" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(true)
+		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(false)
+		spec.endOfMetamorphosis.mode = "gcd"
+	end)
+
+	title = L["DemonHunterDevourerMetamorphosisGcds"]
+	controls.endOfMetamorphosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.endOfMetamorphosis.gcdsMax = value
+	end)
+
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_TIME", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.endOfMetamorphosisModeTime
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisTime"])
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	if spec.endOfMetamorphosis.mode == "time" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(false)
+		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(true)
+		spec.endOfMetamorphosis.mode = "time"
+	end)
+
+	title = L["DemonHunterDevourerMetamorphosisTime"]
+	controls.endOfMetamorphosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.endOfMetamorphosis.timeMax = value
+	end)]]
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], DEVOURER_MAX_FURY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], 1, DEVOURER_MAX_FURY)
+end
+
+local function DevourerConstructSoulFragmentsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.devourer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devourer
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], L["ResourceSoulFragments"], false)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerHeaderSoulFragmentColors"], oUi.xCoord, yCoord)
@@ -1689,70 +1818,48 @@ local function DevourerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 3, yCoord)
-
-
-	--[[yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosisModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfMetamorphosis.mode == "gcd" then
-		f:SetChecked(true)
+local function DevourerConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
 	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(false)
-		spec.endOfMetamorphosis.mode = "gcd"
-	end)
 
-	title = L["DemonHunterDevourerMetamorphosisGcds"]
-	controls.endOfMetamorphosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfMetamorphosis.gcdsMax = value
-	end)
+	local spec = TRB.Data.settings.demonhunter.devourer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devourer
+	local yCoord = 5
 
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 60
-	controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosisModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfMetamorphosis.mode == "time" then
-		f:SetChecked(true)
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 3, yCoord)
+end
+
+local function DevourerConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
 	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(true)
-		spec.endOfMetamorphosis.mode = "time"
-	end)
 
-	title = L["DemonHunterDevourerMetamorphosisTime"]
-	controls.endOfMetamorphosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfMetamorphosis.timeMax = value
-	end)]]
+	local spec = TRB.Data.settings.demonhunter.devourer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devourer
+	local yCoord = 5
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], DEVOURER_MAX_FURY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], 1, DEVOURER_MAX_FURY)
+local function DevourerConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = controls
+	local spec = TRB.Data.settings.demonhunter.devourer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.devourer
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 end
 
 local function DevourerConstructThresholdPanel(parent)
@@ -1954,11 +2061,15 @@ local function DevourerConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
-		{ key = "barDisplay", label = L["TabBarDisplay"], width = 85, constructor = DevourerConstructBarColorsAndBehaviorPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = 100, constructor = DevourerConstructThresholdPanel },
-		{ key = "fontText", label = L["TabFontText"], width = 85, constructor = DevourerConstructFontAndTextPanel },
-		{ key = "barText", label = L["TabBarText"], width = 60, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ key = "resetDefaults", label = L["TabResetDefaults"], width = 100, constructor = DevourerConstructResetDefaultsPanel },
+		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = DevourerConstructFuryBarPanel },
+		{ key = "soulFragmentsBar", label = L["TabSoulFragments"], width = oUi.tabWidth.small, constructor = DevourerConstructSoulFragmentsBarPanel },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevourerConstructHealthBarPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevourerConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevourerConstructBarVisibilityPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdPanel },
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevourerConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DevourerConstructResetDefaultsPanel },
 	}, yCoord)
 end
 

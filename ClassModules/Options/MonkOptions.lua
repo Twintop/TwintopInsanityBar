@@ -1199,15 +1199,15 @@ local function BrewmasterConstructOptionsPanel(cache)
 		end)
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], 125, BrewmasterConstructEnergyBarPanel },
-		{ "staggerBar", L["TabStagger"], 125, BrewmasterConstructStaggerBarPanel },
-		{ "healthBar", L["TabHealth"], 125, BrewmasterConstructHealthBarPanel },
-		{ "barTextures", L["TabTextures"], 125, BrewmasterConstructBarTexturesPanel },
-		{ "barVisibility", L["TabVisibility"], 125, BrewmasterConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], 175, BrewmasterConstructThresholdPanel },
-		{ "fontText", L["TabFontText"], 150, BrewmasterConstructFontAndTextPanel },
-		{ "barText", L["TabBarText"], 125, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ "resetDefaults", L["TabResetDefaults"], 150, BrewmasterConstructResetDefaultsPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel },
+		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BrewmasterConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BrewmasterConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, BrewmasterConstructResetDefaultsPanel },
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -1317,37 +1317,20 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
+local function MistweaverConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.monk.mistweaver
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.mistweaver
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 2, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
@@ -1411,9 +1394,48 @@ local function MistweaverConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
 	end)]]
+end
 
-	yCoord = yCoord - 40
+local function MistweaverConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.mistweaver
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mistweaver
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 2, yCoord)
+end
+
+local function MistweaverConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.mistweaver
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mistweaver
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
+end
+
+local function MistweaverConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.mistweaver
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mistweaver
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
 end
 
 local function MistweaverConstructThresholdPanel(parent)
@@ -1549,10 +1571,13 @@ local function MistweaverConstructOptionsPanel(cache)
 		end)
 
 	local tabDefinitions = {
-		{ "barDisplay", L["TabBarDisplay"], 85, MistweaverConstructBarColorsAndBehaviorPanel },
-		{ "fontText", L["TabFontText"], 85, MistweaverConstructFontAndTextPanel },
-		{ "barText", L["TabBarText"], 60, function(scrollChild) MistweaverConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ "resetDefaults", L["TabResetDefaults"], 100, MistweaverConstructResetDefaultsPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MistweaverConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MistweaverConstructBarVisibilityPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MistweaverConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) MistweaverConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, MistweaverConstructResetDefaultsPanel },
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -1662,40 +1687,20 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
+local function WindwalkerConstructEnergyBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.monk.windwalker
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.windwalker
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-	controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 3, true, false, false, false, false, false)
-	end)
-
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], L["ResourceChi"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
-
-	yCoord = yCoord - 90
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 30
@@ -1750,6 +1755,26 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	end)]]
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
+end
+
+local function WindwalkerConstructChiPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.windwalker
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.windwalker
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], L["ResourceChi"])
+
+	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1796,15 +1821,48 @@ local function WindwalkerConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+end
 
-	yCoord = yCoord - 40
+local function WindwalkerConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.windwalker
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.windwalker
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
+
+	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
+end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
+local function WindwalkerConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
+	local spec = TRB.Data.settings.monk.windwalker
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.windwalker
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
+end
+
+local function WindwalkerConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.windwalker
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.windwalker
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
 end
 
 local function WindwalkerConstructThresholdPanel(parent)
@@ -2112,12 +2170,16 @@ local function WindwalkerConstructOptionsPanel(cache)
 		end)
 
 	local tabDefinitions = {
-		{ "barDisplay", L["TabBarDisplay"], 85, WindwalkerConstructBarColorsAndBehaviorPanel },
-		{ "thresholds", L["TabThresholds"], 100, WindwalkerConstructThresholdPanel },
-		{ "fontText", L["TabFontText"], 85, WindwalkerConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], 120, WindwalkerConstructAudioAndTrackingPanel },
-		{ "barText", L["TabBarText"], 60, function(scrollChild) WindwalkerConstructBarTextDisplayPanel(scrollChild, cache) end },
-		{ "resetDefaults", L["TabResetDefaults"], 100, WindwalkerConstructResetDefaultsPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel },
+		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, WindwalkerConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, WindwalkerConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, WindwalkerConstructAudioAndTrackingPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) WindwalkerConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, WindwalkerConstructResetDefaultsPanel },
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

@@ -29,32 +29,68 @@ TRB.Options.fonts.options.exportSpec = f4
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
-local function ConstructBarColorsAndBehaviorPanel(parent)
+local function ConstructResourceBarPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.core
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
-	local f = nil
-
-	local title = ""
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord)
+end
 
-	yCoord = yCoord - 30
+local function ConstructComboPointsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+end
 
-	yCoord = yCoord - 60
+local function ConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+end
 
-	yCoord = yCoord - 60
+local function ConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
+end
 
-	yCoord = yCoord - 30
+local function ConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.core
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 end
 
@@ -471,11 +507,15 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
 	local tabDefinitions = {
-		{ "barDisplay", L["TabBarDisplay"], 85, ConstructBarColorsAndBehaviorPanel },
-		{ "thresholds", L["TabThresholds"], 85, ConstructThresholdPanel },
-		{ "fontText", L["TabFontText"], 85, ConstructFontAndTextPanel },
-		{ "miscellaneous", L["TabMiscellaneous"], 100, ConstructMiscellaneousPanel },
-		{ "resetDefaults", L["TabResetDefaults"], 100, ConstructResetDefaultsPanel },
+		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel },
+		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
+		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ConstructFontAndTextPanel },
+		{ "miscellaneous", L["TabMiscellaneous"], oUi.tabWidth.medium, ConstructMiscellaneousPanel },
+		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ConstructResetDefaultsPanel },
 	}
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, "Global", tabDefinitions, yCoord)
