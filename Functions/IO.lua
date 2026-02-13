@@ -788,7 +788,7 @@ local function HandleImport(input)
 		(configuration.warlock ~= nil and
 			(configuration.warlock.affliction ~= nil or
 			configuration.warlock.demonology ~= nil or
-			configuration.warlock.destiny ~= nil)) or
+			configuration.warlock.destruction ~= nil)) or
 		(configuration.druid ~= nil and
 			(configuration.druid.balance ~= nil or
 			configuration.druid.feral ~= nil or

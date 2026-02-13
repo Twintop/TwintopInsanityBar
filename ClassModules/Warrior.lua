@@ -370,6 +370,7 @@ local function FillSpellData_Protection()
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
 		
 		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
+		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false },
 
 		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
 		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false },
@@ -644,11 +645,10 @@ local function RefreshLookupData_Protection()
 		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
 		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	end
-	
-	--[[
+		
 	--$ignorePainAbsorb
 	local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
-	local ignorePainAbsorb = TRB.Functions.String:ConvertToShortNumberNotation(_ignorePainAbsorb, 1, "floor", true)]]
+	local ignorePainAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
 
 	--$ignorePainTime
 	local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
@@ -673,10 +673,10 @@ local function RefreshLookupData_Protection()
 	lookup["$rageMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingRage
 	lookup["$ignorePainTime"] = ignorePainTime
+	lookup["$ignorePainAbsorb"] = ignorePainAbsorb
 	lookup["$shieldBlockTime"] = shieldBlockTime
 	lookup["$shieldBlockCharges"] = shieldBlockCharges
 	lookup["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
-	--[[lookup["$ignorePainAbsorb"] = ignorePainAbsorb]]
 	TRB.Data.lookup = lookup
 	
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -686,10 +686,10 @@ local function RefreshLookupData_Protection()
 	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$ignorePainTime"] = _ignorePainTime
+	lookupLogic["$ignorePainAbsorb"] = true
 	lookupLogic["$shieldBlockTime"] = _shieldBlockTime
 	lookupLogic["$shieldBlockCharges"] = shieldBlockCharges
 	lookupLogic["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
-	--[[lookupLogic["$ignorePainAbsorb"] = _ignorePainAbsorb]]
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -725,7 +725,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false
 			elseif spellId == spells.ignorePain.castId then
-				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime)
+				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
 				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
 				if bufferEntry ~= nil then
 					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry)
@@ -1721,6 +1721,9 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.ignorePain.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$ignorePainAbsorb" then
+			-- Always secret, return false
+			valid = false
 		elseif var == "$shieldBlockTime" then
 			if snapshots[spells.shieldBlock.id].buff.isActive then
 				valid = true

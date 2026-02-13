@@ -1872,3 +1872,5 @@ L["TabDefensives"] = "Defensives"
 L["TabResource"] = "Resource"
 L["GlobalOptionsCheckboxMinimapIcon"] = "Show minimap icon"
 L["GlobalOptionsCheckboxMinimapIconTooltip"] = "When checked, the minimap icon will be displayed. You can also toggle this with /trb minimap."
+
+L["WarriorProtectionBarTextVariable_ignorePainAbsorb"] = "Amount of damage being absorbed by Ignore Pain"
