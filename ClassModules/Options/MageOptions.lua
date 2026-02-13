@@ -461,7 +461,7 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], L["ResourceArcaneCharges"])
 
-	yCoord = yCoord - 40
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageArcaneChargesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 

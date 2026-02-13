@@ -122,6 +122,7 @@ TRB.Data.constants = {
 			small = 125,
 			medium = 150,
 			large = 175,
+			xlarge = 250
 		}
 	}
 }

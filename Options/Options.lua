@@ -118,6 +118,7 @@ local function ConstructThresholdPanel(parent)
 	
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
@@ -880,8 +881,8 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 94.16)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.68)
+	local localeText2 = string.format(percentFormat, 92.61)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 16.41)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.36)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.36)

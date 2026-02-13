@@ -768,6 +768,7 @@ local function ElementalConstructThresholdPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, true, false, true, custom)
 
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord, true)
 end
 
@@ -1055,7 +1056,7 @@ local function EnhancementConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
-local function EnhancementConstructMaelstromWeaponBarPanel(parent)
+local function EnhancementConstructManaBarPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1067,9 +1068,6 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], L["ResourceMaelstromWeapon"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
@@ -1098,6 +1096,30 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
 
 	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 2, yCoord, {
+		endOfKey = "ascendance",
+		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+		gcdSliderLabel = L["ShamanAscendanceGcds"],
+		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+		timeSliderLabel = L["ShamanAscendanceTime"],
+	})
+end
+
+local function EnhancementConstructMaelstromWeaponBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.shaman.enhancement
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.enhancement
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], L["ResourceMaelstromWeapon"])
+
+	yCoord = yCoord - 60
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanEnhancementMaelstromWeaponColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -1169,16 +1191,6 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 2, yCoord, {
-		endOfKey = "ascendance",
-		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
-		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
-		gcdSliderLabel = L["ShamanAscendanceGcds"],
-		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
-		timeSliderLabel = L["ShamanAscendanceTime"],
-	})
 end
 
 local function EnhancementConstructHealthBarPanel(parent)
@@ -1355,6 +1367,7 @@ local function EnhancementConstructOptionsPanel(cache)
 		end)
 
 	local tabDefinitions = {
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, EnhancementConstructManaBarPanel },
 		{ "maelstromWeaponBar", L["TabMaelstromWeapon"], oUi.tabWidth.small, EnhancementConstructMaelstromWeaponBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, EnhancementConstructHealthBarPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, EnhancementConstructBarTexturesPanel },
