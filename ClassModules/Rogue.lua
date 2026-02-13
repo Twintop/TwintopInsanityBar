@@ -10,6 +10,21 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
 
+local function CoupDeGraceEvent(self, event, ...)
+	if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		local baseSpellID, overrideSpellID = ...
+		-- Dispatch (Outlaw, ID 2098) or Eviscerate (Subtlety, ID 196819) can be replaced by Coup de Grace (ID 441776)
+		if baseSpellID == 2098 or baseSpellID == 196819 then
+			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+			if snapshotData and snapshotData.attributes then
+				snapshotData.attributes.coupDeGraceActive = (overrideSpellID == 441776)
+			end
+		end
+	end
+end
+local coupDeGraceFrame = CreateFrame("Frame")
+coupDeGraceFrame:SetScript("OnEvent", CoupDeGraceEvent)
+
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
@@ -122,6 +137,7 @@ local function FillSpecializationCache()
 
 	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.outlaw.snapshotData.attributes.comboPoints = 0
+	specCache.outlaw.snapshotData.attributes.coupDeGraceActive = false
 	specCache.outlaw.snapshotData.audio = {
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
@@ -196,8 +212,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
-	---@type TRB.Classes.Snapshot
 	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
 	specCache.outlaw.barTextVariables = {
@@ -233,6 +247,7 @@ local function FillSpecializationCache()
 
 	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.subtlety.snapshotData.attributes.comboPoints = 0
+	specCache.subtlety.snapshotData.attributes.coupDeGraceActive = false
 	specCache.subtlety.snapshotData.audio = {
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
@@ -281,8 +296,6 @@ local function FillSpecializationCache()
 	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, "always")
-	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.escalatingBlade.id] = TRB.Classes.Snapshot:New(spells.escalatingBlade, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
@@ -1524,7 +1537,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.dispatch.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.maxStacks then
+								if snapshotData.attributes.coupDeGraceActive then
 									showThreshold = false
 								elseif isUsable then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1533,14 +1546,15 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.coupDeGrace.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.maxStacks then
+								if not snapshotData.attributes.coupDeGraceActive then
 									showThreshold = false
-								elseif specCacheSettings.colors.threshold.special.enabled and currentResource >= resourceAmount then
-									thresholdColor = specCacheSettings.colors.threshold.special.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									if specCacheSettings.colors.threshold.special.enabled then
+										thresholdColor = specCacheSettings.colors.threshold.special.color
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									else
+										thresholdColor = specCacheSettings.colors.threshold.over.color
+									end
 								end
 							end
 						elseif resourceAmount == 0 then
@@ -1809,7 +1823,7 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.eviscerate.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications >= spells.escalatingBlade.maxStacks then
+								if snapshotData.attributes.coupDeGraceActive then
 									showThreshold = false
 								elseif specCacheSettings.colors.threshold.special.enabled and snapshots[spells.finalityEviscerate.id].buff.isActive then
 									thresholdColor = specCacheSettings.colors.threshold.special.color
@@ -1821,18 +1835,15 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.coupDeGrace.id then
-								if snapshots[spells.escalatingBlade.id].buff.applications < spells.escalatingBlade.maxStacks then
+								if not snapshotData.attributes.coupDeGraceActive then
 									showThreshold = false
-								elseif isUsable then
+								else
 									if specCacheSettings.colors.threshold.special.enabled then
 										thresholdColor = specCacheSettings.colors.threshold.special.color
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									else
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									end
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 						elseif resourceAmount == 0 then
@@ -2004,6 +2015,7 @@ end
 local function SwitchSpec()
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
+	coupDeGraceFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 	if TRB.Data.character.specId == 1 then
 		specCache.assassination.talents:GetTalents()
@@ -2082,6 +2094,10 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
 		TRB.Functions.Class:EventRegistration()
 
+		if specCache.outlaw.talents:IsTalentActive(spells.coupDeGrace) then
+			coupDeGraceFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+		end
+
 		if TRB.Data.barConstructedForSpec ~= "outlaw" then
 			talents = specCache.outlaw.talents
 			TRB.Data.barConstructedForSpec = "outlaw"
@@ -2115,6 +2131,10 @@ local function SwitchSpec()
 
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
 		TRB.Functions.Class:EventRegistration()
+
+		if specCache.subtlety.talents:IsTalentActive(spells.coupDeGrace) then
+			coupDeGraceFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+		end
 
 		if TRB.Data.barConstructedForSpec ~= "subtlety" then
 			talents = specCache.subtlety.talents

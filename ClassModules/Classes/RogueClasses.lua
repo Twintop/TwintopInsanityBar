@@ -278,7 +278,6 @@ end
 ---@field public countTheOdds TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
----@field public escalatingBlade TRB.Classes.SpellBase
 ---@field public floatLikeAButterfly TRB.Classes.SpellBase
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 ---@field public rollTheBones TRB.Classes.SpellThreshold
@@ -446,10 +445,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true,
         isSnowflake = true
     })
-    self.escalatingBlade = TRB.Classes.SpellBase:New({
-        id = 441786,
-        maxStacks = 4
-    })
 
     return self
 end
@@ -615,10 +610,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         settingKey = "coupDeGrace",
         isTalent = true,
         isSnowflake = true
-    })
-    self.escalatingBlade = TRB.Classes.SpellBase:New({
-        id = 441786,
-        maxStacks = 4
     })
        
     return self

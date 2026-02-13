@@ -17,6 +17,11 @@ local content = [====[
 
 - Fix an issue where attempting to use `secret` values in Boolean bar text logic would cause Lua errors and stop the addon from working completely.
 
+## Rogue
+### Outlaw and Subtlety
+
+- [#611](#611) Fix how Coup de Grace is tracked and what controls when its threshold line is shown.
+
 ## Warlock
 ### Destruction
 
