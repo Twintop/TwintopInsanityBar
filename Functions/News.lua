@@ -30,7 +30,7 @@ local content = [====[
 ## Warrior
 ### Protection
 
-- Re-enable tracking of Ignore Pain absorbtion via `$ignorePainTime` bar text variable.
+- Re-enable tracking of Ignore Pain absorbtion via `$ignorePainAbsorb` bar text variable.
 
 ---
 
