@@ -232,6 +232,26 @@ local function ConstructMiscellaneousPanel(parent)
 		TRB.Data.settings.core.smoothBarValueUpdates = self:GetChecked()
 	end)
 
+	controls.checkBoxes.minimapIcon = CreateFrame("CheckButton", "TwintopResourceBar_CB_Minimap_Icon", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.minimapIcon
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxMinimapIcon"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["GlobalOptionsCheckboxMinimapIconTooltip"]
+	if TRB.Data.settings.core.minimap then
+		f:SetChecked(not TRB.Data.settings.core.minimap.hide)
+	else
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		if self:GetChecked() then
+			TRB.Functions.MinimapButton:Show()
+		else
+			TRB.Functions.MinimapButton:Hide()
+		end
+	end)
+
 	yCoord = yCoord - 30
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
