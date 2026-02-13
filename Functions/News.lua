@@ -17,6 +17,11 @@ local content = [====[
 
 - Fix an issue where attempting to use `secret` values in Boolean bar text logic would cause Lua errors and stop the addon from working completely.
 
+## Warrior
+### Protection
+
+- Re-enable tracking of Ignore Pain absorbtion via `$ignorePainTime` bar text variable.
+
 ---
 
 # 12.0.1.1-release (2026-02-12)

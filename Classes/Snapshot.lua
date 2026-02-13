@@ -93,6 +93,7 @@ end
 ---@field public ticks number
 ---@field public resource number
 ---@field public isCustom boolean
+---@field public updateFromSecret boolean
 ---@field public parent TRB.Classes.Snapshot
 ---@field private refreshRequested boolean
 ---@field private refreshEmbargo number?
@@ -194,6 +195,7 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.ticks = 0
 	self.resource = 0
 	self.isCustom = false
+	self.updateFromSecret = false
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
@@ -401,11 +403,13 @@ end
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 ---@param hasStacks boolean? # Should the buff be marked as having stacks
 ---@param stacks integer? # Number of stacks to set when initializing
-function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks, stacks)
+---@param updateFromSecret boolean? # Should the buff be flagged to update from secret AuraData on refresh
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks, stacks, updateFromSecret)
 	local startTime = startTime or GetTime()
 	self.duration = duration
 	self.endTime = startTime + duration
 	self.isCustom = true
+	self.updateFromSecret = updateFromSecret or false
 	if hasStacks then
 		self.applications = stacks or 1
 	else
@@ -484,12 +488,39 @@ function TRB.Classes.SnapshotBuff:RemoveStack(resetAttributes)
 	end
 end
 
----comment
+---Sets the auraInstanceId value for this buff.
 ---@param auraInstanceId integer
 function TRB.Classes.SnapshotBuff:SetAuraInstanceId(auraInstanceId)
 	self.auraInstanceId = auraInstanceId
 	TRB.Functions.Aura:StoreBuffAuraInstanceId(self)
 end
+
+---Parse the aura.points[] into customProperty[] values.
+---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
+---@param aura AuraData # Data about the buff
+local function GetCustomProperties(buff, aura)
+	if buff.customPropertyDefinitions ~= nil then
+		for _, prop in ipairs(buff.customPropertyDefinitions) do
+			buff.customProperties[prop.name] = aura.points[prop.index]
+			if buff.customProperties[prop.name] ~= nil then
+				if issecretvalue(buff.customProperties[prop.name]) then
+					-- Do nothing, store it as-is
+				elseif prop.dataType == "number" then
+					buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name] * prop.modifier)
+				elseif prop.dataType == "integer" then
+					buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name] * prop.modifier))
+				end
+			else
+				if prop.dataType == "number" then
+					buff.customProperties[prop.name] = 0
+				elseif prop.dataType == "integer" then
+					buff.customProperties[prop.name] = 0
+				end
+			end
+		end
+	end
+end
+
 
 ---Parse the buff
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
@@ -511,24 +542,7 @@ local function ParseBuffData(buff, aura)
 		buff.duration = aura.duration
 		buff.endTime = aura.expirationTime
 
-		if buff.customPropertyDefinitions ~= nil then
-			for _, prop in ipairs(buff.customPropertyDefinitions) do
-				buff.customProperties[prop.name] = aura.points[prop.index]
-				if buff.customProperties[prop.name] ~= nil then
-					if prop.dataType == "number" then
-						buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name] * prop.modifier)
-					elseif prop.dataType == "integer" then
-						buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name] * prop.modifier))
-					end
-				else
-					if prop.dataType == "number" then
-						buff.customProperties[prop.name] = 0
-					elseif prop.dataType == "integer" then
-						buff.customProperties[prop.name] = 0
-					end
-				end
-			end
-		end
+		GetCustomProperties(buff, aura)
 
 		TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
 		return aura.spellId
@@ -552,6 +566,7 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 	end
 
 	ParseBuffData(self, auraData)
+
 	if self.currentlySimple then
 		self.isActive = true
 	else
@@ -563,6 +578,12 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 			self:Reset()
 		end
 	end
+end
+
+---Refreshes the buff snapshot with already captured *secret* AuraData
+---@param auraData AuraData
+function TRB.Classes.SnapshotBuff:RefreshWithSecretAuraData(auraData)
+	GetCustomProperties(self, auraData)
 end
 
 ---Refreshes the buff information for the snapshot

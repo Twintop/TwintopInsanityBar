@@ -378,7 +378,7 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			fontJustifyHorizontalName = L["PositionLeft"],
-			text = "{$ignorePainTime}[$ignorePainTime]",
+			text = "{$ignorePainTime}[$ignorePainTime - $ignorePainAbsorb]",
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontSize = 14,
 			name = "Ignore Pain",

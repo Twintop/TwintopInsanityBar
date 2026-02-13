@@ -11,6 +11,9 @@ local auraCacheCleanupTime = 0
 local AURA_CACHE_MAX_DURATION = 1 -- seconds
 local auraCacheEnabled = false
 
+local allBuffsCache = nil
+local allBuffsCacheTime = 0
+
 ---Handles UNIT_AURA events
 ---@param self any
 ---@param event string
@@ -51,7 +54,9 @@ local function AuraUpdateEvent(self, event, unit, info)
 			if auraCacheEnabled and #info.addedAuras == 1 then
 				for _, v in pairs(info.addedAuras) do
 					if auraRequests[currentTime] ~= nil then
-						auraRequests[currentTime]:SetAuraInstanceId(v.auraInstanceID)
+						local snapshot = auraRequests[currentTime]
+						snapshot:SetAuraInstanceId(v.auraInstanceID)
+						snapshot:RefreshWithSecretAuraData(v)
 						auraRequests[currentTime] = nil
 					else
 						auraCacheBuffer[currentTime] = v.auraInstanceID
@@ -104,7 +109,35 @@ local function AuraUpdateEvent(self, event, unit, info)
 				local snapshot = snapshotData.auraInstanceIds[v]
 
 				if snapshot ~= nil then
-					snapshot:Refresh()
+					if snapshot.updateFromSecret then
+						-- Custom buff snapshot: call RefreshWithSecretAuraData() to update with the new AuraData
+						if allBuffsCache == nil or allBuffsCacheTime + 0.5 < currentTime then
+							allBuffsCacheTime = currentTime
+---@diagnostic disable-next-line: param-type-mismatch
+							allBuffsCache = C_UnitAuras.GetUnitAuras("player", "HELPFUL")
+						end
+
+						for i = 1, #allBuffsCache do
+							local auraData = allBuffsCache[i]
+							if auraData.auraInstanceID == v then
+								snapshot:RefreshWithSecretAuraData(auraData)
+								break
+							end
+						end
+						--[[
+
+							Try one of these instead once they return non-secret `points` table data.
+
+							]]
+						--local buffData = TRB.Functions.Aura:FindBuffById(snapshot.parent.spell.id)
+						--local buffData = C_UnitAuras.GetAuraDataBySpellName("player", snapshot.parent.spell.name)
+						--local buffData = C_UnitAuras.GetUnitAuraBySpellID("player", snapshot.parent.spell.id)
+						--local buffData = C_UnitAuras..GetAuraDataByAuraInstanceID("player", snapshot.auraInstanceId)
+						--snapshot:RefreshWithSecretAuraData(buffData)
+					else
+						-- Standard buff snapshot: call Refresh() to update from current aura state
+						snapshot:Refresh()
+					end
 				end
 
 				local target = targetData.auraInstanceIds[v]
@@ -276,6 +309,7 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 	local buffData
 
 	for i = 1, 1000 do
+---@diagnostic disable-next-line: param-type-mismatch
 		buffData = C_UnitAuras.GetBuffDataByIndex(onWhom, i)
 		if not buffData then
 			return
@@ -301,6 +335,7 @@ function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 	local debuffData
 
 	for i = 1, 1000 do
+---@diagnostic disable-next-line: param-type-mismatch
 		debuffData = C_UnitAuras.GetDebuffDataByIndex(onWhom, i)
 		if not debuffData then
 			return

@@ -1844,3 +1844,5 @@ L["FooterNews"] = "News"
 -- Minimap Button
 L["MinimapTooltipLeftClick"] = "Left-click to open settings"
 L["FooterKofi"] = "Donate on Ko-fi"
+
+L["WarriorProtectionBarTextVariable_ignorePainAbsorb"] = "Amount of damage being absorbed by Ignore Pain"
