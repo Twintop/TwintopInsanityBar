@@ -17,6 +17,11 @@ local content = [====[
 
 - Fix an issue where attempting to use `secret` values in Boolean bar text logic would cause Lua errors and stop the addon from working completely.
 
+## Warlock
+### Destruction
+
+- [#612](#612) Fix an issue with importing Destruction-only settings strings.
+
 ## Warrior
 ### Protection
 
