@@ -381,7 +381,7 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 			text = "{$ignorePainTime}[$ignorePainTime - $ignorePainAbsorb]",
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontSize = 14,
-			name = "Ignore Pain",
+			name = L["IgnorePain"],
 			position = {
 				relativeToName = L["PositionCenter"],
 				relativeTo = "CENTER",
@@ -404,7 +404,7 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 			text = "{$shieldBlockTime}[$shieldBlockTime -] $shieldBlockCharges/$shieldBlockMaxCharges",
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontSize = 14,
-			name = "Shield Block",
+			name = L["ShieldBlock"],
 			position = {
 				relativeToName = L["ShieldBlock"],
 				relativeTo = "CENTER",
