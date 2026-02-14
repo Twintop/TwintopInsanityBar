@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.?-release (2026-02-17)
+## Hunter
+### Marksmanship
+
+- [#614](#614) Reduced the Trueshot extension from Cant't Miss, Won't Miss from 4 seconds to 2 seconds to match hotfix changes.
+
+---
+
 # 12.0.1.2-release (2026-02-14)
 ## General
 

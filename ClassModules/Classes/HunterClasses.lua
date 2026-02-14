@@ -247,7 +247,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.cantMissWontMiss = TRB.Classes.SpellThreshold:New({
         id = 1253830,
         isTalent = true,
-        duration = 4
+        duration = 2
     })
 
     return self
