@@ -15,9 +15,9 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 
 local specCache = {
-	elemental = TRB.Classes.SpecCache:New(),
-	enhancement = TRB.Classes.SpecCache:New(),
-	restoration = TRB.Classes.SpecCache:New()
+	shaman_elemental = TRB.Classes.SpecCache:New(),
+	shaman_enhancement = TRB.Classes.SpecCache:New(),
+	shaman_restoration = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
@@ -33,7 +33,7 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	specCache.elemental.character = {
+	specCache.shaman_elemental.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -48,34 +48,34 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Shaman.ElementalSpells
-	specCache.elemental.spellsData.spells = TRB.Classes.Shaman.ElementalSpells:New()
-	local spells = specCache.elemental.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	specCache.shaman_elemental.spellsData.spells = TRB.Classes.Shaman.ElementalSpells:New()
+	local spells = specCache.shaman_elemental.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 	
-	specCache.elemental.snapshotData.audio = {
+	specCache.shaman_elemental.snapshotData.audio = {
 		playedEsCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
+	specCache.shaman_elemental.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.chainLightning.id] = TRB.Classes.Snapshot:New(spells.chainLightning, {
+	specCache.shaman_elemental.snapshotData.snapshots[spells.chainLightning.id] = TRB.Classes.Snapshot:New(spells.chainLightning, {
 		targetsHit = 0,
 		hitTime = nil,
 		hasStruckTargets = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.powerOfTheMaelstrom.id] = TRB.Classes.Snapshot:New(spells.powerOfTheMaelstrom, nil, "always")
+	specCache.shaman_elemental.snapshotData.snapshots[spells.powerOfTheMaelstrom.id] = TRB.Classes.Snapshot:New(spells.powerOfTheMaelstrom, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.icefury.id] = TRB.Classes.Snapshot:New(spells.icefury, {
+	specCache.shaman_elemental.snapshotData.snapshots[spells.icefury.id] = TRB.Classes.Snapshot:New(spells.icefury, {
 		resource = 0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.stormkeeper.id] = TRB.Classes.Snapshot:New(spells.stormkeeper)
+	specCache.shaman_elemental.snapshotData.snapshots[spells.stormkeeper.id] = TRB.Classes.Snapshot:New(spells.stormkeeper)
 	---@type TRB.Classes.Snapshot
-	specCache.elemental.snapshotData.snapshots[spells.echoesOfGreatSundering.id] = TRB.Classes.Snapshot:New(spells.echoesOfGreatSundering)
+	specCache.shaman_elemental.snapshotData.snapshots[spells.echoesOfGreatSundering.id] = TRB.Classes.Snapshot:New(spells.echoesOfGreatSundering)
 
 
 	-- Enhancement
-	specCache.enhancement.Global_TwintopResourceBar = {
+	specCache.shaman_enhancement.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -84,7 +84,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.enhancement.character = {
+	specCache.shaman_enhancement.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -97,35 +97,35 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.Shaman.EnhancementSpells
-	specCache.enhancement.spellsData.spells = TRB.Classes.Shaman.EnhancementSpells:New()
+	specCache.shaman_enhancement.spellsData.spells = TRB.Classes.Shaman.EnhancementSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 
-	specCache.enhancement.snapshotData.attributes.manaRegen = 0
-	specCache.enhancement.snapshotData.audio = {
+	specCache.shaman_enhancement.snapshotData.attributes.manaRegen = 0
+	specCache.shaman_enhancement.snapshotData.audio = {
 		maelstromWeaponThreshold1Played = false,
 		maelstromWeaponThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.enhancement.snapshotData.snapshots[spells.maelstromWeapon.id] = TRB.Classes.Snapshot:New(spells.maelstromWeapon)
+	specCache.shaman_enhancement.snapshotData.snapshots[spells.maelstromWeapon.id] = TRB.Classes.Snapshot:New(spells.maelstromWeapon)
 	---@type TRB.Classes.Snapshot
-	specCache.enhancement.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
+	specCache.shaman_enhancement.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
 
-	specCache.enhancement.barTextVariables = {
+	specCache.shaman_enhancement.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	
 	-- Restoration
-	specCache.restoration.Global_TwintopResourceBar = {
+	specCache.shaman_restoration.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0
 		}
 	}
 
-	specCache.restoration.character = {
+	specCache.shaman_restoration.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -138,17 +138,17 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.Shaman.RestorationSpells
-	specCache.restoration.spellsData.spells = TRB.Classes.Shaman.RestorationSpells:New()
+	specCache.shaman_restoration.spellsData.spells = TRB.Classes.Shaman.RestorationSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 
-	specCache.restoration.snapshotData.attributes.manaRegen = 0
-	specCache.restoration.snapshotData.audio = {
+	specCache.shaman_restoration.snapshotData.attributes.manaRegen = 0
+	specCache.shaman_restoration.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
+	specCache.shaman_restoration.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
 
-	specCache.restoration.barTextVariables = {
+	specCache.shaman_restoration.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -187,11 +187,11 @@ end
 local function FillSpellData_Elemental()
 	Setup_Elemental()
 	---@type TRB.Classes.SpellsData
-	specCache.elemental.spellsData:FillSpellData()
-	local spells = specCache.elemental.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	specCache.shaman_elemental.spellsData:FillSpellData()
+	local spells = specCache.shaman_elemental.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.elemental.barTextVariables.icons = {
+	specCache.shaman_elemental.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -208,7 +208,7 @@ local function FillSpellData_Elemental()
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 	}
-	specCache.elemental.barTextVariables.values = {
+	specCache.shaman_elemental.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -277,18 +277,18 @@ end
 local function FillSpellData_Enhancement()
 	Setup_Enhancement()
 	---@type TRB.Classes.SpellsData
-	specCache.enhancement.spellsData:FillSpellData()
-	local spells = specCache.enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	specCache.shaman_enhancement.spellsData:FillSpellData()
+	local spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.enhancement.barTextVariables.icons = {
+	specCache.shaman_enhancement.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 	}
-	specCache.enhancement.barTextVariables.values = {
+	specCache.shaman_enhancement.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -344,18 +344,18 @@ end
 local function FillSpellData_Restoration()
 	Setup_Restoration()
 	---@type TRB.Classes.SpellsData
-	specCache.restoration.spellsData:FillSpellData()
-	local spells = specCache.restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	specCache.shaman_restoration.spellsData:FillSpellData()
+	local spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.restoration.barTextVariables.icons = {
+	specCache.shaman_restoration.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 	}
-	specCache.restoration.barTextVariables.values = {
+	specCache.shaman_restoration.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -473,7 +473,7 @@ end
 
 local function RefreshLookupData_Elemental()
 	local specSettings = TRB.Data.settings.shaman.elemental
-	local sharedSettings = TRB.Data.specCache["elemental"].settings
+	local sharedSettings = TRB.Data.specCache["shaman_elemental"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -617,7 +617,7 @@ end
 
 local function RefreshLookupData_Enhancement()
 	local specSettings = TRB.Data.settings.shaman.enhancement
-	local sharedSettings = TRB.Data.specCache["enhancement"].settings
+	local sharedSettings = TRB.Data.specCache["shaman_enhancement"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -690,7 +690,7 @@ end
 
 local function RefreshLookupData_Restoration()
 	local specSettings = TRB.Data.settings.shaman.restoration
-	local sharedSettings = TRB.Data.specCache["restoration"].settings
+	local sharedSettings = TRB.Data.specCache["shaman_restoration"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -924,7 +924,7 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.elemental
-		local specCacheSettings = TRB.Data.specCache.elemental.settings
+		local specCacheSettings = TRB.Data.specCache.shaman_elemental.settings
 		UpdateSnapshot_Elemental()
 
 		if snapshotData.attributes.isTracking then
@@ -1114,7 +1114,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 		local specSettings = classSettings.enhancement
-		local specCacheSettings = TRB.Data.specCache.enhancement.settings
+		local specCacheSettings = TRB.Data.specCache.shaman_enhancement.settings
 		UpdateSnapshot_Enhancement()
 
 		if snapshotData.attributes.isTracking then
@@ -1335,7 +1335,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.restoration
-		local specCacheSettings = TRB.Data.specCache.restoration.settings
+		local specCacheSettings = TRB.Data.specCache.shaman_restoration.settings
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
@@ -1406,9 +1406,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 
 	if TRB.Data.character.specId == 1 then
-		specCache.elemental.talents:GetTalents()
+		specCache.shaman_elemental.talents:GetTalents()
 		FillSpellData_Elemental()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shaman_elemental)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
@@ -1417,7 +1417,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.elemental.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shaman_elemental.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = spells.ascendance.icon
@@ -1437,15 +1437,15 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 		
-		if TRB.Data.barConstructedForSpec ~= "elemental" then
-			talents = specCache.elemental.talents
-			TRB.Data.barConstructedForSpec = "elemental"
-			ConstructResourceBar(specCache.elemental.settings)
+		if TRB.Data.barConstructedForSpec ~= "shaman_elemental" then
+			talents = specCache.shaman_elemental.talents
+			TRB.Data.barConstructedForSpec = "shaman_elemental"
+			ConstructResourceBar(specCache.shaman_elemental.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.enhancement.talents:GetTalents()
+		specCache.shaman_enhancement.talents:GetTalents()
 		FillSpellData_Enhancement()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shaman_enhancement)
 			
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]		
 		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
@@ -1454,7 +1454,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Enhancement
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.enhancement.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shaman_enhancement.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = spells.ascendance.icon
@@ -1464,15 +1464,15 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "enhancement" then
-			talents = specCache.enhancement.talents
-			TRB.Data.barConstructedForSpec = "enhancement"
-			ConstructResourceBar(specCache.enhancement.settings)
+		if TRB.Data.barConstructedForSpec ~= "shaman_enhancement" then
+			talents = specCache.shaman_enhancement.talents
+			TRB.Data.barConstructedForSpec = "shaman_enhancement"
+			ConstructResourceBar(specCache.shaman_enhancement.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.restoration.talents:GetTalents()
+		specCache.shaman_restoration.talents:GetTalents()
 		FillSpellData_Restoration()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shaman_restoration)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
@@ -1481,7 +1481,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shaman_restoration.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = spells.ascendance.icon
@@ -1491,10 +1491,10 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "restoration" then
-			talents = specCache.restoration.talents
-			TRB.Data.barConstructedForSpec = "restoration"
-			ConstructResourceBar(specCache.restoration.settings)
+		if TRB.Data.barConstructedForSpec ~= "shaman_restoration" then
+			talents = specCache.shaman_restoration.talents
+			TRB.Data.barConstructedForSpec = "shaman_restoration"
+			ConstructResourceBar(specCache.shaman_restoration.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1652,16 +1652,18 @@ function TRB.Functions.Class:CheckCharacter()
 	
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "elemental"
+		TRB.Data.character.compositeKey = "shaman_elemental"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Maelstrom, false)
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "enhancement"
+		TRB.Data.character.compositeKey = "shaman_enhancement"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		
 		local maxComboPoints = 10
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
 			if barGroups and barGroups.secondary and sharedSettings then
@@ -1673,6 +1675,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
+		TRB.Data.character.compositeKey = "shaman_restoration"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
@@ -1691,7 +1694,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1		
 		TRB.Data.resource2 = "SPELL"
-		TRB.Data.resource2Id = TRB.Data.specCache["enhancement"].spellsData.spells.maelstromWeapon.id
+		TRB.Data.resource2Id = TRB.Data.specCache["shaman_enhancement"].spellsData.spells.maelstromWeapon.id
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Data.specSupported = true
@@ -1713,8 +1716,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then

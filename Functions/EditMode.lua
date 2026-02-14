@@ -178,7 +178,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 
 	-- Use settings if provided, otherwise try to get from spec cache
 	if not settings and TRB.Data.specCache and TRB.Data.character.specName then
-		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specSettings then
 			settings = specSettings.settings
 		end
@@ -211,7 +211,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
 	local comboPointSettings = settings.comboPoints
 	if not comboPointSettings and TRB.Data.character.classId == 11 then
-		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 		if feralSettings and feralSettings.comboPoints then
 			comboPointSettings = feralSettings.comboPoints
 		end
@@ -411,7 +411,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 					return
 				end
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-					local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+					local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 					if specSettings and specSettings.settings then
 						TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 					end
@@ -473,7 +473,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 								}
 							else
 								-- Fallback to legacy settings if normalization fails
-								local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+								local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 								if specSettings and specSettings.settings and specSettings.settings.bar then
 									layoutData.position = {
 										point = "CENTER",
@@ -489,7 +489,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				-- Reapply position when toggling
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.specName].settings,
+						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
 					)
 				end
@@ -518,7 +518,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				-- Reapply position when changing anchor mode
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.specName].settings,
+						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
 					)
 				end
@@ -541,7 +541,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				-- Reapply position when changing offset
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.specName].settings,
+						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
 					)
 				end
@@ -562,7 +562,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				-- Reapply layout when toggling width matching
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.specName].settings,
+						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
 					)
 				end
@@ -615,7 +615,7 @@ function TRB.Functions.EditMode:GetDefaultPosition()
 	local yPos = -200
 
 	if TRB.Data.specCache and TRB.Data.character.specName then
-		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specSettings and specSettings.settings and specSettings.settings.bar then
 			xPos = specSettings.settings.bar.xPos or xPos
 			yPos = specSettings.settings.bar.yPos or yPos
@@ -645,7 +645,7 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 	if not self:IsLayoutEnabled(layoutName) then
 		-- Not enabled - revert to legacy position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
-			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.specName]
+			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 			end
@@ -660,7 +660,7 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 		-- CDM anchored - revert to CDM position instead of saving
 		-- Reapply the full bar layout to restore correct CDM anchoring
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
-			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.specName]
+			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 			end
@@ -689,7 +689,7 @@ end
 function TRB.Functions.EditMode:OnLayoutChanged(layoutName, layoutIndex)
 	-- Reapply bar position based on the new layout
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specSettings and specSettings.settings then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 		end
@@ -757,7 +757,7 @@ function TRB.Functions.EditMode:OnEditModeExit()
 
 	-- Reapply layout to reset frame stratas and levels after Edit Mode
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-		local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specSettings and specSettings.settings then
 			-- Reapply layout to reset frame stratas and levels
 			TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
@@ -929,7 +929,7 @@ local function ReapplyCooldownManagerLayout(layoutName, forceUpdate)
 	if layoutData.matchCooldownManagerWidth or (layoutData.anchorToCooldownManager and layoutData.anchorToCooldownManager ~= "none") then
 		-- Reapply bar layout to update width/position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				-- Skip layout update if width hasn't changed (avoids flickering)
 				-- We already got CDM width via temporary show, so bar is already sized correctly

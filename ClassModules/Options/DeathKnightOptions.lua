@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 6 then --Only do this if we're on a Death Knight!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.DeathKnight = {}
 TRB.Options.DeathKnight.Blood = {}
 TRB.Options.DeathKnight.Frost = {}
 TRB.Options.DeathKnight.Unholy = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.blood = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.frost = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.unholy = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
 
 local BLOOD_MAX_RUNIC_POWER = 125
 local FROST_MAX_RUNIC_POWER = 110
@@ -689,7 +686,7 @@ local function BloodConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.deathknight.blood
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.blood
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_Reset"] = {
@@ -784,7 +781,7 @@ local function BloodConstructRunicPowerBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	local f = nil
 
@@ -818,7 +815,7 @@ local function BloodConstructRunesBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	local f = nil
 
@@ -891,7 +888,7 @@ local function BloodConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
@@ -908,7 +905,7 @@ local function BloodConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
@@ -922,7 +919,7 @@ local function BloodConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
@@ -936,7 +933,7 @@ local function BloodConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	local f = nil
 
@@ -996,7 +993,7 @@ local function BloodConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	local f = nil
 
@@ -1052,7 +1049,7 @@ local function BloodConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.deathknight.blood
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	local f = nil
 
@@ -1072,7 +1069,7 @@ local function BloodConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.deathknight.blood
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.blood
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1090,7 +1087,7 @@ local function BloodConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.blood or {}
+	local controls = interfaceSettingsFrame.controls.deathknight_blood or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1102,7 +1099,7 @@ local function BloodConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "blood", L["DeathKnightBloodFull"], interfaceSettingsFrame.bloodDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_blood", L["DeathKnightBloodFull"], interfaceSettingsFrame.bloodDisplayPanel)
 	
 	parent = interfaceSettingsFrame.bloodDisplayPanel
 
@@ -1115,7 +1112,7 @@ local function BloodConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.blood = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel },
@@ -1139,7 +1136,7 @@ local function FrostConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.deathknight.frost
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.frost
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_Reset"] = {
@@ -1234,7 +1231,7 @@ local function FrostConstructRunicPowerBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1268,7 +1265,7 @@ local function FrostConstructRunesBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1341,7 +1338,7 @@ local function FrostConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
@@ -1358,7 +1355,7 @@ local function FrostConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
@@ -1372,7 +1369,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
@@ -1386,7 +1383,7 @@ local function FrostConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1469,7 +1466,7 @@ local function FrostConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1525,7 +1522,7 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.deathknight.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1545,7 +1542,7 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.deathknight.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1563,7 +1560,7 @@ local function FrostConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.frost or {}
+	local controls = interfaceSettingsFrame.controls.deathknight_frost or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1575,7 +1572,7 @@ local function FrostConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "frost", L["DeathKnightFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_frost", L["DeathKnightFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
@@ -1588,7 +1585,7 @@ local function FrostConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.frost = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel },
@@ -1611,7 +1608,7 @@ local function UnholyConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.deathknight.unholy
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.unholy
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_Reset"] = {
@@ -1706,7 +1703,7 @@ local function UnholyConstructRunicPowerBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	local f = nil
 
@@ -1740,7 +1737,7 @@ local function UnholyConstructRunesBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	local f = nil
 
@@ -1813,7 +1810,7 @@ local function UnholyConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
@@ -1830,7 +1827,7 @@ local function UnholyConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
@@ -1844,7 +1841,7 @@ local function UnholyConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", false, nil, nil, true, L["ResourceRunes"], true)
@@ -1858,7 +1855,7 @@ local function UnholyConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	local f = nil
 
@@ -1919,7 +1916,7 @@ local function UnholyConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	local f = nil
 
@@ -1975,7 +1972,7 @@ local function UnholyConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.deathknight.unholy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	local f = nil
 
@@ -1995,7 +1992,7 @@ local function UnholyConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.deathknight.unholy
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.unholy
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2013,7 +2010,7 @@ local function UnholyConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.unholy or {}
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2025,7 +2022,7 @@ local function UnholyConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("deathKnight", "unholy", L["DeathKnightUnholyFull"], interfaceSettingsFrame.unholyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_unholy", L["DeathKnightUnholyFull"], interfaceSettingsFrame.unholyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.unholyDisplayPanel
 
@@ -2038,7 +2035,7 @@ local function UnholyConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.unholy = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel },
@@ -2055,11 +2052,11 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	TRB.Options.OptionsFrame:RegisterClassHeader("deathKnight", L["DeathKnight"])
+	TRB.Options.OptionsFrame:RegisterClassHeader("deathknight", L["DeathKnight"])
 
-	BloodConstructOptionsPanel(specCache.blood)
-	FrostConstructOptionsPanel(specCache.frost)
-	UnholyConstructOptionsPanel(specCache.unholy)
+	BloodConstructOptionsPanel(specCache.deathknight_blood)
+	FrostConstructOptionsPanel(specCache.deathknight_frost)
+	UnholyConstructOptionsPanel(specCache.deathknight_unholy)
 
 	TRB.Options.OptionsFrame:RefreshNav()
 end

@@ -1,8 +1,5 @@
 ---@diagnostic disable: undefined-field
 local _, TRB = ...
-if TRB.Data.character.classId ~= 5 then --Only do this if we're on a Priest!
-	return
-end
 
 local L = TRB.Localization
 
@@ -594,7 +591,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		return
 	end
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.discipline
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.priest_discipline
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.discipline
@@ -702,7 +699,7 @@ local function DisciplineConstructManaBarPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 	local f = nil
 
@@ -777,7 +774,7 @@ local function DisciplineConstructManaBarPanel(parent)
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 1 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.discipline.settings)
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_discipline.settings)
 		end
 	end)
 
@@ -808,7 +805,7 @@ local function DisciplineConstructHealthBarPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.discipline
@@ -825,7 +822,7 @@ local function DisciplineConstructBarTexturesPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.discipline
@@ -839,7 +836,7 @@ local function DisciplineConstructBarVisibilityPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.discipline
@@ -855,7 +852,7 @@ local function DisciplineConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.priest.discipline
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 	local f = nil
 
@@ -871,7 +868,7 @@ local function DisciplineConstructFontAndTextPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 	local f = nil
 
@@ -917,7 +914,7 @@ local function DisciplineConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.priest.discipline
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 	local f = nil
 
@@ -943,7 +940,7 @@ local function DisciplineConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.priest.discipline
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.discipline
+	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)		
@@ -961,7 +958,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.discipline or {}
+	local controls = interfaceSettingsFrame.controls.priest_discipline or {}
 	local yCoord = 0
 	local f = nil
 
@@ -973,7 +970,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.disciplineDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Discipline")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "discipline", L["PriestDisciplineFull"], interfaceSettingsFrame.disciplineDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "priest_discipline", L["PriestDisciplineFull"], interfaceSettingsFrame.disciplineDisplayPanel)
 	parent = interfaceSettingsFrame.disciplineDisplayPanel
 
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PriestDisciplineFull"],
@@ -985,7 +982,7 @@ local function DisciplineConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_discipline = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel },
@@ -1013,7 +1010,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 		return
 	end
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.holy
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.priest_holy
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.holy
@@ -1121,7 +1118,7 @@ local function HolyConstructManaBarPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 	local f = nil
 
@@ -1276,7 +1273,7 @@ local function HolyConstructManaBarPanel(parent)
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
 		end
 	end)
 
@@ -1298,7 +1295,7 @@ local function HolyConstructManaBarPanel(parent)
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
 		end
 	end)
 
@@ -1320,7 +1317,7 @@ local function HolyConstructManaBarPanel(parent)
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.holy.settings)
+			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
 		end
 	end)
 
@@ -1395,7 +1392,7 @@ local function HolyConstructHealthBarPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.holy
@@ -1412,7 +1409,7 @@ local function HolyConstructBarTexturesPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.holy
@@ -1426,7 +1423,7 @@ local function HolyConstructBarVisibilityPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 
 	local spec = TRB.Data.settings.priest.holy
@@ -1442,7 +1439,7 @@ local function HolyConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.priest.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 	local f = nil
 
@@ -1458,7 +1455,7 @@ local function HolyConstructFontAndTextPanel(parent)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 	local f = nil
 
@@ -1504,7 +1501,7 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.priest.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 	local f = nil
 
@@ -1534,7 +1531,7 @@ local function HolyConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.priest.holy
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)		
@@ -1552,7 +1549,7 @@ local function HolyConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.holy or {}
+	local controls = interfaceSettingsFrame.controls.priest_holy or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1564,7 +1561,7 @@ local function HolyConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Holy")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "holy", L["PriestHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "priest_holy", L["PriestHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
 
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -1577,7 +1574,7 @@ local function HolyConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_holy = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
@@ -1606,7 +1603,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.priest.shadow
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shadow
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.priest_shadow
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Reset"] = {
@@ -1714,7 +1711,7 @@ local function ShadowConstructInsanityBarPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 	local f = nil
 
@@ -1873,7 +1870,7 @@ local function ShadowConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceInsanity"])
@@ -1890,7 +1887,7 @@ local function ShadowConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
@@ -1907,7 +1904,7 @@ local function ShadowConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
@@ -1921,7 +1918,7 @@ local function ShadowConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true)
@@ -1935,7 +1932,7 @@ local function ShadowConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 	local f = nil
 
@@ -2010,7 +2007,7 @@ local function ShadowConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 	local f = nil
 
@@ -2097,7 +2094,7 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.priest.shadow
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 	local f = nil
 
@@ -2123,7 +2120,7 @@ local function ShadowConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.priest.shadow
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shadow
+	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2141,7 +2138,7 @@ local function ShadowConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.shadow or {}
+	local controls = interfaceSettingsFrame.controls.priest_shadow or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2153,7 +2150,7 @@ local function ShadowConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 	
 	interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "shadow", L["PriestShadowFull"], interfaceSettingsFrame.shadowDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("priest", "priest_shadow", L["PriestShadowFull"], interfaceSettingsFrame.shadowDisplayPanel)
 
 	parent = interfaceSettingsFrame.shadowDisplayPanel
 
@@ -2166,7 +2163,7 @@ local function ShadowConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_shadow = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "insanityBar", label = L["TabInsanity"], width = oUi.tabWidth.small, constructor = ShadowConstructInsanityBarPanel },
@@ -2185,9 +2182,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("priest", L["Priest"])
-	DisciplineConstructOptionsPanel(specCache.discipline)
-	HolyConstructOptionsPanel(specCache.holy)
-	ShadowConstructOptionsPanel(specCache.shadow)
+	DisciplineConstructOptionsPanel(specCache.priest_discipline)
+	HolyConstructOptionsPanel(specCache.priest_holy)
+	ShadowConstructOptionsPanel(specCache.priest_shadow)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Priest.ConstructOptionsPanel = ConstructOptionsPanel

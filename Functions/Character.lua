@@ -92,7 +92,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
 	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.specName then
-		local specCache = TRB.Data.specCache[TRB.Data.character.specName]
+		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specCache and specCache.settings and specCache.settings.colors then
 			healthBarSettings = specCache.settings.colors.healthBar
 		end
@@ -190,8 +190,8 @@ function TRB.Functions.Character:UpdateOvercapColor()
 		if classSettings then
 			specSettings = classSettings[TRB.Data.character.specName]
 		end
-		if TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.specName] then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey] then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 	end
 	
@@ -518,6 +518,73 @@ function TRB.Functions.Character:GetSpecializationName(className, specId)
     return nil
 end
 
+---Build a composite key from a className and specName.
+---@param className string All-lowercase class name (e.g., "deathknight")
+---@param specName string Spec name in camelCase (e.g., "beastMastery")
+---@return string compositeKey e.g., "deathknight_frost"
+function TRB.Functions.Character:GetCompositeKey(className, specName)
+	return className .. "_" .. specName
+end
+
+---Look up a composite key from numeric classId and specId via the specRegistry.
+---@param classId number
+---@param specId number
+---@return string|nil compositeKey e.g., "warrior_arms", or nil if not found
+function TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local byClass = TRB.Data.specRegistryByIds[classId]
+	if byClass then
+		local entry = byClass[specId]
+		if entry then
+			return entry.compositeKey
+		end
+	end
+	return nil
+end
+
+---Parse a composite key back into its className and specName components.
+---@param compositeKey string e.g., "deathknight_frost"
+---@return string className e.g., "deathknight"
+---@return string specName e.g., "frost"
+function TRB.Functions.Character:ParseCompositeKey(compositeKey)
+	local className, specName = string.match(compositeKey, "^([^_]+)_(.+)$")
+	return className, specName
+end
+
+---Look up a specRegistry entry from a composite key.
+---@param compositeKey string e.g., "warrior_arms"
+---@return TRB.Data.SpecRegistryEntry|nil
+function TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	return TRB.Data.specRegistry[compositeKey]
+end
+
+---Look up a specRegistry entry from numeric classId and specId.
+---@param classId number
+---@param specId number
+---@return TRB.Data.SpecRegistryEntry|nil
+function TRB.Functions.Character:GetSpecRegistryEntryFromIds(classId, specId)
+	local byClass = TRB.Data.specRegistryByIds[classId]
+	if byClass then
+		return byClass[specId]
+	end
+	return nil
+end
+
+---Get the composite key for the currently active character.
+---@return string|nil compositeKey e.g. "deathknight_frost" or nil if not yet set
+function TRB.Functions.Character:GetActiveCompositeKey()
+	return TRB.Data.character.compositeKey
+end
+
+---Get the specCache entry for the currently active character (using compositeKey).
+---@return table|nil specCacheEntry The specCache entry (contains .settings, .talents, etc.)
+function TRB.Functions.Character:GetActiveSpecCache()
+	local key = TRB.Data.character.compositeKey
+	if key then
+		return TRB.Data.specCache[key]
+	end
+	return nil
+end
+
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 end
@@ -660,7 +727,8 @@ end
 ---| '"protection"' # Protection (Paladin, Warrior)
 ---@param isHealer boolean
 function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, isHealer)
-	local specCache = TRB.Data.specCache[specName] --[[@as TRB.Classes.SpecCache]]
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local specCache = TRB.Data.specCache[compositeKey] --[[@as TRB.Classes.SpecCache]]
 	local core = TRB.Data.settings.core --[[@as TRB.Classes.Settings.Core]]
 	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
 	local enabled = (core.global.globalEnable or s.specEnable) and specCache.settings ~= nil
@@ -908,6 +976,108 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 
 end
 
+--- Mapping from lowercase className to PascalCase options module key
+---@type table<string, string>
+local CLASS_OPTIONS_KEY = {
+	deathknight = "DeathKnight",
+	demonhunter = "DemonHunter",
+	druid = "Druid",
+	evoker = "Evoker",
+	hunter = "Hunter",
+	mage = "Mage",
+	monk = "Monk",
+	paladin = "Paladin",
+	priest = "Priest",
+	rogue = "Rogue",
+	shaman = "Shaman",
+	warlock = "Warlock",
+	warrior = "Warrior",
+}
+
+---Ensure that default spec settings exist in TRB.Data.settings for the given class.
+---If any spec in the class has empty settings (no .bar field), loads defaults from the
+---class's options module and merges them with any existing saved values.
+---@param className string Lowercase class name (e.g., "warrior")
+---@return boolean success Whether settings were successfully ensured
+function TRB.Functions.Character:EnsureSpecSettings(className)
+	local settings = TRB.Data.settings
+	if not settings or not settings[className] then
+		return false
+	end
+
+	-- Check if defaults have already been loaded by testing a sentinel field (.bar)
+	-- on any spec in this class. If all have .bar, defaults are loaded.
+	local needsDefaults = false
+	for _, specSettings in pairs(settings[className]) do
+		if type(specSettings) == "table" and specSettings.bar == nil then
+			needsDefaults = true
+			break
+		end
+	end
+
+	if not needsDefaults then
+		return true
+	end
+
+	local optionsKey = CLASS_OPTIONS_KEY[className]
+	if not optionsKey or not TRB.Options[optionsKey] or not TRB.Options[optionsKey].LoadDefaultSettings then
+		return false
+	end
+
+	-- Load full defaults for this class (returns a complete settings table; we only use the class portion)
+	local classDefaults = TRB.Options[optionsKey].LoadDefaultSettings(true)
+	if not classDefaults or not classDefaults[className] then
+		return false
+	end
+
+	-- Merge class-specific defaults into current settings.
+	-- Table:Merge(original, incoming) gives incoming priority, so defaults are
+	-- the base and any existing saved settings overlay on top.
+	for specName, specDefaults in pairs(classDefaults[className]) do
+		if type(specDefaults) == "table" then
+			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, settings[className][specName] or {})
+		end
+	end
+
+	return true
+end
+
+---Lazily create a minimal specCache entry for the given composite key if one doesn't exist.
+---Ensures the spec's settings are loaded (from defaults if needed) and populates the
+---specCache settings via FillSpecializationCacheSettings.
+---barTextVariables will be empty ({icons={}, values={}}) until FillSpellData is called.
+---@param compositeKey string e.g., "warrior_arms"
+---@return TRB.Classes.SpecCache|nil
+function TRB.Functions.Character:EnsureSpecCache(compositeKey)
+	-- If it already exists and has populated settings, return it
+	if TRB.Data.specCache[compositeKey] and TRB.Data.specCache[compositeKey].settings
+		and TRB.Data.specCache[compositeKey].settings.bar then
+		return TRB.Data.specCache[compositeKey]
+	end
+
+	local className, specName = TRB.Functions.Character:ParseCompositeKey(compositeKey)
+	if not className or not specName then
+		return nil
+	end
+
+	-- Ensure default settings exist for this class
+	if not TRB.Functions.Character:EnsureSpecSettings(className) then
+		return nil
+	end
+
+	-- Create the specCache entry if it doesn't exist
+	if not TRB.Data.specCache[compositeKey] then
+		TRB.Data.specCache[compositeKey] = TRB.Classes.SpecCache:New()
+	end
+
+	-- Populate merged settings into the specCache entry
+	-- isHealer=false is safe for lazy loading; the active class's FillSpecializationCacheSettings
+	-- call with the correct isHealer value will override this when the spec becomes active.
+	TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, false)
+
+	return TRB.Data.specCache[compositeKey]
+end
+
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
 	if floor == nil then
 		floor = false
@@ -1040,7 +1210,7 @@ function TRB.Functions.Character:EventRegistration()
 		-- Note: TriggerResourceBarUpdates is NOT called here because talents/spells may not be set yet.
 		-- The class module's SwitchSpec or ConstructResourceBar handles the full update after setup is complete.
 		if barGroups and TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				-- Initialize Edit Mode if not yet done (required for CDM anchoring/width matching)
 				if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then

@@ -21,16 +21,16 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	balance = TRB.Classes.SpecCache:New(),
-	feral = TRB.Classes.SpecCache:New(),
-	guardian = TRB.Classes.SpecCache:New(),
-	restoration = TRB.Classes.SpecCache:New()
+	druid_balance = TRB.Classes.SpecCache:New(),
+	druid_feral = TRB.Classes.SpecCache:New(),
+	druid_guardian = TRB.Classes.SpecCache:New(),
+	druid_restoration = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Balance
-	specCache.balance.Global_TwintopResourceBar = {
+	specCache.druid_balance.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0
@@ -42,7 +42,7 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	specCache.balance.character = {
+	specCache.druid_balance.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -57,35 +57,35 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Druid.BalanceSpells
-	specCache.balance.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
-	local spells = specCache.balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	specCache.druid_balance.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
+	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	
-	specCache.balance.snapshotData.audio = {
+	specCache.druid_balance.snapshotData.audio = {
 		playedSsCue = false,
 		playedSfCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
+	specCache.druid_balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.eclipseLunar.id] = TRB.Classes.Snapshot:New(spells.eclipseLunar)
+	specCache.druid_balance.snapshotData.snapshots[spells.eclipseLunar.id] = TRB.Classes.Snapshot:New(spells.eclipseLunar)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.celestialAlignment.id] = TRB.Classes.Snapshot:New(spells.celestialAlignment)
+	specCache.druid_balance.snapshotData.snapshots[spells.celestialAlignment.id] = TRB.Classes.Snapshot:New(spells.celestialAlignment)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.incarnationChosenOfElune.id] = TRB.Classes.Snapshot:New(spells.incarnationChosenOfElune)
+	specCache.druid_balance.snapshotData.snapshots[spells.incarnationChosenOfElune.id] = TRB.Classes.Snapshot:New(spells.incarnationChosenOfElune)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.newMoon.id] = TRB.Classes.Snapshot:New(spells.newMoon, {
+	specCache.druid_balance.snapshotData.snapshots[spells.newMoon.id] = TRB.Classes.Snapshot:New(spells.newMoon, {
 		currentSpellId = nil,
 		currentIcon = "",
 		currentKey = "",
 		checkAfter = nil
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.druid_balance.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	specCache.druid_balance.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 
 	-- Feral
-	specCache.feral.Global_TwintopResourceBar = {
+	specCache.druid_feral.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -94,7 +94,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.feral.character = {
+	specCache.druid_feral.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -107,52 +107,52 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Druid.FeralSpells
-	specCache.feral.spellsData.spells = TRB.Classes.Druid.FeralSpells:New()
-	local spells = specCache.feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	specCache.druid_feral.spellsData.spells = TRB.Classes.Druid.FeralSpells:New()
+	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 
-	specCache.feral.snapshotData.attributes.resourceRegen = 0
-	specCache.feral.snapshotData.attributes.comboPoints = 0
-	specCache.feral.snapshotData.audio = {
+	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
+	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
+	specCache.druid_feral.snapshotData.audio = {
 		apexPredatorsCravingCue = false,
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	specCache.druid_feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.brutalSlash.id] = TRB.Classes.Snapshot:New(spells.brutalSlash)
+	specCache.druid_feral.snapshotData.snapshots[spells.brutalSlash.id] = TRB.Classes.Snapshot:New(spells.brutalSlash)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.feralFrenzy.id] = TRB.Classes.Snapshot:New(spells.feralFrenzy)
+	specCache.druid_feral.snapshotData.snapshots[spells.feralFrenzy.id] = TRB.Classes.Snapshot:New(spells.feralFrenzy)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.franticFrenzy.id] = TRB.Classes.Snapshot:New(spells.franticFrenzy)
+	specCache.druid_feral.snapshotData.snapshots[spells.franticFrenzy.id] = TRB.Classes.Snapshot:New(spells.franticFrenzy)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
+	specCache.druid_feral.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk, {
+	specCache.druid_feral.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk, {
 		lastTick = nil,
 		nextTick = nil,
 		untilNextTick = 0,
 		ticks = 0,
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] = TRB.Classes.Snapshot:New(spells.incarnationAvatarOfAshamane)
+	specCache.druid_feral.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] = TRB.Classes.Snapshot:New(spells.incarnationAvatarOfAshamane)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
+	specCache.druid_feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
+	specCache.druid_feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
 	---@type TRB.Classes.Snapshot
-	specCache.feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.druid_feral.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 
 	-- Guardian
-	specCache.guardian.Global_TwintopResourceBar = {
+	specCache.druid_guardian.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0
 		}
 	}
 	
-	specCache.guardian.character = {
+	specCache.druid_guardian.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -165,31 +165,31 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Druid.GuardianSpells
-	specCache.guardian.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
-	local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	specCache.druid_guardian.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
+	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 	---@type TRB.Classes.Snapshot
-	specCache.guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.druid_guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
-	specCache.guardian.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk)
+	specCache.druid_guardian.snapshotData.snapshots[spells.berserk.id] = TRB.Classes.Snapshot:New(spells.berserk)
 	---@type TRB.Classes.Snapshot
-	specCache.guardian.snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id] = TRB.Classes.Snapshot:New(spells.incarnationGuardianOfUrsoc)
+	specCache.druid_guardian.snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id] = TRB.Classes.Snapshot:New(spells.incarnationGuardianOfUrsoc)
 	---@type TRB.Classes.Snapshot
-	specCache.guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.druid_guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
-	specCache.guardian.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	specCache.druid_guardian.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 
-	specCache.guardian.snapshotData.audio = {
+	specCache.druid_guardian.snapshotData.audio = {
 	}
 
 	-- Restoration
-	specCache.restoration.Global_TwintopResourceBar = {
+	specCache.druid_restoration.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.restoration.character = {
+	specCache.druid_restoration.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -202,23 +202,23 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Druid.RestorationSpells
-	specCache.restoration.spellsData.spells = TRB.Classes.Druid.RestorationSpells:New()
-	local spells = specCache.restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	specCache.druid_restoration.spellsData.spells = TRB.Classes.Druid.RestorationSpells:New()
+	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 
-	specCache.restoration.snapshotData.attributes.manaRegen = 0
-	specCache.restoration.snapshotData.audio = {
+	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
+	specCache.druid_restoration.snapshotData.audio = {
 		innervateCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.efflorescence.id] = TRB.Classes.Snapshot:New(spells.efflorescence)
+	specCache.druid_restoration.snapshotData.snapshots[spells.efflorescence.id] = TRB.Classes.Snapshot:New(spells.efflorescence)
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(spells.incarnationTreeOfLife)
+	specCache.druid_restoration.snapshotData.snapshots[spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(spells.incarnationTreeOfLife)
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
+	specCache.druid_restoration.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	specCache.druid_restoration.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 
-	specCache.restoration.barTextVariables = {
+	specCache.druid_restoration.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -236,11 +236,11 @@ end
 
 local function FillSpellData_Balance()
 	Setup_Balance()
-	specCache.balance.spellsData:FillSpellData()
-	local spells = specCache.balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	specCache.druid_balance.spellsData:FillSpellData()
+	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.balance.barTextVariables.icons = {
+	specCache.druid_balance.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -273,7 +273,7 @@ local function FillSpellData_Balance()
 		{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
 		{ variable = "#moon", icon = string.format(L["DruidBalanceIcon_moon"], spells.newMoon.icon, spells.halfMoon.icon, spells.fullMoon.icon), description = L["DruidBalanceIconDescription_moon"], printInSettings = true },
 	}
-	specCache.balance.barTextVariables.values = {
+	specCache.druid_balance.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -354,11 +354,11 @@ end
 
 local function FillSpellData_Feral()
 	Setup_Feral()
-	specCache.feral.spellsData:FillSpellData()
-	local spells = specCache.feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	specCache.druid_feral.spellsData:FillSpellData()
+	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.feral.barTextVariables.icons = {
+	specCache.druid_feral.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -381,7 +381,7 @@ local function FillSpellData_Feral()
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
 		{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
 	}
-	specCache.feral.barTextVariables.values = {
+	specCache.druid_feral.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -454,18 +454,18 @@ end
 
 local function FillSpellData_Guardian()
 	Setup_Guardian()
-	specCache.guardian.spellsData:FillSpellData()
-	local spells = specCache.guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	specCache.druid_guardian.spellsData:FillSpellData()
+	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.guardian.barTextVariables.icons = {
+	specCache.druid_guardian.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
 	}
 
-	specCache.guardian.barTextVariables.values = {
+	specCache.druid_guardian.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -532,11 +532,11 @@ end
 
 local function FillSpellData_Restoration()
 	Setup_Restoration()
-	specCache.restoration.spellsData:FillSpellData()
-	local spells = specCache.restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	specCache.druid_restoration.spellsData:FillSpellData()
+	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.restoration.barTextVariables.icons = {
+	specCache.druid_restoration.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -545,7 +545,7 @@ local function FillSpellData_Restoration()
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#incarnation", icon = spells.incarnationTreeOfLife.icon, description = spells.incarnationTreeOfLife.name, printInSettings = true },
 	}
-	specCache.restoration.barTextVariables.values = {
+	specCache.druid_restoration.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -907,7 +907,7 @@ local function RefreshLookupData_Balance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.balance
-	local sharedSettings = TRB.Data.specCache["balance"].settings
+	local sharedSettings = TRB.Data.specCache["druid_balance"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1038,7 +1038,7 @@ local function RefreshLookupData_Feral()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.feral
-	local sharedSettings = TRB.Data.specCache["feral"].settings
+	local sharedSettings = TRB.Data.specCache["druid_feral"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1149,7 +1149,7 @@ local function RefreshLookupData_Guardian()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.guardian
-	local sharedSettings = TRB.Data.specCache["guardian"].settings
+	local sharedSettings = TRB.Data.specCache["druid_guardian"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1226,7 +1226,7 @@ local function RefreshLookupData_Restoration()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.druid.restoration
-	local sharedSettings = TRB.Data.specCache["restoration"].settings
+	local sharedSettings = TRB.Data.specCache["druid_restoration"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -1299,12 +1299,12 @@ local function RefreshLookupData_Unified()
 	
 	-- Determine which form's settings to use for coloring
 	local formSpecId = GetFormSpecForSettings(specId, currentForm)
-	local formSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[formSpecId]
+	local formSpecName = ({ [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" })[formSpecId]
 	local sharedSettings = TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
 	
 	if not sharedSettings then
 		-- Fallback to active spec settings
-		formSpecName = TRB.Data.character.specName
+		formSpecName = TRB.Data.character.compositeKey
 		sharedSettings = TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
 	end
 	
@@ -1705,6 +1705,7 @@ local function UpdateResourceBar()
 	local activeSpecId = TRB.Data.character.specId
 	local displaySpecId = GetFormSpecForSettings(activeSpecId, currentForm)
 	local displaySpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[displaySpecId]
+	local displayCompositeKey = ({ [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" })[displaySpecId]
 	
 	-- Determine which resource to display based on displaySpecId (respects enableFormSwitching setting)
 	local displayResource = snapshotData.attributes.resource -- default
@@ -1735,12 +1736,12 @@ local function UpdateResourceBar()
 	end
 	
 	local formSpecSettings = classSettings[displaySpecName]
-	local formSpecCache = TRB.Data.specCache[displaySpecName]
+	local formSpecCache = TRB.Data.specCache[displayCompositeKey]
 	local formSpecCacheSettings = formSpecCache and formSpecCache.settings
 	
 	-- If the form's spec cache settings aren't available, fall back to current spec's settings
 	if formSpecCacheSettings == nil then
-		formSpecCacheSettings = TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings
+		formSpecCacheSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		if formSpecCacheSettings == nil then
 			return -- Cannot proceed without settings
 		end
@@ -1872,7 +1873,7 @@ local function UpdateResourceBar()
 	if TRB.Data.character.specId == 1 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
 		local specSettings = classSettings.balance
-		local specCacheSettings = TRB.Data.specCache["balance"].settings
+		local specCacheSettings = TRB.Data.specCache["druid_balance"].settings
 		UpdateSnapshot_Balance()
 
 		if snapshotData.attributes.isTracking then
@@ -2147,7 +2148,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 2 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
 		local specSettings = classSettings.feral
-		local specCacheSettings = TRB.Data.specCache["feral"].settings
+		local specCacheSettings = TRB.Data.specCache["druid_feral"].settings
 		UpdateSnapshot_Feral()
 
 		if snapshotData.attributes.isTracking then
@@ -2514,7 +2515,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
 		local specSettings = classSettings.guardian
-		local specCacheSettings = TRB.Data.specCache["guardian"].settings
+		local specCacheSettings = TRB.Data.specCache["druid_guardian"].settings
 		UpdateSnapshot_Guardian()
 
 		if snapshotData.attributes.isTracking then
@@ -2677,7 +2678,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 4 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
 		local specSettings = classSettings.restoration
-		local specCacheSettings = TRB.Data.specCache.restoration.settings
+		local specCacheSettings = TRB.Data.specCache.druid_restoration.settings
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
@@ -2776,9 +2777,9 @@ local function SwitchSpec()
 	TRB.Data.character.currentShapeshiftFormId = 0
 	TRB.Data.character.currentShapeshiftForm = "humanoid"
 	if TRB.Data.character.specId == 1 then
-		specCache.balance.talents:GetTalents()
+		specCache.druid_balance.talents:GetTalents()
 		FillSpellData_Balance()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.druid_balance)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
@@ -2786,7 +2787,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unified
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.balance.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.druid_balance.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#wrath"] = spells.wrath.icon
@@ -2812,19 +2813,19 @@ local function SwitchSpec()
 		TRB.Data.lookupLogic = {}
 
 		-- Set talents before EventRegistration since CheckCharacter uses it
-		talents = specCache.balance.talents
+		talents = specCache.druid_balance.talents
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "balance" then
-			TRB.Data.barConstructedForSpec = "balance"
-			ConstructResourceBar(specCache.balance.settings)
+		if TRB.Data.barConstructedForSpec ~= "druid_balance" then
+			TRB.Data.barConstructedForSpec = "druid_balance"
+			ConstructResourceBar(specCache.druid_balance.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.feral.talents:GetTalents()
+		specCache.druid_feral.talents:GetTalents()
 		FillSpellData_Feral()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.druid_feral)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
@@ -2832,7 +2833,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unified
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.feral.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.druid_feral.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
@@ -2856,19 +2857,19 @@ local function SwitchSpec()
 		TRB.Data.lookupLogic = {}
 
 		-- Set talents before EventRegistration since CheckCharacter uses it
-		talents = specCache.feral.talents
+		talents = specCache.druid_feral.talents
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "feral" then
-			TRB.Data.barConstructedForSpec = "feral"
-			ConstructResourceBar(specCache.feral.settings)
+		if TRB.Data.barConstructedForSpec ~= "druid_feral" then
+			TRB.Data.barConstructedForSpec = "druid_feral"
+			ConstructResourceBar(specCache.druid_feral.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.guardian.talents:GetTalents()
+		specCache.druid_guardian.talents:GetTalents()
 		FillSpellData_Guardian()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.guardian)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.druid_guardian)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
@@ -2876,7 +2877,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unified
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.guardian)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.druid_guardian)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#berserk"] = spells.berserk.icon
@@ -2884,19 +2885,19 @@ local function SwitchSpec()
 		TRB.Data.lookupLogic = {}
 
 		-- Set talents before EventRegistration since CheckCharacter uses it
-		talents = specCache.guardian.talents
+		talents = specCache.druid_guardian.talents
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "guardian" then
-			TRB.Data.barConstructedForSpec = "guardian"
-			ConstructResourceBar(specCache.guardian.settings)
+		if TRB.Data.barConstructedForSpec ~= "druid_guardian" then
+			TRB.Data.barConstructedForSpec = "druid_guardian"
+			ConstructResourceBar(specCache.druid_guardian.settings)
 		end
 	elseif TRB.Data.character.specId == 4 then
-		specCache.restoration.talents:GetTalents()
+		specCache.druid_restoration.talents:GetTalents()
 		FillSpellData_Restoration()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.druid_restoration)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
@@ -2904,7 +2905,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unified
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.restoration)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.druid_restoration)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#efflorescence"] = spells.efflorescence.icon
@@ -2914,14 +2915,14 @@ local function SwitchSpec()
 		TRB.Data.lookupLogic = {}
 
 		-- Set talents before EventRegistration since CheckCharacter uses it
-		talents = specCache.restoration.talents
+		talents = specCache.druid_restoration.talents
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "restoration" then
-			TRB.Data.barConstructedForSpec = "restoration"
-			ConstructResourceBar(specCache.restoration.settings)
+		if TRB.Data.barConstructedForSpec ~= "druid_restoration" then
+			TRB.Data.barConstructedForSpec = "druid_restoration"
+			ConstructResourceBar(specCache.druid_restoration.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -3115,7 +3116,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 
 	local function SetupSharedSettingsForSpec()
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		if sharedSettings ~= nil and barGroups then
 			if barGroups.primary then
@@ -3135,7 +3136,7 @@ function TRB.Functions.Class:CheckCharacter()
 				end
 				TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 				-- Use Feral settings for combo point configuration
-				local feralSettings = TRB.Data.specCache.feral.settings
+				local feralSettings = TRB.Data.specCache.druid_feral.settings
 
 				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
 					-- Get effective width (may be CDM-matched) from barGroups or fall back to feral settings
@@ -3174,6 +3175,7 @@ function TRB.Functions.Class:CheckCharacter()
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "balance"
+		TRB.Data.character.compositeKey = "druid_balance"
 		TRB.Data.character.maxResource = TRB.Data.character.maxAstralPower
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
@@ -3183,6 +3185,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
+		TRB.Data.character.compositeKey = "druid_feral"
 		TRB.Data.character.maxResource = TRB.Data.character.maxEnergy
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
@@ -3194,6 +3197,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "guardian"
+		TRB.Data.character.compositeKey = "druid_guardian"
 		TRB.Data.character.maxResource = TRB.Data.character.maxRage
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
@@ -3202,6 +3206,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 4 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
+		TRB.Data.character.compositeKey = "druid_restoration"
 		TRB.Data.character.maxResource = TRB.Data.character.maxMana
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
@@ -3285,8 +3290,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 or TRB.Data.character.specId == 4 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -3315,7 +3320,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Show combo points when displaySpecId is Feral (energy bar is shown)
 			if not forceHideAll and displaySpecId == 2 then
 				-- Use Feral's secondary bar settings for visibility
-				local secondarySettings = TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings or sharedSettings
+				local secondarySettings = TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings or sharedSettings
 				
 				if secondarySettings ~= nil and secondarySettings.displayBar ~= nil then
 					if secondarySettings.displayBar.secondary == "always" then

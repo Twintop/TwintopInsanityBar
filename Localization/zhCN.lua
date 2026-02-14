@@ -1636,8 +1636,6 @@ if locale == "zhCN" then
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "圣光灌注触发时播放音效"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "圣光灌注触发时播放音效，每次触发仅播放一次。"
 
-    L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555错误：|r战斗中无法通过斜杠命令打开设置界面。"
-
     L["CheckboxEnableForAllSpecs"] = "为所有专精启用此功能"
     L["CheckboxEnableForAllSpecsTooltip"] = "勾选该选项后，此项全局设置会对所有职业下的每一种专精生效启用；取消勾选后，则对全部职业与专精禁用该设置。"
 

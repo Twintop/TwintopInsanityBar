@@ -17,10 +17,6 @@ local dataObject = ldb:NewDataObject(ADDON_NAME, {
 	icon = ICON_TEXTURE,
 	OnClick = function(_, button)
 		if button == "LeftButton" then
-			if InCombatLockdown() then
-				print(L["CannotOpenOptionsInCombat"])
-				return
-			end
 			TRB.Options.OptionsFrame:Show()
 			if TRB.Data.barConstructedForSpec ~= nil then
 				TRB.Options.OptionsFrame:SelectCategory(TRB.Data.barConstructedForSpec)

@@ -89,15 +89,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	discipline = TRB.Classes.SpecCache:New(),
-	holy = TRB.Classes.SpecCache:New(),
-	shadow = TRB.Classes.SpecCache:New()
+	priest_discipline = TRB.Classes.SpecCache:New(),
+	priest_holy = TRB.Classes.SpecCache:New(),
+	priest_shadow = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Discipline
-	specCache.discipline.Global_TwintopResourceBar = {
+	specCache.priest_discipline.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -105,7 +105,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.discipline.character = {
+	specCache.priest_discipline.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -117,33 +117,33 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	specCache.discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
+	specCache.priest_discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
 	---@type TRB.Classes.Priest.DisciplineSpells
 	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.discipline.spellsData.spells
+	local spells = specCache.priest_discipline.spellsData.spells
 
-	specCache.discipline.snapshotData.attributes.manaRegen = 0
-	specCache.discipline.snapshotData.audio = {
+	specCache.priest_discipline.snapshotData.attributes.manaRegen = 0
+	specCache.priest_discipline.snapshotData.audio = {
 		innervateCue = false,
 		surgeOfLightPlayed = false
 	}
 	--[[---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
+	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
+	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift, {
+	specCache.priest_discipline.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift, {
 		guid = nil,
 		totemId = nil
 	}, false, true)]]
 
-	specCache.discipline.barTextVariables = {
+	specCache.priest_discipline.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Holy
-	specCache.holy.Global_TwintopResourceBar = {
+	specCache.priest_holy.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -151,7 +151,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.holy.character = {
+	specCache.priest_holy.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -164,38 +164,38 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.Priest.HolySpells
-	specCache.holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
+	specCache.priest_holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
-	specCache.holy.snapshotData.attributes.manaRegen = 0
-	specCache.holy.snapshotData.audio = {
+	specCache.priest_holy.snapshotData.attributes.manaRegen = 0
+	specCache.priest_holy.snapshotData.audio = {
 		innervateCue = false,
 		resonantWordsCue = false,
 		lightweaverCue = false,
 		surgeOfLightPlayed = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
+	specCache.priest_holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
+	specCache.priest_holy.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
 	--[[---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
+	specCache.priest_holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
+	specCache.priest_holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(spells.holyWordSerenity)
+	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(spells.holyWordSerenity)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(spells.holyWordSanctify)
+	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(spells.holyWordSanctify)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
+	specCache.priest_holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, "always")
+	specCache.priest_holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, "always")]]
+	specCache.priest_holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, "always")]]
 
 	-- Shadow
-	specCache.shadow.Global_TwintopResourceBar = {
+	specCache.priest_shadow.Global_TwintopResourceBar = {
 		voidform = {
 		},
 		resource = {
@@ -204,7 +204,7 @@ local function FillSpecializationCache()
 		},
 	}
 
-	specCache.shadow.character = {
+	specCache.priest_shadow.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -218,43 +218,43 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.Priest.ShadowSpells
-	specCache.shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
+	specCache.priest_shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
-	specCache.shadow.snapshotData.audio = {
+	specCache.priest_shadow.snapshotData.audio = {
 		playedDpCue = false,
 		playedMdCue = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
+	specCache.priest_shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
+	specCache.priest_shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
+	specCache.priest_shadow.snapshotData.snapshots[spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.screamsOfTheVoid.id] = TRB.Classes.Snapshot:New(spells.screamsOfTheVoid)
+	specCache.priest_shadow.snapshotData.snapshots[spells.screamsOfTheVoid.id] = TRB.Classes.Snapshot:New(spells.screamsOfTheVoid)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift)
+	specCache.priest_shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
+	specCache.priest_shadow.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
 	--[[
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
+	specCache.priest_shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
+	specCache.priest_shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.mindBlast.id] = TRB.Classes.Snapshot:New(spells.mindBlast)
+	specCache.priest_shadow.snapshotData.snapshots[spells.mindBlast.id] = TRB.Classes.Snapshot:New(spells.mindBlast)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(spells.idolOfYoggSaron)
+	specCache.priest_shadow.snapshotData.snapshots[spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(spells.idolOfYoggSaron)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(spells.thingFromBeyond)
+	specCache.priest_shadow.snapshotData.snapshots[spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(spells.thingFromBeyond)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.horrificVisions.id] = TRB.Classes.Snapshot:New(spells.horrificVisions)
+	specCache.priest_shadow.snapshotData.snapshots[spells.horrificVisions.id] = TRB.Classes.Snapshot:New(spells.horrificVisions)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
+	specCache.priest_shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)]]
+	specCache.priest_shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)]]
 end
 
 local function Setup_Discipline()
@@ -270,11 +270,11 @@ end
 local function FillSpellData_Discipline()
 	Setup_Discipline()
 	---@type TRB.Classes.SpellsData
-	specCache.discipline.spellsData:FillSpellData()
-	local spells = specCache.discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	specCache.priest_discipline.spellsData:FillSpellData()
+	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.discipline.barTextVariables.icons = {
+	specCache.priest_discipline.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -286,7 +286,7 @@ local function FillSpellData_Discipline()
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },]]
 	}
-	specCache.discipline.barTextVariables.values = {
+	specCache.priest_discipline.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -356,11 +356,11 @@ end
 
 local function FillSpellData_Holy()
 	Setup_Holy()
-	specCache.holy.spellsData:FillSpellData()
-	local spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	specCache.priest_holy.spellsData:FillSpellData()
+	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.holy.barTextVariables.icons = {
+	specCache.priest_holy.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -394,7 +394,7 @@ local function FillSpellData_Holy()
 		{ variable = "#sacredReverence", icon = spells.sacredReverence.icon, description = spells.sacredReverence.name, printInSettings = true },
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },]]
 	}
-	specCache.holy.barTextVariables.values = {
+	specCache.priest_holy.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -485,11 +485,11 @@ end
 
 local function FillSpellData_Shadow()
 	Setup_Shadow()
-	specCache.shadow.spellsData:FillSpellData()
-	local spells = specCache.shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	specCache.priest_shadow.spellsData:FillSpellData()
+	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.shadow.barTextVariables.icons = {
+	specCache.priest_shadow.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
@@ -548,7 +548,7 @@ local function FillSpellData_Shadow()
 		--[[{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
 		{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },]]
 	}
-	specCache.shadow.barTextVariables.values = {
+	specCache.priest_shadow.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -692,7 +692,7 @@ end
 
 local function RefreshLookupData_Discipline()
 	local specSettings = TRB.Data.settings.priest.discipline
-	local sharedSettings = TRB.Data.specCache["discipline"].settings
+	local sharedSettings = TRB.Data.specCache["priest_discipline"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -803,7 +803,7 @@ local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.priest.holy
-	local sharedSettings = TRB.Data.specCache["holy"].settings
+	local sharedSettings = TRB.Data.specCache["priest_holy"].settings
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -955,7 +955,7 @@ end
 
 local function RefreshLookupData_Shadow()
 	local specSettings = TRB.Data.settings.priest.shadow
-	local sharedSettings = TRB.Data.specCache["shadow"].settings
+	local sharedSettings = TRB.Data.specCache["priest_shadow"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1613,7 +1613,7 @@ local function UpdateResourceBar()
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
-		local specCacheSettings = TRB.Data.specCache.discipline.settings
+		local specCacheSettings = TRB.Data.specCache.priest_discipline.settings
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1662,7 +1662,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		local specSettings = classSettings.holy
-		local specCacheSettings = TRB.Data.specCache.holy.settings
+		local specCacheSettings = TRB.Data.specCache.priest_holy.settings
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1755,7 +1755,7 @@ local function UpdateResourceBar()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
-		local specCacheSettings = TRB.Data.specCache.shadow.settings
+		local specCacheSettings = TRB.Data.specCache.priest_shadow.settings
 		UpdateSnapshot_Shadow()
 
 		if snapshotData.attributes.isTracking then
@@ -2015,9 +2015,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization() or 0
 
 	if TRB.Data.character.specId == 1 then
-		specCache.discipline.talents:GetTalents()
+		specCache.priest_discipline.talents:GetTalents()
 		FillSpellData_Discipline()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.discipline)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.priest_discipline)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
@@ -2025,7 +2025,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.discipline.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.priest_discipline.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		--[[lookup["#atonement"] = spells.atonement.icon
@@ -2042,13 +2042,13 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		talents = specCache.discipline.talents
-		TRB.Data.barConstructedForSpec = "discipline"
-		ConstructResourceBar(specCache.discipline.settings)
+		talents = specCache.priest_discipline.talents
+		TRB.Data.barConstructedForSpec = "priest_discipline"
+		ConstructResourceBar(specCache.priest_discipline.settings)
 	elseif TRB.Data.character.specId == 2 then
-		specCache.holy.talents:GetTalents()
+		specCache.priest_holy.talents:GetTalents()
 		FillSpellData_Holy()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.priest_holy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
@@ -2056,7 +2056,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.priest_holy.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#flashHeal"] = spells.flashHeal.icon
@@ -2087,9 +2087,9 @@ local function SwitchSpec()
 		TRB.Functions.Class:EventRegistration()
 
 		-- Configure Sustained Potency pause tracking for Apotheosis
-		local apotheosisSnapshot = specCache.holy.snapshotData.snapshots[spells.apotheosis.id]
+		local apotheosisSnapshot = specCache.priest_holy.snapshotData.snapshots[spells.apotheosis.id]
 		if apotheosisSnapshot ~= nil then
-			if specCache.holy.talents:IsTalentActive(spells.sustainedPotency) then
+			if specCache.priest_holy.talents:IsTalentActive(spells.sustainedPotency) then
 				-- Set the pause max duration from the Sustained Potency talent
 				apotheosisSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.attributes.pauseDuration)
 				RegisterSustainedPotencyEvents()
@@ -2100,13 +2100,13 @@ local function SwitchSpec()
 			end
 		end
 
-		talents = specCache.holy.talents
-		TRB.Data.barConstructedForSpec = "holy"
-		ConstructResourceBar(specCache.holy.settings)
+		talents = specCache.priest_holy.talents
+		TRB.Data.barConstructedForSpec = "priest_holy"
+		ConstructResourceBar(specCache.priest_holy.settings)
 	elseif TRB.Data.character.specId == 3 then
-		specCache.shadow.talents:GetTalents()
+		specCache.priest_shadow.talents:GetTalents()
 		FillSpellData_Shadow()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.priest_shadow)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
@@ -2114,7 +2114,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.shadow.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.priest_shadow.settings)
 
 		local lookup = {}
 		lookup["#mb"] = spells.mindBlast.icon
@@ -2164,9 +2164,9 @@ local function SwitchSpec()
 		TRB.Functions.Class:EventRegistration()
 
 		-- Configure Sustained Potency pause tracking for Voidform
-		local voidformSnapshot = specCache.shadow.snapshotData.snapshots[spells.voidform.id]
+		local voidformSnapshot = specCache.priest_shadow.snapshotData.snapshots[spells.voidform.id]
 		if voidformSnapshot ~= nil then
-			if specCache.shadow.talents:IsTalentActive(spells.sustainedPotency) then
+			if specCache.priest_shadow.talents:IsTalentActive(spells.sustainedPotency) then
 				-- Set the pause max duration from the Sustained Potency talent
 				voidformSnapshot.buff:SetPauseMaxDuration(spells.sustainedPotency.attributes.pauseDuration)
 				RegisterSustainedPotencyEvents()
@@ -2177,9 +2177,9 @@ local function SwitchSpec()
 			end
 		end
 
-		talents = specCache.shadow.talents
-		TRB.Data.barConstructedForSpec = "shadow"
-		ConstructResourceBar(specCache.shadow.settings)
+		talents = specCache.priest_shadow.talents
+		TRB.Data.barConstructedForSpec = "priest_shadow"
+		ConstructResourceBar(specCache.priest_shadow.settings)
 	else
 		-- Unregister Sustained Potency events when not Shadow spec
 		UnregisterSustainedPotencyEvents()
@@ -2338,6 +2338,7 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
+		TRB.Data.character.compositeKey = "priest_discipline"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
@@ -2351,7 +2352,7 @@ function TRB.Functions.Class:CheckCharacter()
 				totalPowerWordCharges = totalPowerWordCharges + 1
 			end
 		end]]
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	
 		if sharedSettings ~= nil then
 			if totalPowerWordCharges ~= TRB.Data.character.maxResource2 then
@@ -2364,6 +2365,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
+		TRB.Data.character.compositeKey = "priest_holy"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.holy
@@ -2388,7 +2390,7 @@ function TRB.Functions.Class:CheckCharacter()
 		if talents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
 			totalHolyWordCharges = totalHolyWordCharges + 1
 		end]]
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	
 		if sharedSettings ~= nil then
 			if totalHolyWordCharges ~= TRB.Data.character.maxResource2 then
@@ -2401,6 +2403,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
+		TRB.Data.character.compositeKey = "priest_shadow"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Insanity, false)
 	end
@@ -2443,8 +2446,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then

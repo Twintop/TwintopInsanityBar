@@ -69,6 +69,23 @@ local function SetCheckboxTriState(checkbox, state)
 	end
 end
 
+---Returns true if the panel being edited belongs to (or affects) the currently active spec.
+---Used to guard live-preview callbacks so editing a non-active spec's settings doesn't
+---trigger unnecessary or incorrect bar updates.
+---@param classId integer? # Class ID of the panel being edited (nil for global panel)
+---@param specId integer? # Spec ID of the panel being edited (nil for global panel)
+---@return boolean
+function TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId)
+	if classId == nil and specId == nil then
+		return true -- Global panel always affects active spec
+	end
+	-- Druids share bar settings across all forms/specs
+	if TRB.Data.character.classId == 11 then
+		return true
+	end
+	return TRB.Data.character.classId == classId and TRB.Data.character.specId == specId
+end
+
 ---Gets the aggregate state of a global setting across all class/specs
 ---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
 ---@return boolean|nil # true if all enabled, false if all disabled, nil if mixed
@@ -142,7 +159,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:HideResourceBar()
@@ -745,40 +762,42 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 				colorTable[key] = newColorString
 			end
 		
-			if frame ~= nil then
-				if frameType == "backdrop" then
-					-- Handle both single frame and array of frames
-					if type(frame) == "table" and frame[1] ~= nil then
-						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropColor(f, nil, r_1, g_1, b_1, a_1)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				if frame ~= nil then
+					if frameType == "backdrop" then
+						-- Handle both single frame and array of frames
+						if type(frame) == "table" and frame[1] ~= nil then
+							for _, f in ipairs(frame) do
+								TRB.Functions.Color:SetBackdropColor(f, nil, r_1, g_1, b_1, a_1)
+							end
+						else
+							TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
 						end
-					else
-						TRB.Functions.Color:SetBackdropColor(frame, nil, r_1, g_1, b_1, a_1)
-					end
-				elseif frameType == "border" then
-					-- Handle both single frame and array of frames
-					if type(frame) == "table" and frame[1] ~= nil then
-						for _, f in ipairs(frame) do
-							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, newColorString)
+					elseif frameType == "border" then
+						-- Handle both single frame and array of frames
+						if type(frame) == "table" and frame[1] ~= nil then
+							for _, f in ipairs(frame) do
+								TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(f, nil, newColorString)
+							end
+						else
+							TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, newColorString)
 						end
-					else
-						TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, nil, newColorString)
-					end
-				elseif frameType == "bar" then
-					TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
-				elseif frameType == "threshold" then
-					TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
-				end			
-			elseif frameType == "health" then
-				TRB.Functions.Character:UpdateHealthValues()
-			end
+					elseif frameType == "bar" then
+						TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
+					elseif frameType == "threshold" then
+						TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
+					end			
+				elseif frameType == "health" then
+					TRB.Functions.Character:UpdateHealthValues()
+				end
 
-			-- Clear color caches and trigger resource bar update to apply correct spec colors
-			TRB.Data.cache.colors.backdrop = {}
-			TRB.Data.cache.colors.border = {}
-			TRB.Data.cache.colors.bar = {}
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
+				-- Clear color caches and trigger resource bar update to apply correct spec colors
+				TRB.Data.cache.colors.backdrop = {}
+				TRB.Data.cache.colors.border = {}
+				TRB.Data.cache.colors.bar = {}
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
 			end
 		end)
 	end
@@ -1567,7 +1586,7 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 end
 
 local function AdjustBarBorder()
-	local specCacheEntry = TRB.Data.specCache[TRB.Data.character.specName].settings
+	local specCacheEntry = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	if TRB.Frames.barGroups ~= nil then
 		TRB.Functions.Bar:ApplyBarGroupsLayout(specCacheEntry, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(specCacheEntry, TRB.Frames.barGroups)
@@ -1610,8 +1629,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -1645,8 +1664,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -1676,8 +1695,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 
@@ -1702,7 +1721,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1719,7 +1738,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1826,7 +1845,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey] = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -1865,8 +1884,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1890,8 +1909,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1910,8 +1929,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1928,8 +1947,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1948,8 +1967,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1981,7 +2000,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end
 		end)
 	end
@@ -2028,7 +2047,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2066,7 +2085,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2175,7 +2194,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 	
@@ -2196,7 +2215,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"].EditBox:SetText(tostring(borderSize))
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 	
@@ -2211,7 +2230,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		barSettings.xPos = value
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 	
@@ -2225,7 +2244,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		barSettings.yPos = value
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 	
@@ -2245,7 +2264,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		barSettings.border = value
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 		
 		local minSliderWidth = math.max(barSettings.border * 2 + 1, widthMin)
@@ -2270,7 +2289,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			barSettings.spacing = value
 			
 			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end
 		end)
 	end
@@ -2311,7 +2330,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		barRelativeTo:SetDefaultText(barSettings.relativeToName)
 
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end
 
@@ -2344,7 +2363,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 		
 		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 
@@ -2499,8 +2518,10 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	
 	-- Helper to call the change callback
 	local function triggerChange()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 		if changeCallback then
 			changeCallback()
@@ -2697,17 +2718,19 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 		TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 		TRB.Functions.Character:ResetCaches()
 		
-		if TRB.Frames.barGroups ~= nil then
-			local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			TRB.Functions.EditMode:UpdateWrapperSize(settings)
-			TRB.Functions.Bar:HideResourceBar()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				TRB.Functions.EditMode:UpdateWrapperSize(settings)
+				TRB.Functions.Bar:HideResourceBar()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			else
+				TRB.Functions.Bar:HideResourceBar()
 			end
-		else
-			TRB.Functions.Bar:HideResourceBar()
 		end
 	end
 
@@ -2773,7 +2796,7 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -2818,17 +2841,19 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			TRB.Functions.Character:ResetCaches()
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:HideResourceBar()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:HideResourceBar()
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.Bar:Construct()
 				end
-			else
-				TRB.Functions.Bar:Construct()
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
@@ -2846,9 +2871,12 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end
 
 	local function RefreshBar()
+		if not TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			return
+		end
 		TRB.Functions.Character:ResetCaches()
 		if TRB.Frames.barGroups ~= nil then
-			local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -3399,17 +3427,19 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].displayBar = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			TRB.Functions.Character:ResetCaches()
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:HideResourceBar()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:HideResourceBar()
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.Bar:Construct()
 				end
-			else
-				TRB.Functions.Bar:Construct()
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
 		end)
@@ -3457,12 +3487,14 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	local function PrimaryVisibilitySetSelected(newValue)
 		spec.displayBar.primary = newValue
 		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-		-- Reapply layout to adjust positioning for the visibility change
-		if TRB.Frames.barGroups ~= nil then
-			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-			TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			-- Reapply layout to adjust positioning for the visibility change
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+			end
+			TRB.Functions.Bar:HideResourceBar()
 		end
-		TRB.Functions.Bar:HideResourceBar()
 	end
 
 	local function PrimaryVisibilityGenerator(dropdown, rootDescription)
@@ -3490,12 +3522,14 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		local function HealthVisibilitySetSelected(newValue)
 			spec.displayBar.health = newValue
 			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			-- Reapply layout to adjust positioning for the visibility change
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				-- Reapply layout to adjust positioning for the visibility change
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				end
+				TRB.Functions.Bar:HideResourceBar()
 			end
-			TRB.Functions.Bar:HideResourceBar()
 		end
 
 		local function HealthVisibilityGenerator(dropdown, rootDescription)
@@ -3525,12 +3559,14 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		local function SecondaryVisibilitySetSelected(newValue)
 			spec.displayBar.secondary = newValue
 			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			-- Reapply layout to adjust positioning for the visibility change
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				-- Reapply layout to adjust positioning for the visibility change
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				end
+				TRB.Functions.Bar:HideResourceBar()
 			end
-			TRB.Functions.Bar:HideResourceBar()
 		end
 
 		local function SecondaryVisibilityGenerator(dropdown, rootDescription)
@@ -3561,16 +3597,18 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			spec.displayBar.mana = newValue
 			-- Also update specCache to ensure immediate visibility change
 			-- (needed when using global displayBar settings, since specCache.displayBar != spec.displayBar)
-			if TRB.Data.specCache[TRB.Data.character.specName] and TRB.Data.specCache[TRB.Data.character.specName].settings and TRB.Data.specCache[TRB.Data.character.specName].settings.displayBar then
-				TRB.Data.specCache[TRB.Data.character.specName].settings.displayBar.mana = newValue
+			if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
+				TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar.mana = newValue
 			end
 			controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			-- Reapply layout to adjust positioning for the visibility change
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.specName].settings, TRB.Frames.barGroups)
-				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.specName].settings)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				-- Reapply layout to adjust positioning for the visibility change
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				end
+				TRB.Functions.Bar:HideResourceBar()
 			end
-			TRB.Functions.Bar:HideResourceBar()
 		end
 
 		local function ManaVisibilityGenerator(dropdown, rootDescription)
@@ -4156,8 +4194,10 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	local function StaggerColorCurveTypeSetSelected(newValue)
 		spec.colors.comboPoints.type = newValue
 		controls.dropDown.staggerColorCurveType:SetDefaultText(StaggerColorCurveTypeGetDisplayName(newValue))
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end
 
@@ -4189,8 +4229,10 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 			controls.staggerThresholdMedium:SetValue(spec.colors.comboPoints.medium.threshold)
 		end
 
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
@@ -4211,8 +4253,10 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 			controls.staggerThresholdHeavy:SetValue(spec.colors.comboPoints.heavy.threshold)
 		end
 
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
@@ -4350,12 +4394,8 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.maxResource.value = value
 		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
-			local specNameInner = specName
-			if classId == nil then
-				 _, specNameInner = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, TRB.Data.character.specId)
-			end
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[specNameInner].settings
+			if TRB.Frames.barGroups ~= nil and TRB.Data.character.compositeKey then
+				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -4792,6 +4832,7 @@ end
 ---@param yCoord number
 function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord, cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
@@ -5705,7 +5746,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local function ResetTableValues(barText)
 		spec.displayText.barText = barText
-		TRB.Data.specCache[specName].settings.displayText.barText = barText
+		TRB.Data.specCache[compositeKey].settings.displayText.barText = barText
 		SetTableValues(spec.displayText, barTextTable)
 		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
 		

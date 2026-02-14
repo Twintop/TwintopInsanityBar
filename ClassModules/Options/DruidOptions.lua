@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 11 then --Only do this if we're on a Druid!
-	return
-end
 
 local L = TRB.Localization
 
@@ -12,10 +9,10 @@ TRB.Options.Druid.Balance = {}
 TRB.Options.Druid.Feral = {}
 TRB.Options.Druid.Guardian = {}
 TRB.Options.Druid.Restoration = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.balance = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.feral = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = {}
 
 local BALANCE_MAX_ASTRAL_POWER = 140
 local FERAL_MAX_ENERGY = 160
@@ -1019,7 +1016,7 @@ local function BalanceConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.druid.balance
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.balance
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Balance_Reset"] = {
@@ -1114,7 +1111,7 @@ local function BalanceConstructAstralPowerBarPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 	local f = nil
 
@@ -1236,7 +1233,7 @@ local function BalanceConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceAstralPower"])
@@ -1253,7 +1250,7 @@ local function BalanceConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
@@ -1270,7 +1267,7 @@ local function BalanceConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false, nil, true)
@@ -1284,7 +1281,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 	local f = nil
 
@@ -1299,27 +1296,29 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		TRB.Data.cache.colors.border = {}
-		TRB.Data.cache.colors.backdrop = {}
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 1) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+				TRB.Functions.Class:CheckCharacter()
+			end
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
+			TRB.Functions.BarText:CreateBarTextFrames(11, 1)
 		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 1)
 	end)
 end
 
@@ -1331,7 +1330,7 @@ local function BalanceConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 	local f = nil
 
@@ -1450,7 +1449,7 @@ local function BalanceConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 	local f = nil
 
@@ -1537,7 +1536,7 @@ local function BalanceConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.druid.balance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
 	controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1562,7 +1561,7 @@ local function BalanceConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.druid.balance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.balance
+	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1580,7 +1579,7 @@ local function BalanceConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.balance or {}
+	local controls = interfaceSettingsFrame.controls.druid_balance or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1592,7 +1591,7 @@ local function BalanceConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.balanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Balance")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "balance", L["DruidBalanceFull"], interfaceSettingsFrame.balanceDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "druid_balance", L["DruidBalanceFull"], interfaceSettingsFrame.balanceDisplayPanel)
 
 	parent = interfaceSettingsFrame.balanceDisplayPanel
 
@@ -1605,7 +1604,7 @@ local function BalanceConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "astralPowerBar", label = L["TabAstralPower"], width = oUi.tabWidth.small, constructor = BalanceConstructAstralPowerBarPanel },
@@ -1635,7 +1634,7 @@ local function FeralConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.druid.feral
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.feral
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Feral_Reset"] = {
@@ -1730,7 +1729,7 @@ local function FeralConstructEnergyBarPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -1824,7 +1823,7 @@ local function FeralConstructEnergyBarPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
 end
 
 local function FeralConstructComboPointsBarPanel(parent)
@@ -1835,7 +1834,7 @@ local function FeralConstructComboPointsBarPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -1920,7 +1919,7 @@ local function FeralConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
@@ -1937,7 +1936,7 @@ local function FeralConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true)
@@ -1951,7 +1950,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -1966,25 +1965,27 @@ local function FeralConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 2) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+				TRB.Functions.Class:CheckCharacter()
+			end
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
+			TRB.Functions.BarText:CreateBarTextFrames(11, 2)
 		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 2)
 	end)
 end
 
@@ -1996,7 +1997,7 @@ local function FeralConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -2173,7 +2174,7 @@ local function FeralConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -2246,7 +2247,7 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.druid.feral
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 	local f = nil
 
@@ -2295,7 +2296,7 @@ local function FeralConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.druid.feral
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.feral
+	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2313,7 +2314,7 @@ local function FeralConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.feral or {}
+	local controls = interfaceSettingsFrame.controls.druid_feral or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2325,7 +2326,7 @@ local function FeralConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.feralDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Feral")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "feral", L["DruidFeralFull"], interfaceSettingsFrame.feralDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "druid_feral", L["DruidFeralFull"], interfaceSettingsFrame.feralDisplayPanel)
 
 	parent = interfaceSettingsFrame.feralDisplayPanel
 
@@ -2338,7 +2339,7 @@ local function FeralConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "energyBar", label = L["TabEnergy"], width = oUi.tabWidth.small, constructor = FeralConstructEnergyBarPanel },
@@ -2367,7 +2368,7 @@ local function GuardianConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.druid.guardian
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.guardian
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Guardian_Reset"] = {
@@ -2462,7 +2463,7 @@ local function GuardianConstructRageBarPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 	local f = nil
 
@@ -2510,7 +2511,7 @@ local function GuardianConstructRageBarPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 end
 
 local function GuardianConstructHealthBarPanel(parent)
@@ -2521,7 +2522,7 @@ local function GuardianConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
@@ -2538,7 +2539,7 @@ local function GuardianConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
@@ -2552,7 +2553,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 	local f = nil
 
@@ -2567,27 +2568,29 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		TRB.Data.cache.colors.border = {}
-		TRB.Data.cache.colors.backdrop = {}
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 3) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+				TRB.Functions.Class:CheckCharacter()
+			end
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
+			TRB.Functions.BarText:CreateBarTextFrames(11, 3)
 		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 3)
 	end)
 end
 
@@ -2599,7 +2602,7 @@ local function GuardianConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 	local f = nil
 
@@ -2666,7 +2669,7 @@ local function GuardianConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 	local f = nil
 
@@ -2727,7 +2730,7 @@ local function GuardianConstructFontAndTextPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 3, yCoord)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 end
 
 local function GuardianConstructAudioAndTrackingPanel(parent)
@@ -2738,7 +2741,7 @@ local function GuardianConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.druid.guardian
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 	local f = nil
 
@@ -2758,7 +2761,7 @@ local function GuardianConstructBarTextDisplayPanel(parent, cache)
 	end
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.guardian
+	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2777,7 +2780,7 @@ local function GuardianConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.guardian or {}
+	local controls = interfaceSettingsFrame.controls.druid_guardian or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2789,7 +2792,7 @@ local function GuardianConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.guardianDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Guardian")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "guardian", L["DruidGuardianFull"], interfaceSettingsFrame.guardianDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "druid_guardian", L["DruidGuardianFull"], interfaceSettingsFrame.guardianDisplayPanel)
 
 	parent = interfaceSettingsFrame.guardianDisplayPanel
 
@@ -2802,7 +2805,7 @@ local function GuardianConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel },
@@ -2829,7 +2832,7 @@ local function RestorationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.druid.restoration
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.restoration
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_Reset"] = {
@@ -2924,7 +2927,7 @@ local function RestorationConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -2999,7 +3002,7 @@ local function RestorationConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
@@ -3016,7 +3019,7 @@ local function RestorationConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 4, yCoord, false)
@@ -3030,7 +3033,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -3045,27 +3048,29 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
-		-- Clear all caches before rebuilding
-		TRB.Functions.Character:ResetCaches()
-		TRB.Data.cache.colors.border = {}
-		TRB.Data.cache.colors.backdrop = {}
-		-- Destroy and recreate bar groups to add/remove secondary bar
-		TRB.Functions.Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
-		local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
-		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-			TRB.Functions.Class:CheckCharacter()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 4) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
+				TRB.Functions.Class:CheckCharacter()
+			end
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
+			TRB.Functions.BarText:CreateBarTextFrames(11, 4)
 		end
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		TRB.Functions.Character:ResetColorCaches()
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(11, 4)
 	end)
 end
 
@@ -3077,7 +3082,7 @@ local function RestorationConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 	local f = nil
 end
@@ -3090,7 +3095,7 @@ local function RestorationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -3134,7 +3139,7 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.druid.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -3154,7 +3159,7 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.druid.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.druid_restoration
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -3172,7 +3177,7 @@ local function RestorationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.restoration or {}
+	local controls = interfaceSettingsFrame.controls.druid_restoration or {}
 	local yCoord = 0
 	local f = nil
 
@@ -3184,7 +3189,7 @@ local function RestorationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Druid_Restoration")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "restoration", L["DruidRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("druid", "druid_restoration", L["DruidRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
@@ -3197,7 +3202,7 @@ local function RestorationConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel },
@@ -3213,10 +3218,10 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("druid", L["Druid"])
-	BalanceConstructOptionsPanel(specCache.balance)
-	FeralConstructOptionsPanel(specCache.feral)
-	GuardianConstructOptionsPanel(specCache.guardian)
-	RestorationConstructOptionsPanel(specCache.restoration)
+	BalanceConstructOptionsPanel(specCache.druid_balance)
+	FeralConstructOptionsPanel(specCache.druid_feral)
+	GuardianConstructOptionsPanel(specCache.druid_guardian)
+	RestorationConstructOptionsPanel(specCache.druid_restoration)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Druid.ConstructOptionsPanel = ConstructOptionsPanel

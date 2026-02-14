@@ -16,15 +16,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	devastation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	preservation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	augmentation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	evoker_devastation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+	evoker_preservation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+	evoker_augmentation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Devastation
-	specCache.devastation.Global_TwintopResourceBar = {
+	specCache.evoker_devastation.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -33,7 +33,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.devastation.character = {
+	specCache.evoker_devastation.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -46,31 +46,31 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Evoker.DevastationSpells
-	specCache.devastation.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
-	local spells = specCache.devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	specCache.evoker_devastation.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
+	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
-	specCache.devastation.snapshotData.attributes.manaRegen = 0
-	specCache.devastation.snapshotData.audio = {
+	specCache.evoker_devastation.snapshotData.attributes.manaRegen = 0
+	specCache.evoker_devastation.snapshotData.audio = {
 		essenceBurstPlayed = false,
 		secondaryThresholdPlayed = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
+	specCache.evoker_devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
 
-	specCache.devastation.barTextVariables = {
+	specCache.evoker_devastation.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Preservation
-	specCache.preservation.Global_TwintopResourceBar = {
+	specCache.evoker_preservation.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.preservation.character = {
+	specCache.evoker_preservation.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -84,23 +84,23 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Evoker.PreservationSpells
-	specCache.preservation.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
+	specCache.evoker_preservation.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
-	specCache.preservation.snapshotData.attributes.manaRegen = 0
-	specCache.preservation.snapshotData.audio = {
+	specCache.evoker_preservation.snapshotData.attributes.manaRegen = 0
+	specCache.evoker_preservation.snapshotData.audio = {
 		essenceBurstPlayed = false,
 		secondaryThresholdPlayed = false
 	}
 
-	specCache.preservation.barTextVariables = {
+	specCache.evoker_preservation.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Augmentation
-	specCache.augmentation.Global_TwintopResourceBar = {
+	specCache.evoker_augmentation.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -109,7 +109,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.augmentation.character = {
+	specCache.evoker_augmentation.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -122,21 +122,21 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Evoker.AugmentationSpells
-	specCache.augmentation.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
+	specCache.evoker_augmentation.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
-	specCache.augmentation.snapshotData.attributes.manaRegen = 0
-	specCache.augmentation.snapshotData.attributes.extendsEbonMight = false
-	specCache.augmentation.snapshotData.audio = {
+	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
+	specCache.evoker_augmentation.snapshotData.attributes.extendsEbonMight = false
+	specCache.evoker_augmentation.snapshotData.audio = {
 		essenceBurstPlayed = false,
 		playedEbonMightCue = false,
 		secondaryThresholdPlayed = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
+	specCache.evoker_augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
 
-	specCache.augmentation.barTextVariables = {
+	specCache.evoker_augmentation.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -154,17 +154,17 @@ end
 
 local function FillSpellData_Devastation()
 	Setup_Devastation()
-	specCache.devastation.spellsData:FillSpellData()
-	local spells = specCache.devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	specCache.evoker_devastation.spellsData:FillSpellData()
+	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.devastation.barTextVariables.icons = {
+	specCache.evoker_devastation.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		{ variable = "#dragonrage", icon = spells.dragonrage.icon, description = spells.dragonrage.name, printInSettings = true },
 	}
-	specCache.devastation.barTextVariables.values = {
+	specCache.evoker_devastation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -230,16 +230,16 @@ end
 
 local function FillSpellData_Preservation()
 	Setup_Preservation()
-	specCache.preservation.spellsData:FillSpellData()
-	local spells = specCache.preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	specCache.evoker_preservation.spellsData:FillSpellData()
+	local spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.preservation.barTextVariables.icons = {
+	specCache.evoker_preservation.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
-	specCache.preservation.barTextVariables.values = {
+	specCache.evoker_preservation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -304,17 +304,17 @@ end
 
 local function FillSpellData_Augmentation()
 	Setup_Augmentation()
-	specCache.augmentation.spellsData:FillSpellData()
-	local spells = specCache.augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	specCache.evoker_augmentation.spellsData:FillSpellData()
+	local spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.augmentation.barTextVariables.icons = {
+	specCache.evoker_augmentation.barTextVariables.icons = {
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#ebonMight", icon = spells.ebonMight.icon, description = spells.ebonMight.name, printInSettings = true },
 	}
-	specCache.augmentation.barTextVariables.values = {
+	specCache.evoker_augmentation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -438,7 +438,7 @@ local function RefreshLookupData_Devastation()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.devastation
-	local sharedSettings = TRB.Data.specCache["devastation"].settings
+	local sharedSettings = TRB.Data.specCache["evoker_devastation"].settings
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
@@ -520,7 +520,7 @@ local function RefreshLookupData_Preservation()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.evoker.preservation
-	local sharedSettings = TRB.Data.specCache["preservation"].settings
+	local sharedSettings = TRB.Data.specCache["evoker_preservation"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
@@ -600,7 +600,7 @@ local function RefreshLookupData_Augmentation()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.augmentation
-	local sharedSettings = TRB.Data.specCache["augmentation"].settings
+	local sharedSettings = TRB.Data.specCache["evoker_augmentation"].settings
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
@@ -896,7 +896,7 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.devastation
-		local specCacheSettings = TRB.Data.specCache.devastation.settings
+		local specCacheSettings = TRB.Data.specCache.evoker_devastation.settings
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
@@ -966,7 +966,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.preservation
-		local specCacheSettings = TRB.Data.specCache.preservation.settings
+		local specCacheSettings = TRB.Data.specCache.evoker_preservation.settings
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
@@ -1008,7 +1008,7 @@ local function UpdateResourceBar()
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.augmentation
-		local specCacheSettings = TRB.Data.specCache.augmentation.settings
+		local specCacheSettings = TRB.Data.specCache.evoker_augmentation.settings
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
@@ -1112,9 +1112,9 @@ local function SwitchSpec()
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	if TRB.Data.character.specId == 1 then
-		specCache.devastation.talents:GetTalents()
+		specCache.evoker_devastation.talents:GetTalents()
 		FillSpellData_Devastation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_devastation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
@@ -1123,23 +1123,23 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData		
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devastation.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_devastation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#dragonrage"] = spells.dragonrage.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "devastation" then
-			talents = specCache.devastation.talents
+		if TRB.Data.barConstructedForSpec ~= "evoker_devastation" then
+			talents = specCache.evoker_devastation.talents
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "devastation"
-			ConstructResourceBar(specCache.devastation.settings)
+			TRB.Data.barConstructedForSpec = "evoker_devastation"
+			ConstructResourceBar(specCache.evoker_devastation.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.preservation.talents:GetTalents()
+		specCache.evoker_preservation.talents:GetTalents()
 		FillSpellData_Preservation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_preservation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
@@ -1148,22 +1148,22 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.preservation.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_preservation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "preservation" then
-			talents = specCache.devastation.talents
+		if TRB.Data.barConstructedForSpec ~= "evoker_preservation" then
+			talents = specCache.evoker_devastation.talents
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "preservation"
-			ConstructResourceBar(specCache.preservation.settings)
+			TRB.Data.barConstructedForSpec = "evoker_preservation"
+			ConstructResourceBar(specCache.evoker_preservation.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.augmentation.talents:GetTalents()
+		specCache.evoker_augmentation.talents:GetTalents()
 		FillSpellData_Augmentation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_augmentation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
@@ -1172,18 +1172,18 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.augmentation.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_augmentation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ebonMight"] = spells.ebonMight.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "augmentation" then
-			talents = specCache.augmentation.talents
+		if TRB.Data.barConstructedForSpec ~= "evoker_augmentation" then
+			talents = specCache.evoker_augmentation.talents
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "augmentation"
-			ConstructResourceBar(specCache.augmentation.settings)
+			TRB.Data.barConstructedForSpec = "evoker_augmentation"
+			ConstructResourceBar(specCache.evoker_augmentation.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1346,14 +1346,17 @@ function TRB.Functions.Class:CheckCharacter()
 	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "devastation"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "evoker_devastation"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		TRB.Data.character.specName = "preservation"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "evoker_preservation"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "augmentation"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "evoker_augmentation"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	end
 
 	if sharedSettings ~= nil then
@@ -1401,8 +1404,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then

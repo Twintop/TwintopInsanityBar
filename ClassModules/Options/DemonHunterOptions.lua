@@ -1,16 +1,13 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 12 then --Only do this if we're on a Demon Hunter!
-	return
-end
 
 local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 TRB.Options.DemonHunter = {}
 TRB.Options.DemonHunter.Havoc = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = {}
 
 local HAVOC_MAX_FURY = 170
 local VENGEANCE_MAX_FURY = 120
@@ -617,7 +614,7 @@ local function HavocConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.havoc
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_Reset"] = {
@@ -711,7 +708,7 @@ local function HavocConstructFuryBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 	local f = nil
 
@@ -759,7 +756,7 @@ local function HavocConstructFuryBarPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 1, HAVOC_MAX_FURY)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
 local function HavocConstructHealthBarPanel(parent)
@@ -769,7 +766,7 @@ local function HavocConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
@@ -777,7 +774,7 @@ local function HavocConstructHealthBarPanel(parent)
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 1, yCoord)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
 local function HavocConstructBarTexturesPanel(parent)
@@ -787,12 +784,12 @@ local function HavocConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
 local function HavocConstructBarVisibilityPanel(parent)
@@ -802,12 +799,12 @@ local function HavocConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
 local function HavocConstructThresholdPanel(parent)
@@ -818,7 +815,7 @@ local function HavocConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.havoc
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 	local f = nil
 
@@ -906,7 +903,7 @@ local function HavocConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.havoc
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 	local f = nil
 
@@ -979,7 +976,7 @@ local function HavocConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.havoc
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -998,7 +995,7 @@ local function HavocConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.demonhunter.havoc
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.havoc
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1016,7 +1013,7 @@ local function HavocConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.havoc or {}
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1027,7 +1024,7 @@ local function HavocConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "havoc", L["DemonHunterHavocFull"], interfaceSettingsFrame.havocDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonhunter", "demonhunter_havoc", L["DemonHunterHavocFull"], interfaceSettingsFrame.havocDisplayPanel)
 	
 	parent = interfaceSettingsFrame.havocDisplayPanel
 
@@ -1042,7 +1039,7 @@ local function HavocConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = HavocConstructFuryBarPanel },
@@ -1069,7 +1066,7 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_Reset"] = {
@@ -1163,7 +1160,7 @@ local function VengeanceConstructFuryBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 	local f = nil
 
@@ -1211,7 +1208,7 @@ local function VengeanceConstructFuryBarPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
 local function VengeanceConstructSoulFragmentsBarPanel(parent)
@@ -1221,7 +1218,7 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 	local f = nil
 
@@ -1276,7 +1273,7 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
 local function VengeanceConstructHealthBarPanel(parent)
@@ -1286,7 +1283,7 @@ local function VengeanceConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
@@ -1294,7 +1291,7 @@ local function VengeanceConstructHealthBarPanel(parent)
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 2, yCoord)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
 local function VengeanceConstructBarTexturesPanel(parent)
@@ -1304,12 +1301,12 @@ local function VengeanceConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, L["ResourceSoulFragments"])
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
 local function VengeanceConstructBarVisibilityPanel(parent)
@@ -1319,12 +1316,12 @@ local function VengeanceConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
 
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
 local function VengeanceConstructThresholdPanel(parent)
@@ -1335,7 +1332,7 @@ local function VengeanceConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.vengeance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 	local f = nil
 
@@ -1410,7 +1407,7 @@ local function VengeanceConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.vengeance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 	local f = nil
 
@@ -1483,7 +1480,7 @@ local function VengeanceConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.vengeance
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1502,7 +1499,7 @@ local function VengeanceConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.vengeance
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1520,7 +1517,7 @@ local function VengeanceConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.vengeance or {}
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1531,7 +1528,7 @@ local function VengeanceConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "vengeance", L["DemonHunterVengeanceFull"], interfaceSettingsFrame.vengeanceDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonhunter", "demonhunter_vengeance", L["DemonHunterVengeanceFull"], interfaceSettingsFrame.vengeanceDisplayPanel)
 	
 	parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
@@ -1546,7 +1543,7 @@ local function VengeanceConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = VengeanceConstructFuryBarPanel },
@@ -1574,7 +1571,7 @@ local function DevourerConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.devourer
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_DemonHunter_Devourer_Reset"] = {
@@ -1630,7 +1627,7 @@ local function DevourerConstructFuryBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 	local f = nil
 
@@ -1750,7 +1747,7 @@ local function DevourerConstructSoulFragmentsBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 	local f = nil
 
@@ -1831,7 +1828,7 @@ local function DevourerConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
@@ -1847,7 +1844,7 @@ local function DevourerConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 3, yCoord, true, L["ResourceSoulFragments"])
@@ -1860,7 +1857,7 @@ local function DevourerConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
@@ -1874,7 +1871,7 @@ local function DevourerConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.devourer
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 	local f = nil
 
@@ -1927,7 +1924,7 @@ local function DevourerConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.devourer
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 	local f = nil
 
@@ -2000,7 +1997,7 @@ local function DevourerConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.demonhunter.devourer
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Devourer_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -2019,7 +2016,7 @@ local function DevourerConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.demonhunter.devourer
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devourer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2037,7 +2034,7 @@ local function DevourerConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.devourer or {}
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2048,7 +2045,7 @@ local function DevourerConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.devourerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Devourer")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("demonHunter", "devourer", L["DemonHunterDevourerFull"], interfaceSettingsFrame.devourerDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("demonhunter", "demonhunter_devourer", L["DemonHunterDevourerFull"], interfaceSettingsFrame.devourerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.devourerDisplayPanel
 
@@ -2063,7 +2060,7 @@ local function DevourerConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devourer = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = DevourerConstructFuryBarPanel },
@@ -2081,10 +2078,10 @@ end
 
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
-	TRB.Options.OptionsFrame:RegisterClassHeader("demonHunter", L["DemonHunter"])
-	HavocConstructOptionsPanel(specCache.havoc)
-	VengeanceConstructOptionsPanel(specCache.vengeance)
-	DevourerConstructOptionsPanel(specCache.devourer)
+	TRB.Options.OptionsFrame:RegisterClassHeader("demonhunter", L["DemonHunter"])
+	HavocConstructOptionsPanel(specCache.demonhunter_havoc)
+	VengeanceConstructOptionsPanel(specCache.demonhunter_vengeance)
+	DevourerConstructOptionsPanel(specCache.demonhunter_devourer)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.DemonHunter.ConstructOptionsPanel = ConstructOptionsPanel

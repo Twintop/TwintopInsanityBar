@@ -1732,8 +1732,6 @@ L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of L
 L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Play audio cue when Infusion of Light procs"
 L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an Infusion of Light proc occurs. This will only play once per proc."
 
-L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options via the slash command while in combat."
-
 -- Bulk Global Toggle Checkboxes
 L["CheckboxEnableForAllSpecs"] = "Enable for all specializations"
 L["CheckboxEnableForAllSpecsTooltip"] = "When checked, enables this global setting for all specializations across all classes. When unchecked, disables it for all."

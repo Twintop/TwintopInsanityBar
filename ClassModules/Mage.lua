@@ -16,22 +16,22 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	arcane = TRB.Classes.SpecCache:New(),
-	fire = TRB.Classes.SpecCache:New(),
-	frost = TRB.Classes.SpecCache:New()
+	mage_arcane = TRB.Classes.SpecCache:New(),
+	mage_fire = TRB.Classes.SpecCache:New(),
+	mage_frost = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Arcane
-	specCache.arcane.Global_TwintopResourceBar = {
+	specCache.mage_arcane.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.arcane.character = {
+	specCache.mage_arcane.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -44,29 +44,29 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Mage.ArcaneSpells
-	specCache.arcane.spellsData.spells = TRB.Classes.Mage.ArcaneSpells:New()
-	local spells = specCache.arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	specCache.mage_arcane.spellsData.spells = TRB.Classes.Mage.ArcaneSpells:New()
+	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 
-	specCache.arcane.snapshotData.attributes.manaRegen = 0
-	specCache.arcane.snapshotData.audio = {
+	specCache.mage_arcane.snapshotData.attributes.manaRegen = 0
+	specCache.mage_arcane.snapshotData.audio = {
 		arcaneChargeThreshold1Played = false,
 		arcaneChargeThreshold2Played = false,
 	}
 
-	specCache.arcane.barTextVariables = {
+	specCache.mage_arcane.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Fire
-	specCache.fire.Global_TwintopResourceBar = {
+	specCache.mage_fire.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.fire.character = {
+	specCache.mage_fire.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -77,26 +77,26 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Mage.FireSpells
-	specCache.fire.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
+	specCache.mage_fire.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
 
-	specCache.fire.snapshotData.attributes.manaRegen = 0
-	specCache.fire.snapshotData.audio = {
+	specCache.mage_fire.snapshotData.attributes.manaRegen = 0
+	specCache.mage_fire.snapshotData.audio = {
 	}
 
-	specCache.fire.barTextVariables = {
+	specCache.mage_fire.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Frost
-	specCache.frost.Global_TwintopResourceBar = {
+	specCache.mage_frost.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.frost.character = {
+	specCache.mage_frost.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -107,13 +107,13 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Mage.FrostSpells
-	specCache.frost.spellsData.spells = TRB.Classes.Mage.FrostSpells:New()
+	specCache.mage_frost.spellsData.spells = TRB.Classes.Mage.FrostSpells:New()
 
-	specCache.frost.snapshotData.attributes.manaRegen = 0
-	specCache.frost.snapshotData.audio = {
+	specCache.mage_frost.snapshotData.attributes.manaRegen = 0
+	specCache.mage_frost.snapshotData.audio = {
 	}
 
-	specCache.frost.barTextVariables = {
+	specCache.mage_frost.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -131,16 +131,16 @@ end
 
 local function FillSpellData_Arcane()
 	Setup_Arcane()
-	specCache.arcane.spellsData:FillSpellData()
-	local spells = specCache.arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	specCache.mage_arcane.spellsData:FillSpellData()
+	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.arcane.barTextVariables.icons = {
+	specCache.mage_arcane.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
-	specCache.arcane.barTextVariables.values = {
+	specCache.mage_arcane.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -203,16 +203,16 @@ end
 
 local function FillSpellData_Fire()
 	Setup_Fire()
-	specCache.fire.spellsData:FillSpellData()
-	local spells = specCache.fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	specCache.mage_fire.spellsData:FillSpellData()
+	local spells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.fire.barTextVariables.icons = {
+	specCache.mage_fire.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
-	specCache.fire.barTextVariables.values = {
+	specCache.mage_fire.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -270,16 +270,16 @@ end
 
 local function FillSpellData_Frost()
 	Setup_Frost()
-	specCache.frost.spellsData:FillSpellData()
-	local spells = specCache.frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	specCache.mage_frost.spellsData:FillSpellData()
+	local spells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.frost.barTextVariables.icons = {
+	specCache.mage_frost.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
-	specCache.frost.barTextVariables.values = {
+	specCache.mage_frost.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -445,7 +445,7 @@ local function RefreshLookupData_Arcane()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.arcane
-	local sharedSettings = TRB.Data.specCache["arcane"].settings
+	local sharedSettings = TRB.Data.specCache["mage_arcane"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
@@ -506,7 +506,7 @@ local function RefreshLookupData_Fire()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.fire
-	local sharedSettings = TRB.Data.specCache["fire"].settings
+	local sharedSettings = TRB.Data.specCache["mage_fire"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified
 
@@ -559,7 +559,7 @@ local function RefreshLookupData_Frost()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.frost
-	local sharedSettings = TRB.Data.specCache["frost"].settings
+	local sharedSettings = TRB.Data.specCache["mage_frost"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified
 
@@ -677,7 +677,7 @@ local function UpdateResourceBar()
 			return
 		end
 		local specSettings = classSettings.arcane
-		local specCacheSettings = TRB.Data.specCache.arcane.settings
+		local specCacheSettings = TRB.Data.specCache.mage_arcane.settings
 		UpdateSnapshot_Arcane()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -779,7 +779,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire
-		local specCacheSettings = TRB.Data.specCache.fire.settings
+		local specCacheSettings = TRB.Data.specCache.mage_fire.settings
 		UpdateSnapshot_Fire()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -810,7 +810,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.frost
-		local specCacheSettings = TRB.Data.specCache.frost.settings
+		local specCacheSettings = TRB.Data.specCache.mage_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -856,9 +856,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 	
 	if TRB.Data.character.specId == 1 then
-		specCache.arcane.talents:GetTalents()
+		specCache.mage_arcane.talents:GetTalents()
 		FillSpellData_Arcane()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.arcane)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mage_arcane)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
@@ -866,7 +866,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Arcane
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.arcane.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mage_arcane.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -875,15 +875,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "arcane" then
-			talents = specCache.arcane.talents
-			TRB.Data.barConstructedForSpec = "arcane"
-			ConstructResourceBar(specCache.arcane.settings)
+		if TRB.Data.barConstructedForSpec ~= "mage_arcane" then
+			talents = specCache.mage_arcane.talents
+			TRB.Data.barConstructedForSpec = "mage_arcane"
+			ConstructResourceBar(specCache.mage_arcane.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.fire.talents:GetTalents()
+		specCache.mage_fire.talents:GetTalents()
 		FillSpellData_Fire()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.fire)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mage_fire)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
@@ -891,7 +891,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Fire
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.fire.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mage_fire.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -900,15 +900,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "fire" then
-			talents = specCache.fire.talents
-			TRB.Data.barConstructedForSpec = "fire"
-			ConstructResourceBar(specCache.fire.settings)
+		if TRB.Data.barConstructedForSpec ~= "mage_fire" then
+			talents = specCache.mage_fire.talents
+			TRB.Data.barConstructedForSpec = "mage_fire"
+			ConstructResourceBar(specCache.mage_fire.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.frost.talents:GetTalents()
+		specCache.mage_frost.talents:GetTalents()
 		FillSpellData_Frost()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.frost)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mage_frost)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
@@ -916,7 +916,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Frost
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.frost.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mage_frost.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -925,10 +925,10 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "frost" then
-			talents = specCache.frost.talents
-			TRB.Data.barConstructedForSpec = "frost"
-			ConstructResourceBar(specCache.frost.settings)
+		if TRB.Data.barConstructedForSpec ~= "mage_frost" then
+			talents = specCache.mage_frost.talents
+			TRB.Data.barConstructedForSpec = "mage_frost"
+			ConstructResourceBar(specCache.mage_frost.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1088,7 +1088,8 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 		TRB.Data.character.specName = "arcane"
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "mage_arcane"
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		-- Arcane Charges max is always 4 (fixed game value).
 		local maxComboPoints = 4
@@ -1106,9 +1107,11 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fire"
+		TRB.Data.character.compositeKey = "mage_fire"
 		TRB.Data.character.maxResource2 = 1
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "frost"
+		TRB.Data.character.compositeKey = "mage_frost"
 		TRB.Data.character.maxResource2 = 1
 	end
 end
@@ -1146,8 +1149,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then

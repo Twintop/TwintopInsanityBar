@@ -1109,7 +1109,8 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 	
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
-	local settings = TRB.Data.specCache[specName].settings
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local settings = TRB.Data.specCache[compositeKey].settings
 
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames

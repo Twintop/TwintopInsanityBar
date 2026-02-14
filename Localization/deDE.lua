@@ -1675,6 +1675,4 @@ if locale == "deDE" then
     L["PaladinHolyColorPickerInfusionOfLight"] = "Rahmen wenn du Lichtinfusion hast"
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Spiele Audio-Hinweis, wenn Lichtinfusion procced"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Spiele einen Audio-Hinweis ab, wenn ein Lichtinfusion Proc auftritt. Dies wird nur einmal pro Proc abgespielt."
-
-    L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555FEHLER:|r Kann Optionen nicht per Slash-Befehl öffnen, während du im Kampf bist."
 end

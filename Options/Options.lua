@@ -837,6 +837,13 @@ local function ConstructImportExportPanel()
 end
 
 function TRB.Options:ConstructOptionsPanel()
+	-- Idempotency guard: this function is called by every class module's ConstructOptionsPanel.
+	-- Only execute once; subsequent calls are no-ops.
+	if TRB.Options._globalPanelConstructed then
+		return
+	end
+	TRB.Options._globalPanelConstructed = true
+
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	interfaceSettingsFrame.controls = {}
 	local controls = interfaceSettingsFrame.controls
@@ -961,7 +968,157 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructGlobalOptionsPanel()
 	ConstructImportExportPanel()
 
+	-- Register all class headers and spec nav entries (with nil panels).
+	-- The active class's ConstructOptionsPanel will update its specs with real panels via RegisterSpecPanel.
+	-- Non-active classes appear in the nav but have no panels until lazy loading is implemented.
+	TRB.Options:RegisterAllClassSpecNavEntries()
+
 	TRB.Options.OptionsFrame:RefreshNav()
+end
+
+--- Ordered list of all classes and their specs for nav registration.
+--- Each entry maps to the correct localization keys for class headers and spec labels.
+---@type {classKey: string, classLocKey: string, specs: {compositeKey: string, locFullKey: string}[]}[]
+local ALL_CLASS_SPECS = {
+	{ classKey = "warrior", classLocKey = "Warrior", specs = {
+		{ compositeKey = "warrior_arms", locFullKey = "WarriorArmsFull" },
+		{ compositeKey = "warrior_fury", locFullKey = "WarriorFuryFull" },
+		{ compositeKey = "warrior_protection", locFullKey = "WarriorProtectionFull" },
+	}},
+	{ classKey = "paladin", classLocKey = "Paladin", specs = {
+		{ compositeKey = "paladin_holy", locFullKey = "PaladinHolyFull" },
+		{ compositeKey = "paladin_protection", locFullKey = "PaladinProtectionFull" },
+		{ compositeKey = "paladin_retribution", locFullKey = "PaladinRetributionFull" },
+	}},
+	{ classKey = "hunter", classLocKey = "Hunter", specs = {
+		{ compositeKey = "hunter_beastMastery", locFullKey = "HunterBeastMasteryFull" },
+		{ compositeKey = "hunter_marksmanship", locFullKey = "HunterMarksmanshipFull" },
+		{ compositeKey = "hunter_survival", locFullKey = "HunterSurvivalFull" },
+	}},
+	{ classKey = "rogue", classLocKey = "Rogue", specs = {
+		{ compositeKey = "rogue_assassination", locFullKey = "RogueAssassinationFull" },
+		{ compositeKey = "rogue_outlaw", locFullKey = "RogueOutlawFull" },
+		{ compositeKey = "rogue_subtlety", locFullKey = "RogueSubtletyFull" },
+	}},
+	{ classKey = "priest", classLocKey = "Priest", specs = {
+		{ compositeKey = "priest_discipline", locFullKey = "PriestDisciplineFull" },
+		{ compositeKey = "priest_holy", locFullKey = "PriestHolyFull" },
+		{ compositeKey = "priest_shadow", locFullKey = "PriestShadowFull" },
+	}},
+	{ classKey = "deathknight", classLocKey = "DeathKnight", specs = {
+		{ compositeKey = "deathknight_blood", locFullKey = "DeathKnightBloodFull" },
+		{ compositeKey = "deathknight_frost", locFullKey = "DeathKnightFrostFull" },
+		{ compositeKey = "deathknight_unholy", locFullKey = "DeathKnightUnholyFull" },
+	}},
+	{ classKey = "shaman", classLocKey = "Shaman", specs = {
+		{ compositeKey = "shaman_elemental", locFullKey = "ShamanElementalFull" },
+		{ compositeKey = "shaman_enhancement", locFullKey = "ShamanEnhancementFull" },
+		{ compositeKey = "shaman_restoration", locFullKey = "ShamanRestorationFull" },
+	}},
+	{ classKey = "mage", classLocKey = "Mage", specs = {
+		{ compositeKey = "mage_arcane", locFullKey = "MageArcaneFull" },
+		{ compositeKey = "mage_fire", locFullKey = "MageFireFull" },
+		{ compositeKey = "mage_frost", locFullKey = "MageFrostFull" },
+	}},
+	{ classKey = "warlock", classLocKey = "Warlock", specs = {
+		{ compositeKey = "warlock_affliction", locFullKey = "WarlockAfflictionFull" },
+		{ compositeKey = "warlock_demonology", locFullKey = "WarlockDemonologyFull" },
+		{ compositeKey = "warlock_destruction", locFullKey = "WarlockDestructionFull" },
+	}},
+	{ classKey = "monk", classLocKey = "Monk", specs = {
+		{ compositeKey = "monk_brewmaster", locFullKey = "MonkBrewmasterFull" },
+		{ compositeKey = "monk_mistweaver", locFullKey = "MonkMistweaverFull" },
+		{ compositeKey = "monk_windwalker", locFullKey = "MonkWindwalkerFull" },
+	}},
+	{ classKey = "druid", classLocKey = "Druid", specs = {
+		{ compositeKey = "druid_balance", locFullKey = "DruidBalanceFull" },
+		{ compositeKey = "druid_feral", locFullKey = "DruidFeralFull" },
+		{ compositeKey = "druid_guardian", locFullKey = "DruidGuardianFull" },
+		{ compositeKey = "druid_restoration", locFullKey = "DruidRestorationFull" },
+	}},
+	{ classKey = "demonhunter", classLocKey = "DemonHunter", specs = {
+		{ compositeKey = "demonhunter_havoc", locFullKey = "DemonHunterHavocFull" },
+		{ compositeKey = "demonhunter_vengeance", locFullKey = "DemonHunterVengeanceFull" },
+		{ compositeKey = "demonhunter_devourer", locFullKey = "DemonHunterDevourerFull" },
+	}},
+	{ classKey = "evoker", classLocKey = "Evoker", specs = {
+		{ compositeKey = "evoker_devastation", locFullKey = "EvokerDevastationFull" },
+		{ compositeKey = "evoker_preservation", locFullKey = "EvokerPreservationFull" },
+		{ compositeKey = "evoker_augmentation", locFullKey = "EvokerAugmentationFull" },
+	}},
+}
+
+--- Mapping from lowercase className to PascalCase options module key (e.g., TRB.Options.DeathKnight)
+local CLASS_OPTIONS_MODULE = {
+	deathknight = "DeathKnight",
+	demonhunter = "DemonHunter",
+	druid = "Druid",
+	evoker = "Evoker",
+	hunter = "Hunter",
+	mage = "Mage",
+	monk = "Monk",
+	paladin = "Paladin",
+	priest = "Priest",
+	rogue = "Rogue",
+	shaman = "Shaman",
+	warlock = "Warlock",
+	warrior = "Warrior",
+}
+
+---Lazily build all options panels for a class.
+---Ensures specCache entries and settings exist, then calls the class's ConstructOptionsPanel.
+---@param classKey string # Lowercase class key (e.g., "warrior")
+function TRB.Options:BuildClassPanels(classKey)
+	local moduleKey = CLASS_OPTIONS_MODULE[classKey]
+	if not moduleKey or not TRB.Options[moduleKey] or not TRB.Options[moduleKey].ConstructOptionsPanel then
+		return
+	end
+
+	-- Ensure specCache entries exist for all specs in this class
+	for _, classDef in ipairs(ALL_CLASS_SPECS) do
+		if classDef.classKey == classKey then
+			for _, specDef in ipairs(classDef.specs) do
+				TRB.Functions.Character:EnsureSpecCache(specDef.compositeKey)
+			end
+			break
+		end
+	end
+
+	-- Build all panels for this class.
+	-- The class constructor calls TRB.Options:ConstructOptionsPanel() internally (idempotent no-op),
+	-- then builds per-spec panels and registers them via RegisterSpecPanel.
+	TRB.Options[moduleKey].ConstructOptionsPanel(TRB.Data.specCache)
+end
+
+---Register all class headers and spec nav entries in the options frame.
+---Classes are sorted alphabetically by their localized name.
+---Specs within each class remain in specializationId order.
+---Each spec gets a lazy builder that constructs all panels for its class on first click.
+function TRB.Options:RegisterAllClassSpecNavEntries()
+	local L = TRB.Localization
+
+	-- Build a sorted shallow copy so classes appear alphabetically by localized name
+	local sorted = {}
+	for i, classDef in ipairs(ALL_CLASS_SPECS) do
+		sorted[i] = classDef
+	end
+	table.sort(sorted, function(a, b)
+		return L[a.classLocKey] < L[b.classLocKey]
+	end)
+
+	for _, classDef in ipairs(sorted) do
+		TRB.Options.OptionsFrame:RegisterClassHeader(classDef.classKey, L[classDef.classLocKey])
+
+		-- Create a builder that lazily constructs all spec panels for this class
+		local classKeyCapture = classDef.classKey
+		local builder = function()
+			TRB.Options:BuildClassPanels(classKeyCapture)
+		end
+
+		for _, specDef in ipairs(classDef.specs) do
+			TRB.Options.OptionsFrame:RegisterSpecPanel(classDef.classKey, specDef.compositeKey, L[specDef.locFullKey], nil, builder)
+		end
+	end
 end
 
 function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)

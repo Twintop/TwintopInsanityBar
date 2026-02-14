@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 2 then --Only do this if we're on a Paladin!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Paladin = {}
 TRB.Options.Paladin.Holy = {}
 TRB.Options.Paladin.Protection = {}
 TRB.Options.Paladin.Retribution = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.holy = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.retribution = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_holy = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_protection = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_retribution = {}
 
 -- Holy
 ---Loads default bar text settings for Holy
@@ -439,7 +436,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.paladin.holy
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.holy
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_holy
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Paladin_Holy_Reset"] = {
@@ -534,7 +531,7 @@ local function HolyConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 	local f = nil
 
@@ -579,7 +576,7 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 	local f = nil
 
@@ -642,7 +639,7 @@ local function HolyConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"])
@@ -659,7 +656,7 @@ local function HolyConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 1, yCoord, true, L["ResourceHolyPower"])
@@ -673,7 +670,7 @@ local function HolyConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
@@ -687,7 +684,7 @@ local function HolyConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 	local f = nil
 
@@ -705,7 +702,7 @@ local function HolyConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 	local f = nil
 
@@ -749,7 +746,7 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.paladin.holy
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 	local f = nil
 
@@ -764,9 +761,9 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
 
-	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -776,9 +773,9 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
 
-	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -788,9 +785,9 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
 
-	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -807,7 +804,7 @@ local function HolyConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.paladin.holy
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.holy
+	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -825,7 +822,7 @@ local function HolyConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.holy or {}
+	local controls = interfaceSettingsFrame.controls.paladin_holy or {}
 	local yCoord = 0
 	local f = nil
 
@@ -837,7 +834,7 @@ local function HolyConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.holyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Holy")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "holy", L["PaladinHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "paladin_holy", L["PaladinHolyFull"], interfaceSettingsFrame.holyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -862,7 +859,7 @@ local function HolyConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_holy = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -876,7 +873,7 @@ local function ProtectionConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.paladin.protection
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.protection
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_protection
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Paladin_Protection_Reset"] = {
@@ -971,7 +968,7 @@ local function ProtectionConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 	local f = nil
 
@@ -999,7 +996,7 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1062,7 +1059,7 @@ local function ProtectionConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"])
@@ -1079,7 +1076,7 @@ local function ProtectionConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 2, yCoord, true, L["ResourceHolyPower"])
@@ -1093,7 +1090,7 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
@@ -1107,7 +1104,7 @@ local function ProtectionConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1125,7 +1122,7 @@ local function ProtectionConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1169,7 +1166,7 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.paladin.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1184,9 +1181,9 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
 
-	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1196,9 +1193,9 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
 
-	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1208,9 +1205,9 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
 
-	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1225,7 +1222,7 @@ local function ProtectionConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.paladin.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1243,7 +1240,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.protection or {}
+	local controls = interfaceSettingsFrame.controls.paladin_protection or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1255,7 +1252,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Protection")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "protection", L["PaladinProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "paladin_protection", L["PaladinProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.protectionDisplayPanel
 
@@ -1280,7 +1277,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_protection = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1293,7 +1290,7 @@ local function RetributionConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.paladin.retribution
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.retribution
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_retribution
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Paladin_Retribution_Reset"] = {
@@ -1388,7 +1385,7 @@ local function RetributionConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 	local f = nil
 
@@ -1416,7 +1413,7 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 	local f = nil
 
@@ -1479,7 +1476,7 @@ local function RetributionConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])
@@ -1496,7 +1493,7 @@ local function RetributionConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 2, 3, yCoord, true, L["ResourceHolyPower"])
@@ -1510,7 +1507,7 @@ local function RetributionConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
@@ -1524,7 +1521,7 @@ local function RetributionConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 	local f = nil
 
@@ -1542,7 +1539,7 @@ local function RetributionConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 	local f = nil
 
@@ -1586,7 +1583,7 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.paladin.retribution
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 	local f = nil
 
@@ -1601,9 +1598,9 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold1", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold1"], L["PaladinAudioCheckboxHolyPowerThreshold1Tooltip"])
 
-	controls.holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold1Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1613,9 +1610,9 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold2", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold2"], L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"])
 
-	controls.holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold2Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1625,9 +1622,9 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyPowerThreshold3", spec, classId, specId, yCoord, L["PaladinAudioCheckboxHolyPowerThreshold3"], L["PaladinAudioCheckboxHolyPowerThreshold3Tooltip"])
 
-	controls.holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
+	controls.paladin_holyPowerThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PaladinHolyPowerThresholdSliderTitle"], 0, 5, spec.audio["holyPowerThreshold3"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
+	controls.paladin_holyPowerThreshold3Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -1642,7 +1639,7 @@ local function RetributionConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.paladin.retribution
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.retribution
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1660,7 +1657,7 @@ local function RetributionConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.retribution or {}
+	local controls = interfaceSettingsFrame.controls.paladin_retribution or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1672,7 +1669,7 @@ local function RetributionConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.retributionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Retribution")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "retribution", L["PaladinRetributionFull"], interfaceSettingsFrame.retributionDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("paladin", "paladin_retribution", L["PaladinRetributionFull"], interfaceSettingsFrame.retributionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.retributionDisplayPanel
 
@@ -1697,7 +1694,7 @@ local function RetributionConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.retribution = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.paladin_retribution = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1706,9 +1703,9 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("paladin", L["Paladin"])
 
-	HolyConstructOptionsPanel(specCache.holy)
-	ProtectionConstructOptionsPanel(specCache.protection)
-	RetributionConstructOptionsPanel(specCache.retribution)
+	HolyConstructOptionsPanel(specCache.paladin_holy)
+	ProtectionConstructOptionsPanel(specCache.paladin_protection)
+	RetributionConstructOptionsPanel(specCache.paladin_retribution)
 
 	TRB.Options.OptionsFrame:RefreshNav()
 end
