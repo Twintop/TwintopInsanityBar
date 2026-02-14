@@ -223,6 +223,7 @@ function OptionsFrame:EnsureFrame()
 	mainFrame:SetPoint("CENTER")
 	mainFrame:SetFrameStrata("DIALOG")
 	mainFrame:SetClampedToScreen(true)
+	mainFrame:EnableMouse(true)
 	mainFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
