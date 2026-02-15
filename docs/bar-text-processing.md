@@ -13,7 +13,14 @@ flowchart TB
     subgraph "💾 Data Sources"
         LU[("TRB.Data.lookup<br/>Formatted strings<br/>$insanity → '|cFF00FF00150|r'")]
         LL[("TRB.Data.lookupLogic<br/>Raw values<br/>$insanity → 150")]
-        BTV[("barTextVariables<br/>• icons[]<br/>• values[]<br/>• pipe[]<br/>• percent[]")]
+        BTV[("barTextVariables<br/>• icons[]<br/>• values[]")]
+    end
+
+    subgraph "📦 barTextVariables Provenance"
+        GCI["GetCommonIcons(additional)"] --> BTV
+        GCV["GetCommonValues(additional)"] --> BTV
+        FBVR[("barTextVariablesRegistry<br/>[compositeKey] → FillBarTextVariables()")]
+        FBVR -->|"Invoked by<br/>EnsureSpecCache()"| BTV
     end
 
     subgraph "🖼️ Frame Infrastructure"
@@ -26,6 +33,36 @@ flowchart TB
     BTV --> URBT
     URBT --> TF
 ```
+
+## Bar Text Variables Provenance
+
+Bar text variables (`barTextVariables.icons` and `barTextVariables.values`) define which `$variable` and `#icon` tokens are valid for each specialization. These are populated via a centralized registration system:
+
+```mermaid
+flowchart TB
+    subgraph "📋 Load-Time Registration"
+        CLS["ClassModules/Classes/*Classes.lua"] --> DEF["Define FillBarTextVariables()"]
+        DEF --> REG["barTextVariablesRegistry[compositeKey]<br/>= FillBarTextVariables"]
+    end
+
+    subgraph "🔧 FillBarTextVariables(specCacheEntry)"
+        FBV["FillBarTextVariables()"] --> GCI["GetCommonIcons(additionalIcons)"]
+        FBV --> GCV["GetCommonValues(additionalValues)"]
+        GCI --> BASE_I["~3 base icons:<br/>#casting, #item_ITEMID_, #spell_SPELLID_"]
+        GCV --> BASE_V["~30 base values:<br/>$gcd, $haste, $crit, $mastery,<br/>$vers, $health, $inCombat, etc."]
+        BASE_I --> MERGE_I["+ spec-specific icons"]
+        BASE_V --> MERGE_V["+ spec-specific values<br/>($mana, $insanity, etc.)"]
+        MERGE_I --> STORE_I["specCacheEntry.barTextVariables.icons"]
+        MERGE_V --> STORE_V["specCacheEntry.barTextVariables.values"]
+    end
+
+    subgraph "📌 Invocation Points"
+        INV1["SwitchSpec() → FillSpellData_[Spec]()"] -->|"Active spec"| FBV
+        INV2["EnsureSpecCache(compositeKey)"] -->|"Cross-class editing<br/>(lazy, on first panel open)"| FBV
+    end
+```
+
+The `GetCommonIcons()` and `GetCommonValues()` functions in `Functions/BarText.lua` provide the base set of icons and values shared across all specializations. Each spec's `FillBarTextVariables()` passes spec-specific additions that get appended to the common set.
 
 ## Complete Processing Flow
 
@@ -356,6 +393,9 @@ sequenceDiagram
 | `IsValidVariableBase()` | Functions/BarText.lua | Validates common base variables |
 | `GetBarTextFrame()` | ClassModules/*.lua | Resolves frame reference to actual Frame |
 | `CreateBarTextFrames()` | Functions/BarText.lua | Creates text frame infrastructure |
+| `GetCommonIcons()` | Functions/BarText.lua | Returns base icon entries shared by all specs |
+| `GetCommonValues()` | Functions/BarText.lua | Returns base value entries shared by all specs |
+| `FillBarTextVariables()` | ClassModules/Classes/*.lua | Populates specCacheEntry.barTextVariables |
 
 ## Data Store Summary
 
@@ -363,7 +403,8 @@ sequenceDiagram
 |-------|----------|---------|
 | `TRB.Data.lookup` | Global | Formatted colored strings for display |
 | `TRB.Data.lookupLogic` | Global | Raw numeric values for conditional evaluation |
-| `TRB.Data.barTextVariables` | Global | Valid variable definitions per spec |
+| `TRB.Data.barTextVariablesRegistry` | Global | Maps compositeKey → `FillBarTextVariables()` function |
+| `specCache[compositeKey].barTextVariables` | Per-spec | Valid variable definitions `{ icons = {}, values = {} }` |
 | `TRB.Data.cache.barText` | Global | Cached parsed text with format strings |
 | `TRB.Data.cache.barTextTree` | Global | Cached conditional tree structures |
 | `TRB.Data.cache.symbols` | Global | Cached tokenized symbol positions |

@@ -20,11 +20,17 @@ flowchart TB
         J --> L["Bar:ConstructBarGroups()"]
     end
 
+    subgraph "� Registries (Load-Time)"
+        REG1[("specRegistry<br/>compositeKey → entry<br/>e.g. 'priest_shadow'")]
+        REG2[("specRegistryByIds<br/>[classId][specId] → entry")]
+        REG3[("barTextVariablesRegistry<br/>compositeKey → FillBarTextVariables()")]
+    end
+
     subgraph "💾 Data Stores"
         DS1[("snapshotData<br/>• attributes.resource<br/>• attributes.mana<br/>• snapshots[spellId].buff<br/>• casting")]
         DS2[("lookup<br/>• $insanity → '|cFF..150|r'<br/>• $vfTime → '|cFF..12.5|r'")]
         DS3[("lookupLogic<br/>• $insanity → 150<br/>• $vfTime → 12.5")]
-        DS4[("specCache.shadow<br/>• talents<br/>• settings<br/>• spellsData")]
+        DS4[("specCache['priest_shadow']<br/>• talents<br/>• settings<br/>• spellsData<br/>• barTextVariables")]
         DS5[("barGroups<br/>• primary (Insanity)<br/>• mana<br/>• health")]
     end
 
@@ -80,6 +86,64 @@ flowchart TB
     DS4 -->|"Load snapshotData"| DS1
     L --> DS5
     HRB -->|"Show/Hide"| DS5
+    REG3 -.->|"Populates barTextVariables<br/>via EnsureSpecCache()"| DS4
+```
+
+## Options Infrastructure
+
+```mermaid
+flowchart TB
+    subgraph "🔧 Options Panel Initialization"
+        OI["ConstructOptionsPanel()"] --> RACNE["RegisterAllClassSpecNavEntries()"]
+        RACNE --> ACS[("ALL_CLASS_SPECS<br/>13 classes × specs<br/>sorted alphabetically")]
+        ACS --> RCH["RegisterClassHeader(classKey)"]
+        ACS --> RSP["RegisterSpecPanel(classKey,<br/>compositeKey, label, nil, builder)"]
+        RSP -->|"panel = nil<br/>(lazy)"| NAV[("navEntries[]<br/>• classKey<br/>• compositeKey<br/>• builder")]
+    end
+
+    subgraph "🖱️ First Click (Lazy Load)"
+        CLICK["User clicks spec in nav"] --> SC2["SelectCategory(compositeKey)"]
+        SC2 --> CHECK{"entry.panel == nil<br/>and entry.builder?"}
+        CHECK -->|"Yes"| BUILD["builder() →<br/>BuildClassPanels(classKey)"]
+        BUILD --> ENSURE["EnsureSpecCache(compositeKey)"]
+        ENSURE --> ENSSET["EnsureSpecSettings(className)"]
+        ENSSET -->|"Load defaults if needed"| SETS[("TRB.Data.settings")]
+        ENSURE --> NEWSC["SpecCache:New()"]
+        ENSURE -->|"Invoke"| REG3B[("barTextVariablesRegistry<br/>[compositeKey]()")]
+        REG3B --> BTV["Populate barTextVariables"]
+        BUILD --> PANEL["Construct options panel"]
+        CHECK -->|"No (cached)"| SHOW["Show existing panel"]
+    end
+
+    subgraph "🛡️ Live Preview Guards"
+        CALLBACK["Options panel callback"] --> IEAS{"IsEditingActiveSpec(classId, specId)?"}
+        IEAS -->|"Yes"| UPDATE["TriggerResourceBarUpdates()<br/>ApplyBarGroupsLayout()<br/>etc."]
+        IEAS -->|"No"| SKIP["Save setting only,<br/>skip bar update"]
+    end
+```
+
+## Bar Text Variables Provenance
+
+```mermaid
+flowchart TB
+    subgraph "📋 Registration (Load-Time)"
+        CLS["ClassModules/Classes/*Classes.lua"] --> FBV["FillBarTextVariables()"]
+        FBV --> REG["barTextVariablesRegistry[compositeKey]<br/>= FillBarTextVariables"]
+    end
+
+    subgraph "🔧 FillBarTextVariables() Implementation"
+        FBV2["FillBarTextVariables(specCacheEntry)"] --> GCI["GetCommonIcons(additionalIcons)"]
+        FBV2 --> GCV["GetCommonValues(additionalValues)"]
+        GCI --> ICONS["~3 base icons + spec-specific"]
+        GCV --> VALUES["~30 base values + spec-specific"]
+        ICONS --> STORE["specCacheEntry.barTextVariables.icons"]
+        VALUES --> STORE2["specCacheEntry.barTextVariables.values"]
+    end
+
+    subgraph "📌 Invocation Points"
+        INV1["SwitchSpec → FillSpellData_[Spec]()"] -->|"Active spec"| FBV2
+        INV2["EnsureSpecCache(compositeKey)"] -->|"Cross-class editing"| FBV2
+    end
 ```
 
 ## Key Data Flow Loops
@@ -92,6 +156,20 @@ flowchart TB
 | **Lookup → Bar Text** | `lookup` table → `UpdateResourceBarText()` → `textFrames` | Replaces `$insanity` with colored value strings |
 
 ## Data Store Descriptions
+
+### `TRB.Data.specRegistry`
+Canonical registry of all 40 supported specializations, populated at load time in `Init.lua`:
+- Keys are composite keys: `"priest_shadow"`, `"warrior_arms"`, etc.
+- Values are `SpecRegistryEntry` objects: `{ classId, specId, className, specName, compositeKey }`
+
+### `TRB.Data.specRegistryByIds`
+Same registry indexed by numeric IDs:
+- `specRegistryByIds[classId][specId]` → `SpecRegistryEntry`
+
+### `TRB.Data.barTextVariablesRegistry`
+Maps composite keys to `FillBarTextVariables()` functions:
+- Populated at load time by each `ClassModules/Classes/*Classes.lua`
+- Consumed by `EnsureSpecCache()` to lazily populate bar text variables for non-active specs
 
 ### `TRB.Data.snapshotData`
 The central state object containing all tracked information:
@@ -112,11 +190,21 @@ Raw numeric values for conditional evaluation:
 - Values are raw numbers: `150`, `12.5`
 
 ### `TRB.Data.specCache`
-Per-specialization cached data:
+Per-specialization cached data, keyed by composite key (e.g., `"priest_shadow"`):
 - `talents` - Current talent configuration
 - `settings` - Merged user settings
 - `spellsData` - Spell definitions and tracking
 - `snapshotData` - Spec-specific snapshot reference
+- `barTextVariables` - `{ icons = {}, values = {} }` for bar text editor
+
+Created eagerly for all specs of the active class in `SwitchSpec()`, and lazily for other classes via `EnsureSpecCache()`.
+
+### `TRB.Data.character`
+Character identity and state:
+- `classId` / `specId` - Numeric IDs
+- `className` / `specName` - String identifiers
+- `compositeKey` - `"className_specName"` composite key for specCache lookups
+- `inCombat`, `maxResource`, `resourceType`, etc.
 
 ### `TRB.Frames.barGroups`
 OOP-based bar frame hierarchy:

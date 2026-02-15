@@ -30,13 +30,19 @@ flowchart TB
     end
 
     subgraph "TRB.Data.specCache"
-        SC["[specName]"]
+        SC["[compositeKey]<br/>e.g. 'priest_shadow'"]
         SC --> SETS["settings"]
         SC --> SD["spellsData"]
         SC --> SND["snapshotData"]
         SC --> TAL["talents"]
         SC --> BTV["barTextVariables"]
         SC --> CHAR["character"]
+    end
+
+    subgraph "Registries (Load-Time)"
+        SREG["specRegistry<br/>compositeKey → entry"]
+        SREGID["specRegistryByIds<br/>[classId][specId] → entry"]
+        BTVR["barTextVariablesRegistry<br/>compositeKey → FillBarTextVariables()"]
     end
 
     subgraph "Live Data (Not Cached)"
@@ -223,7 +229,7 @@ Prevent redundant frame value updates.
 
 ## 2. TRB.Data.specCache - Per-Specialization Cache
 
-Long-lived cache that persists settings and state per specialization. Defined in `Init.lua` as empty table, populated by class modules.
+Long-lived cache that persists settings and state per specialization. Defined in `Init.lua` as empty table, populated by class modules. Keyed by **composite keys** of the form `"className_specName"` (e.g., `"priest_shadow"`, `"warrior_arms"`).
 
 ### Structure
 
@@ -254,26 +260,45 @@ Defined via `TRB.Classes.SpecCache` in Classes/SpecCache.lua:
 
 ### Population Pattern
 
-Each class module creates its specCache in `Setup_[Spec]()`:
+For the **active class**, each class module creates its specCache entries in `Setup_[Spec]()` using composite keys:
 
 ```lua
 local specCache = {
-    discipline = TRB.Classes.SpecCache:New(),
-    holy = TRB.Classes.SpecCache:New(),
-    shadow = TRB.Classes.SpecCache:New()
+    priest_discipline = TRB.Classes.SpecCache:New(),
+    priest_holy = TRB.Classes.SpecCache:New(),
+    priest_shadow = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 ```
 
+For **non-active classes** (cross-class options editing), entries are created lazily by `EnsureSpecCache(compositeKey)`.
+
 ### Access Pattern
 
 ```lua
--- Access via spec name
-local settings = TRB.Data.specCache[TRB.Data.character.specName].settings
+-- Access via composite key from character data
+local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 -- Or via LoadFromSpecializationCache()
-TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
+TRB.Functions.Character:LoadFromSpecializationCache(specCache.priest_shadow)
+
+-- Cross-class: lazily ensure the entry exists first
+local entry = TRB.Functions.Character:EnsureSpecCache("warrior_arms")
+if entry then
+    local variables = entry.barTextVariables
+end
 ```
+
+### EnsureSpecCache (Lazy Creation)
+
+`EnsureSpecCache(compositeKey)` in `Functions/Character.lua` creates specCache entries on demand for non-active specs. Steps:
+1. Returns existing entry if already populated
+2. Calls `EnsureSpecSettings(className)` to load defaults if needed
+3. Creates `TRB.Classes.SpecCache:New()`
+4. Calls `FillSpecializationCacheSettings()` to merge settings
+5. Invokes `barTextVariablesRegistry[compositeKey]()` to populate bar text variables
+
+This supports cross-class options panels where a user edits settings for a spec they are not currently playing.
 
 ### Settings Merge
 
@@ -286,6 +311,48 @@ TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
 
 - Recreated on spec switch in `SwitchSpec()`
 - Settings re-merged when options change
+- Lazily created entries persist until `/reload`
+
+---
+
+## 2a. TRB.Data.specRegistry - Spec Identity Registry
+
+Canonical registry of all 40 supported specializations, populated at load time in `Init.lua`.
+
+| Property | Value |
+|----------|-------|
+| **Purpose** | Maps composite keys and numeric IDs to spec identity data |
+| **Location** | `TRB.Data.specRegistry[compositeKey]` and `TRB.Data.specRegistryByIds[classId][specId]` |
+| **Population** | `Init.lua` at addon load via `reg()` helper |
+| **Structure** | `{ classId, specId, className, specName, compositeKey }` |
+
+Helper functions in `Functions/Character.lua`:
+- `GetCompositeKey(className, specName)` → `"className_specName"`
+- `GetCompositeKeyFromIds(classId, specId)` → looks up via `specRegistryByIds`
+- `ParseCompositeKey(compositeKey)` → returns `className, specName`
+
+---
+
+## 2b. TRB.Data.barTextVariablesRegistry - Bar Text Variable Registration
+
+Maps composite keys to `FillBarTextVariables()` functions for lazy population of bar text variable definitions.
+
+| Property | Value |
+|----------|-------|
+| **Purpose** | Allows non-active specs to have their bar text variables populated on demand |
+| **Location** | `TRB.Data.barTextVariablesRegistry[compositeKey]` |
+| **Population** | Each `ClassModules/Classes/*Classes.lua` registers at load time |
+| **Access** | `EnsureSpecCache()` in `Functions/Character.lua` |
+| **Structure** | `{ [compositeKey]: function(specCacheEntry) }` |
+
+```lua
+-- Registration (bottom of each *Classes.lua file)
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.FillBarTextVariables
+```
+
+Each `FillBarTextVariables(specCacheEntry)` uses `GetCommonIcons()` and `GetCommonValues()` from `Functions/BarText.lua` to build a merged list of base + spec-specific variable definitions.
 
 ---
 
