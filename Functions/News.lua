@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.6-release (2026-02-16)
+## Druid
+### Feral
+
+- [#619](#619) Fix an issue where the bar text duration for Incarnation: Avatar of Ashamane / Berserk would always display as 0.0 seconds.
+
+---
+
 # 12.0.1.5-release (2026-02-16)
 ## General
 
