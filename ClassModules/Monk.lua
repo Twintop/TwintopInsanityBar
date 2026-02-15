@@ -17,15 +17,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	brewmaster = TRB.Classes.SpecCache:New(),
-	mistweaver = TRB.Classes.SpecCache:New(),
-	windwalker = TRB.Classes.SpecCache:New()
+	monk_brewmaster = TRB.Classes.SpecCache:New(),
+	monk_mistweaver = TRB.Classes.SpecCache:New(),
+	monk_windwalker = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Brewmaster
-	specCache.brewmaster.Global_TwintopResourceBar = {
+	specCache.monk_brewmaster.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -34,7 +34,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.brewmaster.character = {
+	specCache.monk_brewmaster.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -46,42 +46,42 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	specCache.brewmaster.spellsData.spells = TRB.Classes.Monk.BrewmasterSpells:New()
+	specCache.monk_brewmaster.spellsData.spells = TRB.Classes.Monk.BrewmasterSpells:New()
 	---@type TRB.Classes.Monk.BrewmasterSpells
 	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.brewmaster.spellsData.spells
+	local spells = specCache.monk_brewmaster.spellsData.spells
 
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.cracklingJadeLightning.id] = TRB.Classes.Snapshot:New(spells.cracklingJadeLightning)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.cracklingJadeLightning.id] = TRB.Classes.Snapshot:New(spells.cracklingJadeLightning)
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.kegSmash.id] = TRB.Classes.Snapshot:New(spells.kegSmash)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.kegSmash.id] = TRB.Classes.Snapshot:New(spells.kegSmash)
 	---@type TRB.Classes.Snapshot
-	specCache.brewmaster.snapshotData.snapshots[spells.invokeNiuzao.id] = TRB.Classes.Snapshot:New(spells.invokeNiuzao)
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.invokeNiuzao.id] = TRB.Classes.Snapshot:New(spells.invokeNiuzao)
 
-	specCache.brewmaster.snapshotData.attributes.resourceRegen = 0
-	specCache.brewmaster.snapshotData.audio = {
+	specCache.monk_brewmaster.snapshotData.attributes.resourceRegen = 0
+	specCache.monk_brewmaster.snapshotData.audio = {
 	}
 
-	specCache.brewmaster.barTextVariables = {
+	specCache.monk_brewmaster.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Mistweaver
-	specCache.mistweaver.Global_TwintopResourceBar = {
+	specCache.monk_mistweaver.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.mistweaver.character = {
+	specCache.monk_mistweaver.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -93,26 +93,26 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	specCache.mistweaver.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
+	specCache.monk_mistweaver.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
 	---@type TRB.Classes.Monk.MistweaverSpells
 	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.mistweaver.spellsData.spells
+	local spells = specCache.monk_mistweaver.spellsData.spells
 
-	specCache.mistweaver.snapshotData.attributes.manaRegen = 0
-	specCache.mistweaver.snapshotData.audio = {
+	specCache.monk_mistweaver.snapshotData.attributes.manaRegen = 0
+	specCache.monk_mistweaver.snapshotData.audio = {
 		innervateCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
+	specCache.monk_mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
 
-	specCache.mistweaver.barTextVariables = {
+	specCache.monk_mistweaver.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 
 	-- Windwalker
-	specCache.windwalker.Global_TwintopResourceBar = {
+	specCache.monk_windwalker.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -121,7 +121,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.windwalker.character = {
+	specCache.monk_windwalker.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -133,31 +133,31 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	specCache.windwalker.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
+	specCache.monk_windwalker.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
 	---@type TRB.Classes.Monk.WindwalkerSpells
 	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	spells = specCache.windwalker.spellsData.spells
+	spells = specCache.monk_windwalker.spellsData.spells
 
-	specCache.windwalker.snapshotData.attributes.resourceRegen = 0
-	specCache.windwalker.snapshotData.audio = {
+	specCache.monk_windwalker.snapshotData.attributes.resourceRegen = 0
+	specCache.monk_windwalker.snapshotData.audio = {
 		chiThreshold1Played = false,
 		chiThreshold2Played = false,
 		chiThreshold3Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(spells.strikeOfTheWindlord)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(spells.strikeOfTheWindlord)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
+	specCache.monk_windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
 
-	specCache.windwalker.barTextVariables = {
+	specCache.monk_windwalker.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -176,64 +176,10 @@ end
 local function FillSpellData_Brewmaster()
 	Setup_Brewmaster()
 	---@type TRB.Classes.SpellsData
-	specCache.brewmaster.spellsData:FillSpellData()
-	local spells = specCache.brewmaster.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+	specCache.monk_brewmaster.spellsData:FillSpellData()
+	local spells = specCache.monk_brewmaster.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.brewmaster.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
-	}
-	specCache.brewmaster.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$energy", description = L["MonkBrewmasterBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["MonkBrewmasterBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkBrewmasterBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false },
-		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
-
-		{ variable = "$niuzaoTime", description = L["MonkBrewmasterBarTextVariable_niuzaoTime"], printInSettings = true, color = false },
-	}
+	TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables(specCache.monk_brewmaster)
 end
 
 local function Setup_Mistweaver()
@@ -249,62 +195,10 @@ end
 local function FillSpellData_Mistweaver()
 	Setup_Mistweaver()
 	---@type TRB.Classes.SpellsData
-	specCache.mistweaver.spellsData:FillSpellData()
-	local spells = specCache.mistweaver.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+	specCache.monk_mistweaver.spellsData:FillSpellData()
+	local spells = specCache.monk_mistweaver.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.mistweaver.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-		
-		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
-	}
-	specCache.mistweaver.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["MonkMistweaverBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MonkMistweaverBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MonkMistweaverBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkMistweaverBarTextVariable_casting"], printInSettings = true, color = false },
-	}
+	TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables(specCache.monk_mistweaver)
 end
 
 local function Setup_Windwalker()
@@ -320,82 +214,10 @@ end
 local function FillSpellData_Windwalker()
 	Setup_Windwalker()
 	---@type TRB.Classes.SpellsData
-	specCache.windwalker.spellsData:FillSpellData()
-	local spells = specCache.windwalker.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	specCache.monk_windwalker.spellsData:FillSpellData()
+	local spells = specCache.monk_windwalker.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.windwalker.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
-		{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
-		{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
-		{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
-		{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
-		{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
-		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
-		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
-		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
-		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
-		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
-		{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-		{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
-		{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
-		{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
-		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
-		{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-	}
-	specCache.windwalker.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$energy", description = L["MonkWindwalkerBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["MonkWindwalkerBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkWindwalkerBarTextVariable_casting"], printInSettings = false, color = false },
-		
-		{ variable = "$chi", description = L["MonkWindwalkerBarTextVariable_chi"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCache.monk_windwalker)
 end
 
 local function RefreshTargetTracking()
@@ -520,7 +342,7 @@ local function RefreshLookupData_Brewmaster()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.brewmaster
-	local sharedSettings = TRB.Data.specCache["brewmaster"].settings
+	local sharedSettings = TRB.Data.specCache["monk_brewmaster"].settings
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
@@ -609,7 +431,7 @@ local function RefreshLookupData_Mistweaver()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.mistweaver
-	local sharedSettings = TRB.Data.specCache["mistweaver"].settings
+	local sharedSettings = TRB.Data.specCache["monk_mistweaver"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
@@ -659,7 +481,7 @@ local function RefreshLookupData_Windwalker()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.windwalker
-	local sharedSettings = TRB.Data.specCache["windwalker"].settings
+	local sharedSettings = TRB.Data.specCache["monk_windwalker"].settings
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
@@ -826,8 +648,8 @@ local function UpdateStaggerColor()
 
 	-- Get configurable color curve settings from spec settings (new custom bar structure)
 	local staggerBarSettings = nil
-	if TRB.Data.specCache and TRB.Data.specCache.brewmaster then
-		local specCache = TRB.Data.specCache.brewmaster
+	if TRB.Data.specCache and TRB.Data.specCache.monk_brewmaster then
+		local specCache = TRB.Data.specCache.monk_brewmaster
 		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
 			staggerBarSettings = specCache.settings.colors.bars.stagger
 		end
@@ -999,7 +821,7 @@ local function UpdateResourceBar()
 	
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.brewmaster
-		local specCacheSettings = TRB.Data.specCache.brewmaster.settings
+		local specCacheSettings = TRB.Data.specCache.monk_brewmaster.settings
 		UpdateSnapshot_Brewmaster()
 
 		if snapshotData.attributes.isTracking then
@@ -1202,7 +1024,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.mistweaver
-		local specCacheSettings = TRB.Data.specCache.mistweaver.settings
+		local specCacheSettings = TRB.Data.specCache.monk_mistweaver.settings
 		UpdateSnapshot_Mistweaver()
 
 		if snapshotData.attributes.isTracking then
@@ -1247,7 +1069,7 @@ local function UpdateResourceBar()
 			return
 		end
 		local specSettings = classSettings.windwalker
-		local specCacheSettings = TRB.Data.specCache.windwalker.settings
+		local specCacheSettings = TRB.Data.specCache.monk_windwalker.settings
 		UpdateSnapshot_Windwalker()
 
 		if snapshotData.attributes.isTracking then
@@ -1488,9 +1310,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 
 	if TRB.Data.character.specId == 1 then
-		specCache.brewmaster.talents:GetTalents()
+		specCache.monk_brewmaster.talents:GetTalents()
 		FillSpellData_Brewmaster()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.brewmaster)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.monk_brewmaster)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
@@ -1498,26 +1320,26 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Brewmaster
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.brewmaster.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.monk_brewmaster.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#niuzao"] = spells.invokeNiuzao.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "brewmaster" then
-			talents = specCache.brewmaster.talents
+		if TRB.Data.barConstructedForSpec ~= "monk_brewmaster" then
+			talents = specCache.monk_brewmaster.talents
 			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
 			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
 			-- snapshot data to be initialized.
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "brewmaster"
-			ConstructResourceBar(specCache.brewmaster.settings)
+			TRB.Data.barConstructedForSpec = "monk_brewmaster"
+			ConstructResourceBar(specCache.monk_brewmaster.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.mistweaver.talents:GetTalents()
+		specCache.monk_mistweaver.talents:GetTalents()
 		FillSpellData_Mistweaver()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.mistweaver)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.monk_mistweaver)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
@@ -1525,26 +1347,26 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Mistweaver
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.mistweaver.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.monk_mistweaver.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "mistweaver" then
-			talents = specCache.mistweaver.talents
+		if TRB.Data.barConstructedForSpec ~= "monk_mistweaver" then
+			talents = specCache.monk_mistweaver.talents
 			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
 			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
 			-- snapshot data to be initialized.
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "mistweaver"
-			ConstructResourceBar(specCache.mistweaver.settings)
+			TRB.Data.barConstructedForSpec = "monk_mistweaver"
+			ConstructResourceBar(specCache.monk_mistweaver.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.windwalker.talents:GetTalents()
+		specCache.monk_windwalker.talents:GetTalents()
 		FillSpellData_Windwalker()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.windwalker)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.monk_windwalker)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
@@ -1553,7 +1375,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.windwalker.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.monk_windwalker.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#blackoutKick"] = spells.blackoutKick.icon
@@ -1577,14 +1399,14 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "windwalker" then
-			talents = specCache.windwalker.talents
+		if TRB.Data.barConstructedForSpec ~= "monk_windwalker" then
+			talents = specCache.monk_windwalker.talents
 			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
 			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
 			-- snapshot data to be initialized.
 			TRB.Functions.Class:EventRegistration()
-			TRB.Data.barConstructedForSpec = "windwalker"
-			ConstructResourceBar(specCache.windwalker.settings)
+			TRB.Data.barConstructedForSpec = "monk_windwalker"
+			ConstructResourceBar(specCache.monk_windwalker.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1750,11 +1572,12 @@ function TRB.Functions.Class:CheckCharacter()
 	
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "brewmaster"
+		TRB.Data.character.compositeKey = "monk_brewmaster"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 
 		local maxComboPoints = 1
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1767,6 +1590,7 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		TRB.Data.character.specName = "mistweaver"
+		TRB.Data.character.compositeKey = "monk_mistweaver"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 	elseif TRB.Data.character.specId == 3 then
@@ -1774,8 +1598,9 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Energy, false)
 		TRB.Data.character.specName = "windwalker"
+		TRB.Data.character.compositeKey = "monk_windwalker"
 		maxComboPoints = UnitPowerMax("player", Enum.PowerType.Chi)
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1855,8 +1680,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then

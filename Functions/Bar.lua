@@ -93,7 +93,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 		local barGroups = TRB.Frames.barGroups
 		local displayBar = nil
 		if TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.specName]
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				displayBar = specSettings.settings.displayBar
 			end
@@ -165,16 +165,22 @@ function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 			yOfs = math.floor(TRB.Data.sanityCheckValues.barMaxHeight / 2)
 		end
 
+		local controls = TRB.Frames.interfaceSettingsFrameContainer and TRB.Frames.interfaceSettingsFrameContainer.controls
 		if TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar then
-			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].horizontal:SetValue(xOfs)
-			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
-			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].vertical:SetValue(yOfs)
-			TRB.Frames.interfaceSettingsFrameContainer.controls["global"].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+			if controls and controls["global"] then
+				controls["global"].horizontal:SetValue(xOfs)
+				controls["global"].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
+				controls["global"].vertical:SetValue(yOfs)
+				controls["global"].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+			end
 		else
-			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal:SetValue(xOfs)
-			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
-			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical:SetValue(yOfs)
-			TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+			local key = TRB.Data.character.compositeKey
+			if controls and controls[key] then
+				controls[key].horizontal:SetValue(xOfs)
+				controls[key].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0, nil, true))
+				controls[key].vertical:SetValue(yOfs)
+				controls[key].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0, nil, true))
+			end
 		end
 	end
 end
@@ -519,7 +525,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		
 		if enableFormSwitching then
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettingsForDruid then
 				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
 			end
@@ -538,7 +544,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
 			local feralSettings = feralSettingsForDruid
 			if not feralSettings then
-				feralSettings = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+				feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			end
 			if not feralSettings then
 				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
@@ -747,7 +753,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		
 		if enableFormSwitching then
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettingsForDruid then
 				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
 			end
@@ -764,7 +770,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
 			local feralSettings = feralSettingsForDruid
 			if not feralSettings then
-				feralSettings = TRB.Data.specCache and TRB.Data.specCache.feral and TRB.Data.specCache.feral.settings
+				feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			end
 			if not feralSettings then
 				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral

@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 2 and TRB.Data.character.classId ~= 5 and TRB.Data.character.classId ~= 7 and TRB.Data.character.classId ~= 10 and TRB.Data.character.classId ~= 11 and TRB.Data.character.classId ~= 13 then --Only do this if we're on a Healer Class!
-	return
-end
 
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}

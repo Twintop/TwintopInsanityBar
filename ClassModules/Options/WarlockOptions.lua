@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 9 then --Only do this if we're on a Warlock!
-	return
-end
 
 local L = TRB.Localization
 
@@ -9,7 +6,7 @@ local oUi = TRB.Data.constants.optionsUi
 
 TRB.Options.Warlock = {}
 TRB.Options.Warlock.Affliction = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_affliction = {}
 
 --Affliction
 ---Loads default bar text settings for Affliction
@@ -417,7 +414,7 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warlock.affliction
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.affliction
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_affliction
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_Reset"] = {
@@ -512,7 +509,7 @@ local function AfflictionConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 	local f = nil
 
@@ -540,7 +537,7 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 	local f = nil
 
@@ -617,7 +614,7 @@ local function AfflictionConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
@@ -634,7 +631,7 @@ local function AfflictionConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 1, yCoord, true, L["ResourceSoulShards"])
@@ -648,7 +645,7 @@ local function AfflictionConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
@@ -662,7 +659,7 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 	local f = nil
 
@@ -706,7 +703,7 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warlock.affliction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
 	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -750,7 +747,7 @@ local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warlock.affliction
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.affliction
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -780,7 +777,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.afflictionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Affliction")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "affliction", L["WarlockAfflictionFull"], interfaceSettingsFrame.afflictionDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "warlock_affliction", L["WarlockAfflictionFull"], interfaceSettingsFrame.afflictionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.afflictionDisplayPanel
 
@@ -805,7 +802,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_affliction = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -820,7 +817,7 @@ local function DemonologyConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 	local f = nil
 
@@ -848,7 +845,7 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 	local f = nil
 
@@ -925,7 +922,7 @@ local function DemonologyConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"])
@@ -942,7 +939,7 @@ local function DemonologyConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 2, yCoord, true, L["ResourceSoulShards"])
@@ -956,7 +953,7 @@ local function DemonologyConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
@@ -970,7 +967,7 @@ local function DemonologyConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 	local f = nil
 
@@ -1014,7 +1011,7 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warlock.demonology
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
 	controls.buttons.exportButton_Warlock_Demonology_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1057,7 +1054,7 @@ local function DemonologyConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warlock.demonology
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonology
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1077,7 +1074,7 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warlock.demonology
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.demonology
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_demonology
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warlock_Demonology_Reset"] = {
@@ -1181,7 +1178,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.demonologyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix)
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "demonology", L["WarlockDemonologyFull"], interfaceSettingsFrame.demonologyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "warlock_demonology", L["WarlockDemonologyFull"], interfaceSettingsFrame.demonologyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.demonologyDisplayPanel
 
@@ -1206,7 +1203,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.demonology = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_demonology = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1218,7 +1215,7 @@ local function DestructionConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warlock.destruction
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.destruction
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_destruction
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warlock_Destruction_Reset"] = {
@@ -1313,7 +1310,7 @@ local function DestructionConstructManaBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 	local f = nil
 
@@ -1341,7 +1338,7 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 	local f = nil
 
@@ -1418,7 +1415,7 @@ local function DestructionConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])
@@ -1435,7 +1432,7 @@ local function DestructionConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"])
@@ -1449,7 +1446,7 @@ local function DestructionConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
@@ -1463,7 +1460,7 @@ local function DestructionConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 	local f = nil
 
@@ -1505,7 +1502,7 @@ local function DestructionConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warlock.destruction
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 	local f = nil
 
@@ -1552,7 +1549,7 @@ local function DestructionConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warlock.destruction
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.destruction
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1570,7 +1567,7 @@ local function DestructionConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.destruction or {}
+	local controls = interfaceSettingsFrame.controls.warlock_destruction or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1582,7 +1579,7 @@ local function DestructionConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.destructionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_".. namePrefix)
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "destruction", L["WarlockDestructionFull"], interfaceSettingsFrame.destructionDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warlock", "warlock_destruction", L["WarlockDestructionFull"], interfaceSettingsFrame.destructionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.destructionDisplayPanel
 
@@ -1607,7 +1604,7 @@ local function DestructionConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.destruction = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warlock_destruction = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1616,9 +1613,9 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("warlock", L["Warlock"])
 
-	AfflictionConstructOptionsPanel(specCache.affliction)
-	DemonologyConstructOptionsPanel(specCache.demonology)
-	DestructionConstructOptionsPanel(specCache.destruction)
+	AfflictionConstructOptionsPanel(specCache.warlock_affliction)
+	DemonologyConstructOptionsPanel(specCache.warlock_demonology)
+	DestructionConstructOptionsPanel(specCache.warlock_destruction)
 
 	TRB.Options.OptionsFrame:RefreshNav()
 end

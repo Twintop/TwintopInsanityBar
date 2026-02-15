@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 8 then --Only do this if we're on a Mage!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Mage = {}
 TRB.Options.Mage.Arcane = {}
 TRB.Options.Mage.Fire = {}
 TRB.Options.Mage.Frost = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.arcane = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.fire = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.frost = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = {}
 
 -- Arcane
 ---Loads default bar text settings for Arcane
@@ -334,7 +331,7 @@ local function ArcaneConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.arcane
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Mage_Arcane_Reset"] = {
@@ -428,7 +425,7 @@ local function ArcaneConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 	local f = nil
 
@@ -455,7 +452,7 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 	local f = nil
 
@@ -517,7 +514,7 @@ local function ArcaneConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
@@ -533,7 +530,7 @@ local function ArcaneConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"])
@@ -546,7 +543,7 @@ local function ArcaneConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceArcaneCharges"], true)
@@ -560,7 +557,7 @@ local function ArcaneConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.mage.arcane
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 	local f = nil
 
@@ -604,7 +601,7 @@ local function ArcaneConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.mage.arcane
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 	local f = nil
 
@@ -619,9 +616,9 @@ local function ArcaneConstructAudioAndTrackingPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "arcaneChargeThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold1"], L["MageAudioCheckboxArcaneChargeThreshold1Tooltip"])
 
-	controls.arcaneChargeThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.mage_arcaneChargeThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.arcaneChargeThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+	controls.mage_arcaneChargeThreshold1Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -631,9 +628,9 @@ local function ArcaneConstructAudioAndTrackingPanel(parent)
 	yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "arcaneChargeThreshold2", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold2"], L["MageAudioCheckboxArcaneChargeThreshold2Tooltip"])
 
-	controls.arcaneChargeThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.mage_arcaneChargeThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.arcaneChargeThreshold2Slider:SetScript("OnValueChanged", function(self, value)
+	controls.mage_arcaneChargeThreshold2Slider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
@@ -648,7 +645,7 @@ local function ArcaneConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.mage.arcane
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arcane
+	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -666,7 +663,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.arcane or {}
+	local controls = interfaceSettingsFrame.controls.mage_arcane or {}
 	local yCoord = 0
 	local f = nil
 
@@ -678,7 +675,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.arcaneDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Arcane")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "arcane", L["MageArcaneFull"], interfaceSettingsFrame.arcaneDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "mage_arcane", L["MageArcaneFull"], interfaceSettingsFrame.arcaneDisplayPanel)
 	
 	parent = interfaceSettingsFrame.arcaneDisplayPanel
 
@@ -691,7 +688,7 @@ local function ArcaneConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.arcane = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel },
@@ -715,7 +712,7 @@ local function FireConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.mage.fire
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.fire
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Mage_Fire_Reset"] = {
@@ -809,7 +806,7 @@ local function FireConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.fire
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 	local f = nil
 
@@ -836,7 +833,7 @@ local function FireConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.fire
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
@@ -852,7 +849,7 @@ local function FireConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.mage.fire
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord)
@@ -865,7 +862,7 @@ local function FireConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.mage.fire
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
@@ -879,7 +876,7 @@ local function FireConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.mage.fire
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 	local f = nil
 
@@ -923,7 +920,7 @@ local function FireConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.mage.fire
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 	local f = nil
 
@@ -943,7 +940,7 @@ local function FireConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.mage.fire
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fire
+	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -961,7 +958,7 @@ local function FireConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.fire or {}
+	local controls = interfaceSettingsFrame.controls.mage_fire or {}
 	local yCoord = 0
 	local f = nil
 
@@ -973,7 +970,7 @@ local function FireConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.fireDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Fire")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "fire", L["MageFireFull"], interfaceSettingsFrame.fireDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "mage_fire", L["MageFireFull"], interfaceSettingsFrame.fireDisplayPanel)
 	
 	parent = interfaceSettingsFrame.fireDisplayPanel
 
@@ -986,7 +983,7 @@ local function FireConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.fire = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
@@ -1007,7 +1004,7 @@ local function FrostConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.mage.frost
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.frost
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Mage_Frost_Reset"] = {
@@ -1101,7 +1098,7 @@ local function FrostConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1128,7 +1125,7 @@ local function FrostConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.mage.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
@@ -1144,7 +1141,7 @@ local function FrostConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.mage.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord)
@@ -1157,7 +1154,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.mage.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
@@ -1171,7 +1168,7 @@ local function FrostConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.mage.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1215,7 +1212,7 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.mage.frost
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 	local f = nil
 
@@ -1235,7 +1232,7 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.mage.frost
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.frost
+	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1253,7 +1250,7 @@ local function FrostConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.frost or {}
+	local controls = interfaceSettingsFrame.controls.mage_frost or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1265,7 +1262,7 @@ local function FrostConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Mage_Frost")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "frost", L["MageFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("mage", "mage_frost", L["MageFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
@@ -1278,7 +1275,7 @@ local function FrostConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.frost = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
@@ -1295,9 +1292,9 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("mage", L["Mage"])
 
-	ArcaneConstructOptionsPanel(specCache.arcane)
-	FireConstructOptionsPanel(specCache.fire)
-	FrostConstructOptionsPanel(specCache.frost)
+	ArcaneConstructOptionsPanel(specCache.mage_arcane)
+	FireConstructOptionsPanel(specCache.mage_fire)
+	FrostConstructOptionsPanel(specCache.mage_frost)
 
 	TRB.Options.OptionsFrame:RefreshNav()
 end
