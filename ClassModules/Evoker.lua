@@ -701,7 +701,7 @@ local function UpdateResourceBar()
 	local function UpdateEssenceOuter(specSettings, specCacheSettings)
 		local refreshTextEssence = false
 		
-		if specSettings.displayBar.secondary ~= "never" then
+		if specSettings.displayBar.secondary.visibility ~= "never" then
 			refreshTextEssence = true
 			UpdateEssence(specSettings, specCacheSettings)
 		end
@@ -722,7 +722,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" and primaryNode then
+			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				local snapshots = snapshotData.snapshots
@@ -773,7 +773,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -792,7 +792,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" and primaryNode then
+			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -814,7 +814,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -834,7 +834,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" and primaryNode then
+			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
@@ -905,7 +905,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1238,9 +1238,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1250,9 +1250,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- All Evoker specs use the secondary (Essence) bar
 			local showSecondary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1261,9 +1261,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

@@ -1520,7 +1520,7 @@ local function UpdateResourceBar()
 		-- Combo points update (when displaying Feral bar configuration)
 		-- Only show combo points when displaySpecId == 2 (Feral), which means form switching is enabled and we're in Cat form
 		-- This ensures formSpecSettings points to Feral settings (which has comboPoints defined)
-		if displaySpecId == 2 and formSpecSettings.displayBar.secondary ~= "never" then
+		if displaySpecId == 2 and formSpecSettings.displayBar.secondary.visibility ~= "never" then
 			-- Use Feral's combo point settings (formSpecSettings points to Feral when displaySpecId == 2)
 			local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(formSpecSettings.colors.comboPoints.background.color, true)
 			
@@ -1570,7 +1570,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Balance()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
@@ -1810,7 +1810,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			-- Health bar update
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1823,7 +1823,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Mana bar update (Balance only)
-			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana ~= "never" then
+			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana.visibility ~= "never" then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
@@ -1845,7 +1845,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Feral()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
@@ -2103,7 +2103,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Show combo points when in Cat form, OR when displaySpecId is Feral (enableFormSwitching disabled)
-			if (currentForm == "cat" or displaySpecId == 2) and specSettings.displayBar.secondary ~= "never" then
+			if (currentForm == "cat" or displaySpecId == 2) and specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -2153,7 +2153,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Health bar update
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -2212,7 +2212,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Guardian()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
@@ -2355,7 +2355,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			-- Health bar update
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -2375,7 +2375,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
-			if formSpecSettings.displayBar.primary ~= "never" then
+			if formSpecSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
@@ -2437,7 +2437,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			-- Health bar update
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -2995,9 +2995,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -3016,9 +3016,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 				local secondarySettings = TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings or sharedSettings
 				
 				if secondarySettings ~= nil and secondarySettings.displayBar ~= nil then
-					if secondarySettings.displayBar.secondary == "always" then
+					if secondarySettings.displayBar.secondary.visibility == "always" then
 						showSecondary = true
-					elseif secondarySettings.displayBar.secondary == "combat" then
+					elseif secondarySettings.displayBar.secondary.visibility == "combat" then
 						showSecondary = affectingCombat or inVehicle
 					end
 					-- "never" means showSecondary stays false
@@ -3028,9 +3028,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false
@@ -3041,9 +3041,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- This ensures mana bar persists when form switching is disabled
 			local showMana = false
 			if TRB.Data.character.specId == 1 and displaySpecId == 1 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
-				if sharedSettings.displayBar.mana == "always" then
+				if sharedSettings.displayBar.mana.visibility == "always" then
 					showMana = true
-				elseif sharedSettings.displayBar.mana == "combat" then
+				elseif sharedSettings.displayBar.mana.visibility == "combat" then
 					showMana = affectingCombat or inVehicle
 				end
 				-- "never" means showMana stays false

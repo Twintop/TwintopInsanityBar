@@ -34,7 +34,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.ColorsCore
 ---@field public dataRefreshRate number
 ---@field public reactionTime number
----@field public smoothBarValueUpdates boolean
 ---@field public news table
 ---@field public strata table
 ---@field public timers table
@@ -187,6 +186,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"always"' # Always show the bar
 ---| '"combat"' # Only show the bar in combat
 ---| '"never"' # Never show the bar
+
+---@class trbBarVisibilitySetting
+---@field public visibility trbBarVisibility
+---@field public smooth boolean
 
 ---@alias trbBarColorType
 ---| '"step"' # Step colors

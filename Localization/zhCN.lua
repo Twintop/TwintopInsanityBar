@@ -825,8 +825,6 @@ if locale == "zhCN" then
     L["RogueSubtletyThresholdDeathFromAboveTooltip"] = "在资源条上显示竖线，标记施放天降杀机所需的能量阈值，技能冷却或无连击点时显示为「不可用」颜色"
     L["RogueSubtletyThresholdDismantle"] = "解除武装"
     L["RogueSubtletyThresholdDismantleTooltip"] = "在资源条上显示竖线，标记施放解除武装所需的能量阈值"
-    L["GlobalOptionsCheckboxSmoothBar"] = "资源条平滑动画"
-    L["GlobalOptionsCheckboxSmoothBarTooltip"] = "勾选后，各类状态条(资源、施法、被动、连击点等)的数值更新会播放简短平滑动画，而非瞬间跳变；资源条固定绑定个人资源显示时，该设置强制关闭"
     L["BarTextVariableGcd"] = "当前GCD(秒)"
     L["BarTextVariableHaste"] = "当前急速%"
     L["BarTextVariableHasteRating"] = "当前急速等级"

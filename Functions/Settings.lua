@@ -47,7 +47,6 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 		core = {
 			dataRefreshRate = 5.0,
 			reactionTime = 0.1,
-			smoothBarValueUpdates = true,
 			news = {
 				enabled = true,
 				lastUpdate = ""
@@ -78,9 +77,18 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			},
 			displayBar = {
-				primary = "always",
-				secondary = "always",
-				health = "always",
+				primary = {
+					visibility = "always",
+					smooth = true
+				},
+				secondary = {
+					visibility = "always",
+					smooth = false
+				},
+				health = {
+					visibility = "always",
+					smooth = true
+				},
 				dragonriding = true
 			},
 			overcap = {
@@ -4142,6 +4150,84 @@ function TRB.Functions.Settings:PortForwardSettings()
 				bar.ebonMightEnd = bar.inEbonMight1GCD
 				bar.inEbonMight1GCD = nil
 			end
+		end
+	end
+
+	-- Migrate displayBar values from string format to table format { visibility = string, smooth = bool }
+	-- Also migrate core.displayBar the same way
+	-- Then seed smooth defaults from the old core.smoothBarValueUpdates global setting
+	do
+		local oldSmoothSetting = nil
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core then
+			oldSmoothSetting = TwintopInsanityBarSettings.core.smoothBarValueUpdates
+		end
+
+		-- Keys within displayBar that should be converted from string to table
+		local displayBarVisibilityKeys = { "primary", "secondary", "health", "mana", "stagger", "defensives" }
+
+		-- Determine if the secondary bar should default to smooth for a given class/spec
+		-- Only DH Vengeance (specId 2) and Devourer (specId 3) have continuous secondary bars (Soul Fragments)
+		local function IsSecondarySmoothByDefault(className, specName)
+			if className == "demonhunter" and (specName == "vengeance" or specName == "devourer") then
+				return true
+			end
+			return false
+		end
+
+		-- Determine the smooth default for a given displayBar key
+		local function GetSmoothDefault(key, className, specName, oldSmooth)
+			local baseSmooth = (oldSmooth ~= nil) and oldSmooth or true
+			if key == "primary" or key == "health" or key == "mana" or key == "stagger" or key == "defensives" then
+				return baseSmooth
+			elseif key == "secondary" then
+				if IsSecondarySmoothByDefault(className, specName) then
+					return baseSmooth
+				end
+				return false
+			end
+			return false
+		end
+
+		local function MigrateDisplayBarToTable(displayBar, className, specName)
+			if displayBar == nil then
+				return
+			end
+			for _, key in ipairs(displayBarVisibilityKeys) do
+				local val = displayBar[key]
+				if val ~= nil and type(val) == "string" then
+					-- Convert string value to table format
+					displayBar[key] = {
+						visibility = val,
+						smooth = GetSmoothDefault(key, className, specName, oldSmoothSetting)
+					}
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateDisplayBarToTable(TwintopInsanityBarSettings.core.displayBar, "core", "core")
+		end
+
+		-- Migrate all class/spec displayBar settings
+		local classes2 = {
+			"deathknight", "demonhunter", "druid", "evoker", "hunter",
+			"mage", "monk", "paladin", "priest", "rogue",
+			"shaman", "warlock", "warrior"
+		}
+		for _, className in ipairs(classes2) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateDisplayBarToTable(specSettings.displayBar, className, specName)
+					end
+				end
+			end
+		end
+
+		-- Remove the old global smooth setting now that it's been consumed
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core then
+			TwintopInsanityBarSettings.core.smoothBarValueUpdates = nil
 		end
 	end
 end

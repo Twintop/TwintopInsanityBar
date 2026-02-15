@@ -729,7 +729,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Elemental()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
@@ -884,7 +884,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -897,7 +897,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Mana bar update (Balance only)
-			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana ~= "never" then
+			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana.visibility ~= "never" then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
@@ -919,7 +919,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Enhancement()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -963,7 +963,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 			
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if barGroups.secondary then
@@ -1082,7 +1082,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1140,7 +1140,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -1177,7 +1177,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1529,9 +1529,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1541,9 +1541,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Only Enhancement (specId == 2) uses the secondary (Maelstrom Weapon) bar
 			local showSecondary = false
 			if not forceHideAll and TRB.Data.character.specId == 2 then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1577,9 +1577,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll and sharedSettings.displayBar.health ~= nil then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false
@@ -1597,9 +1597,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine mana bar visibility independently (Elemental only)
 			local showMana = false
 			if not forceHideAll and TRB.Data.character.specId == 1 and sharedSettings.displayBar.mana ~= nil then
-				if sharedSettings.displayBar.mana == "always" then
+				if sharedSettings.displayBar.mana.visibility == "always" then
 					showMana = true
-				elseif sharedSettings.displayBar.mana == "combat" then
+				elseif sharedSettings.displayBar.mana.visibility == "combat" then
 					showMana = affectingCombat or inVehicle
 				end
 				-- "never" means showMana stays false

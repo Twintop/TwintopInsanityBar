@@ -2730,11 +2730,11 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 	controls.dropDown[barTypeDef.key .. "Visibility"].label.font:SetFontObject(GameFontNormal)
 
 	local function VisibilityIsSelected(value)
-		return value == spec.displayBar[barTypeDef.visibilityKey]
+		return value == spec.displayBar[barTypeDef.visibilityKey].visibility
 	end
 
 	local function VisibilitySetSelected(newValue)
-		spec.displayBar[barTypeDef.visibilityKey] = newValue
+		spec.displayBar[barTypeDef.visibilityKey].visibility = newValue
 		controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(newValue))
 		
 		-- Refresh cache to ensure global settings pick up spec-specific overrides
@@ -2764,10 +2764,32 @@ function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, cont
 	end
 
 	controls.dropDown[barTypeDef.key .. "Visibility"]:SetupMenu(VisibilityGenerator)
-	controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[barTypeDef.visibilityKey]))
+	controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[barTypeDef.visibilityKey].visibility))
 	controls.dropDown[barTypeDef.key .. "Visibility"]:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 
 	yCoord = yCoord - 70
+
+	-- Custom bar smooth checkbox
+	yCoord = yCoord - 65
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes[barTypeDef.key .. "Smooth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Smooth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[barTypeDef.key .. "Smooth"]
+	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+	f.tooltip = L["CheckboxSmoothBarTooltip"]
+	f:SetChecked(spec.displayBar[barTypeDef.visibilityKey].smooth)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar[barTypeDef.visibilityKey].smooth = self:GetChecked()
+		-- Refresh cache
+		TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+		TRB.Functions.Character:ResetCaches()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			end
+		end
+	end)
 
 	return yCoord
 end
@@ -3504,19 +3526,35 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
 
 	local function PrimaryVisibilityIsSelected(value)
-		return value == spec.displayBar.primary
+		return value == spec.displayBar.primary.visibility
 	end
 
 	local function PrimaryVisibilitySetSelected(newValue)
-		spec.displayBar.primary = newValue
+		spec.displayBar.primary.visibility = newValue
 		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-			-- Reapply layout to adjust positioning for the visibility change
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-				TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+		if classId ~= nil and specId ~= nil then
+			-- Spec panel
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				-- Reapply layout to adjust positioning for the visibility change
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				end
+				TRB.Functions.Bar:HideResourceBar()
 			end
-			TRB.Functions.Bar:HideResourceBar()
+		else
+			-- Global panel: refresh current character's cache if using global displayBar
+			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+				local lowerClassName = string.lower(TRB.Data.character.className)
+				local currentSpecName = TRB.Data.character.specName
+				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				end
+				TRB.Functions.Bar:HideResourceBar()
+			end
 		end
 	end
 
@@ -3527,7 +3565,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	controls.dropDown.primaryVisibility:SetupMenu(PrimaryVisibilityGenerator)
-	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
+	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary.visibility))
 	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 
 	-- Health bar visibility dropdown (only if includeHealthVisibility is true)
@@ -3539,19 +3577,35 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
 
 		local function HealthVisibilityIsSelected(value)
-			return value == spec.displayBar.health
+			return value == spec.displayBar.health.visibility
 		end
 
 		local function HealthVisibilitySetSelected(newValue)
-			spec.displayBar.health = newValue
+			spec.displayBar.health.visibility = newValue
 			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-				-- Reapply layout to adjust positioning for the visibility change
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					-- Reapply layout to adjust positioning for the visibility change
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
 				end
-				TRB.Functions.Bar:HideResourceBar()
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
+				end
 			end
 		end
 
@@ -3562,13 +3616,86 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
-		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
+		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health.visibility))
 		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	end
+
+	-- Smooth animation checkboxes (same row, below the visibility dropdowns)
+	yCoord = yCoord - 65
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.primarySmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_PrimarySmooth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.primarySmooth
+	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+	f.tooltip = L["CheckboxSmoothBarTooltip"]
+	f:SetChecked(spec.displayBar.primary.smooth)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.primary.smooth = self:GetChecked()
+		-- Refresh cache to pick up the new smooth setting
+		if classId ~= nil and specId ~= nil then
+			-- Spec panel: refresh that spec's cache
+			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				end
+			end
+		else
+			-- Global panel: refresh current character's cache if using global displayBar
+			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+				local lowerClassName = string.lower(TRB.Data.character.className)
+				local currentSpecName = TRB.Data.character.specName
+				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				end
+			end
+		end
+	end)
+
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		controls.checkBoxes.healthSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_HealthSmooth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.healthSmooth
+		f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+		f.tooltip = L["CheckboxSmoothBarTooltip"]
+		f:SetChecked(spec.displayBar.health.smooth)
+		f:SetScript("OnClick", function(self, ...)
+			spec.displayBar.health.smooth = self:GetChecked()
+			-- Refresh cache to pick up the new smooth setting
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel: refresh that spec's cache
+				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			end
+		end)
 	end
 
 	-- Secondary bar visibility dropdown (only if includeSecondaryVisibility is true)
 	if includeSecondaryVisibility then
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local secondaryLabel = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"])
 		controls.dropDown.secondaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SecondaryVisibility", parent, "WowStyle1DropdownTemplate")
 		controls.dropDown.secondaryVisibility:SetWidth(oUi.sliderWidth)
@@ -3576,19 +3703,35 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.secondaryVisibility.label.font:SetFontObject(GameFontNormal)
 
 		local function SecondaryVisibilityIsSelected(value)
-			return value == spec.displayBar.secondary
+			return value == spec.displayBar.secondary.visibility
 		end
 
 		local function SecondaryVisibilitySetSelected(newValue)
-			spec.displayBar.secondary = newValue
+			spec.displayBar.secondary.visibility = newValue
 			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-				-- Reapply layout to adjust positioning for the visibility change
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					-- Reapply layout to adjust positioning for the visibility change
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
 				end
-				TRB.Functions.Bar:HideResourceBar()
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
+				end
 			end
 		end
 
@@ -3599,13 +3742,49 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
-		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary))
+		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary.visibility))
 		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+		-- Secondary smooth checkbox
+		yCoord = yCoord - 65
+		controls.checkBoxes.secondarySmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_SecondarySmooth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.secondarySmooth
+		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+		f.tooltip = L["CheckboxSmoothBarTooltip"]
+		f:SetChecked(spec.displayBar.secondary.smooth)
+		f:SetScript("OnClick", function(self, ...)
+			spec.displayBar.secondary.smooth = self:GetChecked()
+			-- Refresh cache to pick up the new smooth setting
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel: refresh that spec's cache
+				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			end
+		end)
 	end
 
 	-- Mana bar visibility dropdown (only if includeManaBarVisibility is true)
 	if includeManaBarVisibility and spec.displayBar.mana ~= nil then
-		yCoord = yCoord - 70
+		yCoord = yCoord - 30
 		local manaLabel = L["ShowBarVisibilityMana"]
 		controls.dropDown.manaVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ManaVisibility", parent, "WowStyle1DropdownTemplate")
 		controls.dropDown.manaVisibility:SetWidth(oUi.sliderWidth)
@@ -3613,24 +3792,38 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.manaVisibility.label.font:SetFontObject(GameFontNormal)
 
 		local function ManaVisibilityIsSelected(value)
-			return value == spec.displayBar.mana
+			return value == spec.displayBar.mana.visibility
 		end
 
 		local function ManaVisibilitySetSelected(newValue)
-			spec.displayBar.mana = newValue
-			-- Also update specCache to ensure immediate visibility change
-			-- (needed when using global displayBar settings, since specCache.displayBar != spec.displayBar)
-			if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
-				TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar.mana = newValue
-			end
+			spec.displayBar.mana.visibility = newValue
 			controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-				-- Reapply layout to adjust positioning for the visibility change
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel: also update specCache for immediate effect
+				if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
+					TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar.mana.visibility = newValue
 				end
-				TRB.Functions.Bar:HideResourceBar()
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					-- Reapply layout to adjust positioning for the visibility change
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
+				end
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+					end
+					TRB.Functions.Bar:HideResourceBar()
+				end
 			end
 		end
 
@@ -3641,12 +3834,48 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		controls.dropDown.manaVisibility:SetupMenu(ManaVisibilityGenerator)
-		controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.mana))
+		controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.mana.visibility))
 		controls.dropDown.manaVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+		-- Mana smooth checkbox
+		yCoord = yCoord - 65
+		controls.checkBoxes.manaSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ManaSmooth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.manaSmooth
+		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+		f.tooltip = L["CheckboxSmoothBarTooltip"]
+		f:SetChecked(spec.displayBar.mana.smooth)
+		f:SetScript("OnClick", function(self, ...)
+			spec.displayBar.mana.smooth = self:GetChecked()
+			-- Refresh cache to pick up the new smooth setting
+			if classId ~= nil and specId ~= nil then
+				-- Spec panel: refresh that spec's cache
+				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			else
+				-- Global panel: refresh current character's cache if using global displayBar
+				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+					local lowerClassName = string.lower(TRB.Data.character.className)
+					local currentSpecName = TRB.Data.character.specName
+					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					end
+				end
+			end
+		end)
 	end
 
 	if includeFlashAlpha then
-		yCoord = yCoord - 90
+		yCoord = yCoord - 50
 		title = string.format(L["FlashAlpha"], flashAlphaName)
 		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)

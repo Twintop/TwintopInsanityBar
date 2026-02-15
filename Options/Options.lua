@@ -221,21 +221,9 @@ local function ConstructMiscellaneousPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.smoothBar = CreateFrame("CheckButton", "TwintopResourceBar_CB_Smooth_Bar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.smoothBar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	---@diagnostic disable-next-line: undefined-field
-	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxSmoothBar"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["GlobalOptionsCheckboxSmoothBarTooltip"]
-	f:SetChecked(TRB.Data.settings.core.smoothBarValueUpdates)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.smoothBarValueUpdates = self:GetChecked()
-	end)
-
 	controls.checkBoxes.minimapIcon = CreateFrame("CheckButton", "TwintopResourceBar_CB_Minimap_Icon", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.minimapIcon
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxMinimapIcon"])
 	---@diagnostic disable-next-line: inject-field

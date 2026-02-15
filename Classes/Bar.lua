@@ -19,6 +19,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public height number
 ---@field public border number
 ---@field public isVisible boolean
+---@field public smooth boolean?
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -44,6 +45,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.height = 20
 	self.border = 2
 	self.isVisible = false
+	self.smooth = nil
 
 	-- Create container frame
 	local containerName = self.name .. "_Container"
@@ -70,10 +72,10 @@ end
 
 ---Sets the value of the StatusBar
 ---@param value number # The current value
----@param smooth boolean? # Whether to use smooth animation (default: uses global setting)
+---@param smooth boolean? # Whether to use smooth animation (default: uses node's smooth setting)
 function TRB.Classes.BarNode:SetValue(value, smooth)
 	if smooth == nil then
-		smooth = TRB.Data.settings.core.smoothBarValueUpdates
+		smooth = self.smooth or false
 	end
 
 	if smooth then
@@ -412,6 +414,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	self.orientation = "HORIZONTAL"
 	self.isVisible = false
 	self.isPrimary = isPrimary or false
+	self.smooth = nil
 
 	-- Create container frame for the group
 	local containerName = self.name
@@ -458,6 +461,10 @@ function TRB.Classes.BarGroup:SetMaxNodes(newMaxNodes)
 				nodeName = self.name .. "_Node"
 			end
 			self.nodes[i] = TRB.Classes.BarNode:New(self.containerFrame, nodeName, i)
+			-- Propagate smooth setting to newly created nodes
+			if self.smooth ~= nil then
+				self.nodes[i].smooth = self.smooth
+			end
 		end
 	else
 		-- Hide and optionally destroy extra nodes
@@ -472,6 +479,15 @@ function TRB.Classes.BarGroup:SetMaxNodes(newMaxNodes)
 	-- Adjust nodeCount if it exceeds the new max
 	if self.nodeCount > self.maxNodes then
 		self.nodeCount = self.maxNodes
+	end
+end
+
+---Sets the smooth animation setting for all nodes in this group
+---@param smooth boolean # Whether to use smooth animation
+function TRB.Classes.BarGroup:SetSmooth(smooth)
+	self.smooth = smooth
+	for _, node in ipairs(self.nodes) do
+		node.smooth = smooth
 	end
 end
 
