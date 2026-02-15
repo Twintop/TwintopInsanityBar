@@ -475,7 +475,7 @@ local function RefreshLookupData_Augmentation()
 	lookup["$resource"] = currentMana
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
-	lookup["$essence"] = snapshotData.attributes.resource
+	lookup["$essence"] = snapshotData.attributes.resource2
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
 	lookup["$essenceMax"] = TRB.Data.character.maxResource2
