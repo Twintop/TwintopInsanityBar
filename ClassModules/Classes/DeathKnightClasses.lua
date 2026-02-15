@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 6 then --Only do this if we're on an Death Knight!
-	return
-end
 
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.DeathKnight = TRB.Classes.DeathKnight or {}
@@ -64,6 +61,41 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
     return self
 end
 
+---Fills barTextVariables for Blood Death Knight options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
+	})
+end
+
 
 ---@class TRB.Classes.DeathKnight.FrostSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field breathOfSindragosa TRB.Classes.SpellThreshold
@@ -103,6 +135,41 @@ function TRB.Classes.DeathKnight.FrostSpells:New()
     return self
 end
 
+---Fills barTextVariables for Frost Death Knight options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.FrostSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
+	})
+end
+
 
 ---@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field raiseAlly TRB.Classes.SpellThreshold
@@ -123,6 +190,41 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
     })
 
     return self
+end
+
+---Fills barTextVariables for Unholy Death Knight options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
+		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
+		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
+		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
+		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
+		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
+
+		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
+		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
+		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
+		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
+		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
+		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
+	})
 end
 
 
@@ -198,3 +300,9 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
         }
     }
 end
+
+-- Register barTextVariables fillers for cross-class options panel support
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["deathknight_blood"] = TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["deathknight_frost"] = TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["deathknight_unholy"] = TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables

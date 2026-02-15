@@ -1,8 +1,5 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-if TRB.Data.character.classId ~= 10 then --Only do this if we're on a Monk!
-	return
-end
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Monk = TRB.Classes.Monk or {}
 
@@ -141,6 +138,33 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 	return self
 end
 
+---Fills barTextVariables for Brewmaster Monk options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Monk.BrewmasterSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$energy", description = L["MonkBrewmasterBarTextVariable_energy"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energyMax", description = L["MonkBrewmasterBarTextVariable_energyMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["MonkBrewmasterBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false },
+		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false },
+
+		{ variable = "$niuzaoTime", description = L["MonkBrewmasterBarTextVariable_niuzaoTime"], printInSettings = true, color = false },
+	})
+end
+
 
 ---@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
 ---@field public risingSunKick TRB.Classes.SpellBase
@@ -193,6 +217,30 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 	})
 
 	return self
+end
+
+---Fills barTextVariables for Mistweaver Monk options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$mana", description = L["MonkMistweaverBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$manaPercent", description = L["MonkMistweaverBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$manaMax", description = L["MonkMistweaverBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["MonkMistweaverBarTextVariable_casting"], printInSettings = true, color = false },
+	})
 end
 
 
@@ -351,6 +399,50 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 	return self
 end
 
+---Fills barTextVariables for Windwalker Monk options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
+		{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
+		{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
+		{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
+		{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
+		{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
+		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
+		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
+		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
+		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
+		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
+		{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
+		{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
+		{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
+		{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
+		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
+		{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$energy", description = L["MonkWindwalkerBarTextVariable_energy"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energyMax", description = L["MonkWindwalkerBarTextVariable_energyMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = L["MonkWindwalkerBarTextVariable_casting"], printInSettings = false, color = false },
+		
+		{ variable = "$chi", description = L["MonkWindwalkerBarTextVariable_chi"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+	})
+end
+
 
 --[[
     BarGroups Factory for Monk
@@ -498,3 +590,9 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
 
     return {}
 end
+
+-- Register barTextVariables fillers for cross-class options panel support
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables

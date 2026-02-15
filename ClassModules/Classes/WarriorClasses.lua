@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 1 then --Only do this if we're on a Warrior!
-	return
-end
 
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Warrior = TRB.Classes.Warrior or {}
@@ -172,6 +169,33 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 	return self
 end
 
+---Fills barTextVariables for Arms Warrior options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#cleave", icon = spells.cleave.icon, description = spells.cleave.name, printInSettings = true },
+		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
+		{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = spells.mortalStrike.name, printInSettings = true },
+		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
+		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
+		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$rage", description = L["WarriorArmsBarTextVariable_rage"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+	})
+end
+
 
 ---@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public whirlwind TRB.Classes.SpellBase
@@ -298,6 +322,34 @@ function TRB.Classes.Warrior.FurySpells:New()
 	return self
 end
 
+---Fills barTextVariables for Fury Warrior options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.FurySpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
+		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
+		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
+		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
+		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true }
+	})
+
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$rage", description = L["WarriorFuryBarTextVariable_rage"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+	})
+end
+
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public enduringDefenses TRB.Classes.SpellBase
 ---@field public shieldCharge TRB.Classes.SpellBase
@@ -419,6 +471,40 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 	return self
 end
 
+---Fills barTextVariables for Protection Warrior options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.ProtectionSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
+		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
+		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
+		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
+		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true }
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$rage", description = L["WarriorProtectionBarTextVariable_rage"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$rageMax", description = L["WarriorProtectionBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
+		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false },
+
+		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockMaxCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"], printInSettings = true, color = false },
+	})
+end
+
 
 --[[
     BarGroups Factory for Warrior
@@ -506,3 +592,9 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
         }
     end
 end
+
+-- Register barTextVariables fillers for cross-class options panel support
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables

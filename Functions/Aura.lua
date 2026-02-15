@@ -43,7 +43,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 	end
 
 	---@type TRB.Classes.SpecCache
-	local specCache = TRB.Data.specCache[TRB.Data.character.specName]
+	local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
 	local targetData = snapshotData.targetData
 	local unitGuid = nil
 	local isUnitFriend = nil

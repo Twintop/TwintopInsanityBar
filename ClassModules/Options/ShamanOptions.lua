@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 7 then --Only do this if we're on a Shaman!
-	return
-end
 
 local L = TRB.Localization
 
@@ -12,9 +9,9 @@ TRB.Options.Shaman.Elemental = {}
 TRB.Options.Shaman.Enhancement = {}
 TRB.Options.Shaman.Restoration = {}
 
-TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_elemental = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_enhancement = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_restoration = {}
 
 local ELEMENTAL_MAX_MAELSTROM = 175
 
@@ -479,7 +476,7 @@ local function ElementalConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.elemental
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_elemental
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_Reset"] = {
@@ -586,7 +583,7 @@ local function ElementalConstructMaelstromBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 	local f = nil
 
@@ -659,7 +656,7 @@ local function ElementalConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"), L["ResourceMaelstrom"])
@@ -675,7 +672,7 @@ local function ElementalConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
@@ -691,7 +688,7 @@ local function ElementalConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, true)
@@ -704,7 +701,7 @@ local function ElementalConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", true, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"], false, nil, true, true)
@@ -718,7 +715,7 @@ local function ElementalConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.shaman.elemental
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 	local f = nil
 
@@ -780,7 +777,7 @@ local function ElementalConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.shaman.elemental
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 	local f = nil
 
@@ -865,7 +862,7 @@ local function ElementalConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.shaman.elemental
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -886,7 +883,7 @@ local function ElementalConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.shaman.elemental
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.elemental
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -908,7 +905,7 @@ local function ElementalConstructOptionsPanel(cache)
 	local yCoord = 0
 	local f = nil
 	interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "elemental", L["ShamanElementalFull"], interfaceSettingsFrame.elementalDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "shaman_elemental", L["ShamanElementalFull"], interfaceSettingsFrame.elementalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.elementalDisplayPanel
 
@@ -936,7 +933,7 @@ local function ElementalConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_elemental = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -956,7 +953,7 @@ local function EnhancementConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_enhancement
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_Reset"] = {
@@ -1063,7 +1060,7 @@ local function EnhancementConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 	local f = nil
 
@@ -1113,7 +1110,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 	local f = nil
 
@@ -1182,13 +1179,15 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.compressedView)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.compressedView = self:GetChecked()
-		-- Rebuild secondary bar with correct node count
-		local barGroups = TRB.Frames.barGroups
-		if barGroups and barGroups.secondary then
-			local maxStacks = TRB.Data.character.maxResource2 or 10
-			local displayNodes = spec.colors.comboPoints.compressedView and math.ceil(maxStacks / 2) or maxStacks
-			barGroups.secondary:RebuildNodes(displayNodes, spec)
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(7, 2) then
+			-- Rebuild secondary bar with correct node count
+			local barGroups = TRB.Frames.barGroups
+			if barGroups and barGroups.secondary then
+				local maxStacks = TRB.Data.character.maxResource2 or 10
+				local displayNodes = spec.colors.comboPoints.compressedView and math.ceil(maxStacks / 2) or maxStacks
+				barGroups.secondary:RebuildNodes(displayNodes, spec)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 end
@@ -1200,7 +1199,7 @@ local function EnhancementConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
@@ -1216,7 +1215,7 @@ local function EnhancementConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, L["ResourceMaelstromWeapon"])
@@ -1229,7 +1228,7 @@ local function EnhancementConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceMaelstromWeapon"], true)
@@ -1243,7 +1242,7 @@ local function EnhancementConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.shaman.enhancement
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 	local f = nil
 
@@ -1281,7 +1280,7 @@ local function EnhancementConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.shaman.enhancement
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
 	controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1324,7 +1323,7 @@ local function EnhancementConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.shaman.enhancement
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.enhancement
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1342,7 +1341,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.enhancement or {}
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1354,7 +1353,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "enhancement", L["ShamanEnhancementFull"], interfaceSettingsFrame.enhancementDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "shaman_enhancement", L["ShamanEnhancementFull"], interfaceSettingsFrame.enhancementDisplayPanel)
 
 	parent = interfaceSettingsFrame.enhancementDisplayPanel
 
@@ -1379,7 +1378,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_enhancement = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1393,7 +1392,7 @@ local function RestorationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.restoration
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.restoration
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_restoration
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_Reset"] = {
@@ -1500,7 +1499,7 @@ local function RestorationConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -1550,7 +1549,7 @@ local function RestorationConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
@@ -1566,7 +1565,7 @@ local function RestorationConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
@@ -1579,7 +1578,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.shaman.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
@@ -1593,7 +1592,7 @@ local function RestorationConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.shaman.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -1611,7 +1610,7 @@ local function RestorationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.shaman.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -1654,7 +1653,7 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.shaman.restoration
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 	local f = nil
 
@@ -1674,7 +1673,7 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.shaman.restoration
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.restoration
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)		
@@ -1692,7 +1691,7 @@ local function RestorationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.restoration or {}
+	local controls = interfaceSettingsFrame.controls.shaman_restoration or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1704,7 +1703,7 @@ local function RestorationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "restoration", L["ShamanRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("shaman", "shaman_restoration", L["ShamanRestorationFull"], interfaceSettingsFrame.restorationDisplayPanel)
 	
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
@@ -1727,7 +1726,7 @@ local function RestorationConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_restoration = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end	
@@ -1735,9 +1734,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("shaman", L["Shaman"])
-	ElementalConstructOptionsPanel(specCache.elemental)
-	EnhancementConstructOptionsPanel(specCache.enhancement)
-	RestorationConstructOptionsPanel(specCache.restoration)
+	ElementalConstructOptionsPanel(specCache.shaman_elemental)
+	EnhancementConstructOptionsPanel(specCache.shaman_enhancement)
+	RestorationConstructOptionsPanel(specCache.shaman_restoration)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel

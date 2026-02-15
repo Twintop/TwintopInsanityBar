@@ -1333,8 +1333,8 @@ L["DeathKnightRunesCheckboxSortRunes"] = "Sort Runes by cooldown duration remain
 L["DeathKnightThresholdCheckboxDeathCoil"] = "Death Coil"
 L["DeathKnightThresholdCheckboxDeathStrike"] = "Death Strike"
 L["DeathKnightThresholdCheckboxRaiseAlly"] = "Raise Ally"
-L["DruidGuardianBatTextVariable_rage"] = "Current Rage"
-L["DruidGuardianBatTextVariable_rageMax"] = "Maximum Rage"
+L["DruidGuardianBarTextVariable_rage"] = "Current Rage"
+L["DruidGuardianBarTextVariable_rageMax"] = "Maximum Rage"
 L["DruidGuardianThresholdCheckboxFrenziedRegeneration"] = "Frenzied Regeneration"
 L["DruidGuardianThresholdCheckboxIronfur"] = "Ironfur"
 L["DruidGuardianThresholdCheckboxMaulRaze"] = "Maul / Raze"
@@ -1732,8 +1732,6 @@ L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of L
 L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Play audio cue when Infusion of Light procs"
 L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an Infusion of Light proc occurs. This will only play once per proc."
 
-L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options via the slash command while in combat."
-
 -- Bulk Global Toggle Checkboxes
 L["CheckboxEnableForAllSpecs"] = "Enable for all specializations"
 L["CheckboxEnableForAllSpecsTooltip"] = "When checked, enables this global setting for all specializations across all classes. When unchecked, disables it for all."
@@ -1876,3 +1874,7 @@ L["GlobalOptionsCheckboxMinimapIconTooltip"] = "When checked, the minimap icon w
 L["WarriorProtectionBarTextVariable_ignorePainAbsorb"] = "Amount of damage being absorbed by Ignore Pain"
 L["DemonHunterHavocColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
 L["DemonHunterVengeanceColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
+
+L["ShamanElementalBarTextVariable_mana"] = "Current Mana"
+L["ShamanElementalBarTextVariable_manaPercent"] = "Current Mana Percentage"
+L["ShamanElementalBarTextVariable_manaMax"] = "Maximum Mana"

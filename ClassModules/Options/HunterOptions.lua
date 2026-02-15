@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 3 then --Only do this if we're on a Hunter!
-	return
-end
 local L = TRB.Localization
 
 local oUi = TRB.Data.constants.optionsUi
@@ -10,9 +7,9 @@ TRB.Options.Hunter = {}
 TRB.Options.Hunter.BeastMastery = {}
 TRB.Options.Hunter.Marksmanship = {}
 TRB.Options.Hunter.Survival = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival = {}
 
 local BEAST_MASTERY_MAX_FOCUS = 100
 local MARKSMANSHIP_MAX_FOCUS = 100
@@ -568,7 +565,7 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.hunter.beastMastery
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_Reset"] = {
@@ -663,7 +660,7 @@ local function BeastMasteryConstructFocusBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 	local f = nil
 
@@ -737,7 +734,7 @@ local function BeastMasteryConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 	local f = nil
 
@@ -755,7 +752,7 @@ local function BeastMasteryConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
@@ -769,7 +766,7 @@ local function BeastMasteryConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"], false, nil, true)
@@ -783,7 +780,7 @@ local function BeastMasteryConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 	local f = nil
 
@@ -921,7 +918,7 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 	local f = nil
 
@@ -994,7 +991,7 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.hunter.beastMastery
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 	local f = nil
 
@@ -1018,7 +1015,7 @@ local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.hunter.beastMastery
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.beastMastery
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1036,7 +1033,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.beastMastery or {}
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1048,7 +1045,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "beastMastery", L["HunterBeastMasteryFull"], interfaceSettingsFrame.beastMasteryDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "hunter_beastMastery", L["HunterBeastMasteryFull"], interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 	parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
@@ -1073,7 +1070,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1091,7 +1088,7 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.hunter.marksmanship
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_Reset"] = {
@@ -1186,7 +1183,7 @@ local function MarksmanshipConstructFocusBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 	local f = nil
 
@@ -1243,7 +1240,7 @@ local function MarksmanshipConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 	local f = nil
 
@@ -1261,7 +1258,7 @@ local function MarksmanshipConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
@@ -1275,7 +1272,7 @@ local function MarksmanshipConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
@@ -1289,7 +1286,7 @@ local function MarksmanshipConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 	local f = nil
 
@@ -1424,7 +1421,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 	local f = nil
 
@@ -1509,7 +1506,7 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.hunter.marksmanship
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 	local f = nil
 
@@ -1582,7 +1579,7 @@ local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.hunter.marksmanship
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.marksmanship
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1600,7 +1597,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.marksmanship or {}
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1612,7 +1609,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "marksmanship", L["HunterMarksmanshipFull"], interfaceSettingsFrame.marksmanshipDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "hunter_marksmanship", L["HunterMarksmanshipFull"], interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 	parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
@@ -1636,7 +1633,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1655,7 +1652,7 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.hunter.survival
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.survival
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
@@ -1750,7 +1747,7 @@ local function SurvivalConstructFocusBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 	local f = nil
 
@@ -1807,7 +1804,7 @@ local function SurvivalConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 	local f = nil
 
@@ -1825,7 +1822,7 @@ local function SurvivalConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
@@ -1839,7 +1836,7 @@ local function SurvivalConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
@@ -1853,7 +1850,7 @@ local function SurvivalConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 	local f = nil
 
@@ -1953,7 +1950,7 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 	local f = nil
 
@@ -2032,7 +2029,7 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.hunter.survival
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 	local f = nil
 
@@ -2054,7 +2051,7 @@ local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.hunter.survival
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.survival
+	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2072,7 +2069,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.survival or {}
+	local controls = interfaceSettingsFrame.controls.hunter_survival or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2084,7 +2081,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "survival", L["HunterSurvivalFull"], interfaceSettingsFrame.survivalDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("hunter", "hunter_survival", L["HunterSurvivalFull"], interfaceSettingsFrame.survivalDisplayPanel)
 	
 	parent = interfaceSettingsFrame.survivalDisplayPanel
 
@@ -2108,7 +2105,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -2117,9 +2114,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("hunter", L["Hunter"])
-	BeastMasteryConstructOptionsPanel(specCache.beastMastery)
-	MarksmanshipConstructOptionsPanel(specCache.marksmanship)
-	SurvivalConstructOptionsPanel(specCache.survival)
+	BeastMasteryConstructOptionsPanel(specCache.hunter_beastMastery)
+	MarksmanshipConstructOptionsPanel(specCache.hunter_marksmanship)
+	SurvivalConstructOptionsPanel(specCache.hunter_survival)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Hunter.ConstructOptionsPanel = ConstructOptionsPanel

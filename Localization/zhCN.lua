@@ -1276,8 +1276,8 @@ if locale == "zhCN" then
     L["DeathKnightThresholdCheckboxDeathCoil"] = "死亡缠绕"
     L["DeathKnightThresholdCheckboxDeathStrike"] = "灵界打击"
     L["DeathKnightThresholdCheckboxRaiseAlly"] = "复活盟友"
-    L["DruidGuardianBatTextVariable_rage"] = "当前怒气"
-    L["DruidGuardianBatTextVariable_rageMax"] = "怒气上限"
+    L["DruidGuardianBarTextVariable_rage"] = "当前怒气"
+    L["DruidGuardianBarTextVariable_rageMax"] = "怒气上限"
     L["DruidGuardianThresholdCheckboxFrenziedRegeneration"] = "狂暴恢复"
     L["DruidGuardianThresholdCheckboxIronfur"] = "铁鬃"
     L["DruidGuardianThresholdCheckboxMaulRaze"] = "重殴/粉碎"
@@ -1636,8 +1636,6 @@ if locale == "zhCN" then
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "圣光灌注触发时播放音效"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "圣光灌注触发时播放音效，每次触发仅播放一次。"
 
-    L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555错误：|r战斗中无法通过斜杠命令打开设置界面。"
-
     L["CheckboxEnableForAllSpecs"] = "为所有专精启用此功能"
     L["CheckboxEnableForAllSpecsTooltip"] = "勾选该选项后，此项全局设置会对所有职业下的每一种专精生效启用；取消勾选后，则对全部职业与专精禁用该设置。"
 
@@ -1737,4 +1735,8 @@ if locale == "zhCN" then
     L["FooterGitHubIssues"] = "GitHub反馈"
     L["FooterNews"] = "最新动态"
     L["MinimapTooltipLeftClick"] = "左键点击打开设置"
+
+    L["ShamanElementalBarTextVariable_mana"] = "当前法力值"
+    L["ShamanElementalBarTextVariable_manaPercent"] = "当前法力值百分比"
+    L["ShamanElementalBarTextVariable_manaMax"] = "法力值上限"
 end

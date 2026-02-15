@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 1 then --Only do this if we're on a Warrior!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Warrior = {}
 TRB.Options.Warrior.Arms = {}
 TRB.Options.Warrior.Fury = {}
 TRB.Options.Warrior.Protection = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.arms = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.fury = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_arms = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_fury = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_protection = {}
 
 local ARMS_MAX_RAGE = 130
 local FURY_MAX_RAGE = 130
@@ -636,7 +633,7 @@ local function ArmsConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.arms
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.arms
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_arms
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_Reset"] = {
@@ -743,7 +740,7 @@ local function ArmsConstructRageBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.arms
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 	local f = nil
 
@@ -776,7 +773,7 @@ local function ArmsConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.arms
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
@@ -792,7 +789,7 @@ local function ArmsConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.arms
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
@@ -805,7 +802,7 @@ local function ArmsConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.arms
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
@@ -819,7 +816,7 @@ local function ArmsConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.warrior.arms
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 	local f = nil
 
@@ -972,7 +969,7 @@ local function ArmsConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warrior.arms
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 	local f = nil
 
@@ -1045,7 +1042,7 @@ local function ArmsConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warrior.arms
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1066,7 +1063,7 @@ local function ArmsConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warrior.arms
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.arms
+	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1084,7 +1081,7 @@ local function ArmsConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.arms or {}
+	local controls = interfaceSettingsFrame.controls.warrior_arms or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1095,7 +1092,7 @@ local function ArmsConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.armsDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Arms")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "arms", L["WarriorArmsFull"], interfaceSettingsFrame.armsDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "warrior_arms", L["WarriorArmsFull"], interfaceSettingsFrame.armsDisplayPanel)
 	
 	parent = interfaceSettingsFrame.armsDisplayPanel
 
@@ -1121,7 +1118,7 @@ local function ArmsConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_arms = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1140,7 +1137,7 @@ local function FuryConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.fury
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.fury
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_fury
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_Reset"] = {
@@ -1247,7 +1244,7 @@ local function FuryConstructRageBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.fury
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 	local f = nil
 
@@ -1287,7 +1284,7 @@ local function FuryConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.fury
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
@@ -1303,7 +1300,7 @@ local function FuryConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.fury
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
@@ -1316,7 +1313,7 @@ local function FuryConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.fury
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
@@ -1330,7 +1327,7 @@ local function FuryConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.warrior.fury
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 	local f = nil
 
@@ -1448,7 +1445,7 @@ local function FuryConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warrior.fury
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 	local f = nil
 
@@ -1521,7 +1518,7 @@ local function FuryConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warrior.fury
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1540,7 +1537,7 @@ local function FuryConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warrior.fury
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.fury
+	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1558,7 +1555,7 @@ local function FuryConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.fury or {}
+	local controls = interfaceSettingsFrame.controls.warrior_fury or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1569,7 +1566,7 @@ local function FuryConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.furyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Fury")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "fury", L["WarriorFuryFull"], interfaceSettingsFrame.furyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "warrior_fury", L["WarriorFuryFull"], interfaceSettingsFrame.furyDisplayPanel)
 	
 	parent = interfaceSettingsFrame.furyDisplayPanel
 
@@ -1595,7 +1592,7 @@ local function FuryConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_fury = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1614,7 +1611,7 @@ local function ProtectionConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.protection
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_protection
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Warrior_Protection_Reset"] = {
@@ -1721,7 +1718,7 @@ local function ProtectionConstructRageBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1754,7 +1751,7 @@ local function ProtectionConstructDefensivesBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
@@ -1775,7 +1772,7 @@ local function ProtectionConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
@@ -1791,7 +1788,7 @@ local function ProtectionConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 3, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives") })
@@ -1804,7 +1801,7 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
@@ -1822,7 +1819,7 @@ local function ProtectionConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.warrior.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 	local f = nil
 
@@ -1966,7 +1963,7 @@ local function ProtectionConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.warrior.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 	local f = nil
 
@@ -2039,7 +2036,7 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.warrior.protection
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Protection_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -2058,7 +2055,7 @@ local function ProtectionConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.warrior.protection
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.protection
+	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2076,7 +2073,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.protection or {}
+	local controls = interfaceSettingsFrame.controls.warrior_protection or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2087,7 +2084,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.protectionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Protection")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "protection", L["WarriorProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("warrior", "warrior_protection", L["WarriorProtectionFull"], interfaceSettingsFrame.protectionDisplayPanel)
 	
 	parent = interfaceSettingsFrame.protectionDisplayPanel
 
@@ -2114,7 +2111,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_protection = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -2123,9 +2120,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("warrior", L["Warrior"])
-	ArmsConstructOptionsPanel(specCache.arms)
-	FuryConstructOptionsPanel(specCache.fury)
-	ProtectionConstructOptionsPanel(specCache.protection)
+	ArmsConstructOptionsPanel(specCache.warrior_arms)
+	FuryConstructOptionsPanel(specCache.warrior_fury)
+	ProtectionConstructOptionsPanel(specCache.warrior_protection)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Warrior.ConstructOptionsPanel = ConstructOptionsPanel

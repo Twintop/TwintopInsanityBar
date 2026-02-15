@@ -1295,8 +1295,8 @@ if locale == "deDE" then
     L["DeathKnightThresholdCheckboxDeathCoil"] = "Todesmantel"
     L["DeathKnightThresholdCheckboxDeathStrike"] = "Todesstoß"
     L["DeathKnightThresholdCheckboxRaiseAlly"] = "Verbündeten erwecken"
-    L["DruidGuardianBatTextVariable_rage"] = "Aktuelle Wut"
-    L["DruidGuardianBatTextVariable_rageMax"] = "Maximale Wut"
+    L["DruidGuardianBarTextVariable_rage"] = "Aktuelle Wut"
+    L["DruidGuardianBarTextVariable_rageMax"] = "Maximale Wut"
     L["DruidGuardianThresholdCheckboxFrenziedRegeneration"] = "Rasende Regeneration"
     L["DruidGuardianThresholdCheckboxIronfur"] = "Eisenfell"
     L["DruidGuardianThresholdCheckboxMaulRaze"] = "Zermalmen / Zerreissen"
@@ -1676,5 +1676,7 @@ if locale == "deDE" then
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Spiele Audio-Hinweis, wenn Lichtinfusion procced"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Spiele einen Audio-Hinweis ab, wenn ein Lichtinfusion Proc auftritt. Dies wird nur einmal pro Proc abgespielt."
 
-    L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555FEHLER:|r Kann Optionen nicht per Slash-Befehl öffnen, während du im Kampf bist."
+    L["ShamanElementalBarTextVariable_mana"] = "Aktuelles Mana"
+    L["ShamanElementalBarTextVariable_manaPercent"] = "Aktueller Mana Prozentsatz"
+    L["ShamanElementalBarTextVariable_manaMax"] = "Maximales Mana"
 end

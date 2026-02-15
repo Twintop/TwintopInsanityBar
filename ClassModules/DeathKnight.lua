@@ -16,9 +16,9 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	blood = TRB.Classes.SpecCache:New(),
-	frost = TRB.Classes.SpecCache:New(),
-	unholy = TRB.Classes.SpecCache:New()
+	deathknight_blood = TRB.Classes.SpecCache:New(),
+	deathknight_frost = TRB.Classes.SpecCache:New(),
+	deathknight_unholy = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
@@ -78,14 +78,14 @@ end
 
 local function FillSpecializationCache()
 	-- Blood
-	specCache.blood.Global_TwintopResourceBar = {
+	specCache.deathknight_blood.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.blood.character = {
+	specCache.deathknight_blood.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -102,26 +102,26 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.DeathKnight.BloodSpells
-	specCache.blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
-	local spells = specCache.blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	specCache.deathknight_blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
+	local spells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
 	
-	specCache.blood.snapshotData.audio = {
+	specCache.deathknight_blood.snapshotData.audio = {
 	}
 
-	specCache.blood.barTextVariables = {
+	specCache.deathknight_blood.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Frost
-	specCache.frost.Global_TwintopResourceBar = {
+	specCache.deathknight_frost.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		}
 	}
 
-	specCache.frost.character = {
+	specCache.deathknight_frost.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -138,28 +138,28 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.DeathKnight.FrostSpells
-	specCache.frost.spellsData.spells = TRB.Classes.DeathKnight.FrostSpells:New()
-	local spells = specCache.frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+	specCache.deathknight_frost.spellsData.spells = TRB.Classes.DeathKnight.FrostSpells:New()
+	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
 	---@type TRB.Classes.Snapshot
-	specCache.frost.snapshotData.snapshots[spells.breathOfSindragosa.id] = TRB.Classes.Snapshot:New(spells.breathOfSindragosa)
+	specCache.deathknight_frost.snapshotData.snapshots[spells.breathOfSindragosa.id] = TRB.Classes.Snapshot:New(spells.breathOfSindragosa)
 
-	specCache.frost.snapshotData.audio = {
+	specCache.deathknight_frost.snapshotData.audio = {
 	}
 
-	specCache.frost.barTextVariables = {
+	specCache.deathknight_frost.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Unholy
-	specCache.unholy.Global_TwintopResourceBar = {
+	specCache.deathknight_unholy.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.unholy.character = {
+	specCache.deathknight_unholy.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -176,12 +176,12 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.DeathKnight.UnholySpells
-	specCache.unholy.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
+	specCache.deathknight_unholy.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
 
-	specCache.unholy.snapshotData.audio = {
+	specCache.deathknight_unholy.snapshotData.audio = {
 	}
 
-	specCache.unholy.barTextVariables = {
+	specCache.deathknight_unholy.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -199,73 +199,10 @@ end
 
 local function FillSpellData_Blood()
 	Setup_Blood()
-	specCache.blood.spellsData:FillSpellData()
-	local spells = specCache.blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	specCache.deathknight_blood.spellsData:FillSpellData()
+	local spells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.blood.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.blood.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-
-		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
-		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
-		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
-		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
-		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
-		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
-		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
-		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
-		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
-		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
-		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
-	}
+	TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCache.deathknight_blood)
 end
 
 local function Setup_Frost()
@@ -280,73 +217,10 @@ end
 
 local function FillSpellData_Frost()
 	Setup_Frost()
-	specCache.frost.spellsData:FillSpellData()
-	local spells = specCache.frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+	specCache.deathknight_frost.spellsData:FillSpellData()
+	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.frost.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.frost.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-
-		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
-		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
-		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
-		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
-		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
-		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
-		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
-		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
-		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
-		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
-		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
-	}
+	TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCache.deathknight_frost)
 end
 
 local function Setup_Unholy()
@@ -361,73 +235,10 @@ end
 
 local function FillSpellData_Unholy()
 	Setup_Unholy()
-	specCache.unholy.spellsData:FillSpellData()
-	local spells = specCache.unholy.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	specCache.deathknight_unholy.spellsData:FillSpellData()
+	local spells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.unholy.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.unholy.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-
-		{ variable = "$runesReadyCount", description = L["DeathKnightBarTextVariable_runesReadyCount"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Time", description = L["DeathKnightBarTextVariable_rune1Time"], printInSettings = true, color = false },
-		{ variable = "$rune2Time", description = L["DeathKnightBarTextVariable_rune2Time"], printInSettings = true, color = false },
-		{ variable = "$rune3Time", description = L["DeathKnightBarTextVariable_rune3Time"], printInSettings = true, color = false },
-		{ variable = "$rune4Time", description = L["DeathKnightBarTextVariable_rune4Time"], printInSettings = true, color = false },
-		{ variable = "$rune5Time", description = L["DeathKnightBarTextVariable_rune5Time"], printInSettings = true, color = false },
-		{ variable = "$rune6Time", description = L["DeathKnightBarTextVariable_rune6Time"], printInSettings = true, color = false },
-
-		{ variable = "$rune1Ready", description = L["DeathKnightBarTextVariable_rune1Ready"], printInSettings = true, color = false },
-		{ variable = "$rune2Ready", description = L["DeathKnightBarTextVariable_rune2Ready"], printInSettings = true, color = false },
-		{ variable = "$rune3Ready", description = L["DeathKnightBarTextVariable_rune3Ready"], printInSettings = true, color = false },
-		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
-		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
-		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
-	}
+	TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCache.deathknight_unholy)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -511,7 +322,7 @@ local function RefreshLookupData_Blood()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.deathknight.blood
-	local sharedSettings = TRB.Data.specCache["blood"].settings
+	local sharedSettings = TRB.Data.specCache["deathknight_blood"].settings
 	local currentTime = GetTime()
 	local normalizedRunicPower = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
@@ -607,7 +418,7 @@ local function RefreshLookupData_Frost()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.deathknight.frost
-	local sharedSettings = TRB.Data.specCache["frost"].settings
+	local sharedSettings = TRB.Data.specCache["deathknight_frost"].settings
 	local currentTime = GetTime()
 	local normalizedRunicPower = snapshotData.attributes.resourceModified
 
@@ -703,7 +514,7 @@ local function RefreshLookupData_Unholy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.deathknight.unholy
-	local sharedSettings = TRB.Data.specCache["unholy"].settings
+	local sharedSettings = TRB.Data.specCache["deathknight_unholy"].settings
 	local currentTime = GetTime()
 	local normalizedRunicPower = snapshotData.attributes.resourceModified
 
@@ -848,7 +659,7 @@ local function UpdateSnapshot()
 		UpdateRune(x, true)
 	end
 	
-	local specSettings = TRB.Data.settings.deathknight[TRB.Data.barConstructedForSpec]
+	local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
 	local runes = TRB.Data.character.runes
 	if specSettings.colors.comboPoints.sortRunes == true then
 		-- Sort: ready runes first, then by percentage (high to low)
@@ -959,7 +770,7 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.blood
-		local specCacheSettings = TRB.Data.specCache.blood.settings
+		local specCacheSettings = TRB.Data.specCache.deathknight_blood.settings
 		UpdateSnapshot_Blood()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1062,7 +873,7 @@ local function UpdateResourceBar()
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.frost
-		local specCacheSettings = TRB.Data.specCache.frost.settings
+		local specCacheSettings = TRB.Data.specCache.deathknight_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1165,7 +976,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.unholy
-		local specCacheSettings = TRB.Data.specCache.unholy.settings
+		local specCacheSettings = TRB.Data.specCache.deathknight_unholy.settings
 		UpdateSnapshot_Unholy()
 		if snapshotData.attributes.isTracking then
 			if specSettings.displayBar.primary ~= "never" then
@@ -1283,9 +1094,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 	
 	if TRB.Data.character.specId == 1 then
-		specCache.blood.talents:GetTalents()
+		specCache.deathknight_blood.talents:GetTalents()
 		FillSpellData_Blood()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.blood)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.deathknight_blood)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
@@ -1293,21 +1104,21 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Blood
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.blood.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.deathknight_blood.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "blood" then
-			talents = specCache.blood.talents
-			TRB.Data.barConstructedForSpec = "blood"
-			ConstructResourceBar(specCache.blood.settings)
+		if TRB.Data.barConstructedForSpec ~= "deathknight_blood" then
+			talents = specCache.deathknight_blood.talents
+			TRB.Data.barConstructedForSpec = "deathknight_blood"
+			ConstructResourceBar(specCache.deathknight_blood.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.frost.talents:GetTalents()
+		specCache.deathknight_frost.talents:GetTalents()
 		FillSpellData_Frost()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.frost)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.deathknight_frost)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
@@ -1315,21 +1126,21 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Frost
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.frost.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.deathknight_frost.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "frost" then
-			talents = specCache.frost.talents
-			TRB.Data.barConstructedForSpec = "frost"
-			ConstructResourceBar(specCache.frost.settings)
+		if TRB.Data.barConstructedForSpec ~= "deathknight_frost" then
+			talents = specCache.deathknight_frost.talents
+			TRB.Data.barConstructedForSpec = "deathknight_frost"
+			ConstructResourceBar(specCache.deathknight_frost.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.unholy.talents:GetTalents()
+		specCache.deathknight_unholy.talents:GetTalents()
 		FillSpellData_Unholy()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.unholy)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.deathknight_unholy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
@@ -1337,16 +1148,16 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Unholy
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.unholy.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.deathknight_unholy.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "unholy" then
-			talents = specCache.unholy.talents
-			TRB.Data.barConstructedForSpec = "unholy"
-			ConstructResourceBar(specCache.unholy.settings)
+		if TRB.Data.barConstructedForSpec ~= "deathknight_unholy" then
+			talents = specCache.deathknight_unholy.talents
+			TRB.Data.barConstructedForSpec = "deathknight_unholy"
+			ConstructResourceBar(specCache.deathknight_unholy.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1507,13 +1318,16 @@ function TRB.Functions.Class:CheckCharacter()
 	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "blood"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "deathknight_blood"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "frost"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "deathknight_frost"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "unholy"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "deathknight_unholy"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	end
 
 	if sharedSettings ~= nil then
@@ -1557,8 +1371,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
