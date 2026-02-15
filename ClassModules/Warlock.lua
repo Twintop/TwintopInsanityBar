@@ -643,9 +643,6 @@ local function UpdateResourceBar()
 
 			if normalizedResource2 >= x then
 				fillValue = 1
-				if x == 4 then
-					print(normalizedResource2, (TRB.Data.character.maxResource2 - 1),  (not specSettings.comboPoints.sameColor and x == (math.floor(TRB.Data.character.maxResource2 - 1))))
-				end
 				if (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
