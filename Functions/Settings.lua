@@ -2002,7 +2002,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.background = { color = bar.background }
 		end
 		if type(bar.apotheosis) == "string" then
-			print("apoth")
 			bar.apotheosis = { color = bar.apotheosis }
 		end
 		if type(bar.apotheosisEnd) == "string" then
