@@ -12,6 +12,23 @@ local content = [====[
 
 ---
 
+# 12.0.1.3-release (2026-02-15)
+## General
+
+- [#352](#352) Allow for any class specialization's settings to be accessed and modified, regardless of what the current class is.
+- [#352](#352) Make the options window lazy load settings for a spec only when they are accessed. This will reduce the amount of memory consumed by the addon in most circumstances.
+
+### Localization
+
+- [#615](#615) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Warlock
+### Destruction
+
+- Fix an issue where sometimes the penultimate Soul Shard color would not be applied when the "Same Color" option was enabled.
+
+---
+
 # 12.0.1.2-release (2026-02-14)
 ## General
 
