@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.4-release (2026-02-15)
+## General
+
+- Fix a regression with bar spacing not accounting for hidden bars when anchored to the Cooldown Manager in Edit Mode.
+
+---
+
 # 12.0.1.3-release (2026-02-15)
 ## General
 
