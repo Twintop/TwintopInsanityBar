@@ -132,7 +132,6 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
 	})
 end
 
