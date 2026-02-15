@@ -140,6 +140,19 @@ TRB.Data.constants = {
 		["BOTTOM"]      = { anchorPoint = "BOTTOM",      attachPoint = "TOP" },
 		["BOTTOMLEFT"]  = { anchorPoint = "BOTTOMLEFT",  attachPoint = "TOPLEFT" },
 		["BOTTOMRIGHT"] = { anchorPoint = "BOTTOMRIGHT",  attachPoint = "TOPRIGHT" },
+	},
+	---Maps an anchorPoint to the closest legacy relativeTo value.
+	---Used for dual-write from anchor UI back to legacy fields.
+	anchorPointToRelativeToMap = {
+		["TOPLEFT"]     = "TOPLEFT",
+		["TOP"]         = "TOP",
+		["TOPRIGHT"]    = "TOPRIGHT",
+		["LEFT"]        = "TOPLEFT",
+		["CENTER"]      = "TOP",
+		["RIGHT"]       = "TOPRIGHT",
+		["BOTTOMLEFT"]  = "BOTTOMLEFT",
+		["BOTTOM"]      = "BOTTOM",
+		["BOTTOMRIGHT"] = "BOTTOMRIGHT",
 	}
 }
 

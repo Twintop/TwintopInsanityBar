@@ -391,30 +391,85 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- Get or create the wrapper frame for Edit Mode
 	local wrapperFrame = TRB.Functions.EditMode:GetOrCreateWrapperFrame()
 
+	-- Determine the root of the wrapper tree
+	-- Walk from baseBarKey up anchor chain to find the screen-anchored bar that is the tree root
+	local wrapperRootKey = self:FindWrapperRoot(settings, barGroups)
+	local primaryIsRoot = (wrapperRootKey == "primary")
+
+	-- If root is not primary, parent the root bar's container to the wrapper
+	if not primaryIsRoot then
+		local rootGroup = barGroups[wrapperRootKey]
+		if rootGroup and wrapperFrame then
+			if rootGroup.containerFrame:GetParent() ~= wrapperFrame then
+				rootGroup.containerFrame:SetParent(wrapperFrame)
+			end
+			rootGroup.containerFrame:ClearAllPoints()
+			if editModeLayoutEnabled then
+				rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+			else
+				rootGroup.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
+			end
+		end
+	end
+
 	-- Configure the primary bar group
 	if barGroups.primary then
 		local primary = barGroups.primary
 		local primaryNode = primary:GetNode(1)
 
-		-- Parent the primary container to the wrapper frame
-		-- This ensures when the wrapper is dragged in Edit Mode, all bars move with it
-		if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
-			primary.containerFrame:SetParent(wrapperFrame)
+		if primaryIsRoot then
+			-- Primary is the wrapper root: parent to wrapper and position at origin
+			if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
+				primary.containerFrame:SetParent(wrapperFrame)
+			end
+			primary.containerFrame:ClearAllPoints()
+			if editModeLayoutEnabled then
+				primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+			else
+				primary.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
+			end
+		else
+			-- Primary is a child bar: parent to wrapper for Edit Mode drag, position via anchor
+			if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
+				primary.containerFrame:SetParent(wrapperFrame)
+			end
+			local primaryAnchor = self:GetBarAnchor(settings, "primary")
+			if primaryAnchor and primaryAnchor.barKey and primaryAnchor.barKey ~= "screen" then
+				local anchorGroup = barGroups[primaryAnchor.barKey]
+				if anchorGroup then
+					local anchorBarSettings = self:GetBarSettings(settings, primaryAnchor.barKey)
+					local aBorder = (anchorBarSettings and anchorBarSettings.border) or 0
+					local ap = primaryAnchor.anchorPoint or "BOTTOM"
+					local att = primaryAnchor.attachPoint or "TOP"
+					local xo = primaryAnchor.xOffset or 0
+					local yo = primaryAnchor.yOffset or 0
+					-- Apply border offsets (same logic as ConstructAnchoredBarGroup)
+					if primaryAnchor.matchWidth then
+						local isAbove = string.find(ap, "TOP") ~= nil
+						local isBelow = string.find(ap, "BOTTOM") ~= nil
+						if isAbove then att = "BOTTOM"; ap = "TOP"
+						elseif isBelow then att = "TOP"; ap = "BOTTOM" end
+						xo = 0
+					else
+						if string.find(att, "LEFT") ~= nil then xo = xo - aBorder
+						elseif string.find(att, "RIGHT") ~= nil then xo = xo + aBorder end
+					end
+					if string.find(ap, "BOTTOM") ~= nil or ap == "BOTTOM" then yo = yo - aBorder
+					elseif string.find(ap, "TOP") ~= nil or ap == "TOP" then yo = yo + aBorder end
+					primary.containerFrame:ClearAllPoints()
+					primary.containerFrame:SetPoint(att, anchorGroup:GetContainerFrame(), ap, xo, yo)
+				end
+			end
 		end
 
-		-- Position the primary container WITHIN the wrapper
-		-- When Edit Mode layout is enabled: primary bar at TOP, wrapper encompasses all bars
-		-- When Edit Mode layout is disabled: primary bar at CENTER, wrapper matches primary bar (legacy behavior)
-		primary.containerFrame:ClearAllPoints()
-		if editModeLayoutEnabled then
-			-- Edit Mode: Primary bar is at the top of the wrapper (secondary bars accounted for via extendAbove)
-			primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
-		else
-			-- Legacy: Primary bar is centered within the wrapper (secondary bars anchor relative to primary)
-			primary.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
-		end
-		
-		primary.containerFrame:SetWidth(effectiveWidth - (settings.bar.border * 2))
+		-- Primary bar width: always use effectiveWidth.
+		-- effectiveWidth already accounts for CDM width matching.
+		-- When matchWidth is true on a non-root primary, effectiveWidth is still correct
+		-- because it propagates CDM width through the chain without needing to read the
+		-- anchor bar's container (which may not be sized yet in this layout pass).
+		local primaryWidth = effectiveWidth
+
+		primary.containerFrame:SetWidth(primaryWidth - (settings.bar.border * 2))
 		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 
 		-- Now position the WRAPPER frame based on the three use cases:
@@ -444,17 +499,19 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			if editModePosition and editModePosition.point then
 				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
 			else
-				-- No saved Edit Mode position yet, use legacy position as default
-				local xPos = settings.bar.xPos or 0
-				local yPos = settings.bar.yPos or -200
+				-- No saved Edit Mode position yet; use root bar's screen position as default
+				local rootAnchor = self:GetBarAnchor(settings, wrapperRootKey)
+				local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+				local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
 				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
 			end
 		else
-			-- Use Case 1: Edit Mode disabled - use legacy position
-			local xPos = settings.bar.xPos or 0
-			local yPos = settings.bar.yPos or -200
+			-- Use Case 1: Edit Mode disabled - use root bar's screen position
+			local rootAnchor = self:GetBarAnchor(settings, wrapperRootKey)
+			local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+			local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
 			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
-			-- Legacy mode: wrapper matches primary bar dimensions exactly
+			-- Legacy mode: wrapper matches root bar dimensions
 			wrapperFrame:SetSize(effectiveWidth, settings.bar.height)
 		end
 
@@ -463,7 +520,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			primary:SetFrameStrata(strata)
 
 			-- Set dimensions (stores values and sizes border/resource frames)
-			primaryNode:SetDimensions(effectiveWidth, settings.bar.height, settings.bar.border)
+			primaryNode:SetDimensions(primaryWidth, settings.bar.height, settings.bar.border)
 
 			-- Set frame levels
 			primaryNode:SetFrameLevels(
@@ -588,7 +645,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		-- Resolve anchor group for secondary bar from settings
 		local secondaryAnchor = self:GetBarAnchor(effectiveSettings, "secondary")
 		local secondaryAnchorKey = (secondaryAnchor and secondaryAnchor.barKey) or "primary"
-		local secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
+		local secondaryAnchorGroup
+		if secondaryAnchorKey ~= "screen" then
+			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
+		end
+		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
 		self:ConstructSecondaryBarGroup(effectiveSettings, secondaryAnchorGroup, barGroups.secondary, false)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
@@ -629,7 +690,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		-- Resolve anchor group for health bar from settings
 		local healthAnchor = self:GetBarAnchor(settings, "health")
 		local healthAnchorKey = (healthAnchor and healthAnchor.barKey) or "primary"
-		local healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
+		local healthAnchorGroup
+		if healthAnchorKey ~= "screen" then
+			healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
+		end
+		-- healthAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
 		self:ConstructHealthBarGroup(settings, healthAnchorGroup, barGroups.health, true)
 	end
 
@@ -682,8 +747,7 @@ end
 ---@param effectiveWidth number # The width being used (may be CDM-matched)
 ---@param settings table? # Settings for dimension calculations
 function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
-	local primary = barGroups.primary
-	if not primary or not primary.containerFrame then
+	if not barGroups then
 		return
 	end
 
@@ -712,10 +776,13 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	wrapperFrame:SetWidth(effectiveWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
-	-- Reposition the primary bar within the wrapper to account for bars above/beside it
-	local primaryFrame = primary.containerFrame
-	primaryFrame:ClearAllPoints()
-	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+	-- Reposition the root bar within the wrapper to account for bars above/beside it
+	local wrapperRootKey = self:FindWrapperRoot(settings or {}, barGroups)
+	local rootGroup = barGroups[wrapperRootKey]
+	if rootGroup then
+		rootGroup.containerFrame:ClearAllPoints()
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+	end
 
 	-- Now anchor the wrapper to the CDM frame, horizontally centered
 	-- Include a 1px base gap to prevent border/CDM overlap regardless of strata
@@ -957,6 +1024,18 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 		end
 	end
 
+	-- Ultimate fallback: bars with xPos/yPos but no relativeTo (e.g., primary bar) are screen-anchored
+	if barSettings.xPos ~= nil then
+		return {
+			barKey = "screen",
+			anchorPoint = "CENTER",
+			attachPoint = "CENTER",
+			xOffset = barSettings.xPos or 0,
+			yOffset = barSettings.yPos or -200,
+			matchWidth = false,
+		}
+	end
+
 	return nil
 end
 
@@ -1034,7 +1113,9 @@ end
 ---@return string
 function TRB.Functions.Bar:GetBarDisplayName(barKey)
 	local L = TRB.Localization
-	if barKey == "primary" then
+	if barKey == "screen" then
+		return L["AnchorBarScreen"]
+	elseif barKey == "primary" then
 		return L["AnchorBarPrimary"]
 	elseif barKey == "secondary" then
 		return L["AnchorBarSecondary"]
@@ -1052,7 +1133,33 @@ function TRB.Functions.Bar:GetBarDisplayName(barKey)
 	end
 end
 
+---Finds the root bar of the wrapper tree by walking up from baseBarKey.
+---The root is the bar whose anchor has barKey="screen" (or no anchor), meaning it's positioned on UIParent.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@return string # The barKey of the wrapper tree root
+function TRB.Functions.Bar:FindWrapperRoot(settings, barGroups)
+	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
+	local current = baseBarKey
+	local visited = {}
+	while true do
+		if visited[current] then return current end -- cycle, stop
+		visited[current] = true
+		local anchor = self:GetBarAnchor(settings, current)
+		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
+			return current -- reached a screen-anchored bar = this is the root
+		end
+		if not barGroups[anchor.barKey] then
+			return current -- parent doesn't exist in barGroups, this is effectively the root
+		end
+		current = anchor.barKey
+	end
+end
+
 ---Validates that an anchor configuration does not create a cycle.
+---The tree is a forest: bars with barKey="screen" are roots (anchored to UIParent).
+---A valid tree means every bar can reach either "screen" or the baseBarKey by
+---following parent links without revisiting a node.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 ---@param testBarKey string? # If provided, validates with this bar's anchor changed
@@ -1060,35 +1167,31 @@ end
 ---@return boolean # true if valid (no cycles)
 ---@return string? # Error message if invalid
 function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, testAnchorBarKey)
-	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
 	local allKeys = self:GetAllBarKeys(barGroups)
 
 	-- Build adjacency: child -> parent
+	-- Bars with barKey="screen" are roots (parentOf entry is nil)
 	local parentOf = {}
 	for _, barKey in ipairs(allKeys) do
-		if barKey ~= baseBarKey then
-			local anchor
-			if testBarKey and barKey == testBarKey then
-				-- Use the proposed test anchor instead of the real one
-				anchor = { barKey = testAnchorBarKey }
-			else
-				anchor = self:GetBarAnchor(settings, barKey)
-			end
-			if anchor then
-				parentOf[barKey] = anchor.barKey
-			else
-				parentOf[barKey] = baseBarKey
-			end
+		local anchor
+		if testBarKey and barKey == testBarKey then
+			-- Use the proposed test anchor instead of the real one
+			anchor = { barKey = testAnchorBarKey }
+		else
+			anchor = self:GetBarAnchor(settings, barKey)
 		end
+		if anchor and anchor.barKey and anchor.barKey ~= "screen" then
+			parentOf[barKey] = anchor.barKey
+		end
+		-- barKey="screen" → no parent (root)
 	end
 
-	-- Walk from each non-base node to root; if we visit more nodes than exist, there's a cycle
-	local nodeCount = #allKeys
+	-- Walk from each node to a root; detect cycles via revisit
 	for _, barKey in ipairs(allKeys) do
-		if barKey ~= baseBarKey then
+		if parentOf[barKey] then
 			local visited = {}
 			local current = barKey
-			while current and current ~= baseBarKey do
+			while current and parentOf[current] do
 				if visited[current] then
 					local L = TRB.Localization
 					return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
@@ -1096,8 +1199,9 @@ function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, t
 				visited[current] = true
 				current = parentOf[current]
 			end
-			-- If we didn't reach the base bar, the graph is disconnected (treat as invalid)
-			if current ~= baseBarKey then
+			-- current is now either a root (no parent, i.e. screen-anchored) or nil
+			-- If current is nil, the parent chain referenced a non-existent bar — treat as invalid
+			if current == nil then
 				local L = TRB.Localization
 				return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
 			end
@@ -1108,13 +1212,14 @@ function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, t
 end
 
 ---Returns the list of bar keys that the specified bar can anchor to without creating a cycle.
+---Always includes "screen" as a valid target (anchoring to screen never creates a cycle).
 ---@param thisBarKey string
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
----@return string[] # List of valid anchor target bar keys
+---@return string[] # List of valid anchor target bar keys (includes "screen")
 function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups)
+	local valid = { "screen" }
 	local allKeys = self:GetAllBarKeys(barGroups)
-	local valid = {}
 	for _, candidate in ipairs(allKeys) do
 		if candidate ~= thisBarKey then
 			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate)
@@ -1126,7 +1231,9 @@ function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGr
 	return valid
 end
 
----Builds the anchor tree from settings, returning the root node.
+---Builds the anchor tree from settings, returning the root node of the baseBarKey's tree.
+---The tree is a forest: bars with barKey="screen" are independent roots.
+---This function finds the root that contains the baseBarKey and builds only that sub-tree.
 ---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
@@ -1141,57 +1248,98 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
 	local allKeys = self:GetAllBarKeys(barGroups)
 
-	-- Build all nodes
+	-- Build all nodes; bars with barKey="screen" or no anchor are roots (anchor = nil)
 	---@type table<string, TRB.Classes.Settings.AnchorTreeNode>
 	local nodes = {}
+	---@type table<string, string> # child -> parent adjacency
+	local parentOf = {}
 	for _, barKey in ipairs(allKeys) do
 		local barSettings = self:GetBarSettings(settings, barKey)
 		local barGroup = barGroups[barKey]
+		local anchor = self:GetBarAnchor(settings, barKey)
+		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
 		nodes[barKey] = {
 			barKey = barKey,
-			anchor = (barKey ~= baseBarKey) and self:GetBarAnchor(settings, barKey) or nil,
+			anchor = isRoot and nil or anchor,
 			children = {},
 			barGroup = barGroup,
 			barSettings = barSettings,
 			width = barSettings and barSettings.width or 0,
 			height = barSettings and barSettings.height or 0,
 		}
+		if not isRoot then
+			parentOf[barKey] = anchor.barKey
+		end
 	end
 
-	-- Ensure the base node exists
-	if not nodes[baseBarKey] then
+	-- Find the root of the baseBarKey's tree by walking up the parent chain
+	local rootKey = baseBarKey
+	local visited = {}
+	while parentOf[rootKey] and not visited[rootKey] do
+		visited[rootKey] = true
+		local parentKey = parentOf[rootKey]
+		if nodes[parentKey] then
+			rootKey = parentKey
+		else
+			break -- parent doesn't exist in barGroups; current node is effectively a root
+		end
+	end
+
+	-- Ensure the root node exists
+	if not nodes[rootKey] then
 		return nil
 	end
 
-	-- Build parent-child relationships
+	-- Determine which bars belong to this tree (reachable from rootKey via parent chain)
+	local inTree = { [rootKey] = true }
 	for _, barKey in ipairs(allKeys) do
-		if barKey ~= baseBarKey then
-			local node = nodes[barKey]
-			local parentKey = (node.anchor and node.anchor.barKey) or baseBarKey
-			-- Validate parent exists; fall back to base bar
-			if not nodes[parentKey] then
-				parentKey = baseBarKey
+		if barKey ~= rootKey and not inTree[barKey] then
+			-- Walk up from barKey; if we reach a node already known to be in the tree, mark the whole chain
+			local chain = {}
+			local current = barKey
+			local reached = false
+			local seen = {}
+			while current do
+				if inTree[current] then reached = true; break end
+				if seen[current] then break end -- cycle
+				seen[current] = true
+				table.insert(chain, current)
+				current = parentOf[current]
 			end
+			if reached then
+				for _, k in ipairs(chain) do
+					inTree[k] = true
+				end
+			end
+		end
+	end
+
+	-- Build parent-child relationships for bars in this tree
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= rootKey and inTree[barKey] then
+			local node = nodes[barKey]
+			local parentKey = parentOf[barKey] or rootKey
 
 			if collapseHidden then
-				-- Walk up the parent chain to find the first visible parent
+				-- Walk up the parent chain to find the first visible parent within the tree
 				local effectiveParentKey = parentKey
-				while effectiveParentKey ~= baseBarKey and
+				while effectiveParentKey ~= rootKey and
 					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
-					local grandparentAnchor = nodes[effectiveParentKey] and nodes[effectiveParentKey].anchor
-					effectiveParentKey = (grandparentAnchor and grandparentAnchor.barKey) or baseBarKey
+					effectiveParentKey = parentOf[effectiveParentKey] or rootKey
 				end
 				parentKey = effectiveParentKey
 			end
 
 			-- Only add visible bars (or all bars if includeHidden)
 			if self:IsBarVisible(settings, barKey, includeHidden) then
-				table.insert(nodes[parentKey].children, node)
+				if nodes[parentKey] then
+					table.insert(nodes[parentKey].children, node)
+				end
 			end
 		end
 	end
 
-	return nodes[baseBarKey]
+	return nodes[rootKey]
 end
 
 ---Calculates the pixel position of an anchor point on a rectangle.
@@ -1325,12 +1473,20 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	end
 
 	-- Resolve the actual anchor frame
-	-- The anchorGroup parameter is the resolved anchor group (from the tree walk), use it directly
-	local anchorContainer = anchorGroup:GetContainerFrame()
-
-	-- Get the anchor bar's border for offset calculations
-	local anchorBarSettings = self:GetBarSettings(settings, anchor.barKey)
-	local anchorBorder = (anchorBarSettings and anchorBarSettings.border) or settings.bar.border
+	local anchorContainer
+	local anchorBorder = 0
+	if anchor.barKey == "screen" then
+		-- Screen anchor: position directly on UIParent
+		anchorContainer = UIParent
+	elseif anchorGroup and anchorGroup.GetContainerFrame then
+		-- Bar anchor: position relative to anchorGroup container
+		anchorContainer = anchorGroup:GetContainerFrame()
+		local anchorBarSettings = self:GetBarSettings(settings, anchor.barKey)
+		anchorBorder = (anchorBarSettings and anchorBarSettings.border) or settings.bar.border
+	else
+		-- Fallback: anchor to UIParent
+		anchorContainer = UIParent
+	end
 
 	-- Calculate dimensions
 	local groupWidth = groupSettings.width
@@ -1343,16 +1499,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local xPos = anchor.xOffset or 0
 	local yPos = anchor.yOffset or 0
 
-	if anchor.matchWidth then
-		-- Match anchor bar's effective width
-		-- If anchored to the base bar, use effectiveWidth (accounts for CDM width matching)
-		local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
-		if anchor.barKey == baseBarKey then
-			groupWidth = effectiveWidth
-		else
-			-- Use the anchor bar container's width
-			groupWidth = anchorContainer:GetWidth() or effectiveWidth
-		end
+	if anchor.matchWidth and anchor.barKey ~= "screen" then
+		-- Match width: always use effectiveWidth (the system-wide width).
+		-- effectiveWidth accounts for CDM width matching and avoids ordering issues
+		-- (the anchor bar's container may not have been sized yet in this layout pass).
+		groupWidth = effectiveWidth
 		-- Force center alignment vertically (above or below)
 		-- Determine if attach is above or below and force center alignment
 		local isAbove = string.find(anchorPoint, "TOP") ~= nil
@@ -1626,7 +1777,11 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			-- Resolve the correct anchor group from settings
 			local anchor = self:GetBarAnchor(settings, key)
 			local anchorBarKey = (anchor and anchor.barKey) or "primary"
-			local anchorGroup = barGroups[anchorBarKey] or barGroups.primary
+			local anchorGroup
+			if anchorBarKey ~= "screen" then
+				anchorGroup = barGroups[anchorBarKey] or barGroups.primary
+			end
+			-- anchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
 
 			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
 			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)

@@ -1897,3 +1897,21 @@ L["AnchorCycleError"] = "Cannot anchor to %s: this would create a circular depen
 L["AnchorBarPrimary"] = "Primary Resource Bar"
 L["AnchorBarSecondary"] = "Secondary Resource Bar"
 L["AnchorBarHealth"] = "Health Bar"
+L["AnchorBarScreen"] = "Screen (Free Position)"
+L["AnchorBarScreenTooltip"] = "Position this bar independently on screen. It will not be attached to any other bar."
+
+-- Anchor Point Display Names (9-point system)
+L["AnchorPointTOPLEFT"] = "Top Left"
+L["AnchorPointTOP"] = "Top Center"
+L["AnchorPointTOPRIGHT"] = "Top Right"
+L["AnchorPointLEFT"] = "Middle Left"
+L["AnchorPointCENTER"] = "Center"
+L["AnchorPointRIGHT"] = "Middle Right"
+L["AnchorPointBOTTOMLEFT"] = "Bottom Left"
+L["AnchorPointBOTTOM"] = "Bottom Center"
+L["AnchorPointBOTTOMRIGHT"] = "Bottom Right"
+
+-- Anchor UI Labels
+L["AnchorToBarLabel"] = "Anchor %s to:"
+L["AnchorPointLabel"] = "Point on %s (target)"
+L["AttachPointLabel"] = "Point on %s (this bar)"

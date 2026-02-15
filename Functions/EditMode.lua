@@ -130,15 +130,24 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 	-- position correctly relative to the center of the primary bar.
 	-- When Edit Mode layout is enabled, the wrapper encompasses all bars for proper selection box.
 	if not editModeLayoutEnabled then
-		-- Legacy mode: wrapper matches primary bar dimensions, primary bar fills wrapper
+		-- Legacy mode: wrapper matches root bar dimensions, root bar fills wrapper
+		local wrapperRootKey = TRB.Functions.Bar:FindWrapperRoot(settings or {}, barGroups)
+		local rootGroup = barGroups[wrapperRootKey]
 		local effectiveWidth = (barGroups.effectiveWidth) or (settings and settings.bar and settings.bar.width) or 100
-		local primaryHeight = (settings and settings.bar and settings.bar.height) or 100
-		editModeWrapperFrame:SetSize(effectiveWidth, primaryHeight)
+		local rootHeight
+		if wrapperRootKey == "primary" then
+			rootHeight = (settings and settings.bar and settings.bar.height) or 100
+		else
+			local rootSettings = TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
+			rootHeight = (rootSettings and rootSettings.height) or 100
+		end
+		editModeWrapperFrame:SetSize(effectiveWidth, rootHeight)
 
-		-- Primary bar centered within the wrapper (legacy behavior)
-		local primaryFrame = barGroups.primary.containerFrame
-		primaryFrame:ClearAllPoints()
-		primaryFrame:SetPoint("CENTER", editModeWrapperFrame, "CENTER", 0, 0)
+		-- Root bar centered within the wrapper (legacy behavior)
+		if rootGroup then
+			rootGroup.containerFrame:ClearAllPoints()
+			rootGroup.containerFrame:SetPoint("CENTER", editModeWrapperFrame, "CENTER", 0, 0)
+		end
 		return
 	end
 
@@ -155,11 +164,14 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 		editModeWrapperFrame:SetSize(totalWidth, totalHeight)
 	end
 
-	-- Reposition the primary bar within the wrapper to account for bars above/beside it
+	-- Reposition the root bar within the wrapper to account for bars above/beside it
 	-- extendAbove offsets down from top; baseOffsetX offsets horizontally from center
-	local primaryFrame = barGroups.primary.containerFrame
-	primaryFrame:ClearAllPoints()
-	primaryFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+	local wrapperRootKey = TRB.Functions.Bar:FindWrapperRoot(settings or {}, barGroups)
+	local rootGroup = barGroups[wrapperRootKey]
+	if rootGroup then
+		rootGroup.containerFrame:ClearAllPoints()
+		rootGroup.containerFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+	end
 end
 
 ---Calculates layout information for the wrapper frame based on settings.
@@ -213,13 +225,20 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 		return effectiveWidth, settings.bar.height, 0, 0, 0
 	end
 
-	-- Base bar dimensions
-	local baseWidth = effectiveWidth
-	local baseHeight = settings.bar.height or 0
+	-- Root node dimensions (root may not be primary in a forest)
+	local rootBarKey = rootNode.barKey
+	local baseWidth, baseHeight
+	if rootBarKey == "primary" then
+		baseWidth = effectiveWidth
+		baseHeight = settings.bar.height or 0
+	else
+		local rootBarSettings = rootNode.barSettings
+		baseWidth = (rootBarSettings and rootBarSettings.width) or effectiveWidth
+		baseHeight = (rootBarSettings and rootBarSettings.height) or 0
+	end
 
-	-- Check if base bar is visible
-	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
-	if not TRB.Functions.Bar:IsBarVisible(settings, baseBarKey, includeHidden) then
+	-- Check if root bar is visible
+	if not TRB.Functions.Bar:IsBarVisible(settings, rootBarKey, includeHidden) then
 		baseHeight = 0
 	end
 

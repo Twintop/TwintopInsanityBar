@@ -6,24 +6,120 @@ local oUi = TRB.Data.constants.optionsUi
 
 local L = TRB.Localization
 
----Syncs the anchor block from legacy fields (relativeTo, xPos, yPos, fullWidth).
----Call this from any Options handler that writes to these legacy fields to keep the anchor block in sync.
+---Ensures the bar settings table has an anchor block, synthesizing from legacy fields if needed.
+---Returns the anchor block (creates it if absent).
 ---@param barSettings table # A bar dimensions table (e.g., spec.comboPoints, spec.healthBar, barSettings)
-local function SyncAnchorFromLegacy(barSettings)
-	if barSettings == nil or barSettings.relativeTo == nil then
-		return
+---@param barKey string? # The bar key of this bar (e.g., "primary", "secondary", "health"). Used to determine default anchor target.
+---@return table anchor # The anchor block
+local function EnsureAnchorBlock(barSettings, barKey)
+	if barSettings.anchor then
+		return barSettings.anchor
 	end
-	local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
-	if mapping then
-		barSettings.anchor = {
-			barKey = (barSettings.anchor and barSettings.anchor.barKey) or "primary",
-			anchorPoint = mapping.anchorPoint,
-			attachPoint = mapping.attachPoint,
-			xOffset = barSettings.xPos or 0,
-			yOffset = barSettings.yPos or 0,
-			matchWidth = barSettings.fullWidth or false,
-		}
+	-- Primary bar (or no barKey) defaults to "screen"; all others default to "primary"
+	local defaultTarget = (barKey == "primary") and "screen" or "primary"
+	-- Synthesize from legacy fields
+	local anchor = {
+		barKey = defaultTarget,
+		anchorPoint = "TOP",
+		attachPoint = "BOTTOM",
+		xOffset = barSettings.xPos or 0,
+		yOffset = barSettings.yPos or 0,
+		matchWidth = barSettings.fullWidth or false,
+	}
+	if barKey == "primary" then
+		-- Primary bar: screen anchor uses absolute position, default points are CENTER/CENTER
+		anchor.anchorPoint = "CENTER"
+		anchor.attachPoint = "CENTER"
+		anchor.xOffset = barSettings.xPos or 0
+		anchor.yOffset = barSettings.yPos or -200
+	elseif barSettings.relativeTo then
+		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
+		if mapping then
+			anchor.anchorPoint = mapping.anchorPoint
+			anchor.attachPoint = mapping.attachPoint
+		end
 	end
+	barSettings.anchor = anchor
+	return anchor
+end
+
+---Dual-writes anchor block values back to legacy fields for backward compatibility.
+---Call after any change to barSettings.anchor so that legacy readers remain correct.
+---@param barSettings table # A bar dimensions table with an anchor block
+local function DualWriteAnchorToLegacy(barSettings)
+	if not barSettings or not barSettings.anchor then return end
+	local anchor = barSettings.anchor
+	barSettings.xPos = anchor.xOffset or 0
+	barSettings.yPos = anchor.yOffset or 0
+	barSettings.fullWidth = anchor.matchWidth or false
+	-- Best-match relativeTo from anchorPoint (only for bar-anchored bars, not screen-anchored)
+	if anchor.barKey and anchor.barKey ~= "screen" then
+		local reverseMap = TRB.Data.constants.anchorPointToRelativeToMap
+		if reverseMap and anchor.anchorPoint then
+			barSettings.relativeTo = reverseMap[anchor.anchorPoint]
+			local nameMap = {
+				TOPLEFT = L["PositionAboveLeft"],
+				TOP = L["PositionAboveMiddle"],
+				TOPRIGHT = L["PositionAboveRight"],
+				BOTTOMLEFT = L["PositionBelowLeft"],
+				BOTTOM = L["PositionBelowMiddle"],
+				BOTTOMRIGHT = L["PositionBelowRight"],
+			}
+			barSettings.relativeToName = nameMap[barSettings.relativeTo] or ""
+		end
+	end
+end
+
+---Returns the localized display name for a 9-point anchor constant.
+---@param point string # One of TOPLEFT, TOP, TOPRIGHT, LEFT, CENTER, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT
+---@return string
+local function GetAnchorPointDisplayName(point)
+	return L["AnchorPoint" .. (point or "TOP")] or point or "TOP"
+end
+
+---Maps a settings key (used by GenerateAncillaryBarDimensionsOptions) to its bar key
+---(used by GetAvailableAnchorTargets, ValidateAnchorTree, etc.).
+---@param settingKey string
+---@return string barKey
+local function SettingKeyToBarKey(settingKey)
+	local map = {
+		bar = "primary",
+		comboPoints = "secondary",
+		healthBar = "health",
+	}
+	return map[settingKey] or settingKey
+end
+
+---Applies sensible defaults when changing anchor target type (screen ↔ bar).
+---When transitioning between screen and bar anchoring, the existing offset/point values
+---are meaningless for the new context, so reset them to useful defaults.
+---@param anchor table The anchor block to modify
+---@param oldBarKey string The previous barKey
+---@param newBarKey string The new barKey
+---@return boolean changed Whether any properties besides barKey were changed
+local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
+	local wasScreen = (oldBarKey == "screen" or oldBarKey == nil)
+	local goingToScreen = (newBarKey == "screen")
+
+	if wasScreen and not goingToScreen then
+		-- Screen → Bar: reset to bar-to-bar defaults
+		-- Attach this bar's TOP to the target bar's BOTTOM (bar appears just below target)
+		anchor.anchorPoint = "BOTTOM"
+		anchor.attachPoint = "TOP"
+		anchor.xOffset = 0
+		anchor.yOffset = 0
+		anchor.matchWidth = true
+		return true
+	elseif not wasScreen and goingToScreen then
+		-- Bar → Screen: reset to screen defaults
+		anchor.anchorPoint = "CENTER"
+		anchor.attachPoint = "CENTER"
+		anchor.xOffset = 0
+		anchor.yOffset = -200
+		anchor.matchWidth = false
+		return true
+	end
+	return false
 end
 
 local function GetUseGlobalSettingsColor()
@@ -1752,13 +1848,18 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
+	-- Primary bar anchor block (ensure it exists)
+	local primaryAnchor = EnsureAnchorBlock(spec.bar, "primary")
+
 	title = L["BarHorizontalPosition"]
 	yCoord = yCoord - 60
-	controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
+	controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), primaryAnchor.xOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.horizontal:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.bar.xPos = value
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.xOffset = value
+		DualWriteAnchorToLegacy(spec.bar)
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -1771,11 +1872,13 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	end)
 
 	title = L["BarVerticalPosition"]
-	controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
+	controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), primaryAnchor.yOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.bar.yPos = value
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.yOffset = value
+		DualWriteAnchorToLegacy(spec.bar)
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -1822,6 +1925,154 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	controls.dragAndDropMessage:SetWidth(oUi.maxOptionsWidth - oUi.xCoord2 - oUi.xPadding2)
 	controls.dragAndDropMessage:SetJustifyH("LEFT")
 	controls.dragAndDropMessage:SetText(L["DragAndDropEditModeMessage"])
+
+	-- Primary bar anchor controls (Anchor To, Match Width, Anchor Point, Attach Point)
+	local anchorPoints = TRB.Data.constants.anchorPoints
+	-- Forward-declare dropdown locals so closures defined before CreateFrame can reference them
+	local primaryAnchorPointDropdown
+	local primaryAttachPointDropdown
+
+	local function ApplyPrimaryAnchorLayout()
+		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:HideResourceBar()
+			end
+		end
+	end
+
+	-- "Anchor To" dropdown
+	yCoord = yCoord - 40
+	local primaryAnchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAnchorTo", parent, "WowStyle1DropdownTemplate")
+	primaryAnchorToDropdown:SetWidth(oUi.sliderWidth)
+	primaryAnchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], L["Resource"]), oUi.xCoord, yCoord)
+	primaryAnchorToDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function PrimaryAnchorToIsSelected(value)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		return value == a.barKey
+	end
+
+	local function PrimaryAnchorToSetSelected(newValue)
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				local valid, err = TRB.Functions.Bar:ValidateAnchorTree(specSettings, TRB.Frames.barGroups, "primary", newValue)
+				if not valid then
+					print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
+					return
+				end
+			end
+		end
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		local oldBarKey = a.barKey
+		a.barKey = newValue
+		local transitioned = ApplyAnchorTransitionDefaults(a, oldBarKey, newValue)
+		DualWriteAnchorToLegacy(spec.bar)
+		primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+		-- Update UI controls if anchor type changed (screen ↔ bar)
+		if transitioned then
+			controls.horizontal:SetValue(a.xOffset)
+			controls.vertical:SetValue(a.yOffset)
+			controls.checkBoxes.primaryMatchWidth:SetChecked(a.matchWidth)
+			primaryAnchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
+			primaryAttachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+		end
+		ApplyPrimaryAnchorLayout()
+	end
+
+	local function PrimaryAnchorToGenerator(dropdown, rootDescription)
+		local targets
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", specSettings, TRB.Frames.barGroups)
+			end
+		end
+		if not targets then
+			targets = { "screen" }
+		end
+		for _, barKey in ipairs(targets) do
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected, barKey)
+		end
+	end
+	primaryAnchorToDropdown:SetupMenu(PrimaryAnchorToGenerator)
+	primaryAnchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(primaryAnchor.barKey))
+
+	-- Match Width checkbox
+	controls.checkBoxes.primaryMatchWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barMatchWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.primaryMatchWidth
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["MatchAnchorWidthTooltip"]
+	f:SetChecked(primaryAnchor.matchWidth)
+	f:SetScript("OnClick", function(self, ...)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.matchWidth = self:GetChecked()
+		DualWriteAnchorToLegacy(spec.bar)
+		ApplyPrimaryAnchorLayout()
+	end)
+
+	-- Anchor Point dropdown (point on target bar/screen)
+	yCoord = yCoord - 60
+	primaryAnchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAnchorPoint", parent, "WowStyle1DropdownTemplate")
+	primaryAnchorPointDropdown:SetWidth(oUi.sliderWidth)
+	primaryAnchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	primaryAnchorPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function PrimaryAnchorPointIsSelected(value)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		return value == a.anchorPoint
+	end
+
+	local function PrimaryAnchorPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.anchorPoint = newValue
+		DualWriteAnchorToLegacy(spec.bar)
+		primaryAnchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+		ApplyPrimaryAnchorLayout()
+	end
+
+	local function PrimaryAnchorPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), PrimaryAnchorPointIsSelected, PrimaryAnchorPointSetSelected, pt)
+		end
+	end
+	primaryAnchorPointDropdown:SetupMenu(PrimaryAnchorPointGenerator)
+	primaryAnchorPointDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	primaryAnchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(primaryAnchor.anchorPoint))
+
+	-- Attach Point dropdown (point on this bar)
+	primaryAttachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAttachPoint", parent, "WowStyle1DropdownTemplate")
+	primaryAttachPointDropdown:SetWidth(oUi.sliderWidth)
+	primaryAttachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	primaryAttachPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function PrimaryAttachPointIsSelected(value)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		return value == a.attachPoint
+	end
+
+	local function PrimaryAttachPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.attachPoint = newValue
+		DualWriteAnchorToLegacy(spec.bar)
+		primaryAttachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+		ApplyPrimaryAnchorLayout()
+	end
+
+	local function PrimaryAttachPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), PrimaryAttachPointIsSelected, PrimaryAttachPointSetSelected, pt)
+		end
+	end
+	primaryAttachPointDropdown:SetupMenu(PrimaryAttachPointGenerator)
+	primaryAttachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	primaryAttachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(primaryAnchor.attachPoint))
 
 	yCoord = yCoord - 30
 
@@ -1916,7 +2167,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].width = value
 
-		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local a = EnsureAnchorBlock(spec[settingKey])
+		local effectiveWidth = a.matchWidth and spec.bar.width or spec[settingKey].width
 		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
@@ -1941,7 +2193,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].height = value
 
-		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local a = EnsureAnchorBlock(spec[settingKey])
+		local effectiveWidth = a.matchWidth and spec.bar.width or spec[settingKey].width
 		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
@@ -1959,15 +2212,18 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end
 	end)
 
-	-- Horizontal and Vertical position sliders
+	-- Horizontal and Vertical offset sliders (read/write anchor block, dual-write to legacy)
+	local anchor = EnsureAnchorBlock(spec[settingKey])
+
 	title = string.format(L["SecondaryHorizontalPosition"], displayName)
 	yCoord = yCoord - 60
-	controls[settingKey .. "Horizontal"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec[settingKey].xPos, 1, 2,
+	controls[settingKey .. "Horizontal"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), anchor.xOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[settingKey .. "Horizontal"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec[settingKey].xPos = value
-		SyncAnchorFromLegacy(spec[settingKey])
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.xOffset = value
+		DualWriteAnchorToLegacy(spec[settingKey])
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -1981,12 +2237,13 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	end)
 
 	title = string.format(L["SecondaryVerticalPosition"], displayName)
-	controls[settingKey .. "Vertical"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec[settingKey].yPos, 1, 2,
+	controls[settingKey .. "Vertical"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), anchor.yOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[settingKey .. "Vertical"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec[settingKey].yPos = value
-		SyncAnchorFromLegacy(spec[settingKey])
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.yOffset = value
+		DualWriteAnchorToLegacy(spec[settingKey])
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -2018,7 +2275,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			end
 		end
 
-		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local aB = EnsureAnchorBlock(spec[settingKey])
+		local effectiveWidth = aB.matchWidth and spec.bar.width or spec[settingKey].width
 		local minsliderWidth = math.max(spec[settingKey].border*2, 1)
 		local minsliderHeight = math.max(spec[settingKey].border*2, 1)
 
@@ -2027,7 +2285,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		local scMaxWidth = useSmallerSanityChecks and scValues.comboPointsMaxWidth or scValues.barMaxWidth
 		controls[settingKey .. "Height"]:SetMinMaxValues(minsliderHeight, scMaxHeight)
 		controls[settingKey .. "Height"].MinLabel:SetText(tostring(minsliderHeight))
-		if not spec[settingKey].fullWidth then
+		if not aB.matchWidth then
 			controls[settingKey .. "Width"]:SetMinMaxValues(minsliderWidth, scMaxWidth)
 			controls[settingKey .. "Width"].MinLabel:SetText(tostring(minsliderWidth))
 		end
@@ -2050,45 +2308,14 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end)
 	end
 
-	-- Relative To dropdown
+	-- Anchor To dropdown + Match Width checkbox
 	yCoord = yCoord - 40
 
-	local barRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "RelativeTo", parent, "WowStyle1DropdownTemplate")
-	barRelativeTo:SetWidth(oUi.sliderWidth)
-	barRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], displayName, primaryResourceString), oUi.xCoord, yCoord)
-	barRelativeTo.label.font:SetFontObject(GameFontNormal)
-	
-	local relativeTo = {}
-	relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
-	relativeTo[L["PositionAboveMiddle"]] = "TOP"
-	relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
-	relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
-	relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
-	relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
-	local relativeToList = {
-		L["PositionAboveLeft"],
-		L["PositionAboveMiddle"],
-		L["PositionAboveRight"],
-		L["PositionBelowLeft"],
-		L["PositionBelowMiddle"],
-		L["PositionBelowRight"]
-	}
+	local thisBarKey = SettingKeyToBarKey(settingKey)
+	local anchorPoints = TRB.Data.constants.anchorPoints
 
-	local function RelativeToIsSelected(value)
-		return value == spec[settingKey].relativeTo
-	end
-	
-	local function RelativeToSetSelected(newValue)
-		spec[settingKey].relativeTo = newValue
-		
-		for k, v in pairs(relativeTo) do
-			if v == newValue then
-				spec[settingKey].relativeToName = k
-			end
-		end
-		SyncAnchorFromLegacy(spec[settingKey])
-		barRelativeTo:SetDefaultText(spec[settingKey].relativeToName)
-
+	-- Common function to apply layout changes (shared by all anchor controls)
+	local function ApplyAnchorLayout()
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
@@ -2099,35 +2326,87 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end
 	end
 
-	local function RelativeToGenerator(dropdown, rootDescription)
-		for k, v in pairs(relativeToList) do
-			rootDescription:CreateRadio(v, RelativeToIsSelected, RelativeToSetSelected, relativeTo[v])
-		end
-		rootDescription:SetScrollMode(400)
+	-- "Anchor To" dropdown
+	local anchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AnchorTo", parent, "WowStyle1DropdownTemplate")
+	anchorToDropdown:SetWidth(oUi.sliderWidth)
+	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
+	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AnchorToIsSelected(value)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		return value == a.barKey
 	end
-	barRelativeTo:SetupMenu(RelativeToGenerator)
-	barRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	
-	-- Full Width checkbox
-	controls.checkBoxes[settingKey .. "FullWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_" .. settingKey .. "FullWidth", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes[settingKey .. "FullWidth"]
+
+	local function AnchorToSetSelected(newValue)
+		-- Validate no cycle
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				local valid, err = TRB.Functions.Bar:ValidateAnchorTree(specSettings, TRB.Frames.barGroups, thisBarKey, newValue)
+				if not valid then
+					print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
+					return
+				end
+			end
+		end
+		local a = EnsureAnchorBlock(spec[settingKey])
+		local oldBarKey = a.barKey
+		a.barKey = newValue
+		local transitioned = ApplyAnchorTransitionDefaults(a, oldBarKey, newValue)
+		DualWriteAnchorToLegacy(spec[settingKey])
+		anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+		-- Update UI controls if anchor type changed (screen ↔ bar)
+		if transitioned then
+			controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
+			controls[settingKey .. "Vertical"]:SetValue(a.yOffset)
+			controls.checkBoxes[settingKey .. "MatchWidth"]:SetChecked(a.matchWidth)
+			anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
+			attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+		end
+		ApplyAnchorLayout()
+	end
+
+	local function AnchorToGenerator(dropdown, rootDescription)
+		-- Build list of valid targets
+		local targets
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, specSettings, TRB.Frames.barGroups)
+			end
+		end
+		if not targets then
+			targets = { "primary" }
+		end
+		for _, barKey in ipairs(targets) do
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), AnchorToIsSelected, AnchorToSetSelected, barKey)
+		end
+	end
+	anchorToDropdown:SetupMenu(AnchorToGenerator)
+	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey))
+
+	-- Match Width checkbox
+	controls.checkBoxes[settingKey .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "MatchWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[settingKey .. "MatchWidth"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], displayName))
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], displayName, displayName, displayName)
-	f:SetChecked(spec[settingKey].fullWidth)
+	f.tooltip = L["MatchAnchorWidthTooltip"]
+	f:SetChecked(anchor.matchWidth)
 	f:SetScript("OnClick", function(self, ...)
-		spec[settingKey].fullWidth = self:GetChecked()
-		SyncAnchorFromLegacy(spec[settingKey])
-		
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.matchWidth = self:GetChecked()
+		DualWriteAnchorToLegacy(spec[settingKey])
+
 		-- Update border max based on new effective width
-		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
+		local effectiveWidth = a.matchWidth and spec.bar.width or spec[settingKey].width
 		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
 		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
@@ -2137,6 +2416,64 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			end
 		end
 	end)
+
+	-- Anchor Point dropdown (point on target bar)
+	yCoord = yCoord - 60
+
+	local anchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AnchorPoint", parent, "WowStyle1DropdownTemplate")
+	anchorPointDropdown:SetWidth(oUi.sliderWidth)
+	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AnchorPointIsSelected(value)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		return value == a.anchorPoint
+	end
+
+	local function AnchorPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.anchorPoint = newValue
+		DualWriteAnchorToLegacy(spec[settingKey])
+		anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+		ApplyAnchorLayout()
+	end
+
+	local function AnchorPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AnchorPointIsSelected, AnchorPointSetSelected, pt)
+		end
+	end
+	anchorPointDropdown:SetupMenu(AnchorPointGenerator)
+	anchorPointDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.anchorPoint))
+
+	-- Attach Point dropdown (point on this bar)
+	local attachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AttachPoint", parent, "WowStyle1DropdownTemplate")
+	attachPointDropdown:SetWidth(oUi.sliderWidth)
+	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AttachPointIsSelected(value)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		return value == a.attachPoint
+	end
+
+	local function AttachPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.attachPoint = newValue
+		DualWriteAnchorToLegacy(spec[settingKey])
+		attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+		ApplyAnchorLayout()
+	end
+
+	local function AttachPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AttachPointIsSelected, AttachPointSetSelected, pt)
+		end
+	end
+	attachPointDropdown:SetupMenu(AttachPointGenerator)
+	attachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.attachPoint))
 
 	return yCoord
 end
@@ -2232,8 +2569,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.width = value
 		
-		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
-		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local a = EnsureAnchorBlock(barSettings)
+		local effectiveWidth = a.matchWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
@@ -2253,8 +2591,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.height = value
 		
-		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
-		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local a = EnsureAnchorBlock(barSettings)
+		local effectiveWidth = a.matchWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
@@ -2266,31 +2605,35 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		end
 	end)
 	
-	-- X Position slider
+	-- X/Y Offset sliders (read/write anchor block, dual-write to legacy)
 	yCoord = yCoord - 60
+	local anchor = EnsureAnchorBlock(barSettings)
+
 	local xPosMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
 	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName), 
-		math.ceil(-xPosMax / 2), math.floor(xPosMax / 2), barSettings.xPos, 1, 0,
+		math.ceil(-xPosMax / 2), math.floor(xPosMax / 2), anchor.xOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		barSettings.xPos = value
-		SyncAnchorFromLegacy(barSettings)
+		local a = EnsureAnchorBlock(barSettings)
+		a.xOffset = value
+		DualWriteAnchorToLegacy(barSettings)
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
 	
-	-- Y Position slider
+	-- Y Offset slider
 	local yPosMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
 	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName), 
-		math.ceil(-yPosMax / 2), math.floor(yPosMax / 2), barSettings.yPos, 1, 0,
+		math.ceil(-yPosMax / 2), math.floor(yPosMax / 2), anchor.yOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		barSettings.yPos = value
-		SyncAnchorFromLegacy(barSettings)
+		local a = EnsureAnchorBlock(barSettings)
+		a.yOffset = value
+		DualWriteAnchorToLegacy(barSettings)
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -2299,9 +2642,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	
 	-- Border slider
 	yCoord = yCoord - 60
-	-- When fullWidth is checked, use main bar dimensions for border max (matching Health Bar behavior)
-	local effectiveWidthForBorder = barSettings.fullWidth and spec.bar.width or barSettings.width
-	local effectiveHeightForBorder = barSettings.fullWidth and spec.bar.height or barSettings.height
+	-- When matchWidth is checked, use main bar dimensions for border max (matching Health Bar behavior)
+	local effectiveWidthForBorder = anchor.matchWidth and spec.bar.width or barSettings.width
+	local effectiveHeightForBorder = anchor.matchWidth and spec.bar.height or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
 	-- Ensure maxBorderHeight is at least as large as the current border value to prevent slider errors
 	maxBorderHeight = math.max(maxBorderHeight, barSettings.border)
@@ -2322,7 +2665,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		
 		controls[barTypeDef.key .. "Height"]:SetMinMaxValues(minSliderHeight, heightSliderMax)
 		controls[barTypeDef.key .. "Height"].MinLabel:SetText(tostring(minSliderHeight))
-		if not barSettings.fullWidth then
+		if not EnsureAnchorBlock(barSettings).matchWidth then
 			controls[barTypeDef.key .. "Width"]:SetMinMaxValues(minSliderWidth, math.ceil(widthMax / widthDivisor))
 			controls[barTypeDef.key .. "Width"].MinLabel:SetText(tostring(minSliderWidth))
 		end
@@ -2343,70 +2686,90 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		end)
 	end
 	
-	-- Relative To dropdown
+	-- Anchor To dropdown + Match Width checkbox
 	yCoord = yCoord - 60
-	local relativeTo = {
-		[L["PositionAboveLeft"]] = "TOPLEFT",
-		[L["PositionAboveMiddle"]] = "TOP",
-		[L["PositionAboveRight"]] = "TOPRIGHT",
-		[L["PositionBelowLeft"]] = "BOTTOMLEFT",
-		[L["PositionBelowMiddle"]] = "BOTTOM",
-		[L["PositionBelowRight"]] = "BOTTOMRIGHT"
-	}
-	local relativeToList = {
-		L["PositionAboveLeft"], L["PositionAboveMiddle"], L["PositionAboveRight"],
-		L["PositionBelowLeft"], L["PositionBelowMiddle"], L["PositionBelowRight"]
-	}
 
-	controls[barTypeDef.key .. "RelativeTo"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_RelativeTo", parent, "WowStyle1DropdownTemplate")
-	local barRelativeTo = controls[barTypeDef.key .. "RelativeTo"]
-	barRelativeTo:SetWidth(oUi.dropdownWidth)
-	barRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], displayName, primaryResourceString), oUi.xCoord, yCoord)
-	barRelativeTo.label.font:SetFontObject(GameFontNormal)
-	barRelativeTo:SetDefaultText(barSettings.relativeToName)
+	local thisBarKey = barTypeDef.key
+	local anchorPoints = TRB.Data.constants.anchorPoints
 
-	local function RelativeToIsSelected(value)
-		return value == barSettings.relativeTo
+	-- "Anchor To" dropdown
+	local anchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AnchorTo", parent, "WowStyle1DropdownTemplate")
+	anchorToDropdown:SetWidth(oUi.sliderWidth)
+	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
+	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AnchorToIsSelected(value)
+		local a = EnsureAnchorBlock(barSettings)
+		return value == a.barKey
 	end
-	
-	local function RelativeToSetSelected(newValue)
-		barSettings.relativeTo = newValue
-		for k, v in pairs(relativeTo) do
-			if v == newValue then
-				barSettings.relativeToName = k
+
+	local function AnchorToSetSelected(newValue)
+		-- Validate no cycle
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				local valid, err = TRB.Functions.Bar:ValidateAnchorTree(specSettings, TRB.Frames.barGroups, thisBarKey, newValue)
+				if not valid then
+					print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
+					return
+				end
 			end
 		end
-		SyncAnchorFromLegacy(barSettings)
-		barRelativeTo:SetDefaultText(barSettings.relativeToName)
+		local a = EnsureAnchorBlock(barSettings)
+		local oldBarKey = a.barKey
+		a.barKey = newValue
+		local transitioned = ApplyAnchorTransitionDefaults(a, oldBarKey, newValue)
+		DualWriteAnchorToLegacy(barSettings)
+		anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+		-- Update UI controls if anchor type changed (screen ↔ bar)
+		if transitioned then
+			controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
+			controls[barTypeDef.key .. "YPos"]:SetValue(a.yOffset)
+			controls[barTypeDef.key .. "MatchWidth"]:SetChecked(a.matchWidth)
+			anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
+			attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+		end
 
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end
 
-	local function RelativeToGenerator(dropdown, rootDescription)
-		for _, displayNameItem in ipairs(relativeToList) do
-			rootDescription:CreateRadio(displayNameItem, RelativeToIsSelected, RelativeToSetSelected, relativeTo[displayNameItem])
+	local function AnchorToGenerator(dropdown, rootDescription)
+		local targets
+		if TRB.Frames.barGroups then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if specSettings then
+				targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, specSettings, TRB.Frames.barGroups)
+			end
+		end
+		if not targets then
+			targets = { "primary" }
+		end
+		for _, barKey in ipairs(targets) do
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), AnchorToIsSelected, AnchorToSetSelected, barKey)
 		end
 	end
-	barRelativeTo:SetupMenu(RelativeToGenerator)
-	barRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	anchorToDropdown:SetupMenu(AnchorToGenerator)
+	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey))
 	
-	-- Full Width checkbox
-	controls[barTypeDef.key .. "FullWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_FullWidth", parent, "ChatConfigCheckButtonTemplate")
-	f = controls[barTypeDef.key .. "FullWidth"]
+	-- Match Width checkbox
+	controls[barTypeDef.key .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchWidth", parent, "ChatConfigCheckButtonTemplate")
+	f = controls[barTypeDef.key .. "MatchWidth"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord - 30)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], displayName))
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], displayName, displayName, displayName)
-	f:SetChecked(barSettings.fullWidth)
+	f.tooltip = L["MatchAnchorWidthTooltip"]
+	f:SetChecked(anchor.matchWidth)
 	f:SetScript("OnClick", function(self, ...)
-		barSettings.fullWidth = self:GetChecked()
-		SyncAnchorFromLegacy(barSettings)
+		local a = EnsureAnchorBlock(barSettings)
+		a.matchWidth = self:GetChecked()
+		DualWriteAnchorToLegacy(barSettings)
 		
 		-- Update border max based on new effective width/height (matching Health Bar behavior)
-		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width
-		local effectiveHeight = barSettings.fullWidth and spec.bar.height or barSettings.height
+		local effectiveWidth = a.matchWidth and spec.bar.width or barSettings.width
+		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
@@ -2417,6 +2780,70 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
+
+	-- Anchor Point dropdown (point on target bar)
+	yCoord = yCoord - 60
+
+	local anchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AnchorPoint", parent, "WowStyle1DropdownTemplate")
+	anchorPointDropdown:SetWidth(oUi.sliderWidth)
+	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AnchorPointIsSelected(value)
+		local a = EnsureAnchorBlock(barSettings)
+		return value == a.anchorPoint
+	end
+
+	local function AnchorPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(barSettings)
+		a.anchorPoint = newValue
+		DualWriteAnchorToLegacy(barSettings)
+		anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+		end
+	end
+
+	local function AnchorPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AnchorPointIsSelected, AnchorPointSetSelected, pt)
+		end
+	end
+	anchorPointDropdown:SetupMenu(AnchorPointGenerator)
+	anchorPointDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.anchorPoint))
+
+	-- Attach Point dropdown (point on this bar)
+	local attachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AttachPoint", parent, "WowStyle1DropdownTemplate")
+	attachPointDropdown:SetWidth(oUi.sliderWidth)
+	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function AttachPointIsSelected(value)
+		local a = EnsureAnchorBlock(barSettings)
+		return value == a.attachPoint
+	end
+
+	local function AttachPointSetSelected(newValue)
+		local a = EnsureAnchorBlock(barSettings)
+		a.attachPoint = newValue
+		DualWriteAnchorToLegacy(barSettings)
+		attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(newValue))
+
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+		end
+	end
+
+	local function AttachPointGenerator(dropdown, rootDescription)
+		for _, pt in ipairs(anchorPoints) do
+			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AttachPointIsSelected, AttachPointSetSelected, pt)
+		end
+	end
+	attachPointDropdown:SetupMenu(AttachPointGenerator)
+	attachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+	attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.attachPoint))
 
 	return yCoord
 end

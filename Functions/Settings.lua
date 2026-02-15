@@ -4241,7 +4241,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 			if barSettings.anchor ~= nil then
 				return
 			end
-			-- Only migrate if legacy relativeTo exists
+			-- Migrate from legacy relativeTo → anchor block
 			if barSettings.relativeTo then
 				local mapping = anchorMap[barSettings.relativeTo]
 				if mapping then
@@ -4254,6 +4254,16 @@ function TRB.Functions.Settings:PortForwardSettings()
 						matchWidth = barSettings.fullWidth or false,
 					}
 				end
+			elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
+				-- Primary bar (has xPos/yPos but no relativeTo) → screen anchor
+				barSettings.anchor = {
+					barKey = "screen",
+					anchorPoint = "CENTER",
+					attachPoint = "CENTER",
+					xOffset = barSettings.xPos or 0,
+					yOffset = barSettings.yPos or -200,
+					matchWidth = false,
+				}
 			end
 		end
 
@@ -4334,7 +4344,15 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		height = 30,
 		xPos = 0,
 		yPos = -200,
-		border = border
+		border = border,
+		anchor = {
+			barKey = "screen",
+			anchorPoint = "CENTER",
+			attachPoint = "CENTER",
+			xOffset = 0,
+			yOffset = -200,
+			matchWidth = false,
+		},
 	}
 end
 
@@ -4703,6 +4721,16 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 					matchWidth = barSettings.fullWidth or false,
 				}
 			end
+		elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
+			-- Primary bar (has xPos/yPos but no relativeTo) → screen anchor
+			barSettings.anchor = {
+				barKey = "screen",
+				anchorPoint = "CENTER",
+				attachPoint = "CENTER",
+				xOffset = barSettings.xPos or 0,
+				yOffset = barSettings.yPos or -200,
+				matchWidth = false,
+			}
 		end
 	end
 
