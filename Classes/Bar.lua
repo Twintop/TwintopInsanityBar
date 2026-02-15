@@ -613,7 +613,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 
 	-- Set node count and apply layout
 	self:SetNodeCount(displayNodes)
-	self:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+	self:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 	self:Show()
 
 	-- Use effectiveWidth (CDM-matched) if available, otherwise fall back to settings.bar.width

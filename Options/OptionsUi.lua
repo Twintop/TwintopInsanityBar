@@ -6,6 +6,26 @@ local oUi = TRB.Data.constants.optionsUi
 
 local L = TRB.Localization
 
+---Syncs the anchor block from legacy fields (relativeTo, xPos, yPos, fullWidth).
+---Call this from any Options handler that writes to these legacy fields to keep the anchor block in sync.
+---@param barSettings table # A bar dimensions table (e.g., spec.comboPoints, spec.healthBar, barSettings)
+local function SyncAnchorFromLegacy(barSettings)
+	if barSettings == nil or barSettings.relativeTo == nil then
+		return
+	end
+	local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
+	if mapping then
+		barSettings.anchor = {
+			barKey = (barSettings.anchor and barSettings.anchor.barKey) or "primary",
+			anchorPoint = mapping.anchorPoint,
+			attachPoint = mapping.attachPoint,
+			xOffset = barSettings.xPos or 0,
+			yOffset = barSettings.yPos or 0,
+			matchWidth = barSettings.fullWidth or false,
+		}
+	end
+end
+
 local function GetUseGlobalSettingsColor()
 	return 100/255, 225/255, 200/225
 end
@@ -1947,6 +1967,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	controls[settingKey .. "Horizontal"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].xPos = value
+		SyncAnchorFromLegacy(spec[settingKey])
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -1965,6 +1986,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	controls[settingKey .. "Vertical"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].yPos = value
+		SyncAnchorFromLegacy(spec[settingKey])
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -2064,6 +2086,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				spec[settingKey].relativeToName = k
 			end
 		end
+		SyncAnchorFromLegacy(spec[settingKey])
 		barRelativeTo:SetDefaultText(spec[settingKey].relativeToName)
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -2095,6 +2118,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	f:SetChecked(spec[settingKey].fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		spec[settingKey].fullWidth = self:GetChecked()
+		SyncAnchorFromLegacy(spec[settingKey])
 		
 		-- Update border max based on new effective width
 		local effectiveWidth = spec[settingKey].fullWidth and spec.bar.width or spec[settingKey].width
@@ -2251,6 +2275,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.xPos = value
+		SyncAnchorFromLegacy(barSettings)
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -2265,6 +2290,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.yPos = value
+		SyncAnchorFromLegacy(barSettings)
 		
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -2350,6 +2376,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				barSettings.relativeToName = k
 			end
 		end
+		SyncAnchorFromLegacy(barSettings)
 		barRelativeTo:SetDefaultText(barSettings.relativeToName)
 
 		if TRB.Frames.barGroups ~= nil then
@@ -2375,6 +2402,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	f:SetChecked(barSettings.fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		barSettings.fullWidth = self:GetChecked()
+		SyncAnchorFromLegacy(barSettings)
 		
 		-- Update border max based on new effective width/height (matching Health Bar behavior)
 		local effectiveWidth = barSettings.fullWidth and spec.bar.width or barSettings.width

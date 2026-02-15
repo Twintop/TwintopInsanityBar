@@ -848,6 +848,12 @@ local function HandleImport(input)
 	end
 
 	TRB.Data.settings = mergedSettings
+
+	-- Post-import migration: ensure anchor blocks are populated from legacy fields.
+	-- forceResync=true because the import may have changed relativeTo/xPos/yPos/fullWidth
+	-- without updating the corresponding anchor blocks.
+	TRB.Functions.Settings:MigrateBarAnchors(TRB.Data.settings, true)
+
 	return 1
 end
 

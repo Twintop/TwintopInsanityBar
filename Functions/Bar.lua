@@ -585,7 +585,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 		end
 
-		self:ConstructSecondaryBarGroup(effectiveSettings, barGroups.primary, barGroups.secondary, false)
+		-- Resolve anchor group for secondary bar from settings
+		local secondaryAnchor = self:GetBarAnchor(effectiveSettings, "secondary")
+		local secondaryAnchorKey = (secondaryAnchor and secondaryAnchor.barKey) or "primary"
+		local secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
+		self:ConstructSecondaryBarGroup(effectiveSettings, secondaryAnchorGroup, barGroups.secondary, false)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
@@ -622,7 +626,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Configure health bar group (apply appearance immediately to ensure textures are set)
 	if barGroups.health and settings.healthBar then
-		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, true)
+		-- Resolve anchor group for health bar from settings
+		local healthAnchor = self:GetBarAnchor(settings, "health")
+		local healthAnchorKey = (healthAnchor and healthAnchor.barKey) or "primary"
+		local healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
+		self:ConstructHealthBarGroup(settings, healthAnchorGroup, barGroups.health, true)
 	end
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
@@ -697,18 +705,17 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	local includeHidden = TRB.Functions.EditMode:IsInEditMode()
 
 	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
+	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	
 	-- Update wrapper frame size to encompass all bars
 	-- Use effectiveWidth for width (matches CDM if "Match CDM Width" is enabled)
 	wrapperFrame:SetWidth(effectiveWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
-	-- Reposition the primary bar within the wrapper to account for bars above it
-	-- The primary bar should be offset down by extendAbove
+	-- Reposition the primary bar within the wrapper to account for bars above/beside it
 	local primaryFrame = primary.containerFrame
 	primaryFrame:ClearAllPoints()
-	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
+	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
 
 	-- Now anchor the wrapper to the CDM frame, horizontally centered
 	-- Include a 1px base gap to prevent border/CDM overlap regardless of strata
@@ -894,6 +901,334 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- triggering updates after all setup is complete.
 end
 
+-- ============================================================================
+-- Anchor Tree System
+-- ============================================================================
+-- The anchor tree system allows each bar to anchor to any other bar, forming a
+-- directed acyclic graph (tree). The "base bar" is the root of the tree and
+-- receives absolute positioning (from Edit Mode or legacy xPos/yPos). All other
+-- bars position themselves relative to their anchor target using 9-point
+-- anchor/attach pairs.
+
+---Gets the bar settings table for a given bar key from the spec settings.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string # "primary", "secondary", "health", or a BarTypeRegistry key
+---@return table? # The bar's settings table, or nil if not found
+function TRB.Functions.Bar:GetBarSettings(settings, barKey)
+	if barKey == "primary" then
+		return settings.bar
+	elseif barKey == "secondary" then
+		return settings.comboPoints
+	elseif barKey == "health" then
+		return settings.healthBar
+	else
+		-- Check custom bars from BarTypeRegistry
+		return settings.bars and settings.bars[barKey]
+	end
+end
+
+---Gets the anchor block for a given bar key, with fallback from legacy fields.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@return TRB.Classes.Settings.BarAnchor?
+function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
+	local barSettings = self:GetBarSettings(settings, barKey)
+	if not barSettings then
+		return nil
+	end
+
+	-- New anchor system takes priority
+	if barSettings.anchor then
+		return barSettings.anchor
+	end
+
+	-- Phase 1 fallback: synthesize from legacy fields
+	if barSettings.relativeTo then
+		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
+		if mapping then
+			return {
+				barKey = "primary",
+				anchorPoint = mapping.anchorPoint,
+				attachPoint = mapping.attachPoint,
+				xOffset = barSettings.xPos or 0,
+				yOffset = barSettings.yPos or 0,
+				matchWidth = barSettings.fullWidth or false,
+			}
+		end
+	end
+
+	return nil
+end
+
+---Gets the effective matchWidth setting for a bar, reading from anchor with legacy fallback.
+---@param barSettings table # The bar's settings table (e.g., settings.comboPoints)
+---@return boolean
+function TRB.Functions.Bar:GetMatchWidth(barSettings)
+	if barSettings and barSettings.anchor then
+		return barSettings.anchor.matchWidth or false
+	end
+	-- Phase 1 fallback to legacy field
+	return barSettings and barSettings.fullWidth or false
+end
+
+---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
+---@param barKey string
+---@return string
+function TRB.Functions.Bar:GetVisibilityKey(barKey)
+	if barKey == "primary" then
+		return "primary"
+	elseif barKey == "secondary" then
+		return "secondary"
+	elseif barKey == "health" then
+		return "health"
+	else
+		-- Custom bars use their BarTypeRegistry visibilityKey, which defaults to barKey
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef then
+				return barTypeDef.visibilityKey or barKey
+			end
+		end
+		return barKey
+	end
+end
+
+---Checks if a bar is visible (not set to "never" visibility).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@param includeHidden boolean?
+---@return boolean
+function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
+	if includeHidden then return true end
+	local visKey = self:GetVisibilityKey(barKey)
+	local visibilitySetting = settings.displayBar and settings.displayBar[visKey]
+	return not visibilitySetting or visibilitySetting.visibility ~= "never"
+end
+
+---Enumerates all bar keys present for the current bar groups.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@return string[] # List of bar keys
+function TRB.Functions.Bar:GetAllBarKeys(barGroups)
+	local keys = {}
+	if barGroups.primary then table.insert(keys, "primary") end
+	if barGroups.secondary then table.insert(keys, "secondary") end
+	if barGroups.health then table.insert(keys, "health") end
+
+	-- Custom bars from BarTypeRegistry
+	local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	if registry then
+		local allBarTypes = registry:GetAll()
+		for barKey, _ in pairs(allBarTypes) do
+			if barGroups[barKey] then
+				table.insert(keys, barKey)
+			end
+		end
+	end
+
+	return keys
+end
+
+---Gets a human-readable display name for a bar key (for Options UI dropdowns).
+---@param barKey string
+---@return string
+function TRB.Functions.Bar:GetBarDisplayName(barKey)
+	local L = TRB.Localization
+	if barKey == "primary" then
+		return L["AnchorBarPrimary"]
+	elseif barKey == "secondary" then
+		return L["AnchorBarSecondary"]
+	elseif barKey == "health" then
+		return L["AnchorBarHealth"]
+	else
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef and barTypeDef.displayName then
+				return barTypeDef.displayName
+			end
+		end
+		return barKey
+	end
+end
+
+---Validates that an anchor configuration does not create a cycle.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param testBarKey string? # If provided, validates with this bar's anchor changed
+---@param testAnchorBarKey string? # If provided, the new anchor target for testBarKey
+---@return boolean # true if valid (no cycles)
+---@return string? # Error message if invalid
+function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, testAnchorBarKey)
+	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
+	local allKeys = self:GetAllBarKeys(barGroups)
+
+	-- Build adjacency: child -> parent
+	local parentOf = {}
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= baseBarKey then
+			local anchor
+			if testBarKey and barKey == testBarKey then
+				-- Use the proposed test anchor instead of the real one
+				anchor = { barKey = testAnchorBarKey }
+			else
+				anchor = self:GetBarAnchor(settings, barKey)
+			end
+			if anchor then
+				parentOf[barKey] = anchor.barKey
+			else
+				parentOf[barKey] = baseBarKey
+			end
+		end
+	end
+
+	-- Walk from each non-base node to root; if we visit more nodes than exist, there's a cycle
+	local nodeCount = #allKeys
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= baseBarKey then
+			local visited = {}
+			local current = barKey
+			while current and current ~= baseBarKey do
+				if visited[current] then
+					local L = TRB.Localization
+					return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
+				end
+				visited[current] = true
+				current = parentOf[current]
+			end
+			-- If we didn't reach the base bar, the graph is disconnected (treat as invalid)
+			if current ~= baseBarKey then
+				local L = TRB.Localization
+				return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
+			end
+		end
+	end
+
+	return true, nil
+end
+
+---Returns the list of bar keys that the specified bar can anchor to without creating a cycle.
+---@param thisBarKey string
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@return string[] # List of valid anchor target bar keys
+function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups)
+	local allKeys = self:GetAllBarKeys(barGroups)
+	local valid = {}
+	for _, candidate in ipairs(allKeys) do
+		if candidate ~= thisBarKey then
+			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate)
+			if ok then
+				table.insert(valid, candidate)
+			end
+		end
+	end
+	return valid
+end
+
+---Builds the anchor tree from settings, returning the root node.
+---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param collapseHidden boolean? # If true, skip hidden bars and re-parent their children
+---@param includeHidden boolean? # If true, include bars with visibility="never" in the tree
+---@return TRB.Classes.Settings.AnchorTreeNode? # Root node, or nil if tree cannot be built
+function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, includeHidden)
+	if not settings or not barGroups then
+		return nil
+	end
+
+	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
+	local allKeys = self:GetAllBarKeys(barGroups)
+
+	-- Build all nodes
+	---@type table<string, TRB.Classes.Settings.AnchorTreeNode>
+	local nodes = {}
+	for _, barKey in ipairs(allKeys) do
+		local barSettings = self:GetBarSettings(settings, barKey)
+		local barGroup = barGroups[barKey]
+		nodes[barKey] = {
+			barKey = barKey,
+			anchor = (barKey ~= baseBarKey) and self:GetBarAnchor(settings, barKey) or nil,
+			children = {},
+			barGroup = barGroup,
+			barSettings = barSettings,
+			width = barSettings and barSettings.width or 0,
+			height = barSettings and barSettings.height or 0,
+		}
+	end
+
+	-- Ensure the base node exists
+	if not nodes[baseBarKey] then
+		return nil
+	end
+
+	-- Build parent-child relationships
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= baseBarKey then
+			local node = nodes[barKey]
+			local parentKey = (node.anchor and node.anchor.barKey) or baseBarKey
+			-- Validate parent exists; fall back to base bar
+			if not nodes[parentKey] then
+				parentKey = baseBarKey
+			end
+
+			if collapseHidden then
+				-- Walk up the parent chain to find the first visible parent
+				local effectiveParentKey = parentKey
+				while effectiveParentKey ~= baseBarKey and
+					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
+					local grandparentAnchor = nodes[effectiveParentKey] and nodes[effectiveParentKey].anchor
+					effectiveParentKey = (grandparentAnchor and grandparentAnchor.barKey) or baseBarKey
+				end
+				parentKey = effectiveParentKey
+			end
+
+			-- Only add visible bars (or all bars if includeHidden)
+			if self:IsBarVisible(settings, barKey, includeHidden) then
+				table.insert(nodes[parentKey].children, node)
+			end
+		end
+	end
+
+	return nodes[baseBarKey]
+end
+
+---Calculates the pixel position of an anchor point on a rectangle.
+---Origin is at bottom-left of the rectangle (WoW convention).
+---@param width number
+---@param height number
+---@param point string # One of the 9 anchor points
+---@return number x
+---@return number y
+function TRB.Functions.Bar:CalculateAnchorPointOffset(width, height, point)
+	local x, y = 0, 0
+	if point == "TOPLEFT" then
+		x, y = 0, height
+	elseif point == "TOP" then
+		x, y = width / 2, height
+	elseif point == "TOPRIGHT" then
+		x, y = width, height
+	elseif point == "LEFT" then
+		x, y = 0, height / 2
+	elseif point == "CENTER" then
+		x, y = width / 2, height / 2
+	elseif point == "RIGHT" then
+		x, y = width, height / 2
+	elseif point == "BOTTOMLEFT" then
+		x, y = 0, 0
+	elseif point == "BOTTOM" then
+		x, y = width / 2, 0
+	elseif point == "BOTTOMRIGHT" then
+		x, y = width, 0
+	end
+	return x, y
+end
+
+-- ============================================================================
+-- End Anchor Tree System
+-- ============================================================================
+
 ---Configuration for constructing an anchored bar group
 ---@class TRB.Classes.AnchoredBarGroupConfig
 ---@field public settingsKey string? # Key to read from settings (e.g., "comboPoints", "healthBar"). Ignored if settingsTable is provided.
@@ -955,96 +1290,108 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Set node count
 	targetGroup:SetNodeCount(nodes)
 
-	-- Set layout parameters
-	targetGroup:SetLayout(groupSettings.spacing or 0, groupSettings.fullWidth, "HORIZONTAL")
+	-- Set layout parameters (use anchor.matchWidth with fallback)
+	local matchWidth = self:GetMatchWidth(groupSettings)
+	targetGroup:SetLayout(groupSettings.spacing or 0, matchWidth, "HORIZONTAL")
 
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)
 
-	-- Calculate positioning based on relativeTo setting
+	-- Resolve anchor: new system with Phase 1 legacy fallback
+	local anchor = groupSettings.anchor
+	if not anchor then
+		-- Phase 1 fallback: synthesize from legacy fields
+		if groupSettings.relativeTo then
+			local mapping = TRB.Data.constants.relativeToAnchorMap[groupSettings.relativeTo]
+			if mapping then
+				anchor = {
+					barKey = "primary",
+					anchorPoint = mapping.anchorPoint,
+					attachPoint = mapping.attachPoint,
+					xOffset = groupSettings.xPos or 0,
+					yOffset = groupSettings.yPos or 0,
+					matchWidth = groupSettings.fullWidth or false,
+				}
+			end
+		end
+		-- Ultimate fallback
+		if not anchor then
+			if config.defaultAnchorAbove then
+				anchor = { barKey = "primary", anchorPoint = "TOP", attachPoint = "BOTTOM", xOffset = 0, yOffset = 0, matchWidth = true }
+			else
+				anchor = { barKey = "primary", anchorPoint = "BOTTOM", attachPoint = "TOP", xOffset = 0, yOffset = 0, matchWidth = true }
+			end
+		end
+	end
+
+	-- Resolve the actual anchor frame
+	-- The anchorGroup parameter is the resolved anchor group (from the tree walk), use it directly
 	local anchorContainer = anchorGroup:GetContainerFrame()
-	local setPoint, setPointRelativeTo, topBottom, leftCenterRight
 
-	-- Set defaults based on config
-	if config.defaultAnchorAbove then
-		setPoint = "BOTTOM"
-		setPointRelativeTo = "TOP"
-		topBottom = "TOP"
-	else
-		setPoint = "TOP"
-		setPointRelativeTo = "BOTTOM"
-		topBottom = "BOTTOM"
-	end
-	leftCenterRight = "CENTER"
+	-- Get the anchor bar's border for offset calculations
+	local anchorBarSettings = self:GetBarSettings(settings, anchor.barKey)
+	local anchorBorder = (anchorBarSettings and anchorBarSettings.border) or settings.bar.border
 
-	-- Override based on relativeTo setting
-	if groupSettings.relativeTo == "TOPLEFT" then
-		setPoint = "BOTTOMLEFT"
-		setPointRelativeTo = "TOPLEFT"
-		topBottom = "TOP"
-		leftCenterRight = "LEFT"
-	elseif groupSettings.relativeTo == "TOP" then
-		setPoint = "BOTTOM"
-		setPointRelativeTo = "TOP"
-		topBottom = "TOP"
-	elseif groupSettings.relativeTo == "TOPRIGHT" then
-		setPoint = "BOTTOMRIGHT"
-		setPointRelativeTo = "TOPRIGHT"
-		topBottom = "TOP"
-		leftCenterRight = "RIGHT"
-	elseif groupSettings.relativeTo == "BOTTOMLEFT" then
-		setPoint = "TOPLEFT"
-		setPointRelativeTo = "BOTTOMLEFT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "LEFT"
-	elseif groupSettings.relativeTo == "BOTTOM" then
-		setPoint = "TOP"
-		setPointRelativeTo = "BOTTOM"
-		topBottom = "BOTTOM"
-	elseif groupSettings.relativeTo == "BOTTOMRIGHT" then
-		setPoint = "TOPRIGHT"
-		setPointRelativeTo = "BOTTOMRIGHT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "RIGHT"
-	end
-
-	-- Calculate dimensions (may be overridden by fullWidth)
+	-- Calculate dimensions
 	local groupWidth = groupSettings.width
 	local groupHeight = groupSettings.height
 	local groupBorder = groupSettings.border
 
-	local xPos, yPos
+	-- Determine SetPoint values from the anchor
+	local attachPoint = anchor.attachPoint
+	local anchorPoint = anchor.anchorPoint
+	local xPos = anchor.xOffset or 0
+	local yPos = anchor.yOffset or 0
 
-	if groupSettings.fullWidth then
+	if anchor.matchWidth then
+		-- Match anchor bar's effective width
+		-- If anchored to the base bar, use effectiveWidth (accounts for CDM width matching)
+		local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
+		if anchor.barKey == baseBarKey then
+			groupWidth = effectiveWidth
+		else
+			-- Use the anchor bar container's width
+			groupWidth = anchorContainer:GetWidth() or effectiveWidth
+		end
+		-- Force center alignment vertically (above or below)
+		-- Determine if attach is above or below and force center alignment
+		local isAbove = string.find(anchorPoint, "TOP") ~= nil
+		local isBelow = string.find(anchorPoint, "BOTTOM") ~= nil
+		if isAbove then
+			attachPoint = "BOTTOM"
+			anchorPoint = "TOP"
+		elseif isBelow then
+			attachPoint = "TOP"
+			anchorPoint = "BOTTOM"
+		end
 		xPos = 0
-		groupWidth = effectiveWidth
-		if topBottom == "BOTTOM" then
-			setPoint = "TOP"
-			setPointRelativeTo = "BOTTOM"
-		else
-			setPoint = "BOTTOM"
-			setPointRelativeTo = "TOP"
-		end
-		leftCenterRight = "CENTER"
 	else
-		if leftCenterRight == "LEFT" then
-			xPos = -settings.bar.border + groupSettings.xPos
-		elseif leftCenterRight == "RIGHT" then
-			xPos = settings.bar.border + groupSettings.xPos
-		else
-			xPos = groupSettings.xPos
+		-- Apply border offset adjustments for non-matchWidth positioning
+		-- This maintains visual alignment when bars have borders
+		local isLeft = string.find(attachPoint, "LEFT") ~= nil
+		local isRight = string.find(attachPoint, "RIGHT") ~= nil
+		local isTop = string.find(attachPoint, "TOP") ~= nil or (attachPoint == "TOP")
+		local isBottom = string.find(attachPoint, "BOTTOM") ~= nil or (attachPoint == "BOTTOM")
+
+		if isLeft then
+			xPos = xPos - anchorBorder
+		elseif isRight then
+			xPos = xPos + anchorBorder
 		end
 	end
 
-	if topBottom == "BOTTOM" then
-		yPos = -settings.bar.border + groupSettings.yPos
-	else
-		yPos = settings.bar.border + groupSettings.yPos
+	-- Apply border offset for vertical spacing
+	local anchorIsTop = string.find(anchorPoint, "TOP") ~= nil or (anchorPoint == "TOP")
+	local anchorIsBottom = string.find(anchorPoint, "BOTTOM") ~= nil or (anchorPoint == "BOTTOM")
+	if anchorIsBottom then
+		yPos = yPos - anchorBorder
+	elseif anchorIsTop then
+		yPos = yPos + anchorBorder
 	end
 
-	-- Position the target container
+	-- Position the target container using the new anchor system
 	targetGroup.containerFrame:ClearAllPoints()
-	targetGroup.containerFrame:SetPoint(setPoint, anchorContainer, setPointRelativeTo, xPos, yPos)
+	targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
 	targetGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
 
 	-- Apply layout or size directly based on config
@@ -1276,8 +1623,13 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 				minMaxMode = barTypeDef.minMaxMode or "custom"
 			}
 			
+			-- Resolve the correct anchor group from settings
+			local anchor = self:GetBarAnchor(settings, key)
+			local anchorBarKey = (anchor and anchor.barKey) or "primary"
+			local anchorGroup = barGroups[anchorBarKey] or barGroups.primary
+
 			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
-			self:ConstructAnchoredBarGroup(settings, barGroups.primary, barGroup, config, false)
+			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)
 		end
 	end
 end

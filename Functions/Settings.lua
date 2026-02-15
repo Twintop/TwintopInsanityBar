@@ -4225,6 +4225,69 @@ function TRB.Functions.Settings:PortForwardSettings()
 			TwintopInsanityBarSettings.core.smoothBarValueUpdates = nil
 		end
 	end
+
+	-- Migrate bar anchor settings from legacy relativeTo/xPos/yPos/fullWidth to new anchor block system.
+	-- Phase 1: Populate anchor blocks alongside legacy fields. Legacy fields are kept for backward compatibility.
+	do
+		local anchorMap = TRB.Data.constants.relativeToAnchorMap
+
+		--- Populates an anchor block on a bar settings table if it has legacy relativeTo but no anchor.
+		---@param barSettings table? # A bar dimensions table (e.g., specSettings.comboPoints, specSettings.healthBar)
+		local function MigrateBarAnchor(barSettings)
+			if barSettings == nil then
+				return
+			end
+			-- Skip if already migrated
+			if barSettings.anchor ~= nil then
+				return
+			end
+			-- Only migrate if legacy relativeTo exists
+			if barSettings.relativeTo then
+				local mapping = anchorMap[barSettings.relativeTo]
+				if mapping then
+					barSettings.anchor = {
+						barKey = "primary",
+						anchorPoint = mapping.anchorPoint,
+						attachPoint = mapping.attachPoint,
+						xOffset = barSettings.xPos or 0,
+						yOffset = barSettings.yPos or 0,
+						matchWidth = barSettings.fullWidth or false,
+					}
+				end
+			end
+		end
+
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if type(specSettings) == "table" then
+						-- Migrate primary bar (only relevant if baseBarKey is changed from "primary")
+						MigrateBarAnchor(specSettings.bar)
+
+						-- Migrate secondary bar (combo points)
+						MigrateBarAnchor(specSettings.comboPoints)
+
+						-- Migrate health bar
+						MigrateBarAnchor(specSettings.healthBar)
+
+						-- Migrate custom bars (stagger, mana, defensives, etc.)
+						if specSettings.bars then
+							for barKey, barDimSettings in pairs(specSettings.bars) do
+								if type(barDimSettings) == "table" then
+									MigrateBarAnchor(barDimSettings)
+								end
+							end
+						end
+
+						-- Create anchorLayout if not present
+						if specSettings.anchorLayout == nil then
+							specSettings.anchorLayout = TRB.Functions.Settings:DefaultAnchorLayout()
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -4301,6 +4364,14 @@ function TRB.Functions.Settings:DefaultHealthDimensions(classic)
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "BOTTOM",
+			attachPoint = "TOP",
+			xOffset = 0,
+			yOffset = yPos,
+			matchWidth = true,
+		},
 	}
 end
 
@@ -4318,7 +4389,15 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			spacing = 14,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth = true
+			fullWidth = true,
+			anchor = {
+				barKey = "primary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
 		}
 	end
 
@@ -4332,6 +4411,14 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		relativeTo ="TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
 	}
 end
 
@@ -4360,7 +4447,15 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			spacing = 0,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth = true
+			fullWidth = true,
+			anchor = {
+				barKey = "primary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
 		}
 	end
 
@@ -4374,6 +4469,14 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
 	}
 end
 
@@ -4407,7 +4510,15 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			spacing = 0,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth = true
+			fullWidth = true,
+			anchor = {
+				barKey = "primary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
 		}
 	end
 
@@ -4421,6 +4532,14 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
 	}
 end
 
@@ -4504,7 +4623,15 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			spacing = 14,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
-			fullWidth = true
+			fullWidth = true,
+			anchor = {
+				barKey = "primary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
 		}
 	end
 
@@ -4518,6 +4645,14 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
 	}
 end
 
@@ -4532,6 +4667,72 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 			shieldBlock = { color = "FF0099FF", enabled = true }
 		}
 	}
+end
+
+---Gets the default anchor layout configuration
+---@return TRB.Classes.Settings.AnchorLayout
+function TRB.Functions.Settings:DefaultAnchorLayout()
+	return {
+		baseBarKey = "primary",
+	}
+end
+
+---Migrates anchor blocks for all bar settings in the provided settings table.
+---Synthesizes anchor blocks from legacy relativeTo/xPos/yPos/fullWidth fields.
+---@param settingsTable table # The top-level settings table (e.g., TRB.Data.settings)
+---@param forceResync boolean? # If true, re-synthesize all anchor blocks even if they already exist
+function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
+	if not settingsTable then
+		return
+	end
+
+	local anchorMap = TRB.Data.constants.relativeToAnchorMap
+
+	local function MigrateOne(barSettings)
+		if barSettings == nil then return end
+		if barSettings.anchor ~= nil and not forceResync then return end
+		if barSettings.relativeTo then
+			local mapping = anchorMap[barSettings.relativeTo]
+			if mapping then
+				barSettings.anchor = {
+					barKey = "primary",
+					anchorPoint = mapping.anchorPoint,
+					attachPoint = mapping.attachPoint,
+					xOffset = barSettings.xPos or 0,
+					yOffset = barSettings.yPos or 0,
+					matchWidth = barSettings.fullWidth or false,
+				}
+			end
+		end
+	end
+
+	local classes = {
+		"deathknight", "demonhunter", "druid", "evoker", "hunter",
+		"mage", "monk", "paladin", "priest", "rogue",
+		"shaman", "warlock", "warrior"
+	}
+
+	for _, className in ipairs(classes) do
+		if settingsTable[className] then
+			for specName, specSettings in pairs(settingsTable[className]) do
+				if type(specSettings) == "table" then
+					MigrateOne(specSettings.bar)
+					MigrateOne(specSettings.comboPoints)
+					MigrateOne(specSettings.healthBar)
+					if specSettings.bars then
+						for _, barDimSettings in pairs(specSettings.bars) do
+							if type(barDimSettings) == "table" then
+								MigrateOne(barDimSettings)
+							end
+						end
+					end
+					if specSettings.anchorLayout == nil then
+						specSettings.anchorLayout = self:DefaultAnchorLayout()
+					end
+				end
+			end
+		end
+	end
 end
 
 ---Gets the default textures for bars

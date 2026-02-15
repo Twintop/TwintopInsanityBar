@@ -425,7 +425,7 @@ local function ConstructResourceBar(settings)
 		
 		-- Ensure secondary group knows the correct node count
 		barGroups.secondary:SetNodeCount(maxComboPoints)
-		barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+		barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 		barGroups.secondary:Show()
 		
 		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
@@ -2089,7 +2089,7 @@ function TRB.Functions.Class:CheckCharacter()
 				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
-				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
 				
 				-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
 				local effectiveWidth = (barGroups and barGroups.effectiveWidth) or sharedSettings.bar.width

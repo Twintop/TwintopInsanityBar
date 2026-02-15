@@ -248,7 +248,7 @@ local function ConstructResourceBar(settings)
 			
 			-- Ensure secondary group knows the correct node count
 			barGroups.secondary:SetNodeCount(maxCharges)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 			
 			-- Get effective width (may be CDM-matched) from barGroups or fall back to settings

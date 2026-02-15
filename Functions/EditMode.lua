@@ -148,32 +148,33 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 	local includeHidden = self:IsInEditMode()
 
 	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow = self:CalculateWrapperLayout(settings, includeHidden)
+	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = self:CalculateWrapperLayout(settings, includeHidden)
 
 	-- Size the wrapper to encompass all bars
 	if totalWidth > 0 and totalHeight > 0 then
 		editModeWrapperFrame:SetSize(totalWidth, totalHeight)
 	end
 
-	-- Reposition the primary bar within the wrapper to account for bars above it
-	-- The primary bar should be offset down by extendAbove
+	-- Reposition the primary bar within the wrapper to account for bars above/beside it
+	-- extendAbove offsets down from top; baseOffsetX offsets horizontally from center
 	local primaryFrame = barGroups.primary.containerFrame
 	primaryFrame:ClearAllPoints()
-	primaryFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", 0, -extendAbove)
+	primaryFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
 end
 
----Calculates layout information for the wrapper frame based on settings
----This calculates dimensions and offsets without relying on screen coordinates
+---Calculates layout information for the wrapper frame based on settings.
+---Uses the anchor tree to recursively compute a 2D bounding box encompassing all bars.
 ---@param settings table? # Settings table for dimension calculations
 ---@param includeHidden boolean? # If true, include hidden bars (for Edit Mode)
 ---@return number totalWidth # Total width needed
 ---@return number totalHeight # Total height needed
----@return number extendAbove # How much bars extend above the primary bar
----@return number extendBelow # How much bars extend below the primary bar
+---@return number extendAbove # How much bars extend above the base bar's top edge
+---@return number extendBelow # How much bars extend below the base bar's bottom edge
+---@return number baseOffsetX # Horizontal offset of the base bar center from the wrapper center
 function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	local barGroups = TRB.Frames.barGroups
 	if not barGroups or not barGroups.primary then
-		return 100, 100, 0, 0
+		return 100, 100, 0, 0, 0
 	end
 
 	-- Use settings if provided, otherwise try to get from spec cache
@@ -185,118 +186,160 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	end
 
 	if not settings then
-		return 100, 100, 0, 0
+		return 100, 100, 0, 0, 0
 	end
 
-	-- Start with primary bar dimensions
+	-- Get effective width (may be CDM-matched)
 	local effectiveWidth = (barGroups.effectiveWidth) or settings.bar.width
-	local totalWidth = effectiveWidth
 
-	-- Check if primary bar is permanently hidden; collapse its height to 0 if so
-	local primaryVisibilitySetting = settings.displayBar and settings.displayBar.primary
-	local primaryVisible = not primaryVisibilitySetting or primaryVisibilitySetting.visibility ~= "never"
-	local primaryHeight = (primaryVisible or includeHidden) and settings.bar.height or 0
-
-	local extendAbove = 0
-	local extendBelow = 0
-
-	-- Helper to determine if a bar is above or below primary based on relativeTo
-	local function isAbovePrimary(relativeTo)
-		return relativeTo == "TOP" or relativeTo == "TOPLEFT" or relativeTo == "TOPRIGHT"
-	end
-
-	-- Add secondary bar (combo points, arcane charges, etc.) if visible or includeHidden
-	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
-	-- but they DO have a secondary bar group for combo points when in cat form.
-	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	local comboPointSettings = settings.comboPoints
-	if not comboPointSettings and TRB.Data.character.classId == 11 then
+	-- DRUID SPECIAL CASE: Non-Feral Druids may need Feral's combo point settings
+	-- for proper wrapper sizing when form switching is active.
+	local treeSettings = settings
+	if TRB.Data.character.classId == 11 and not settings.comboPoints then
 		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 		if feralSettings and feralSettings.comboPoints then
-			comboPointSettings = feralSettings.comboPoints
+			-- Shallow copy with Feral combo points injected
+			treeSettings = {}
+			for k, v in pairs(settings) do
+				treeSettings[k] = v
+			end
+			treeSettings.comboPoints = feralSettings.comboPoints
 		end
 	end
 
-	if barGroups.secondary and comboPointSettings then
-		local secondaryGroup = barGroups.secondary
-		-- Check displayBar settings rather than IsShown() since the bar may not be shown yet
-		local secondaryVisibilitySetting = settings.displayBar and settings.displayBar.secondary
-		local secondaryVisible = not secondaryVisibilitySetting or secondaryVisibilitySetting.visibility ~= "never"
-		
-		if secondaryVisible or includeHidden then
-			local secondaryHeight = comboPointSettings.height or 0
-			local secondarySpacing = math.abs(comboPointSettings.yPos or 0)
-			local barHeight = secondaryHeight + secondarySpacing
-			
-			local relativeTo = comboPointSettings.relativeTo or "TOP"
-			if isAbovePrimary(relativeTo) then
-				extendAbove = extendAbove + barHeight
-			else
-				extendBelow = extendBelow + barHeight
-			end
-			
-			-- Secondary bar might be wider if not fullWidth
-			if not comboPointSettings.fullWidth then
-				local nodeCount = TRB.Data.character.maxResource2 or secondaryGroup.nodeCount or 5
-				local nodeWidth = comboPointSettings.width or 10
-				local nodeSpacing = comboPointSettings.spacing or 2
-				local secondaryWidth = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1)) + (comboPointSettings.border or 1) * 2
-				totalWidth = math.max(totalWidth, secondaryWidth)
-			end
-		end
+	-- Build anchor tree (collapse hidden bars when NOT including them)
+	local rootNode = TRB.Functions.Bar:BuildAnchorTree(treeSettings, barGroups, not includeHidden, includeHidden)
+	if not rootNode then
+		return effectiveWidth, settings.bar.height, 0, 0, 0
 	end
 
-	-- Add health bar if visible or includeHidden
-	if barGroups.health and settings.healthBar then
-		-- Check displayBar settings rather than IsShown() since the bar may not be shown yet
-		local healthVisibilitySetting = settings.displayBar and settings.displayBar.health
-		local healthVisible = not healthVisibilitySetting or healthVisibilitySetting.visibility ~= "never"
-		
-		if healthVisible or includeHidden then
-			local healthHeight = settings.healthBar.height or 0
-			local healthSpacing = math.abs(settings.healthBar.yPos or 0)
-			local barHeight = healthHeight + healthSpacing
-			
-			local relativeTo = settings.healthBar.relativeTo or "BOTTOM"
-			if isAbovePrimary(relativeTo) then
-				extendAbove = extendAbove + barHeight
-			else
-				extendBelow = extendBelow + barHeight
-			end
-		end
+	-- Base bar dimensions
+	local baseWidth = effectiveWidth
+	local baseHeight = settings.bar.height or 0
+
+	-- Check if base bar is visible
+	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
+	if not TRB.Functions.Bar:IsBarVisible(settings, baseBarKey, includeHidden) then
+		baseHeight = 0
 	end
 
-	-- Check for custom bar types (stagger, mana bar, etc.) from the BarTypeRegistry
-	local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
-	if registry then
-		local allBarTypes = registry:GetAll()
-		for barKey, barTypeDef in pairs(allBarTypes) do
-			if barGroups[barKey] and settings.bars and settings.bars[barKey] then
-				-- Check displayBar settings rather than IsShown() since the bar may not be shown yet
-				-- Custom bars use the visibilityKey from the barTypeDef (e.g., "mana", "stagger")
-				local visibilityKey = barTypeDef.visibilityKey or barKey
-				local customVisibilitySetting = settings.displayBar and settings.displayBar[visibilityKey]
-				local customVisible = not customVisibilitySetting or customVisibilitySetting.visibility ~= "never"
-				
-				if customVisible or includeHidden then
-					local customSettings = settings.bars[barKey]
-					local customHeight = customSettings.height or 0
-					local customSpacing = math.abs(customSettings.yPos or 0)
-					local barHeight = customHeight + customSpacing
-					
-					local relativeTo = customSettings.relativeTo or "TOP"
-					if isAbovePrimary(relativeTo) then
-						extendAbove = extendAbove + barHeight
-					else
-						extendBelow = extendBelow + barHeight
+	-- Coordinate system: X-right positive, Y-up positive, base bar's bottom-left at (0,0)
+	local minX, maxX = 0, baseWidth
+	local minY, maxY = 0, baseHeight
+
+	-- Helper: get effective size for a bar node, accounting for matchWidth and multi-node layout
+	local function getEffectiveBarSize(node, parentWidth)
+		local barSettings = node.barSettings
+		if not barSettings then
+			return node.width or 0, node.height or 0
+		end
+
+		local w = barSettings.width or 0
+		local h = barSettings.height or 0
+
+		local matchWidth = TRB.Functions.Bar:GetMatchWidth(barSettings)
+		if matchWidth then
+			w = parentWidth
+		elseif node.barKey == "secondary" then
+			-- Non-matchWidth secondary bar: calculate total width from node dimensions
+			local nodeCount = TRB.Data.character.maxResource2 or 5
+			if node.barGroup and node.barGroup.nodeCount then
+				nodeCount = node.barGroup.nodeCount
+			end
+			local nodeWidth = barSettings.width or 10
+			local nodeSpacing = barSettings.spacing or 2
+			local barBorder = barSettings.border or 1
+			w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1)) + barBorder * 2
+		end
+
+		return w, h
+	end
+
+	-- Recursive function to walk the tree and accumulate bounding box
+	local function walkTree(parentNode, parentLeft, parentBottom, parentWidth, parentHeight)
+		for _, child in ipairs(parentNode.children) do
+			local anchor = child.anchor
+			if anchor then
+				local childWidth, childHeight = getEffectiveBarSize(child, parentWidth)
+				if childWidth > 0 and childHeight > 0 then
+					local anchorPt = anchor.anchorPoint or "TOP"
+					local attachPt = anchor.attachPoint or "BOTTOM"
+					local xOffset = anchor.xOffset or 0
+					local yOffset = anchor.yOffset or 0
+					local matchWidth = child.barSettings and TRB.Functions.Bar:GetMatchWidth(child.barSettings)
+
+					-- Apply matchWidth center-alignment override (matching ConstructAnchoredBarGroup)
+					if matchWidth then
+						local isAbove = string.find(anchorPt, "TOP") ~= nil
+						local isBelow = string.find(anchorPt, "BOTTOM") ~= nil
+						if isAbove then
+							anchorPt = "TOP"
+							attachPt = "BOTTOM"
+						elseif isBelow then
+							anchorPt = "BOTTOM"
+							attachPt = "TOP"
+						end
+						xOffset = 0
 					end
+
+					-- Apply border offset (matching ConstructAnchoredBarGroup)
+					local anchorBarSettings = parentNode.barSettings
+					local anchorBorder = (anchorBarSettings and anchorBarSettings.border) or 0
+
+					local anchorIsTop = string.find(anchorPt, "TOP") ~= nil or anchorPt == "TOP"
+					local anchorIsBottom = string.find(anchorPt, "BOTTOM") ~= nil or anchorPt == "BOTTOM"
+					if anchorIsBottom then
+						yOffset = yOffset - anchorBorder
+					elseif anchorIsTop then
+						yOffset = yOffset + anchorBorder
+					end
+
+					if not matchWidth then
+						local isLeft = string.find(attachPt, "LEFT") ~= nil
+						local isRight = string.find(attachPt, "RIGHT") ~= nil
+						if isLeft then
+							xOffset = xOffset - anchorBorder
+						elseif isRight then
+							xOffset = xOffset + anchorBorder
+						end
+					end
+
+					-- Calculate anchor point position on parent (Y-up, origin=parent bottom-left)
+					local apX, apY = TRB.Functions.Bar:CalculateAnchorPointOffset(parentWidth, parentHeight, anchorPt)
+					-- Calculate attach point position on child
+					local atX, atY = TRB.Functions.Bar:CalculateAnchorPointOffset(childWidth, childHeight, attachPt)
+
+					-- Child's bottom-left in global coords
+					local childLeft = parentLeft + apX + xOffset - atX
+					local childBottom = parentBottom + apY + yOffset - atY
+
+					-- Update bounding box
+					minX = math.min(minX, childLeft)
+					maxX = math.max(maxX, childLeft + childWidth)
+					minY = math.min(minY, childBottom)
+					maxY = math.max(maxY, childBottom + childHeight)
+
+					-- Recurse into this child's children
+					walkTree(child, childLeft, childBottom, childWidth, childHeight)
 				end
 			end
 		end
 	end
 
-	local totalHeight = primaryHeight + extendAbove + extendBelow
-	return totalWidth, totalHeight, extendAbove, extendBelow
+	-- Walk the tree starting from the root
+	walkTree(rootNode, 0, 0, baseWidth, baseHeight)
+
+	local totalWidth = maxX - minX
+	local totalHeight = maxY - minY
+
+	-- extendAbove = how much above the base bar's top = maxY - baseHeight
+	local extendAbove = math.max(0, maxY - baseHeight)
+	-- extendBelow = how much below the base bar's bottom = max(0, -minY)
+	local extendBelow = math.max(0, -minY)
+	-- baseOffsetX = horizontal offset of base bar center from wrapper center
+	local baseOffsetX = (baseWidth / 2 - minX) - (totalWidth / 2)
+
+	return totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX
 end
 
 ---Calculates the total dimensions needed to encompass all bars

@@ -2837,7 +2837,7 @@ function TRB.Functions.Class:CheckCharacter()
 					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
 					barGroups.secondary:ApplyLayout(
 						effectiveWidth,
 						feralSettings.comboPoints.width,

@@ -292,7 +292,7 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 	-- When fullWidth is enabled, use the bar's effectiveWidth (accounts for CDM width matching)
 	-- Otherwise use the comboPoints-specific width setting
 	local effectiveWidth
-	if settings.comboPoints.fullWidth then
+	if TRB.Functions.Bar:GetMatchWidth(settings.comboPoints) then
 		effectiveWidth = (TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth) or (settings.bar and settings.bar.width) or settings.comboPoints.width
 	else
 		effectiveWidth = settings.comboPoints.width

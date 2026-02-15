@@ -29,6 +29,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public precision TRB.Classes.Settings.Precision
 ---@field public audio { string: TRB.Classes.Settings.Audio }
 ---@field public maxResource table?
+---@field public anchorLayout TRB.Classes.Settings.AnchorLayout?
 
 ---@class TRB.Classes.Settings.Core : TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public colors TRB.Classes.Settings.ColorsCore
@@ -127,17 +128,19 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public xPos number
 ---@field public yPos number
 ---@field public border integer
+---@field public anchor TRB.Classes.Settings.BarAnchor? # Only used when this bar is NOT the base bar
 
 ---@class TRB.Classes.Settings.SecondaryBar
 ---@field public width number
 ---@field public height number
----@field public xPos number
----@field public yPos number
 ---@field public border integer
 ---@field public spacing integer
----@field public relativeTo string
----@field public relativeToName string
----@field public fullWidth boolean
+---@field public anchor TRB.Classes.Settings.BarAnchor? # New anchor system
+---@field public xPos number # @deprecated Use anchor.xOffset instead
+---@field public yPos number # @deprecated Use anchor.yOffset instead
+---@field public relativeTo string # @deprecated Use anchor.anchorPoint/attachPoint instead
+---@field public relativeToName string # @deprecated Display label for legacy relativeTo
+---@field public fullWidth boolean # @deprecated Use anchor.matchWidth instead
 
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
@@ -175,6 +178,28 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public sound string
 ---@field public soundName string
 ---@field public configuration table?
+
+---Defines how a bar is anchored to another bar in the anchor tree.
+---@class TRB.Classes.Settings.BarAnchor
+---@field public barKey string # Key of the target bar: "primary", "secondary", "health", or any BarTypeRegistry key
+---@field public anchorPoint string # Point on the TARGET bar (TOPLEFT|TOP|TOPRIGHT|LEFT|CENTER|RIGHT|BOTTOMLEFT|BOTTOM|BOTTOMRIGHT)
+---@field public attachPoint string # Point on THIS bar that touches the anchor point
+---@field public xOffset number # Horizontal pixel offset from the anchor point
+---@field public yOffset number # Vertical pixel offset from the anchor point
+---@field public matchWidth boolean # If true, this bar's width matches the anchor bar's effective width
+
+---Defines the anchor tree root for a spec's bar layout.
+---@class TRB.Classes.Settings.AnchorLayout
+---@field public baseBarKey string # Key of the root bar ("primary" by default)
+
+---@class TRB.Classes.Settings.AnchorTreeNode
+---@field public barKey string # Key of this bar
+---@field public anchor TRB.Classes.Settings.BarAnchor? # Anchor settings (nil for base bar)
+---@field public children TRB.Classes.Settings.AnchorTreeNode[] # Child bars anchored to this bar
+---@field public barGroup TRB.Classes.BarGroup? # Runtime reference to the BarGroup
+---@field public barSettings table? # Runtime reference to the bar's settings table
+---@field public width number? # Effective width (for bounding box calculations)
+---@field public height number? # Effective height (for bounding box calculations)
 
 ---@class TRB.Classes.Settings.GenericTrackingOverX
 ---@field public enabled boolean
