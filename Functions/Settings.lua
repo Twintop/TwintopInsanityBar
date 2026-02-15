@@ -4210,12 +4210,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 
 		-- Migrate all class/spec displayBar settings
-		local classes2 = {
-			"deathknight", "demonhunter", "druid", "evoker", "hunter",
-			"mage", "monk", "paladin", "priest", "rogue",
-			"shaman", "warlock", "warrior"
-		}
-		for _, className in ipairs(classes2) do
+		for _, className in ipairs(classes) do
 			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
