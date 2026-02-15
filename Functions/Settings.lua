@@ -1362,9 +1362,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Move bar smoothing setting and reset bar and comboPoint global settings
+	-- NOTE: This migration is ONLY for very old settings that had core.bar.smooth.
+	-- Modern settings have displayBar.primary as a table. Skip if already modern.
 	if TwintopInsanityBarSettings ~= nil and
 	TwintopInsanityBarSettings.core ~= nil and
-	TwintopInsanityBarSettings.core.smoothBarValueUpdates == nil then
+	TwintopInsanityBarSettings.core.smoothBarValueUpdates == nil and
+	TwintopInsanityBarSettings.core.bar ~= nil and
+	TwintopInsanityBarSettings.core.bar.smooth ~= nil then
 		TwintopInsanityBarSettings.core.smoothBarValueUpdates = TwintopInsanityBarSettings.core.bar.smooth
 
 		
@@ -4220,10 +4224,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 
-		-- Remove the old global smooth setting now that it's been consumed
-		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core then
-			TwintopInsanityBarSettings.core.smoothBarValueUpdates = nil
-		end
+		-- NOTE: Do NOT remove smoothBarValueUpdates here. It's still needed as a guard for an older
+		-- migration (line ~1365) that resets core.bar/core.comboPoints. Without the guard, that
+		-- migration would run on every reload and reset the user's bar dimension settings.
 	end
 end
 

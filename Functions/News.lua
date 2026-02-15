@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.5-release (2026-02-16)
+## General
+
+- Fix an issue where global options for bar and combo point dimensions/positions were incorrectly being reset to default values.
+
+---
+
 # 12.0.1.4-release (2026-02-15)
 ## General
 
