@@ -194,7 +194,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 
 	-- Check if primary bar is permanently hidden; collapse its height to 0 if so
 	local primaryVisibilitySetting = settings.displayBar and settings.displayBar.primary
-	local primaryVisible = primaryVisibilitySetting ~= "never"
+	local primaryVisible = not primaryVisibilitySetting or primaryVisibilitySetting.visibility ~= "never"
 	local primaryHeight = (primaryVisible or includeHidden) and settings.bar.height or 0
 
 	local extendAbove = 0
@@ -221,7 +221,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 		local secondaryGroup = barGroups.secondary
 		-- Check displayBar settings rather than IsShown() since the bar may not be shown yet
 		local secondaryVisibilitySetting = settings.displayBar and settings.displayBar.secondary
-		local secondaryVisible = secondaryVisibilitySetting ~= "never"
+		local secondaryVisible = not secondaryVisibilitySetting or secondaryVisibilitySetting.visibility ~= "never"
 		
 		if secondaryVisible or includeHidden then
 			local secondaryHeight = comboPointSettings.height or 0
@@ -250,7 +250,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	if barGroups.health and settings.healthBar then
 		-- Check displayBar settings rather than IsShown() since the bar may not be shown yet
 		local healthVisibilitySetting = settings.displayBar and settings.displayBar.health
-		local healthVisible = healthVisibilitySetting ~= "never"
+		local healthVisible = not healthVisibilitySetting or healthVisibilitySetting.visibility ~= "never"
 		
 		if healthVisible or includeHidden then
 			local healthHeight = settings.healthBar.height or 0
@@ -276,7 +276,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 				-- Custom bars use the visibilityKey from the barTypeDef (e.g., "mana", "stagger")
 				local visibilityKey = barTypeDef.visibilityKey or barKey
 				local customVisibilitySetting = settings.displayBar and settings.displayBar[visibilityKey]
-				local customVisible = customVisibilitySetting ~= "never"
+				local customVisible = not customVisibilitySetting or customVisibilitySetting.visibility ~= "never"
 				
 				if customVisible or includeHidden then
 					local customSettings = settings.bars[barKey]
