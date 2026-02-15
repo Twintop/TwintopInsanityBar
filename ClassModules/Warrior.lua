@@ -743,7 +743,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Arms()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
@@ -848,7 +848,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -867,7 +867,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Fury()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
@@ -968,7 +968,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -987,7 +987,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Protection()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
@@ -1077,12 +1077,12 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
-			if specSettings.displayBar.defensives ~= "never" then
+			if specSettings.displayBar.defensives.visibility ~= "never" then
 			refreshText = true
 				UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1425,9 +1425,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1437,9 +1437,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Only Protection (specId == 3) uses the secondary bar
 			local showSecondary = false
 			if not forceHideAll and TRB.Data.character.specId == 3 then
-				if sharedSettings.displayBar.defensives == "always" then
+				if sharedSettings.displayBar.defensives.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.defensives == "combat" then
+				elseif sharedSettings.displayBar.defensives.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1448,9 +1448,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

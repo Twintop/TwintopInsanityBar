@@ -682,7 +682,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_BeastMastery()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]				
@@ -837,7 +837,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -856,7 +856,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Marksmanship()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
@@ -1013,7 +1013,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1032,7 +1032,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Survival()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
@@ -1143,7 +1143,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1481,9 +1481,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Hunter has no secondary bar
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1492,9 +1492,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

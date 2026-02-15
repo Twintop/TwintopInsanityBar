@@ -828,8 +828,6 @@ if locale == "deDE" then
     L["RogueSubtletyThresholdDeathFromAboveTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Tod von oben zu nutzen. Wenn auf Abklingzeit oder ohne Combopunkte, wird es als 'nicht benutzbar' gefärbt."
     L["RogueSubtletyThresholdDismantle"] = "Zerlegen"
     L["RogueSubtletyThresholdDismantleTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Zerlegen zu nutzen."
-    L["GlobalOptionsCheckboxSmoothBar"] = "Weiche Leistenanimationen"
-    L["GlobalOptionsCheckboxSmoothBarTooltip"] = "Wenn aktiviert, werden Aktualisierungen der verschiedenen Statusleisten (Ressource, Zaubern, Passiv, Combopunkte, etc.) eine kurze und weiche Animation haben, um die Änderung anzuzeigen, anstatt sofort auf den neuen Wert zu springen. Diese Einstellung ist immer deaktiviert, wenn die Leiste an die persönliche Ressourcenanzeige angeheftet ist."
     L["BarTextVariableGcd"] = "Aktueller GCD, in Sekunden"
     L["BarTextVariableHaste"] = "Aktuelles Tempo %"
     L["BarTextVariableHasteRating"] = "Aktuelle Tempowertung"

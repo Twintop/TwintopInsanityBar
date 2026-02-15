@@ -949,10 +949,19 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 
 	if s.displayBar then
-		-- Create a shallow copy to avoid modifying the global displayBar object
+		-- Create a deep copy to avoid modifying the global displayBar object
 		specCache.settings.displayBar = {}
 		for k, v in pairs(core.displayBar) do
-			specCache.settings.displayBar[k] = v
+			if type(v) == "table" then
+				-- Deep copy the table (visibility + smooth)
+				specCache.settings.displayBar[k] = {}
+				for k2, v2 in pairs(v) do
+					specCache.settings.displayBar[k][k2] = v2
+				end
+				-- When using global displayBar, both visibility AND smooth come from global
+			else
+				specCache.settings.displayBar[k] = v
+			end
 		end
 		
 		-- Override with spec-specific custom bar visibility settings
@@ -965,6 +974,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 		if spec.displayBar and spec.displayBar.defensives ~= nil then
 			specCache.settings.displayBar.defensives = spec.displayBar.defensives
+		end
+		-- Also carry over non-global keys that don't exist in core
+		if spec.displayBar then
+			if spec.displayBar.enableFormSwitching ~= nil then
+				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
+			end
 		end
 	else
 		specCache.settings.displayBar = spec.displayBar

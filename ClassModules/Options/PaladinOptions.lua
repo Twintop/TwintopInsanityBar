@@ -40,9 +40,9 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -179,9 +179,9 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -307,9 +307,9 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),

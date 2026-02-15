@@ -825,7 +825,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Brewmaster()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
@@ -933,7 +933,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.stagger ~= "never" then
+			if specSettings.displayBar.stagger.visibility ~= "never" then
 				refreshText = true
 				-- Update Stagger bar using BarNodes
 				if barGroups and barGroups.stagger then
@@ -1009,7 +1009,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1028,7 +1028,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Mistweaver()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
@@ -1051,7 +1051,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1073,7 +1073,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Windwalker()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
@@ -1186,7 +1186,7 @@ local function UpdateResourceBar()
 				end
 			end
 			
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				-- Update Chi using BarNodes
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -1220,7 +1220,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1692,9 +1692,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1703,7 +1703,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine stagger bar visibility (Brewmaster only)
 			local showStagger = false
 			if not forceHideAll and TRB.Data.character.specId == 1 then
-				local staggerVisibility = sharedSettings.displayBar.stagger
+				local staggerVisibility = sharedSettings.displayBar.stagger.visibility
 				if staggerVisibility == "always" then
 					showStagger = true
 				elseif staggerVisibility == "combat" then
@@ -1715,9 +1715,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine secondary bar visibility (Windwalker Chi only)
 			local showSecondary = false
 			if not forceHideAll and TRB.Data.character.specId == 3 then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1726,9 +1726,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

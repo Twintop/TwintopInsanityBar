@@ -1297,7 +1297,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_discipline.settings
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -1326,7 +1326,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update health bar
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1346,7 +1346,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_holy.settings
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
@@ -1419,7 +1419,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update health bar
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1440,7 +1440,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Shadow()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
@@ -1651,7 +1651,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1664,7 +1664,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update mana bar (Shadow only)
-		if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana ~= "never" then
+		if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana.visibility ~= "never" then
 			refreshText = true
 			local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 			if manaNode then
@@ -2140,9 +2140,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Priest has no secondary bar
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -2151,9 +2151,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false
@@ -2162,9 +2162,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine mana bar visibility independently (Shadow only)
 			local showMana = false
 			if TRB.Data.character.specId == 3 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
-				if sharedSettings.displayBar.mana == "always" then
+				if sharedSettings.displayBar.mana.visibility == "always" then
 					showMana = true
-				elseif sharedSettings.displayBar.mana == "combat" then
+				elseif sharedSettings.displayBar.mana.visibility == "combat" then
 					showMana = affectingCombat or inVehicle
 				end
 				-- "never" means showMana stays false

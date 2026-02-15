@@ -17,6 +17,7 @@ local content = [====[
 
 - [#352](#352) Allow for any class specialization's settings to be accessed and modified, regardless of what the current class is.
 - [#352](#352) Make the options window lazy load settings for a spec only when they are accessed. This will reduce the amount of memory consumed by the addon in most circumstances.
+- [#577](#577) Allow for each bar type to have its own smooth bar setting instead of a single global setting for all bars. By default, "Combo Point" style bars will have this disabled while the other bars will match the previous global setting value.
 
 ### Localization
 

@@ -40,9 +40,9 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -162,9 +162,9 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -246,9 +246,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
