@@ -1735,4 +1735,8 @@ if locale == "zhCN" then
     L["FooterGitHubIssues"] = "GitHub反馈"
     L["FooterNews"] = "最新动态"
     L["MinimapTooltipLeftClick"] = "左键点击打开设置"
+
+    L["ShamanElementalBarTextVariable_mana"] = "当前法力值"
+    L["ShamanElementalBarTextVariable_manaPercent"] = "当前法力值百分比"
+    L["ShamanElementalBarTextVariable_manaMax"] = "法力值上限"
 end

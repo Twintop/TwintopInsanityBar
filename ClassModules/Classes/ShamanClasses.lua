@@ -190,9 +190,9 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["ShamanElementalBarTextVariable_casting"], printInSettings = true, color = false },
 
-		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["ShamanElementalBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["ShamanElementalBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false },
 
 		--[[{ variable = "$ifStacks", description = L["ShamanElementalBarTextVariable_ifStacks"], printInSettings = true, color = false },
 		{ variable = "$ifMaelstrom", description = L["ShamanElementalBarTextVariable_ifMaelstrom"], printInSettings = true, color = false },

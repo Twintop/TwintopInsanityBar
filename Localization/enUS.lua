@@ -1874,3 +1874,7 @@ L["GlobalOptionsCheckboxMinimapIconTooltip"] = "When checked, the minimap icon w
 L["WarriorProtectionBarTextVariable_ignorePainAbsorb"] = "Amount of damage being absorbed by Ignore Pain"
 L["DemonHunterHavocColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
 L["DemonHunterVengeanceColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
+
+L["ShamanElementalBarTextVariable_mana"] = "Current Mana"
+L["ShamanElementalBarTextVariable_manaPercent"] = "Current Mana Percentage"
+L["ShamanElementalBarTextVariable_manaMax"] = "Maximum Mana"

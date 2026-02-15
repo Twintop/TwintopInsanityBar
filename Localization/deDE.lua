@@ -1675,4 +1675,8 @@ if locale == "deDE" then
     L["PaladinHolyColorPickerInfusionOfLight"] = "Rahmen wenn du Lichtinfusion hast"
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Spiele Audio-Hinweis, wenn Lichtinfusion procced"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Spiele einen Audio-Hinweis ab, wenn ein Lichtinfusion Proc auftritt. Dies wird nur einmal pro Proc abgespielt."
+
+    L["ShamanElementalBarTextVariable_mana"] = "Aktuelles Mana"
+    L["ShamanElementalBarTextVariable_manaPercent"] = "Aktueller Mana Prozentsatz"
+    L["ShamanElementalBarTextVariable_manaMax"] = "Maximales Mana"
 end
