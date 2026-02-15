@@ -41,6 +41,23 @@ local settingKeyToCheckboxSuffix = {
 	precision = "precision"
 }
 
+-- Mapping from lowercase class name to classId for frame name resolution
+local classNameToId = {
+	deathknight = 6,
+	demonhunter = 12,
+	druid = 11,
+	evoker = 13,
+	hunter = 3,
+	mage = 8,
+	monk = 10,
+	paladin = 2,
+	priest = 5,
+	rogue = 4,
+	shaman = 7,
+	warlock = 9,
+	warrior = 1
+}
+
 ---Sets a checkbox to tristate visual mode
 ---@param checkbox CheckButton # The checkbox to update
 ---@param state boolean|nil # true = checked, false = unchecked, nil = mixed/desaturated
@@ -135,24 +152,30 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		end
 	end
 	
-	-- Update all existing per-spec checkboxes in the UI (only for current class)
-	local currentClassName = TRB.Data.character.className
-	if checkboxSuffix and currentClassName and allClassSpecs[currentClassName] then
-		-- Get the proper capitalized class name for frame naming
-		local capitalizedClassName, _ = TRB.Functions.Character:GetClassAndSpecializationNames(TRB.Data.character.classId, nil)
-		for _, specName in ipairs(allClassSpecs[currentClassName]) do
-			local frameName = "TwintopResourceBar_" .. capitalizedClassName .. "_" .. specName .. "_useGlobal_" .. checkboxSuffix
-			local checkbox = _G[frameName]
-			if checkbox then
-				checkbox:SetChecked(value)
+	-- Update all existing per-spec checkboxes in the UI across ALL classes
+	if checkboxSuffix then
+		for className, specs in pairs(allClassSpecs) do
+			local classId = classNameToId[className]
+			if classId then
+				local capitalizedClassName, _ = TRB.Functions.Character:GetClassAndSpecializationNames(classId, nil)
+				for _, specName in ipairs(specs) do
+					local frameName = "TwintopResourceBar_" .. capitalizedClassName .. "_" .. specName .. "_useGlobal_" .. checkboxSuffix
+					local checkbox = _G[frameName]
+					if checkbox then
+						checkbox:SetChecked(value)
+					end
+				end
 			end
 		end
 	end
 	
-	-- Refresh caches for all specs of the current class
-	if currentClassName and allClassSpecs[currentClassName] then
-		for _, specName in ipairs(allClassSpecs[currentClassName]) do
-			TRB.Functions.Character:FillSpecializationCacheSettings(currentClassName, specName)
+	-- Refresh caches for all specs that have been initialized (specCache exists)
+	for className, specs in pairs(allClassSpecs) do
+		for _, specName in ipairs(specs) do
+			local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+			if TRB.Data.specCache[compositeKey] then
+				TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+			end
 		end
 	end
 	

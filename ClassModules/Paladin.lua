@@ -143,62 +143,7 @@ local function FillSpellData_Holy()
 	specCache.paladin_holy.spellsData:FillSpellData()
 	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.paladin_holy.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.paladin_holy.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCache.paladin_holy)
 end
 
 local function Setup_Protection()
@@ -216,62 +161,7 @@ local function FillSpellData_Protection()
 	specCache.paladin_protection.spellsData:FillSpellData()
 	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.paladin_protection.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.paladin_protection.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCache.paladin_protection)
 end
 
 local function Setup_Retribution()
@@ -289,62 +179,7 @@ local function FillSpellData_Retribution()
 	specCache.paladin_retribution.spellsData:FillSpellData()
 	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.paladin_retribution.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.paladin_retribution.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCache.paladin_retribution)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)

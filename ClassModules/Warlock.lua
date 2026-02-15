@@ -147,62 +147,7 @@ local function FillSpellData_Affliction()
 	specCache.warlock_affliction.spellsData:FillSpellData()
 	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.warlock_affliction.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.warlock_affliction.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCache.warlock_affliction)
 end
 
 local function Setup_Demonology()
@@ -220,62 +165,7 @@ local function FillSpellData_Demonology()
 	specCache.warlock_demonology.spellsData:FillSpellData()
 	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.warlock_demonology.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.warlock_demonology.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCache.warlock_demonology)
 end
 
 
@@ -295,62 +185,7 @@ local function FillSpellData_Destruction()
 	specCache.warlock_destruction.spellsData:FillSpellData()
 	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.warlock_destruction.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.warlock_destruction.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		
-		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCache.warlock_destruction)
 end
 
 local function RefreshTargetTracking()

@@ -1075,7 +1075,18 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 	-- call with the correct isHealer value will override this when the spec becomes active.
 	TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, false)
 
-	return TRB.Data.specCache[compositeKey]
+	-- Populate barTextVariables for cross-class options panel display.
+	-- For the active class, barTextVariables are populated by FillSpellData_[Spec] at load time.
+	-- For non-active classes, we use the registry to fill icons/values from the Classes files.
+	local entry = TRB.Data.specCache[compositeKey]
+	if entry and TRB.Functions.Table:Length(entry.barTextVariables.icons) == 0 then
+		local registry = TRB.Data.barTextVariablesRegistry
+		if registry and registry[compositeKey] then
+			registry[compositeKey](entry)
+		end
+	end
+
+	return entry
 end
 
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
