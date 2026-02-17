@@ -1111,7 +1111,7 @@ function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, 
 	-- ChatConfigCheckButtonTemplate renders text to the RIGHT of the frame, so we offset enough for it
 	cb:SetPoint("RIGHT", importBtn, "LEFT", -75, 0)
 
-	return yCoord - 52
+	return yCoord - 37
 end
 
 ---Builds a Label object for the Options UI
@@ -1231,6 +1231,15 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 	activeTab.bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
 	parent.lastTab = parent.tabsheets[tabId]
 	parent.lastTabId = tabId
+
+	-- Show/hide the Bar Text Variables flyout based on active tab
+	if TRB.Frames.barTextVariablesPanel then
+		if tabId == "barText" then
+			TRB.Frames.barTextVariablesPanel:Show()
+		else
+			TRB.Frames.barTextVariablesPanel:Hide()
+		end
+	end
 end
 
 function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width)
@@ -1448,14 +1457,52 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 end
 
 function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
-	local grandparent = parent:GetParent()
-	local variablesPanelParent = TRB.Functions.OptionsUi:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
-	local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
-	variablesPanelParent:SetBackdropColor(0, 0, 0, 0.8)
-	variablesPanelParent:ClearAllPoints()
-	variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 55, 5)
-	TRB.Functions.OptionsUi:BuildSectionHeader(variablesPanel, "Bar Text Variables", oUi.xCoord, 5)
-	return variablesPanel
+	local mainFrame = TRB.Frames.optionsFrame
+	local panelWidth = 300
+	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
+	cf:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		edgeSize = 8,
+		tileSize = 32,
+		insets = { left = 0, right = 0, top = 0, bottom = 0 },
+	})
+	cf:SetBackdropColor(0, 0, 0, 0.8)
+	cf:SetWidth(panelWidth)
+	cf:ClearAllPoints()
+	cf:SetPoint("TOPLEFT", mainFrame, "TOPRIGHT", 0, 0)
+	cf:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMRIGHT", 0, 0)
+
+	local sfName = "TRB_" .. name .. "_BarTextVariables_FrameScrollFrame"
+	local sf = CreateFrame("ScrollFrame", sfName, cf, "UIPanelScrollFrameTemplate")
+	sf:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+	sf:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -25, 5)
+
+	local scrollChild = CreateFrame("Frame")
+	scrollChild:SetWidth(panelWidth - 30)
+	scrollChild:SetHeight(1) -- will be extended by content
+	sf:SetScrollChild(scrollChild)
+
+	-- Keep scrollChild width in sync when the scroll frame resizes
+	sf:HookScript("OnSizeChanged", function(self, w, h)
+		if scrollChild then
+			scrollChild:SetWidth(w)
+		end
+	end)
+
+	---@diagnostic disable-next-line: inject-field
+	cf.scrollFrame = sf
+	cf.scrollFrame.scrollChild = scrollChild
+
+	-- Start hidden; SwitchTab will show it when the Bar Text tab is active
+	cf:Hide()
+
+	-- Store reference so SwitchTab and nav selection can show/hide it
+	TRB.Frames.barTextVariablesPanel = cf
+
+	TRB.Functions.OptionsUi:BuildSectionHeader(scrollChild, "Bar Text Variables", oUi.xCoord, 5)
+	return scrollChild
 end
 
 function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)

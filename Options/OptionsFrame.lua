@@ -28,7 +28,7 @@ StaticPopupDialogs["TRB_OPTIONSFRAME_URL"] = {
 
 -- Constants
 local FRAME_WIDTH = 960
-local FRAME_HEIGHT = 700
+local FRAME_HEIGHT = 750
 local TITLE_HEIGHT = 30
 local FOOTER_HEIGHT = 24
 local NAV_WIDTH = 220
@@ -664,6 +664,10 @@ function OptionsFrame:SelectCategory(key)
 	-- Hide current panel
 	if self.currentPanel then
 		self.currentPanel:Hide()
+	end
+	-- Hide the Bar Text Variables flyout when switching panels
+	if TRB.Frames.barTextVariablesPanel then
+		TRB.Frames.barTextVariablesPanel:Hide()
 	end
 	if self.selectedKey and self.navEntries[self.selectedKey] and self.navEntries[self.selectedKey].button then
 		self.navEntries[self.selectedKey].button.selectedTexture:Hide()
