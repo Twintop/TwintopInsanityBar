@@ -1879,3 +1879,6 @@ L["ShamanElementalBarTextVariable_manaMax"] = "Maximum Mana"
 
 L["CheckboxSmoothBar"] = "Smooth Bar Animation"
 L["CheckboxSmoothBarTooltip"] = "When checked, updates to this bar will have a short and smooth animation to show the change instead of an instantaneous update."
+
+L["GlobalOptionsCheckboxNumberAbbreviation"] = "Use abbreviated number formatting (10.0K, 1.5M)"
+L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "When checked, large numbers will be displayed in abbreviated form (e.g. 100.0K, 1.5M). When unchecked, the full number with locale-appropriate separators will be shown (e.g. 100,000 or 1.500.000)."

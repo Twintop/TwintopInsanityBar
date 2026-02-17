@@ -51,6 +51,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				enabled = true,
 				lastUpdate = ""
 			},
+			numberAbbreviation = true,
 			minimap = {
 				hide = false,
 			},

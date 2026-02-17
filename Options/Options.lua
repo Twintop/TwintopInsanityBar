@@ -242,6 +242,22 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.numberAbbreviation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Number_Abbreviation", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.numberAbbreviation
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxNumberAbbreviation"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["GlobalOptionsCheckboxNumberAbbreviationTooltip"]
+	f:SetChecked(TRB.Data.settings.core.numberAbbreviation)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.numberAbbreviation = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	yCoord = yCoord - 30
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50

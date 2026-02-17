@@ -15,6 +15,7 @@ local content = [====[
 # 12.0.1.7-release (2026-02-17)
 ## General
 
+- Add an option to enable or disable abbreviated number formatting (e.g. 10.0K, 1.5M) for large numbers across all bars.
 - Fix news popup from blending in with the options window.
 
 ## Hunter
