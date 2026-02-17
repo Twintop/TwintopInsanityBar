@@ -1775,4 +1775,18 @@ if locale == "zhCN" then
     L["CheckboxSmoothBar"] = "平滑进度条动画"
     L["CheckboxSmoothBarTooltip"] = "勾选后，此进度条的数值更新将以短暂平滑的动画效果呈现，而非瞬间跳变。"
 
+
+    L["GlobalOptionsCheckboxNumberAbbreviation"] = "使用数字缩写格式"
+    L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "勾选后，大数将以缩写形式显示（万、亿）。取消勾选则显示完整数字，并使用符合地区习惯的分隔符（例如 100,000 或 1.500.000）。"
+
+
+    L["BarTextVariablesPanelSearchPlaceholder"] = "搜索变量……"
+    L["BarTextVariablesPanelDescriptionDefault"] = "点击上方变量可查看其说明。"
+    L["BarTextVariablesSectionValues"] = "数值"
+    L["BarTextVariablesSectionIcons"] = "图标"
+    L["BarTextVariablesSectionPipe"] = "管道命令"
+    L["BarTextVariablesAddTooltip"] = "在当前激活的条形图文本编辑器中，将此变量插入光标位置"
+    L["BarTextVariablesAddButton"] = "+"
+    L["BarTextVariablesPanelTitle"] = "条形图文本变量"
+
 end
