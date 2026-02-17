@@ -17,6 +17,11 @@ local content = [====[
 
 - Fix news popup from blending in with the options window.
 
+## Hunter
+### Marksmanship
+
+- [#614](#614) Reduced the Trueshot extension from Cant't Miss, Won't Miss from 4 seconds to 2 seconds to match hotfix changes.
+
 ---
 
 # 12.0.1.6-release (2026-02-16)
