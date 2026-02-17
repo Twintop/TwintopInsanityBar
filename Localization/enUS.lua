@@ -1882,3 +1882,12 @@ L["CheckboxSmoothBarTooltip"] = "When checked, updates to this bar will have a s
 
 L["GlobalOptionsCheckboxNumberAbbreviation"] = "Use abbreviated number formatting (10.0K, 1.5M)"
 L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "When checked, large numbers will be displayed in abbreviated form (e.g. 100.0K, 1.5M). When unchecked, the full number with locale-appropriate separators will be shown (e.g. 100,000 or 1.500.000)."
+
+L["BarTextVariablesPanelSearchPlaceholder"] = "Search variables..."
+L["BarTextVariablesPanelDescriptionDefault"] = "Click a variable above to see its description."
+L["BarTextVariablesSectionValues"] = "Values"
+L["BarTextVariablesSectionIcons"] = "Icons"
+L["BarTextVariablesSectionPipe"] = "Pipe Commands"
+L["BarTextVariablesAddTooltip"] = "Insert this variable at the cursor position in the active bar text editor"
+L["BarTextVariablesAddButton"] = "+"
+L["BarTextVariablesPanelTitle"] = "Bar Text Variables"

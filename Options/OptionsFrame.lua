@@ -665,10 +665,9 @@ function OptionsFrame:SelectCategory(key)
 	if self.currentPanel then
 		self.currentPanel:Hide()
 	end
-	-- Hide the Bar Text Variables flyout when switching panels
-	if TRB.Frames.barTextVariablesPanel then
-		TRB.Frames.barTextVariablesPanel:Hide()
-	end
+	-- Clear active edit box tracking when switching panels
+	TRB.Frames.activeBarTextEditBox = nil
+	TRB.Frames.activeBarTextCursorPosition = nil
 	if self.selectedKey and self.navEntries[self.selectedKey] and self.navEntries[self.selectedKey].button then
 		self.navEntries[self.selectedKey].button.selectedTexture:Hide()
 	end
@@ -684,6 +683,30 @@ function OptionsFrame:SelectCategory(key)
 		self.currentPanel = entry.panel
 	end
 	self.selectedKey = key
+
+	-- Show/hide the Bar Text Variables flyout based on the new panel's active tab
+	if entry.panel and entry.panel.lastTabId == "barText" then
+		-- Swap to the new spec's variables panel
+		local barTextSheet = entry.panel.tabsheets and entry.panel.tabsheets["barText"]
+		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
+		if scrollChild and scrollChild.barTextVariablesPanel then
+			-- Hide the previous panel if it's different
+			if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel ~= scrollChild.barTextVariablesPanel then
+				TRB.Frames.barTextVariablesPanel:Hide()
+			end
+			TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
+		end
+		if TRB.Frames.barTextVariablesPanel then
+			TRB.Frames.barTextVariablesPanel:Show()
+			if TRB.Frames.barTextVariablesPanel.variablesTable then
+				TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+			end
+		end
+	else
+		if TRB.Frames.barTextVariablesPanel then
+			TRB.Frames.barTextVariablesPanel:Hide()
+		end
+	end
 
 	-- Highlight the button
 	if entry.button then

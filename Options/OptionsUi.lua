@@ -1233,12 +1233,30 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 	parent.lastTabId = tabId
 
 	-- Show/hide the Bar Text Variables flyout based on active tab
-	if TRB.Frames.barTextVariablesPanel then
-		if tabId == "barText" then
+	if tabId == "barText" then
+		-- Swap to the correct spec's variables panel via the tabsheet's scrollChild
+		local barTextSheet = parent.tabsheets and parent.tabsheets["barText"]
+		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
+		if scrollChild and scrollChild.barTextVariablesPanel then
+			-- Hide the previous panel if it's different
+			if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel ~= scrollChild.barTextVariablesPanel then
+				TRB.Frames.barTextVariablesPanel:Hide()
+			end
+			TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
+		end
+		if TRB.Frames.barTextVariablesPanel then
 			TRB.Frames.barTextVariablesPanel:Show()
-		else
+			if TRB.Frames.barTextVariablesPanel.variablesTable then
+				TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+			end
+		end
+	else
+		if TRB.Frames.barTextVariablesPanel then
 			TRB.Frames.barTextVariablesPanel:Hide()
 		end
+		-- Clear active edit box tracking when leaving the Bar Text tab
+		TRB.Frames.activeBarTextEditBox = nil
+		TRB.Frames.activeBarTextCursorPosition = nil
 	end
 end
 
@@ -1456,9 +1474,11 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
+function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
-	local panelWidth = 300
+	local panelWidth = 350
+
+	-- Outer container frame anchored to the right of the main options frame
 	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
 	cf:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -1474,35 +1494,480 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
 	cf:SetPoint("TOPLEFT", mainFrame, "TOPRIGHT", 0, 0)
 	cf:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMRIGHT", 0, 0)
 
-	local sfName = "TRB_" .. name .. "_BarTextVariables_FrameScrollFrame"
-	local sf = CreateFrame("ScrollFrame", sfName, cf, "UIPanelScrollFrameTemplate")
-	sf:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
-	sf:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -25, 5)
-
-	local scrollChild = CreateFrame("Frame")
-	scrollChild:SetWidth(panelWidth - 30)
-	scrollChild:SetHeight(1) -- will be extended by content
-	sf:SetScrollChild(scrollChild)
-
-	-- Keep scrollChild width in sync when the scroll frame resizes
-	sf:HookScript("OnSizeChanged", function(self, w, h)
-		if scrollChild then
-			scrollChild:SetWidth(w)
-		end
-	end)
-
-	---@diagnostic disable-next-line: inject-field
-	cf.scrollFrame = sf
-	cf.scrollFrame.scrollChild = scrollChild
-
 	-- Start hidden; SwitchTab will show it when the Bar Text tab is active
 	cf:Hide()
 
 	-- Store reference so SwitchTab and nav selection can show/hide it
 	TRB.Frames.barTextVariablesPanel = cf
+	-- Also register in the per-spec lookup table so we can swap panels on spec switch
+	TRB.Frames.barTextVariablesPanelRegistry = TRB.Frames.barTextVariablesPanelRegistry or {}
+	TRB.Frames.barTextVariablesPanelRegistry[name] = cf
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(scrollChild, "Bar Text Variables", oUi.xCoord, 5)
-	return scrollChild
+	-- =============================================
+	-- Title
+	-- =============================================
+	local titleLabel = cf:CreateFontString(nil, "OVERLAY")
+	titleLabel:SetFontObject(GameFontNormalLarge)
+	titleLabel:SetPoint("TOPLEFT", cf, "TOPLEFT", 10, -8)
+	titleLabel:SetText(L["BarTextVariablesPanelTitle"])
+
+	-- =============================================
+	-- Search box
+	-- =============================================
+	local searchBox = CreateFrame("EditBox", "TRB_" .. name .. "_BarTextVariables_Search", cf, "InputBoxTemplate")
+	searchBox:SetSize(panelWidth - 30, 20)
+	searchBox:SetPoint("TOPLEFT", cf, "TOPLEFT", 18, -30)
+	searchBox:SetAutoFocus(false)
+	searchBox:SetFontObject(ChatFontNormal)
+
+	local searchPlaceholder = searchBox:CreateFontString(nil, "ARTWORK")
+	searchPlaceholder:SetFontObject(GameFontDisable)
+	searchPlaceholder:SetPoint("LEFT", searchBox, "LEFT", 4, 0)
+	searchPlaceholder:SetText(L["BarTextVariablesPanelSearchPlaceholder"])
+	searchBox:SetScript("OnEditFocusGained", function(self)
+		searchPlaceholder:Hide()
+	end)
+	searchBox:SetScript("OnEditFocusLost", function(self)
+		if self:GetText() == "" then
+			searchPlaceholder:Show()
+		end
+	end)
+	searchBox:SetScript("OnEscapePressed", function(self)
+		self:ClearFocus()
+	end)
+
+	-- =============================================
+	-- Description pane (bottom 30% of the panel)
+	-- =============================================
+	local descHeight = 120
+	local descFrame = CreateFrame("Frame", nil, cf, "BackdropTemplate")
+	descFrame:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		edgeSize = 8,
+		tileSize = 16,
+		insets = { left = 2, right = 2, top = 2, bottom = 2 },
+	})
+	descFrame:SetBackdropColor(0.05, 0.05, 0.05, 0.9)
+	descFrame:SetHeight(descHeight)
+	descFrame:SetPoint("BOTTOMLEFT", cf, "BOTTOMLEFT", 5, 5)
+	descFrame:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -5, 5)
+
+	local descLabel = descFrame:CreateFontString(nil, "OVERLAY")
+	descLabel:SetFontObject(GameFontNormal)
+	descLabel:SetPoint("TOPLEFT", descFrame, "TOPLEFT", 8, -6)
+	descLabel:SetWidth(panelWidth - 30)
+	descLabel:SetJustifyH("LEFT")
+	descLabel:SetJustifyV("TOP")
+	descLabel:SetText("")
+
+	local descText = descFrame:CreateFontString(nil, "OVERLAY")
+	descText:SetFontObject(GameFontHighlight)
+	descText:SetPoint("TOPLEFT", descLabel, "BOTTOMLEFT", 0, -4)
+	descText:SetPoint("BOTTOMRIGHT", descFrame, "BOTTOMRIGHT", -8, 6)
+	descText:SetJustifyH("LEFT")
+	descText:SetJustifyV("TOP")
+	---@diagnostic disable-next-line: redundant-parameter
+	descText:SetWordWrap(true)
+	descText:SetText(L["BarTextVariablesPanelDescriptionDefault"])
+
+	-- =============================================
+	-- Table container (between search and description)
+	-- =============================================
+	local tableContainer = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_TableContainer", cf)
+	tableContainer:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -55)
+	tableContainer:SetPoint("BOTTOMRIGHT", descFrame, "TOPRIGHT", -5, 2)
+
+	-- =============================================
+	-- Build data table from cache.barTextVariables
+	-- =============================================
+	local allData = {}     -- flat array for LibScrollingTable
+	local sectionOrder = { "values", "pipe", "icons" }
+	local sectionLabels = {
+		values = L["BarTextVariablesSectionValues"],
+		pipe = L["BarTextVariablesSectionPipe"],
+		icons = L["BarTextVariablesSectionIcons"],
+	}
+
+	local function BuildDataTable(barTextVariables)
+		local data = {}
+		for _, sectionKey in ipairs(sectionOrder) do
+			local sectionEntries = barTextVariables[sectionKey]
+			if sectionEntries and #sectionEntries > 0 then
+				local hasVisible = false
+				for _, entry in ipairs(sectionEntries) do
+					if entry.printInSettings then
+						hasVisible = true
+						break
+					end
+				end
+				if hasVisible then
+					-- Section header row
+					table.insert(data, {
+						cols = {
+							{ value = "" },
+							{ value = sectionLabels[sectionKey] },
+						},
+						isHeader = true,
+						sectionKey = sectionKey,
+						variable = "",
+						description = "",
+					})
+					-- Variable rows
+					for _, entry in ipairs(sectionEntries) do
+						if entry.printInSettings then
+							local desc = entry.description or ""
+							if sectionKey == "icons" and entry.icon and entry.icon ~= "" then
+								desc = entry.icon .. " " .. desc
+							end
+							table.insert(data, {
+								cols = {
+									{ value = L["BarTextVariablesAddButton"] },
+									{ value = entry.variable },
+								},
+								isHeader = false,
+								sectionKey = sectionKey,
+								variable = entry.variable,
+								description = desc,
+							})
+						end
+					end
+				end
+			end
+		end
+		return data
+	end
+
+	-- Ensure barTextVariables are populated for this spec.
+	-- For non-active specs, FillBarTextVariables hasn't been called yet during SwitchSpec,
+	-- so we use the barTextVariablesRegistry to fill them on demand.
+	local registryKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local function EnsureBarTextVariablesPopulated()
+		local vals = cache.barTextVariables.values
+		if vals == nil or #vals == 0 then
+			local registry = TRB.Data.barTextVariablesRegistry
+			if registry and registryKey and registry[registryKey] then
+				registry[registryKey](cache)
+			end
+		end
+	end
+
+	EnsureBarTextVariablesPopulated()
+	allData = BuildDataTable(cache.barTextVariables)
+
+	-- =============================================
+	-- Calculate how many rows fit in the table area
+	-- =============================================
+	local rowHeight = 22
+	-- Reserve space: panel top (55px for title+search) + description pane (descHeight + gap)
+	-- The table container fills the remainder. Estimate available height.
+	-- We use a conservative default; the table will scroll.
+	local estimatedTableHeight = 400  -- Reasonable default, will be dynamically limited by anchors
+	local numDisplayRows = math.max(5, math.floor(estimatedTableHeight / rowHeight))
+
+	-- =============================================
+	-- LibScrollingTable columns
+	-- Column 1 = Add button (+), Column 2 = Variable name
+	-- =============================================
+	local columns = {
+		{
+			["name"] = "",
+			["width"] = 28,
+			["align"] = "CENTER",
+			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
+				if not fShow then return end
+				local rowData = data[realrow]
+				if rowData and rowData.isHeader then
+					cellFrame.text:SetText("")
+				else
+					cellFrame.text:SetFontObject(GameFontNormal)
+					local hasActiveEditBox = TRB.Frames.activeBarTextEditBox ~= nil
+					if hasActiveEditBox then
+						cellFrame.text:SetTextColor(0.2, 0.9, 0.2, 1)
+					else
+						cellFrame.text:SetTextColor(0.5, 0.5, 0.5, 0.6)
+					end
+					cellFrame.text:SetText(L["BarTextVariablesAddButton"])
+				end
+			end,
+		},
+		{
+			["name"] = "",
+			["width"] = panelWidth - 75,
+			["align"] = "LEFT",
+			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
+				if not fShow then return end
+				local rowData = data[realrow]
+				if rowData and rowData.isHeader then
+					cellFrame.text:SetFontObject(GameFontNormal)
+					cellFrame.text:SetTextColor(1, 0.82, 0, 1)
+					cellFrame.text:SetText(rowData.cols[2].value)
+				else
+					cellFrame.text:SetFontObject(GameFontHighlight)
+					cellFrame.text:SetTextColor(1, 1, 1, 1)
+					cellFrame.text:SetText(rowData and rowData.cols[2].value or "")
+				end
+			end,
+		},
+	}
+
+	local variablesTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, numDisplayRows, rowHeight, nil, tableContainer, false)
+	variablesTable:EnableSelection(true)
+	variablesTable.frame:SetPoint("TOPLEFT", tableContainer, "TOPLEFT", 0, 0)
+	variablesTable.frame:SetPoint("TOPRIGHT", tableContainer, "TOPRIGHT", 0, 0)
+	variablesTable:SetData(allData)
+
+	-- Raise the search box above the table header frames so it remains clickable
+	searchBox:SetFrameLevel(variablesTable.frame:GetFrameLevel() + 10)
+
+	-- Dynamically resize the table when the container size changes
+	tableContainer:HookScript("OnSizeChanged", function(self, w, h)
+		local newRows = math.max(5, math.floor(h / rowHeight))
+		if newRows ~= variablesTable.displayRows then
+			variablesTable:SetDisplayRows(newRows, rowHeight)
+		end
+		-- Resize variable column (col 2) to fill remaining width
+		columns[2].width = math.max(100, w - columns[1].width - 45)
+		variablesTable:SetDisplayCols(columns)
+	end)
+
+	-- =============================================
+	-- Search filtering
+	-- =============================================
+	local searchText = ""
+	variablesTable:SetFilter(function(self, rowData)
+		if searchText == "" then
+			return true
+		end
+		if rowData.isHeader then
+			-- Show header if any child in the same section passes the filter
+			local started = false
+			for _, d in ipairs(allData) do
+				if d == rowData then
+					started = true
+				elseif started then
+					if d.isHeader then
+						break -- next section
+					end
+					local var = (d.variable or ""):lower()
+					local desc = (d.description or ""):lower()
+					if string.find(var, searchText, 1, true) or string.find(desc, searchText, 1, true) then
+						return true
+					end
+				end
+			end
+			return false
+		end
+		local var = (rowData.variable or ""):lower()
+		local desc = (rowData.description or ""):lower()
+		return string.find(var, searchText, 1, true) or string.find(desc, searchText, 1, true)
+	end)
+
+	searchBox:SetScript("OnTextChanged", function(self, userInput)
+		searchText = self:GetText():lower()
+		variablesTable:SortData() -- Re-filters and refreshes
+	end)
+
+	-- =============================================
+	-- Row click / Add button behavior
+	-- =============================================
+	variablesTable:RegisterEvents({
+		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" and realrow and realrow > 0 then
+				local rowData = data[realrow]
+				if rowData and rowData.isHeader then
+					-- Section header click — do nothing
+					scrollingTable:ClearSelection()
+					return true
+				end
+
+				if column == 1 then
+					-- "Add" button column clicked — insert variable at cursor
+					local editBox = TRB.Frames.activeBarTextEditBox
+					if editBox and rowData and rowData.variable and rowData.variable ~= "" then
+						local cursorPos = TRB.Frames.activeBarTextCursorPosition or editBox:GetCursorPosition()
+						local currentText = editBox:GetText() or ""
+						local before = string.sub(currentText, 1, cursorPos)
+						local after = string.sub(currentText, cursorPos + 1)
+						local varText = rowData.variable
+						local newText = before .. varText .. after
+						editBox:SetText(newText)
+						-- Move cursor to just after inserted variable
+						local newCursorPos = cursorPos + string.len(varText)
+						editBox:SetCursorPosition(newCursorPos)
+						TRB.Frames.activeBarTextCursorPosition = newCursorPos
+
+						-- Fire the OnTextChanged to update working data
+						if editBox:GetScript("OnTextChanged") then
+							editBox:GetScript("OnTextChanged")(editBox, true)
+						end
+					end
+					-- Don't select the row for an add-button click
+					scrollingTable:ClearSelection()
+					return true
+				else
+					-- Normal click — show description and select the row
+					if rowData then
+						descLabel:SetText(rowData.variable or "")
+						descText:SetText(rowData.description or "")
+						scrollingTable:SetSelection(realrow)
+					end
+				end
+			end
+			return true
+		end,
+		["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow and realrow > 0 then
+				local rowData = data[realrow]
+				if rowData and not rowData.isHeader then
+					scrollingTable:SetHighLightColor(rowFrame, scrollingTable:GetDefaultHighlight())
+					-- Tooltip for add button
+					if column == 1 then
+						GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+						GameTooltip:SetText(L["BarTextVariablesAddTooltip"], 1, 1, 1)
+						GameTooltip:Show()
+					end
+				end
+			end
+			return true
+		end,
+		["OnLeave"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow and realrow > 0 then
+				local rowData = data[realrow]
+				if not rowData or not rowData.isHeader then
+					-- Only clear highlight if this row is not the current selection
+					if realrow ~= scrollingTable:GetSelection() then
+						scrollingTable:SetHighLightColor(rowFrame, scrollingTable:GetDefaultHighlightBlank())
+					end
+				end
+			end
+			GameTooltip:Hide()
+			return true
+		end,
+	})
+
+	-- Refresh data from cache on each Show (handles cases where barTextVariables
+	-- were not yet populated at construction time, e.g. when spec was not active).
+	cf:HookScript("OnShow", function()
+		EnsureBarTextVariablesPopulated()
+		local newData = BuildDataTable(cache.barTextVariables)
+		if #newData > 0 and #newData ~= #allData then
+			allData = newData
+			variablesTable:SetData(allData)
+			variablesTable:SortData()
+		end
+	end)
+
+	---@diagnostic disable-next-line: inject-field
+	cf.variablesTable = variablesTable
+	---@diagnostic disable-next-line: inject-field
+	cf.allData = allData
+	---@diagnostic disable-next-line: inject-field
+	cf.BuildDataTable = BuildDataTable
+	---@diagnostic disable-next-line: inject-field
+	cf.descLabel = descLabel
+	---@diagnostic disable-next-line: inject-field
+	cf.descText = descText
+	---@diagnostic disable-next-line: inject-field
+	cf.searchBox = searchBox
+
+	return cf
+end
+
+---Attaches undo/redo support (Ctrl+Z / Ctrl+Y) to an EditBox.
+---Text snapshots are recorded on a debounced timer so rapid typing collapses into
+---a single history entry.  The public helpers `editBox:ResetUndoHistory()` and
+---`editBox:ResetUndoHistory(initialText)` are added for external use (e.g. when
+---the user switches to a different bar-text entry).
+local UNDO_MAX_HISTORY = 50
+local UNDO_DEBOUNCE_SEC = 0.4
+
+local function AttachUndoRedo(editBox)
+	-- Private state stored directly on the frame
+	editBox._undoHistory  = { editBox:GetText() or "" }
+	editBox._undoCursors  = { 0 }
+	editBox._undoIndex    = 1
+	editBox._undoSuppress = false  -- flag: true while we are programmatically setting text
+	editBox._undoTimer    = nil
+
+	--- Reset the undo stack (call when loading a different entry).
+	---@param initialText? string  If given, seeds the stack with this text.
+	function editBox:ResetUndoHistory(initialText)
+		if self._undoTimer then self._undoTimer:Cancel(); self._undoTimer = nil end
+		local t = initialText or self:GetText() or ""
+		self._undoHistory  = { t }
+		self._undoCursors  = { self:GetCursorPosition() or 0 }
+		self._undoIndex    = 1
+	end
+
+	-- Helper: push current text onto the stack (trimming any future entries).
+	local function PushState(self)
+		local text   = self:GetText()
+		local cursor = self:GetCursorPosition() or 0
+		-- Don't push if identical to the current entry
+		if self._undoHistory[self._undoIndex] == text then return end
+		-- Trim any redo entries beyond the current index
+		for i = #self._undoHistory, self._undoIndex + 1, -1 do
+			table.remove(self._undoHistory, i)
+			table.remove(self._undoCursors, i)
+		end
+		-- Push
+		table.insert(self._undoHistory, text)
+		table.insert(self._undoCursors, cursor)
+		-- Cap size
+		if #self._undoHistory > UNDO_MAX_HISTORY then
+			table.remove(self._undoHistory, 1)
+			table.remove(self._undoCursors, 1)
+		end
+		self._undoIndex = #self._undoHistory
+	end
+
+	-- Record text changes (debounced, user-input only)
+	editBox:HookScript("OnTextChanged", function(self, userInput)
+		if self._undoSuppress or not userInput then return end
+		if self._undoTimer then self._undoTimer:Cancel() end
+		self._undoTimer = C_Timer.NewTimer(UNDO_DEBOUNCE_SEC, function()
+			self._undoTimer = nil
+			PushState(self)
+		end)
+	end)
+
+	-- Intercept Ctrl+Z (undo), Ctrl+Y / Ctrl+Shift+Z (redo)
+	editBox:SetScript("OnKeyDown", function(self, key)
+		local handled = false
+		if IsControlKeyDown() then
+			local isRedo = (key == "Y") or (key == "Z" and IsShiftKeyDown())
+			if key == "Z" and not IsShiftKeyDown() then
+				handled = true
+				-- Flush any pending debounce so the current state is saved first
+				if self._undoTimer then
+					self._undoTimer:Cancel()
+					self._undoTimer = nil
+					PushState(self)
+				end
+				if self._undoIndex > 1 then
+					self._undoIndex = self._undoIndex - 1
+					self._undoSuppress = true
+					self:SetText(self._undoHistory[self._undoIndex])
+					self:SetCursorPosition(self._undoCursors[self._undoIndex] or 0)
+					self._undoSuppress = false
+				end
+			elseif isRedo then
+				handled = true
+				if self._undoIndex < #self._undoHistory then
+					self._undoIndex = self._undoIndex + 1
+					self._undoSuppress = true
+					self:SetText(self._undoHistory[self._undoIndex])
+					self:SetCursorPosition(self._undoCursors[self._undoIndex] or 0)
+					self._undoSuppress = false
+				end
+			end
+		end
+		-- Prevent keystrokes from leaking to game keybinds.
+		-- Must be called AFTER all processing (WoW requirement).
+		self:SetPropagateKeyboardInput(false)
+	end)
 end
 
 function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
@@ -1547,6 +2012,17 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	e:SetWidth(width)
 	e:SetText(text)
 	e:SetAutoFocus(false)
+
+	-- Track this EditBox as the active bar text editor when it gains focus.
+	-- We remember both the EditBox and cursor position so the side panel
+	-- "Add" button can insert variables at the right place even after focus
+	-- moves away.
+	e:HookScript("OnEditFocusGained", function(self)
+		TRB.Frames.activeBarTextEditBox = self
+	end)
+	e:HookScript("OnEditFocusLost", function(self)
+		TRB.Frames.activeBarTextCursorPosition = self:GetCursorPosition()
+	end)
 
 	-- Clicking anywhere in the scroll frame (not just on text) gives focus to the EditBox
 	s:EnableMouse(true)
@@ -5122,6 +5598,31 @@ function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spe
 	dd:SetPoint("TOPLEFT", oUi.xPadding2, yCoord-20)
 end
 
+-- Delete-bar-text confirmation dialog.  Defined once (outside GenerateBarTextEditor)
+-- so that every spec shares a single dialog whose OnAccept works entirely from the
+-- per-invocation data payload — no closure references to the wrong spec's locals.
+StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
+	text = "",
+	button1 = L["Yes"],
+	button2 = L["No"],
+	OnShow = function(self, data)
+		self:SetFormattedText(data.message)
+		self.data = data
+	end,
+	OnAccept = function(self)
+		local d = self.data
+		d.btt:SetSelection()
+		table.remove(d.displayText.barText, d.row)
+		d.setTableValues(d.displayText, d.btt)
+		TRB.Functions.BarText:CreateBarTextFrames(d.classId, d.specId)
+		d.barTextOptionsFrame:Hide()
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3
+}
+
 ---
 ---@param parent frame
 ---@param controls table
@@ -5841,6 +6342,26 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextScrollFrame:SetPoint("RIGHT", barTextOptionsFrame, "RIGHT", -30, 0)
 	barText:SetCursorPosition(0)
 
+	-- When the bar text editor frame is shown (selecting/adding a bar text area),
+	-- mark the EditBox as active so the side panel "+" buttons turn green.
+	barTextOptionsFrame:HookScript("OnShow", function()
+		TRB.Frames.activeBarTextEditBox = barText
+		TRB.Frames.activeBarTextCursorPosition = barText:GetCursorPosition()
+		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end)
+
+	-- When the bar text editor frame is hidden (deleting a bar text area or switching panels),
+	-- clear the active EditBox so the "+" buttons revert to gray/disabled.
+	barTextOptionsFrame:HookScript("OnHide", function()
+		TRB.Frames.activeBarTextEditBox = nil
+		TRB.Frames.activeBarTextCursorPosition = nil
+		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end)
+
 	---@param displayText TRB.Classes.Settings.DisplayText
 	---@param btt table # LibScrollingTable
 	local function SetTableValues(displayText, btt)
@@ -5932,6 +6453,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		fontSize:SetValue(workingBarText.fontSize)
 		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString((workingBarText.color and workingBarText.color.color) or "FFFFFFFF", true))
 		barText:SetText(workingBarText.text)
+		-- Reset undo history so the newly loaded text is the baseline
+		if barText.ResetUndoHistory then
+			barText:ResetUndoHistory(workingBarText.text)
+		end
 
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
@@ -5976,38 +6501,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Data.cache.barTextTree = {}
 	end)
 
-	---Deletes a specified bar text row
-	---@param displayText TRB.Classes.Settings.DisplayText
-	---@param deleteClassId integer
-	---@param deleteSpecId integer
-	---@param row integer
-	---@param btt table
-	local function DeleteBarTextRow(displayText, deleteClassId, deleteSpecId, row, btt)
-		btt:SetSelection()
-		table.remove(displayText.barText, row)
----@diagnostic disable-next-line: missing-fields
-		workingBarText = {}
-		SetTableValues(displayText, btt)
-		TRB.Functions.BarText:CreateBarTextFrames(deleteClassId, deleteSpecId)
-		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
-	end
-
-	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
-		text = "",
-		button1 = L["Yes"],
-		button2 = L["No"],
-		OnShow = function(self, data)
-			self:SetFormattedText(data.message)
-			self.data = data
-		end,
-		OnAccept = function(self)
-			DeleteBarTextRow(self.data.displayText, self.data.classId, self.data.specId, self.data.row, self.data.btt)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
+	-- Attach undo/redo AFTER SetScript("OnTextChanged") so the HookScript
+	-- recording handler is guaranteed to persist.
+	AttachUndoRedo(barText)
 
 	barTextTable:RegisterEvents({
 		OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
@@ -6025,6 +6521,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 							btt = scrollingTable,
 							classId = classId,
 							specId = specId,
+							barTextOptionsFrame = barTextOptionsFrame,
+							setTableValues = SetTableValues,
 						})
 					else
 						FillBarTextEditorFields(guid, spec.displayText)
@@ -6065,7 +6563,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	controls.barTextFields.ResetTableValues = ResetTableValues
 
 	yCoord = oldYCoord
-	local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
+	local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix, cache, classId, specId)
+	-- Tag the scroll child's ancestor (the tabsheet parent) so SwitchTab/SelectCategory can find the right panel
+	---@diagnostic disable-next-line: inject-field
+	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-	TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 end

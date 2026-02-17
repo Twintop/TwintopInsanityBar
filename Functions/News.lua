@@ -15,6 +15,8 @@ local content = [====[
 # 12.0.1.7-release (2026-02-17)
 ## General
 
+- [#313](#313) Upgrade the Bar Text Variables flyout to have a searchable list of variables with descriptions and icons. Add the option to insert the current variable into the Bar Text editor at the current cursor position.
+- Add undo/redo functionality to the Bar Text editor with standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
 - Add an option to enable or disable abbreviated number formatting (e.g. 10.0K, 1.5M) for large numbers across all bars.
 - Fix news popup from blending in with the options window.
 
