@@ -17,22 +17,22 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	beastMastery = TRB.Classes.SpecCache:New(),
-	marksmanship = TRB.Classes.SpecCache:New(),
-	survival = TRB.Classes.SpecCache:New()
+	hunter_beastMastery = TRB.Classes.SpecCache:New(),
+	hunter_marksmanship = TRB.Classes.SpecCache:New(),
+	hunter_survival = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Beast Mastery
-	specCache.beastMastery.Global_TwintopResourceBar = {
+	specCache.hunter_beastMastery.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0
 		}
 	}
 
-	specCache.beastMastery.character = {
+	specCache.hunter_beastMastery.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -42,29 +42,29 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Hunter.BeastMasterySpells
-	specCache.beastMastery.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
+	specCache.hunter_beastMastery.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	local spells = specCache.beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
-	specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
-	specCache.beastMastery.snapshotData.audio = {
+	specCache.hunter_beastMastery.snapshotData.attributes.resourceRegen = 0
+	specCache.hunter_beastMastery.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.bestialWrath.id] = TRB.Classes.Snapshot:New(spells.bestialWrath)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.bestialWrath.id] = TRB.Classes.Snapshot:New(spells.bestialWrath)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.beastCleave.id] = TRB.Classes.Snapshot:New(spells.beastCleave)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.beastCleave.id] = TRB.Classes.Snapshot:New(spells.beastCleave)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.wildThrash.id] = TRB.Classes.Snapshot:New(spells.wildThrash)
+	specCache.hunter_beastMastery.snapshotData.snapshots[spells.wildThrash.id] = TRB.Classes.Snapshot:New(spells.wildThrash)
 
-	specCache.beastMastery.barTextVariables = {
+	specCache.hunter_beastMastery.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -72,7 +72,7 @@ local function FillSpecializationCache()
 
 	-- Marksmanship
 
-	specCache.marksmanship.Global_TwintopResourceBar = {
+	specCache.hunter_marksmanship.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -80,7 +80,7 @@ local function FillSpecializationCache()
 		}
 	}
 
-	specCache.marksmanship.character = {
+	specCache.hunter_marksmanship.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -89,38 +89,38 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Hunter.MarksmanshipSpells
-	specCache.marksmanship.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
+	specCache.hunter_marksmanship.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
-	specCache.marksmanship.snapshotData.attributes.resourceRegen = 0
-	specCache.marksmanship.snapshotData.audio = {
+	specCache.hunter_marksmanship.snapshotData.attributes.resourceRegen = 0
+	specCache.hunter_marksmanship.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 
-	specCache.marksmanship.barTextVariables = {
+	specCache.hunter_marksmanship.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Survival
-	specCache.survival.Global_TwintopResourceBar = {
+	specCache.hunter_survival.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0
 		}
 	}
 
-	specCache.survival.character = {
+	specCache.hunter_survival.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -129,24 +129,24 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Hunter.SurvivalSpells
-	specCache.survival.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
+	specCache.hunter_survival.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
-	specCache.survival.snapshotData.attributes.resourceRegen = 0
-	specCache.survival.snapshotData.audio = {
+	specCache.hunter_survival.snapshotData.attributes.resourceRegen = 0
+	specCache.hunter_survival.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
+	specCache.hunter_survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
+	specCache.hunter_survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.boomstick.id] = TRB.Classes.Snapshot:New(spells.boomstick)
+	specCache.hunter_survival.snapshotData.snapshots[spells.boomstick.id] = TRB.Classes.Snapshot:New(spells.boomstick)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[spells.takedown.id] = TRB.Classes.Snapshot:New(spells.takedown)
+	specCache.hunter_survival.snapshotData.snapshots[spells.takedown.id] = TRB.Classes.Snapshot:New(spells.takedown)
 	
 
-	specCache.survival.barTextVariables = {
+	specCache.hunter_survival.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -164,68 +164,10 @@ end
 
 local function FillSpellData_BeastMastery()
 	Setup_BeastMastery()
-	specCache.beastMastery.spellsData:FillSpellData()
-	local spells = specCache.beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	specCache.hunter_beastMastery.spellsData:FillSpellData()
+	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.beastMastery.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
-		{ variable = "#bestialWrath", icon = spells.bestialWrath.icon, description = spells.bestialWrath.name, printInSettings = true },
-		{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = spells.cobraShot.name, printInSettings = true },
-		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
-		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
-		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-	}
-	specCache.beastMastery.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$focus", description = L["HunterBeastMasteryBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterBeastMasteryBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
-		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false }
-	}
+	TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCache.hunter_beastMastery)
 end
 
 local function Setup_Marksmanship()
@@ -240,70 +182,10 @@ end
 
 local function FillSpellData_Marksmanship()
 	Setup_Marksmanship()
-	specCache.marksmanship.spellsData:FillSpellData()
-	local spells = specCache.marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	specCache.hunter_marksmanship.spellsData:FillSpellData()
+	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.marksmanship.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
-		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
-		{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
-		{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
-		{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = spells.rapidFire.name, printInSettings = true },
-		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
-		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-		{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
-		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true }
-	}
-	specCache.marksmanship.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$focus", description = L["HunterMarksmanshipBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterMarksmanshipBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
-	}
+	TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCache.hunter_marksmanship)
 end
 
 local function Setup_Survival()
@@ -318,68 +200,10 @@ end
 
 local function FillSpellData_Survival()
 	Setup_Survival()
-	specCache.survival.spellsData:FillSpellData()
-	local spells = specCache.survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	specCache.hunter_survival.spellsData:FillSpellData()
+	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.survival.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
-		{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = spells.raptorStrike.name, printInSettings = true },
-		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
-		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
-		{ variable = "#takedown", icon = spells.takedown.icon, description = spells.takedown.name, printInSettings = true },
-		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
-		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
-	}
-	specCache.survival.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$focus", description = L["HunterSurvivalBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterSurvivalBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$takedownTime", description = L["HunterSurvivalBarTextVariable_takedownTime"], printInSettings = true, color = false },
-	}
+	TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCache.hunter_survival)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -443,7 +267,7 @@ end
 
 local function RefreshLookupData_BeastMastery()
 	local specSettings = TRB.Data.settings.hunter.beastMastery
-	local sharedSettings = TRB.Data.specCache["beastMastery"].settings
+	local sharedSettings = TRB.Data.specCache["hunter_beastMastery"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -526,7 +350,7 @@ end
 
 local function RefreshLookupData_Marksmanship()
 	local specSettings = TRB.Data.settings.hunter.marksmanship
-	local sharedSettings = TRB.Data.specCache["marksmanship"].settings
+	local sharedSettings = TRB.Data.specCache["hunter_marksmanship"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -602,7 +426,7 @@ end
 
 local function RefreshLookupData_Survival()
 	local specSettings = TRB.Data.settings.hunter.survival
-	local sharedSettings = TRB.Data.specCache["survival"].settings
+	local sharedSettings = TRB.Data.specCache["hunter_survival"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -854,11 +678,11 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.beastMastery
-		local specCacheSettings = TRB.Data.specCache.beastMastery.settings
+		local specCacheSettings = TRB.Data.specCache.hunter_beastMastery.settings
 		UpdateSnapshot_BeastMastery()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]				
@@ -1013,7 +837,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1028,11 +852,11 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.marksmanship
-		local specCacheSettings = TRB.Data.specCache.marksmanship.settings
+		local specCacheSettings = TRB.Data.specCache.hunter_marksmanship.settings
 		UpdateSnapshot_Marksmanship()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
@@ -1189,7 +1013,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1204,11 +1028,11 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.survival
-		local specCacheSettings = TRB.Data.specCache.survival.settings
+		local specCacheSettings = TRB.Data.specCache.hunter_survival.settings
 		UpdateSnapshot_Survival()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
@@ -1319,7 +1143,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health ~= "never" then
+		if specSettings.displayBar.health.visibility ~= "never" then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1349,9 +1173,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 
 	if TRB.Data.character.specId == 1 then
-		specCache.beastMastery.talents:GetTalents()
+		specCache.hunter_beastMastery.talents:GetTalents()
 		FillSpellData_BeastMastery()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.hunter_beastMastery)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
@@ -1360,7 +1184,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.beastMastery.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.hunter_beastMastery.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#beastCleave"] = spells.beastCleave.icon
@@ -1375,15 +1199,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "beastMastery" then
-			talents = specCache.beastMastery.talents
-			TRB.Data.barConstructedForSpec = "beastMastery"
-			ConstructResourceBar(specCache.beastMastery.settings)
+		if TRB.Data.barConstructedForSpec ~= "hunter_beastMastery" then
+			talents = specCache.hunter_beastMastery.talents
+			TRB.Data.barConstructedForSpec = "hunter_beastMastery"
+			ConstructResourceBar(specCache.hunter_beastMastery.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.marksmanship.talents:GetTalents()
+		specCache.hunter_marksmanship.talents:GetTalents()
 		FillSpellData_Marksmanship()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.hunter_marksmanship)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
@@ -1392,7 +1216,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.marksmanship.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.hunter_marksmanship.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#aimedShot"] = spells.aimedShot.icon
@@ -1410,15 +1234,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "marksmanship" then
-			talents = specCache.marksmanship.talents
-			TRB.Data.barConstructedForSpec = "marksmanship"
-			ConstructResourceBar(specCache.marksmanship.settings)
+		if TRB.Data.barConstructedForSpec ~= "hunter_marksmanship" then
+			talents = specCache.hunter_marksmanship.talents
+			TRB.Data.barConstructedForSpec = "hunter_marksmanship"
+			ConstructResourceBar(specCache.hunter_marksmanship.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.survival.talents:GetTalents()
+		specCache.hunter_survival.talents:GetTalents()
 		FillSpellData_Survival()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.hunter_survival)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
@@ -1427,7 +1251,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.survival.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.hunter_survival.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#killCommand"] = spells.killCommand.icon
@@ -1444,10 +1268,10 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "survival" then
-			talents = specCache.survival.talents
-			TRB.Data.barConstructedForSpec = "survival"
-			ConstructResourceBar(specCache.survival.settings)
+		if TRB.Data.barConstructedForSpec ~= "hunter_survival" then
+			talents = specCache.hunter_survival.talents
+			TRB.Data.barConstructedForSpec = "hunter_survival"
+			ConstructResourceBar(specCache.hunter_survival.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1607,10 +1431,13 @@ function TRB.Functions.Class:CheckCharacter()
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "beastMastery"
+		TRB.Data.character.compositeKey = "hunter_beastMastery"
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "marksmanship"
+		TRB.Data.character.compositeKey = "hunter_marksmanship"
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "survival"
+		TRB.Data.character.compositeKey = "hunter_survival"
 	end
 end
 
@@ -1641,8 +1468,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -1654,9 +1481,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Hunter has no secondary bar
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1665,9 +1492,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

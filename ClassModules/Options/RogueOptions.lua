@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 4 then --Only do this if we're on a Rogue!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Rogue = {}
 TRB.Options.Rogue.Assassination = {}
 TRB.Options.Rogue.Outlaw = {}
 TRB.Options.Rogue.Subtlety = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_assassination = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_outlaw = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_subtlety = {}
 
 local ASSASSINATION_MAX_ENERGY = 300
 local OUTLAW_MAX_ENERGY = 250
@@ -121,9 +118,9 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -371,9 +368,9 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -638,9 +635,9 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -813,7 +810,7 @@ local function AssassinationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.rogue.assassination
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.assassination
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_assassination
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_Reset"] = {
@@ -922,7 +919,7 @@ local function AssassinationConstructEnergyBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 	local f = nil
 
@@ -973,7 +970,7 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 	local f = nil
 
@@ -1054,7 +1051,7 @@ local function AssassinationConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
@@ -1071,7 +1068,7 @@ local function AssassinationConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, L["ResourceComboPoints"])
@@ -1085,7 +1082,7 @@ local function AssassinationConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
@@ -1099,7 +1096,7 @@ local function AssassinationConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 	local f = nil
 
@@ -1379,7 +1376,7 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 	local f = nil
 
@@ -1451,7 +1448,7 @@ local function AssassinationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.rogue.assassination
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 	local f = nil
 
@@ -1497,7 +1494,7 @@ local function AssassinationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.rogue.assassination
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.assassination
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1515,7 +1512,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.assassination or {}
+	local controls = interfaceSettingsFrame.controls.rogue_assassination or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1527,7 +1524,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.assassinationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Assassination")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "assassination", L["RogueAssassinationFull"], interfaceSettingsFrame.assassinationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "rogue_assassination", L["RogueAssassinationFull"], interfaceSettingsFrame.assassinationDisplayPanel)
 	
 	parent = interfaceSettingsFrame.assassinationDisplayPanel
 
@@ -1553,7 +1550,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_assassination = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1572,7 +1569,7 @@ local function OutlawConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.rogue.outlaw
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_outlaw
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Rogue_Outlaw_Reset"] = {
@@ -1681,7 +1678,7 @@ local function OutlawConstructEnergyBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 	local f = nil
 
@@ -1747,7 +1744,7 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 	local f = nil
 
@@ -1827,7 +1824,7 @@ local function OutlawConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
@@ -1844,7 +1841,7 @@ local function OutlawConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, L["ResourceComboPoints"])
@@ -1858,7 +1855,7 @@ local function OutlawConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
@@ -1872,7 +1869,7 @@ local function OutlawConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 	local f = nil
 
@@ -2153,7 +2150,7 @@ local function OutlawConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 	local f = nil
 
@@ -2226,7 +2223,7 @@ local function OutlawConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.rogue.outlaw
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 	local f = nil
 
@@ -2272,7 +2269,7 @@ local function OutlawConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.rogue.outlaw
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.outlaw
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2290,7 +2287,7 @@ local function OutlawConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.outlaw or {}
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2302,7 +2299,7 @@ local function OutlawConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.outlawDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Outlaw")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "outlaw", L["RogueOutlawFull"], interfaceSettingsFrame.outlawDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "rogue_outlaw", L["RogueOutlawFull"], interfaceSettingsFrame.outlawDisplayPanel)
 	
 	parent = interfaceSettingsFrame.outlawDisplayPanel
 
@@ -2328,7 +2325,7 @@ local function OutlawConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_outlaw = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -2346,7 +2343,7 @@ local function SubtletyConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.rogue.subtlety
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_subtlety
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Rogue_Subtlety_Reset"] = {
@@ -2455,7 +2452,7 @@ local function SubtletyConstructEnergyBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 	local f = nil
 
@@ -2513,7 +2510,7 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 	local f = nil
 
@@ -2600,7 +2597,7 @@ local function SubtletyConstructHealthBarPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
@@ -2617,7 +2614,7 @@ local function SubtletyConstructBarTexturesPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, L["ResourceComboPoints"])
@@ -2631,7 +2628,7 @@ local function SubtletyConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
@@ -2645,7 +2642,7 @@ local function SubtletyConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 	local f = nil
 
@@ -2917,7 +2914,7 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 	local f = nil
 
@@ -2990,7 +2987,7 @@ local function SubtletyConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.rogue.subtlety
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 	local f = nil
 
@@ -3036,7 +3033,7 @@ local function SubtletyConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.rogue.subtlety
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.subtlety
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -3054,7 +3051,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.subtlety or {}
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety or {}
 	local yCoord = 0
 	local f = nil
 
@@ -3066,7 +3063,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.subtletyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Subtlety")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "subtlety", L["RogueSubtletyFull"], interfaceSettingsFrame.subtletyDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("rogue", "rogue_subtlety", L["RogueSubtletyFull"], interfaceSettingsFrame.subtletyDisplayPanel)
 
 	parent = interfaceSettingsFrame.subtletyDisplayPanel
 
@@ -3092,7 +3089,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_subtlety = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -3100,9 +3097,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("rogue", L["Rogue"])
-	AssassinationConstructOptionsPanel(specCache.assassination)
-	OutlawConstructOptionsPanel(specCache.outlaw)
-	SubtletyConstructOptionsPanel(specCache.subtlety)
+	AssassinationConstructOptionsPanel(specCache.rogue_assassination)
+	OutlawConstructOptionsPanel(specCache.rogue_outlaw)
+	SubtletyConstructOptionsPanel(specCache.rogue_subtlety)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Rogue.ConstructOptionsPanel = ConstructOptionsPanel

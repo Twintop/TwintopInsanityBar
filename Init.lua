@@ -170,6 +170,105 @@ TRB.Data.cache.values = {
 TRB.Data.cache.thresholdSpells = {}
 TRB.Data.specCache = {}
 
+-- Canonical registry of all supported class/spec combinations.
+-- Each entry maps a compositeKey ("className_specName") to its identifiers.
+---@class TRB.Data.SpecRegistryEntry
+---@field public classId number
+---@field public specId number
+---@field public className string   -- all-lowercase, e.g. "deathknight"
+---@field public specName string    -- camelCase, e.g. "beastMastery"
+---@field public compositeKey string -- "className_specName", e.g. "deathknight_frost"
+
+---@type table<string, TRB.Data.SpecRegistryEntry>
+TRB.Data.specRegistry = {}
+
+---@type table<number, table<number, TRB.Data.SpecRegistryEntry>>
+TRB.Data.specRegistryByIds = {}
+
+do
+	local function reg(classId, specId, className, specName)
+		local compositeKey = className .. "_" .. specName
+		local entry = {
+			classId = classId,
+			specId = specId,
+			className = className,
+			specName = specName,
+			compositeKey = compositeKey,
+		}
+		TRB.Data.specRegistry[compositeKey] = entry
+		if not TRB.Data.specRegistryByIds[classId] then
+			TRB.Data.specRegistryByIds[classId] = {}
+		end
+		TRB.Data.specRegistryByIds[classId][specId] = entry
+	end
+
+	-- Death Knight (classId 6)
+	reg(6, 1, "deathknight", "blood")
+	reg(6, 2, "deathknight", "frost")
+	reg(6, 3, "deathknight", "unholy")
+
+	-- Demon Hunter (classId 12)
+	reg(12, 1, "demonhunter", "havoc")
+	reg(12, 2, "demonhunter", "vengeance")
+	reg(12, 3, "demonhunter", "devourer")
+
+	-- Druid (classId 11)
+	reg(11, 1, "druid", "balance")
+	reg(11, 2, "druid", "feral")
+	reg(11, 3, "druid", "guardian")
+	reg(11, 4, "druid", "restoration")
+
+	-- Evoker (classId 13)
+	reg(13, 1, "evoker", "devastation")
+	reg(13, 2, "evoker", "preservation")
+	reg(13, 3, "evoker", "augmentation")
+
+	-- Hunter (classId 3)
+	reg(3, 1, "hunter", "beastMastery")
+	reg(3, 2, "hunter", "marksmanship")
+	reg(3, 3, "hunter", "survival")
+
+	-- Mage (classId 8)
+	reg(8, 1, "mage", "arcane")
+	reg(8, 2, "mage", "fire")
+	reg(8, 3, "mage", "frost")
+
+	-- Monk (classId 10)
+	reg(10, 1, "monk", "brewmaster")
+	reg(10, 2, "monk", "mistweaver")
+	reg(10, 3, "monk", "windwalker")
+
+	-- Paladin (classId 2)
+	reg(2, 1, "paladin", "holy")
+	reg(2, 2, "paladin", "protection")
+	reg(2, 3, "paladin", "retribution")
+
+	-- Priest (classId 5)
+	reg(5, 1, "priest", "discipline")
+	reg(5, 2, "priest", "holy")
+	reg(5, 3, "priest", "shadow")
+
+	-- Rogue (classId 4)
+	reg(4, 1, "rogue", "assassination")
+	reg(4, 2, "rogue", "outlaw")
+	reg(4, 3, "rogue", "subtlety")
+
+	-- Shaman (classId 7)
+	reg(7, 1, "shaman", "elemental")
+	reg(7, 2, "shaman", "enhancement")
+	reg(7, 3, "shaman", "restoration")
+
+	-- Warlock (classId 9)
+	reg(9, 1, "warlock", "affliction")
+	reg(9, 2, "warlock", "demonology")
+	reg(9, 3, "warlock", "destruction")
+
+	-- Warrior (classId 1)
+	reg(1, 1, "warrior", "arms")
+	reg(1, 2, "warrior", "fury")
+	reg(1, 3, "warrior", "protection")
+end
+
 TRB.Data.character = {
 	guid = UnitGUID("player"),
 	raceId = 0,
@@ -177,6 +276,7 @@ TRB.Data.character = {
 	classId = classIndexId,
 	className = "",
 	specName = "",
+	compositeKey = nil, -- className_specName composite key, set by CheckCharacter()
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
 	items = {}
@@ -310,10 +410,6 @@ function SlashCmdList.TWINTOP(msg)
 			TRB.Functions.MinimapButton:Toggle()
 		end
 	else
-		if InCombatLockdown() then
-			print(L["CannotOpenOptionsInCombat"])
-			return
-		end
 		TRB.Options.OptionsFrame:Show()
 		if TRB.Data.barConstructedForSpec ~= nil then
 			TRB.Options.OptionsFrame:SelectCategory(TRB.Data.barConstructedForSpec)

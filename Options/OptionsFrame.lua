@@ -37,10 +37,10 @@ local NAV_BUTTON_HEIGHT = 22
 local NAV_BUTTON_PAD = 2
 local NAV_ICON_SIZE = 16
 
--- Lookup tables for class/spec icons
+-- Lookup tables for class/spec icons (all-lowercase class keys)
 local CLASS_IDS = {
-	deathKnight = 6,
-	demonHunter = 12,
+	deathknight = 6,
+	demonhunter = 12,
 	druid = 11,
 	evoker = 13,
 	hunter = 3,
@@ -55,8 +55,8 @@ local CLASS_IDS = {
 }
 
 local SPEC_INDICES = {
-	deathKnight = { blood = 1, frost = 2, unholy = 3 },
-	demonHunter = { havoc = 1, vengeance = 2, devourer = 3 },
+	deathknight = { blood = 1, frost = 2, unholy = 3 },
+	demonhunter = { havoc = 1, vengeance = 2, devourer = 3 },
 	druid = { balance = 1, feral = 2, guardian = 3, restoration = 4 },
 	evoker = { devastation = 1, preservation = 2, augmentation = 3 },
 	hunter = { beastMastery = 1, marksmanship = 2, survival = 3 },
@@ -98,26 +98,45 @@ OptionsFrame.__index = OptionsFrame
 -- Internal helpers
 -- ─────────────────────────────────────────────────────────────────────
 
+---Parse a composite key ("className_specName") into its class and spec parts
+---@param compositeKey string e.g. "deathknight_frost"
+---@return string|nil className
+---@return string|nil specName
+local function ParseCompositeKey(compositeKey)
+	if not compositeKey then
+		return nil, nil
+	end
+	local className, specName = string.match(compositeKey, "^([^_]+)_(.+)$")
+	return className, specName
+end
+
 ---Get icon info for a nav entry
----@param classKey string|nil
----@param specKey string|nil
+---@param classKey string|nil All-lowercase class key (e.g., "deathknight")
+---@param specKey string|nil Bare spec name (e.g., "frost"), composite key (e.g., "deathknight_frost"), or nil for class icon
 ---@return table|nil iconInfo {atlas=string} or {texture=number} or nil
 local function GetNavIcon(classKey, specKey)
 	if not classKey then
 		return nil
 	end
-	if specKey and CLASS_IDS[classKey] and SPEC_INDICES[classKey] then
-		local classId = CLASS_IDS[classKey]
-		local specIndex = SPEC_INDICES[classKey][specKey]
-		if classId and specIndex and GetSpecializationInfoForClassID then
-			local _, _, _, icon = GetSpecializationInfoForClassID(classId, specIndex)
-			if icon then
-				return { texture = icon }
+	if specKey then
+		-- If specKey is a composite key, parse out the bare spec name
+		local parsedClass, parsedSpec = ParseCompositeKey(specKey)
+		local bareSpec = parsedSpec or specKey
+		local lookupClass = parsedClass or classKey
+
+		if CLASS_IDS[lookupClass] and SPEC_INDICES[lookupClass] then
+			local classId = CLASS_IDS[lookupClass]
+			local specIndex = SPEC_INDICES[lookupClass][bareSpec]
+			if classId and specIndex and GetSpecializationInfoForClassID then
+				local _, _, _, icon = GetSpecializationInfoForClassID(classId, specIndex)
+				if icon then
+					return { texture = icon }
+				end
 			end
 		end
 	end
-	-- Fall back to class icon atlas
-	return { atlas = "classicon-" .. string.lower(classKey) }
+	-- Fall back to class icon atlas (classKey is already lowercase)
+	return { atlas = "classicon-" .. classKey }
 end
 
 ---@param parent Frame
@@ -223,6 +242,7 @@ function OptionsFrame:EnsureFrame()
 	mainFrame:SetPoint("CENTER")
 	mainFrame:SetFrameStrata("DIALOG")
 	mainFrame:SetClampedToScreen(true)
+	mainFrame:EnableMouse(true)
 	mainFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -561,13 +581,39 @@ end
 ---@param classKey string
 ---@param specKey string
 ---@param specLabel string
----@param panel Frame
-function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel)
+---@param panel Frame?
+---@param builder function? # Optional builder function called on first navigation if panel is nil
+function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, builder)
 	self:EnsureFrame()
 
 	-- Ensure the class header exists
 	if not self.navEntries[classKey] then
 		self:RegisterClassHeader(classKey, classKey)
+	end
+
+	-- If this spec is already registered, update panel/builder if provided
+	if self.navEntries[specKey] then
+		if panel then
+			self.navEntries[specKey].panel = panel
+			panel:SetParent(self.contentArea)
+			panel:ClearAllPoints()
+			panel:SetAllPoints(self.contentArea)
+			panel:Hide()
+
+			-- If the button was already created (during RefreshNav) with no panel,
+			-- it has no click handler yet. Set it now.
+			if self.navEntries[specKey].button then
+				local selfRef = self
+				local k = specKey
+				self.navEntries[specKey].button:SetScript("OnClick", function()
+					selfRef:SelectCategory(k)
+				end)
+			end
+		end
+		if builder then
+			self.navEntries[specKey].builder = builder
+		end
+		return
 	end
 
 	self.navEntries[specKey] = {
@@ -578,14 +624,17 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel)
 		children = nil,
 		collapsed = false,
 		button = nil,
+		builder = builder,
 	}
 	table.insert(self.navEntries[classKey].children, specKey)
 
 	-- Re-parent the panel into content area, hide it
-	panel:SetParent(self.contentArea)
-	panel:ClearAllPoints()
-	panel:SetAllPoints(self.contentArea)
-	panel:Hide()
+	if panel then
+		panel:SetParent(self.contentArea)
+		panel:ClearAllPoints()
+		panel:SetAllPoints(self.contentArea)
+		panel:Hide()
+	end
 
 	-- Populate compat shim so existing code referencing addonCategory.specs still works
 	TRB.Details.addonCategory = TRB.Details.addonCategory or {}
@@ -604,6 +653,14 @@ function OptionsFrame:SelectCategory(key)
 		return
 	end
 
+	local entry = self.navEntries[key]
+
+	-- Lazy loading: if no panel but a builder exists, call builder to construct the panel.
+	-- The builder is expected to call RegisterSpecPanel which populates entry.panel.
+	if entry.panel == nil and entry.builder then
+		entry.builder()
+	end
+
 	-- Hide current panel
 	if self.currentPanel then
 		self.currentPanel:Hide()
@@ -613,7 +670,6 @@ function OptionsFrame:SelectCategory(key)
 	end
 
 	-- If this entry has a parent class header, expand it
-	local entry = self.navEntries[key]
 	if entry.parentKey and self.navEntries[entry.parentKey] then
 		self.navEntries[entry.parentKey].collapsed = false
 	end

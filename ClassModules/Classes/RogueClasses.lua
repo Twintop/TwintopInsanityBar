@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 4 then --Only do this if we're on a Rogue!
-	return
-end
 
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Rogue = TRB.Classes.Rogue or {}
@@ -265,6 +262,45 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     return self
 end
 
+---Fills barTextVariables for Assassination Rogue options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
+		{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
+		{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
+		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
+		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+		{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
+		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
+		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
+		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
+
+		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+
+		--[[
+		-- Proc
+		{ variable = "$blindsideTime", description = L["RogueAssassinationBarTextVariable_blindsideTime"], printInSettings = true, color = false },]]
+	})
+end
+
 
 ---@class TRB.Classes.Rogue.OutlawSpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
@@ -449,6 +485,77 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     return self
 end
 
+---Fills barTextVariables for Outlaw Rogue options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#adrenalineRush", icon = spells.adrenalineRush.icon, description = spells.adrenalineRush.name, printInSettings = true },
+		{ variable = "#betweenTheEyes", icon = spells.betweenTheEyes.icon, description = spells.betweenTheEyes.name, printInSettings = true },
+		{ variable = "#bladeFlurry", icon = spells.bladeFlurry.icon, description = spells.bladeFlurry.name, printInSettings = true },
+		{ variable = "#bladeRush", icon = spells.bladeRush.icon, description = spells.bladeRush.name, printInSettings = true },
+		{ variable = "#broadside", icon = spells.broadside.icon, description = spells.broadside.name, printInSettings = true },
+		{ variable = "#buriedTreasure", icon = spells.buriedTreasure.icon, description = spells.buriedTreasure.name, printInSettings = true },
+		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
+		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
+		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
+		{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
+		{ variable = "#pistolShot", icon = spells.pistolShot.icon, description = spells.pistolShot.name, printInSettings = true },
+		{ variable = "#rollTheBones", icon = spells.rollTheBones.icon, description = spells.rollTheBones.name, printInSettings = true },
+		{ variable = "#ruthlessPrecision", icon = spells.ruthlessPrecision.icon, description = spells.ruthlessPrecision.name, printInSettings = true },
+		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
+		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
+		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
+		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
+		{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
+
+
+		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+
+		--[[{ variable = "$rtbCount", description = L["RogueOutlawBarTextVariable_rtbCount"], printInSettings = true, color = false },
+		{ variable = "$rollTheBonesCount", description = "", printInSettings = false, color = false },
+
+		{ variable = "$rtbTemporaryCount", description = L["RogueOutlawBarTextVariable_rtbTemporaryCount"], printInSettings = true, color = false },
+		{ variable = "$rollTheBonesTemporaryCount", description = "", printInSettings = false, color = false },
+
+		{ variable = "$rtbAllCount", description = L["RogueOutlawBarTextVariable_rtbAllCount"], printInSettings = true, color = false },
+		{ variable = "$rollTheBonesAllCount", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$rtbBuffTime", description = L["RogueOutlawBarTextVariable_rtbBuffTime"], printInSettings = true, color = false },
+		{ variable = "$rollTheBonesBuffTime", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$rtbGoodBuff", description = L["RogueOutlawBarTextVariable_rtbGoodBuff"], printInSettings = true, color = false },
+		{ variable = "$rollTheBonesGoodBuff", description = "", printInSettings = false, color = false },
+
+		{ variable = "$broadsideTime", description = L["RogueOutlawBarTextVariable_broadsideTime"], printInSettings = true, color = false },
+		{ variable = "$buriedTreasureTime", description = L["RogueOutlawBarTextVariable_buriedTreasureTime"], printInSettings = true, color = false },
+		{ variable = "$grandMeleeTime", description = L["RogueOutlawBarTextVariable_grandMeleeTime"], printInSettings = true, color = false },
+		{ variable = "$ruthlessPrecisionTime", description = L["RogueOutlawBarTextVariable_ruthlessPrecisionTime"], printInSettings = true, color = false },
+		{ variable = "$skullAndCrossbonesTime", description = L["RogueOutlawBarTextVariable_skullAndCrossbonesTime"], printInSettings = true, color = false },
+		{ variable = "$trueBearingTime", description = L["RogueOutlawBarTextVariable_trueBearingTime"], printInSettings = true, color = false },
+
+		-- Proc
+		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
+	})
+end
+
 
 ---@class TRB.Classes.Rogue.SubtletySpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public shadowTechniques TRB.Classes.SpellBase
@@ -615,6 +722,47 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     return self
 end
 
+---Fills barTextVariables for Subtlety Rogue options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
+		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+		{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
+		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
+		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
+		{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
+		{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
+		{ variable = "#symbolsOfDeath", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = false },
+	})
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
+
+
+		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false },
+		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		
+		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+		--[[{ variable = "$shadowTechniquesCount", description = L["RogueSubtletyBarTextVariable_shadowTechniquesCount"], printInSettings = true, color = false },
+
+		{ variable = "$sodTime", description = L["RogueSubtletyBarTextVariable_sodTime"], printInSettings = true, color = false },
+		{ variable = "$symbolsOfDeathTime", description = "", printInSettings = false, color = false },
+
+		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },]]
+	})
+end
+
 
 --[[
     BarGroups Factory for Rogue
@@ -685,3 +833,9 @@ function TRB.Classes.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
         }
     }
 end
+
+-- Register barTextVariables fillers for cross-class options panel support
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables

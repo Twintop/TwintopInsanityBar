@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 10 then --Only do this if we're on a Monk!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Monk = {}
 TRB.Options.Monk.Brewmaster = {}
 TRB.Options.Monk.Mistweaver = {}
 TRB.Options.Monk.Windwalker = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker = {}
 
 local BREWMASTER_MAX_ENERGY = 100
 local WINDWALKER_MAX_ENERGY = 150
@@ -149,9 +146,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "always",
-			stagger = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			stagger = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -303,9 +300,9 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -441,9 +438,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -624,7 +621,7 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Monk_Brewmaster_Reset"] = {
@@ -718,7 +715,7 @@ local function BrewmasterConstructEnergyBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 	local f = nil
 
@@ -776,7 +773,7 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
 	-- Stagger bar dimensions using custom bar system
@@ -800,8 +797,10 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 		self.EditBox:SetText(displayValue .. "%")
 		-- Store as decimal (e.g., 100% -> 1.0, 200% -> 2.0)
 		spec.bars.stagger.maxScale = value / 100
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 end
@@ -813,7 +812,7 @@ local function BrewmasterConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
@@ -829,7 +828,7 @@ local function BrewmasterConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
 	-- Pass stagger bar definition to include its textures in the standard texture section
@@ -848,7 +847,7 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
 	-- Primary and health bar visibility
@@ -870,7 +869,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.monk.brewmaster
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 	local f = nil
 
@@ -1015,8 +1014,10 @@ local function BrewmasterConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.medium.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.medium.enabled = self:GetChecked()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
@@ -1028,8 +1029,10 @@ local function BrewmasterConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.heavy.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
@@ -1042,8 +1045,10 @@ local function BrewmasterConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.extreme.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.extreme.enabled = self:GetChecked()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
@@ -1061,7 +1066,7 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.monk.brewmaster
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 	local f = nil
 
@@ -1138,7 +1143,7 @@ local function BrewmasterConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.monk.brewmaster
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 	local f = nil
 
@@ -1157,7 +1162,7 @@ local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.monk.brewmaster
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.brewmaster
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1175,7 +1180,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.brewmaster or {}
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1187,7 +1192,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.brewmasterDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Brewmaster")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "brewmaster", L["MonkBrewmasterFull"], interfaceSettingsFrame.brewmasterDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "monk_brewmaster", L["MonkBrewmasterFull"], interfaceSettingsFrame.brewmasterDisplayPanel)
 	
 	parent = interfaceSettingsFrame.brewmasterDisplayPanel
 
@@ -1212,7 +1217,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1231,7 +1236,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_Reset"] = {
@@ -1325,7 +1330,7 @@ local function MistweaverConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 	local f = nil
 
@@ -1404,7 +1409,7 @@ local function MistweaverConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
@@ -1420,7 +1425,7 @@ local function MistweaverConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
@@ -1433,7 +1438,7 @@ local function MistweaverConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
@@ -1447,7 +1452,7 @@ local function MistweaverConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.monk.mistweaver
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 	local f = nil
 
@@ -1465,7 +1470,7 @@ local function MistweaverConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.monk.mistweaver
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 	local f = nil
 
@@ -1509,7 +1514,7 @@ local function MistweaverConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.monk.mistweaver
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 	local f = nil
 
@@ -1529,7 +1534,7 @@ local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.monk.mistweaver
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mistweaver
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1547,7 +1552,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.mistweaver or {}
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1559,7 +1564,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "mistweaver", L["MonkMistweaverFull"], interfaceSettingsFrame.mistweaverDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "monk_mistweaver", L["MonkMistweaverFull"], interfaceSettingsFrame.mistweaverDisplayPanel)
 	
 	parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
@@ -1582,7 +1587,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -1601,7 +1606,7 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_Reset"] = {
@@ -1695,7 +1700,7 @@ local function WindwalkerConstructEnergyBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 	local f = nil
 
@@ -1769,7 +1774,7 @@ local function WindwalkerConstructChiPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 	local f = nil
 
@@ -1831,7 +1836,7 @@ local function WindwalkerConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
@@ -1847,7 +1852,7 @@ local function WindwalkerConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
@@ -1860,7 +1865,7 @@ local function WindwalkerConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
@@ -1874,7 +1879,7 @@ local function WindwalkerConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.monk.windwalker
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 	local f = nil
 
@@ -1998,7 +2003,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.monk.windwalker
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 	local f = nil
 
@@ -2071,7 +2076,7 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.monk.windwalker
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 	local f = nil
 
@@ -2129,7 +2134,7 @@ local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.monk.windwalker
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.windwalker
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -2147,7 +2152,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.windwalker or {}
+	local controls = interfaceSettingsFrame.controls.monk_windwalker or {}
 	local yCoord = 0
 	local f = nil
 
@@ -2159,7 +2164,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "windwalker", L["MonkWindwalkerFull"], interfaceSettingsFrame.windwalkerDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("monk", "monk_windwalker", L["MonkWindwalkerFull"], interfaceSettingsFrame.windwalkerDisplayPanel)
 	
 	parent = interfaceSettingsFrame.windwalkerDisplayPanel
 
@@ -2185,7 +2190,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	}
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker = controls
 
 	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
@@ -2193,9 +2198,9 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("monk", L["Monk"])
-	BrewmasterConstructOptionsPanel(specCache.brewmaster)
-	MistweaverConstructOptionsPanel(specCache.mistweaver)
-	WindwalkerConstructOptionsPanel(specCache.windwalker)
+	BrewmasterConstructOptionsPanel(specCache.monk_brewmaster)
+	MistweaverConstructOptionsPanel(specCache.monk_mistweaver)
+	WindwalkerConstructOptionsPanel(specCache.monk_windwalker)
 	TRB.Options.OptionsFrame:RefreshNav()
 end
 TRB.Options.Monk.ConstructOptionsPanel = ConstructOptionsPanel

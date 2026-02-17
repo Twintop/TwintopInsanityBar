@@ -16,15 +16,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	havoc = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
-	vengeance = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
-	devourer = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	demonhunter_havoc = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	demonhunter_vengeance = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	demonhunter_devourer = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Havoc
-	specCache.havoc.Global_TwintopResourceBar = {
+	specCache.demonhunter_havoc.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			burningHatred = 0,
@@ -42,7 +42,7 @@ local function FillSpecializationCache()
 		}
 	}
 
-	specCache.havoc.character = {
+	specCache.demonhunter_havoc.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -55,26 +55,26 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.DemonHunter.HavocSpells
-	specCache.havoc.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
-	local spells = specCache.havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	specCache.demonhunter_havoc.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
+	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 
-	specCache.havoc.snapshotData.audio = {
+	specCache.demonhunter_havoc.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.bladeDance.id] = TRB.Classes.Snapshot:New(spells.bladeDance)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.bladeDance.id] = TRB.Classes.Snapshot:New(spells.bladeDance)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.deathSweep.id] = TRB.Classes.Snapshot:New(spells.deathSweep)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.deathSweep.id] = TRB.Classes.Snapshot:New(spells.deathSweep)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.eyeBeam.id] = TRB.Classes.Snapshot:New(spells.eyeBeam)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.eyeBeam.id] = TRB.Classes.Snapshot:New(spells.eyeBeam)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
-	specCache.havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
 
 	-- vengeance
-	specCache.vengeance.Global_TwintopResourceBar = {
+	specCache.demonhunter_vengeance.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			burningHatred = 0,
@@ -90,7 +90,7 @@ local function FillSpecializationCache()
 		}
 	}
 
-	specCache.vengeance.character = {
+	specCache.demonhunter_vengeance.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -103,23 +103,23 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.DemonHunter.VengeanceSpells
-	specCache.vengeance.spellsData.spells = TRB.Classes.DemonHunter.VengeanceSpells:New()
+	specCache.demonhunter_vengeance.spellsData.spells = TRB.Classes.DemonHunter.VengeanceSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
-	specCache.vengeance.snapshotData.audio = {
+	specCache.demonhunter_vengeance.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
+	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
 	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.felDevastation.id] = TRB.Classes.Snapshot:New(spells.felDevastation)
+	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.felDevastation.id] = TRB.Classes.Snapshot:New(spells.felDevastation)
 	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
+	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
-	specCache.vengeance.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
+	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
 	
 	-- Devourer
-	specCache.devourer.Global_TwintopResourceBar = {
+	specCache.demonhunter_devourer.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			burningHatred = 0,
@@ -127,7 +127,7 @@ local function FillSpecializationCache()
 		},
 	}
 
-	specCache.devourer.character = {
+	specCache.demonhunter_devourer.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -140,21 +140,21 @@ local function FillSpecializationCache()
 	}
 
 	---@type TRB.Classes.DemonHunter.DevourerSpells
-	specCache.devourer.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
-	local spells = specCache.devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	specCache.demonhunter_devourer.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
+	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 
-	specCache.devourer.snapshotData.audio = {
+	specCache.demonhunter_devourer.snapshotData.audio = {
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
+	specCache.demonhunter_devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
 	-----@type TRB.Classes.Snapshot
-	--specCache.devourer.snapshotData.snapshots[spells.voidMetamorphosis.id] = TRB.Classes.Snapshot:New(spells.voidMetamorphosis, nil, "always")
+	--specCache.demonhunter_devourer.snapshotData.snapshots[spells.voidMetamorphosis.id] = TRB.Classes.Snapshot:New(spells.voidMetamorphosis, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.devourer.snapshotData.snapshots[spells.voidRay.id] = TRB.Classes.Snapshot:New(spells.voidRay)
+	specCache.demonhunter_devourer.snapshotData.snapshots[spells.voidRay.id] = TRB.Classes.Snapshot:New(spells.voidRay)
 	---@type TRB.Classes.Snapshot
-	specCache.devourer.snapshotData.snapshots[spells.soulFragments.id] = TRB.Classes.Snapshot:New(spells.soulFragments, nil, "always")
+	specCache.demonhunter_devourer.snapshotData.snapshots[spells.soulFragments.id] = TRB.Classes.Snapshot:New(spells.soulFragments, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.devourer.snapshotData.snapshots[spells.collapsingStar.id] = TRB.Classes.Snapshot:New(spells.collapsingStar, nil, "always")
+	specCache.demonhunter_devourer.snapshotData.snapshots[spells.collapsingStar.id] = TRB.Classes.Snapshot:New(spells.collapsingStar, nil, "always")
 end
 
 local function Setup_Havoc()
@@ -169,74 +169,10 @@ end
 
 local function FillSpellData_Havoc()
 	Setup_Havoc()
-	specCache.havoc.spellsData:FillSpellData()
-	local spells = specCache.havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	specCache.demonhunter_havoc.spellsData:FillSpellData()
+	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.havoc.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
-		{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
-		{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
-		{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
-		{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
-		{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
-		{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
-		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
-		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-	}
-	specCache.havoc.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		
-		{ variable = "$fury", description = L["DemonHunterHavocBarTextVariable_fury"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$furyMax", description = L["DemonHunterHavocBarTextVariable_furyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DemonHunterHavocBarTextVariable_casting"], printInSettings = true, color = false },
-
-		{ variable = "$metaTime", description = L["DemonHunterHavocBarTextVariable_metaTime"], printInSettings = true, color = false },
-		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetaTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables(specCache.demonhunter_havoc)
 end
 
 local function Setup_Vengeance()
@@ -251,72 +187,10 @@ end
 
 local function FillSpellData_Vengeance()
 	Setup_Vengeance()
-	specCache.vengeance.spellsData:FillSpellData()
-	local spells = specCache.vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	specCache.demonhunter_vengeance.spellsData:FillSpellData()
+	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.vengeance.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
-		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
-	}
-	specCache.vengeance.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		
-		{ variable = "$fury", description = L["DemonHunterVengeanceBarTextVariable_fury"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$furyMax", description = L["DemonHunterVengeanceBarTextVariable_furyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DemonHunterVengeanceBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$soulFragments", description = L["DemonHunterVengeanceBarTextVariable_soulFragments"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulFragmentsMax", description = L["DemonHunterVengeanceBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-
-		{ variable = "$metaTime", description = L["DemonHunterVengeanceBarTextVariable_metaTime"], printInSettings = true, color = false },
-		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetaTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables(specCache.demonhunter_vengeance)
 end
 
 local function Setup_Devourer()
@@ -331,76 +205,10 @@ end
 
 local function FillSpellData_Devourer()
 	Setup_Devourer()
-	specCache.devourer.spellsData:FillSpellData()
-	local spells = specCache.devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	specCache.demonhunter_devourer.spellsData:FillSpellData()
+	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.devourer.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#collapsingStar", icon = spells.collapsingStar.icon, description = spells.collapsingStar.name, printInSettings = true },
-		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
-		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#voidRay", icon = spells.voidRay.icon, description = spells.voidRay.name, printInSettings = true },
-	}
-	specCache.devourer.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		
-		{ variable = "$fury", description = L["DemonHunterHavocBarTextVariable_fury"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$furyMax", description = L["DemonHunterHavocBarTextVariable_furyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DemonHunterHavocBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$soulFragments", description = L["DemonHunterDevourerBarTextVariable_soulFragments"], printInSettings = true, color = false },
-		{ variable = "$collapsingStar", description = "", printInSettings = false, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulFragmentsMax", description = L["DemonHunterDevourerBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
-		{ variable = "$collapsingStarMax", description = "", printInSettings = false, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$metaTime", description = L["DemonHunterDevourerBarTextVariable_metaTime"], printInSettings = true, color = false },
-		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetaTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
-		{ variable = "$voidRayUsable", description = L["DemonHunterDevourerBarTextVariable_voidRayUsable"], printInSettings = true, color = false },
-		{ variable = "$collapsingStarUsable", description = L["DemonHunterDevourerBarTextVariable_collapsingStarUsable"], printInSettings = true, color = false },
-	}
+	TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCache.demonhunter_devourer)
 end
 
 local function RefreshTargetTracking()
@@ -490,7 +298,7 @@ local function RefreshLookupData_Havoc()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.havoc
-	local sharedSettings = TRB.Data.specCache["havoc"].settings
+	local sharedSettings = TRB.Data.specCache["demonhunter_havoc"].settings
 	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	--Spec specific implementation
 
@@ -563,7 +371,7 @@ local function RefreshLookupData_Vengeance()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.vengeance
-	local sharedSettings = TRB.Data.specCache["vengeance"].settings
+	local sharedSettings = TRB.Data.specCache["demonhunter_vengeance"].settings
 	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	--Spec specific implementation
 
@@ -650,7 +458,7 @@ local function RefreshLookupData_Devourer()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.devourer
-	local sharedSettings = TRB.Data.specCache["devourer"].settings
+	local sharedSettings = TRB.Data.specCache["demonhunter_devourer"].settings
 	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	--Spec specific implementation
 
@@ -923,11 +731,11 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.havoc
-		local specCacheSettings = TRB.Data.specCache.havoc.settings
+		local specCacheSettings = TRB.Data.specCache.demonhunter_havoc.settings
 		UpdateSnapshot_Havoc()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
@@ -1049,7 +857,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1064,11 +872,11 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.vengeance
-		local specCacheSettings = TRB.Data.specCache.vengeance.settings
+		local specCacheSettings = TRB.Data.specCache.demonhunter_vengeance.settings
 		UpdateSnapshot_Vengeance()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
@@ -1176,7 +984,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 				-- Soul Fragments bar (Vengeance, 0-5 fragments)
@@ -1213,7 +1021,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1228,7 +1036,7 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.devourer
-		local specCacheSettings = TRB.Data.specCache.devourer.settings
+		local specCacheSettings = TRB.Data.specCache.demonhunter_devourer.settings
 		UpdateSnapshot_Devourer()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
@@ -1236,7 +1044,7 @@ local function UpdateResourceBar()
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 
@@ -1336,7 +1144,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				-- Soul Fragments bar (Devourer fixed max)
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
@@ -1404,7 +1212,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1434,9 +1242,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 	soulFragmentsFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	if TRB.Data.character.specId == 1 then
-		specCache.havoc.talents:GetTalents()
+		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonhunter_havoc)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
@@ -1444,7 +1252,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.havoc.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonhunter_havoc.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#annihilation"] = spells.annihilation.icon
@@ -1461,16 +1269,16 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		if TRB.Data.barConstructedForSpec ~= "havoc" then
-			talents = specCache.havoc.talents
-			TRB.Data.barConstructedForSpec = "havoc"
+		if TRB.Data.barConstructedForSpec ~= "demonhunter_havoc" then
+			talents = specCache.demonhunter_havoc.talents
+			TRB.Data.barConstructedForSpec = "demonhunter_havoc"
 			TRB.Functions.Class:EventRegistration()
-			ConstructResourceBar(specCache.havoc.settings)
+			ConstructResourceBar(specCache.demonhunter_havoc.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.vengeance.talents:GetTalents()
+		specCache.demonhunter_vengeance.talents:GetTalents()
 		FillSpellData_Vengeance()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.vengeance)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonhunter_vengeance)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
@@ -1478,7 +1286,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Vengeance
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.vengeance.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonhunter_vengeance.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
@@ -1491,16 +1299,16 @@ local function SwitchSpec()
 		
 		soulFragmentsFrame:RegisterEvent("SPELL_UPDATE_USES")
 
-		if TRB.Data.barConstructedForSpec ~= "vengeance" then
-			talents = specCache.vengeance.talents
-			TRB.Data.barConstructedForSpec = "vengeance"
+		if TRB.Data.barConstructedForSpec ~= "demonhunter_vengeance" then
+			talents = specCache.demonhunter_vengeance.talents
+			TRB.Data.barConstructedForSpec = "demonhunter_vengeance"
 			TRB.Functions.Class:EventRegistration()
-			ConstructResourceBar(specCache.vengeance.settings)
+			ConstructResourceBar(specCache.demonhunter_vengeance.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.devourer.talents:GetTalents()
+		specCache.demonhunter_devourer.talents:GetTalents()
 		FillSpellData_Devourer()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devourer)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonhunter_devourer)
 		-- For whatever reason, this gets reset as Vengeance's specId after when going from Vengeance to Devourer. Manually re-set it.
 		TRB.Data.character.specId = 3
 
@@ -1511,7 +1319,7 @@ local function SwitchSpec()
 		snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devourer
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.devourer.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonhunter_devourer.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#collapsingStar"] = spells.collapsingStar.icon
@@ -1525,11 +1333,11 @@ local function SwitchSpec()
 
 		snapshotData.snapshots[spells.soulFragments.id].buff:Refresh()
 
-		if TRB.Data.barConstructedForSpec ~= "devourer" then
-			talents = specCache.devourer.talents
-			TRB.Data.barConstructedForSpec = "devourer"
+		if TRB.Data.barConstructedForSpec ~= "demonhunter_devourer" then
+			talents = specCache.demonhunter_devourer.talents
+			TRB.Data.barConstructedForSpec = "demonhunter_devourer"
 			TRB.Functions.Class:EventRegistration()
-			ConstructResourceBar(specCache.devourer.settings)
+			ConstructResourceBar(specCache.demonhunter_devourer.settings)
 		end
 
 		C_Timer.After(0, function()
@@ -1700,14 +1508,16 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 		TRB.Data.character.specName = "havoc"
+		TRB.Data.character.compositeKey = "demonhunter_havoc"
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		TRB.Data.character.specName = "vengeance"
+		TRB.Data.character.compositeKey = "demonhunter_vengeance"
 		
 		-- Soul Fragments: 1 node with 5 thresholds, max 6 fragments
 		local maxComboPoints = 1
 		TRB.Data.character.maxResource2Value = 6
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1720,10 +1530,11 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		TRB.Data.character.specName = "devourer"
+		TRB.Data.character.compositeKey = "demonhunter_devourer"
 
 		local maxComboPoints = 1
 		TRB.Data.character.maxResource2Value = 50
-		local sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1772,8 +1583,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -1784,9 +1595,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1796,9 +1607,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Vengeance (specId == 2) and Devourer (specId == 3) use the secondary (Soul Fragments) bar
 			local showSecondary = false
 			if not forceHideAll and (TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3) then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1807,9 +1618,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

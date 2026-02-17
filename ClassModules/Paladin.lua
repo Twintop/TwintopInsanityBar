@@ -16,22 +16,22 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	holy = TRB.Classes.SpecCache:New(),
-	protection = TRB.Classes.SpecCache:New(),
-	retribution = TRB.Classes.SpecCache:New()
+	paladin_holy = TRB.Classes.SpecCache:New(),
+	paladin_protection = TRB.Classes.SpecCache:New(),
+	paladin_retribution = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Holy
-	specCache.holy.Global_TwintopResourceBar = {
+	specCache.paladin_holy.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.holy.character = {
+	specCache.paladin_holy.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -44,11 +44,11 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Paladin.HolySpells
-	specCache.holy.spellsData.spells = TRB.Classes.Paladin.HolySpells:New()
-	local spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	specCache.paladin_holy.spellsData.spells = TRB.Classes.Paladin.HolySpells:New()
+	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
-	specCache.holy.snapshotData.attributes.manaRegen = 0
-	specCache.holy.snapshotData.audio = {
+	specCache.paladin_holy.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_holy.snapshotData.audio = {
 		innervateCue = false,
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
@@ -56,20 +56,20 @@ local function FillSpecializationCache()
 		infusionOfLightPlayed = false,
 	}
 
-	specCache.holy.barTextVariables = {
+	specCache.paladin_holy.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Protection
-	specCache.protection.Global_TwintopResourceBar = {
+	specCache.paladin_protection.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.protection.character = {
+	specCache.paladin_protection.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -80,29 +80,29 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Paladin.ProtectionSpells
-	specCache.protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
+	specCache.paladin_protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
 
-	specCache.protection.snapshotData.attributes.manaRegen = 0
-	specCache.protection.snapshotData.audio = {
+	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_protection.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
 	}
 
-	specCache.protection.barTextVariables = {
+	specCache.paladin_protection.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Retribution
-	specCache.retribution.Global_TwintopResourceBar = {
+	specCache.paladin_retribution.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
 		},
 	}
 
-	specCache.retribution.character = {
+	specCache.paladin_retribution.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -113,16 +113,16 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Paladin.RetributionSpells
-	specCache.retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
+	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
 
-	specCache.retribution.snapshotData.attributes.manaRegen = 0
-	specCache.retribution.snapshotData.audio = {
+	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_retribution.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
 	}
 
-	specCache.retribution.barTextVariables = {
+	specCache.paladin_retribution.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -140,65 +140,10 @@ end
 
 local function FillSpellData_Holy()
 	Setup_Holy()
-	specCache.holy.spellsData:FillSpellData()
-	local spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	specCache.paladin_holy.spellsData:FillSpellData()
+	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.holy.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.holy.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCache.paladin_holy)
 end
 
 local function Setup_Protection()
@@ -213,65 +158,10 @@ end
 
 local function FillSpellData_Protection()
 	Setup_Protection()
-	specCache.protection.spellsData:FillSpellData()
-	local spells = specCache.protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	specCache.paladin_protection.spellsData:FillSpellData()
+	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.protection.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.protection.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCache.paladin_protection)
 end
 
 local function Setup_Retribution()
@@ -286,65 +176,10 @@ end
 
 local function FillSpellData_Retribution()
 	Setup_Retribution()
-	specCache.retribution.spellsData:FillSpellData()
-	local spells = specCache.retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	specCache.paladin_retribution.spellsData:FillSpellData()
+	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.retribution.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.retribution.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCache.paladin_retribution)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -465,7 +300,7 @@ local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.paladin.holy
-	local sharedSettings = TRB.Data.specCache["holy"].settings
+	local sharedSettings = TRB.Data.specCache["paladin_holy"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 
@@ -532,7 +367,7 @@ local function RefreshLookupData_Protection()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.paladin.protection
-	local sharedSettings = TRB.Data.specCache["protection"].settings
+	local sharedSettings = TRB.Data.specCache["paladin_protection"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified
 
@@ -593,7 +428,7 @@ local function RefreshLookupData_Retribution()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.paladin.retribution
-	local sharedSettings = TRB.Data.specCache["retribution"].settings
+	local sharedSettings = TRB.Data.specCache["paladin_retribution"].settings
 	local currentTime = GetTime()
 	local normalizedMana = snapshotData.attributes.resourceModified
 
@@ -828,10 +663,10 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.holy
-		local specCacheSettings = TRB.Data.specCache.holy.settings
+		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -858,12 +693,12 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -885,10 +720,10 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.protection
-		local specCacheSettings = TRB.Data.specCache.protection.settings
+		local specCacheSettings = TRB.Data.specCache.paladin_protection.settings
 		UpdateSnapshot_Protection()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -900,12 +735,12 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -927,10 +762,10 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.retribution
-		local specCacheSettings = TRB.Data.specCache.retribution.settings
+		local specCacheSettings = TRB.Data.specCache.paladin_retribution.settings
 		UpdateSnapshot_Retribution()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -942,12 +777,12 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -984,9 +819,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 	
 	if TRB.Data.character.specId == 1 then
-		specCache.holy.talents:GetTalents()
+		specCache.paladin_holy.talents:GetTalents()
 		FillSpellData_Holy()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.paladin_holy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
@@ -994,7 +829,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.holy.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.paladin_holy.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1003,15 +838,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "holy" then
-			talents = specCache.holy.talents
-			TRB.Data.barConstructedForSpec = "holy"
-			ConstructResourceBar(specCache.holy.settings)
+		if TRB.Data.barConstructedForSpec ~= "paladin_holy" then
+			talents = specCache.paladin_holy.talents
+			TRB.Data.barConstructedForSpec = "paladin_holy"
+			ConstructResourceBar(specCache.paladin_holy.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.protection.talents:GetTalents()
+		specCache.paladin_protection.talents:GetTalents()
 		FillSpellData_Protection()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.protection)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.paladin_protection)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
@@ -1019,7 +854,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Protection
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.protection.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.paladin_protection.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1028,15 +863,15 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "protection" then
-			talents = specCache.protection.talents
-			TRB.Data.barConstructedForSpec = "protection"
-			ConstructResourceBar(specCache.protection.settings)
+		if TRB.Data.barConstructedForSpec ~= "paladin_protection" then
+			talents = specCache.paladin_protection.talents
+			TRB.Data.barConstructedForSpec = "paladin_protection"
+			ConstructResourceBar(specCache.paladin_protection.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.retribution.talents:GetTalents()
+		specCache.paladin_retribution.talents:GetTalents()
 		FillSpellData_Retribution()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.retribution)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.paladin_retribution)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
@@ -1044,7 +879,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Retribution
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.retribution.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.paladin_retribution.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1053,10 +888,10 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "retribution" then
-			talents = specCache.retribution.talents
-			TRB.Data.barConstructedForSpec = "retribution"
-			ConstructResourceBar(specCache.retribution.settings)
+		if TRB.Data.barConstructedForSpec ~= "paladin_retribution" then
+			talents = specCache.paladin_retribution.talents
+			TRB.Data.barConstructedForSpec = "paladin_retribution"
+			ConstructResourceBar(specCache.paladin_retribution.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1216,13 +1051,16 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		TRB.Data.character.specName = "holy"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "paladin_holy"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "protection"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "paladin_protection"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "retribution"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "paladin_retribution"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	end
 
 	if sharedSettings ~= nil then
@@ -1269,8 +1107,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -1281,9 +1119,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1293,9 +1131,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- All Paladin specs use the secondary (Holy Power) bar
 			local showSecondary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1304,9 +1142,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

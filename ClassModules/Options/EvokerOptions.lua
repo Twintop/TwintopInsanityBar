@@ -1,7 +1,4 @@
 local _, TRB = ...
-if TRB.Data.character.classId ~= 13 then --Only do this if we're on a Evoker!
-	return
-end
 
 local L = TRB.Localization
 
@@ -11,9 +8,9 @@ TRB.Options.Evoker = {}
 TRB.Options.Evoker.Devastation = {}
 TRB.Options.Evoker.Preservation = {}
 TRB.Options.Evoker.Augmentation = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_devastation = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_preservation = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_augmentation = {}
 
 ---Loads extra default bar text settings for Evoker
 ---@param classic boolean?
@@ -199,9 +196,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -333,9 +330,9 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -498,9 +495,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = "always",
-			secondary = "always",
-			health = "always",
+			primary = { visibility = "always", smooth = true },
+			secondary = { visibility = "always", smooth = false },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -639,7 +636,7 @@ local function DevastationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.devastation
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_devastation
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_Reset"] = {
@@ -733,7 +730,7 @@ local function DevastationConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 	local f = nil
 
@@ -802,7 +799,7 @@ local function DevastationConstructEssenceBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 	local f = nil
 
@@ -864,7 +861,7 @@ local function DevastationConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
@@ -880,7 +877,7 @@ local function DevastationConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 1, yCoord, true, L["ResourceEssence"])
@@ -893,7 +890,7 @@ local function DevastationConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
@@ -907,7 +904,7 @@ local function DevastationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.evoker.devastation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 	local f = nil
 
@@ -945,7 +942,7 @@ local function DevastationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.evoker.devastation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
 	controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -980,7 +977,7 @@ local function DevastationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.evoker.devastation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.devastation
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -998,7 +995,7 @@ local function DevastationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.devastation or {}
+	local controls = interfaceSettingsFrame.controls.evoker_devastation or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1010,7 +1007,7 @@ local function DevastationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "devastation", L["EvokerDevastationFull"], interfaceSettingsFrame.devastationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "evoker_devastation", L["EvokerDevastationFull"], interfaceSettingsFrame.devastationDisplayPanel)
 
 	parent = interfaceSettingsFrame.devastationDisplayPanel
 
@@ -1023,7 +1020,7 @@ local function DevastationConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_devastation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel },
@@ -1052,7 +1049,7 @@ local function PreservationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.preservation
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_preservation
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_Reset"] = {
@@ -1146,7 +1143,7 @@ local function PreservationConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 	local f = nil
 
@@ -1190,7 +1187,7 @@ local function PreservationConstructEssenceBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 	local f = nil
 
@@ -1252,7 +1249,7 @@ local function PreservationConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
@@ -1268,7 +1265,7 @@ local function PreservationConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 2, yCoord, true, L["ResourceEssence"])
@@ -1281,7 +1278,7 @@ local function PreservationConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
@@ -1295,7 +1292,7 @@ local function PreservationConstructThresholdPanel(parent)
 	local spec = TRB.Data.settings.evoker.preservation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 	local f = nil
 
@@ -1313,7 +1310,7 @@ local function PreservationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.evoker.preservation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 	local f = nil
 
@@ -1357,7 +1354,7 @@ local function PreservationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.evoker.preservation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 	local f = nil
 
@@ -1393,7 +1390,7 @@ local function PreservationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.evoker.preservation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.preservation
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1411,7 +1408,7 @@ local function PreservationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.preservation or {}
+	local controls = interfaceSettingsFrame.controls.evoker_preservation or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1423,7 +1420,7 @@ local function PreservationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "preservation", L["EvokerPreservationFull"], interfaceSettingsFrame.preservationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "evoker_preservation", L["EvokerPreservationFull"], interfaceSettingsFrame.preservationDisplayPanel)
 
 	parent = interfaceSettingsFrame.preservationDisplayPanel
 
@@ -1436,7 +1433,7 @@ local function PreservationConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_preservation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = PreservationConstructManaBarPanel },
@@ -1468,7 +1465,7 @@ local function AugmentationConstructResetDefaultsPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 
-	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_augmentation
 	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_Reset"] = {
@@ -1562,7 +1559,7 @@ local function AugmentationConstructManaBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 	local f = nil
 
@@ -1646,7 +1643,7 @@ local function AugmentationConstructEssenceBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 	local f = nil
 
@@ -1708,7 +1705,7 @@ local function AugmentationConstructHealthBarPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
@@ -1724,7 +1721,7 @@ local function AugmentationConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, L["ResourceEssence"])
@@ -1737,7 +1734,7 @@ local function AugmentationConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
@@ -1751,7 +1748,7 @@ local function AugmentationConstructFontAndTextPanel(parent)
 	local spec = TRB.Data.settings.evoker.augmentation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 	local f = nil
 
@@ -1789,7 +1786,7 @@ local function AugmentationConstructAudioAndTrackingPanel(parent)
 	local spec = TRB.Data.settings.evoker.augmentation
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
 	controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
@@ -1826,7 +1823,7 @@ local function AugmentationConstructBarTextDisplayPanel(parent, cache)
 
 	local spec = TRB.Data.settings.evoker.augmentation
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.augmentation
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
@@ -1844,7 +1841,7 @@ local function AugmentationConstructOptionsPanel(cache)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
-	local controls = interfaceSettingsFrame.controls.augmentation or {}
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation or {}
 	local yCoord = 0
 	local f = nil
 
@@ -1856,7 +1853,7 @@ local function AugmentationConstructOptionsPanel(cache)
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation")
-	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "augmentation", L["EvokerAugmentationFull"], interfaceSettingsFrame.augmentationDisplayPanel)
+	TRB.Options.OptionsFrame:RegisterSpecPanel("evoker", "evoker_augmentation", L["EvokerAugmentationFull"], interfaceSettingsFrame.augmentationDisplayPanel)
 
 	parent = interfaceSettingsFrame.augmentationDisplayPanel
 
@@ -1869,7 +1866,7 @@ local function AugmentationConstructOptionsPanel(cache)
 		end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
-	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_augmentation = controls
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = AugmentationConstructManaBarPanel },
@@ -1888,9 +1885,9 @@ local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	TRB.Options.OptionsFrame:RegisterClassHeader("evoker", L["Evoker"])
 
-	DevastationConstructOptionsPanel(specCache.devastation)
-	PreservationConstructOptionsPanel(specCache.preservation)
-	AugmentationConstructOptionsPanel(specCache.augmentation)
+	DevastationConstructOptionsPanel(specCache.evoker_devastation)
+	PreservationConstructOptionsPanel(specCache.evoker_preservation)
+	AugmentationConstructOptionsPanel(specCache.evoker_augmentation)
 
 	TRB.Options.OptionsFrame:RefreshNav()
 end

@@ -859,8 +859,6 @@ L["RogueSubtletyThresholdDeathFromAbove"] = "Death from Above"
 L["RogueSubtletyThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
 L["RogueSubtletyThresholdDismantle"] = "Dismantle"
 L["RogueSubtletyThresholdDismantleTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
-L["GlobalOptionsCheckboxSmoothBar"] = "Smooth Bar Animations"
-L["GlobalOptionsCheckboxSmoothBarTooltip"] = "When checked, updates to the various Status Bars (resource, casting, passive, combo point, etc.) will have a short and smooth animation to show the change instead of an instantaneous update to the new value. This setting is always disabled when the bar is pinned to the Personal Resource Display."
 L["BarTextVariableGcd"] = "Current GCD, in seconds"
 L["BarTextVariableHaste"] = "Current Haste %"
 L["BarTextVariableHasteRating"] = "Current Haste rating"
@@ -1333,8 +1331,8 @@ L["DeathKnightRunesCheckboxSortRunes"] = "Sort Runes by cooldown duration remain
 L["DeathKnightThresholdCheckboxDeathCoil"] = "Death Coil"
 L["DeathKnightThresholdCheckboxDeathStrike"] = "Death Strike"
 L["DeathKnightThresholdCheckboxRaiseAlly"] = "Raise Ally"
-L["DruidGuardianBatTextVariable_rage"] = "Current Rage"
-L["DruidGuardianBatTextVariable_rageMax"] = "Maximum Rage"
+L["DruidGuardianBarTextVariable_rage"] = "Current Rage"
+L["DruidGuardianBarTextVariable_rageMax"] = "Maximum Rage"
 L["DruidGuardianThresholdCheckboxFrenziedRegeneration"] = "Frenzied Regeneration"
 L["DruidGuardianThresholdCheckboxIronfur"] = "Ironfur"
 L["DruidGuardianThresholdCheckboxMaulRaze"] = "Maul / Raze"
@@ -1732,8 +1730,6 @@ L["PaladinHolyColorPickerInfusionOfLight"] = "Border when you have Infusion of L
 L["PaladinHolyAudioCheckboxInfusionOfLight"] = "Play audio cue when Infusion of Light procs"
 L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "Play an audio cue when an Infusion of Light proc occurs. This will only play once per proc."
 
-L["CannotOpenOptionsInCombat"] = "TRB: |cFFFF5555ERROR:|r Cannot open options via the slash command while in combat."
-
 -- Bulk Global Toggle Checkboxes
 L["CheckboxEnableForAllSpecs"] = "Enable for all specializations"
 L["CheckboxEnableForAllSpecsTooltip"] = "When checked, enables this global setting for all specializations across all classes. When unchecked, disables it for all."
@@ -1876,3 +1872,10 @@ L["GlobalOptionsCheckboxMinimapIconTooltip"] = "When checked, the minimap icon w
 L["WarriorProtectionBarTextVariable_ignorePainAbsorb"] = "Amount of damage being absorbed by Ignore Pain"
 L["DemonHunterHavocColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
 L["DemonHunterVengeanceColorPickerMetamorphosisEnd"] = "Metamorphosis - Ending"
+
+L["ShamanElementalBarTextVariable_mana"] = "Current Mana"
+L["ShamanElementalBarTextVariable_manaPercent"] = "Current Mana Percentage"
+L["ShamanElementalBarTextVariable_manaMax"] = "Maximum Mana"
+
+L["CheckboxSmoothBar"] = "Smooth Bar Animation"
+L["CheckboxSmoothBarTooltip"] = "When checked, updates to this bar will have a short and smooth animation to show the change instead of an instantaneous update."

@@ -16,15 +16,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	affliction = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
-	demonology = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
-	destruction = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	warlock_affliction = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	warlock_demonology = TRB.Classes.SpecCache:New(), --[[@as TRB.Classes.SpecCache]]
+	warlock_destruction = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Affliction
-	specCache.affliction.Global_TwintopResourceBar = {
+	specCache.warlock_affliction.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -33,7 +33,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.affliction.character = {
+	specCache.warlock_affliction.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -46,21 +46,21 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Warlock.AfflictionSpells
-	specCache.affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
-	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	specCache.warlock_affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
+	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	specCache.affliction.snapshotData.audio = {
+	specCache.warlock_affliction.snapshotData.audio = {
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 	}
 
-	specCache.affliction.barTextVariables = {
+	specCache.warlock_affliction.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Demonology
-	specCache.demonology.Global_TwintopResourceBar = {
+	specCache.warlock_demonology.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -69,7 +69,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.demonology.character = {
+	specCache.warlock_demonology.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -82,21 +82,21 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Warlock.DemonologySpells
-	specCache.demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
-	local spells = specCache.demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	specCache.warlock_demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
+	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	specCache.demonology.snapshotData.audio = {
+	specCache.warlock_demonology.snapshotData.audio = {
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 	}
 
-	specCache.demonology.barTextVariables = {
+	specCache.warlock_demonology.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Destruction
-	specCache.destruction.Global_TwintopResourceBar = {
+	specCache.warlock_destruction.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -105,7 +105,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.destruction.character = {
+	specCache.warlock_destruction.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -118,15 +118,15 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Warlock.DestructionSpells
-	specCache.destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
-	local spells = specCache.destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	specCache.warlock_destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
+	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	specCache.destruction.snapshotData.audio = {
+	specCache.warlock_destruction.snapshotData.audio = {
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 	}
 
-	specCache.destruction.barTextVariables = {
+	specCache.warlock_destruction.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -144,65 +144,10 @@ end
 
 local function FillSpellData_Affliction()
 	Setup_Affliction()
-	specCache.affliction.spellsData:FillSpellData()
-	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	specCache.warlock_affliction.spellsData:FillSpellData()
+	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.affliction.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.affliction.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCache.warlock_affliction)
 end
 
 local function Setup_Demonology()
@@ -217,65 +162,10 @@ end
 
 local function FillSpellData_Demonology()
 	Setup_Demonology()
-	specCache.demonology.spellsData:FillSpellData()
-	local spells = specCache.demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	specCache.warlock_demonology.spellsData:FillSpellData()
+	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.demonology.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.demonology.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-
-		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false },
-					
-		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCache.warlock_demonology)
 end
 
 
@@ -292,65 +182,10 @@ end
 
 local function FillSpellData_Destruction()
 	Setup_Destruction()
-	specCache.destruction.spellsData:FillSpellData()
-	local spells = specCache.destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	specCache.warlock_destruction.spellsData:FillSpellData()
+	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.destruction.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-	}
-	specCache.destruction.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-		
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		
-		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
-
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
-	}
+	TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCache.warlock_destruction)
 end
 
 local function RefreshTargetTracking()
@@ -459,7 +294,7 @@ local function RefreshLookupData_Affliction()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.warlock.affliction
-	local sharedSettings = TRB.Data.specCache["affliction"].settings
+	local sharedSettings = TRB.Data.specCache["warlock_affliction"].settings
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
@@ -519,7 +354,7 @@ local function RefreshLookupData_Demonology()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.warlock.demonology
-	local sharedSettings = TRB.Data.specCache["demonology"].settings
+	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
@@ -585,7 +420,7 @@ local function RefreshLookupData_Destruction()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.warlock.destruction
-	local sharedSettings = TRB.Data.specCache["destruction"].settings
+	local sharedSettings = TRB.Data.specCache["warlock_destruction"].settings
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local targetData = snapshotData.targetData
 	local currentTime = GetTime()
@@ -808,7 +643,7 @@ local function UpdateResourceBar()
 
 			if normalizedResource2 >= x then
 				fillValue = 1
-				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				if (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 					cpColor = specSettings.colors.comboPoints.final.color
@@ -832,10 +667,10 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.affliction
-		local specCacheSettings = TRB.Data.specCache.affliction.settings
+		local specCacheSettings = TRB.Data.specCache.warlock_affliction.settings
 		UpdateSnapshot_Affliction()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -849,14 +684,14 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -877,10 +712,10 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.demonology
-		local specCacheSettings = TRB.Data.specCache.demonology.settings
+		local specCacheSettings = TRB.Data.specCache.warlock_demonology.settings
 		UpdateSnapshot_Demonology()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -893,13 +728,13 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -920,10 +755,10 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.destruction
-		local specCacheSettings = TRB.Data.specCache.destruction.settings
+		local specCacheSettings = TRB.Data.specCache.warlock_destruction.settings
 		UpdateSnapshot_Destruction()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -936,13 +771,13 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -978,9 +813,9 @@ local function SwitchSpec()
 	TRB.Data.character.specId = GetSpecialization()
 
 	if TRB.Data.character.specId == 1 then
-		specCache.affliction.talents:GetTalents()
+		specCache.warlock_affliction.talents:GetTalents()
 		FillSpellData_Affliction()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.affliction)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.warlock_affliction)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
@@ -989,7 +824,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Affliction
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.affliction.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.warlock_affliction.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -998,15 +833,15 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "affliction" then
-			talents = specCache.affliction.talents
-			TRB.Data.barConstructedForSpec = "affliction"
-			ConstructResourceBar(specCache.affliction.settings)
+		if TRB.Data.barConstructedForSpec ~= "warlock_affliction" then
+			talents = specCache.warlock_affliction.talents
+			TRB.Data.barConstructedForSpec = "warlock_affliction"
+			ConstructResourceBar(specCache.warlock_affliction.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.demonology.talents:GetTalents()
+		specCache.warlock_demonology.talents:GetTalents()
 		FillSpellData_Demonology()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonology)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.warlock_demonology)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
@@ -1015,7 +850,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Demonology
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.demonology.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.warlock_demonology.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1024,15 +859,15 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "demonology" then
-			talents = specCache.demonology.talents
-			TRB.Data.barConstructedForSpec = "demonology"
-			ConstructResourceBar(specCache.demonology.settings)
+		if TRB.Data.barConstructedForSpec ~= "warlock_demonology" then
+			talents = specCache.warlock_demonology.talents
+			TRB.Data.barConstructedForSpec = "warlock_demonology"
+			ConstructResourceBar(specCache.warlock_demonology.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.destruction.talents:GetTalents()
+		specCache.warlock_destruction.talents:GetTalents()
 		FillSpellData_Destruction()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.destruction)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.warlock_destruction)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
@@ -1041,7 +876,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Destruction
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.destruction.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.warlock_destruction.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1050,10 +885,10 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "destruction" then
-			talents = specCache.destruction.talents
-			TRB.Data.barConstructedForSpec = "destruction"
-			ConstructResourceBar(specCache.destruction.settings)
+		if TRB.Data.barConstructedForSpec ~= "warlock_destruction" then
+			talents = specCache.warlock_destruction.talents
+			TRB.Data.barConstructedForSpec = "warlock_destruction"
+			ConstructResourceBar(specCache.warlock_destruction.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -1218,13 +1053,16 @@ function TRB.Functions.Class:CheckCharacter()
 	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "affliction"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "warlock_affliction"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "demonology"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "warlock_demonology"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "destruction"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "warlock_destruction"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	end
 
 	if sharedSettings ~= nil then
@@ -1273,8 +1111,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -1285,9 +1123,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -1297,9 +1135,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- All Warlock specs use the secondary (Soul Shards) bar
 			local showSecondary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -1308,9 +1146,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false

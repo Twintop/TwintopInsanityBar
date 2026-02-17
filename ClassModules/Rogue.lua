@@ -31,15 +31,15 @@ Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	assassination = TRB.Classes.SpecCache:New(),
-	outlaw = TRB.Classes.SpecCache:New(),
-	subtlety = TRB.Classes.SpecCache:New()
+	rogue_assassination = TRB.Classes.SpecCache:New(),
+	rogue_outlaw = TRB.Classes.SpecCache:New(),
+	rogue_subtlety = TRB.Classes.SpecCache:New()
 }
 TRB.Data.specCache = specCache
 
 local function FillSpecializationCache()
 	-- Assassination
-	specCache.assassination.Global_TwintopResourceBar = {
+	specCache.rogue_assassination.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -48,7 +48,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.assassination.character = {
+	specCache.rogue_assassination.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -60,57 +60,57 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Rogue.AssassinationSpells
-	specCache.assassination.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
+	specCache.rogue_assassination.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	local spells = specCache.assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 
-	specCache.assassination.snapshotData.attributes.resourceRegen = 0
-	specCache.assassination.snapshotData.attributes.comboPoints = 0
-	specCache.assassination.snapshotData.audio = {
+	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
+	specCache.rogue_assassination.snapshotData.attributes.comboPoints = 0
+	specCache.rogue_assassination.snapshotData.audio = {
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.garrote.id] = TRB.Classes.Snapshot:New(spells.garrote)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.garrote.id] = TRB.Classes.Snapshot:New(spells.garrote)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(spells.improvedGarrote, {
+	specCache.rogue_assassination.snapshotData.snapshots[spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(spells.improvedGarrote, {
 		isActiveStealth = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.blindside.id] = TRB.Classes.Snapshot:New(spells.blindside)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.blindside.id] = TRB.Classes.Snapshot:New(spells.blindside)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
+	specCache.rogue_assassination.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
-	specCache.assassination.barTextVariables = {
+	specCache.rogue_assassination.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 
 	-- Outlaw
-	specCache.outlaw.Global_TwintopResourceBar = {
+	specCache.rogue_outlaw.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -119,7 +119,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.outlaw.character = {
+	specCache.rogue_outlaw.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -131,49 +131,49 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Rogue.OutlawSpells
-	specCache.outlaw.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
+	specCache.rogue_outlaw.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 
-	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
-	specCache.outlaw.snapshotData.attributes.comboPoints = 0
-	specCache.outlaw.snapshotData.attributes.coupDeGraceActive = false
-	specCache.outlaw.snapshotData.audio = {
+	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
+	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
+	specCache.rogue_outlaw.snapshotData.attributes.coupDeGraceActive = false
+	specCache.rogue_outlaw.snapshotData.audio = {
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.betweenTheEyes.id] = TRB.Classes.Snapshot:New(spells.betweenTheEyes)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.betweenTheEyes.id] = TRB.Classes.Snapshot:New(spells.betweenTheEyes)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.bladeFlurry.id] = TRB.Classes.Snapshot:New(spells.bladeFlurry)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.bladeFlurry.id] = TRB.Classes.Snapshot:New(spells.bladeFlurry)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.bladeRush.id] = TRB.Classes.Snapshot:New(spells.bladeRush)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.bladeRush.id] = TRB.Classes.Snapshot:New(spells.bladeRush)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.killingSpree.id] = TRB.Classes.Snapshot:New(spells.killingSpree)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.killingSpree.id] = TRB.Classes.Snapshot:New(spells.killingSpree)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
 		---@type table<integer, TRB.Classes.Snapshot>
 		buffs = {
 			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside, {
@@ -200,27 +200,27 @@ local function FillSpecializationCache()
 		goodBuffs = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.broadside.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.broadside.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.broadside.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.broadside.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.buriedTreasure.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.buriedTreasure.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.buriedTreasure.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.buriedTreasure.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.grandMelee.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.grandMelee.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.grandMelee.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.grandMelee.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.ruthlessPrecision.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.ruthlessPrecision.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.ruthlessPrecision.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.ruthlessPrecision.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.skullAndCrossbones.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.skullAndCrossbones.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.skullAndCrossbones.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.skullAndCrossbones.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
-	specCache.outlaw.barTextVariables = {
+	specCache.rogue_outlaw.barTextVariables = {
 		icons = {},
 		values = {}
 	}
 
 	-- Subtlety
-	specCache.subtlety.Global_TwintopResourceBar = {
+	specCache.rogue_subtlety.Global_TwintopResourceBar = {
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -229,7 +229,7 @@ local function FillSpecializationCache()
 		isPvp = false
 	}
 
-	specCache.subtlety.character = {
+	specCache.rogue_subtlety.character = {
 		guid = UnitGUID("player"),
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
@@ -241,65 +241,65 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Rogue.SubtletySpells
-	specCache.subtlety.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
+	specCache.rogue_subtlety.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
 	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 
-	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
-	specCache.subtlety.snapshotData.attributes.comboPoints = 0
-	specCache.subtlety.snapshotData.attributes.coupDeGraceActive = false
-	specCache.subtlety.snapshotData.audio = {
+	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
+	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0
+	specCache.rogue_subtlety.snapshotData.attributes.coupDeGraceActive = false
+	specCache.rogue_subtlety.snapshotData.audio = {
 		comboPointThreshold1Played = false,
 		comboPointThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(spells.symbolsOfDeath)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(spells.symbolsOfDeath)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.goremawsBite.id] = TRB.Classes.Snapshot:New(spells.goremawsBite)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.goremawsBite.id] = TRB.Classes.Snapshot:New(spells.goremawsBite)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.secretTechnique.id] = TRB.Classes.Snapshot:New(spells.secretTechnique)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.secretTechnique.id] = TRB.Classes.Snapshot:New(spells.secretTechnique)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowBlades.id] = TRB.Classes.Snapshot:New(spells.shadowBlades)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.shadowBlades.id] = TRB.Classes.Snapshot:New(spells.shadowBlades)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(spells.finalityBlackPowder, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(spells.finalityBlackPowder, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, "always")
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
-	specCache.subtlety.barTextVariables = {
+	specCache.rogue_subtlety.barTextVariables = {
 		icons = {},
 		values = {}
 	}
@@ -317,76 +317,10 @@ end
 
 local function FillSpellData_Assassination()
 	Setup_Assassination()
-	specCache.assassination.spellsData:FillSpellData()
-	local spells = specCache.assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+	specCache.rogue_assassination.spellsData:FillSpellData()
+	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	
-	-- This is done here so that we can get icons for the options menu!
-	specCache.assassination.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
-		{ variable = "#crimsonTempest", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = true },
-		{ variable = "#ct", icon = spells.crimsonTempest.icon, description = spells.crimsonTempest.name, printInSettings = false },
-		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
-		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#garrote", icon = spells.garrote.icon, description = spells.garrote.name, printInSettings = true },
-		{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
-		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
-		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-	}
-	specCache.assassination.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
-
-		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-
-		--[[
-		-- Proc
-		{ variable = "$blindsideTime", description = L["RogueAssassinationBarTextVariable_blindsideTime"], printInSettings = true, color = false },]]
-	}
+	TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCache.rogue_assassination)
 end
 
 local function Setup_Outlaw()
@@ -401,108 +335,10 @@ end
 
 local function FillSpellData_Outlaw()
 	Setup_Outlaw()
-	specCache.outlaw.spellsData:FillSpellData()
-	local spells = specCache.outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	specCache.rogue_outlaw.spellsData:FillSpellData()
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.outlaw.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#adrenalineRush", icon = spells.adrenalineRush.icon, description = spells.adrenalineRush.name, printInSettings = true },
-		{ variable = "#betweenTheEyes", icon = spells.betweenTheEyes.icon, description = spells.betweenTheEyes.name, printInSettings = true },
-		{ variable = "#bladeFlurry", icon = spells.bladeFlurry.icon, description = spells.bladeFlurry.name, printInSettings = true },
-		{ variable = "#bladeRush", icon = spells.bladeRush.icon, description = spells.bladeRush.name, printInSettings = true },
-		{ variable = "#broadside", icon = spells.broadside.icon, description = spells.broadside.name, printInSettings = true },
-		{ variable = "#buriedTreasure", icon = spells.buriedTreasure.icon, description = spells.buriedTreasure.name, printInSettings = true },
-		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
-		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
-		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
-		{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
-		{ variable = "#pistolShot", icon = spells.pistolShot.icon, description = spells.pistolShot.name, printInSettings = true },
-		{ variable = "#rollTheBones", icon = spells.rollTheBones.icon, description = spells.rollTheBones.name, printInSettings = true },
-		{ variable = "#ruthlessPrecision", icon = spells.ruthlessPrecision.icon, description = spells.ruthlessPrecision.name, printInSettings = true },
-		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
-		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
-		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
-		{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
-	}
-	specCache.outlaw.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
-
-
-		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-
-		--[[{ variable = "$rtbCount", description = L["RogueOutlawBarTextVariable_rtbCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbTemporaryCount", description = L["RogueOutlawBarTextVariable_rtbTemporaryCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesTemporaryCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbAllCount", description = L["RogueOutlawBarTextVariable_rtbAllCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesAllCount", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbBuffTime", description = L["RogueOutlawBarTextVariable_rtbBuffTime"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesBuffTime", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbGoodBuff", description = L["RogueOutlawBarTextVariable_rtbGoodBuff"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesGoodBuff", description = "", printInSettings = false, color = false },
-
-		{ variable = "$broadsideTime", description = L["RogueOutlawBarTextVariable_broadsideTime"], printInSettings = true, color = false },
-		{ variable = "$buriedTreasureTime", description = L["RogueOutlawBarTextVariable_buriedTreasureTime"], printInSettings = true, color = false },
-		{ variable = "$grandMeleeTime", description = L["RogueOutlawBarTextVariable_grandMeleeTime"], printInSettings = true, color = false },
-		{ variable = "$ruthlessPrecisionTime", description = L["RogueOutlawBarTextVariable_ruthlessPrecisionTime"], printInSettings = true, color = false },
-		{ variable = "$skullAndCrossbonesTime", description = L["RogueOutlawBarTextVariable_skullAndCrossbonesTime"], printInSettings = true, color = false },
-		{ variable = "$trueBearingTime", description = L["RogueOutlawBarTextVariable_trueBearingTime"], printInSettings = true, color = false },
-
-		-- Proc
-		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
-	}
+	TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCache.rogue_outlaw)
 end
 
 local function Setup_Subtlety()
@@ -517,78 +353,10 @@ end
 
 local function FillSpellData_Subtlety()
 	Setup_Subtlety()
-	specCache.subtlety.spellsData:FillSpellData()
-	local spells = specCache.subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	specCache.rogue_subtlety.spellsData:FillSpellData()
+	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 
-	-- This is done here so that we can get icons for the options menu!
-	specCache.subtlety.barTextVariables.icons = {
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
-		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
-		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
-
-		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
-		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
-		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
-		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
-		{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
-		{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
-		{ variable = "#symbolsOfDeath", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = false },
-	}
-	specCache.subtlety.barTextVariables.values = {
-		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
-
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
-		
-		{ variable = "$health", description = L["BarTextVariableHealth"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariableHealthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariableHealthPercent"], printInSettings = true, color = false },
-
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
-		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
-
-
-		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		--[[{ variable = "$shadowTechniquesCount", description = L["RogueSubtletyBarTextVariable_shadowTechniquesCount"], printInSettings = true, color = false },
-
-		{ variable = "$sodTime", description = L["RogueSubtletyBarTextVariable_sodTime"], printInSettings = true, color = false },
-		{ variable = "$symbolsOfDeathTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },]]
-	}
+	TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCache.rogue_subtlety)
 end
 
 local function UpdateCastingResourceFinal()
@@ -698,7 +466,7 @@ end
 
 local function RefreshLookupData_Assassination()
 	local specSettings = TRB.Data.settings.rogue.assassination
-	local sharedSettings = TRB.Data.specCache["assassination"].settings
+	local sharedSettings = TRB.Data.specCache["rogue_assassination"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -782,7 +550,7 @@ end
 
 local function RefreshLookupData_Outlaw()
 	local specSettings = TRB.Data.settings.rogue.outlaw
-	local sharedSettings = TRB.Data.specCache["outlaw"].settings
+	local sharedSettings = TRB.Data.specCache["rogue_outlaw"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -936,7 +704,7 @@ end
 
 local function RefreshLookupData_Subtlety()
 	local specSettings = TRB.Data.settings.rogue.subtlety
-	local sharedSettings = TRB.Data.specCache["subtlety"].settings
+	local sharedSettings = TRB.Data.specCache["rogue_subtlety"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -1166,11 +934,11 @@ local function UpdateResourceBar()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.assassination
-		local specCacheSettings = TRB.Data.specCache.assassination.settings
+		local specCacheSettings = TRB.Data.specCache.rogue_assassination.settings
 		UpdateSnapshot_Assassination()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
@@ -1335,7 +1103,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 
@@ -1386,7 +1154,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1407,11 +1175,11 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.outlaw
-		local specCacheSettings = TRB.Data.specCache.outlaw.settings
+		local specCacheSettings = TRB.Data.specCache.rogue_outlaw.settings
 		UpdateSnapshot_Outlaw()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
@@ -1637,7 +1405,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 
@@ -1685,7 +1453,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1706,11 +1474,11 @@ local function UpdateResourceBar()
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.subtlety
-		local specCacheSettings = TRB.Data.specCache.subtlety.settings
+		local specCacheSettings = TRB.Data.specCache.rogue_subtlety.settings
 		UpdateSnapshot_Subtlety()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary ~= "never" then
+			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
@@ -1922,7 +1690,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary ~= "never" then
+			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -1981,7 +1749,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health ~= "never" then
+			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -2018,9 +1786,9 @@ local function SwitchSpec()
 	coupDeGraceFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 	if TRB.Data.character.specId == 1 then
-		specCache.assassination.talents:GetTalents()
+		specCache.rogue_assassination.talents:GetTalents()
 		FillSpellData_Assassination()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.rogue_assassination)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
@@ -2031,7 +1799,7 @@ local function SwitchSpec()
 		spells.shiv:ResetPrimaryResourceCost()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Assassination
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.assassination.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.rogue_assassination.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#blindside"] = spells.blindside.icon
@@ -2049,15 +1817,15 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
 		TRB.Functions.Class:EventRegistration()
 
-		if TRB.Data.barConstructedForSpec ~= "assassination" then
-			talents = specCache.assassination.talents
-			TRB.Data.barConstructedForSpec = "assassination"
-			ConstructResourceBar(specCache.assassination.settings)
+		if TRB.Data.barConstructedForSpec ~= "rogue_assassination" then
+			talents = specCache.rogue_assassination.talents
+			TRB.Data.barConstructedForSpec = "rogue_assassination"
+			ConstructResourceBar(specCache.rogue_assassination.settings)
 		end
 	elseif TRB.Data.character.specId == 2 then
-		specCache.outlaw.talents:GetTalents()
+		specCache.rogue_outlaw.talents:GetTalents()
 		FillSpellData_Outlaw()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.rogue_outlaw)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
@@ -2066,7 +1834,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Outlaw
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.outlaw.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.rogue_outlaw.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#adrenalineRush"] = spells.adrenalineRush.icon
@@ -2094,19 +1862,19 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
 		TRB.Functions.Class:EventRegistration()
 
-		if specCache.outlaw.talents:IsTalentActive(spells.coupDeGrace) then
+		if specCache.rogue_outlaw.talents:IsTalentActive(spells.coupDeGrace) then
 			coupDeGraceFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 		end
 
-		if TRB.Data.barConstructedForSpec ~= "outlaw" then
-			talents = specCache.outlaw.talents
-			TRB.Data.barConstructedForSpec = "outlaw"
-			ConstructResourceBar(specCache.outlaw.settings)
+		if TRB.Data.barConstructedForSpec ~= "rogue_outlaw" then
+			talents = specCache.rogue_outlaw.talents
+			TRB.Data.barConstructedForSpec = "rogue_outlaw"
+			ConstructResourceBar(specCache.rogue_outlaw.settings)
 		end
 	elseif TRB.Data.character.specId == 3 then
-		specCache.subtlety.talents:GetTalents()
+		specCache.rogue_subtlety.talents:GetTalents()
 		FillSpellData_Subtlety()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.subtlety)
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.rogue_subtlety)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
@@ -2115,7 +1883,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Subtlety
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.subtlety.settings)
+		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.rogue_subtlety.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
@@ -2132,14 +1900,14 @@ local function SwitchSpec()
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
 		TRB.Functions.Class:EventRegistration()
 
-		if specCache.subtlety.talents:IsTalentActive(spells.coupDeGrace) then
+		if specCache.rogue_subtlety.talents:IsTalentActive(spells.coupDeGrace) then
 			coupDeGraceFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 		end
 
-		if TRB.Data.barConstructedForSpec ~= "subtlety" then
-			talents = specCache.subtlety.talents
-			TRB.Data.barConstructedForSpec = "subtlety"
-			ConstructResourceBar(specCache.subtlety.settings)
+		if TRB.Data.barConstructedForSpec ~= "rogue_subtlety" then
+			talents = specCache.rogue_subtlety.talents
+			TRB.Data.barConstructedForSpec = "rogue_subtlety"
+			ConstructResourceBar(specCache.rogue_subtlety.settings)
 		end
 	else
 		TRB.Data.barConstructedForSpec = nil
@@ -2296,13 +2064,16 @@ function TRB.Functions.Class:CheckCharacter()
 
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "assassination"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "rogue_assassination"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "outlaw"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "rogue_outlaw"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "subtlety"
-		sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		TRB.Data.character.compositeKey = "rogue_subtlety"
+		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	end
 	
 	if sharedSettings ~= nil then
@@ -2379,8 +2150,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 		local sharedSettings
-		if TRB.Data.specCache[TRB.Data.character.specName] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.specName].settings
+		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
+			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
 		if sharedSettings ~= nil then
@@ -2391,9 +2162,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine primary bar visibility independently
 			local showPrimary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.primary == "always" then
+				if sharedSettings.displayBar.primary.visibility == "always" then
 					showPrimary = true
-				elseif sharedSettings.displayBar.primary == "combat" then
+				elseif sharedSettings.displayBar.primary.visibility == "combat" then
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
@@ -2403,9 +2174,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- All Rogue specs use the secondary (Combo Points) bar
 			local showSecondary = false
 			if not forceHideAll then
-				if sharedSettings.displayBar.secondary == "always" then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
-				elseif sharedSettings.displayBar.secondary == "combat" then
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
 				-- "never" means showSecondary stays false
@@ -2434,9 +2205,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- Determine health bar visibility independently
 			local showHealth = false
 			if not forceHideAll and sharedSettings.displayBar.health ~= nil then
-				if sharedSettings.displayBar.health == "always" then
+				if sharedSettings.displayBar.health.visibility == "always" then
 					showHealth = true
-				elseif sharedSettings.displayBar.health == "combat" then
+				elseif sharedSettings.displayBar.health.visibility == "combat" then
 					showHealth = affectingCombat or inVehicle
 				end
 				-- "never" means showHealth stays false
