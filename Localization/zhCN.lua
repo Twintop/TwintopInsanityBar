@@ -1771,4 +1771,8 @@ if locale == "zhCN" then
     L["ShamanElementalBarTextVariable_mana"] = "当前法力值"
     L["ShamanElementalBarTextVariable_manaPercent"] = "当前法力值百分比"
     L["ShamanElementalBarTextVariable_manaMax"] = "法力值上限"
+
+    L["CheckboxSmoothBar"] = "平滑进度条动画"
+    L["CheckboxSmoothBarTooltip"] = "勾选后，此进度条的数值更新将以短暂平滑的动画效果呈现，而非瞬间跳变。"
+
 end
