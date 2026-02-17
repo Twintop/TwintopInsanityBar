@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.7-release (2026-02-17)
+## General
+
+- Fix news popup from blending in with the options window.
+
+---
+
 # 12.0.1.6-release (2026-02-16)
 ## Druid
 ### Feral
@@ -809,7 +816,8 @@ local content = [====[
 ]====]
 
 local newsFrame = CreateFrame("Frame", "TRB_News_Frame", UIParent, "BackdropTemplate")
-newsFrame:SetFrameStrata("DIALOG")
+newsFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+newsFrame:EnableMouse(true)
 local isConstructed = false
 
 function TRB.Functions.News:BuildNewsPopup()
@@ -829,7 +837,7 @@ function TRB.Functions.News:BuildNewsPopup()
 			bottom = 0,
 		}
 	})
-	newsFrame:SetBackdropColor(0, 0, 0, 0.5)
+	newsFrame:SetBackdropColor(0, 0, 0, 0.95)
 	newsFrame:SetWidth(650)
 	newsFrame:SetHeight(480)
 	newsFrame:SetPoint("CENTER", UIParent)
@@ -841,6 +849,13 @@ function TRB.Functions.News:BuildNewsPopup()
 	newsPanelParent:SetPoint("TOPLEFT", 5, -30)
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, L["NewsHeaderTwintopsResourceBarUpdates"], oUi.xCoord, 0)
+
+	local closeX = CreateFrame("Button", nil, newsFrame, "UIPanelCloseButton")
+	closeX:SetPoint("TOPRIGHT", newsFrame, "TOPRIGHT", -2, -2)
+	closeX:SetScript("OnClick", function()
+		TRB.Functions.News:Hide()
+	end)
+
 	local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, L["Close"], 510, -10, 100, 25)
 	closeButton:ClearAllPoints()
 	closeButton:SetPoint("BOTTOMRIGHT", -5, 5)
@@ -865,22 +880,22 @@ function TRB.Functions.News:BuildNewsPopup()
 	simpleHtml:SetWidth(600)
 	
 ---@diagnostic disable-next-line: param-type-mismatch
-	simpleHtml:SetFontObject("h1", "SubzoneTextFont")
-	simpleHtml:SetTextColor("h1", 0, 0.6, 1, 1)
+	simpleHtml:SetFontObject("h1", "SystemFont_Huge1")
+	simpleHtml:SetTextColor("h1", 1.0, 0.82, 0.0, 1)
 
 ---@diagnostic disable-next-line: param-type-mismatch
-	simpleHtml:SetFontObject("h2", "Fancy22Font")
-	simpleHtml:SetTextColor("h2", 0, 1, 0, 1)
+	simpleHtml:SetFontObject("h2", "SystemFont_Large")
+	simpleHtml:SetTextColor("h2", 0.45, 0.75, 1.0, 1)
 
 ---@diagnostic disable-next-line: param-type-mismatch
-	simpleHtml:SetFontObject("h3", "NumberFontNormalLarge")
-	simpleHtml:SetTextColor("h3", 0, 0.8, 0.4, 1)
+	simpleHtml:SetFontObject("h3", "SystemFont_Med3")
+	simpleHtml:SetTextColor("h3", 0.9, 0.9, 0.9, 1)
 
 ---@diagnostic disable-next-line: param-type-mismatch
-	simpleHtml:SetFontObject("p", "GameFontNormal")
-	simpleHtml:SetTextColor("p", 1, 1, 1, 1)
+	simpleHtml:SetFontObject("p", "GameFontHighlight")
+	simpleHtml:SetTextColor("p", 0.78, 0.78, 0.78, 1)
 
-	simpleHtml:SetHyperlinkFormat("[|cff3399ff|H%s|h%s|h|r]")
+	simpleHtml:SetHyperlinkFormat("[|cff4da6ff|H%s|h%s|h|r]")
 
 	simpleHtml:SetScript("OnHyperlinkClick", 
 		function(f, link, text, ...)
@@ -899,6 +914,16 @@ function TRB.Functions.News:BuildNewsPopup()
 	simpleHtml:SetScript("OnHyperlinkEnter", function(f) SetCursor("Interface\\CURSOR\\vehichleCursor.PNG") end)
 ---@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetScript("OnHyperlinkLeave", function(f) SetCursor(nil)									 end)
+
+	-- Override LibMarkdown inline color escapes for a cleaner palette
+	LMD.config["strong"]  = "|cffffcc00"
+	LMD.config["/strong"] = "|r"
+	LMD.config["em"]      = "|cffff9966"
+	LMD.config["/em"]     = "|r"
+	LMD.config["code"]    = "|cffaaaadd"
+	LMD.config["/code"]   = "|r"
+	LMD.config["pre"]     = "<p>|cffaaaadd"
+	LMD.config["/pre"]    = "|r</p><br />"
 
 	simpleHtml:SetText(LMD:ToHTML(content))
 	-- ... and this is the popup it opens.
