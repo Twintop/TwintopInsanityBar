@@ -1673,28 +1673,40 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 	local columns = {
 		{
 			["name"] = "",
-			["width"] = 28,
+			["width"] = 18,
 			["align"] = "CENTER",
 			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 				if not fShow then return end
+				-- Hide the default text; we use an icon texture instead
+				cellFrame.text:SetText("")
+
 				local rowData = data[realrow]
 				if rowData and rowData.isHeader then
-					cellFrame.text:SetText("")
+					if cellFrame._addIcon then cellFrame._addIcon:Hide() end
 				else
-					cellFrame.text:SetFontObject(GameFontNormal)
+					-- Create the icon texture once per cell, reuse thereafter
+					if not cellFrame._addIcon then
+						local icon = cellFrame:CreateTexture(nil, "ARTWORK")
+						icon:SetSize(10, 10)
+						icon:SetPoint("CENTER", cellFrame, "CENTER", 0, 0)
+						-- Use a white base texture so SetVertexColor has full range
+						icon:SetAtlas("communities-chat-icon-plus")
+						cellFrame._addIcon = icon
+					end
+					local icon = cellFrame._addIcon
+					icon:Show()
 					local hasActiveEditBox = TRB.Frames.activeBarTextEditBox ~= nil
 					if hasActiveEditBox then
-						cellFrame.text:SetTextColor(0.2, 0.9, 0.2, 1)
+						icon:SetVertexColor(0, 1, 0, 1)
 					else
-						cellFrame.text:SetTextColor(0.5, 0.5, 0.5, 0.6)
+						icon:SetVertexColor(0.5, 0.5, 0.5, 0.6)
 					end
-					cellFrame.text:SetText(L["BarTextVariablesAddButton"])
 				end
 			end,
 		},
 		{
 			["name"] = "",
-			["width"] = panelWidth - 75,
+			["width"] = panelWidth - 65,
 			["align"] = "LEFT",
 			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 				if not fShow then return end

@@ -824,8 +824,14 @@ local content = [====[
 ]====]
 
 local newsFrame = CreateFrame("Frame", "TRB_News_Frame", UIParent, "BackdropTemplate")
-newsFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+newsFrame:SetFrameStrata("DIALOG")
+newsFrame:SetFrameLevel(500)
 newsFrame:EnableMouse(true)
+newsFrame:SetMovable(true)
+newsFrame:SetClampedToScreen(true)
+newsFrame:RegisterForDrag("LeftButton")
+newsFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
+newsFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 local isConstructed = false
 
 function TRB.Functions.News:BuildNewsPopup()
