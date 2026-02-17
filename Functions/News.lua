@@ -20,6 +20,10 @@ local content = [====[
 - Add an option to enable or disable abbreviated number formatting (e.g. 10.0K, 1.5M) for large numbers across all bars.
 - Fix news popup from blending in with the options window.
 
+### Localization
+
+- [#615](#615) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Hunter
 ### Marksmanship
 
