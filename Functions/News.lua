@@ -22,7 +22,7 @@ local content = [====[
 
 ### Localization
 
-- [#615](#615) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#621](#621) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Hunter
 ### Marksmanship
