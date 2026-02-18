@@ -1247,13 +1247,19 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				font:SetJustifyH(fontJustifyHorizontal)
 				font:SetFont(fontFace, fontSize, "OUTLINE")
-				font:Show()
 				font:ClearAllPoints()
 				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
 				textFrames[frameCount]:SetAllPoints(font)
-				textFrames[frameCount]:Show()
+
+				if TRB.Functions.Bar:IsRenderTransitionActive() then
+					font:Hide()
+					textFrames[frameCount]:Hide()
+				else
+					font:Show()
+					textFrames[frameCount]:Show()
+				end
 			else
 				textFrames[frameCount]:Hide()
 				font:Hide()
@@ -1336,9 +1342,15 @@ function TRB.Functions.BarText:Show(settings)
 			end
 			
 			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
-				textFrames[i]:Show()
-				---@diagnostic disable-next-line: undefined-field
-				textFrames[i].font:Show()
+				if TRB.Functions.Bar:IsRenderTransitionActive() then
+					textFrames[i]:Hide()
+					---@diagnostic disable-next-line: undefined-field
+					textFrames[i].font:Hide()
+				else
+					textFrames[i]:Show()
+					---@diagnostic disable-next-line: undefined-field
+					textFrames[i].font:Show()
+				end
 			elseif textFrames[i] ~= nil then
 				textFrames[i]:Hide()
 				---@diagnostic disable-next-line: undefined-field

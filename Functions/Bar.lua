@@ -3,6 +3,78 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
+local renderTransitionState = {
+	active = true,
+	token = 0,
+	reason = "init",
+	defaultDelay = 0.6
+}
+
+local function SetBarGroupsAlpha(alpha)
+	local barGroups = TRB.Frames.barGroups
+	if not barGroups then
+		return
+	end
+
+	for _, group in pairs(barGroups) do
+		if type(group) == "table" and group.SetAlpha then
+			group:SetAlpha(alpha)
+		elseif type(group) == "table" and group.GetContainerFrame then
+			local container = group:GetContainerFrame()
+			if container and container.SetAlpha then
+				container:SetAlpha(alpha)
+			end
+		end
+	end
+
+	-- Also handle legacy frames just in case
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barContainerFrame:SetAlpha(alpha)
+	end
+	if TRB.Frames.resource2ContainerFrame then
+		TRB.Frames.resource2ContainerFrame:SetAlpha(alpha)
+	end
+end
+
+-- Initialize transition state early to prevent flash on load
+-- We'll clear this after a safe delay
+C_Timer.After(10, function()
+	if renderTransitionState.active and renderTransitionState.reason == "init" then
+		TRB.Functions.Bar:EndRenderTransition("init:timeout")
+	end
+end)
+
+local function HideAllBarGroupsAndBarText()
+	local barGroups = TRB.Frames.barGroups
+
+	if barGroups then
+		for _, group in pairs(barGroups) do
+			if type(group) == "table" and group.Hide then
+				group:Hide()
+			end
+		end
+	end
+
+	-- Brutally hide legacy frames
+	if TRB.Frames.barContainerFrame then
+		TRB.Frames.barContainerFrame:Hide()
+	end
+	if TRB.Frames.resource2ContainerFrame then
+		TRB.Frames.resource2ContainerFrame:Hide()
+	end
+
+	if TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
+		TRB.Data.snapshotData.attributes.isTracking = false
+	end
+
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey and TRB.Functions.BarText and TRB.Functions.BarText.Hide then
+		local specCacheEntry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if specCacheEntry and specCacheEntry.settings then
+			TRB.Functions.BarText:Hide(specCacheEntry.settings)
+		end
+	end
+end
+
 ---Computes the width of each Combo Point node
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return number
@@ -60,8 +132,80 @@ function TRB.Functions.Bar:ShowResourceBar()
 		TRB.Functions.Class:EventRegistration()
 	end
 
+	if self:IsRenderTransitionActive() then
+		return
+	end
+
 	TRB.Data.snapshotData.attributes.isTracking = true
 	TRB.Functions.Bar:HideResourceBar()
+end
+
+function TRB.Functions.Bar:IsRenderTransitionActive()
+	return renderTransitionState.active
+end
+
+function TRB.Functions.Bar:QueueRenderTransition(reason, delaySeconds)
+	local delay = delaySeconds or renderTransitionState.defaultDelay
+	if delay < 0 then
+		delay = 0
+	end
+
+	renderTransitionState.active = true
+	renderTransitionState.reason = reason
+	renderTransitionState.token = renderTransitionState.token + 1
+	local token = renderTransitionState.token
+	
+	-- Force immediate hide
+	HideAllBarGroupsAndBarText()
+	SetBarGroupsAlpha(0)
+
+	C_Timer.After(delay, function()
+		if renderTransitionState.active and renderTransitionState.token == token then
+			TRB.Functions.Bar:EndRenderTransition("timer")
+		end
+	end)
+end
+
+function TRB.Functions.Bar:TouchRenderTransition(delaySeconds)
+	if not renderTransitionState.active then
+		return
+	end
+
+	local delay = delaySeconds or renderTransitionState.defaultDelay
+	if delay < 0 then
+		delay = 0
+	end
+
+	renderTransitionState.token = renderTransitionState.token + 1
+	local token = renderTransitionState.token
+	
+	-- Re-enforce hide
+	HideAllBarGroupsAndBarText()
+	SetBarGroupsAlpha(0)
+
+	C_Timer.After(delay, function()
+		if renderTransitionState.active and renderTransitionState.token == token then
+			TRB.Functions.Bar:EndRenderTransition("activity")
+		end
+	end)
+end
+
+function TRB.Functions.Bar:EndRenderTransition(reason)
+	if not renderTransitionState.active then
+		return
+	end
+
+	renderTransitionState.active = false
+	renderTransitionState.reason = reason
+
+	TRB.Functions.Bar:HideResourceBar()
+	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+
+	-- Restore alpha only AFTER visibility logic has run
+	-- This prevents a single-frame flash where alpha becomes 1 while the bar is still technically "shown" but should be hidden
+	SetBarGroupsAlpha(1)
 end
 
 function TRB.Functions.Bar:HideResourceBar(force)
@@ -73,17 +217,12 @@ function TRB.Functions.Bar:HideResourceBar(force)
 
 	-- If spec is not supported (disabled), hide all bars immediately and skip all other logic
 	if not TRB.Data.specSupported then
-		local barGroups = TRB.Frames.barGroups
-		if barGroups then
-			for _, group in pairs(barGroups) do
-				if type(group) == "table" and group.Hide then
-					group:Hide()
-				end
-			end
-		end
-		if TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
-			TRB.Data.snapshotData.attributes.isTracking = false
-		end
+		HideAllBarGroupsAndBarText()
+		return
+	end
+
+	if self:IsRenderTransitionActive() then
+		HideAllBarGroupsAndBarText()
 		return
 	end
 
@@ -315,6 +454,13 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	-- Pre-emptive hide before doing anything else
+	if self:IsRenderTransitionActive() then
+		SetBarGroupsAlpha(0)
+	end
+	
+	self:TouchRenderTransition(0.35)
+
 	-- Don't construct bars if spec is not supported (disabled in settings)
 	if not TRB.Data.specSupported then
 		return
@@ -341,6 +487,10 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	TRB.Functions.BarText:CreateBarTextFrames()
 	TRB.Functions.BarText:Hide(settings)
 	TRB.Functions.Class:HideResourceBar()
+
+	if self:IsRenderTransitionActive() then
+		SetBarGroupsAlpha(0)
+	end
 end
 
 ---Applies size/position/layout updates to existing bar groups (OOP system only).
@@ -350,6 +500,13 @@ end
 function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if settings == nil or settings.bar == nil or barGroups == nil then
 		return
+	end
+
+	self:TouchRenderTransition(0.35)
+
+	-- If render transition is active, force alpha 0 to prevent flicker
+	if self:IsRenderTransitionActive() then
+		SetBarGroupsAlpha(0)
 	end
 
 	-- Don't apply layout if spec is not supported (disabled in settings)
@@ -494,6 +651,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			-- Show the primary bar (now parented directly to UIParent)
 			primary:Show()
 			primaryNode:Show()
+
+			-- If render transition is active, keep it hidden (alpha 0) despite the Show() call
+			if self:IsRenderTransitionActive() then
+				SetBarGroupsAlpha(0)
+			end
 
 			-- Redraw thresholds to match new bar dimensions
 			local thresholds = primaryNode:GetThresholds()
@@ -731,6 +893,13 @@ end
 function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	if settings == nil or settings.bar == nil or barGroups == nil then
 		return
+	end
+
+	self:TouchRenderTransition(0.35)
+
+	-- If render transition is active, force alpha 0 to prevent flicker
+	if self:IsRenderTransitionActive() then
+		SetBarGroupsAlpha(0)
 	end
 
 	-- Clear color caches to ensure colors are re-applied after ApplyBackdrop resets frames
@@ -1154,6 +1323,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if TRB.Data.specSupported then
 		targetGroup:Show()
 		targetGroup:ShowNodes(nodes)
+
+		-- If render transition is active, keep it hidden (alpha 0) despite the Show() call
+		if self:IsRenderTransitionActive() then
+			SetBarGroupsAlpha(0)
+		end
 	else
 		targetGroup:Hide()
 	end

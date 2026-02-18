@@ -6555,7 +6555,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local function ResetTableValues(barText)
 		spec.displayText.barText = barText
-		TRB.Data.specCache[compositeKey].settings.displayText.barText = barText
+		if TRB.Data.specCache[compositeKey] then
+			TRB.Data.specCache[compositeKey].settings.displayText.barText = barText
+		end
 		SetTableValues(spec.displayText, barTextTable)
 		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
 		
