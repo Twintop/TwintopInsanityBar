@@ -313,8 +313,6 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
-	-- TRB.Functions.Bar:HideResourceBar() -- This is the generic one, but we are supposed to call Class:HideResourceBar?
-    -- Actually, we should probably just call TriggerResourceBarUpdates which calls HideResourceBar(true) if needed.
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
