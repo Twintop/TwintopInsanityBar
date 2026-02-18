@@ -270,8 +270,20 @@ function TRB.Classes.BarNode:SetFrameStrata(strata)
 	self.resourceFrame:SetFrameStrata(strata)
 end
 
+---Sets the node's alpha transparency
+---@param alpha number
+function TRB.Classes.BarNode:SetAlpha(alpha)
+	self.containerFrame:SetAlpha(alpha)
+end
+
 ---Shows the node
 function TRB.Classes.BarNode:Show()
+	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
+		self.containerFrame:SetAlpha(0)
+	else
+		self.containerFrame:SetAlpha(1)
+	end
+
 	self.containerFrame:Show()
 	self.resourceFrame:Show()
 	if self.border >= 1 then
@@ -504,6 +516,23 @@ function TRB.Classes.BarGroup:GetNodeCount()
 	return self.nodeCount
 end
 
+---Gets the container frame
+---@return Frame
+function TRB.Classes.BarGroup:GetContainerFrame()
+	return self.containerFrame
+end
+
+---Sets the alpha of the group container and all nodes
+---@param alpha number
+function TRB.Classes.BarGroup:SetAlpha(alpha)
+	self.containerFrame:SetAlpha(alpha)
+	for i = 1, self.maxNodes do
+		if self.nodes[i] then
+			self.nodes[i]:SetAlpha(alpha)
+		end
+	end
+end
+
 ---Gets all nodes
 ---@return TRB.Classes.BarNode[]
 function TRB.Classes.BarGroup:GetNodes()
@@ -676,6 +705,12 @@ end
 
 ---Shows the group container
 function TRB.Classes.BarGroup:Show()
+	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
+		self.containerFrame:SetAlpha(0)
+	else
+		self.containerFrame:SetAlpha(1)
+	end
+
 	self.containerFrame:Show()
 	self.isVisible = true
 end

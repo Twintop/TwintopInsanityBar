@@ -244,6 +244,19 @@ end
 ---@param event string
 ---@param ... unknown
 local function CharacterChange(self, event, ...)
+	if event == "PLAYER_SPECIALIZATION_CHANGED" then
+		local unitTarget = ...
+		if unitTarget ~= "player" then
+			return
+		end
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+		if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+			TRB.Functions.Bar:QueueRenderTransition("characterChange:" .. event, 0.35)
+		end
+	end
+
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
@@ -300,6 +313,8 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 	characterChangeFrame:RegisterEvent("PET_BATTLE_CLOSE")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 end
 
 function TRB.Functions.Character:DisableCharacterChange()
@@ -315,6 +330,8 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
 	characterChangeFrame:UnregisterEvent("PET_BATTLE_CLOSE")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 end
 
 ---Handles SPELL_RANGE_CHECK_UPDATE events
