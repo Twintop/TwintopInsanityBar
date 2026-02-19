@@ -516,9 +516,20 @@ function TRB.Classes.BarGroup:GetNodeCount()
 	return self.nodeCount
 end
 
----Gets the container frame
+
+---Gets the frame that other bars should anchor to.
+---For single-node groups (primary, health, etc.), returns the border frame of node 1,
+---which represents the full visual extent including borders.
+---For multi-node groups (combo points, defensives, etc.), returns the group container,
+---which already encompasses all nodes at full visual extent.
 ---@return Frame
-function TRB.Classes.BarGroup:GetContainerFrame()
+function TRB.Classes.BarGroup:GetAnchorFrame()
+	if self.maxNodes == 1 then
+		local node = self.nodes[1]
+		if node then
+			return node:GetBorderFrame()
+		end
+	end
 	return self.containerFrame
 end
 

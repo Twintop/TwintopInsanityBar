@@ -425,6 +425,16 @@ local function UpdateShapeshiftForm()
 		TRB.Data.cache.values.frame = {}
 		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
 	end
+
+	-- Recalculate wrapper/CDM positioning for the new form.
+	-- The bounding box (CalculateWrapperLayout) is form-aware: it strips bars that aren't
+	-- shown in the current form (e.g., combo points in Moonkin, mana bar in Cat).
+	-- Without this, the wrapper stays sized for the old form, causing:
+	-- - Wrong extendAbove (gap between CDM and top bar)
+	-- - Wrong baseOffsetX (primary shifted away from CDM center)
+	if TRB.Functions.Bar and TRB.Functions.Bar.RefreshWrapperPositioning then
+		TRB.Functions.Bar:RefreshWrapperPositioning()
+	end
 end
 
 local shapeshiftFrame = CreateFrame("Frame")

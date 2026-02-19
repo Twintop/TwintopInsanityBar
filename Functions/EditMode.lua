@@ -138,7 +138,7 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 		if wrapperRootKey == "primary" then
 			rootHeight = (settings and settings.bar and settings.bar.height) or 100
 		else
-			local rootSettings = TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
+			local rootSettings = settings and TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
 			rootHeight = (rootSettings and rootSettings.height) or 100
 		end
 		editModeWrapperFrame:SetSize(effectiveWidth, rootHeight)
@@ -164,13 +164,15 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 		editModeWrapperFrame:SetSize(totalWidth, totalHeight)
 	end
 
-	-- Reposition the root bar within the wrapper to account for bars above/beside it
-	-- extendAbove offsets down from top; baseOffsetX offsets horizontally from center
+	-- Reposition the root bar within the wrapper to account for bars above/beside it.
+	-- Offset by rootBorder so the borderFrame's visible edge aligns with the wrapper boundary.
 	local wrapperRootKey = TRB.Functions.Bar:FindWrapperRoot(settings or {}, barGroups)
 	local rootGroup = barGroups[wrapperRootKey]
-	if rootGroup then
+	if rootGroup and settings then
+		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
+		local rootBorder = (rootBarSettings and rootBarSettings.border) or 0
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+		rootGroup.containerFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -(extendAbove + rootBorder))
 	end
 end
 
@@ -204,18 +206,81 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 	-- Get effective width (may be CDM-matched)
 	local effectiveWidth = (barGroups.effectiveWidth) or settings.bar.width
 
-	-- DRUID SPECIAL CASE: Non-Feral Druids may need Feral's combo point settings
-	-- for proper wrapper sizing when form switching is active.
+	-- DRUID SPECIAL CASE: Druids have form-based bar visibility that's controlled at
+	-- runtime by HideResourceBar (not by settings.displayBar.*.visibility).
+	-- The bounding box must match this runtime behavior:
+	-- - Combo points (secondary): only visible in Cat form (displaySpecId 2)
+	-- - Mana bar (custom): only visible in Balance/Moonkin form (displaySpecId 1)
+	-- Without matching, the wrapper is the wrong size and creates gaps/offsets.
 	local treeSettings = settings
-	if TRB.Data.character.classId == 11 and not settings.comboPoints then
-		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-		if feralSettings and feralSettings.comboPoints then
-			-- Shallow copy with Feral combo points injected
+	if TRB.Data.character.classId == 11 and not includeHidden then
+		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		local shouldIncludeComboPoints = (currentForm == "cat")
+		local shouldIncludeMana = (currentForm == "moonkin" and TRB.Data.character.specId == 1)
+
+		-- Determine if we need to create a modified settings copy.
+		-- CRITICAL: For non-Feral Druids in cat form, ALWAYS inject Feral's comboPoints
+		-- settings, even if the current spec's settings already has a comboPoints table
+		-- (e.g., from saved vars or global settings resolution). The rendering path
+		-- (ApplyBarGroupsLayout) always overrides with Feral's comboPoints for non-Feral
+		-- Druids, so the anchoring path must match. Without this, the bounding box uses
+		-- the current spec's stale/global comboPoints dimensions instead of Feral's.
+		local isNonFeralDruid = (TRB.Data.character.specId ~= 2)
+		local needsComboPointsInject = shouldIncludeComboPoints and isNonFeralDruid
+		local needsComboPointsStrip = not shouldIncludeComboPoints and settings.comboPoints
+		local needsManaStrip = not shouldIncludeMana and settings.bars and settings.bars.mana
+
+		if needsComboPointsInject or needsComboPointsStrip or needsManaStrip then
+			-- Create a shallow copy of settings so we can modify it without affecting the original
 			treeSettings = {}
 			for k, v in pairs(settings) do
 				treeSettings[k] = v
 			end
-			treeSettings.comboPoints = feralSettings.comboPoints
+
+			-- Copy displayBar so we can override visibility for stripped bars
+			local newDisplayBar = {}
+			for k, v in pairs(settings.displayBar or {}) do
+				newDisplayBar[k] = v
+			end
+			treeSettings.displayBar = newDisplayBar
+
+			if needsComboPointsInject then
+				-- Cat form on non-Feral spec: always use Feral's comboPoints settings
+				local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+				if feralSettings and feralSettings.comboPoints then
+					treeSettings.comboPoints = feralSettings.comboPoints
+				end
+			elseif needsComboPointsStrip then
+				-- Non-Cat form, but settings has comboPoints: strip them
+				treeSettings.comboPoints = nil
+				newDisplayBar.secondary = { visibility = "never" }
+			end
+
+			if needsManaStrip then
+				-- Non-Balance form, but settings has mana bar: strip it so it doesn't
+				-- inflate the bounding box or shift baseOffsetX
+				local newBars = {}
+				for k, v in pairs(settings.bars) do
+					if k ~= "mana" then
+						newBars[k] = v
+					end
+				end
+				treeSettings.bars = newBars
+				newDisplayBar.mana = { visibility = "never" }
+			end
+		end
+	elseif TRB.Data.character.classId == 11 and includeHidden then
+		-- Edit Mode: always inject Feral's comboPoints for non-Feral specs (so Edit Mode
+		-- shows all bars with the correct Feral dimensions, not stale/global values)
+		if TRB.Data.character.specId ~= 2 then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if feralSettings and feralSettings.comboPoints then
+				treeSettings = {}
+				for k, v in pairs(settings) do
+					treeSettings[k] = v
+				end
+				treeSettings.comboPoints = feralSettings.comboPoints
+			end
 		end
 	end
 
@@ -260,15 +325,17 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 		if matchWidth then
 			w = parentWidth
 		elseif node.barKey == "secondary" then
-			-- Non-matchWidth secondary bar: calculate total width from node dimensions
+			-- Non-matchWidth secondary bar: calculate total width from node dimensions.
+			-- The rendered group width (from BarGroup:ApplyLayout) is exactly:
+			--   nodeCount * nodeWidth + (nodeCount - 1) * spacing
+			-- Per-node borders are contained WITHIN each nodeWidth and don't add extra width.
 			local nodeCount = TRB.Data.character.maxResource2 or 5
 			if node.barGroup and node.barGroup.nodeCount then
 				nodeCount = node.barGroup.nodeCount
 			end
 			local nodeWidth = barSettings.width or 10
 			local nodeSpacing = barSettings.spacing or 2
-			local barBorder = barSettings.border or 1
-			w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1)) + barBorder * 2
+			w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
 		end
 
 		return w, h
@@ -299,28 +366,6 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 							attachPt = "TOP"
 						end
 						xOffset = 0
-					end
-
-					-- Apply border offset (matching ConstructAnchoredBarGroup)
-					local anchorBarSettings = parentNode.barSettings
-					local anchorBorder = (anchorBarSettings and anchorBarSettings.border) or 0
-
-					local anchorIsTop = string.find(anchorPt, "TOP") ~= nil or anchorPt == "TOP"
-					local anchorIsBottom = string.find(anchorPt, "BOTTOM") ~= nil or anchorPt == "BOTTOM"
-					if anchorIsBottom then
-						yOffset = yOffset - anchorBorder
-					elseif anchorIsTop then
-						yOffset = yOffset + anchorBorder
-					end
-
-					if not matchWidth then
-						local isLeft = string.find(attachPt, "LEFT") ~= nil
-						local isRight = string.find(attachPt, "RIGHT") ~= nil
-						if isLeft then
-							xOffset = xOffset - anchorBorder
-						elseif isRight then
-							xOffset = xOffset + anchorBorder
-						end
 					end
 
 					-- Calculate anchor point position on parent (Y-up, origin=parent bottom-left)

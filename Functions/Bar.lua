@@ -594,27 +594,20 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			if primaryAnchor and primaryAnchor.barKey and primaryAnchor.barKey ~= "screen" then
 				local anchorGroup = barGroups[primaryAnchor.barKey]
 				if anchorGroup then
-					local anchorBarSettings = self:GetBarSettings(settings, primaryAnchor.barKey)
-					local aBorder = (anchorBarSettings and anchorBarSettings.border) or 0
 					local ap = primaryAnchor.anchorPoint or "BOTTOM"
 					local att = primaryAnchor.attachPoint or "TOP"
 					local xo = primaryAnchor.xOffset or 0
 					local yo = primaryAnchor.yOffset or 0
-					-- Apply border offsets (same logic as ConstructAnchoredBarGroup)
+					-- Apply matchWidth center-alignment override
 					if primaryAnchor.matchWidth then
 						local isAbove = string.find(ap, "TOP") ~= nil
 						local isBelow = string.find(ap, "BOTTOM") ~= nil
 						if isAbove then att = "BOTTOM"; ap = "TOP"
 						elseif isBelow then att = "TOP"; ap = "BOTTOM" end
 						xo = 0
-					else
-						if string.find(att, "LEFT") ~= nil then xo = xo - aBorder
-						elseif string.find(att, "RIGHT") ~= nil then xo = xo + aBorder end
 					end
-					if string.find(ap, "BOTTOM") ~= nil or ap == "BOTTOM" then yo = yo - aBorder
-					elseif string.find(ap, "TOP") ~= nil or ap == "TOP" then yo = yo + aBorder end
 					primary.containerFrame:ClearAllPoints()
-					primary.containerFrame:SetPoint(att, anchorGroup:GetContainerFrame(), ap, xo, yo)
+					primary.containerFrame:SetPoint(att, anchorGroup:GetAnchorFrame(), ap, xo, yo)
 				end
 			end
 		end
@@ -938,24 +931,71 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	wrapperFrame:SetWidth(effectiveWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
-	-- Reposition the root bar within the wrapper to account for bars above/beside it
+	-- Reposition the root bar within the wrapper.
+	-- For CDM anchoring, the root bar MUST stay centered on CDM horizontally.
+	-- baseOffsetX is NOT applied here (unlike Edit Mode free position) because
+	-- asymmetric child bars (e.g., combo points wider than CDM) should NOT
+	-- shift the primary bar off CDM center. They simply overflow.
+	-- The root group's containerFrame is INNER-sized (height - 2*border), but the bounding
+	-- box uses BORDER-INCLUSIVE heights. We must offset by rootBorder so the borderFrame's
+	-- top edge (the visible bar edge) aligns with the expected position in the wrapper.
 	local wrapperRootKey = self:FindWrapperRoot(settings or {}, barGroups)
 	local rootGroup = barGroups[wrapperRootKey]
+	local rootBorder = 0
 	if rootGroup then
+		local rootBarSettings = self:GetBarSettings(settings, wrapperRootKey)
+		rootBorder = (rootBarSettings and rootBarSettings.border) or 0
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -(extendAbove + rootBorder))
 	end
 
-	-- Now anchor the wrapper to the CDM frame, horizontally centered
-	-- Include a 1px base gap to prevent border/CDM overlap regardless of strata
+	-- Anchor the wrapper to the CDM frame, horizontally centered.
+	-- With the rootBorder offset above, the root bar's borderFrame.TOP aligns exactly
+	-- with wrapperTOP - extendAbove, creating a visually flush edge with CDM.
 	wrapperFrame:ClearAllPoints()
 
 	if anchorMode == "above" then
 		-- Position wrapper above CDM, centered horizontally
-		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, -1 + anchorOffset)
+		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
 	else -- "below"
 		-- Position wrapper below CDM, centered horizontally
-		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -1 - anchorOffset)
+		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
+	end
+end
+
+
+---Lightweight wrapper refresh that recalculates wrapper/CDM positioning without
+---triggering a full bar reconstruction or render transition.
+---Called when the visible set of bars changes (e.g., Druid form switch) so that
+---the wrapper size, root bar offset, and CDM anchor are updated to match.
+function TRB.Functions.Bar:RefreshWrapperPositioning()
+	local barGroups = TRB.Frames.barGroups
+	if not barGroups or not barGroups.primary then
+		return
+	end
+
+	-- Get current spec settings
+	local settings
+	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if specCache then
+			settings = specCache.settings
+		end
+	end
+	if not settings then
+		return
+	end
+
+	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
+	local useCdmAnchoring = editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
+
+	if useCdmAnchoring then
+		local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset()
+		local effectiveWidth = barGroups.effectiveWidth or settings.bar.width
+		self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
+	else
+		TRB.Functions.EditMode:UpdateWrapperSize(settings)
 	end
 end
 
@@ -1219,6 +1259,42 @@ function TRB.Functions.Bar:GetMatchWidth(barSettings)
 	return barSettings and barSettings.fullWidth or false
 end
 
+---Resolves the actual width for a bar, following the matchWidth chain if necessary.
+---This handles bars that match their anchor's width, which may itself match another bar's width.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string # "primary", "secondary", "health", "screen", or a BarTypeRegistry key
+---@param visited table? # Internal: tracks visited bars to detect cycles
+---@return number # The resolved width for this bar
+function TRB.Functions.Bar:ResolveBarWidth(settings, barKey, visited)
+	visited = visited or {}
+	if visited[barKey] then
+		-- Cycle detected, fall back to primary bar width
+		return settings.bar.width
+	end
+	visited[barKey] = true
+
+	if barKey == "primary" then
+		-- Primary bar uses effectiveWidth (accounts for CDM width matching)
+		return (TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth) or settings.bar.width
+	elseif barKey == "screen" then
+		-- Screen-anchored bars don't have a reference width to match
+		return settings.bar.width
+	end
+
+	local barSettings = self:GetBarSettings(settings, barKey)
+	if not barSettings then
+		return settings.bar.width
+	end
+
+	local anchor = self:GetBarAnchor(settings, barKey)
+	if anchor and anchor.matchWidth and anchor.barKey ~= "screen" then
+		-- This bar matches its anchor's width, recursively resolve
+		return self:ResolveBarWidth(settings, anchor.barKey, visited)
+	end
+
+	return barSettings.width or settings.bar.width
+end
+
 ---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
 ---@param barKey string
 ---@return string
@@ -1270,6 +1346,33 @@ function TRB.Functions.Bar:GetAllBarKeys(barGroups)
 		for barKey, _ in pairs(allBarTypes) do
 			if barGroups[barKey] then
 				table.insert(keys, barKey)
+			end
+		end
+	end
+
+	return keys
+end
+
+---Enumerates all bar keys that a settings table defines, independent of live barGroups.
+---This is used by the Options UI to determine valid anchor targets for a specific spec's
+---configuration, even when a different spec is currently active (e.g., Druid forms).
+---@param settings table # The spec's settings table (e.g., TRB.Data.settings.druid.feral)
+---@return string[] # List of bar keys this settings table defines
+function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
+	local keys = {}
+	if settings.bar then table.insert(keys, "primary") end
+	if settings.comboPoints then table.insert(keys, "secondary") end
+	if settings.healthBar then table.insert(keys, "health") end
+
+	-- Custom bars from BarTypeRegistry that have settings
+	if settings.bars then
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local allBarTypes = registry:GetAll()
+			for barKey, _ in pairs(allBarTypes) do
+				if settings.bars[barKey] then
+					table.insert(keys, barKey)
+				end
 			end
 		end
 	end
@@ -1330,13 +1433,14 @@ end
 ---A valid tree means every bar can reach either "screen" or the baseBarKey by
 ---following parent links without revisiting a node.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barGroups table<string, TRB.Classes.BarGroup>?
 ---@param testBarKey string? # If provided, validates with this bar's anchor changed
 ---@param testAnchorBarKey string? # If provided, the new anchor target for testBarKey
+---@param barKeys string[]? # If provided, use these bar keys instead of deriving from barGroups
 ---@return boolean # true if valid (no cycles)
 ---@return string? # Error message if invalid
-function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, testAnchorBarKey)
-	local allKeys = self:GetAllBarKeys(barGroups)
+function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, testAnchorBarKey, barKeys)
+	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
 
 	-- Build adjacency: child -> parent
 	-- Bars with barKey="screen" are roots (parentOf entry is nil)
@@ -1384,14 +1488,15 @@ end
 ---Always includes "screen" as a valid target (anchoring to screen never creates a cycle).
 ---@param thisBarKey string
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param barKeys string[]? # If provided, use these bar keys instead of deriving from barGroups
 ---@return string[] # List of valid anchor target bar keys (includes "screen")
-function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups)
+function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups, barKeys)
 	local valid = { "screen" }
-	local allKeys = self:GetAllBarKeys(barGroups)
+	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
 	for _, candidate in ipairs(allKeys) do
 		if candidate ~= thisBarKey then
-			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate)
+			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate, allKeys)
 			if ok then
 				table.insert(valid, candidate)
 			end
@@ -1642,16 +1747,15 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	end
 
 	-- Resolve the actual anchor frame
+	-- Use GetAnchorFrame() which returns the border frame for single-node bars
+	-- and the container frame for multi-node bars, giving us the full visual extent.
 	local anchorContainer
-	local anchorBorder = 0
 	if anchor.barKey == "screen" then
 		-- Screen anchor: position directly on UIParent
 		anchorContainer = UIParent
-	elseif anchorGroup and anchorGroup.GetContainerFrame then
-		-- Bar anchor: position relative to anchorGroup container
-		anchorContainer = anchorGroup:GetContainerFrame()
-		local anchorBarSettings = self:GetBarSettings(settings, anchor.barKey)
-		anchorBorder = (anchorBarSettings and anchorBarSettings.border) or settings.bar.border
+	elseif anchorGroup and anchorGroup.GetAnchorFrame then
+		-- Bar anchor: position relative to anchorGroup's visual extent (border)
+		anchorContainer = anchorGroup:GetAnchorFrame()
 	else
 		-- Fallback: anchor to UIParent
 		anchorContainer = UIParent
@@ -1669,10 +1773,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local yPos = anchor.yOffset or 0
 
 	if anchor.matchWidth and anchor.barKey ~= "screen" then
-		-- Match width: always use effectiveWidth (the system-wide width).
-		-- effectiveWidth accounts for CDM width matching and avoids ordering issues
-		-- (the anchor bar's container may not have been sized yet in this layout pass).
-		groupWidth = effectiveWidth
+		-- Match width: resolve the anchor bar's width, following matchWidth chains if necessary.
+		-- This correctly handles anchoring to bars other than primary (e.g., health bar).
+		groupWidth = self:ResolveBarWidth(settings, anchor.barKey)
 		-- Force center alignment vertically (above or below)
 		-- Determine if attach is above or below and force center alignment
 		local isAbove = string.find(anchorPoint, "TOP") ~= nil
@@ -1685,28 +1788,6 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			anchorPoint = "BOTTOM"
 		end
 		xPos = 0
-	else
-		-- Apply border offset adjustments for non-matchWidth positioning
-		-- This maintains visual alignment when bars have borders
-		local isLeft = string.find(attachPoint, "LEFT") ~= nil
-		local isRight = string.find(attachPoint, "RIGHT") ~= nil
-		local isTop = string.find(attachPoint, "TOP") ~= nil or (attachPoint == "TOP")
-		local isBottom = string.find(attachPoint, "BOTTOM") ~= nil or (attachPoint == "BOTTOM")
-
-		if isLeft then
-			xPos = xPos - anchorBorder
-		elseif isRight then
-			xPos = xPos + anchorBorder
-		end
-	end
-
-	-- Apply border offset for vertical spacing
-	local anchorIsTop = string.find(anchorPoint, "TOP") ~= nil or (anchorPoint == "TOP")
-	local anchorIsBottom = string.find(anchorPoint, "BOTTOM") ~= nil or (anchorPoint == "BOTTOM")
-	if anchorIsBottom then
-		yPos = yPos - anchorBorder
-	elseif anchorIsTop then
-		yPos = yPos + anchorBorder
 	end
 
 	-- Position the target container using the new anchor system
