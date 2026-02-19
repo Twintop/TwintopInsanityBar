@@ -268,7 +268,7 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
-	TRB.Functions.Bar:HideResourceBar()
+	-- TRB.Functions.Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
@@ -1203,6 +1203,11 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
+	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
+		TRB.Functions.Bar:HideResourceBar(true)
+	end
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 
@@ -1311,7 +1316,6 @@ local function SwitchSpec()
 		C_Timer.After(0.05, function()
 			TRB.Functions.Class:CheckCharacter()
 			if TRB.Data.barConstructedForSpec ~= nil then
-				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
 				-- Ensure health values are populated so the health bar displays immediately
 				TRB.Functions.Character:UpdateHealthValues()
@@ -1432,6 +1436,11 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			end
 
 			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
+				if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+					TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
+				elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
+					TRB.Functions.Bar:HideResourceBar(true)
+				end
 				C_Timer.After(0, function()
 					C_Timer.After(0.1, function()
 						SwitchSpec()
@@ -1853,6 +1862,11 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
+	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
+		TRB.Functions.Bar:HideResourceBar(true)
+		return
+	end
+
 	if not TRB.Data.specSupported or talents == nil then
 		return
 	end

@@ -388,6 +388,24 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	TRB.Functions.Bar:ShowResourceBar()
 end)
 
+TRB.Frames.renderTransitionFrame = CreateFrame("Frame")
+TRB.Frames.renderTransitionFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+TRB.Frames.renderTransitionFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+TRB.Frames.renderTransitionFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+TRB.Frames.renderTransitionFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_LIST_UPDATED")
+TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
+		return
+	end
+
+	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+		-- Increase initial transition time to cover the loading sequence delay
+		TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)
+	end
+end)
+
 -- Settings placeholders
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}

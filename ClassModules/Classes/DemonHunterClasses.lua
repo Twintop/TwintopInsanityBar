@@ -32,7 +32,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 	self.demonic = TRB.Classes.SpellBase:New({
 		id = 213410,
 		isTalent = true,
-		duration = 5
+		duration = 5,
+		channelDuration = 2
 	})
 	self.throwGlaive = TRB.Classes.SpellThreshold:New({
 		id = 185123,

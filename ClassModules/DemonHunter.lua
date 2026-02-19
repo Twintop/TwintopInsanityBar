@@ -289,7 +289,7 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
-	TRB.Functions.Bar:HideResourceBar()
+	-- TRB.Functions.Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
@@ -572,22 +572,24 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 		if event == "UNIT_SPELLCAST_CHANNEL_START" then
-			if casting.spellId ~= spells.eyeBeam.id and spellId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
-				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
+			if casting.spellId ~= spells.eyeBeam.id and spellId == spells.eyeBeam.id then
+				if talents:IsTalentActive(spells.blindFury) then
+					local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
 
-				casting.spellId = spells.eyeBeam.id
-				casting.startTime = currentChannelStartTime / 1000
-				casting.endTime = currentChannelEndTime / 1000
-				casting.icon = spells.eyeBeam.icon
-				local remainingTime = casting.endTime - currentTime
-				--TODO: use SnapshotBuff:UpdateTicks() instead?
-				local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
-				local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
-				casting.resourceRaw = math.max(resource, 0)
-				casting.resourceFinal = casting.resourceRaw
+					casting.spellId = spells.eyeBeam.id
+					casting.startTime = currentChannelStartTime / 1000
+					casting.endTime = currentChannelEndTime / 1000
+					casting.icon = spells.eyeBeam.icon
+					local remainingTime = casting.endTime - currentTime
+					--TODO: use SnapshotBuff:UpdateTicks() instead?
+					local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
+					local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
+					casting.resourceRaw = math.max(resource, 0)
+					casting.resourceFinal = casting.resourceRaw
+				end
 
 				if talents:IsTalentActive(spells.demonic) then
-					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + (casting.endTime - casting.startTime), currentTime)
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + spells.demonic.attributes.channelDuration, currentTime)
 				end
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -1238,6 +1240,11 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
+	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
+		TRB.Functions.Bar:HideResourceBar(true)
+	end
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	soulFragmentsFrame:UnregisterEvent("SPELL_UPDATE_USES")
@@ -1359,7 +1366,6 @@ local function SwitchSpec()
 		C_Timer.After(0.05, function()
 			TRB.Functions.Class:CheckCharacter()
 			if TRB.Data.barConstructedForSpec ~= nil then
-				ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 				TRB.Functions.Character:ResetCaches()
 				-- Ensure health values are populated so the health bar displays immediately
 				TRB.Functions.Character:UpdateHealthValues()
@@ -1481,6 +1487,11 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 			end
 
 			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
+				if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
+					TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
+				elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
+					TRB.Functions.Bar:HideResourceBar(true)
+				end
 				C_Timer.After(0, function()
 					C_Timer.After(0.1, function()
 						SwitchSpec()
@@ -1861,6 +1872,11 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
+	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
+		TRB.Functions.Bar:HideResourceBar(true)
+		return
+	end
+
 	if not TRB.Data.specSupported or talents == nil then
 		return
 	end
