@@ -561,11 +561,14 @@ end
 local function GetBerserkRemainingTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	if talents:IsTalentActive(spells.incarnationAvatarOfAshamane) then
-		return snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].cooldown.remaining
-	else
-		return snapshotData.snapshots[spells.berserk.id].cooldown.remaining
+	local currentTime = GetTime()
+	local berserkSnapshotBuff = snapshotData.snapshots[spells.berserk.id].buff
+
+	if not berserkSnapshotBuff.isActive and talents:IsTalentActive(spells.incarnationAvatarOfAshamane) then
+		berserkSnapshotBuff = snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff
 	end
+
+	return berserkSnapshotBuff:GetRemainingTime(currentTime)
 end
 
 local function GetEclipseRemainingTime()

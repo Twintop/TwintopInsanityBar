@@ -101,6 +101,9 @@ end]]
 ---@param num number
 ---@return string # Short notation output
 function TRB.Functions.String:ConvertToAbbreviatedNumber(num)
+	if TRB.Data.settings ~= nil and TRB.Data.settings.core ~= nil and TRB.Data.settings.core.numberAbbreviation == false then
+		return BreakUpLargeNumbers(num)
+	end
 ---@diagnostic disable-next-line: redundant-parameter
 	return AbbreviateNumbers(num, abbrevData)
 end
@@ -119,6 +122,14 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 	if num < 0 then
 		negative = "-"
 		num = -num
+	end
+
+	if TRB.Data.settings ~= nil and TRB.Data.settings.core ~= nil and TRB.Data.settings.core.numberAbbreviation == false then
+		if isInteger or num == math.floor(num) then
+			return negative .. BreakUpLargeNumbers(TRB.Functions.Number:RoundTo(num, 0, mode))
+		else
+			return negative .. BreakUpLargeNumbers(TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode))
+		end
 	end
 
 	if num >= 10^12 then
@@ -150,7 +161,7 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 	end
 end
 
----Checks if the original string constains the substring provided
+---Checks if the original string contains the substring provided
 ---@param original string
 ---@param sub string
 ---@return boolean
