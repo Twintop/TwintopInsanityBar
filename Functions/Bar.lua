@@ -77,6 +77,25 @@ end
 
 ---Computes the width of each Combo Point node
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---Builds a map from barKey to its root barKey by traversing a forest
+---@param forest table<string, table> # Forest from BuildAnchorForest
+---@return table<string, string> # Map of barKey -> rootBarKey
+local function BuildBarKeyToRootMap(forest)
+	local map = {}
+	local function traverse(node, rootKey)
+		map[node.barKey] = rootKey
+		if node.children then
+			for _, child in ipairs(node.children) do
+				traverse(child, rootKey)
+			end
+		end
+	end
+	for rootKey, rootNode in pairs(forest) do
+		traverse(rootNode, rootKey)
+	end
+	return map
+end
+
 ---@return number
 local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
@@ -478,9 +497,9 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
 
-	-- Register the primary bar with Edit Mode
-	if barGroups.primary and TRB.Functions.EditMode then
-		TRB.Functions.EditMode:RegisterPrimaryBar(barGroups.primary:GetContainerFrame())
+	-- Register all tree roots with Edit Mode (each root gets its own wrapper)
+	if TRB.Functions.EditMode then
+		TRB.Functions.EditMode:RegisterAllTreeRoots()
 	end
 
 	-- Create bar text frames (essential for bar text display)
@@ -517,54 +536,65 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
 
-	-- Check for Cooldown Manager width matching
-	local effectiveWidth = settings.bar.width
-	local cdmWidthMatching = TRB.Functions.EditMode:IsWidthMatchingEnabled()
-	if cdmWidthMatching then
-		local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
-		if cdmWidth then
-			effectiveWidth = cdmWidth
+	-- ========================
+	-- Build the anchor forest and per-root metadata
+	-- ========================
+	local forest = self:BuildAnchorForest(settings, barGroups, false, false)
+	local barKeyToRoot = BuildBarKeyToRootMap(forest)
+
+	-- Per-root data: wrappers, CDM settings, effectiveWidth
+	local rootMetadata = {}
+	for rootBarKey, _ in pairs(forest) do
+		local wrapper = TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
+		local rootCdmWidthMatch = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, rootBarKey)
+		local rootEffWidth
+		if rootBarKey == "primary" then
+			rootEffWidth = settings.bar.width
+		else
+			local rootBarSettings = self:GetBarSettings(settings, rootBarKey)
+			rootEffWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
 		end
+		if rootCdmWidthMatch then
+			local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+			if cdmWidth then rootEffWidth = cdmWidth end
+		end
+
+		rootMetadata[rootBarKey] = {
+			wrapper = wrapper,
+			effectiveWidth = rootEffWidth,
+			editModeEnabled = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey),
+			anchorMode = TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey),
+			anchorOffset = TRB.Functions.EditMode:GetAnchorOffset(nil, rootBarKey),
+			useCdm = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey)
+				and TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey) ~= "none"
+				and TRB.Functions.EditMode:IsCooldownManagerAvailable(),
+		}
 	end
 
-	-- Store effectiveWidth on barGroups for use by secondary bar construction
+	-- Primary root's effectiveWidth is the canonical one for secondary bar width matching
+	local primaryRootKey = barKeyToRoot["primary"] or "primary"
+	local primaryRootMeta = rootMetadata[primaryRootKey]
+	local effectiveWidth = primaryRootMeta and primaryRootMeta.effectiveWidth or settings.bar.width
 	barGroups.effectiveWidth = effectiveWidth
 
-	-- Check if Edit Mode layout is enabled for this layout
-	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+	-- Store per-root effective widths for ResolveBarWidth
+	barGroups.rootEffectiveWidths = {}
+	for rootBarKey, meta in pairs(rootMetadata) do
+		barGroups.rootEffectiveWidths[rootBarKey] = meta.effectiveWidth
+	end
 
-	-- Get anchor mode for CDM positioning
-	-- Note: GetAnchorMode() returns "none" if layout is not enabled
-	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
-	local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset()
-
-	-- Determine if we're using CDM anchoring
-	-- CDM anchoring requires:
-	-- 1. Edit Mode layout is enabled ("Enable for this layout" checked)
-	-- 2. Anchor mode is not "none" ("Anchor To" set to Above/Below CDM)
-	-- 3. CDM frame is available
-	local useCdmAnchoring = editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
-
-	-- Get or create the wrapper frame for Edit Mode
-	local wrapperFrame = TRB.Functions.EditMode:GetOrCreateWrapperFrame()
-
-	-- Determine the root of the wrapper tree
-	-- Walk from baseBarKey up anchor chain to find the screen-anchored bar that is the tree root
-	local wrapperRootKey = self:FindWrapperRoot(settings, barGroups)
-	local primaryIsRoot = (wrapperRootKey == "primary")
-
-	-- If root is not primary, parent the root bar's container to the wrapper
-	if not primaryIsRoot then
-		local rootGroup = barGroups[wrapperRootKey]
-		if rootGroup and wrapperFrame then
-			if rootGroup.containerFrame:GetParent() ~= wrapperFrame then
-				rootGroup.containerFrame:SetParent(wrapperFrame)
+	-- Parent each tree root's bar to its tree's wrapper frame
+	for rootBarKey, meta in pairs(rootMetadata) do
+		local rootGroup = barGroups[rootBarKey]
+		if rootGroup and meta.wrapper then
+			if rootGroup.containerFrame:GetParent() ~= meta.wrapper then
+				rootGroup.containerFrame:SetParent(meta.wrapper)
 			end
 			rootGroup.containerFrame:ClearAllPoints()
-			if editModeLayoutEnabled then
-				rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
+			if meta.editModeEnabled then
+				rootGroup.containerFrame:SetPoint("TOP", meta.wrapper, "TOP", 0, 0)
 			else
-				rootGroup.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
+				rootGroup.containerFrame:SetPoint("CENTER", meta.wrapper, "CENTER", 0, 0)
 			end
 		end
 	end
@@ -573,22 +603,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if barGroups.primary then
 		local primary = barGroups.primary
 		local primaryNode = primary:GetNode(1)
+		local primaryIsRoot = (primaryRootKey == "primary")
 
-		if primaryIsRoot then
-			-- Primary is the wrapper root: parent to wrapper and position at origin
-			if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
-				primary.containerFrame:SetParent(wrapperFrame)
-			end
-			primary.containerFrame:ClearAllPoints()
-			if editModeLayoutEnabled then
-				primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
-			else
-				primary.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
-			end
-		else
-			-- Primary is a child bar: parent to wrapper for Edit Mode drag, position via anchor
-			if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
-				primary.containerFrame:SetParent(wrapperFrame)
+		-- If primary is NOT the root (it's a child bar in another root's tree),
+		-- parent it to its root's wrapper and position via anchor
+		if not primaryIsRoot then
+			local rootWrapper = primaryRootMeta and primaryRootMeta.wrapper
+			if rootWrapper and primary.containerFrame:GetParent() ~= rootWrapper then
+				primary.containerFrame:SetParent(rootWrapper)
 			end
 			local primaryAnchor = self:GetBarAnchor(settings, "primary")
 			if primaryAnchor and primaryAnchor.barKey and primaryAnchor.barKey ~= "screen" then
@@ -611,59 +633,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				end
 			end
 		end
+		-- If primary IS the root, it was already parented and positioned by the per-root loop above.
 
 		-- Primary bar width: always use effectiveWidth.
 		-- effectiveWidth already accounts for CDM width matching.
-		-- When matchWidth is true on a non-root primary, effectiveWidth is still correct
-		-- because it propagates CDM width through the chain without needing to read the
-		-- anchor bar's container (which may not be sized yet in this layout pass).
 		local primaryWidth = effectiveWidth
 
 		primary.containerFrame:SetWidth(primaryWidth - (settings.bar.border * 2))
 		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
-
-		-- Now position the WRAPPER frame based on the three use cases:
-		-- Use Case 1: Edit Mode disabled -> Legacy position (settings.bar.xPos/yPos)
-		-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode saved position
-		-- Use Case 3: Edit Mode enabled + CDM anchor -> Anchor to CDM frame
-		wrapperFrame:ClearAllPoints()
-
-		if useCdmAnchoring then
-			-- Use Case 3: CDM anchoring - anchor wrapper to CDM frame
-			-- The real anchor will be refined by ApplyCooldownManagerAnchoring after all bars are laid out
-			local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
-			if cdmFrame then
-				if anchorMode == "above" then
-					wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
-				else
-					wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
-				end
-			else
-				-- Fallback if CDM frame not available
-				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
-			end
-		elseif editModeLayoutEnabled then
-			-- Use Case 2: Edit Mode enabled + Free Position
-			-- Use the position saved by LibEditMode for this layout
-			local editModePosition = TRB.Functions.EditMode:GetActivePosition()
-			if editModePosition and editModePosition.point then
-				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
-			else
-				-- No saved Edit Mode position yet; use root bar's screen position as default
-				local rootAnchor = self:GetBarAnchor(settings, wrapperRootKey)
-				local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
-				local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
-				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
-			end
-		else
-			-- Use Case 1: Edit Mode disabled - use root bar's screen position
-			local rootAnchor = self:GetBarAnchor(settings, wrapperRootKey)
-			local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
-			local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
-			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
-			-- Legacy mode: wrapper matches root bar dimensions
-			wrapperFrame:SetSize(effectiveWidth, settings.bar.height)
-		end
 
 		if primaryNode then
 			-- Set frame strata
@@ -879,13 +856,57 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
-	-- Apply CDM anchoring if enabled (must be done after all bars are laid out)
-	-- This calculates the bounding box of all visible bars and positions relative to CDM
-	if anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable() and barGroups.primary then
-		self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
-	else
-		-- Even when not using CDM anchoring, update wrapper size for proper Edit Mode selection box
-		TRB.Functions.EditMode:UpdateWrapperSize(settings)
+	-- ========================
+	-- Per-root wrapper positioning (replaces single-wrapper positioning)
+	-- Each root bar tree gets its own wrapper with independent position/CDM settings
+	-- ========================
+	for rootBarKey, meta in pairs(rootMetadata) do
+		local wrapperFrame = meta.wrapper
+		wrapperFrame:ClearAllPoints()
+
+		if meta.useCdm then
+			-- Use Case 3: CDM anchoring - anchor wrapper to CDM frame
+			-- The real anchor will be refined by ApplyCooldownManagerAnchoring below
+			local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
+			if cdmFrame then
+				if meta.anchorMode == "above" then
+					wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, meta.anchorOffset)
+				else
+					wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -meta.anchorOffset)
+				end
+			else
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+			end
+		elseif meta.editModeEnabled then
+			-- Use Case 2: Edit Mode enabled + Free Position
+			local editModePosition = TRB.Functions.EditMode:GetActivePosition(rootBarKey)
+			if editModePosition and editModePosition.point then
+				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+			else
+				-- No saved Edit Mode position yet; use root bar's screen position as default
+				local rootAnchor = self:GetBarAnchor(settings, rootBarKey)
+				local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+				local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			end
+		else
+			-- Use Case 1: Edit Mode disabled - use root bar's screen position
+			local rootAnchor = self:GetBarAnchor(settings, rootBarKey)
+			local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+			local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
+			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			-- Legacy mode: wrapper matches root bar dimensions
+			wrapperFrame:SetSize(meta.effectiveWidth, settings.bar.height)
+		end
+	end
+
+	-- Per-root CDM anchoring / wrapper sizing (must be done after all bars are laid out)
+	for rootBarKey, meta in pairs(rootMetadata) do
+		if meta.useCdm then
+			self:ApplyCooldownManagerAnchoring(barGroups, meta.anchorMode, meta.anchorOffset, meta.effectiveWidth, settings, rootBarKey)
+		else
+			TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
+		end
 	end
 	
 	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
@@ -901,7 +922,8 @@ end
 ---@param anchorOffset number # Vertical offset in pixels
 ---@param effectiveWidth number # The width being used (may be CDM-matched)
 ---@param settings table? # Settings for dimension calculations
-function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
+---@param rootBarKey string? # The root bar key for this tree (defaults to FindWrapperRoot)
+function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings, rootBarKey)
 	if not barGroups then
 		return
 	end
@@ -912,53 +934,44 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 		return
 	end
 
-	-- Get the wrapper frame (which is the parent of all bars)
-	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
+	-- Get the wrapper frame for the specified root
+	rootBarKey = rootBarKey or self:FindWrapperRoot(settings or {}, barGroups)
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame(rootBarKey)
 	if not wrapperFrame then
 		return
 	end
 
 	-- CRITICAL: In Edit Mode, include ALL bars (even hidden ones) in wrapper calculations.
-	-- This ensures the Edit Mode selection box encompasses all bars, not just visible ones.
-	-- DO NOT hardcode `false` - use IsInEditMode() to prevent regression.
 	local includeHidden = TRB.Functions.EditMode:IsInEditMode()
 
-	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
-	
-	-- Update wrapper frame size to encompass all bars
-	-- Use effectiveWidth for width (matches CDM if "Match CDM Width" is enabled)
+	-- Calculate wrapper layout for this specific root's tree
+	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
+
+	-- Update wrapper frame size to encompass all bars in this tree
 	wrapperFrame:SetWidth(effectiveWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
 	-- Reposition the root bar within the wrapper.
-	-- For CDM anchoring, the root bar MUST stay centered on CDM horizontally.
-	-- baseOffsetX is NOT applied here (unlike Edit Mode free position) because
-	-- asymmetric child bars (e.g., combo points wider than CDM) should NOT
-	-- shift the primary bar off CDM center. They simply overflow.
-	-- The root group's containerFrame is INNER-sized (height - 2*border), but the bounding
-	-- box uses BORDER-INCLUSIVE heights. We must offset by rootBorder so the borderFrame's
-	-- top edge (the visible bar edge) aligns with the expected position in the wrapper.
-	local wrapperRootKey = self:FindWrapperRoot(settings or {}, barGroups)
-	local rootGroup = barGroups[wrapperRootKey]
-	local rootBorder = 0
+	local rootGroup = barGroups[rootBarKey]
 	if rootGroup then
-		local rootBarSettings = self:GetBarSettings(settings, wrapperRootKey)
-		rootBorder = (rootBarSettings and rootBarSettings.border) or 0
+		-- Only the primary bar needs border offset: its group.containerFrame is sized to
+		-- inner dimensions (border subtracted), so the borderFrame extends beyond it.
+		-- Non-primary roots (mana, etc.) are constructed via ConstructAnchoredBarGroup
+		-- which sets group.containerFrame to outer dimensions with SetAllPoints — no overhang.
+		local rootBorderOffset = 0
+		if rootBarKey == "primary" then
+			rootBorderOffset = (settings and settings.bar and settings.bar.border) or 0
+		end
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -(extendAbove + rootBorder))
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -(extendAbove + rootBorderOffset))
 	end
 
 	-- Anchor the wrapper to the CDM frame, horizontally centered.
-	-- With the rootBorder offset above, the root bar's borderFrame.TOP aligns exactly
-	-- with wrapperTOP - extendAbove, creating a visually flush edge with CDM.
 	wrapperFrame:ClearAllPoints()
 
 	if anchorMode == "above" then
-		-- Position wrapper above CDM, centered horizontally
 		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
 	else -- "below"
-		-- Position wrapper below CDM, centered horizontally
 		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
 	end
 end
@@ -987,15 +1000,22 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 	end
 
 	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
-	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
-	local useCdmAnchoring = editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
 
-	if useCdmAnchoring then
-		local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset()
-		local effectiveWidth = barGroups.effectiveWidth or settings.bar.width
-		self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
-	else
-		TRB.Functions.EditMode:UpdateWrapperSize(settings)
+	-- Build forest to iterate per-root
+	local forest = self:BuildAnchorForest(settings, barGroups, false, false)
+
+	for rootBarKey, _ in pairs(forest) do
+		local anchorMode = TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey)
+		local rootEditEnabled = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey)
+		local useCdm = rootEditEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
+
+		if useCdm then
+			local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset(nil, rootBarKey)
+			local rootEffWidth = (barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[rootBarKey]) or barGroups.effectiveWidth or settings.bar.width
+			self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, rootEffWidth, settings, rootBarKey)
+		else
+			TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
+		end
 	end
 end
 
@@ -1273,12 +1293,23 @@ function TRB.Functions.Bar:ResolveBarWidth(settings, barKey, visited)
 	end
 	visited[barKey] = true
 
+	local barGroups = TRB.Frames.barGroups
+
 	if barKey == "primary" then
 		-- Primary bar uses effectiveWidth (accounts for CDM width matching)
-		return (TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth) or settings.bar.width
+		return (barGroups and barGroups.effectiveWidth) or settings.bar.width
 	elseif barKey == "screen" then
 		-- Screen-anchored bars don't have a reference width to match
 		return settings.bar.width
+	end
+
+	-- Check if this barKey has a per-root effective width override (e.g., CDM matching on a non-primary root)
+	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
+		-- This bar IS a root with its own effective width; check if it's a screen-rooted root
+		local anchor = self:GetBarAnchor(settings, barKey)
+		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
+			return barGroups.rootEffectiveWidths[barKey]
+		end
 	end
 
 	local barSettings = self:GetBarSettings(settings, barKey)
@@ -1616,6 +1647,91 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 	return nodes[rootKey]
 end
 
+---Builds all anchor trees (the anchor forest).
+---Each screen-rooted bar is a root of its own tree. Returns a map from rootBarKey -> rootNode.
+---Orphaned bars (anchor target not present in barGroups) become new roots.
+---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param collapseHidden boolean? # If true, skip hidden bars and re-parent their children
+---@param includeHidden boolean? # If true, include bars with visibility="never" in the tree
+---@return table<string, TRB.Classes.Settings.AnchorTreeNode> # Map of rootBarKey -> rootNode
+function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden, includeHidden)
+	if not settings or not barGroups then
+		return {}
+	end
+
+	local allKeys = self:GetAllBarKeys(barGroups)
+
+	-- Build all nodes; bars with barKey="screen" or no anchor are roots
+	---@type table<string, TRB.Classes.Settings.AnchorTreeNode>
+	local nodes = {}
+	---@type table<string, string> # child -> parent adjacency
+	local parentOf = {}
+	for _, barKey in ipairs(allKeys) do
+		local barSettings = self:GetBarSettings(settings, barKey)
+		local barGroup = barGroups[barKey]
+		local anchor = self:GetBarAnchor(settings, barKey)
+		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
+
+		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
+		if not isRoot and not barGroups[anchor.barKey] then
+			isRoot = true
+		end
+
+		nodes[barKey] = {
+			barKey = barKey,
+			anchor = isRoot and nil or anchor,
+			children = {},
+			barGroup = barGroup,
+			barSettings = barSettings,
+			width = barSettings and barSettings.width or 0,
+			height = barSettings and barSettings.height or 0,
+		}
+		if not isRoot then
+			parentOf[barKey] = anchor.barKey
+		end
+	end
+
+	-- Identify roots: nodes that have no parent entry
+	local roots = {}
+	for _, barKey in ipairs(allKeys) do
+		if not parentOf[barKey] then
+			roots[barKey] = nodes[barKey]
+		end
+	end
+
+	-- Assign each non-root bar to its root's tree by walking up the parent chain
+	-- Build parent-child relationships
+	for _, barKey in ipairs(allKeys) do
+		if parentOf[barKey] then
+			local parentKey = parentOf[barKey]
+
+			if collapseHidden then
+				-- Walk up the parent chain to find the first visible parent
+				local effectiveParentKey = parentKey
+				local visited = {}
+				while effectiveParentKey and not roots[effectiveParentKey] and
+					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
+					if visited[effectiveParentKey] then break end
+					visited[effectiveParentKey] = true
+					effectiveParentKey = parentOf[effectiveParentKey] or effectiveParentKey
+				end
+				parentKey = effectiveParentKey
+			end
+
+			-- Only add visible bars (or all bars if includeHidden)
+			if self:IsBarVisible(settings, barKey, includeHidden) then
+				if nodes[parentKey] then
+					table.insert(nodes[parentKey].children, nodes[barKey])
+				end
+			end
+		end
+	end
+
+	return roots
+end
+
 ---Calculates the pixel position of an anchor point on a rectangle.
 ---Origin is at bottom-left of the rectangle (WoW convention).
 ---@param width number
@@ -1788,6 +1904,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			anchorPoint = "BOTTOM"
 		end
 		xPos = 0
+	elseif anchor.barKey == "screen" and config.rootEffectiveWidth then
+		-- Screen-anchored root bar: use the root's effective width (accounts for CDM width matching)
+		groupWidth = config.rootEffectiveWidth
 	end
 
 	-- Position the target container using the new anchor system
@@ -2026,7 +2145,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 					background = "background",
 					bar = "bar"
 				},
-				minMaxMode = barTypeDef.minMaxMode or "custom"
+				minMaxMode = barTypeDef.minMaxMode or "custom",
+				rootEffectiveWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[key],
 			}
 			
 			-- Resolve the correct anchor group from settings

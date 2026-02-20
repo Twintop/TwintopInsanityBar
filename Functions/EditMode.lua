@@ -8,11 +8,18 @@ TRB.Functions.EditMode = {}
 -- Local reference to LibEditMode
 local LibEditMode = nil
 
--- Track the currently registered container frame to prevent duplicate registrations
+-- Track the currently registered container frames to prevent duplicate registrations
+-- Map of rootBarKey -> wrapperFrame
+local registeredFrames = {}
+
+-- Legacy compat: single registered frame reference (points to primary root wrapper)
 local registeredFrame = nil
 
--- Edit Mode wrapper frame - this is the PARENT of the primary bar container
--- When LibEditMode drags this frame, all bars (children) move with it
+-- Edit Mode wrapper frames - one per anchor tree root
+-- Map of rootBarKey -> Frame
+local editModeWrapperFrames = {}
+
+-- Legacy compat: single wrapper frame reference (points to primary root wrapper)
 local editModeWrapperFrame = nil
 
 -- Track if Initialize has been called
@@ -66,87 +73,114 @@ function TRB.Functions.EditMode:Initialize()
 	self:HookCooldownManagerShow()
 end
 
----Clears the registered frame reference
+---Clears all registered frame references
 ---Call this when bar groups are destroyed to ensure re-registration on next bar creation
 function TRB.Functions.EditMode:ClearRegisteredFrame()
-	-- Hide any selection frame that might be visible
+	-- Hide any selection frames that might be visible
 	-- This prevents the Edit Mode overlay from showing after spec changes
-	if editModeWrapperFrame and LibEditMode and LibEditMode.frameSelections then
-		local selection = LibEditMode.frameSelections[editModeWrapperFrame]
-		if selection and not LibEditMode:IsInEditMode() then
-			selection:Hide()
+	for rootBarKey, wrapperFrame in pairs(editModeWrapperFrames) do
+		if wrapperFrame and LibEditMode and LibEditMode.frameSelections then
+			local selection = LibEditMode.frameSelections[wrapperFrame]
+			if selection and not LibEditMode:IsInEditMode() then
+				selection:Hide()
+			end
 		end
 	end
 	
-	-- Clear tracking but keep the wrapper frame registered with LibEditMode
-	-- The wrapper frame persists and will be reused
+	-- Clear tracking but keep the wrapper frames registered with LibEditMode
+	-- The wrapper frames persist and will be reused
+	registeredFrames = {}
 	registeredFrame = nil
 end
 
----Gets or creates the Edit Mode wrapper frame
----This frame is the PARENT of the primary bar container
----When LibEditMode drags this frame, all bars move with it
+---Gets or creates the Edit Mode wrapper frame for a specific tree root.
+---Each tree root gets its own wrapper. When LibEditMode drags a wrapper, all bars in that tree move with it.
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return Frame
-function TRB.Functions.EditMode:GetOrCreateWrapperFrame()
-	if editModeWrapperFrame then
-		return editModeWrapperFrame
+function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+
+	if editModeWrapperFrames[rootBarKey] then
+		return editModeWrapperFrames[rootBarKey]
 	end
 
 	-- Create a wrapper frame parented to UIParent
-	editModeWrapperFrame = CreateFrame("Frame", "TRB_EditModeWrapper", UIParent)
-	editModeWrapperFrame:SetFrameStrata("BACKGROUND")
-	editModeWrapperFrame:SetFrameLevel(1)
-	-- Start with a default size - will be updated to encompass all bars
-	editModeWrapperFrame:SetSize(100, 100)
-	editModeWrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+	local frameName = "TRB_EditModeWrapper_" .. rootBarKey
+	local wrapperFrame = CreateFrame("Frame", frameName, UIParent)
+	wrapperFrame:SetFrameStrata("BACKGROUND")
+	wrapperFrame:SetFrameLevel(1)
+	-- Start with a default size - will be updated to encompass all bars in this tree
+	wrapperFrame:SetSize(100, 100)
+	wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
 
-	return editModeWrapperFrame
+	-- Tag the frame with its root bar key so callbacks can identify it
+	wrapperFrame.trbRootBarKey = rootBarKey
+
+	editModeWrapperFrames[rootBarKey] = wrapperFrame
+
+	-- Maintain legacy compat: editModeWrapperFrame always points to primary root
+	if rootBarKey == "primary" then
+		editModeWrapperFrame = wrapperFrame
+	end
+
+	return wrapperFrame
 end
 
----Gets the wrapper frame (nil if not yet created)
+---Gets the wrapper frame for a specific tree root (nil if not yet created)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return Frame?
-function TRB.Functions.EditMode:GetWrapperFrame()
-	return editModeWrapperFrame
+function TRB.Functions.EditMode:GetWrapperFrame(rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	return editModeWrapperFrames[rootBarKey]
 end
 
----Updates the wrapper frame's size to encompass all bars and positions the primary bar within it
----The wrapper position is controlled by LibEditMode or CDM anchoring
+---Gets all wrapper frames currently created
+---@return table<string, Frame> # Map of rootBarKey -> wrapperFrame
+function TRB.Functions.EditMode:GetAllWrapperFrames()
+	return editModeWrapperFrames
+end
+
+---Updates a specific wrapper frame's size to encompass all bars in its tree
+---and positions the root bar within it.
+---The wrapper position is controlled by LibEditMode or CDM anchoring.
 ---@param settings table? # Settings table for dimension calculations
-function TRB.Functions.EditMode:UpdateWrapperSize(settings)
-	if not editModeWrapperFrame then
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	local wrapperFrame = editModeWrapperFrames[rootBarKey]
+	if not wrapperFrame then
 		return
 	end
 
 	local barGroups = TRB.Frames.barGroups
-	if not barGroups or not barGroups.primary then
+	if not barGroups then
 		return
 	end
 
 	-- Check if Edit Mode layout is enabled for this layout
-	local editModeLayoutEnabled = self:IsLayoutEnabled()
+	local editModeLayoutEnabled = self:IsLayoutEnabled(nil, rootBarKey)
 
-	-- When Edit Mode layout is disabled, the wrapper should match the primary bar exactly.
-	-- Secondary bars anchor to the primary bar container (not the wrapper), so they will
-	-- position correctly relative to the center of the primary bar.
-	-- When Edit Mode layout is enabled, the wrapper encompasses all bars for proper selection box.
+	-- When Edit Mode layout is disabled, the wrapper should match the root bar exactly.
 	if not editModeLayoutEnabled then
 		-- Legacy mode: wrapper matches root bar dimensions, root bar fills wrapper
-		local wrapperRootKey = TRB.Functions.Bar:FindWrapperRoot(settings or {}, barGroups)
-		local rootGroup = barGroups[wrapperRootKey]
-		local effectiveWidth = (barGroups.effectiveWidth) or (settings and settings.bar and settings.bar.width) or 100
-		local rootHeight
-		if wrapperRootKey == "primary" then
-			rootHeight = (settings and settings.bar and settings.bar.height) or 100
+		local rootGroup = barGroups[rootBarKey]
+		local rootBarSettings = settings and TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
+		local effectiveWidth
+		if barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[rootBarKey] then
+			effectiveWidth = barGroups.rootEffectiveWidths[rootBarKey]
+		elseif rootBarKey == "primary" and barGroups.effectiveWidth and type(barGroups.effectiveWidth) == "number" then
+			effectiveWidth = barGroups.effectiveWidth
 		else
-			local rootSettings = settings and TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
-			rootHeight = (rootSettings and rootSettings.height) or 100
+			local rootBarSettings = settings and TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
+			effectiveWidth = (rootBarSettings and rootBarSettings.width) or (settings and settings.bar and settings.bar.width) or 100
 		end
-		editModeWrapperFrame:SetSize(effectiveWidth, rootHeight)
+		local rootHeight = (rootBarSettings and rootBarSettings.height) or (rootBarKey == "primary" and settings and settings.bar and settings.bar.height) or 100
+		wrapperFrame:SetSize(effectiveWidth, rootHeight)
 
 		-- Root bar centered within the wrapper (legacy behavior)
 		if rootGroup then
 			rootGroup.containerFrame:ClearAllPoints()
-			rootGroup.containerFrame:SetPoint("CENTER", editModeWrapperFrame, "CENTER", 0, 0)
+			rootGroup.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
 		end
 		return
 	end
@@ -156,38 +190,53 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings)
 	-- In Edit Mode, include all bars (even hidden ones)
 	local includeHidden = self:IsInEditMode()
 
-	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = self:CalculateWrapperLayout(settings, includeHidden)
+	-- Calculate wrapper layout from settings for this specific tree root
+	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = self:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
 
-	-- Size the wrapper to encompass all bars
+	-- Size the wrapper to encompass all bars in this tree
 	if totalWidth > 0 and totalHeight > 0 then
-		editModeWrapperFrame:SetSize(totalWidth, totalHeight)
+		wrapperFrame:SetSize(totalWidth, totalHeight)
 	end
 
 	-- Reposition the root bar within the wrapper to account for bars above/beside it.
-	-- Offset by rootBorder so the borderFrame's visible edge aligns with the wrapper boundary.
-	local wrapperRootKey = TRB.Functions.Bar:FindWrapperRoot(settings or {}, barGroups)
-	local rootGroup = barGroups[wrapperRootKey]
+	local rootGroup = barGroups[rootBarKey]
 	if rootGroup and settings then
-		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, wrapperRootKey)
-		local rootBorder = (rootBarSettings and rootBarSettings.border) or 0
+		-- Only the primary bar needs border offset: its group.containerFrame is sized to
+		-- inner dimensions (border subtracted), so the borderFrame extends beyond it.
+		-- Non-primary roots (mana, etc.) use outer dimensions with SetAllPoints — no overhang.
+		local rootBorderOffset = 0
+		if rootBarKey == "primary" then
+			rootBorderOffset = (settings.bar and settings.bar.border) or 0
+		end
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", editModeWrapperFrame, "TOP", baseOffsetX or 0, -(extendAbove + rootBorder))
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -(extendAbove + rootBorderOffset))
 	end
 end
 
----Calculates layout information for the wrapper frame based on settings.
----Uses the anchor tree to recursively compute a 2D bounding box encompassing all bars.
+---Updates ALL wrapper frames' sizes
+---@param settings table? # Settings table for dimension calculations
+function TRB.Functions.EditMode:UpdateAllWrapperSizes(settings)
+	for rootBarKey, _ in pairs(editModeWrapperFrames) do
+		self:UpdateWrapperSize(settings, rootBarKey)
+	end
+end
+
+---Calculates layout information for a specific wrapper frame based on settings.
+---Uses the anchor forest to get the tree for the given root and recursively
+---compute a 2D bounding box encompassing all bars in that tree.
 ---@param settings table? # Settings table for dimension calculations
 ---@param includeHidden boolean? # If true, include hidden bars (for Edit Mode)
+---@param rootBarKey string? # The tree root to calculate for (defaults to "primary")
 ---@return number totalWidth # Total width needed
 ---@return number totalHeight # Total height needed
 ---@return number extendAbove # How much bars extend above the base bar's top edge
 ---@return number extendBelow # How much bars extend below the base bar's bottom edge
 ---@return number baseOffsetX # Horizontal offset of the base bar center from the wrapper center
-function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
+function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+
 	local barGroups = TRB.Frames.barGroups
-	if not barGroups or not barGroups.primary then
+	if not barGroups then
 		return 100, 100, 0, 0, 0
 	end
 
@@ -203,8 +252,16 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 		return 100, 100, 0, 0, 0
 	end
 
-	-- Get effective width (may be CDM-matched)
-	local effectiveWidth = (barGroups.effectiveWidth) or settings.bar.width
+	-- Get effective width (may be CDM-matched) for this root
+	local effectiveWidth
+	if barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[rootBarKey] then
+		effectiveWidth = barGroups.rootEffectiveWidths[rootBarKey]
+	elseif rootBarKey == "primary" and barGroups.effectiveWidth and type(barGroups.effectiveWidth) == "number" then
+		effectiveWidth = barGroups.effectiveWidth
+	else
+		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
+		effectiveWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+	end
 
 	-- DRUID SPECIAL CASE: Druids have form-based bar visibility that's controlled at
 	-- runtime by HideResourceBar (not by settings.displayBar.*.visibility).
@@ -284,14 +341,23 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
 		end
 	end
 
-	-- Build anchor tree (collapse hidden bars when NOT including them)
-	local rootNode = TRB.Functions.Bar:BuildAnchorTree(treeSettings, barGroups, not includeHidden, includeHidden)
+	-- Build anchor forest and select the tree for our root (collapse hidden bars when NOT including them)
+	local forest = TRB.Functions.Bar:BuildAnchorForest(treeSettings, barGroups, not includeHidden, includeHidden)
+	local rootNode = forest and forest[rootBarKey]
 	if not rootNode then
-		return effectiveWidth, settings.bar.height, 0, 0, 0
+		-- Fallback: if the requested root isn't in the forest, try the old single-tree approach
+		-- This handles edge cases where rootBarKey might be inside another tree's subtree
+		local fallbackRoot = TRB.Functions.Bar:BuildAnchorTree(treeSettings, barGroups, not includeHidden, includeHidden)
+		if fallbackRoot and fallbackRoot.barKey == rootBarKey then
+			rootNode = fallbackRoot
+		end
+		if not rootNode then
+			local fallbackWidth = (rootBarKey == "primary") and effectiveWidth or settings.bar.width
+			return fallbackWidth, settings.bar.height, 0, 0, 0
+		end
 	end
 
-	-- Root node dimensions (root may not be primary in a forest)
-	local rootBarKey = rootNode.barKey
+	-- Root node dimensions
 	local baseWidth, baseHeight
 	if rootBarKey == "primary" then
 		baseWidth = effectiveWidth
@@ -483,10 +549,71 @@ function TRB.Functions.EditMode:NormalizePosition(frame)
 	return point, x / scale, y / scale
 end
 
----Registers the primary bar with Edit Mode using a wrapper frame
+---Registers the primary bar with Edit Mode using a wrapper frame (legacy wrapper)
 ---The wrapper becomes the parent of the primary bar container
 ---@param containerFrame Frame # The primary bar's container frame
 function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
+	self:RegisterTreeRoot("primary", containerFrame)
+end
+
+---Registers all tree roots in the current anchor forest with Edit Mode.
+---Call this after all bars are constructed.
+function TRB.Functions.EditMode:RegisterAllTreeRoots()
+	if not LibEditMode then
+		return
+	end
+
+	local barGroups = TRB.Frames.barGroups
+	if not barGroups then
+		return
+	end
+
+	-- Get current settings for building the forest
+	local settings
+	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if specCache then
+			settings = specCache.settings
+		end
+	end
+	if not settings then
+		-- Fallback: just register primary
+		if barGroups.primary then
+			self:RegisterTreeRoot("primary", barGroups.primary:GetContainerFrame())
+		end
+		return
+	end
+
+	-- Build the forest to find all tree roots
+	local forest = TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, false, true)
+
+	-- Register each root
+	for rootBarKey, _ in pairs(forest) do
+		local rootGroup = barGroups[rootBarKey]
+		if rootGroup then
+			self:RegisterTreeRoot(rootBarKey, rootGroup:GetContainerFrame())
+		end
+	end
+
+	-- Hide wrappers for roots that no longer exist in the forest
+	for existingRootKey, wrapperFrame in pairs(editModeWrapperFrames) do
+		if not forest[existingRootKey] then
+			wrapperFrame:Hide()
+			if LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame] then
+				local selection = LibEditMode.frameSelections[wrapperFrame]
+				if selection then
+					selection:Hide()
+				end
+			end
+		end
+	end
+end
+
+---Registers a single tree root with Edit Mode using a per-root wrapper frame.
+---The wrapper becomes the parent of the root bar's container frame.
+---@param rootBarKey string # The bar key that is the root of this tree
+---@param containerFrame Frame # The root bar's container frame
+function TRB.Functions.EditMode:RegisterTreeRoot(rootBarKey, containerFrame)
 	if not LibEditMode then
 		return
 	end
@@ -495,19 +622,22 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 		return
 	end
 
-	-- Get or create the wrapper frame
-	local wrapperFrame = self:GetOrCreateWrapperFrame()
+	-- Get or create the wrapper frame for this tree root
+	local wrapperFrame = self:GetOrCreateWrapperFrame(rootBarKey)
 
 	-- Don't re-register the same wrapper (check both our tracking variable AND LibEditMode's registry)
 	-- The wrapper frame persists across spec changes, so it may already be registered
-	local alreadyRegistered = registeredFrame == wrapperFrame or 
+	local alreadyRegistered = registeredFrames[rootBarKey] == wrapperFrame or 
 		(LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame])
 	
 	if alreadyRegistered then
 		-- Update tracking and size, but don't re-add to LibEditMode
-		registeredFrame = wrapperFrame
-		self.primaryContainerFrame = containerFrame
-		self:UpdateWrapperSize()
+		registeredFrames[rootBarKey] = wrapperFrame
+		if rootBarKey == "primary" then
+			registeredFrame = wrapperFrame
+			self.primaryContainerFrame = containerFrame
+		end
+		self:UpdateWrapperSize(nil, rootBarKey)
 		
 		-- Even when already registered, we need to reapply layout after a delay
 		-- to ensure CDM width matching is applied correctly after spec switches.
@@ -517,7 +647,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				if not TRB.Data.specSupported then
 					return
 				end
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.specName then
 					local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 					if specSettings and specSettings.settings then
 						TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
@@ -529,26 +659,66 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 	end
 
 	-- Update the tracked frame reference
-	registeredFrame = wrapperFrame
-
-	-- Store reference to the primary container
-	self.primaryContainerFrame = containerFrame
+	registeredFrames[rootBarKey] = wrapperFrame
+	if rootBarKey == "primary" then
+		registeredFrame = wrapperFrame
+		self.primaryContainerFrame = containerFrame
+	end
 
 	-- Get default position from current spec settings or fall back to core defaults
-	local defaultPosition = self:GetDefaultPosition()
+	local defaultPosition = self:GetDefaultPosition(rootBarKey)
 
-	-- Register the WRAPPER frame with LibEditMode (not the primary container)
-	-- When the wrapper is dragged, the primary bar (as its child) moves with it
+	-- Generate display name for this wrapper
+	local displayName = self:GetWrapperDisplayName(rootBarKey)
+
+	-- Register the WRAPPER frame with LibEditMode (not the bar container)
+	-- When the wrapper is dragged, the root bar (as its child) moves with it
 	LibEditMode:AddFrame(
 		wrapperFrame,
 		function(frame, layoutName, point, x, y)
 			self:OnPositionChanged(frame, layoutName, point, x, y)
 		end,
 		defaultPosition,
-		L["TRBAddonName"]
+		displayName
 	)
 
-	-- Add the "Enable for this layout" checkbox setting
+	-- Add per-root Edit Mode settings
+	self:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
+
+	-- Try to hook the Cooldown Manager resize and show events (retry in case they weren't available during Initialize)
+	self:HookCooldownManagerResize()
+	self:HookCooldownManagerShow()
+
+	-- If we're registering while Edit Mode is active (e.g., after a spec switch),
+	-- we need to show the selection frame and make the bar visible
+	if LibEditMode:IsInEditMode() then
+		-- Raise the wrapper strata so selection frame can receive clicks
+		wrapperFrame:SetFrameStrata("DIALOG")
+		wrapperFrame:SetFrameLevel(100)
+
+		-- Show the bar so it's visible in Edit Mode
+		containerFrame:Show()
+
+		-- LibEditMode stores selection frames keyed by the registered frame (wrapperFrame, not containerFrame)
+		local selection = LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame]
+		if selection and selection.ShowHighlighted then
+			selection:ShowHighlighted()
+		end
+	end
+end
+
+---Gets a display name for a wrapper (for Edit Mode overlay title)
+---@param rootBarKey string
+---@return string
+function TRB.Functions.EditMode:GetWrapperDisplayName(rootBarKey)
+	local barDisplayName = TRB.Functions.Bar:GetBarDisplayName(rootBarKey)
+	return L["TRBAddonName"] .. " - " .. barDisplayName
+end
+
+---Adds Edit Mode frame settings (checkbox, dropdown, slider) for a specific tree root wrapper.
+---@param wrapperFrame Frame
+---@param rootBarKey string
+function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
 	LibEditMode:AddFrameSettings(wrapperFrame, {
 		{
 			kind = LibEditMode.SettingType.Checkbox,
@@ -556,22 +726,21 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 			desc = L["EditModeEnableForLayoutTooltip"],
 			default = false,
 			get = function(layoutName)
-				return self:IsLayoutEnabled(layoutName)
+				return self:IsLayoutEnabled(layoutName, rootBarKey)
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetLayoutEnabled(layoutName, newValue)
+				self:SetLayoutEnabled(layoutName, newValue, rootBarKey)
 
 				-- When enabling for the first time, capture the current wrapper position
 				-- so the bar doesn't jump when Edit Mode takes over
 				if newValue and layoutName then
-					self:EnsureLayoutSettings(layoutName)
-					local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
-					if not layoutData.position then
+					self:EnsureLayoutSettings(layoutName, rootBarKey)
+					local layoutData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+					if layoutData and not layoutData.position then
 						-- No position saved yet - capture current WRAPPER position
-						-- The wrapper is what LibEditMode moves, so its position is what we save/restore
-						-- IMPORTANT: Use the wrapper, NOT the container (which is positioned inside the wrapper)
-						if editModeWrapperFrame then
-							local point, x, y = self:NormalizePosition(editModeWrapperFrame)
+						local thisWrapper = editModeWrapperFrames[rootBarKey]
+						if thisWrapper then
+							local point, x, y = self:NormalizePosition(thisWrapper)
 							if point and x and y then
 								layoutData.position = {
 									point = point,
@@ -594,7 +763,7 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				end
 
 				-- Reapply position when toggling
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
 						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
@@ -616,14 +785,13 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 				{ text = L["EditModeAnchorBelowCDM"], value = "below" },
 			},
 			get = function(layoutName)
-				-- Use Raw version so UI always shows actual saved value, not effective value
-				return self:GetAnchorModeRaw(layoutName)
+				return self:GetAnchorModeRaw(layoutName, rootBarKey)
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetAnchorMode(layoutName, newValue)
+				self:SetAnchorMode(layoutName, newValue, rootBarKey)
 
 				-- Reapply position when changing anchor mode
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
 						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
@@ -640,13 +808,13 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 			maxValue = 200,
 			valueStep = 1,
 			get = function(layoutName)
-				return self:GetAnchorOffset(layoutName)
+				return self:GetAnchorOffset(layoutName, rootBarKey)
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetAnchorOffset(layoutName, newValue)
+				self:SetAnchorOffset(layoutName, newValue, rootBarKey)
 
 				-- Reapply position when changing offset
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
 						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
@@ -660,14 +828,13 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 			desc = L["EditModeMatchCDMWidthTooltip"],
 			default = false,
 			get = function(layoutName)
-				-- Use Raw version so UI always shows actual saved value, not effective value
-				return self:IsWidthMatchingEnabledRaw(layoutName)
+				return self:IsWidthMatchingEnabledRaw(layoutName, rootBarKey)
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetWidthMatchingEnabled(layoutName, newValue)
+				self:SetWidthMatchingEnabled(layoutName, newValue, rootBarKey)
 
 				-- Reapply layout when toggling width matching
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(
 						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
 						TRB.Frames.barGroups
@@ -676,38 +843,20 @@ function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
 			end,
 		},
 	})
-
-	-- Try to hook the Cooldown Manager resize and show events (retry in case they weren't available during Initialize)
-	self:HookCooldownManagerResize()
-	self:HookCooldownManagerShow()
-
-
-	-- If we're registering while Edit Mode is active (e.g., after a spec switch),
-	-- we need to show the selection frame and make the bar visible
-	if LibEditMode:IsInEditMode() then
-		-- Raise the wrapper strata so selection frame can receive clicks
-		wrapperFrame:SetFrameStrata("DIALOG")
-		wrapperFrame:SetFrameLevel(100)
-
-		-- Show the bar so it's visible in Edit Mode
-		containerFrame:Show()
-
-		-- LibEditMode stores selection frames keyed by the registered frame (wrapperFrame, not containerFrame)
-		local selection = LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame]
-		if selection and selection.ShowHighlighted then
-			selection:ShowHighlighted()
-		end
-	end
 end
 
----Gets the default position for the bar
+---Gets the default position for a tree root's wrapper
 ---Uses NormalizePosition to capture the actual current position if the wrapper exists
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return table # Default position table with point, x, y
-function TRB.Functions.EditMode:GetDefaultPosition()
+function TRB.Functions.EditMode:GetDefaultPosition(rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+
 	-- Use the wrapper frame position, NOT the container frame
 	-- The wrapper is what LibEditMode moves, so its position is what we save/restore
-	if editModeWrapperFrame then
-		local point, x, y = self:NormalizePosition(editModeWrapperFrame)
+	local wrapperFrame = editModeWrapperFrames[rootBarKey]
+	if wrapperFrame then
+		local point, x, y = self:NormalizePosition(wrapperFrame)
 		if point and x and y then
 			return {
 				point = point,
@@ -736,8 +885,8 @@ function TRB.Functions.EditMode:GetDefaultPosition()
 	}
 end
 
----Callback when the bar position is changed in Edit Mode
----@param frame Frame # The frame that was moved (the primary bar container)
+---Callback when a bar position is changed in Edit Mode
+---@param frame Frame # The wrapper frame that was moved
 ---@param layoutName string # The current layout name
 ---@param point string # The anchor point
 ---@param x number # X offset
@@ -747,11 +896,14 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 		return
 	end
 
-	-- Check if Edit Mode is enabled for this layout
+	-- Determine which tree root this wrapper belongs to
+	local rootBarKey = frame and frame.trbRootBarKey or "primary"
+
+	-- Check if Edit Mode is enabled for this root in this layout
 	-- If not enabled, ignore position changes - use legacy positioning instead
-	if not self:IsLayoutEnabled(layoutName) then
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		-- Not enabled - revert to legacy position
-		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		if TRB.Frames.barGroups then
 			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
@@ -760,13 +912,11 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 		return
 	end
 
-	-- Check if we're using CDM anchoring - if so, ignore position changes
-	-- The bar should stay anchored to CDM, not be freely positioned
-	local anchorMode = self:GetAnchorMode(layoutName)
+	-- Check if we're using CDM anchoring for this root - if so, ignore position changes
+	local anchorMode = self:GetAnchorMode(layoutName, rootBarKey)
 	if anchorMode ~= "none" and self:IsCooldownManagerAvailable() then
 		-- CDM anchored - revert to CDM position instead of saving
-		-- Reapply the full bar layout to restore correct CDM anchoring
-		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+		if TRB.Frames.barGroups then
 			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
@@ -776,18 +926,20 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 	end
 
 	-- LibEditMode has moved the wrapper frame
-	-- Save the new position for this layout
+	-- Save the new position for this layout + root
 
 	-- Ensure settings structure exists
-	self:EnsureLayoutSettings(layoutName)
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
 
-	-- Save the position for this layout
-	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
-	layoutData.position = {
-		point = point,
-		x = x,
-		y = y
-	}
+	-- Save the position for this root in this layout
+	local layoutBarData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if layoutBarData then
+		layoutBarData.position = {
+			point = point,
+			x = x,
+			y = y
+		}
+	end
 end
 
 ---Called when the Edit Mode layout changes
@@ -833,12 +985,12 @@ end
 
 ---Called when Edit Mode is entered
 function TRB.Functions.EditMode:OnEditModeEnter()
-	-- Raise the wrapper frame's strata so the selection frame can receive mouse events
-	-- The selection frame is a child of the wrapper, so it inherits wrapper's strata
-	-- Without this, the bar frames (at higher levels within BACKGROUND) block clicks
-	if editModeWrapperFrame then
-		editModeWrapperFrame:SetFrameStrata("DIALOG")
-		editModeWrapperFrame:SetFrameLevel(100)
+	-- Raise ALL wrapper frames' strata so selection frames can receive mouse events
+	for _, wrapperFrame in pairs(editModeWrapperFrames) do
+		if wrapperFrame then
+			wrapperFrame:SetFrameStrata("DIALOG")
+			wrapperFrame:SetFrameLevel(100)
+		end
 	end
 
 	-- Disable the legacy drag-and-drop while in Edit Mode
@@ -856,10 +1008,12 @@ end
 
 ---Called when Edit Mode is exited
 function TRB.Functions.EditMode:OnEditModeExit()
-	-- Lower the wrapper frame's strata back to normal
-	if editModeWrapperFrame then
-		editModeWrapperFrame:SetFrameStrata("BACKGROUND")
-		editModeWrapperFrame:SetFrameLevel(1)
+	-- Lower ALL wrapper frames' strata back to normal
+	for _, wrapperFrame in pairs(editModeWrapperFrames) do
+		if wrapperFrame then
+			wrapperFrame:SetFrameStrata("BACKGROUND")
+			wrapperFrame:SetFrameLevel(1)
+		end
 	end
 
 	-- Reapply layout to reset frame stratas and levels after Edit Mode
@@ -879,9 +1033,14 @@ function TRB.Functions.EditMode:OnEditModeExit()
 	end
 end
 
----Ensures the layout settings structure exists for a given layout
+---Ensures the layout settings structure exists for a given layout and root bar.
+---Performs backward-compatible migration from the old flat structure to the new
+---per-root structure: layouts[name].bars[rootBarKey] = { enabled, position, ... }
 ---@param layoutName string # The layout name
-function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+
 	if not TRB.Data.settings.core.editMode then
 		TRB.Data.settings.core.editMode = {
 			layouts = {}
@@ -894,31 +1053,75 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName)
 
 	if not TRB.Data.settings.core.editMode.layouts[layoutName] then
 		TRB.Data.settings.core.editMode.layouts[layoutName] = {
+			bars = {}
+		}
+	end
+
+	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
+
+	-- Migration: if old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
+	if layoutData.enabled ~= nil and not layoutData.bars then
+		layoutData.bars = {}
+		layoutData.bars["primary"] = {
+			enabled = layoutData.enabled,
+			position = layoutData.position,
+			anchorToCooldownManager = layoutData.anchorToCooldownManager or "none",
+			anchorOffset = layoutData.anchorOffset or 0,
+			matchCooldownManagerWidth = layoutData.matchCooldownManagerWidth or false,
+		}
+		-- Clean up old flat fields
+		layoutData.enabled = nil
+		layoutData.position = nil
+		layoutData.anchorToCooldownManager = nil
+		layoutData.anchorOffset = nil
+		layoutData.matchCooldownManagerWidth = nil
+	end
+
+	-- Ensure bars sub-table exists
+	if not layoutData.bars then
+		layoutData.bars = {}
+	end
+
+	-- Ensure per-root entry exists
+	if not layoutData.bars[rootBarKey] then
+		layoutData.bars[rootBarKey] = {
 			enabled = false,
 			position = nil,
 			anchorToCooldownManager = "none",
 			anchorOffset = 0,
-			matchCooldownManagerWidth = false
+			matchCooldownManagerWidth = false,
 		}
 	end
 
-	-- Ensure new fields exist for existing layouts (migration)
-	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
-	if layoutData.anchorToCooldownManager == nil then
-		layoutData.anchorToCooldownManager = "none"
+	-- Ensure all fields exist for this root (field-level migration)
+	local barData = layoutData.bars[rootBarKey]
+	if barData.anchorToCooldownManager == nil then
+		barData.anchorToCooldownManager = "none"
 	end
-	if layoutData.anchorOffset == nil then
-		layoutData.anchorOffset = 0
+	if barData.anchorOffset == nil then
+		barData.anchorOffset = 0
 	end
-	if layoutData.matchCooldownManagerWidth == nil then
-		layoutData.matchCooldownManagerWidth = false
+	if barData.matchCooldownManagerWidth == nil then
+		barData.matchCooldownManagerWidth = false
 	end
 end
 
----Checks if a layout is enabled for Edit Mode positioning
+---Gets the per-root layout settings for a given layout and root bar key.
+---@param layoutName string
+---@param rootBarKey string? # Defaults to "primary"
+---@return table? # The bar-specific layout data
+function TRB.Functions.EditMode:GetLayoutBarSettings(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	return TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey]
+end
+
+---Checks if a layout is enabled for Edit Mode positioning for a specific root
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return boolean # True if the layout is enabled
-function TRB.Functions.EditMode:IsLayoutEnabled(layoutName)
+function TRB.Functions.EditMode:IsLayoutEnabled(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return false
@@ -928,21 +1131,26 @@ function TRB.Functions.EditMode:IsLayoutEnabled(layoutName)
 		return false
 	end
 
-	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
-	return layoutData and layoutData.enabled == true
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	local barData = TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey]
+	return barData and barData.enabled == true
 end
 
----Sets whether a layout is enabled for Edit Mode positioning
+---Sets whether a layout is enabled for Edit Mode positioning for a specific root
 ---@param layoutName string # The layout name
 ---@param enabled boolean # Whether to enable Edit Mode for this layout
-function TRB.Functions.EditMode:SetLayoutEnabled(layoutName, enabled)
-	self:EnsureLayoutSettings(layoutName)
-	TRB.Data.settings.core.editMode.layouts[layoutName].enabled = enabled
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetLayoutEnabled(layoutName, enabled, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].enabled = enabled
 end
 
----Gets the position for the current Edit Mode layout if enabled
+---Gets the position for the current Edit Mode layout if enabled for a specific root
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return table? # Position table {point, x, y} or nil if not using Edit Mode
-function TRB.Functions.EditMode:GetActivePosition()
+function TRB.Functions.EditMode:GetActivePosition(rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	if not LibEditMode then
 		return nil
 	end
@@ -952,15 +1160,15 @@ function TRB.Functions.EditMode:GetActivePosition()
 		return nil
 	end
 
-	-- Check if this layout is enabled
-	if not self:IsLayoutEnabled(layoutName) then
+	-- Check if this layout is enabled for this root
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		return nil
 	end
 
-	-- Get the saved position for this layout
-	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
-	if layoutData and layoutData.position then
-		return layoutData.position
+	-- Get the saved position for this root in this layout
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if barData and barData.position then
+		return barData.position
 	end
 
 	return nil
@@ -1028,30 +1236,34 @@ local function ReapplyCooldownManagerLayout(layoutName, forceUpdate)
 	end
 
 	local layoutData = TRB.Data.settings.core.editMode.layouts and TRB.Data.settings.core.editMode.layouts[layoutName]
-	if not layoutData then
+	if not layoutData or not layoutData.bars then
 		return
 	end
 
-	-- Only trigger updates if we're using CDM width matching or anchoring
-	if layoutData.matchCooldownManagerWidth or (layoutData.anchorToCooldownManager and layoutData.anchorToCooldownManager ~= "none") then
+	-- Check if any root bar uses CDM width matching or anchoring
+	local anyCdmUsage = false
+	for _, barData in pairs(layoutData.bars) do
+		if barData.enabled and (barData.matchCooldownManagerWidth or (barData.anchorToCooldownManager and barData.anchorToCooldownManager ~= "none")) then
+			anyCdmUsage = true
+			break
+		end
+	end
+
+	if anyCdmUsage then
 		-- Reapply bar layout to update width/position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				-- Skip layout update if width hasn't changed (avoids flickering)
-				-- We already got CDM width via temporary show, so bar is already sized correctly
 				if not forceUpdate then
 					local currentEffectiveWidth = TRB.Frames.barGroups.effectiveWidth
 					local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
 					if currentEffectiveWidth and cdmWidth and math.abs(currentEffectiveWidth - cdmWidth) < 1 then
-						-- Width is already correct, no need to reapply layout
 						return
 					end
 				end
-				
+
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
-				-- Restore correct bar visibility after layout changes
-				-- ApplyBarGroupsLayout may show bars that should be hidden
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -1120,76 +1332,87 @@ function TRB.Functions.EditMode:HookCooldownManagerShow()
 	end
 end
 
----Gets the anchor mode for the current layout
+---Gets the anchor mode for the current layout for a specific root
 ---This returns the EFFECTIVE anchor mode (for bar positioning)
 ---Returns "none" if layout is not enabled
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return string # "none", "above", or "below"
-function TRB.Functions.EditMode:GetAnchorMode(layoutName)
+function TRB.Functions.EditMode:GetAnchorMode(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return "none"
 	end
 
-	-- If Edit Mode layout is not enabled, anchor mode is always "none"
-	-- This ensures CDM settings only apply when "Enable for this layout" is checked
-	if not self:IsLayoutEnabled(layoutName) then
+	-- If Edit Mode layout is not enabled for this root, anchor mode is always "none"
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		return "none"
 	end
 
-	self:EnsureLayoutSettings(layoutName)
-	return TRB.Data.settings.core.editMode.layouts[layoutName].anchorToCooldownManager or "none"
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchorToCooldownManager) or "none"
 end
 
 ---Gets the RAW saved anchor mode for the current layout (for UI display)
 ---This returns the actual saved value regardless of whether layout is enabled
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return string # "none", "above", or "below"
-function TRB.Functions.EditMode:GetAnchorModeRaw(layoutName)
+function TRB.Functions.EditMode:GetAnchorModeRaw(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return "none"
 	end
 
-	self:EnsureLayoutSettings(layoutName)
-	return TRB.Data.settings.core.editMode.layouts[layoutName].anchorToCooldownManager or "none"
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchorToCooldownManager) or "none"
 end
 
----Sets the anchor mode for a layout
+---Sets the anchor mode for a layout for a specific root
 ---@param layoutName string # The layout name
 ---@param mode string # "none", "above", or "below"
-function TRB.Functions.EditMode:SetAnchorMode(layoutName, mode)
-	self:EnsureLayoutSettings(layoutName)
-	TRB.Data.settings.core.editMode.layouts[layoutName].anchorToCooldownManager = mode
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAnchorMode(layoutName, mode, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchorToCooldownManager = mode
 end
 
----Gets the anchor offset for the current layout
+---Gets the anchor offset for the current layout for a specific root
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return number # The vertical offset in pixels
-function TRB.Functions.EditMode:GetAnchorOffset(layoutName)
+function TRB.Functions.EditMode:GetAnchorOffset(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return 0
 	end
 
-	self:EnsureLayoutSettings(layoutName)
-	return TRB.Data.settings.core.editMode.layouts[layoutName].anchorOffset or 0
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchorOffset) or 0
 end
 
----Sets the anchor offset for a layout
+---Sets the anchor offset for a layout for a specific root
 ---@param layoutName string # The layout name
 ---@param offset number # The vertical offset in pixels
-function TRB.Functions.EditMode:SetAnchorOffset(layoutName, offset)
-	self:EnsureLayoutSettings(layoutName)
-	TRB.Data.settings.core.editMode.layouts[layoutName].anchorOffset = offset
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAnchorOffset(layoutName, offset, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchorOffset = offset
 end
 
----Gets whether width matching is enabled for the current layout
+---Gets whether width matching is enabled for the current layout for a specific root
 ---This returns the EFFECTIVE value (for bar positioning)
 ---Returns false if layout is not enabled or anchor mode is "none"
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return boolean # True if width matching is enabled
-function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName)
+function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		-- LibEditMode hasn't initialized yet or no active layout
@@ -1199,16 +1422,18 @@ function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName)
 		-- This prevents the bar from flashing to settings.bar.width during init.
 		if TRB.Data.settings.core.editMode and TRB.Data.settings.core.editMode.layouts then
 			for _, layoutData in pairs(TRB.Data.settings.core.editMode.layouts) do
-				if layoutData.enabled and
-				   layoutData.matchCooldownManagerWidth and
-				   layoutData.anchorToCooldownManager and
-				   layoutData.anchorToCooldownManager ~= "none" then
-					-- At least one layout has CDM width matching enabled
-					-- Check if CDM is actually available
-					if self:IsCooldownManagerAvailable() then
-						return true
+				-- Check per-root settings
+				if layoutData.bars and layoutData.bars[rootBarKey] then
+					local barData = layoutData.bars[rootBarKey]
+					if barData.enabled and
+					   barData.matchCooldownManagerWidth and
+					   barData.anchorToCooldownManager and
+					   barData.anchorToCooldownManager ~= "none" then
+						if self:IsCooldownManagerAvailable() then
+							return true
+						end
+						break
 					end
-					break
 				end
 			end
 		end
@@ -1216,41 +1441,45 @@ function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName)
 	end
 
 	-- Width matching only applies when:
-	-- 1. Edit Mode layout is enabled for this layout
+	-- 1. Edit Mode layout is enabled for this root
 	-- 2. Anchor mode is not "none" (actually anchored to CDM)
-	if not self:IsLayoutEnabled(layoutName) then
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		return false
 	end
 
-	local anchorMode = self:GetAnchorMode(layoutName)
+	local anchorMode = self:GetAnchorMode(layoutName, rootBarKey)
 	if anchorMode == "none" then
 		return false
 	end
 
-	self:EnsureLayoutSettings(layoutName)
-	return TRB.Data.settings.core.editMode.layouts[layoutName].matchCooldownManagerWidth == true
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return barData and barData.matchCooldownManagerWidth == true
 end
 
 ---Gets the RAW saved width matching setting (for UI display)
 ---This returns the actual saved value regardless of whether layout/anchor is enabled
 ---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return boolean # True if width matching is enabled in settings
-function TRB.Functions.EditMode:IsWidthMatchingEnabledRaw(layoutName)
+function TRB.Functions.EditMode:IsWidthMatchingEnabledRaw(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return false
 	end
 
-	self:EnsureLayoutSettings(layoutName)
-	return TRB.Data.settings.core.editMode.layouts[layoutName].matchCooldownManagerWidth == true
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return barData and barData.matchCooldownManagerWidth == true
 end
 
----Sets whether width matching is enabled for a layout
+---Sets whether width matching is enabled for a layout for a specific root
 ---@param layoutName string # The layout name
 ---@param enabled boolean # Whether to enable width matching
-function TRB.Functions.EditMode:SetWidthMatchingEnabled(layoutName, enabled)
-	self:EnsureLayoutSettings(layoutName)
-	TRB.Data.settings.core.editMode.layouts[layoutName].matchCooldownManagerWidth = enabled
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetWidthMatchingEnabled(layoutName, enabled, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].matchCooldownManagerWidth = enabled
 end
 
 ---Calculates the bounding box of all TRB bar groups
