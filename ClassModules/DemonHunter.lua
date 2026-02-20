@@ -609,7 +609,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						duration = duration + spells.vengefulBeast.duration
 					end
 
-					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
+					snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, currentTime)
 				end
 			end
 		end
@@ -653,7 +653,6 @@ local function DemonHunterEvent(self, event, ...)
 		local spellId = ...
 		if TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-			print(spellId == spells.metamorphosis.id, talents:IsTalentActive(spells.untetheredRage))
 			if spellId == spells.metamorphosis.id and talents:IsTalentActive(spells.untetheredRage) then -- Metamorphosis
 				snapshotData.attributes.untetheredRageActive = true
 			end
@@ -665,6 +664,20 @@ local function DemonHunterEvent(self, event, ...)
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 			if spellId == spells.metamorphosis.id then -- Metamorphosis
 				snapshotData.attributes.untetheredRageActive = false
+			end
+		end
+	elseif event == "SPELL_UPDATE_COOLDOWN" then
+		local spellId = ...
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			if spellId == spells.uncontainedFel.id then -- Last Resort fires off Uncontained Fel
+				local duration = spells.metamorphosis.duration
+				if talents:IsTalentActive(spells.vengefulBeast) then
+					duration = duration + spells.vengefulBeast.duration
+				end
+
+				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, GetTime())
 			end
 		end
 	end
@@ -1272,6 +1285,7 @@ local function SwitchSpec()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 	if TRB.Data.character.specId == 1 then
 		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()
@@ -1331,6 +1345,7 @@ local function SwitchSpec()
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
 		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 
 		if TRB.Data.barConstructedForSpec ~= "demonhunter_vengeance" then
 			talents = specCache.demonhunter_vengeance.talents

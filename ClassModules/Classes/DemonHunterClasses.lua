@@ -165,6 +165,7 @@ end
 ---@field public vengefulBeast TRB.Classes.SpellBase
 ---@field public artOfTheGlaive TRB.Classes.SpellBase
 ---@field public untetheredRage TRB.Classes.SpellBase
+---@field public uncontainedFel TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
@@ -242,6 +243,11 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		talentId = 1270449,
 		isTalent = true,
 		duration = 10
+	})
+	self.uncontainedFel = TRB.Classes.SpellBase:New({
+		id = 209261,
+		talentId = 209258, -- Last Resort
+		isTalent = true,
 	})
 
 	-- Aldrachi Reaver

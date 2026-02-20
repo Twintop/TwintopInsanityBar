@@ -22,6 +22,7 @@ local content = [====[
 ### Vengeance
 
 - Add Untethered Rage talent support for extending/triggering Metamorphosis.
+- Add support for Metamorphosis via Last Resort procs.
 
 ---
 
