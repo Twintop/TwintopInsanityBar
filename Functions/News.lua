@@ -20,7 +20,7 @@ local content = [====[
 
 ### Localization
 
-- [#621](#621) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#623](#623) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Demon Hunter
 ### Havoc
