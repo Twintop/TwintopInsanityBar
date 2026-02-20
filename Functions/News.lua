@@ -13,6 +13,15 @@ local content = [====[
 ---
 
 # 12.0.1.8-release (2026-02-21)
+## General
+
+- [#624](#624) Reduce bar flickering when setting up upon login, specialization, or talent changes.
+- Fix Lua errors from the Reset Default Bar Text buttons.
+
+### Localization
+
+- [#621](#621) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Demon Hunter
 ### Havoc
 
