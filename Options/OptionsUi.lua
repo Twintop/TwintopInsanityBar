@@ -2510,8 +2510,14 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 				controls.horizontal:SetValue(a.xOffset)
 				controls.vertical:SetValue(a.yOffset)
 				controls.checkBoxes.primaryMatchWidth:SetChecked(a.matchWidth)
-				primaryAnchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
-				primaryAttachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
+				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
+				primaryAnchorPointDropdown:SetDefaultText(anchorPointText)
+				primaryAttachPointDropdown:SetDefaultText(attachPointText)
+				-- Force visual refresh: SetDefaultText alone may not update the displayed
+				-- text when the dropdown has internal selection state from prior interaction.
+				primaryAnchorPointDropdown:SetText(anchorPointText)
+				primaryAttachPointDropdown:SetText(attachPointText)
 			end
 			ApplyPrimaryAnchorLayout()
 		end)
@@ -2891,8 +2897,14 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
 				controls[settingKey .. "Vertical"]:SetValue(a.yOffset)
 				controls.checkBoxes[settingKey .. "MatchWidth"]:SetChecked(a.matchWidth)
-				anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
-				attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
+				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
+				anchorPointDropdown:SetDefaultText(anchorPointText)
+				attachPointDropdown:SetDefaultText(attachPointText)
+				-- Force visual refresh: SetDefaultText alone may not update the displayed
+				-- text when the dropdown has internal selection state from prior interaction.
+				anchorPointDropdown:SetText(anchorPointText)
+				attachPointDropdown:SetText(attachPointText)
 			end
 			ApplyAnchorLayout()
 		end)
@@ -3255,8 +3267,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
 				controls[barTypeDef.key .. "YPos"]:SetValue(a.yOffset)
 				controls[barTypeDef.key .. "MatchWidth"]:SetChecked(a.matchWidth)
-				anchorPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.anchorPoint))
-				attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(a.attachPoint))
+				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
+				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
+				anchorPointDropdown:SetDefaultText(anchorPointText)
+				attachPointDropdown:SetDefaultText(attachPointText)
+				-- Force visual refresh: SetDefaultText alone may not update the displayed
+				-- text when the dropdown has internal selection state from prior interaction.
+				anchorPointDropdown:SetText(anchorPointText)
+				attachPointDropdown:SetText(attachPointText)
 			end
 
 			if TRB.Frames.barGroups ~= nil then

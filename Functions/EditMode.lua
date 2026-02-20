@@ -352,19 +352,20 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			rootNode = fallbackRoot
 		end
 		if not rootNode then
-			local fallbackWidth = (rootBarKey == "primary") and effectiveWidth or settings.bar.width
-			return fallbackWidth, settings.bar.height, 0, 0, 0
+			return effectiveWidth, settings.bar.height, 0, 0, 0
 		end
 	end
 
 	-- Root node dimensions
+	-- Use effectiveWidth for all roots (accounts for CDM width matching).
+	-- The raw settings width is only a fallback when effectiveWidth isn't available.
 	local baseWidth, baseHeight
 	if rootBarKey == "primary" then
 		baseWidth = effectiveWidth
 		baseHeight = settings.bar.height or 0
 	else
 		local rootBarSettings = rootNode.barSettings
-		baseWidth = (rootBarSettings and rootBarSettings.width) or effectiveWidth
+		baseWidth = effectiveWidth
 		baseHeight = (rootBarSettings and rootBarSettings.height) or 0
 	end
 
@@ -422,15 +423,13 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 
 					-- Apply matchWidth center-alignment override (matching ConstructAnchoredBarGroup)
 					if matchWidth then
-						local isAbove = string.find(anchorPt, "TOP") ~= nil
-						local isBelow = string.find(anchorPt, "BOTTOM") ~= nil
-						if isAbove then
-							anchorPt = "TOP"
-							attachPt = "BOTTOM"
-						elseif isBelow then
-							anchorPt = "BOTTOM"
-							attachPt = "TOP"
-						end
+						-- Strip horizontal component to force center alignment, preserve vertical
+						anchorPt = string.gsub(anchorPt, "LEFT", "")
+						anchorPt = string.gsub(anchorPt, "RIGHT", "")
+						attachPt = string.gsub(attachPt, "LEFT", "")
+						attachPt = string.gsub(attachPt, "RIGHT", "")
+						if anchorPt == "" then anchorPt = "CENTER" end
+						if attachPt == "" then attachPt = "CENTER" end
 						xOffset = 0
 					end
 
@@ -637,24 +636,22 @@ function TRB.Functions.EditMode:RegisterTreeRoot(rootBarKey, containerFrame)
 			registeredFrame = wrapperFrame
 			self.primaryContainerFrame = containerFrame
 		end
+		-- The wrapper may have been hidden by a previous RegisterAllTreeRoots call
+		-- (when this bar was temporarily a non-root). Re-show it now that it's a root again.
+		wrapperFrame:Show()
 		self:UpdateWrapperSize(nil, rootBarKey)
-		
-		-- Even when already registered, we need to reapply layout after a delay
-		-- to ensure CDM width matching is applied correctly after spec switches.
-		-- The CDM frame dimensions may not be finalized when ConstructBarGroups runs.
-		C_Timer.After(0, function()
-			C_Timer.After(0.1, function()
-				if not TRB.Data.specSupported then
-					return
-				end
-				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.specName then
-					local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
-					if specSettings and specSettings.settings then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
-					end
-				end
-			end)
-		end)
+
+		-- If Edit Mode is active, restore the selection frame visibility so the
+		-- wrapper appears as a draggable frame immediately.
+		if LibEditMode:IsInEditMode() then
+			wrapperFrame:SetFrameStrata("DIALOG")
+			wrapperFrame:SetFrameLevel(100)
+			containerFrame:Show()
+			local selection = LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame]
+			if selection and selection.ShowHighlighted then
+				selection:ShowHighlighted()
+			end
+		end
 		return
 	end
 

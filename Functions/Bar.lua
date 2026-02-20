@@ -497,11 +497,6 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
 
-	-- Register all tree roots with Edit Mode (each root gets its own wrapper)
-	if TRB.Functions.EditMode then
-		TRB.Functions.EditMode:RegisterAllTreeRoots()
-	end
-
 	-- Create bar text frames (essential for bar text display)
 	TRB.Functions.BarText:CreateBarTextFrames()
 	TRB.Functions.BarText:Hide(settings)
@@ -599,6 +594,22 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
+	-- Re-parent non-root bars to their root's wrapper frame.
+	-- This is critical when a bar transitions from root to non-root: its containerFrame
+	-- was parented to its own wrapper (which gets hidden), so it must be re-parented
+	-- to the new root's wrapper to remain visible.
+	for barKey, rootBarKey in pairs(barKeyToRoot) do
+		if barKey ~= rootBarKey then
+			local barGroup = barGroups[barKey]
+			local rootMeta = rootMetadata[rootBarKey]
+			if barGroup and rootMeta and rootMeta.wrapper then
+				if barGroup.containerFrame:GetParent() ~= rootMeta.wrapper then
+					barGroup.containerFrame:SetParent(rootMeta.wrapper)
+				end
+			end
+		end
+	end
+
 	-- Configure the primary bar group
 	if barGroups.primary then
 		local primary = barGroups.primary
@@ -622,10 +633,12 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 					local yo = primaryAnchor.yOffset or 0
 					-- Apply matchWidth center-alignment override
 					if primaryAnchor.matchWidth then
-						local isAbove = string.find(ap, "TOP") ~= nil
-						local isBelow = string.find(ap, "BOTTOM") ~= nil
-						if isAbove then att = "BOTTOM"; ap = "TOP"
-						elseif isBelow then att = "TOP"; ap = "BOTTOM" end
+						ap = string.gsub(ap, "LEFT", "")
+						ap = string.gsub(ap, "RIGHT", "")
+						att = string.gsub(att, "LEFT", "")
+						att = string.gsub(att, "RIGHT", "")
+						if ap == "" then ap = "CENTER" end
+						if att == "" then att = "CENTER" end
 						xo = 0
 					end
 					primary.containerFrame:ClearAllPoints()
@@ -900,6 +913,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
+	-- Re-register tree roots BEFORE sizing so stale wrapper frames (from bars that
+	-- changed from root to non-root) are hidden and new roots are registered.
+	-- This must happen before CDM anchoring/UpdateWrapperSize because RegisterTreeRoot
+	-- calls UpdateWrapperSize internally, and we want the explicit sizing below to
+	-- be the final authority on wrapper dimensions.
+	if TRB.Functions.EditMode and TRB.Functions.EditMode.RegisterAllTreeRoots then
+		TRB.Functions.EditMode:RegisterAllTreeRoots()
+	end
+
 	-- Per-root CDM anchoring / wrapper sizing (must be done after all bars are laid out)
 	for rootBarKey, meta in pairs(rootMetadata) do
 		if meta.useCdm then
@@ -908,7 +930,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
 		end
 	end
-	
+
 	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
 	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 		TRB.Functions.Class:CheckCharacter()
@@ -1892,17 +1914,14 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Match width: resolve the anchor bar's width, following matchWidth chains if necessary.
 		-- This correctly handles anchoring to bars other than primary (e.g., health bar).
 		groupWidth = self:ResolveBarWidth(settings, anchor.barKey)
-		-- Force center alignment vertically (above or below)
-		-- Determine if attach is above or below and force center alignment
-		local isAbove = string.find(anchorPoint, "TOP") ~= nil
-		local isBelow = string.find(anchorPoint, "BOTTOM") ~= nil
-		if isAbove then
-			attachPoint = "BOTTOM"
-			anchorPoint = "TOP"
-		elseif isBelow then
-			attachPoint = "TOP"
-			anchorPoint = "BOTTOM"
-		end
+		-- Force horizontal center alignment by stripping LEFT/RIGHT from anchor points
+		-- but preserve the user's chosen vertical relationship (TOP/BOTTOM/CENTER).
+		anchorPoint = string.gsub(anchorPoint, "LEFT", "")
+		anchorPoint = string.gsub(anchorPoint, "RIGHT", "")
+		attachPoint = string.gsub(attachPoint, "LEFT", "")
+		attachPoint = string.gsub(attachPoint, "RIGHT", "")
+		if anchorPoint == "" then anchorPoint = "CENTER" end
+		if attachPoint == "" then attachPoint = "CENTER" end
 		xPos = 0
 	elseif anchor.barKey == "screen" and config.rootEffectiveWidth then
 		-- Screen-anchored root bar: use the root's effective width (accounts for CDM width matching)
