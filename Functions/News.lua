@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.1.8-release (2026-02-21)
+## Demon Hunter
+### Havoc
+
+- Fix an issue with Metamorphosis tracking when talented into Demonic and not talented into Blind Fury.
+- Fix an issue with Metamorphosis duration extensions not correctly including the base channel duration of Eye Beam with Demonic talented.
+
+### Vengeance
+
+- Add Untethered Rage talent support for extending/triggering Metamorphosis.
+
+---
+
 # 12.0.1.7-release (2026-02-17)
 ## General
 

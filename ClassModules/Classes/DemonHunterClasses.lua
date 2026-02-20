@@ -164,6 +164,7 @@ end
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public vengefulBeast TRB.Classes.SpellBase
 ---@field public artOfTheGlaive TRB.Classes.SpellBase
+---@field public untetheredRage TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
@@ -235,6 +236,12 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 		isTalent = true,
 		isSnowflake = true,
 		rangeCheck = false
+	})
+	self.untetheredRage = TRB.Classes.SpellBase:New({
+		id = 1270444,
+		talentId = 1270449,
+		isTalent = true,
+		duration = 10
 	})
 
 	-- Aldrachi Reaver

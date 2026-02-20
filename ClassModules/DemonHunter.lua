@@ -601,13 +601,16 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.metamorphosis.castId then
-				local duration = spells.metamorphosis.duration
+				if snapshotData.attributes.untetheredRageActive then
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.untetheredRage.duration, currentTime)
+				else
+					local duration = spells.metamorphosis.duration
+					if talents:IsTalentActive(spells.vengefulBeast) then
+						duration = duration + spells.vengefulBeast.duration
+					end
 
-				if talents:IsTalentActive(spells.vengefulBeast) then
-					duration = duration + spells.vengefulBeast.duration
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				end
-
-				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -645,10 +648,29 @@ local function DemonHunterEvent(self, event, ...)
 				snapshotData.attributes.resource2 = soulFragments
 			end
 		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			print(spellId == spells.metamorphosis.id, talents:IsTalentActive(spells.untetheredRage))
+			if spellId == spells.metamorphosis.id and talents:IsTalentActive(spells.untetheredRage) then -- Metamorphosis
+				snapshotData.attributes.untetheredRageActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			if spellId == spells.metamorphosis.id then -- Metamorphosis
+				snapshotData.attributes.untetheredRageActive = false
+			end
+		end
 	end
 end
-local soulFragmentsFrame = CreateFrame("Frame")
-soulFragmentsFrame:SetScript("OnEvent", DemonHunterEvent)
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", DemonHunterEvent)
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
@@ -1247,7 +1269,9 @@ local function SwitchSpec()
 	end
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
-	soulFragmentsFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	if TRB.Data.character.specId == 1 then
 		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()
@@ -1304,7 +1328,9 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 		
-		soulFragmentsFrame:RegisterEvent("SPELL_UPDATE_USES")
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
 		if TRB.Data.barConstructedForSpec ~= "demonhunter_vengeance" then
 			talents = specCache.demonhunter_vengeance.talents
