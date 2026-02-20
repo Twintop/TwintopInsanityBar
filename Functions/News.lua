@@ -12,6 +12,29 @@ local content = [====[
 
 ---
 
+# 12.0.1.8-release (2026-02-21)
+## General
+
+- [#624](#624) Reduce bar flickering when setting up upon login, specialization, or talent changes.
+- Fix Lua errors from the Reset Default Bar Text buttons.
+
+### Localization
+
+- [#623](#623) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Demon Hunter
+### Havoc
+
+- Fix an issue with Metamorphosis tracking when talented into Demonic and not talented into Blind Fury.
+- Fix an issue with Metamorphosis duration extensions not correctly including the base channel duration of Eye Beam with Demonic talented.
+
+### Vengeance
+
+- Add Untethered Rage talent support for extending/triggering Metamorphosis.
+- Add support for Metamorphosis via Last Resort procs.
+
+---
+
 # 12.0.1.7-release (2026-02-17)
 ## General
 
