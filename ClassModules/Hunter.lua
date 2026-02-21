@@ -848,7 +848,6 @@ local function UpdateResourceBar()
 				healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.marksmanship
@@ -1024,7 +1023,6 @@ local function UpdateResourceBar()
 				healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.survival
@@ -1154,7 +1152,6 @@ local function UpdateResourceBar()
 				healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

@@ -15,7 +15,10 @@ local content = [====[
 # 12.0.1.8-release (2026-02-21)
 ## General
 
+- [#628](#628) Add support for indivudal bars to be anchored to other bars instead of using an X/Y offset from the Primary Resource Bar.
+- [#628](#628) Allow any bar that is anchored to the "Screen" (`UIParent`) to also be independently controlled by Edit Mode for positioning, including anchoring to the Cooldown Manager's Essential frame.
 - [#624](#624) Reduce bar flickering when setting up upon login, specialization, or talent changes.
+- [#626](#626) Fix inconsistent bar text updates when some UI elements are disabled.
 - Fix Lua errors from the Reset Default Bar Text buttons.
 
 ### Localization

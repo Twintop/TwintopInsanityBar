@@ -2216,7 +2216,6 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -2461,9 +2460,8 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specSettings.colors.healthBar.background.color)
 				end
 			end
-
-			TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 		end
+		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
 

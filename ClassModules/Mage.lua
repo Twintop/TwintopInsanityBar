@@ -626,7 +626,6 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire

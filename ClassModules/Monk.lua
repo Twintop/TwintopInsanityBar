@@ -1297,7 +1297,6 @@ local function UpdateResourceBar()
 				end
 			end
 		end
-
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
