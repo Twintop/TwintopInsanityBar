@@ -4419,7 +4419,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 	end
 
 	return {
-		width = 30,
+		width = 60,
 		height = 20,
 		xPos = 0,
 		yPos = 0,
