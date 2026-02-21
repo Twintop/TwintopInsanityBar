@@ -295,4 +295,6 @@ if locale == "enGB" then
 
     L["HunterMarksmanshipCheckboxTrueshotTooltip"] = "This will change the bar colour when you have Trueshot active."
     L["CheckboxBorderStealthTooltip"] = "This will change the bar border colour when you are stealthed."
+
+    L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colours will be used instead of the specialization-specific setting."
 end

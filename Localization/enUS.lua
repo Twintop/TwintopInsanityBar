@@ -1930,3 +1930,6 @@ L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "This will only show 
 L["PriestShadowColorPickerThresholdOver"] = "Have enough Insanity to cast Shadow Word: Madness"
 L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text color when you are able to cast Shadow Word: Madness"
 L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Shadow Word: Madness audio sound."
+
+-- Global Health Bar Colors
+L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colors will be used instead of the specialization-specific setting."
