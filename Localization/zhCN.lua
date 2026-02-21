@@ -599,7 +599,6 @@ if locale == "zhCN" then
     L["PriestShadowThresholdShadowWordMadness3x"] = "连续3发暗影真言：狂乱"
     L["PriestShadowThresholdShadowWordMadness3xTooltip"] = "在资源条上显示竖线，标记连续施放三发暗影真言：狂乱所需的狂乱值阈值"
     L["PriestShadowThresholdCheckboxOnlyCurrentNext"] = "仅显示当前+下一级阈值线？"
-    L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "仅当你拥有足够狂乱值、或即将达到下一级吞噬瘟疫阈值时，显示对应阈值线。即使上方未勾选，也会在达成前一级阈值后才触发下一级显示！"
     L["PriestShadowHeaderEndOfVoidformConfiguration"] = "虚空形态结束设置"
     L["PriestShadowCheckboxVoidformGcds"] = "距离虚空形态结束的GCD数"
     L["PriestShadowVoidformGcds"] = "虚空形态GCD计数 - 向下取整0.75秒"
@@ -608,12 +607,9 @@ if locale == "zhCN" then
     L["PriestShadowTextColorsHeader"] = "狂乱值文字颜色"
     L["PriestShadowColorPickerTextCurrent"] = "当前狂乱值"
     L["PriestShadowColorPickerTextCasting"] = "读条技能产生的狂乱值"
-    L["PriestShadowColorPickerThresholdOver"] = "拥有足够狂乱值施放吞噬瘟疫"
-    L["PriestShadowCheckboxThresholdOverTooltip"] = "拥有足够狂乱值施放吞噬瘟疫时，改变狂乱值文字颜色"
     L["PriestShadowAudioCheckboxShadowWordMadness"] = "暗影真言：狂乱可用时播放音效"
     L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"] = "暗影真言：狂乱可施放时，播放提示音效"
     L["PriestShadowAudioCheckboxMindDevourer"] = "心灵吞噬者触发时播放音效"
-    L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "心灵吞噬者触发时播放提示音效，该音效会覆盖常规吞噬瘟疫音效"
 
     L["ResourceMaelstromWeapon"] = "漩涡武器"
     L["ShamanManaColorPickerAscendance"] = "升腾状态下的法力值"
@@ -1733,7 +1729,7 @@ if locale == "zhCN" then
     L["FooterGitHubIssues"] = "GitHub反馈"
     L["FooterNews"] = "最新动态"
     L["MinimapTooltipLeftClick"] = "左键点击打开设置"
-    L["FooterKofi"] = "在Ko-fi上捐赠"
+    L["FooterKofi"] = "Ko-fi上捐赠"
 
     L["TabEnergy"] = "能量"
     L["TabStagger"] = "醉拳值"
@@ -1775,7 +1771,38 @@ if locale == "zhCN" then
     L["CheckboxSmoothBar"] = "平滑进度条动画"
     L["CheckboxSmoothBarTooltip"] = "勾选后，此进度条的数值更新将以短暂平滑的动画效果呈现，而非瞬间跳变。"
 
+    L["AnchorTo"] = "锚定至"
+    L["AnchorToTooltip"] = "选择此条锚定的目标条。此条将相对于所选目标条进行定位。"
+    L["AnchorPoint"] = "锚点位置"
+    L["AnchorPointTooltip"] = "此条附着在目标条上的对应位置。"
+    L["AttachPoint"] = "附着点位置"
+	L["AttachPointTooltip"] = "此条上与锚点接触的位置。"
+	L["MatchAnchorWidth"] = "匹配锚定条宽度"
+	L["MatchAnchorWidthTooltip"] = "启用后，此条的宽度将与所锚定的条保持一致。"
+	L["BaseBarDropdown"] = "基础锚定条"
+	L["BaseBarDropdownTooltip"] = "所有其他条定位的基准条。此条将通过编辑模式或传统位置设置获得绝对定位。"
+	L["AnchorHorizontalOffset"] = "水平偏移量"
+	L["AnchorVerticalOffset"] = "垂直偏移量"
+	L["AnchorCycleError"] = "无法锚定至 %s：这将造成循环依赖。"
+	L["AnchorBarPrimary"] = "主资源条"
+	L["AnchorBarSecondary"] = "副资源条"
+	L["AnchorBarHealth"] = "生命值条"
+	L["AnchorBarScreen"] = "屏幕（自由定位）"
+	L["AnchorBarScreenTooltip"] = "在屏幕上独立定位此条。它将不附着于任何其他条。"
 
+	L["AnchorPointTOPLEFT"] = "左上"
+	L["AnchorPointTOP"] = "上中"
+	L["AnchorPointTOPRIGHT"] = "右上"
+	L["AnchorPointLEFT"] = "中左"
+	L["AnchorPointCENTER"] = "中心"
+	L["AnchorPointRIGHT"] = "中右"
+	L["AnchorPointBOTTOMLEFT"] = "左下"
+	L["AnchorPointBOTTOM"] = "下中"
+	L["AnchorPointBOTTOMRIGHT"] = "右下"
+
+	L["AnchorToBarLabel"] = "将 %s 锚定至："
+	L["AnchorPointLabel"] = "%s 上的位置（目标条栏）"
+	L["AttachPointLabel"] = "%s 上的位置（此条栏）"
     L["GlobalOptionsCheckboxNumberAbbreviation"] = "使用数字缩写格式"
     L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "勾选后，大数将以缩写形式显示（万、亿）。取消勾选则显示完整数字，并使用符合地区习惯的分隔符（例如 100,000 或 1.500.000）。"
 
@@ -1788,5 +1815,14 @@ if locale == "zhCN" then
     L["BarTextVariablesAddTooltip"] = "在当前激活的条形图文本编辑器中，将此变量插入光标位置"
     L["BarTextVariablesAddButton"] = "+"
     L["BarTextVariablesPanelTitle"] = "条形图文本变量"
+
+	L["WrapperDisplayNameFormat"] = "%s - %s"
+
+	L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "仅当你已拥有足够狂乱值可施放暗言术：疯狂，或该阈值是你即将达到的下一个阈值时，才会显示暗言术：疯狂的阈值线。仅当上一个阈值线达成后，才会触发下一个阈值线的显示（即使上方未勾选该选项）！"
+	L["PriestShadowColorPickerThresholdOver"] = "拥有足够狂乱值可施放暗言术：疯狂"
+	L["PriestShadowCheckboxThresholdOverTooltip"] = "当你能够施放暗言术：疯狂时，此项会改变狂乱值文本的颜色"
+	L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "当心灵吞噬者触发时播放音效提示。此音效将替代常规的暗言术：疯狂音效。"
+
+	L["CheckboxUseGlobalTooltip_HealthBarColors"] = "勾选后，生命值条颜色将使用全局设置，而非专精专属设置。"
 
 end
