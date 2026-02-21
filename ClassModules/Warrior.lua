@@ -155,11 +155,11 @@ end
 local function Setup_Arms()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warrior", "arms")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Arms using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_arms" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Arms()
@@ -173,11 +173,11 @@ end
 local function Setup_Fury()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warrior", "fury")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Fury using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_fury" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Fury()
@@ -191,11 +191,11 @@ end
 local function Setup_Protection()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warrior", "protection", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Protection using new OOP system (includes secondary for defensive buffs)
-	TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_protection" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Protection()

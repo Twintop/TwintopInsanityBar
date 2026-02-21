@@ -308,11 +308,11 @@ end
 local function Setup_Assassination()
 	TRB.Functions.Character:FillSpecializationCacheSettings("rogue", "assassination")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Assassination using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_assassination" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Assassination()
@@ -326,11 +326,11 @@ end
 local function Setup_Outlaw()
 	TRB.Functions.Character:FillSpecializationCacheSettings("rogue", "outlaw")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Outlaw using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_outlaw" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Outlaw()
@@ -344,11 +344,11 @@ end
 local function Setup_Subtlety()
 	TRB.Functions.Character:FillSpecializationCacheSettings("rogue", "subtlety")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Subtlety using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_subtlety" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Subtlety()
@@ -425,11 +425,14 @@ local function ConstructResourceBar(settings)
 		
 		-- Ensure secondary group knows the correct node count
 		barGroups.secondary:SetNodeCount(maxComboPoints)
-		barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+		barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 		barGroups.secondary:Show()
 		
-		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-		local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+		-- Get effective width for secondary bar, accounting for CDM width matching
+		local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+		if cdmForced then
+			barGroups.secondary.fullWidth = true
+		end
 		
 		-- Apply layout to position all nodes correctly
 		barGroups.secondary:ApplyLayout(
@@ -2098,10 +2101,13 @@ function TRB.Functions.Class:CheckCharacter()
 				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				barGroups.secondary:SetNodeCount(maxComboPoints)
-				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+				barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
 				
-				-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-				local effectiveWidth = (barGroups and barGroups.effectiveWidth) or sharedSettings.bar.width
+				-- Get effective width for secondary bar, accounting for CDM width matching
+				local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
+				if cdmForced then
+					barGroups.secondary.fullWidth = true
+				end
 				
 				barGroups.secondary:ApplyLayout(
 					effectiveWidth,

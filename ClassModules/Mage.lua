@@ -122,11 +122,11 @@ end
 local function Setup_Arcane()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "arcane", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Arcane using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_arcane" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Arcane()
@@ -140,11 +140,11 @@ end
 local function Setup_Fire()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "fire")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Fire using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_fire" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Fire()
@@ -158,11 +158,11 @@ end
 local function Setup_Frost()
 	TRB.Functions.Character:FillSpecializationCacheSettings("mage", "frost")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Frost using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_frost" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Frost()
@@ -248,11 +248,14 @@ local function ConstructResourceBar(settings)
 			
 			-- Ensure secondary group knows the correct node count
 			barGroups.secondary:SetNodeCount(maxCharges)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 			
-			-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-			local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+			-- Get effective width for secondary bar, accounting for CDM width matching
+			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			if cdmForced then
+				barGroups.secondary.fullWidth = true
+			end
 			
 			-- Apply layout to position all nodes correctly
 			barGroups.secondary:ApplyLayout(

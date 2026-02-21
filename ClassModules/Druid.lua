@@ -425,6 +425,16 @@ local function UpdateShapeshiftForm()
 		TRB.Data.cache.values.frame = {}
 		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
 	end
+
+	-- Recalculate wrapper/CDM positioning for the new form.
+	-- The bounding box (CalculateWrapperLayout) is form-aware: it strips bars that aren't
+	-- shown in the current form (e.g., combo points in Moonkin, mana bar in Cat).
+	-- Without this, the wrapper stays sized for the old form, causing:
+	-- - Wrong extendAbove (gap between CDM and top bar)
+	-- - Wrong baseOffsetX (primary shifted away from CDM center)
+	if TRB.Functions.Bar and TRB.Functions.Bar.RefreshWrapperPositioning then
+		TRB.Functions.Bar:RefreshWrapperPositioning()
+	end
 end
 
 local shapeshiftFrame = CreateFrame("Frame")
@@ -2844,12 +2854,15 @@ function TRB.Functions.Class:CheckCharacter()
 				local feralSettings = TRB.Data.specCache.druid_feral.settings
 
 				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
-					-- Get effective width (may be CDM-matched) from barGroups or fall back to feral settings
-					local effectiveWidth = (barGroups and barGroups.effectiveWidth) or feralSettings.bar.width
+					-- Get effective width for secondary bar, accounting for CDM width matching
+					local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
 					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, feralSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
+					if cdmForced then
+						barGroups.secondary.fullWidth = true
+					end
 					barGroups.secondary:ApplyLayout(
 						effectiveWidth,
 						feralSettings.comboPoints.width,

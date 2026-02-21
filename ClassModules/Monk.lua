@@ -166,11 +166,12 @@ end
 local function Setup_Brewmaster()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "brewmaster")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Brewmaster using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(1)
+	-- Only destroy and recreate bar groups when switching to this spec
+	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "monk_brewmaster" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(1)
+	end
 end
 
 local function FillSpellData_Brewmaster()
@@ -185,11 +186,12 @@ end
 local function Setup_Mistweaver()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "mistweaver", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Mistweaver using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(2)
+	-- Only destroy and recreate bar groups when switching to this spec
+	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "monk_mistweaver" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(2)
+	end
 end
 
 local function FillSpellData_Mistweaver()
@@ -204,11 +206,12 @@ end
 local function Setup_Windwalker()
 	TRB.Functions.Character:FillSpecializationCacheSettings("monk", "windwalker")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Windwalker using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(3)
+	-- Only destroy and recreate bar groups when switching to this spec
+	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "monk_windwalker" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(3)
+	end
 end
 
 local function FillSpellData_Windwalker()
@@ -297,11 +300,14 @@ local function ConstructResourceBar(settings)
 			
 			-- Set the node count and layout for Chi
 			barGroups.secondary:SetNodeCount(maxChi)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, settings.comboPoints.fullWidth, "HORIZONTAL")
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 			
-			-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-			local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+			-- Get effective width for secondary bar, accounting for CDM width matching
+			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			if cdmForced then
+				barGroups.secondary.fullWidth = true
+			end
 			
 			-- Apply layout to position all Chi nodes correctly
 			barGroups.secondary:ApplyLayout(
@@ -954,8 +960,8 @@ local function UpdateResourceBar()
 						
 						-- Calculate effective width (respects fullWidth setting and Edit Mode CDM width matching)
 						local staggerWidth
-						if staggerSettings.fullWidth then
-							-- When fullWidth is enabled, use effectiveWidth (which accounts for CDM width matching)
+						if TRB.Functions.Bar:GetMatchWidth(staggerSettings) then
+							-- When matchWidth is enabled, use effectiveWidth (which accounts for CDM width matching)
 							staggerWidth = (barGroups and barGroups.effectiveWidth) or specSettings.bar.width
 						else
 							staggerWidth = staggerSettings.width
@@ -1624,10 +1630,13 @@ function TRB.Functions.Class:CheckCharacter()
 					
 					barGroups.secondary:SetMaxNodes(maxComboPoints)
 					barGroups.secondary:SetNodeCount(maxComboPoints)
-					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, sharedSettings.comboPoints.fullWidth, "HORIZONTAL")
+					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
 					
-					-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-					local effectiveWidth = (barGroups and barGroups.effectiveWidth) or sharedSettings.bar.width
+					-- Get effective width for secondary bar, accounting for CDM width matching
+					local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
+					if cdmForced then
+						barGroups.secondary.fullWidth = true
+					end
 					
 					barGroups.secondary:ApplyLayout(
 						effectiveWidth,

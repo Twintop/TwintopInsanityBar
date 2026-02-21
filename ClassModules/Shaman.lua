@@ -157,31 +157,31 @@ end
 local function Setup_Elemental()
 	TRB.Functions.Character:FillSpecializationCacheSettings("shaman", "elemental")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Elemental using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(1)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_elemental" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(1)
+	end
 end
 
 local function Setup_Enhancement()
 	TRB.Functions.Character:FillSpecializationCacheSettings("shaman", "enhancement", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Enhancement using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(2)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_enhancement" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(2)
+	end
 end
 
 local function Setup_Restoration()
 	TRB.Functions.Character:FillSpecializationCacheSettings("shaman", "restoration", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Restoration using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(3)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_restoration" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(3)
+	end
 end
 
 local function FillSpellData_Elemental()

@@ -1880,6 +1880,41 @@ L["ShamanElementalBarTextVariable_manaMax"] = "Maximum Mana"
 L["CheckboxSmoothBar"] = "Smooth Bar Animation"
 L["CheckboxSmoothBarTooltip"] = "When checked, updates to this bar will have a short and smooth animation to show the change instead of an instantaneous update."
 
+-- Anchor System
+L["AnchorTo"] = "Anchor To"
+L["AnchorToTooltip"] = "Select which bar this bar is anchored to. This bar will be positioned relative to the selected target bar."
+L["AnchorPoint"] = "Anchor Point"
+L["AnchorPointTooltip"] = "The point on the target bar where this bar attaches."
+L["AttachPoint"] = "Attach Point"
+L["AttachPointTooltip"] = "The point on this bar that touches the anchor point."
+L["MatchAnchorWidth"] = "Match Anchor Bar Width"
+L["MatchAnchorWidthTooltip"] = "When enabled, this bar's width will match the bar it is anchored to."
+L["BaseBarDropdown"] = "Base Anchor Bar"
+L["BaseBarDropdownTooltip"] = "The root bar that all other bars are positioned relative to. This bar receives absolute positioning from Edit Mode or legacy position settings."
+L["AnchorHorizontalOffset"] = "Horizontal Offset"
+L["AnchorVerticalOffset"] = "Vertical Offset"
+L["AnchorCycleError"] = "Cannot anchor to %s: this would create a circular dependency."
+L["AnchorBarPrimary"] = "Primary Resource Bar"
+L["AnchorBarSecondary"] = "Secondary Resource Bar"
+L["AnchorBarHealth"] = "Health Bar"
+L["AnchorBarScreen"] = "Screen (Free Position)"
+L["AnchorBarScreenTooltip"] = "Position this bar independently on screen. It will not be attached to any other bar."
+
+-- Anchor Point Display Names (9-point system)
+L["AnchorPointTOPLEFT"] = "Top Left"
+L["AnchorPointTOP"] = "Top Center"
+L["AnchorPointTOPRIGHT"] = "Top Right"
+L["AnchorPointLEFT"] = "Middle Left"
+L["AnchorPointCENTER"] = "Center"
+L["AnchorPointRIGHT"] = "Middle Right"
+L["AnchorPointBOTTOMLEFT"] = "Bottom Left"
+L["AnchorPointBOTTOM"] = "Bottom Center"
+L["AnchorPointBOTTOMRIGHT"] = "Bottom Right"
+
+-- Anchor UI Labels
+L["AnchorToBarLabel"] = "Anchor %s to:"
+L["AnchorPointLabel"] = "Point on %s (target)"
+L["AttachPointLabel"] = "Point on %s (this bar)"
 L["GlobalOptionsCheckboxNumberAbbreviation"] = "Use abbreviated number formatting (10.0K, 1.5M)"
 L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "When checked, large numbers will be displayed in abbreviated form (e.g. 100.0K, 1.5M). When unchecked, the full number with locale-appropriate separators will be shown (e.g. 100,000 or 1.500.000)."
 
@@ -1891,3 +1926,6 @@ L["BarTextVariablesSectionPipe"] = "Pipe Commands"
 L["BarTextVariablesAddTooltip"] = "Insert this variable at the cursor position in the active bar text editor"
 L["BarTextVariablesAddButton"] = "+"
 L["BarTextVariablesPanelTitle"] = "Bar Text Variables"
+
+-- Wrapper Display Name (Edit Mode overlay)
+L["WrapperDisplayNameFormat"] = "%s - %s"

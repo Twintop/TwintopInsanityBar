@@ -124,6 +124,35 @@ TRB.Data.constants = {
 			large = 175,
 			xlarge = 250
 		}
+	},
+	---All 9 valid anchor points for bar positioning
+	anchorPoints = {
+		"TOPLEFT", "TOP", "TOPRIGHT",
+		"LEFT", "CENTER", "RIGHT",
+		"BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"
+	},
+	---Maps a legacy relativeTo value to the corresponding anchor/attach point pair
+	---Used by PortForwardSettings migration and runtime fallback
+	relativeToAnchorMap = {
+		["TOP"]         = { anchorPoint = "TOP",         attachPoint = "BOTTOM" },
+		["TOPLEFT"]     = { anchorPoint = "TOPLEFT",     attachPoint = "BOTTOMLEFT" },
+		["TOPRIGHT"]    = { anchorPoint = "TOPRIGHT",    attachPoint = "BOTTOMRIGHT" },
+		["BOTTOM"]      = { anchorPoint = "BOTTOM",      attachPoint = "TOP" },
+		["BOTTOMLEFT"]  = { anchorPoint = "BOTTOMLEFT",  attachPoint = "TOPLEFT" },
+		["BOTTOMRIGHT"] = { anchorPoint = "BOTTOMRIGHT",  attachPoint = "TOPRIGHT" },
+	},
+	---Maps an anchorPoint to the closest legacy relativeTo value.
+	---Used for dual-write from anchor UI back to legacy fields.
+	anchorPointToRelativeToMap = {
+		["TOPLEFT"]     = "TOPLEFT",
+		["TOP"]         = "TOP",
+		["TOPRIGHT"]    = "TOPRIGHT",
+		["LEFT"]        = "TOPLEFT",
+		["CENTER"]      = "TOP",
+		["RIGHT"]       = "TOPRIGHT",
+		["BOTTOMLEFT"]  = "BOTTOMLEFT",
+		["BOTTOM"]      = "BOTTOM",
+		["BOTTOMRIGHT"] = "BOTTOMRIGHT",
 	}
 }
 

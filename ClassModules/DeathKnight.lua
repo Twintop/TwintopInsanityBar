@@ -190,11 +190,12 @@ end
 local function Setup_Blood()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "blood", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Blood using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_blood" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Blood()
@@ -208,11 +209,11 @@ end
 local function Setup_Frost()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "frost")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Frost using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_frost" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Frost()
@@ -226,11 +227,11 @@ end
 local function Setup_Unholy()
 	TRB.Functions.Character:FillSpecializationCacheSettings("deathknight", "unholy")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Unholy using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_unholy" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Unholy()

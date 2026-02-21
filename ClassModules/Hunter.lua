@@ -155,11 +155,11 @@ end
 local function Setup_BeastMastery()
 	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "beastMastery")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Beast Mastery using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_beastMastery" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_BeastMastery()
@@ -173,11 +173,11 @@ end
 local function Setup_Marksmanship()
 	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "marksmanship")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Marksmanship using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_marksmanship" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Marksmanship()
@@ -191,11 +191,11 @@ end
 local function Setup_Survival()
 	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "survival")
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Survival using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_survival" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Survival()

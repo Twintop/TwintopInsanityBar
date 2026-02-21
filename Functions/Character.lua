@@ -1269,9 +1269,9 @@ function TRB.Functions.Character:EventRegistration()
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(specSettings.settings, barGroups)
 
-				-- Register the primary bar with Edit Mode (required for CDM anchoring)
-				if barGroups.primary and TRB.Functions.EditMode then
-					TRB.Functions.EditMode:RegisterPrimaryBar(barGroups.primary:GetContainerFrame())
+				-- Register all tree roots with Edit Mode (each root gets its own wrapper)
+				if TRB.Functions.EditMode then
+					TRB.Functions.EditMode:RegisterAllTreeRoots()
 				end
 
 				TRB.Functions.BarText:CreateBarTextFrames()

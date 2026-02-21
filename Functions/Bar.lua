@@ -77,6 +77,25 @@ end
 
 ---Computes the width of each Combo Point node
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---Builds a map from barKey to its root barKey by traversing a forest
+---@param forest table<string, table> # Forest from BuildAnchorForest
+---@return table<string, string> # Map of barKey -> rootBarKey
+local function BuildBarKeyToRootMap(forest)
+	local map = {}
+	local function traverse(node, rootKey)
+		map[node.barKey] = rootKey
+		if node.children then
+			for _, child in ipairs(node.children) do
+				traverse(child, rootKey)
+			end
+		end
+	end
+	for rootKey, rootNode in pairs(forest) do
+		traverse(rootNode, rootKey)
+	end
+	return map
+end
+
 ---@return number
 local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
@@ -90,6 +109,52 @@ local function GetComboPointNodeWidth(settings)
 		end
 	end
 	return 0
+end
+
+---Calculates the total rendered width of a multi-node bar group (e.g., combo points).
+---For multi-node bars, `barSettings.width` is per-node width, not total width.
+---The total width is:  nodeCount * nodeWidth + (nodeCount - 1) * spacing
+---@param barKey string # The bar key (e.g., "secondary")
+---@param barSettings table? # The bar's settings (e.g., settings.comboPoints)
+---@param barGroup TRB.Classes.BarGroup? # The bar group (for nodeCount)
+---@return number # Total rendered width, or 0 if not applicable
+function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGroup)
+	if not barSettings then
+		return 0
+	end
+
+	-- Determine if this bar is multi-node
+	local isMultiNode = false
+	local maxNodes = 1
+	if barKey == "secondary" then
+		isMultiNode = true
+		maxNodes = TRB.Data.character.maxResource2 or 5
+	else
+		-- Check the BarTypeRegistry for custom multi-node bars (e.g., defensives)
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
+				isMultiNode = true
+				maxNodes = barTypeDef.maxNodes
+			end
+		end
+	end
+
+	if not isMultiNode then
+		return barSettings.width or 0
+	end
+
+	-- Resolve actual node count from the bar group if available
+	local nodeCount = maxNodes
+	if barGroup and barGroup.lastRebuildNodeCount then
+		nodeCount = barGroup.lastRebuildNodeCount
+	elseif barGroup and barGroup.nodeCount and barGroup.nodeCount > 0 then
+		nodeCount = barGroup.nodeCount
+	end
+	local nodeWidth = barSettings.width or 10
+	local nodeSpacing = barSettings.spacing or 2
+	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
 end
 
 ---Computes the absolute min/max values for the bar
@@ -478,11 +543,6 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
 
-	-- Register the primary bar with Edit Mode
-	if barGroups.primary and TRB.Functions.EditMode then
-		TRB.Functions.EditMode:RegisterPrimaryBar(barGroups.primary:GetContainerFrame())
-	end
-
 	-- Create bar text frames (essential for bar text display)
 	TRB.Functions.BarText:CreateBarTextFrames()
 	TRB.Functions.BarText:Hide(settings)
@@ -517,110 +577,198 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
 
-	-- Check for Cooldown Manager width matching
-	local effectiveWidth = settings.bar.width
-	local cdmWidthMatching = TRB.Functions.EditMode:IsWidthMatchingEnabled()
-	if cdmWidthMatching then
-		local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
-		if cdmWidth then
-			effectiveWidth = cdmWidth
+	-- ========================
+	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings
+	-- for layout purposes (anchor, dimensions, textures, colors). This must happen
+	-- BEFORE building the anchor forest so the correct anchor config (e.g.,
+	-- barKey="screen" for CDM binding) is used for tree construction.
+	-- ========================
+	local layoutSettings = settings
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+
+		if enableFormSwitching then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettings and feralSettings.comboPoints then
+				---@diagnostic disable-next-line: missing-fields
+				layoutSettings = {}
+				for k, v in pairs(settings) do
+					layoutSettings[k] = v
+				end
+				layoutSettings.comboPoints = feralSettings.comboPoints
+				-- Merge textures
+				if feralSettings.textures then
+					local newTextures = {}
+					if settings.textures then
+						for k, v in pairs(settings.textures) do
+							newTextures[k] = v
+						end
+					end
+					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
+					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
+					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
+					layoutSettings.textures = newTextures
+				end
+				-- Merge colors
+				if feralSettings.colors and feralSettings.colors.comboPoints then
+					local newColors = {}
+					if settings.colors then
+						for k, v in pairs(settings.colors) do
+							newColors[k] = v
+						end
+					end
+					newColors.comboPoints = feralSettings.colors.comboPoints
+					layoutSettings.colors = newColors
+				end
+			end
 		end
 	end
 
-	-- Store effectiveWidth on barGroups for use by secondary bar construction
+	-- ========================
+	-- Build the anchor forest and per-root metadata
+	-- ========================
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
+	local barKeyToRoot = BuildBarKeyToRootMap(forest)
+
+	-- Per-root data: wrappers, CDM settings, effectiveWidth
+	local rootMetadata = {}
+	for rootBarKey, _ in pairs(forest) do
+		local wrapper = TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
+		local rootCdmWidthMatch = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, rootBarKey)
+		local rootEffWidth
+		if rootBarKey == "primary" then
+			rootEffWidth = settings.bar.width
+		else
+			local rootBarSettings = self:GetBarSettings(layoutSettings, rootBarKey)
+			-- For multi-node bars (e.g., secondary/combo points), barSettings.width is
+			-- per-node width. The total rendered width is nodeCount * nodeWidth + spacing.
+			-- Without this, the root effective width would be just one node's width.
+			local rootGroup = barGroups[rootBarKey]
+			rootEffWidth = self:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
+			if rootEffWidth == 0 then
+				rootEffWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+			end
+		end
+		if rootCdmWidthMatch then
+			local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+			if cdmWidth then rootEffWidth = cdmWidth end
+		end
+
+		rootMetadata[rootBarKey] = {
+			wrapper = wrapper,
+			effectiveWidth = rootEffWidth,
+			editModeEnabled = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey),
+			anchorMode = TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey),
+			anchorOffset = TRB.Functions.EditMode:GetAnchorOffset(nil, rootBarKey),
+			useCdm = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey)
+				and TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey) ~= "none"
+				and TRB.Functions.EditMode:IsCooldownManagerAvailable(),
+		}
+	end
+
+	-- Primary root's effectiveWidth is the canonical one for secondary bar width matching
+	local primaryRootKey = barKeyToRoot["primary"] or "primary"
+	local primaryRootMeta = rootMetadata[primaryRootKey]
+	local effectiveWidth = primaryRootMeta and primaryRootMeta.effectiveWidth or settings.bar.width
 	barGroups.effectiveWidth = effectiveWidth
 
-	-- Check if Edit Mode layout is enabled for this layout
-	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+	-- Store per-root effective widths for ResolveBarWidth
+	barGroups.rootEffectiveWidths = {}
+	for rootBarKey, meta in pairs(rootMetadata) do
+		barGroups.rootEffectiveWidths[rootBarKey] = meta.effectiveWidth
+	end
 
-	-- Get anchor mode for CDM positioning
-	-- Note: GetAnchorMode() returns "none" if layout is not enabled
-	local anchorMode = TRB.Functions.EditMode:GetAnchorMode()
-	local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset()
+	-- Parent each tree root's bar to its tree's wrapper frame
+	for rootBarKey, meta in pairs(rootMetadata) do
+		local rootGroup = barGroups[rootBarKey]
+		if rootGroup and meta.wrapper then
+			if rootGroup.containerFrame:GetParent() ~= meta.wrapper then
+				rootGroup.containerFrame:SetParent(meta.wrapper)
+			end
+			rootGroup.containerFrame:ClearAllPoints()
+			if meta.editModeEnabled then
+				rootGroup.containerFrame:SetPoint("TOP", meta.wrapper, "TOP", 0, 0)
+			else
+				rootGroup.containerFrame:SetPoint("CENTER", meta.wrapper, "CENTER", 0, 0)
+			end
+		end
+	end
 
-	-- Determine if we're using CDM anchoring
-	-- CDM anchoring requires:
-	-- 1. Edit Mode layout is enabled ("Enable for this layout" checked)
-	-- 2. Anchor mode is not "none" ("Anchor To" set to Above/Below CDM)
-	-- 3. CDM frame is available
-	local useCdmAnchoring = editModeLayoutEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
-
-	-- Get or create the wrapper frame for Edit Mode
-	local wrapperFrame = TRB.Functions.EditMode:GetOrCreateWrapperFrame()
+	-- Re-parent non-root bars to their root's wrapper frame.
+	-- This is critical when a bar transitions from root to non-root: its containerFrame
+	-- was parented to its own wrapper (which gets hidden), so it must be re-parented
+	-- to the new root's wrapper to remain visible.
+	for barKey, rootBarKey in pairs(barKeyToRoot) do
+		if barKey ~= rootBarKey then
+			local barGroup = barGroups[barKey]
+			local rootMeta = rootMetadata[rootBarKey]
+			if barGroup and rootMeta and rootMeta.wrapper then
+				if barGroup.containerFrame:GetParent() ~= rootMeta.wrapper then
+					barGroup.containerFrame:SetParent(rootMeta.wrapper)
+				end
+			end
+		end
+	end
 
 	-- Configure the primary bar group
 	if barGroups.primary then
 		local primary = barGroups.primary
 		local primaryNode = primary:GetNode(1)
+		local primaryIsRoot = (primaryRootKey == "primary")
 
-		-- Parent the primary container to the wrapper frame
-		-- This ensures when the wrapper is dragged in Edit Mode, all bars move with it
-		if wrapperFrame and primary.containerFrame:GetParent() ~= wrapperFrame then
-			primary.containerFrame:SetParent(wrapperFrame)
-		end
-
-		-- Position the primary container WITHIN the wrapper
-		-- When Edit Mode layout is enabled: primary bar at TOP, wrapper encompasses all bars
-		-- When Edit Mode layout is disabled: primary bar at CENTER, wrapper matches primary bar (legacy behavior)
-		primary.containerFrame:ClearAllPoints()
-		if editModeLayoutEnabled then
-			-- Edit Mode: Primary bar is at the top of the wrapper (secondary bars accounted for via extendAbove)
-			primary.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, 0)
-		else
-			-- Legacy: Primary bar is centered within the wrapper (secondary bars anchor relative to primary)
-			primary.containerFrame:SetPoint("CENTER", wrapperFrame, "CENTER", 0, 0)
-		end
-		
-		primary.containerFrame:SetWidth(effectiveWidth - (settings.bar.border * 2))
-		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
-
-		-- Now position the WRAPPER frame based on the three use cases:
-		-- Use Case 1: Edit Mode disabled -> Legacy position (settings.bar.xPos/yPos)
-		-- Use Case 2: Edit Mode enabled + Free Position -> Edit Mode saved position
-		-- Use Case 3: Edit Mode enabled + CDM anchor -> Anchor to CDM frame
-		wrapperFrame:ClearAllPoints()
-
-		if useCdmAnchoring then
-			-- Use Case 3: CDM anchoring - anchor wrapper to CDM frame
-			-- The real anchor will be refined by ApplyCooldownManagerAnchoring after all bars are laid out
-			local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
-			if cdmFrame then
-				if anchorMode == "above" then
-					wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
-				else
-					wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
+		-- If primary is NOT the root (it's a child bar in another root's tree),
+		-- parent it to its root's wrapper and position via anchor
+		if not primaryIsRoot then
+			local rootWrapper = primaryRootMeta and primaryRootMeta.wrapper
+			if rootWrapper and primary.containerFrame:GetParent() ~= rootWrapper then
+				primary.containerFrame:SetParent(rootWrapper)
+			end
+			local primaryAnchor = self:GetBarAnchor(settings, "primary")
+			if primaryAnchor and primaryAnchor.barKey and primaryAnchor.barKey ~= "screen" then
+				local anchorGroup = barGroups[primaryAnchor.barKey]
+				if anchorGroup then
+					local ap = primaryAnchor.anchorPoint or "BOTTOM"
+					local att = primaryAnchor.attachPoint or "TOP"
+					local xo = primaryAnchor.xOffset or 0
+					local yo = primaryAnchor.yOffset or 0
+					-- Apply matchWidth center-alignment override
+					if primaryAnchor.matchWidth then
+						ap = string.gsub(ap, "LEFT", "")
+						ap = string.gsub(ap, "RIGHT", "")
+						att = string.gsub(att, "LEFT", "")
+						att = string.gsub(att, "RIGHT", "")
+						if ap == "" then ap = "CENTER" end
+						if att == "" then att = "CENTER" end
+						xo = 0
+					end
+					primary.containerFrame:ClearAllPoints()
+					primary.containerFrame:SetPoint(att, anchorGroup:GetAnchorFrame(), ap, xo, yo)
 				end
-			else
-				-- Fallback if CDM frame not available
-				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
 			end
-		elseif editModeLayoutEnabled then
-			-- Use Case 2: Edit Mode enabled + Free Position
-			-- Use the position saved by LibEditMode for this layout
-			local editModePosition = TRB.Functions.EditMode:GetActivePosition()
-			if editModePosition and editModePosition.point then
-				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
-			else
-				-- No saved Edit Mode position yet, use legacy position as default
-				local xPos = settings.bar.xPos or 0
-				local yPos = settings.bar.yPos or -200
-				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
-			end
-		else
-			-- Use Case 1: Edit Mode disabled - use legacy position
-			local xPos = settings.bar.xPos or 0
-			local yPos = settings.bar.yPos or -200
-			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
-			-- Legacy mode: wrapper matches primary bar dimensions exactly
-			wrapperFrame:SetSize(effectiveWidth, settings.bar.height)
 		end
+		-- If primary IS the root, it was already parented and positioned by the per-root loop above.
+
+		-- Primary bar width: always use effectiveWidth.
+		-- effectiveWidth already accounts for CDM width matching.
+		local primaryWidth = effectiveWidth
+
+		primary.containerFrame:SetWidth(primaryWidth - (settings.bar.border * 2))
+		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
 
 		if primaryNode then
 			-- Set frame strata
 			primary:SetFrameStrata(strata)
 
 			-- Set dimensions (stores values and sizes border/resource frames)
-			primaryNode:SetDimensions(effectiveWidth, settings.bar.height, settings.bar.border)
+			primaryNode:SetDimensions(primaryWidth, settings.bar.height, settings.bar.border)
 
 			-- Set frame levels
 			primaryNode:SetFrameLevels(
@@ -669,85 +817,20 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 
 	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
-	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
-	-- but they DO have a secondary bar group for combo points when in cat form.
-	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
-	local hasComboPointSettings = settings.comboPoints ~= nil
-	local feralSettingsForDruid = nil
-	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
-		-- Check if form switching is enabled for this Druid spec
-		-- enableFormSwitching defaults to true. Only skip secondary bar if explicitly set to false.
-		local specName = TRB.Data.character.specName
-		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
-		local enableFormSwitching = true
-		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
-			enableFormSwitching = false
-		end
-		
-		if enableFormSwitching then
-			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			if not feralSettingsForDruid then
-				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
-			end
-			if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
-				hasComboPointSettings = true
-			end
-		end
-	end
+	-- DRUID SPECIAL CASE: layoutSettings already has Feral's comboPoints merged in
+	-- (done above, before BuildAnchorForest) so we can use it directly.
+	local hasComboPointSettings = layoutSettings.comboPoints ~= nil
 
 	if barGroups.secondary and hasComboPointSettings then
-		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
-		-- When on a non-Feral Druid spec, use Feral's combo point configuration
-		-- so that changes made in Feral options are reflected immediately.
-		local effectiveSettings = settings
-		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
-			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			local feralSettings = feralSettingsForDruid
-			if not feralSettings then
-				feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			end
-			if not feralSettings then
-				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
-			end
-			if feralSettings and feralSettings.comboPoints then
-				-- Create a shallow copy with Feral's combo point settings
-				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
----@diagnostic disable-next-line: missing-fields
-				effectiveSettings = {}
-				for k, v in pairs(settings) do
-					effectiveSettings[k] = v
-				end
-				effectiveSettings.comboPoints = feralSettings.comboPoints
-				-- Create a new textures table with current spec's textures, then override combo point textures
-				if feralSettings.textures then
-					local newTextures = {}
-					if settings.textures then
-						for k, v in pairs(settings.textures) do
-							newTextures[k] = v
-						end
-					end
-					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
-					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
-					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
-					effectiveSettings.textures = newTextures
-				end
-				-- Create a new colors table with current spec's colors, then override combo point colors
-				if feralSettings.colors and feralSettings.colors.comboPoints then
-					local newColors = {}
-					if settings.colors then
-						for k, v in pairs(settings.colors) do
-							newColors[k] = v
-						end
-					end
-					newColors.comboPoints = feralSettings.colors.comboPoints
-					effectiveSettings.colors = newColors
-				end
-			end
+		-- Resolve anchor group for secondary bar from settings
+		local secondaryAnchor = self:GetBarAnchor(layoutSettings, "secondary")
+		local secondaryAnchorKey = (secondaryAnchor and secondaryAnchor.barKey) or "primary"
+		local secondaryAnchorGroup
+		if secondaryAnchorKey ~= "screen" then
+			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
 		end
-
-		self:ConstructSecondaryBarGroup(effectiveSettings, barGroups.primary, barGroups.secondary, false)
+		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
+		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
@@ -764,7 +847,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				local thresholds = node:GetThresholds()
 				if thresholds and #thresholds > 0 then
 					for _, threshold in ipairs(thresholds) do
-						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, effectiveSettings)
+						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, layoutSettings)
 					end
 				end
 			end
@@ -784,7 +867,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Configure health bar group (apply appearance immediately to ensure textures are set)
 	if barGroups.health and settings.healthBar then
-		self:ConstructHealthBarGroup(settings, barGroups.primary, barGroups.health, true)
+		-- Resolve anchor group for health bar from settings
+		local healthAnchor = self:GetBarAnchor(settings, "health")
+		local healthAnchorKey = (healthAnchor and healthAnchor.barKey) or "primary"
+		local healthAnchorGroup
+		if healthAnchorKey ~= "screen" then
+			healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
+		end
+		-- healthAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
+		self:ConstructHealthBarGroup(settings, healthAnchorGroup, barGroups.health, true)
 	end
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
@@ -813,15 +904,68 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		end
 	end
 
-	-- Apply CDM anchoring if enabled (must be done after all bars are laid out)
-	-- This calculates the bounding box of all visible bars and positions relative to CDM
-	if anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable() and barGroups.primary then
-		self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
-	else
-		-- Even when not using CDM anchoring, update wrapper size for proper Edit Mode selection box
-		TRB.Functions.EditMode:UpdateWrapperSize(settings)
+	-- ========================
+	-- Per-root wrapper positioning (replaces single-wrapper positioning)
+	-- Each root bar tree gets its own wrapper with independent position/CDM settings
+	-- ========================
+	for rootBarKey, meta in pairs(rootMetadata) do
+		local wrapperFrame = meta.wrapper
+		wrapperFrame:ClearAllPoints()
+
+		if meta.useCdm then
+			-- Use Case 3: CDM anchoring - anchor wrapper to CDM frame
+			-- The real anchor will be refined by ApplyCooldownManagerAnchoring below
+			local cdmFrame = TRB.Functions.EditMode:GetCooldownManagerFrame()
+			if cdmFrame then
+				if meta.anchorMode == "above" then
+					wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, meta.anchorOffset)
+				else
+					wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -meta.anchorOffset)
+				end
+			else
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+			end
+		elseif meta.editModeEnabled then
+			-- Use Case 2: Edit Mode enabled + Free Position
+			local editModePosition = TRB.Functions.EditMode:GetActivePosition(rootBarKey)
+			if editModePosition and editModePosition.point then
+				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
+			else
+				-- No saved Edit Mode position yet; use root bar's screen position as default
+				local rootAnchor = self:GetBarAnchor(layoutSettings, rootBarKey)
+				local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+				local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
+				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			end
+		else
+			-- Use Case 1: Edit Mode disabled - use root bar's screen position
+			local rootAnchor = self:GetBarAnchor(layoutSettings, rootBarKey)
+			local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
+			local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
+			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
+			-- Legacy mode: wrapper matches root bar dimensions
+			wrapperFrame:SetSize(meta.effectiveWidth, settings.bar.height)
+		end
 	end
-	
+
+	-- Re-register tree roots BEFORE sizing so stale wrapper frames (from bars that
+	-- changed from root to non-root) are hidden and new roots are registered.
+	-- This must happen before CDM anchoring/UpdateWrapperSize because RegisterTreeRoot
+	-- calls UpdateWrapperSize internally, and we want the explicit sizing below to
+	-- be the final authority on wrapper dimensions.
+	if TRB.Functions.EditMode and TRB.Functions.EditMode.RegisterAllTreeRoots then
+		TRB.Functions.EditMode:RegisterAllTreeRoots()
+	end
+
+	-- Per-root CDM anchoring / wrapper sizing (must be done after all bars are laid out)
+	for rootBarKey, meta in pairs(rootMetadata) do
+		if meta.useCdm then
+			self:ApplyCooldownManagerAnchoring(barGroups, meta.anchorMode, meta.anchorOffset, meta.effectiveWidth, layoutSettings, rootBarKey)
+		else
+			TRB.Functions.EditMode:UpdateWrapperSize(layoutSettings, rootBarKey)
+		end
+	end
+
 	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
 	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 		TRB.Functions.Class:CheckCharacter()
@@ -835,9 +979,9 @@ end
 ---@param anchorOffset number # Vertical offset in pixels
 ---@param effectiveWidth number # The width being used (may be CDM-matched)
 ---@param settings table? # Settings for dimension calculations
-function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings)
-	local primary = barGroups.primary
-	if not primary or not primary.containerFrame then
+---@param rootBarKey string # The root bar key for this tree
+function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings, rootBarKey)
+	if not barGroups then
 		return
 	end
 
@@ -847,42 +991,118 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 		return
 	end
 
-	-- Get the wrapper frame (which is the parent of all bars)
-	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
+	-- Get the wrapper frame for the specified root
+	rootBarKey = rootBarKey or "primary"
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame(rootBarKey)
 	if not wrapperFrame then
 		return
 	end
 
 	-- CRITICAL: In Edit Mode, include ALL bars (even hidden ones) in wrapper calculations.
-	-- This ensures the Edit Mode selection box encompasses all bars, not just visible ones.
-	-- DO NOT hardcode `false` - use IsInEditMode() to prevent regression.
 	local includeHidden = TRB.Functions.EditMode:IsInEditMode()
 
-	-- Calculate wrapper layout from settings (doesn't rely on screen coordinates)
-	local totalWidth, totalHeight, extendAbove, extendBelow = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden)
-	
-	-- Update wrapper frame size to encompass all bars
-	-- Use effectiveWidth for width (matches CDM if "Match CDM Width" is enabled)
+	-- Calculate wrapper layout for this specific root's tree
+	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
+
+	-- Update wrapper frame size to encompass all bars in this tree
 	wrapperFrame:SetWidth(effectiveWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
-	-- Reposition the primary bar within the wrapper to account for bars above it
-	-- The primary bar should be offset down by extendAbove
-	local primaryFrame = primary.containerFrame
-	primaryFrame:ClearAllPoints()
-	primaryFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
+	-- Reposition the root bar within the wrapper.
+	local rootGroup = barGroups[rootBarKey]
+	if rootGroup then
+		-- Only the primary bar needs border offset: its group.containerFrame is sized to
+		-- inner dimensions (border subtracted), so the borderFrame extends beyond it.
+		-- Non-primary roots (mana, etc.) are constructed via ConstructAnchoredBarGroup
+		-- which sets group.containerFrame to outer dimensions with SetAllPoints — no overhang.
+		local rootBorderOffset = 0
+		if rootBarKey == "primary" then
+			rootBorderOffset = (settings and settings.bar and settings.bar.border) or 0
+		end
+		rootGroup.containerFrame:ClearAllPoints()
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -(extendAbove + rootBorderOffset))
+	end
 
-	-- Now anchor the wrapper to the CDM frame, horizontally centered
-	-- Include a 1px base gap to prevent border/CDM overlap regardless of strata
+	-- Anchor the wrapper to the CDM frame, horizontally centered.
 	wrapperFrame:ClearAllPoints()
 
 	if anchorMode == "above" then
-		-- Position wrapper above CDM, centered horizontally
-		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, -1 + anchorOffset)
+		wrapperFrame:SetPoint("BOTTOM", cdmFrame, "TOP", 0, anchorOffset)
 	else -- "below"
-		-- Position wrapper below CDM, centered horizontally
-		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -1 - anchorOffset)
+		wrapperFrame:SetPoint("TOP", cdmFrame, "BOTTOM", 0, -anchorOffset)
 	end
+end
+
+
+---Lightweight wrapper refresh that recalculates wrapper/CDM positioning without
+---triggering a full bar reconstruction or render transition.
+---Called when the visible set of bars changes (e.g., Druid form switch) so that
+---the wrapper size, root bar offset, and CDM anchor are updated to match.
+function TRB.Functions.Bar:RefreshWrapperPositioning()
+	local barGroups = TRB.Frames.barGroups
+	if not barGroups or not barGroups.primary then
+		return
+	end
+
+	-- Get current spec settings
+	local settings
+	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if specCache then
+			settings = specCache.settings
+		end
+	end
+	if not settings then
+		return
+	end
+
+	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
+
+	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's comboPoints for forest building
+	local layoutSettings = settings
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		if enableFormSwitching then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettings and feralSettings.comboPoints then
+				---@diagnostic disable-next-line: missing-fields
+				layoutSettings = {}
+				for k, v in pairs(settings) do
+					layoutSettings[k] = v
+				end
+				layoutSettings.comboPoints = feralSettings.comboPoints
+			end
+		end
+	end
+
+	-- Build forest to iterate per-root
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
+
+	for rootBarKey, _ in pairs(forest) do
+		local anchorMode = TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey)
+		local rootEditEnabled = TRB.Functions.EditMode:IsLayoutEnabled(nil, rootBarKey)
+		local useCdm = rootEditEnabled and anchorMode ~= "none" and TRB.Functions.EditMode:IsCooldownManagerAvailable()
+
+		if useCdm then
+			local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset(nil, rootBarKey)
+			local rootEffWidth = (barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[rootBarKey]) or barGroups.effectiveWidth or settings.bar.width
+			self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, rootEffWidth, layoutSettings, rootBarKey)
+		else
+			TRB.Functions.EditMode:UpdateWrapperSize(layoutSettings, rootBarKey)
+		end
+	end
+
+	-- Druid form-switch: hide/show wrappers for form-dependent tree roots (e.g., combo
+	-- points hidden when not in cat form, mana hidden when not in moonkin form).
+	TRB.Functions.EditMode:RefreshDruidWrapperVisibility(layoutSettings, forest)
 end
 
 
@@ -930,10 +1150,10 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
+	-- Non-Feral Druids ALWAYS use Feral's combo point settings for appearance.
 	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
-	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
 		-- Check if form switching is enabled for this Druid spec
 		-- enableFormSwitching defaults to true. Only skip if explicitly set to false.
 		local specName = TRB.Data.character.specName
@@ -956,9 +1176,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	end
 
 	if barGroups.secondary and hasComboPointSettings then
-		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
+		-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings.
 		local effectiveSettings = settings
-		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
+		if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
 			local feralSettings = feralSettingsForDruid
 			if not feralSettings then
@@ -1063,6 +1283,577 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- triggering updates after all setup is complete.
 end
 
+-- ============================================================================
+-- Anchor Tree System
+-- ============================================================================
+-- The anchor tree system allows each bar to anchor to any other bar, forming a
+-- directed acyclic graph (tree). The "base bar" is the root of the tree and
+-- receives absolute positioning (from Edit Mode or legacy xPos/yPos). All other
+-- bars position themselves relative to their anchor target using 9-point
+-- anchor/attach pairs.
+
+---Gets the bar settings table for a given bar key from the spec settings.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string # "primary", "secondary", "health", or a BarTypeRegistry key
+---@return table? # The bar's settings table, or nil if not found
+function TRB.Functions.Bar:GetBarSettings(settings, barKey)
+	if barKey == "primary" then
+		return settings.bar
+	elseif barKey == "secondary" then
+		return settings.comboPoints
+	elseif barKey == "health" then
+		return settings.healthBar
+	else
+		-- Check custom bars from BarTypeRegistry
+		return settings.bars and settings.bars[barKey]
+	end
+end
+
+---Gets the anchor block for a given bar key, with fallback from legacy fields.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@return TRB.Classes.Settings.BarAnchor?
+function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
+	local barSettings = self:GetBarSettings(settings, barKey)
+	if not barSettings then
+		return nil
+	end
+
+	-- New anchor system takes priority
+	if barSettings.anchor then
+		return barSettings.anchor
+	end
+
+	-- Phase 1 fallback: synthesize from legacy fields
+	if barSettings.relativeTo then
+		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
+		if mapping then
+			return {
+				barKey = "primary",
+				anchorPoint = mapping.anchorPoint,
+				attachPoint = mapping.attachPoint,
+				xOffset = barSettings.xPos or 0,
+				yOffset = barSettings.yPos or 0,
+				matchWidth = barSettings.fullWidth or false,
+			}
+		end
+	end
+
+	-- Ultimate fallback: bars with xPos/yPos but no relativeTo (e.g., primary bar) are screen-anchored
+	if barSettings.xPos ~= nil then
+		return {
+			barKey = "screen",
+			anchorPoint = "CENTER",
+			attachPoint = "CENTER",
+			xOffset = barSettings.xPos or 0,
+			yOffset = barSettings.yPos or -200,
+			matchWidth = false,
+		}
+	end
+
+	return nil
+end
+
+---Gets the effective matchWidth setting for a bar, reading from anchor with legacy fallback.
+---@param barSettings table # The bar's settings table (e.g., settings.comboPoints)
+---@return boolean
+function TRB.Functions.Bar:GetMatchWidth(barSettings)
+	if barSettings and barSettings.anchor then
+		return barSettings.anchor.matchWidth or false
+	end
+	-- Phase 1 fallback to legacy field
+	return barSettings and barSettings.fullWidth or false
+end
+
+---Returns the effective width and CDM-forced fullWidth state for a bar group.
+---Checks per-root effective widths first (which include CDM width matching when the bar
+---is a forest root), then falls back to the primary bar's effective width.
+---@param barGroups table? # TRB.Frames.barGroups
+---@param settings table # Spec settings containing bar.width as fallback
+---@param barKey string # The bar key to resolve width for (e.g., "secondary")
+---@return number effectiveWidth # The resolved width
+---@return boolean cdmForced # Whether CDM width matching is active (caller should force fullWidth)
+function TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, barKey)
+	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+	local cdmForced = false
+
+	-- Check for per-root effective width (handles CDM matching when the bar is its own root)
+	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
+		effectiveWidth = barGroups.rootEffectiveWidths[barKey]
+		-- Check if CDM width matching is active for this root
+		if TRB.Functions.EditMode and TRB.Functions.EditMode.IsWidthMatchingEnabled then
+			cdmForced = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, barKey)
+		end
+	end
+
+	return effectiveWidth, cdmForced
+end
+
+---Resolves the actual width for a bar, following the matchWidth chain if necessary.
+---This handles bars that match their anchor's width, which may itself match another bar's width.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string # "primary", "secondary", "health", "screen", or a BarTypeRegistry key
+---@param visited table? # Internal: tracks visited bars to detect cycles
+---@return number # The resolved width for this bar
+function TRB.Functions.Bar:ResolveBarWidth(settings, barKey, visited)
+	visited = visited or {}
+	if visited[barKey] then
+		-- Cycle detected, fall back to primary bar width
+		return settings.bar.width
+	end
+	visited[barKey] = true
+
+	local barGroups = TRB.Frames.barGroups
+
+	if barKey == "primary" then
+		-- Primary bar uses effectiveWidth (accounts for CDM width matching)
+		return (barGroups and barGroups.effectiveWidth) or settings.bar.width
+	elseif barKey == "screen" then
+		-- Screen-anchored bars don't have a reference width to match
+		return settings.bar.width
+	end
+
+	-- Check if this barKey has a per-root effective width override (e.g., CDM matching on a non-primary root)
+	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
+		-- This bar IS a root with its own effective width; check if it's a screen-rooted root
+		local anchor = self:GetBarAnchor(settings, barKey)
+		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
+			return barGroups.rootEffectiveWidths[barKey]
+		end
+	end
+
+	local barSettings = self:GetBarSettings(settings, barKey)
+	if not barSettings then
+		return settings.bar.width
+	end
+
+	local anchor = self:GetBarAnchor(settings, barKey)
+	if anchor and anchor.matchWidth and anchor.barKey ~= "screen" then
+		-- This bar matches its anchor's width, recursively resolve
+		return self:ResolveBarWidth(settings, anchor.barKey, visited)
+	end
+
+	return barSettings.width or settings.bar.width
+end
+
+---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
+---@param barKey string
+---@return string
+function TRB.Functions.Bar:GetVisibilityKey(barKey)
+	if barKey == "primary" then
+		return "primary"
+	elseif barKey == "secondary" then
+		return "secondary"
+	elseif barKey == "health" then
+		return "health"
+	else
+		-- Custom bars use their BarTypeRegistry visibilityKey, which defaults to barKey
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef then
+				return barTypeDef.visibilityKey or barKey
+			end
+		end
+		return barKey
+	end
+end
+
+---Checks if a bar is visible (not set to "never" visibility).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@param includeHidden boolean?
+---@return boolean
+function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
+	if includeHidden then return true end
+	local visKey = self:GetVisibilityKey(barKey)
+	local visibilitySetting = settings.displayBar and settings.displayBar[visKey]
+	return not visibilitySetting or visibilitySetting.visibility ~= "never"
+end
+
+---Enumerates all bar keys present for the current bar groups.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@return string[] # List of bar keys
+function TRB.Functions.Bar:GetAllBarKeys(barGroups)
+	local keys = {}
+	if barGroups.primary then table.insert(keys, "primary") end
+	if barGroups.secondary then table.insert(keys, "secondary") end
+	if barGroups.health then table.insert(keys, "health") end
+
+	-- Custom bars from BarTypeRegistry
+	local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	if registry then
+		local allBarTypes = registry:GetAll()
+		for barKey, _ in pairs(allBarTypes) do
+			if barGroups[barKey] then
+				table.insert(keys, barKey)
+			end
+		end
+	end
+
+	return keys
+end
+
+---Enumerates all bar keys that a settings table defines, independent of live barGroups.
+---This is used by the Options UI to determine valid anchor targets for a specific spec's
+---configuration, even when a different spec is currently active (e.g., Druid forms).
+---@param settings table # The spec's settings table (e.g., TRB.Data.settings.druid.feral)
+---@return string[] # List of bar keys this settings table defines
+function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
+	local keys = {}
+	if settings.bar then table.insert(keys, "primary") end
+	if settings.comboPoints then table.insert(keys, "secondary") end
+	if settings.healthBar then table.insert(keys, "health") end
+
+	-- Custom bars from BarTypeRegistry that have settings
+	if settings.bars then
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local allBarTypes = registry:GetAll()
+			for barKey, _ in pairs(allBarTypes) do
+				if settings.bars[barKey] then
+					table.insert(keys, barKey)
+				end
+			end
+		end
+	end
+
+	return keys
+end
+
+---Gets a human-readable display name for a bar key (for Options UI dropdowns).
+---@param barKey string
+---@return string
+function TRB.Functions.Bar:GetBarDisplayName(barKey)
+	local L = TRB.Localization
+	if barKey == "screen" then
+		return L["AnchorBarScreen"]
+	elseif barKey == "primary" then
+		return L["AnchorBarPrimary"]
+	elseif barKey == "secondary" then
+		return L["AnchorBarSecondary"]
+	elseif barKey == "health" then
+		return L["AnchorBarHealth"]
+	else
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef and barTypeDef.displayName then
+				return barTypeDef.displayName
+			end
+		end
+		return barKey
+	end
+end
+
+---Validates that an anchor configuration does not create a cycle.
+---The tree is a forest: bars with barKey="screen" are roots (anchored to UIParent).
+---A valid tree means every bar can reach either "screen" or "primary" by
+---following parent links without revisiting a node.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param testBarKey string? # If provided, validates with this bar's anchor changed
+---@param testAnchorBarKey string? # If provided, the new anchor target for testBarKey
+---@param barKeys string[]? # If provided, use these bar keys instead of deriving from barGroups
+---@return boolean # true if valid (no cycles)
+---@return string? # Error message if invalid
+function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, testAnchorBarKey, barKeys)
+	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
+
+	-- Build adjacency: child -> parent
+	-- Bars with barKey="screen" are roots (parentOf entry is nil)
+	local parentOf = {}
+	for _, barKey in ipairs(allKeys) do
+		local anchor
+		if testBarKey and barKey == testBarKey then
+			-- Use the proposed test anchor instead of the real one
+			anchor = { barKey = testAnchorBarKey }
+		else
+			anchor = self:GetBarAnchor(settings, barKey)
+		end
+		if anchor and anchor.barKey and anchor.barKey ~= "screen" then
+			parentOf[barKey] = anchor.barKey
+		end
+		-- barKey="screen" → no parent (root)
+	end
+
+	-- Walk from each node to a root; detect cycles via revisit
+	for _, barKey in ipairs(allKeys) do
+		if parentOf[barKey] then
+			local visited = {}
+			local current = barKey
+			while current and parentOf[current] do
+				if visited[current] then
+					local L = TRB.Localization
+					return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
+				end
+				visited[current] = true
+				current = parentOf[current]
+			end
+			-- current is now either a root (no parent, i.e. screen-anchored) or nil
+			-- If current is nil, the parent chain referenced a non-existent bar — treat as invalid
+			if current == nil then
+				local L = TRB.Localization
+				return false, string.format(L["AnchorCycleError"], self:GetBarDisplayName(testAnchorBarKey or ""))
+			end
+		end
+	end
+
+	return true, nil
+end
+
+---Returns the list of bar keys that the specified bar can anchor to without creating a cycle.
+---Always includes "screen" as a valid target (anchoring to screen never creates a cycle).
+---@param thisBarKey string
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param barKeys string[]? # If provided, use these bar keys instead of deriving from barGroups
+---@return string[] # List of valid anchor target bar keys (includes "screen")
+function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups, barKeys)
+	local valid = { "screen" }
+	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
+	for _, candidate in ipairs(allKeys) do
+		if candidate ~= thisBarKey then
+			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate, allKeys)
+			if ok then
+				table.insert(valid, candidate)
+			end
+		end
+	end
+	return valid
+end
+
+---@deprecated Use BuildAnchorForest() instead. Retained as fallback for CalculateWrapperLayout edge cases.
+---Builds the anchor tree from settings, returning the root node of the "primary" bar's tree.
+---The tree is a forest: bars with barKey="screen" are independent roots.
+---This function finds the root that contains "primary" and builds only that sub-tree.
+---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param collapseHidden boolean? # If true, skip hidden bars and re-parent their children
+---@param includeHidden boolean? # If true, include bars with visibility="never" in the tree
+---@return TRB.Classes.Settings.AnchorTreeNode? # Root node, or nil if tree cannot be built
+function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, includeHidden)
+	if not settings or not barGroups then
+		return nil
+	end
+
+	local allKeys = self:GetAllBarKeys(barGroups)
+
+	-- Build all nodes; bars with barKey="screen" or no anchor are roots (anchor = nil)
+	---@type table<string, TRB.Classes.Settings.AnchorTreeNode>
+	local nodes = {}
+	---@type table<string, string> # child -> parent adjacency
+	local parentOf = {}
+	for _, barKey in ipairs(allKeys) do
+		local barSettings = self:GetBarSettings(settings, barKey)
+		local barGroup = barGroups[barKey]
+		local anchor = self:GetBarAnchor(settings, barKey)
+		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
+		nodes[barKey] = {
+			barKey = barKey,
+			anchor = isRoot and nil or anchor,
+			children = {},
+			barGroup = barGroup,
+			barSettings = barSettings,
+			width = barSettings and barSettings.width or 0,
+			height = barSettings and barSettings.height or 0,
+		}
+		if not isRoot then
+			parentOf[barKey] = anchor.barKey
+		end
+	end
+
+	-- Find the root of the "primary" bar's tree by walking up the parent chain
+	local rootKey = "primary"
+	local visited = {}
+	while parentOf[rootKey] and not visited[rootKey] do
+		visited[rootKey] = true
+		local parentKey = parentOf[rootKey]
+		if nodes[parentKey] then
+			rootKey = parentKey
+		else
+			break -- parent doesn't exist in barGroups; current node is effectively a root
+		end
+	end
+
+	-- Ensure the root node exists
+	if not nodes[rootKey] then
+		return nil
+	end
+
+	-- Determine which bars belong to this tree (reachable from rootKey via parent chain)
+	local inTree = { [rootKey] = true }
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= rootKey and not inTree[barKey] then
+			-- Walk up from barKey; if we reach a node already known to be in the tree, mark the whole chain
+			local chain = {}
+			local current = barKey
+			local reached = false
+			local seen = {}
+			while current do
+				if inTree[current] then reached = true; break end
+				if seen[current] then break end -- cycle
+				seen[current] = true
+				table.insert(chain, current)
+				current = parentOf[current]
+			end
+			if reached then
+				for _, k in ipairs(chain) do
+					inTree[k] = true
+				end
+			end
+		end
+	end
+
+	-- Build parent-child relationships for bars in this tree
+	for _, barKey in ipairs(allKeys) do
+		if barKey ~= rootKey and inTree[barKey] then
+			local node = nodes[barKey]
+			local parentKey = parentOf[barKey] or rootKey
+
+			if collapseHidden then
+				-- Walk up the parent chain to find the first visible parent within the tree
+				local effectiveParentKey = parentKey
+				while effectiveParentKey ~= rootKey and
+					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
+					effectiveParentKey = parentOf[effectiveParentKey] or rootKey
+				end
+				parentKey = effectiveParentKey
+			end
+
+			-- Only add visible bars (or all bars if includeHidden)
+			if self:IsBarVisible(settings, barKey, includeHidden) then
+				if nodes[parentKey] then
+					table.insert(nodes[parentKey].children, node)
+				end
+			end
+		end
+	end
+
+	return nodes[rootKey]
+end
+
+---Builds all anchor trees (the anchor forest).
+---Each screen-rooted bar is a root of its own tree. Returns a map from rootBarKey -> rootNode.
+---Orphaned bars (anchor target not present in barGroups) become new roots.
+---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param collapseHidden boolean? # If true, skip hidden bars and re-parent their children
+---@param includeHidden boolean? # If true, include bars with visibility="never" in the tree
+---@return table<string, TRB.Classes.Settings.AnchorTreeNode> # Map of rootBarKey -> rootNode
+function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden, includeHidden)
+	if not settings or not barGroups then
+		return {}
+	end
+
+	local allKeys = self:GetAllBarKeys(barGroups)
+
+	-- Build all nodes; bars with barKey="screen" or no anchor are roots
+	---@type table<string, TRB.Classes.Settings.AnchorTreeNode>
+	local nodes = {}
+	---@type table<string, string> # child -> parent adjacency
+	local parentOf = {}
+	for _, barKey in ipairs(allKeys) do
+		local barSettings = self:GetBarSettings(settings, barKey)
+		local barGroup = barGroups[barKey]
+		local anchor = self:GetBarAnchor(settings, barKey)
+		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
+
+		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
+		if not isRoot and not barGroups[anchor.barKey] then
+			isRoot = true
+		end
+
+		nodes[barKey] = {
+			barKey = barKey,
+			anchor = isRoot and nil or anchor,
+			children = {},
+			barGroup = barGroup,
+			barSettings = barSettings,
+			width = barSettings and barSettings.width or 0,
+			height = barSettings and barSettings.height or 0,
+		}
+		if not isRoot then
+			parentOf[barKey] = anchor.barKey
+		end
+	end
+
+	-- Identify roots: nodes that have no parent entry
+	local roots = {}
+	for _, barKey in ipairs(allKeys) do
+		if not parentOf[barKey] then
+			roots[barKey] = nodes[barKey]
+		end
+	end
+
+	-- Assign each non-root bar to its root's tree by walking up the parent chain
+	-- Build parent-child relationships
+	for _, barKey in ipairs(allKeys) do
+		if parentOf[barKey] then
+			local parentKey = parentOf[barKey]
+
+			if collapseHidden then
+				-- Walk up the parent chain to find the first visible parent
+				local effectiveParentKey = parentKey
+				local visited = {}
+				while effectiveParentKey and not roots[effectiveParentKey] and
+					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
+					if visited[effectiveParentKey] then break end
+					visited[effectiveParentKey] = true
+					effectiveParentKey = parentOf[effectiveParentKey] or effectiveParentKey
+				end
+				parentKey = effectiveParentKey
+			end
+
+			-- Only add visible bars (or all bars if includeHidden)
+			if self:IsBarVisible(settings, barKey, includeHidden) then
+				if nodes[parentKey] then
+					table.insert(nodes[parentKey].children, nodes[barKey])
+				end
+			end
+		end
+	end
+
+	return roots
+end
+
+---Calculates the pixel position of an anchor point on a rectangle.
+---Origin is at bottom-left of the rectangle (WoW convention).
+---@param width number
+---@param height number
+---@param point string # One of the 9 anchor points
+---@return number x
+---@return number y
+function TRB.Functions.Bar:CalculateAnchorPointOffset(width, height, point)
+	local x, y = 0, 0
+	if point == "TOPLEFT" then
+		x, y = 0, height
+	elseif point == "TOP" then
+		x, y = width / 2, height
+	elseif point == "TOPRIGHT" then
+		x, y = width, height
+	elseif point == "LEFT" then
+		x, y = 0, height / 2
+	elseif point == "CENTER" then
+		x, y = width / 2, height / 2
+	elseif point == "RIGHT" then
+		x, y = width, height / 2
+	elseif point == "BOTTOMLEFT" then
+		x, y = 0, 0
+	elseif point == "BOTTOM" then
+		x, y = width / 2, 0
+	elseif point == "BOTTOMRIGHT" then
+		x, y = width, 0
+	end
+	return x, y
+end
+
+-- ============================================================================
+-- End Anchor Tree System
+-- ============================================================================
+
 ---Configuration for constructing an anchored bar group
 ---@class TRB.Classes.AnchoredBarGroupConfig
 ---@field public settingsKey string? # Key to read from settings (e.g., "comboPoints", "healthBar"). Ignored if settingsTable is provided.
@@ -1075,6 +1866,7 @@ end
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
+---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
 
 ---Constructs an anchored bar group (combo points, health bar, etc.)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -1124,103 +1916,131 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Set node count
 	targetGroup:SetNodeCount(nodes)
 
-	-- Set layout parameters
-	targetGroup:SetLayout(groupSettings.spacing or 0, groupSettings.fullWidth, "HORIZONTAL")
+	-- Set layout parameters (use anchor.matchWidth with fallback)
+	local matchWidth = self:GetMatchWidth(groupSettings)
+	targetGroup:SetLayout(groupSettings.spacing or 0, matchWidth, "HORIZONTAL")
 
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)
 
-	-- Calculate positioning based on relativeTo setting
-	local anchorContainer = anchorGroup:GetContainerFrame()
-	local setPoint, setPointRelativeTo, topBottom, leftCenterRight
+	-- Resolve anchor: new system with Phase 1 legacy fallback
+	local anchor = groupSettings.anchor
+	if not anchor then
+		-- Phase 1 fallback: synthesize from legacy fields
+		if groupSettings.relativeTo then
+			local mapping = TRB.Data.constants.relativeToAnchorMap[groupSettings.relativeTo]
+			if mapping then
+				anchor = {
+					barKey = "primary",
+					anchorPoint = mapping.anchorPoint,
+					attachPoint = mapping.attachPoint,
+					xOffset = groupSettings.xPos or 0,
+					yOffset = groupSettings.yPos or 0,
+					matchWidth = groupSettings.fullWidth or false,
+				}
+			end
+		end
+		-- Ultimate fallback
+		if not anchor then
+			if config.defaultAnchorAbove then
+				anchor = { barKey = "primary", anchorPoint = "TOP", attachPoint = "BOTTOM", xOffset = 0, yOffset = 0, matchWidth = true }
+			else
+				anchor = { barKey = "primary", anchorPoint = "BOTTOM", attachPoint = "TOP", xOffset = 0, yOffset = 0, matchWidth = true }
+			end
+		end
+	end
 
-	-- Set defaults based on config
-	if config.defaultAnchorAbove then
-		setPoint = "BOTTOM"
-		setPointRelativeTo = "TOP"
-		topBottom = "TOP"
+	-- Resolve the actual anchor frame
+	-- Use GetAnchorFrame() which returns the border frame for single-node bars
+	-- and the container frame for multi-node bars, giving us the full visual extent.
+	local anchorContainer
+	local isScreenRoot = false
+	if anchor.barKey == "screen" then
+		-- Screen-anchored bar: check if it's a tree root with a wrapper frame.
+		-- ApplyBarGroupsLayout parents root bar containers to their wrapper frame.
+		-- If the container has been parented to a wrapper, position relative to the wrapper,
+		-- NOT UIParent. The wrapper handles CDM/EditMode positioning.
+		local currentParent = targetGroup.containerFrame:GetParent()
+		if currentParent and currentParent ~= UIParent and currentParent.trbRootBarKey then
+			-- Container is parented to a TRB wrapper frame — position inside it
+			anchorContainer = currentParent
+			isScreenRoot = true
+		else
+			anchorContainer = UIParent
+		end
+	elseif anchorGroup and anchorGroup.GetAnchorFrame then
+		-- Bar anchor: position relative to anchorGroup's visual extent (border)
+		anchorContainer = anchorGroup:GetAnchorFrame()
 	else
-		setPoint = "TOP"
-		setPointRelativeTo = "BOTTOM"
-		topBottom = "BOTTOM"
-	end
-	leftCenterRight = "CENTER"
-
-	-- Override based on relativeTo setting
-	if groupSettings.relativeTo == "TOPLEFT" then
-		setPoint = "BOTTOMLEFT"
-		setPointRelativeTo = "TOPLEFT"
-		topBottom = "TOP"
-		leftCenterRight = "LEFT"
-	elseif groupSettings.relativeTo == "TOP" then
-		setPoint = "BOTTOM"
-		setPointRelativeTo = "TOP"
-		topBottom = "TOP"
-	elseif groupSettings.relativeTo == "TOPRIGHT" then
-		setPoint = "BOTTOMRIGHT"
-		setPointRelativeTo = "TOPRIGHT"
-		topBottom = "TOP"
-		leftCenterRight = "RIGHT"
-	elseif groupSettings.relativeTo == "BOTTOMLEFT" then
-		setPoint = "TOPLEFT"
-		setPointRelativeTo = "BOTTOMLEFT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "LEFT"
-	elseif groupSettings.relativeTo == "BOTTOM" then
-		setPoint = "TOP"
-		setPointRelativeTo = "BOTTOM"
-		topBottom = "BOTTOM"
-	elseif groupSettings.relativeTo == "BOTTOMRIGHT" then
-		setPoint = "TOPRIGHT"
-		setPointRelativeTo = "BOTTOMRIGHT"
-		topBottom = "BOTTOM"
-		leftCenterRight = "RIGHT"
+		-- Fallback: anchor to UIParent
+		anchorContainer = UIParent
 	end
 
-	-- Calculate dimensions (may be overridden by fullWidth)
+	-- Calculate dimensions
 	local groupWidth = groupSettings.width
 	local groupHeight = groupSettings.height
 	local groupBorder = groupSettings.border
 
-	local xPos, yPos
+	-- Determine SetPoint values from the anchor
+	local attachPoint = anchor.attachPoint
+	local anchorPoint = anchor.anchorPoint
+	local xPos = anchor.xOffset or 0
+	local yPos = anchor.yOffset or 0
 
-	if groupSettings.fullWidth then
+	if anchor.matchWidth and anchor.barKey ~= "screen" then
+		-- Match width: resolve the anchor bar's width, following matchWidth chains if necessary.
+		-- This correctly handles anchoring to bars other than primary (e.g., health bar).
+		groupWidth = self:ResolveBarWidth(settings, anchor.barKey)
+		-- Force horizontal center alignment by stripping LEFT/RIGHT from anchor points
+		-- but preserve the user's chosen vertical relationship (TOP/BOTTOM/CENTER).
+		anchorPoint = string.gsub(anchorPoint, "LEFT", "")
+		anchorPoint = string.gsub(anchorPoint, "RIGHT", "")
+		attachPoint = string.gsub(attachPoint, "LEFT", "")
+		attachPoint = string.gsub(attachPoint, "RIGHT", "")
+		if anchorPoint == "" then anchorPoint = "CENTER" end
+		if attachPoint == "" then attachPoint = "CENTER" end
 		xPos = 0
-		groupWidth = effectiveWidth
-		if topBottom == "BOTTOM" then
-			setPoint = "TOP"
-			setPointRelativeTo = "BOTTOM"
-		else
-			setPoint = "BOTTOM"
-			setPointRelativeTo = "TOP"
-		end
-		leftCenterRight = "CENTER"
-	else
-		if leftCenterRight == "LEFT" then
-			xPos = -settings.bar.border + groupSettings.xPos
-		elseif leftCenterRight == "RIGHT" then
-			xPos = settings.bar.border + groupSettings.xPos
-		else
-			xPos = groupSettings.xPos
-		end
+	elseif anchor.barKey == "screen" and config.rootEffectiveWidth then
+		-- Screen-anchored root bar: use the root's effective width (accounts for CDM width matching)
+		groupWidth = config.rootEffectiveWidth
 	end
 
-	if topBottom == "BOTTOM" then
-		yPos = -settings.bar.border + groupSettings.yPos
-	else
-		yPos = settings.bar.border + groupSettings.yPos
+	-- CDM width matching override: when Edit Mode has CDM width matching active for this
+	-- bar's root, the CDM width should take precedence over the resolved groupWidth.
+	-- This handles the case where the bar's own anchor is "primary" with matchWidth=true
+	-- (resolved above to primary's width), but Edit Mode has positioned the wrapper at CDM
+	-- with a wider CDM width.
+	if config.cdmWidthMatched and config.rootEffectiveWidth then
+		groupWidth = config.rootEffectiveWidth
 	end
 
-	-- Position the target container
+	-- Position the target container using the new anchor system
 	targetGroup.containerFrame:ClearAllPoints()
-	targetGroup.containerFrame:SetPoint(setPoint, anchorContainer, setPointRelativeTo, xPos, yPos)
+	if isScreenRoot then
+		-- Screen-anchored tree root: position relative to wrapper frame.
+		-- The wrapper handles CDM/EditMode positioning; the container just sits at its top.
+		targetGroup.containerFrame:SetPoint("TOP", anchorContainer, "TOP", 0, 0)
+	else
+		targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
+	end
 	targetGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
 
 	-- Apply layout or size directly based on config
 	if config.useApplyLayout then
 		-- Multi-node layout (combo points, runes, etc.)
+		-- Use groupWidth for totalWidth: it has been resolved for matchWidth (parent's width),
+		-- screen-anchored root (rootEffectiveWidth/CDM), or per-node width (non-match case).
+
+		-- When CDM width matching is active for a multi-node root, force fullWidth
+		-- so ApplyLayout stretches nodes to fill the CDM width.
+		-- This is needed because anchor.matchWidth (which normally sets fullWidth via
+		-- SetLayout) doesn't account for CDM matching — they're separate mechanisms.
+		if config.cdmWidthMatched then
+			targetGroup.fullWidth = true
+		end
+
 		targetGroup:ApplyLayout(
-			effectiveWidth,
+			groupWidth,
 			groupSettings.width,
 			groupSettings.height,
 			groupSettings.border
@@ -1339,6 +2159,18 @@ end
 ---@param secondaryGroup TRB.Classes.BarGroup
 ---@param applyAppearance boolean?
 function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
+	local barGroups = TRB.Frames.barGroups
+	local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, "secondary")
+
+	-- Determine the effective root width for secondary.
+	-- Priority: rootEffectiveWidths (if secondary is a forest root) > CDM width > nil
+	local rootEffWidth = barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths["secondary"]
+	if not rootEffWidth and cdmMatched then
+		-- Secondary is a child of primary in the forest, but Edit Mode has CDM width
+		-- matching enabled for it. Get the CDM width directly.
+		rootEffWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+	end
+
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
 		settingsKey = "comboPoints",
@@ -1346,6 +2178,8 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		nodeCount = nil, -- Dynamic based on maxResource2
 		useApplyLayout = true,
 		defaultAnchorAbove = true,
+		rootEffectiveWidth = rootEffWidth,
+		cdmWidthMatched = cdmMatched,
 		textures = {
 			bar = "comboPointsBar",
 			border = "comboPointsBorder",
@@ -1429,6 +2263,14 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			-- Get color settings
 			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
 			
+			-- Determine if CDM width matching is active for this custom bar
+			local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, key)
+			local rootEffWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[key]
+			if not rootEffWidth and cdmMatched then
+				-- Bar is not a forest root but has CDM width matching; get CDM width directly
+				rootEffWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+			end
+
 			-- Build config for ConstructAnchoredBarGroup
 			---@type TRB.Classes.AnchoredBarGroupConfig
 			local config = {
@@ -1447,11 +2289,22 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 					background = "background",
 					bar = "bar"
 				},
-				minMaxMode = barTypeDef.minMaxMode or "custom"
+				minMaxMode = barTypeDef.minMaxMode or "custom",
+				rootEffectiveWidth = rootEffWidth,
+				cdmWidthMatched = cdmMatched,
 			}
 			
+			-- Resolve the correct anchor group from settings
+			local anchor = self:GetBarAnchor(settings, key)
+			local anchorBarKey = (anchor and anchor.barKey) or "primary"
+			local anchorGroup
+			if anchorBarKey ~= "screen" then
+				anchorGroup = barGroups[anchorBarKey] or barGroups.primary
+			end
+			-- anchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
+
 			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
-			self:ConstructAnchoredBarGroup(settings, barGroups.primary, barGroup, config, false)
+			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)
 		end
 	end
 end

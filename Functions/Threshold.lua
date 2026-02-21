@@ -42,17 +42,16 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		end
 	end
 
-	-- Use effective width from barGroups if available (for CDM width matching)
-	-- Otherwise fall back to settings.bar.width
-	local effectiveWidth = settings.bar.width
-	if TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth then
-		effectiveWidth = TRB.Frames.barGroups.effectiveWidth
-	end
+	-- Derive effective width directly from the parent frame's actual rendered width.
+	-- This ensures threshold positions always match the bar's true dimensions,
+	-- even after CDM width matching changes the bar width. The parent frame
+	-- (node container) already has borders subtracted, so no border adjustment needed.
+	local effectiveWidth = parentFrame:GetWidth()
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	-- Include effectiveWidth in cache check so thresholds update when CDM width changes
+	-- Include effectiveWidth in cache check so thresholds update when bar width changes
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = (effectiveWidth - (settings.bar.border * 2)) / maxResource
+		local factor = effectiveWidth / maxResource
 
 		if growRight then
 			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
@@ -288,28 +287,23 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 	end
 
-	-- Calculate effective width for the combo points bar
-	-- When fullWidth is enabled, use the bar's effectiveWidth (accounts for CDM width matching)
-	-- Otherwise use the comboPoints-specific width setting
-	local effectiveWidth
-	if settings.comboPoints.fullWidth then
-		effectiveWidth = (TRB.Frames.barGroups and TRB.Frames.barGroups.effectiveWidth) or (settings.bar and settings.bar.width) or settings.comboPoints.width
-	else
-		effectiveWidth = settings.comboPoints.width
-	end
-
-	local border = settings.comboPoints.border or 0
+	-- Derive effective width from the threshold's own parent frame (resourceFrame).
+	-- Thresholds are children of the node's resourceFrame (inner content area, borders
+	-- already subtracted). Both width and anchor must use this frame so thresholds are
+	-- positioned within the content area, not offset into the border.
+	local renderFrame = thresholdLine:GetParent()
+	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	-- Include effectiveWidth in cache check so thresholds update when CDM width changes
+	-- Include effectiveWidth in cache check so thresholds update when bar width changes
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = (effectiveWidth - (border * 2)) / maxResource
+		local factor = effectiveWidth / maxResource
 
 		thresholdLine:ClearAllPoints()
 		if growRight then
-			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
+			thresholdLine:SetPoint("LEFT", renderFrame, "LEFT", math.floor(value * factor), 0)
 		else
-			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
+			thresholdLine:SetPoint("RIGHT", renderFrame, "LEFT", math.ceil(value * factor), 0)
 		end
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
@@ -352,18 +346,32 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 		maxResource = 100
 	end
 
+	-- Derive effective width from the threshold's own parent frame (resourceFrame).
+	-- For custom bars (stagger, defensives, etc.) using single-node direct sizing,
+	-- ConstructAnchoredBarGroup sets the BarGroup containerFrame to the full outer width
+	-- and then SetAllPoints propagates this to the BarNode containerFrame/resourceFrame.
+	-- Unlike the primary bar (where the group container is set to inner width) or
+	-- combo point bars (which use ApplyLayout with TOPLEFT anchoring that preserves
+	-- SetDimensions' inner width), single-node custom bars have resourceFrame at full
+	-- outer width. We must subtract 2*border to get the inner content width.
+	local renderFrame = thresholdLine:GetParent()
+	local frameWidth = renderFrame and renderFrame:GetWidth() or 0
+	local effectiveWidth = frameWidth - (barBorder * 2)
+	if effectiveWidth < 0 then effectiveWidth = 0 end
+
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource then
-		local factor = (barWidth - (barBorder * 2)) / maxResource
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
+		local factor = effectiveWidth / maxResource
 
 		thresholdLine:ClearAllPoints()
 		if growRight then
-			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
+			thresholdLine:SetPoint("LEFT", renderFrame, "LEFT", math.floor(value * factor), 0)
 		else
-			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
+			thresholdLine:SetPoint("RIGHT", renderFrame, "LEFT", math.ceil(value * factor), 0)
 		end
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
+		TRB.Data.cache.values.threshold[key].effectiveWidth = effectiveWidth
 	end
 end
 

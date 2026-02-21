@@ -145,11 +145,11 @@ end
 local function Setup_Devastation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "devastation")
 
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-
-	-- Create bar groups for Devastation using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(1)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_devastation" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(1)
+	end
 end
 
 local function FillSpellData_Devastation()
@@ -161,11 +161,11 @@ end
 local function Setup_Preservation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
 
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-
-	-- Create bar groups for Preservation using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(2)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_preservation" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(2)
+	end
 end
 
 local function FillSpellData_Preservation()
@@ -177,11 +177,11 @@ end
 local function Setup_Augmentation()
 	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "augmentation")
 
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-
-	-- Create bar groups for Augmentation using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(3)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_augmentation" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(3)
+	end
 end
 
 local function FillSpellData_Augmentation()
