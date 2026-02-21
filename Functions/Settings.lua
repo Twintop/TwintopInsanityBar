@@ -4695,7 +4695,7 @@ end
 ---@return TRB.Classes.Settings.AnchorLayout
 function TRB.Functions.Settings:DefaultAnchorLayout()
 	return {
-		baseBarKey = "primary",
+		baseBarKey = "primary", -- Deprecated: no longer used in layout. Retained for backward compatibility.
 	}
 end
 

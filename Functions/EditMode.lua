@@ -92,7 +92,7 @@ function TRB.Functions.EditMode:Initialize()
 	end)
 
 	-- Try to hook the Cooldown Manager resize and show events
-	-- This may fail if CDM doesn't exist yet; we'll retry in RegisterPrimaryBar
+	-- This may fail if CDM doesn't exist yet; we'll retry in RegisterTreeRoot
 	self:HookCooldownManagerResize()
 	self:HookCooldownManagerShow()
 end
@@ -500,18 +500,38 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		local matchWidth = TRB.Functions.Bar:GetMatchWidth(barSettings)
 		if matchWidth then
 			w = parentWidth
-		elseif node.barKey == "secondary" then
-			-- Non-matchWidth secondary bar: calculate total width from node dimensions.
-			-- The rendered group width (from BarGroup:ApplyLayout) is exactly:
-			--   nodeCount * nodeWidth + (nodeCount - 1) * spacing
-			-- Per-node borders are contained WITHIN each nodeWidth and don't add extra width.
-			local nodeCount = TRB.Data.character.maxResource2 or 5
-			if node.barGroup and node.barGroup.nodeCount then
-				nodeCount = node.barGroup.nodeCount
+		else
+			-- Check if this is a multi-node bar that needs total width calculation
+			local isMultiNode = false
+			local maxNodes = 1
+			if node.barKey == "secondary" then
+				isMultiNode = true
+				maxNodes = TRB.Data.character.maxResource2 or 5
+			else
+				-- Check BarTypeRegistry for custom multi-node bars (e.g., defensives)
+				local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+				if registry then
+					local barTypeDef = registry:Get(node.barKey)
+					if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
+						isMultiNode = true
+						maxNodes = barTypeDef.maxNodes
+					end
+				end
 			end
-			local nodeWidth = barSettings.width or 10
-			local nodeSpacing = barSettings.spacing or 2
-			w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+
+			if isMultiNode then
+				-- Multi-node bar: calculate total width from node dimensions.
+				-- The rendered group width (from BarGroup:ApplyLayout) is exactly:
+				--   nodeCount * nodeWidth + (nodeCount - 1) * spacing
+				-- Per-node borders are contained WITHIN each nodeWidth and don't add extra width.
+				local nodeCount = maxNodes
+				if node.barGroup and node.barGroup.nodeCount then
+					nodeCount = node.barGroup.nodeCount
+				end
+				local nodeWidth = barSettings.width or 10
+				local nodeSpacing = barSettings.spacing or 2
+				w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+			end
 		end
 
 		-- CDM width matching override: Edit Mode may have CDM width matching enabled
@@ -667,13 +687,6 @@ function TRB.Functions.EditMode:NormalizePosition(frame)
 	end
 
 	return point, x / scale, y / scale
-end
-
----Registers the primary bar with Edit Mode using a wrapper frame (legacy wrapper)
----The wrapper becomes the parent of the primary bar container
----@param containerFrame Frame # The primary bar's container frame
-function TRB.Functions.EditMode:RegisterPrimaryBar(containerFrame)
-	self:RegisterTreeRoot("primary", containerFrame)
 end
 
 ---Registers all tree roots in the current anchor forest with Edit Mode.
@@ -856,7 +869,7 @@ end
 ---@return string
 function TRB.Functions.EditMode:GetWrapperDisplayName(rootBarKey)
 	local barDisplayName = TRB.Functions.Bar:GetBarDisplayName(rootBarKey)
-	return L["TRBAddonName"] .. " - " .. barDisplayName
+	return string.format(L["WrapperDisplayNameFormat"], L["TRBAddonName"], barDisplayName)
 end
 
 ---Adds Edit Mode frame settings (checkbox, dropdown, slider) for a specific tree root wrapper.

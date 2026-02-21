@@ -119,10 +119,34 @@ end
 ---@param barGroup TRB.Classes.BarGroup? # The bar group (for nodeCount)
 ---@return number # Total rendered width, or 0 if not applicable
 function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGroup)
-	if barKey ~= "secondary" or not barSettings then
-		return barSettings and barSettings.width or 0
+	if not barSettings then
+		return 0
 	end
-	local nodeCount = TRB.Data.character.maxResource2 or 5
+
+	-- Determine if this bar is multi-node
+	local isMultiNode = false
+	local maxNodes = 1
+	if barKey == "secondary" then
+		isMultiNode = true
+		maxNodes = TRB.Data.character.maxResource2 or 5
+	else
+		-- Check the BarTypeRegistry for custom multi-node bars (e.g., defensives)
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
+				isMultiNode = true
+				maxNodes = barTypeDef.maxNodes
+			end
+		end
+	end
+
+	if not isMultiNode then
+		return barSettings.width or 0
+	end
+
+	-- Resolve actual node count from the bar group if available
+	local nodeCount = maxNodes
 	if barGroup and barGroup.lastRebuildNodeCount then
 		nodeCount = barGroup.lastRebuildNodeCount
 	elseif barGroup and barGroup.nodeCount and barGroup.nodeCount > 0 then
@@ -955,7 +979,7 @@ end
 ---@param anchorOffset number # Vertical offset in pixels
 ---@param effectiveWidth number # The width being used (may be CDM-matched)
 ---@param settings table? # Settings for dimension calculations
----@param rootBarKey string? # The root bar key for this tree (defaults to FindWrapperRoot)
+---@param rootBarKey string # The root bar key for this tree
 function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, effectiveWidth, settings, rootBarKey)
 	if not barGroups then
 		return
@@ -968,7 +992,7 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	end
 
 	-- Get the wrapper frame for the specified root
-	rootBarKey = rootBarKey or self:FindWrapperRoot(settings or {}, barGroups)
+	rootBarKey = rootBarKey or "primary"
 	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame(rootBarKey)
 	if not wrapperFrame then
 		return
@@ -1522,6 +1546,7 @@ function TRB.Functions.Bar:GetBarDisplayName(barKey)
 	end
 end
 
+---@deprecated Use BuildAnchorForest() instead. This function is no longer called from the layout path.
 ---Finds the root bar of the wrapper tree by walking up from baseBarKey.
 ---The root is the bar whose anchor has barKey="screen" (or no anchor), meaning it's positioned on UIParent.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -1622,6 +1647,7 @@ function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGr
 	return valid
 end
 
+---@deprecated Use BuildAnchorForest() instead. Retained as fallback for CalculateWrapperLayout edge cases.
 ---Builds the anchor tree from settings, returning the root node of the baseBarKey's tree.
 ---The tree is a forest: bars with barKey="screen" are independent roots.
 ---This function finds the root that contains the baseBarKey and builds only that sub-tree.
@@ -2262,6 +2288,14 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			-- Get color settings
 			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
 			
+			-- Determine if CDM width matching is active for this custom bar
+			local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, key)
+			local rootEffWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[key]
+			if not rootEffWidth and cdmMatched then
+				-- Bar is not a forest root but has CDM width matching; get CDM width directly
+				rootEffWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+			end
+
 			-- Build config for ConstructAnchoredBarGroup
 			---@type TRB.Classes.AnchoredBarGroupConfig
 			local config = {
@@ -2281,7 +2315,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 					bar = "bar"
 				},
 				minMaxMode = barTypeDef.minMaxMode or "custom",
-				rootEffectiveWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[key],
+				rootEffectiveWidth = rootEffWidth,
+				cdmWidthMatched = cdmMatched,
 			}
 			
 			-- Resolve the correct anchor group from settings

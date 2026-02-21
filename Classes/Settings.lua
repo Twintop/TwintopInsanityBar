@@ -190,7 +190,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---Defines the anchor tree root for a spec's bar layout.
 ---@class TRB.Classes.Settings.AnchorLayout
----@field public baseBarKey string # Key of the root bar ("primary" by default)
+---@field public baseBarKey string # @deprecated No longer used in layout. Retained for backward compatibility.
 
 ---@class TRB.Classes.Settings.AnchorTreeNode
 ---@field public barKey string # Key of this bar

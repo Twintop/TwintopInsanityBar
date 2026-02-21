@@ -1926,3 +1926,6 @@ L["BarTextVariablesSectionPipe"] = "Pipe Commands"
 L["BarTextVariablesAddTooltip"] = "Insert this variable at the cursor position in the active bar text editor"
 L["BarTextVariablesAddButton"] = "+"
 L["BarTextVariablesPanelTitle"] = "Bar Text Variables"
+
+-- Wrapper Display Name (Edit Mode overlay)
+L["WrapperDisplayNameFormat"] = "%s - %s"
