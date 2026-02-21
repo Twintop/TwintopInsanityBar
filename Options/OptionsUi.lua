@@ -2519,6 +2519,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 				primaryAnchorPointDropdown:SetText(anchorPointText)
 				primaryAttachPointDropdown:SetText(attachPointText)
 			end
+			controls.checkBoxes.primaryMatchWidth:SetEnabled(newValue ~= "screen")
+			getglobal(controls.checkBoxes.primaryMatchWidth:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 			ApplyPrimaryAnchorLayout()
 		end)
 	end
@@ -2542,6 +2544,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(primaryAnchor.matchWidth)
+	f:SetEnabled(primaryAnchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(primaryAnchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.matchWidth = self:GetChecked()
@@ -2906,6 +2910,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				anchorPointDropdown:SetText(anchorPointText)
 				attachPointDropdown:SetText(attachPointText)
 			end
+			local matchWidthCb = controls.checkBoxes[settingKey .. "MatchWidth"]
+			matchWidthCb:SetEnabled(newValue ~= "screen")
+			getglobal(matchWidthCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 			ApplyAnchorLayout()
 		end)
 	end
@@ -2930,6 +2937,8 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(anchor.matchWidth)
+	f:SetEnabled(anchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.matchWidth = self:GetChecked()
@@ -3276,6 +3285,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				anchorPointDropdown:SetText(anchorPointText)
 				attachPointDropdown:SetText(attachPointText)
 			end
+			local matchWidthCb = controls[barTypeDef.key .. "MatchWidth"]
+			matchWidthCb:SetEnabled(newValue ~= "screen")
+			getglobal(matchWidthCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -3302,6 +3314,8 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(anchor.matchWidth)
+	f:SetEnabled(anchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(barSettings)
 		a.matchWidth = self:GetChecked()

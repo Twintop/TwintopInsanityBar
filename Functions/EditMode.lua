@@ -876,6 +876,21 @@ end
 ---@param wrapperFrame Frame
 ---@param rootBarKey string
 function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
+	-- Helper: returns true when the layout checkbox is unchecked (controls should be disabled)
+	local function isLayoutDisabled(layoutName)
+		return not self:IsLayoutEnabled(layoutName, rootBarKey)
+	end
+
+	-- Helper: returns true when the anchor mode is "none" (free position / screen)
+	local function isAnchorNone(layoutName)
+		return self:GetAnchorModeRaw(layoutName, rootBarKey) == "none"
+	end
+
+	-- Helper: returns true when the layout is disabled OR anchor is free position
+	local function isLayoutDisabledOrAnchorNone(layoutName)
+		return isLayoutDisabled(layoutName) or isAnchorNone(layoutName)
+	end
+
 	LibEditMode:AddFrameSettings(wrapperFrame, {
 		{
 			kind = LibEditMode.SettingType.Checkbox,
@@ -936,6 +951,7 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 			name = L["EditModeAnchorTo"],
 			desc = L["EditModeAnchorToTooltip"],
 			default = "none",
+			disabled = isLayoutDisabled,
 			values = {
 				{ text = L["EditModeAnchorFreePosition"], value = "none" },
 				{ text = L["EditModeAnchorAboveCDM"], value = "above" },
@@ -961,6 +977,7 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 			name = L["EditModeAnchorOffset"],
 			desc = L["EditModeAnchorOffsetTooltip"],
 			default = 0,
+			disabled = isLayoutDisabledOrAnchorNone,
 			minValue = -200,
 			maxValue = 200,
 			valueStep = 1,
@@ -984,6 +1001,7 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 			name = L["EditModeMatchCDMWidth"],
 			desc = L["EditModeMatchCDMWidthTooltip"],
 			default = false,
+			disabled = isLayoutDisabledOrAnchorNone,
 			get = function(layoutName)
 				return self:IsWidthMatchingEnabledRaw(layoutName, rootBarKey)
 			end,
