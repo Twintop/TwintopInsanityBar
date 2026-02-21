@@ -52,14 +52,16 @@ Every bar can be shown or hidden independently:
 
 - Adjustable width and height for primary and secondary resource bars
 - Pixel-precise positioning with horizontal and vertical offsets
-- Drag-and-drop repositioning
+- Anchor bars to other bars for automatic relative positioning, or position each bar independently
+- Position bars via Edit Mode or classic X/Y offset settings
 
 ### Colors
 
 - Separate color settings for bar fill, border, and background
 - Per-threshold colors: under resource threshold, over resource threshold, unusable, out of range
-- State-based bar colors that change based on active buffs or procs
+- State-based bar colors that change based on active buffs or procs, each individually toggleable
 - Individual node coloring for secondary resources
+- Global color settings that apply across all specializations (e.g., Health Bar colors)
 
 ### Textures and Fonts
 
@@ -70,6 +72,7 @@ Every bar can be shown or hidden independently:
 ### Audio Notifications
 
 - Customizable sound cues triggered by resource thresholds or proc events
+- Secondary resource audio cues (Combo Points, Holy Power, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) that fire independently of bar visibility, triggering only during combat
 - LibSharedMedia support for custom sounds
 - Configurable audio output channel
 
@@ -79,6 +82,8 @@ TRB features a powerful bar text system that lets you display exactly the inform
 
 Use variables like `$resource`, `$comboPoints`, `$haste`, `$gcd`, and `$inCombatTime` to display live data, or `#casting` to show spell icons. Bar text also supports conditional logic with Boolean operators for dynamic displays.
 
+The bar text editor includes a searchable variable browser with descriptions and icons, allowing you to find and insert variables directly at the cursor position. Full undo/redo support is available via standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
+
 For complete documentation on available variables and advanced formatting, check out the [Bar Text Customization Wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization).
 
 ### Import and Export
@@ -87,6 +92,22 @@ Share your configuration with others or back up your settings:
 
 - Export individual sections (colors, thresholds, fonts, audio) or entire spec configurations
 - Import configurations from other players
+- Compressed export strings using Blizzard's `C_EncodingUtil` with Deflate compression for smaller sizes (legacy import strings remain compatible)
+
+### Options Window
+
+- Dedicated movable options window accessible via `/trb` or the minimap button
+- Access and modify any class specialization's settings regardless of your current class
+- Lazy-loaded settings panels to reduce memory usage
+- Options organized across multiple focused tabs for easier navigation
+
+### Global Settings
+
+- Apply common settings across all classes and specializations from the "Global Options" screen
+- Changes are immediately reflected across all specializations
+- Includes Health Bar colors, and more
+- Per-bar smooth animation settings instead of a single global toggle
+- Optional abbreviated number formatting (e.g., 10.0K, 1.5M) for large numbers across all bars
 
 ---
 
@@ -98,9 +119,12 @@ Full integration with WoW's native Edit Mode system, allowing you to position an
 
 - **Per-Layout Settings** - Edit Mode configuration is saved separately for each HUD layout, so you can have different positions and settings for each
 - **Free Position Mode** - Place the bar anywhere on screen with drag-and-drop positioning while in Edit Mode
-- **Anchor to Cooldown Manager** - Optionally anchor the bar above or below Blizzard's Cooldown Manager Essential Abilities frame to keep it aligned with your HUD
+- **Per-Bar Edit Mode Control** - Any bar anchored to the screen can be independently controlled by Edit Mode, including anchoring to the Cooldown Manager
+- **Bar-to-Bar Anchoring** - Anchor bars to other bars for automatic relative positioning instead of using manual X/Y offsets from the Primary Resource Bar
+- **Anchor to Cooldown Manager** - Optionally anchor any screen-anchored bar above or below Blizzard's Cooldown Manager Essential Abilities frame
 - **Match Cooldown Manager Width** - When anchored to the Cooldown Manager, optionally match its width for a cohesive look
 - **Vertical Offset** - Fine-tune vertical spacing when anchored to the Cooldown Manager
+- **Reset Edit Mode Data** - Clear all stored Edit Mode layout data from the "Reset Defaults" tab in Global Options
 
 ### Primary Resource Bar
 
@@ -147,13 +171,13 @@ Some DPS specs that may need to off-heal in a pinch have a secondary mana bar av
 
 ### Stagger Bar (Brewmaster Monk)
 
-Brewmaster Monks get a dedicated Stagger bar that displays current stagger damage as a percentage of maximum health. The bar includes configurable thresholds for Medium and Heavy stagger levels, with color transitions as stagger severity increases. Stagger levels and colors are set to Blizzard's defaults but can be freely customized to suit your preferences and needs.
+Brewmaster Monks get a dedicated Stagger bar that displays current stagger damage as a percentage of maximum health. The bar includes configurable thresholds for Medium, Heavy, and Extremely Heavy stagger levels, with color transitions as stagger severity increases. The maximum stagger percentage displayed by the bar can be set above 100% of maximum health. Stagger levels and colors are set to Blizzard's defaults but can be freely customized to suit your preferences and needs.
 
 ### Defensives Bar (Protection Warrior)
 
 Protection Warriors have a specialized Defensives bar that tracks the remaining duration of key defensive abilities:
 
-- **Ignore Pain** duration remaining
+- **Ignore Pain** duration and absorption amount remaining
 - **Shield Block** duration remaining and available charges
 
 ### Major Cooldown Tracking
@@ -175,6 +199,17 @@ Many specs can track important buff status and timers via color changes and dire
 | Survival Hunter | Takedown |
 | Brewmaster Monk | Invoke Niuzao, the Black Ox |
 | Elemental/Enhancement/Restoration Shaman | Ascendance |
+
+---
+
+## Localization
+
+TRB is being actively translated into multiple languages. Current progress:
+
+- **German (deDE)** - Complete
+- **Simplified Chinese (zhCN)** - Complete
+
+If you're interested in helping translate TRB into other languages, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
 
 ---
 
