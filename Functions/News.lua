@@ -19,6 +19,7 @@ local content = [====[
 - [#628](#628) Allow any bar that is anchored to the "Screen" (`UIParent`) to also be independently controlled by Edit Mode for positioning, including anchoring to the Cooldown Manager's Essential frame.
 - [#624](#624) Reduce bar flickering when setting up upon login, specialization, or talent changes.
 - [#626](#626) Fix inconsistent bar text updates when some UI elements are disabled.
+- [#630](#630) Allow Health Bar colors to be controlled by a global setting.
 - Fix Lua errors from the Reset Default Bar Text buttons.
 
 ### Localization

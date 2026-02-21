@@ -793,7 +793,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		threshold = {},
 		comboPoints = spec.colors.comboPoints,
 		bars = spec.colors.bars,
-		healthBar = spec.colors.healthBar,
+		healthBar = {},
 		manaBar = spec.colors.manaBar
 	}
 

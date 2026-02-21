@@ -66,6 +66,8 @@ local function ConstructHealthBarPanel(parent)
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 local function ConstructBarTexturesPanel(parent)

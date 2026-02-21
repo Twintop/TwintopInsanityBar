@@ -148,6 +148,7 @@ local settingKeyToCheckboxSuffix = {
 	bar = "barDimensions",
 	comboPoints = "comboPoints",
 	healthBar = "healthBar",
+	healthBarColors = "healthBarColors",
 	textures = "textures",
 	displayBar = "displayBar",
 	thresholdIcons = "thresholdIcons",
@@ -297,6 +298,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 	
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()
+	TRB.Functions.Character:UpdateHealthValues()
 	if TRB.Frames.barGroups ~= nil then
 		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
@@ -5386,9 +5388,43 @@ end
 
 function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, classId, specId, yCoord)
 	local L = TRB.Localization or {}
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
 
 	-- Build the header
 	controls.healthBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
+
+	if classId ~= nil and specId ~= nil then
+		yCoord = yCoord - 30
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes.useGlobalHealthBarColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_healthBarColors", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.useGlobalHealthBarColors
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_HealthBarColors"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].healthBarColors)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].healthBarColors = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
+				TRB.Functions.Character:UpdateHealthValues()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				else
+					TRB.Functions.Bar:Construct()
+				end
+			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("healthBarColors")
+		end)
+	elseif classId == nil and specId == nil then
+		-- Global options panel - add bulk toggle checkbox
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllHealthBarColors", "healthBarColors", yCoord)
+	end
+
 	yCoord = yCoord - 30
 
 	-- Create a lightweight bar type definition-like object for Health Bar
