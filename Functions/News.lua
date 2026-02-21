@@ -24,6 +24,7 @@ local content = [====[
 ### Localization
 
 - [#623](#623) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- Clean up some old references to "Devouring Plague" to properly refer to "Shadow Word: Madness".
 
 ## Demon Hunter
 ### Havoc

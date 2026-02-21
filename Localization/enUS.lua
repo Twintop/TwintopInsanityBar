@@ -630,7 +630,6 @@ L["PriestShadowThresholdShadowWordMadness2xTooltip"] = "This will show the verti
 L["PriestShadowThresholdShadowWordMadness3x"] = "3x Shadow Word: Madness"
 L["PriestShadowThresholdShadowWordMadness3xTooltip"] = "This will show the vertical line on the bar denoting how much Insanity is required to cast three Shadow Word: Madnesses in a row."
 L["PriestShadowThresholdCheckboxOnlyCurrentNext"] = "Only show current + next threshold lines?"
-L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "This will only show Devouring Plague threshold lines if you already have enough Insanity to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
 L["PriestShadowHeaderEndOfVoidformConfiguration"] = "End of Voidform Configuration"
 L["PriestShadowCheckboxVoidformGcds"] = "GCDs until Voidform ends"
 L["PriestShadowVoidformGcds"] = "Voidform GCDs - 0.75sec Floor"
@@ -639,12 +638,9 @@ L["PriestShadowVoidformTime"] = "Voidform Time Remaining (sec)"
 L["PriestShadowTextColorsHeader"] = "Insanity Text Colors"
 L["PriestShadowColorPickerTextCurrent"] = "Current Insanity"
 L["PriestShadowColorPickerTextCasting"] = "Insanity from hardcasting spells"
-L["PriestShadowColorPickerThresholdOver"] = "Have enough Insanity to cast Devouring Plague"
-L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text color when you are able to cast Devouring Plague"
 L["PriestShadowAudioCheckboxShadowWordMadness"] = "Play audio cue when Shadow Word: Madness is usable"
 L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"] = "Play an audio cue when Shadow Word: Madness can be cast."
 L["PriestShadowAudioCheckboxMindDevourer"] = "Play audio cue when a Mind Devourer proc occurs"
-L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
 
 -- ShamanOptions
 L["ResourceMaelstromWeapon"] = "Maelstrom Weapon"
@@ -1929,3 +1925,8 @@ L["BarTextVariablesPanelTitle"] = "Bar Text Variables"
 
 -- Wrapper Display Name (Edit Mode overlay)
 L["WrapperDisplayNameFormat"] = "%s - %s"
+
+L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "This will only show Shadow Word: Madness threshold lines if you already have enough Insanity to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
+L["PriestShadowColorPickerThresholdOver"] = "Have enough Insanity to cast Shadow Word: Madness"
+L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text color when you are able to cast Shadow Word: Madness"
+L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Shadow Word: Madness audio sound."

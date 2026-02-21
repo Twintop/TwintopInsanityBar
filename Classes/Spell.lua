@@ -79,7 +79,7 @@ end
 ---@field public baseline boolean? # Is this spell a baseline ability?
 ---@field public isTalent boolean? # Is this spell available via a talent? Only used if we need to check if the talent is talented.
 ---@field public primaryResourceType Enum.PowerType? # Primary resource used in API calls, e.g. Enum.PowerType.Mana
----@field public primaryResourceTypeMod number? # Modifier applied to whatever the returned primary resource amount is, e.g. a second Devouring Plague cast cost
+---@field public primaryResourceTypeMod number? # Modifier applied to whatever the returned primary resource amount is, e.g. a second Shadow Word: Madness cast cost
 ---@field public primaryResourceTypeProperty string? # Which parameter to take from the return of the API call. Defaults to `cost` but can also be `minCost` or `costPerSec`.
 ---@field public primaryResourceTypePropertyValue number? # Custom override value that an ability will cost. Primarily used for spells that have a max range but the value isn't returned by the API, such as Execute.
 ---@field public resource number? # How much of the primary resource a spell will generate.
