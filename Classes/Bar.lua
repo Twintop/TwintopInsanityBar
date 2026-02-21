@@ -9,9 +9,10 @@ TRB.Classes = TRB.Classes or {}
 ]]
 
 ---@class TRB.Classes.BarNode
----@field public containerFrame Frame
----@field public borderFrame StatusBar
----@field public resourceFrame StatusBar
+---@field public frame StatusBar # The single consolidated StatusBar frame
+---@field public containerFrame StatusBar # Alias for frame (backward compat)
+---@field public borderFrame StatusBar # Alias for frame (backward compat)
+---@field public resourceFrame StatusBar # Alias for frame (backward compat)
 ---@field public thresholds Frame[]
 ---@field public index integer
 ---@field public name string
@@ -20,12 +21,13 @@ TRB.Classes = TRB.Classes or {}
 ---@field public border number
 ---@field public isVisible boolean
 ---@field public smooth boolean?
+---@field public borderTexture string? # Stored border texture path for toggling edge visibility
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
 ---Creates a new BarNode
 ---@param parent Frame # The parent frame to attach this node to
----@param name string # Base name for the frames (will be suffixed with frame type)
+---@param name string # Base name for the frame
 ---@param index integer # Index of this node within its group (1-based)
 ---@return TRB.Classes.BarNode
 function TRB.Classes.BarNode:New(parent, name, index)
@@ -34,38 +36,34 @@ function TRB.Classes.BarNode:New(parent, name, index)
 
 	self.index = index or 1
 	self.name = name or "TwintopResourceBarFrame"
-	
+
 	-- Include index in name for unique cache keys when index > 0
 	if index and index > 0 then
 		self.name = self.name .. "_" .. index
 	end
-	
+
 	self.thresholds = {}
 	self.width = 100
 	self.height = 20
 	self.border = 2
 	self.isVisible = false
 	self.smooth = nil
+	self.borderTexture = nil
 
-	-- Create container frame
-	local containerName = self.name .. "_Container"
-	self.containerFrame = CreateFrame("Frame", containerName, parent, "BackdropTemplate")
-	self.containerFrame:SetFrameStrata("BACKGROUND")
-	-- Hide the container by default - nodes should only be shown explicitly
-	self.containerFrame:Hide()
+	-- Create a single consolidated StatusBar frame
+	self.frame = CreateFrame("StatusBar", self.name, parent, "BackdropTemplate")
+	self.frame:SetFrameStrata("BACKGROUND")
+	-- Hide by default - nodes should only be shown explicitly
+	self.frame:Hide()
 
-	-- Create border frame
-	local borderName = self.name .. "_Border"
-	self.borderFrame = CreateFrame("StatusBar", borderName, self.containerFrame, "BackdropTemplate")
-	self.borderFrame:SetFrameStrata("BACKGROUND")
+	-- Alias all legacy accessors to the single frame for backward compatibility
+	self.containerFrame = self.frame
+	self.borderFrame = self.frame
+	self.resourceFrame = self.frame
 
-	-- Create resource frame (the actual status bar)
-	local resourceName = self.name .. "_Resource"
-	self.resourceFrame = CreateFrame("StatusBar", resourceName, self.containerFrame, "BackdropTemplate")
-	self.resourceFrame:SetFrameStrata("BACKGROUND")
-
-	-- Initialize the resource frame's thresholds array for compatibility
-	self.resourceFrame.thresholds = self.thresholds
+	-- Initialize the frame's thresholds array for compatibility
+---@diagnostic disable-next-line: inject-field
+	self.frame.thresholds = self.thresholds
 
 	return self
 end
@@ -80,10 +78,10 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 
 	if smooth then
 ---@diagnostic disable-next-line: redundant-parameter
-		self.resourceFrame:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
+		self.frame:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
 	else
 ---@diagnostic disable-next-line: redundant-parameter
-		self.resourceFrame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
+		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
 end
 
@@ -91,20 +89,20 @@ end
 ---@param min number
 ---@param max number
 function TRB.Classes.BarNode:SetMinMax(min, max)
-	self.resourceFrame:SetMinMaxValues(min, max)
+	self.frame:SetMinMaxValues(min, max)
 end
 
 ---Gets the current min/max values
 ---@return number min
 ---@return number max
 function TRB.Classes.BarNode:GetMinMax()
-	return self.resourceFrame:GetMinMaxValues()
+	return self.frame:GetMinMaxValues()
 end
 
 ---Sets the color of the resource bar
 ---@param colorString string # ARGB hex color string (e.g., "FFFF0000" for red)
 function TRB.Classes.BarNode:SetColor(colorString)
-	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.resourceFrame, self.name .. "_resource", colorString)
+	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.name .. "_resource", colorString)
 end
 
 ---Sets the color of the resource bar
@@ -114,7 +112,7 @@ function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
-	local texture = self.resourceFrame:GetStatusBarTexture()
+	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		texture:SetVertexColor(colorResult:GetRGBA())
 	end
@@ -123,7 +121,7 @@ end
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
-	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.borderFrame, self.name .. "_border", colorString)
+	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.name .. "_border", colorString)
 end
 
 ---Sets the border color from a curve result
@@ -134,7 +132,7 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult)
 		return
 	end
 	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
-	self.borderFrame:SetBackdropBorderColor(colorResult:GetRGBA())
+	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
 end
 
 ---Sets the background color
@@ -143,7 +141,7 @@ end
 ---@param b number # Blue (0-1)
 ---@param a number # Alpha (0-1)
 function TRB.Classes.BarNode:SetBackgroundColor(r, g, b, a)
-	TRB.Functions.Color:SetBackdropColor(self.containerFrame, self.name .. "_background", r, g, b, a)
+	TRB.Functions.Color:SetBackdropColor(self.frame, self.name .. "_background", r, g, b, a)
 end
 
 ---Sets the background color from a color string
@@ -154,8 +152,8 @@ function TRB.Classes.BarNode:SetBackgroundColorFromString(colorString)
 end
 
 ---Sets the dimensions of the node
----@param width number
----@param height number
+---@param width number # Outer width (including border)
+---@param height number # Outer height (including border)
 ---@param border number?
 function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	self.width = width
@@ -165,36 +163,34 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 		self.border = border
 	end
 
-	local innerWidth = width - (self.border * 2)
-	local innerHeight = height - (self.border * 2)
+	-- Single frame uses outer dimensions
+	self.frame:SetWidth(width)
+	self.frame:SetHeight(height)
 
-	self.containerFrame:SetWidth(innerWidth)
-	self.containerFrame:SetHeight(innerHeight)
-
-	self.borderFrame:SetWidth(width)
-	self.borderFrame:SetHeight(height)
-
-	self.resourceFrame:SetHeight(innerHeight)
-
-	-- Update the border frame's edgeSize when border changes
-	-- This is necessary because edgeSize is part of backdropInfo, not just frame dimensions
-	if borderChanged and self.borderFrame.backdropInfo then
+	-- Update the backdrop edgeSize when border changes
+	if borderChanged and self.frame.backdropInfo then
 		if self.border < 1 then
-			self.borderFrame.backdropInfo.edgeSize = 1
-			self.borderFrame:ApplyBackdrop()
-			self.borderFrame:SetBackdropColor(0, 0, 0, 0)
-			self.borderFrame:Hide()
+			-- No border: remove edge from backdrop entirely
+			self.frame.backdropInfo.edgeFile = nil
+			self.frame.backdropInfo.edgeSize = 0
 		else
-			self.borderFrame.backdropInfo.edgeSize = self.border
-			self.borderFrame:ApplyBackdrop()
-			self.borderFrame:SetBackdropColor(0, 0, 0, 0)
-			self.borderFrame:Show()
+			-- Restore edge with stored texture path
+			self.frame.backdropInfo.edgeFile = self.borderTexture
+			self.frame.backdropInfo.edgeSize = self.border
 		end
+		self.frame.backdropInfo.insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
+		self.frame:ApplyBackdrop()
 		-- Restore cached border color after ApplyBackdrop resets it
 		local borderCacheKey = self.name .. "_border"
 		local cachedColor = TRB.Data.cache.colors.border[borderCacheKey]
 		if cachedColor then
-			self.borderFrame:SetBackdropBorderColor(cachedColor.r, cachedColor.g, cachedColor.b, cachedColor.a)
+			self.frame:SetBackdropBorderColor(cachedColor.r, cachedColor.g, cachedColor.b, cachedColor.a)
+		end
+		-- Restore cached background color after ApplyBackdrop resets it
+		local bgCacheKey = self.name .. "_background"
+		local cachedBgColor = TRB.Data.cache.colors.backdrop[bgCacheKey]
+		if cachedBgColor then
+			self.frame:SetBackdropColor(cachedBgColor.r, cachedBgColor.g, cachedBgColor.b, cachedBgColor.a)
 		end
 	end
 end
@@ -211,90 +207,71 @@ end
 ---@param borderTexture string # Path to the border texture
 ---@param backgroundTexture string # Path to the background texture
 function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgroundTexture)
-	-- Set resource bar texture
-	self.resourceFrame:SetStatusBarTexture(resourceTexture)
+	-- Store border texture for later use in SetDimensions when toggling border
+	self.borderTexture = borderTexture
 
-	-- Set background texture using backdropInfo pattern for BackdropTemplate frames
+	-- Set resource bar (StatusBar fill) texture
+	self.frame:SetStatusBarTexture(resourceTexture)
+	-- Lower the fill texture to BORDER,-1 so it draws above the backdrop background
+	-- (BACKGROUND,0) but below the backdrop edge/border (BORDER,0).
+	local fillTexture = self.frame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("BORDER", -1)
+	end
+
+	-- Configure unified backdrop: bgFile for background, edgeFile for border
+	local edgeFile = nil
+	local edgeSize = 0
+	if self.border >= 1 then
+		edgeFile = borderTexture
+		edgeSize = self.border
+	end
+
 ---@diagnostic disable-next-line: inject-field
-	self.containerFrame.backdropInfo = {
+	self.frame.backdropInfo = {
 		bgFile = backgroundTexture,
+		edgeFile = edgeFile,
 		tile = true,
 		tileSize = self.width,
-		edgeSize = 1,
-		insets = {0, 0, 0, 0}
+		edgeSize = edgeSize,
+		insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
 	}
-	self.containerFrame:ApplyBackdrop()
-
-	-- Set border texture
-	if self.border < 1 then
----@diagnostic disable-next-line: inject-field
-		self.borderFrame.backdropInfo = {
-			edgeFile = borderTexture,
-			tile = true,
-			tileSize = 4,
-			edgeSize = 1,
-			insets = {0, 0, 0, 0}
-		}
-		self.borderFrame:ApplyBackdrop()
-		self.borderFrame:Hide()
-	else
----@diagnostic disable-next-line: inject-field
-		self.borderFrame.backdropInfo = {
-			edgeFile = borderTexture,
-			tile = true,
-			tileSize = 4,
-			edgeSize = self.border,
-			insets = {0, 0, 0, 0}
-		}
-		self.borderFrame:ApplyBackdrop()
-		self.borderFrame:Show()
-	end
-	self.borderFrame:SetBackdropColor(0, 0, 0, 0)
+	self.frame:ApplyBackdrop()
 end
 
----Sets frame levels for all components
----@param containerLevel integer
----@param borderLevel integer
----@param resourceLevel integer
-function TRB.Classes.BarNode:SetFrameLevels(containerLevel, borderLevel, resourceLevel)
-	self.containerFrame:SetFrameLevel(containerLevel)
-	self.borderFrame:SetFrameLevel(borderLevel)
-	self.resourceFrame:SetFrameLevel(resourceLevel)
+---Sets the frame level for the node
+---@param level integer
+function TRB.Classes.BarNode:SetFrameLevel(level)
+	self.frame:SetFrameLevel(level)
 end
 
----Sets the frame strata for all components
+---Sets the frame strata for the node
 ---@param strata string
 function TRB.Classes.BarNode:SetFrameStrata(strata)
-	self.containerFrame:SetFrameStrata(strata)
-	self.borderFrame:SetFrameStrata(strata)
-	self.resourceFrame:SetFrameStrata(strata)
+	self.frame:SetFrameStrata(strata)
 end
 
 ---Sets the node's alpha transparency
 ---@param alpha number
 function TRB.Classes.BarNode:SetAlpha(alpha)
-	self.containerFrame:SetAlpha(alpha)
+	self.frame:SetAlpha(alpha)
 end
 
 ---Shows the node
 function TRB.Classes.BarNode:Show()
 	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
-		self.containerFrame:SetAlpha(0)
+		self.frame:SetAlpha(0)
 	else
-		self.containerFrame:SetAlpha(1)
+		self.frame:SetAlpha(1)
 	end
 
-	self.containerFrame:Show()
-	self.resourceFrame:Show()
-	if self.border >= 1 then
-		self.borderFrame:Show()
-	end
+	self.frame:Show()
 	self.isVisible = true
 end
 
 ---Hides the node
 function TRB.Classes.BarNode:Hide()
-	self.containerFrame:Hide()
+	self.frame:Hide()
 	self.isVisible = false
 end
 
@@ -303,28 +280,32 @@ end
 function TRB.Classes.BarNode:Destroy()
 	self:Hide()
 	self:ClearThresholds()
-	self.borderFrame:Hide()
-	self.resourceFrame:Hide()
-	self.containerFrame:SetParent(nil)
-	self.containerFrame:ClearAllPoints()
+	self.frame:SetParent(nil)
+	self.frame:ClearAllPoints()
 end
 
----Returns the resource frame (for legacy compatibility and bar text binding)
+---Returns the frame (resource, container, and border are all the same frame now)
+---@return StatusBar
+function TRB.Classes.BarNode:GetFrame()
+	return self.frame
+end
+
+---Returns the resource frame (alias for GetFrame, backward compat)
 ---@return StatusBar
 function TRB.Classes.BarNode:GetResourceFrame()
-	return self.resourceFrame
+	return self.frame
 end
 
----Returns the container frame
----@return Frame
+---Returns the container frame (alias for GetFrame, backward compat)
+---@return StatusBar
 function TRB.Classes.BarNode:GetContainerFrame()
-	return self.containerFrame
+	return self.frame
 end
 
----Returns the border frame
+---Returns the border frame (alias for GetFrame, backward compat)
 ---@return StatusBar
 function TRB.Classes.BarNode:GetBorderFrame()
-	return self.borderFrame
+	return self.frame
 end
 
 ---Registers a threshold frame with this node, or creates one at the specified index
@@ -340,7 +321,7 @@ function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
 		if self.thresholds[index] then
 			return self.thresholds[index]
 		end
-		thresholdFrame = CreateFrame("Frame", nil, self.resourceFrame)
+		thresholdFrame = CreateFrame("Frame", nil, self.frame)
 	else
 		-- Use the provided frame
 		thresholdFrame = thresholdFrameOrIndex
@@ -348,9 +329,9 @@ function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
 	end
 
 	self.thresholds[index] = thresholdFrame
-	-- Keep resourceFrame.thresholds in sync for compatibility
+	-- Keep frame.thresholds in sync for compatibility
 ---@diagnostic disable-next-line: inject-field
-	self.resourceFrame.thresholds = self.thresholds
+	self.frame.thresholds = self.thresholds
 	return thresholdFrame
 end
 
@@ -363,7 +344,7 @@ function TRB.Classes.BarNode:ClearThresholds()
 	end
 	self.thresholds = {}
 ---@diagnostic disable-next-line: inject-field
-	self.resourceFrame.thresholds = self.thresholds
+	self.frame.thresholds = self.thresholds
 end
 
 ---Gets all registered thresholds
@@ -372,16 +353,10 @@ function TRB.Classes.BarNode:GetThresholds()
 	return self.thresholds
 end
 
----Positions the resource frame within the container
+---Legacy no-op: With a single frame, there is nothing to position relative to itself.
+---Retained for backward compatibility with callers.
 function TRB.Classes.BarNode:PositionResourceFrame()
-	-- Position the resource bar within the BarNode's container
-	self.resourceFrame:ClearAllPoints()
-	self.resourceFrame:SetPoint("LEFT", self.containerFrame, "LEFT", 0, 0)
-	self.resourceFrame:SetPoint("RIGHT", self.containerFrame, "RIGHT", 0, 0)
-
-	-- Position the border centered on the container
-	self.borderFrame:ClearAllPoints()
-	self.borderFrame:SetPoint("CENTER", self.containerFrame, "CENTER", 0, 0)
+	-- No-op: single consolidated frame, nothing to reposition
 end
 
 
@@ -518,7 +493,7 @@ end
 
 
 ---Gets the frame that other bars should anchor to.
----For single-node groups (primary, health, etc.), returns the border frame of node 1,
+---For single-node groups (primary, health, etc.), returns the node's frame,
 ---which represents the full visual extent including borders.
 ---For multi-node groups (combo points, defensives, etc.), returns the group container,
 ---which already encompasses all nodes at full visual extent.
@@ -527,7 +502,7 @@ function TRB.Classes.BarGroup:GetAnchorFrame()
 	if self.maxNodes == 1 then
 		local node = self.nodes[1]
 		if node then
-			return node:GetBorderFrame()
+			return node:GetFrame()
 		end
 	end
 	return self.containerFrame
@@ -691,7 +666,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 			node:SetBorderColor(settings.colors.comboPoints.border.color)
 			node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 			node:SetColor(settings.colors.comboPoints.base.color)
-			node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+			node:SetFrameLevel(frameLevels.comboPoint)
 			node:Show()
 		end
 	end
@@ -764,15 +739,17 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 	end
 
 	local actualNodeWidth = nodeWidth
-	local nodeSpacing = self.spacing + (border * 2)
+	-- Each node is now a single frame at outer dimensions (including its own border),
+	-- so spacing between nodes is just the user-configured spacing.
+	local nodeSpacing = self.spacing
 
 	if self.fullWidth then
 		-- Calculate node width to fill the total width
-		actualNodeWidth = (totalWidth - ((self.nodeCount - 1) * (nodeSpacing - border * 2))) / self.nodeCount
+		actualNodeWidth = (totalWidth - ((self.nodeCount - 1) * nodeSpacing)) / self.nodeCount
 	end
 
 	-- Set container dimensions
-	local groupWidth = self.fullWidth and totalWidth or (self.nodeCount * actualNodeWidth + (self.nodeCount - 1) * self.spacing)
+	local groupWidth = self.fullWidth and totalWidth or (self.nodeCount * actualNodeWidth + (self.nodeCount - 1) * nodeSpacing)
 	self.containerFrame:SetWidth(groupWidth)
 	self.containerFrame:SetHeight(nodeHeight)
 
@@ -782,18 +759,15 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 		if node then
 			if i <= self.nodeCount then
 				node:SetDimensions(actualNodeWidth, nodeHeight, border)
-				node:PositionResourceFrame()
 
-				node.containerFrame:ClearAllPoints()
+				node.frame:ClearAllPoints()
 				if i == 1 then
-					-- Offset Y by -border because borderFrame is centered on containerFrame
-					-- and extends 'border' pixels above it. This aligns the visual top (border edge)
-					-- with the group container's top edge.
-					node.containerFrame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", border, -border)
+					-- Node frame is the full outer boundary now, no border offset needed
+					node.frame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", 0, 0)
 				else
 					local prevNode = self.nodes[i-1]
 					if prevNode then
-						node.containerFrame:SetPoint("LEFT", prevNode.containerFrame, "RIGHT", nodeSpacing, 0)
+						node.frame:SetPoint("LEFT", prevNode.frame, "RIGHT", nodeSpacing, 0)
 					end
 				end
 				node:Show()

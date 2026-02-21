@@ -456,7 +456,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				node:SetColor(settings.colors.comboPoints.base.color)
-				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end
@@ -2129,7 +2129,7 @@ function TRB.Functions.Class:CheckCharacter()
 						node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 						node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 						node:SetColor(sharedSettings.colors.comboPoints.base.color)
-						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+						node:SetFrameLevel(frameLevels.comboPoint)
 					end
 				end
 			end

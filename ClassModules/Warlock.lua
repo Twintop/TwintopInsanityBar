@@ -281,7 +281,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				node:SetColor(settings.colors.comboPoints.base.color)
-				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end

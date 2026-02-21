@@ -2881,7 +2881,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
 							node:SetColor(feralSettings.colors.comboPoints.base.color)
-							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end
 				end
