@@ -111,6 +111,28 @@ local function GetComboPointNodeWidth(settings)
 	return 0
 end
 
+---Calculates the total rendered width of a multi-node bar group (e.g., combo points).
+---For multi-node bars, `barSettings.width` is per-node width, not total width.
+---The total width is:  nodeCount * nodeWidth + (nodeCount - 1) * spacing
+---@param barKey string # The bar key (e.g., "secondary")
+---@param barSettings table? # The bar's settings (e.g., settings.comboPoints)
+---@param barGroup TRB.Classes.BarGroup? # The bar group (for nodeCount)
+---@return number # Total rendered width, or 0 if not applicable
+function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGroup)
+	if barKey ~= "secondary" or not barSettings then
+		return barSettings and barSettings.width or 0
+	end
+	local nodeCount = TRB.Data.character.maxResource2 or 5
+	if barGroup and barGroup.lastRebuildNodeCount then
+		nodeCount = barGroup.lastRebuildNodeCount
+	elseif barGroup and barGroup.nodeCount and barGroup.nodeCount > 0 then
+		nodeCount = barGroup.nodeCount
+	end
+	local nodeWidth = barSettings.width or 10
+	local nodeSpacing = barSettings.spacing or 2
+	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+end
+
 ---Computes the absolute min/max values for the bar
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return table
@@ -532,9 +554,64 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local frameLevels = TRB.Data.constants.frameLevels
 
 	-- ========================
+	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings
+	-- for layout purposes (anchor, dimensions, textures, colors). This must happen
+	-- BEFORE building the anchor forest so the correct anchor config (e.g.,
+	-- barKey="screen" for CDM binding) is used for tree construction.
+	-- ========================
+	local layoutSettings = settings
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+
+		if enableFormSwitching then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettings and feralSettings.comboPoints then
+				---@diagnostic disable-next-line: missing-fields
+				layoutSettings = {}
+				for k, v in pairs(settings) do
+					layoutSettings[k] = v
+				end
+				layoutSettings.comboPoints = feralSettings.comboPoints
+				-- Merge textures
+				if feralSettings.textures then
+					local newTextures = {}
+					if settings.textures then
+						for k, v in pairs(settings.textures) do
+							newTextures[k] = v
+						end
+					end
+					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
+					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
+					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
+					layoutSettings.textures = newTextures
+				end
+				-- Merge colors
+				if feralSettings.colors and feralSettings.colors.comboPoints then
+					local newColors = {}
+					if settings.colors then
+						for k, v in pairs(settings.colors) do
+							newColors[k] = v
+						end
+					end
+					newColors.comboPoints = feralSettings.colors.comboPoints
+					layoutSettings.colors = newColors
+				end
+			end
+		end
+	end
+
+	-- ========================
 	-- Build the anchor forest and per-root metadata
 	-- ========================
-	local forest = self:BuildAnchorForest(settings, barGroups, false, false)
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
 
 	-- Per-root data: wrappers, CDM settings, effectiveWidth
@@ -546,8 +623,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		if rootBarKey == "primary" then
 			rootEffWidth = settings.bar.width
 		else
-			local rootBarSettings = self:GetBarSettings(settings, rootBarKey)
-			rootEffWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+			local rootBarSettings = self:GetBarSettings(layoutSettings, rootBarKey)
+			-- For multi-node bars (e.g., secondary/combo points), barSettings.width is
+			-- per-node width. The total rendered width is nodeCount * nodeWidth + spacing.
+			-- Without this, the root effective width would be just one node's width.
+			local rootGroup = barGroups[rootBarKey]
+			rootEffWidth = self:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
+			if rootEffWidth == 0 then
+				rootEffWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+			end
 		end
 		if rootCdmWidthMatch then
 			local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
@@ -709,93 +793,20 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 
 	-- Configure secondary bar groups (combo points, arcane charges, runes, etc.)
-	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
-	-- but they DO have a secondary bar group for combo points when in cat form.
-	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
-	local hasComboPointSettings = settings.comboPoints ~= nil
-	local feralSettingsForDruid = nil
-	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
-		-- Check if form switching is enabled for this Druid spec
-		-- enableFormSwitching defaults to true. Only skip secondary bar if explicitly set to false.
-		local specName = TRB.Data.character.specName
-		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
-		local enableFormSwitching = true
-		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
-			enableFormSwitching = false
-		end
-		
-		if enableFormSwitching then
-			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			if not feralSettingsForDruid then
-				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
-			end
-			if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
-				hasComboPointSettings = true
-			end
-		end
-	end
+	-- DRUID SPECIAL CASE: layoutSettings already has Feral's comboPoints merged in
+	-- (done above, before BuildAnchorForest) so we can use it directly.
+	local hasComboPointSettings = layoutSettings.comboPoints ~= nil
 
 	if barGroups.secondary and hasComboPointSettings then
-		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
-		-- When on a non-Feral Druid spec, use Feral's combo point configuration
-		-- so that changes made in Feral options are reflected immediately.
-		local effectiveSettings = settings
-		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
-			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
-			local feralSettings = feralSettingsForDruid
-			if not feralSettings then
-				feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			end
-			if not feralSettings then
-				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
-			end
-			if feralSettings and feralSettings.comboPoints then
-				-- Create a shallow copy with Feral's combo point settings
-				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
----@diagnostic disable-next-line: missing-fields
-				effectiveSettings = {}
-				for k, v in pairs(settings) do
-					effectiveSettings[k] = v
-				end
-				effectiveSettings.comboPoints = feralSettings.comboPoints
-				-- Create a new textures table with current spec's textures, then override combo point textures
-				if feralSettings.textures then
-					local newTextures = {}
-					if settings.textures then
-						for k, v in pairs(settings.textures) do
-							newTextures[k] = v
-						end
-					end
-					newTextures.comboPointsBar = feralSettings.textures.comboPointsBar
-					newTextures.comboPointsBorder = feralSettings.textures.comboPointsBorder
-					newTextures.comboPointsBackground = feralSettings.textures.comboPointsBackground
-					effectiveSettings.textures = newTextures
-				end
-				-- Create a new colors table with current spec's colors, then override combo point colors
-				if feralSettings.colors and feralSettings.colors.comboPoints then
-					local newColors = {}
-					if settings.colors then
-						for k, v in pairs(settings.colors) do
-							newColors[k] = v
-						end
-					end
-					newColors.comboPoints = feralSettings.colors.comboPoints
-					effectiveSettings.colors = newColors
-				end
-			end
-		end
-
 		-- Resolve anchor group for secondary bar from settings
-		local secondaryAnchor = self:GetBarAnchor(effectiveSettings, "secondary")
+		local secondaryAnchor = self:GetBarAnchor(layoutSettings, "secondary")
 		local secondaryAnchorKey = (secondaryAnchor and secondaryAnchor.barKey) or "primary"
 		local secondaryAnchorGroup
 		if secondaryAnchorKey ~= "screen" then
 			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
 		end
 		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
-		self:ConstructSecondaryBarGroup(effectiveSettings, secondaryAnchorGroup, barGroups.secondary, false)
+		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
@@ -812,7 +823,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				local thresholds = node:GetThresholds()
 				if thresholds and #thresholds > 0 then
 					for _, threshold in ipairs(thresholds) do
-						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, effectiveSettings)
+						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, layoutSettings)
 					end
 				end
 			end
@@ -897,14 +908,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 				wrapperFrame:SetPoint(editModePosition.point, editModePosition.x, editModePosition.y)
 			else
 				-- No saved Edit Mode position yet; use root bar's screen position as default
-				local rootAnchor = self:GetBarAnchor(settings, rootBarKey)
+				local rootAnchor = self:GetBarAnchor(layoutSettings, rootBarKey)
 				local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
 				local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
 				wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
 			end
 		else
 			-- Use Case 1: Edit Mode disabled - use root bar's screen position
-			local rootAnchor = self:GetBarAnchor(settings, rootBarKey)
+			local rootAnchor = self:GetBarAnchor(layoutSettings, rootBarKey)
 			local xPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.xOffset) or settings.bar.xPos or 0
 			local yPos = (rootAnchor and rootAnchor.barKey == "screen" and rootAnchor.yOffset) or settings.bar.yPos or -200
 			wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", xPos, yPos)
@@ -925,9 +936,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- Per-root CDM anchoring / wrapper sizing (must be done after all bars are laid out)
 	for rootBarKey, meta in pairs(rootMetadata) do
 		if meta.useCdm then
-			self:ApplyCooldownManagerAnchoring(barGroups, meta.anchorMode, meta.anchorOffset, meta.effectiveWidth, settings, rootBarKey)
+			self:ApplyCooldownManagerAnchoring(barGroups, meta.anchorMode, meta.anchorOffset, meta.effectiveWidth, layoutSettings, rootBarKey)
 		else
-			TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
+			TRB.Functions.EditMode:UpdateWrapperSize(layoutSettings, rootBarKey)
 		end
 	end
 
@@ -1023,8 +1034,33 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 
 	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
 
+	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's comboPoints for forest building
+	local layoutSettings = settings
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		if enableFormSwitching then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettings and feralSettings.comboPoints then
+				---@diagnostic disable-next-line: missing-fields
+				layoutSettings = {}
+				for k, v in pairs(settings) do
+					layoutSettings[k] = v
+				end
+				layoutSettings.comboPoints = feralSettings.comboPoints
+			end
+		end
+	end
+
 	-- Build forest to iterate per-root
-	local forest = self:BuildAnchorForest(settings, barGroups, false, false)
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
 
 	for rootBarKey, _ in pairs(forest) do
 		local anchorMode = TRB.Functions.EditMode:GetAnchorMode(nil, rootBarKey)
@@ -1034,11 +1070,15 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 		if useCdm then
 			local anchorOffset = TRB.Functions.EditMode:GetAnchorOffset(nil, rootBarKey)
 			local rootEffWidth = (barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[rootBarKey]) or barGroups.effectiveWidth or settings.bar.width
-			self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, rootEffWidth, settings, rootBarKey)
+			self:ApplyCooldownManagerAnchoring(barGroups, anchorMode, anchorOffset, rootEffWidth, layoutSettings, rootBarKey)
 		else
-			TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
+			TRB.Functions.EditMode:UpdateWrapperSize(layoutSettings, rootBarKey)
 		end
 	end
+
+	-- Druid form-switch: hide/show wrappers for form-dependent tree roots (e.g., combo
+	-- points hidden when not in cat form, mana hidden when not in moonkin form).
+	TRB.Functions.EditMode:RefreshDruidWrapperVisibility(layoutSettings, forest)
 end
 
 
@@ -1086,10 +1126,10 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- DRUID SPECIAL CASE: Non-Feral Druids don't have comboPoints in their settings,
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
-	-- However, if enableFormSwitching is disabled, skip the secondary bar entirely for non-Feral.
+	-- Non-Feral Druids ALWAYS use Feral's combo point settings for appearance.
 	local hasComboPointSettings = settings.comboPoints ~= nil
 	local feralSettingsForDruid = nil
-	if not hasComboPointSettings and TRB.Data.character.classId == 11 then
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
 		-- Check if form switching is enabled for this Druid spec
 		-- enableFormSwitching defaults to true. Only skip if explicitly set to false.
 		local specName = TRB.Data.character.specName
@@ -1112,9 +1152,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	end
 
 	if barGroups.secondary and hasComboPointSettings then
-		-- DRUID SPECIAL CASE: All Druid specs share Feral's combo point settings.
+		-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings.
 		local effectiveSettings = settings
-		if TRB.Data.character.classId == 11 and (TRB.Data.character.specId ~= 2 or not settings.comboPoints) then
+		if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
 			local feralSettings = feralSettingsForDruid
 			if not feralSettings then
@@ -1299,6 +1339,30 @@ function TRB.Functions.Bar:GetMatchWidth(barSettings)
 	end
 	-- Phase 1 fallback to legacy field
 	return barSettings and barSettings.fullWidth or false
+end
+
+---Returns the effective width and CDM-forced fullWidth state for a bar group.
+---Checks per-root effective widths first (which include CDM width matching when the bar
+---is a forest root), then falls back to the primary bar's effective width.
+---@param barGroups table? # TRB.Frames.barGroups
+---@param settings table # Spec settings containing bar.width as fallback
+---@param barKey string # The bar key to resolve width for (e.g., "secondary")
+---@return number effectiveWidth # The resolved width
+---@return boolean cdmForced # Whether CDM width matching is active (caller should force fullWidth)
+function TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, barKey)
+	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+	local cdmForced = false
+
+	-- Check for per-root effective width (handles CDM matching when the bar is its own root)
+	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
+		effectiveWidth = barGroups.rootEffectiveWidths[barKey]
+		-- Check if CDM width matching is active for this root
+		if TRB.Functions.EditMode and TRB.Functions.EditMode.IsWidthMatchingEnabled then
+			cdmForced = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, barKey)
+		end
+	end
+
+	return effectiveWidth, cdmForced
 end
 
 ---Resolves the actual width for a bar, following the matchWidth chain if necessary.
@@ -1801,6 +1865,7 @@ end
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
+---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
 
 ---Constructs an anchored bar group (combo points, health bar, etc.)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -1888,9 +1953,20 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Use GetAnchorFrame() which returns the border frame for single-node bars
 	-- and the container frame for multi-node bars, giving us the full visual extent.
 	local anchorContainer
+	local isScreenRoot = false
 	if anchor.barKey == "screen" then
-		-- Screen anchor: position directly on UIParent
-		anchorContainer = UIParent
+		-- Screen-anchored bar: check if it's a tree root with a wrapper frame.
+		-- ApplyBarGroupsLayout parents root bar containers to their wrapper frame.
+		-- If the container has been parented to a wrapper, position relative to the wrapper,
+		-- NOT UIParent. The wrapper handles CDM/EditMode positioning.
+		local currentParent = targetGroup.containerFrame:GetParent()
+		if currentParent and currentParent ~= UIParent and currentParent.trbRootBarKey then
+			-- Container is parented to a TRB wrapper frame — position inside it
+			anchorContainer = currentParent
+			isScreenRoot = true
+		else
+			anchorContainer = UIParent
+		end
 	elseif anchorGroup and anchorGroup.GetAnchorFrame then
 		-- Bar anchor: position relative to anchorGroup's visual extent (border)
 		anchorContainer = anchorGroup:GetAnchorFrame()
@@ -1928,16 +2004,42 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		groupWidth = config.rootEffectiveWidth
 	end
 
+	-- CDM width matching override: when Edit Mode has CDM width matching active for this
+	-- bar's root, the CDM width should take precedence over the resolved groupWidth.
+	-- This handles the case where the bar's own anchor is "primary" with matchWidth=true
+	-- (resolved above to primary's width), but Edit Mode has positioned the wrapper at CDM
+	-- with a wider CDM width.
+	if config.cdmWidthMatched and config.rootEffectiveWidth then
+		groupWidth = config.rootEffectiveWidth
+	end
+
 	-- Position the target container using the new anchor system
 	targetGroup.containerFrame:ClearAllPoints()
-	targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
+	if isScreenRoot then
+		-- Screen-anchored tree root: position relative to wrapper frame.
+		-- The wrapper handles CDM/EditMode positioning; the container just sits at its top.
+		targetGroup.containerFrame:SetPoint("TOP", anchorContainer, "TOP", 0, 0)
+	else
+		targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
+	end
 	targetGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
 
 	-- Apply layout or size directly based on config
 	if config.useApplyLayout then
 		-- Multi-node layout (combo points, runes, etc.)
+		-- Use groupWidth for totalWidth: it has been resolved for matchWidth (parent's width),
+		-- screen-anchored root (rootEffectiveWidth/CDM), or per-node width (non-match case).
+
+		-- When CDM width matching is active for a multi-node root, force fullWidth
+		-- so ApplyLayout stretches nodes to fill the CDM width.
+		-- This is needed because anchor.matchWidth (which normally sets fullWidth via
+		-- SetLayout) doesn't account for CDM matching — they're separate mechanisms.
+		if config.cdmWidthMatched then
+			targetGroup.fullWidth = true
+		end
+
 		targetGroup:ApplyLayout(
-			effectiveWidth,
+			groupWidth,
 			groupSettings.width,
 			groupSettings.height,
 			groupSettings.border
@@ -2056,6 +2158,18 @@ end
 ---@param secondaryGroup TRB.Classes.BarGroup
 ---@param applyAppearance boolean?
 function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
+	local barGroups = TRB.Frames.barGroups
+	local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, "secondary")
+
+	-- Determine the effective root width for secondary.
+	-- Priority: rootEffectiveWidths (if secondary is a forest root) > CDM width > nil
+	local rootEffWidth = barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths["secondary"]
+	if not rootEffWidth and cdmMatched then
+		-- Secondary is a child of primary in the forest, but Edit Mode has CDM width
+		-- matching enabled for it. Get the CDM width directly.
+		rootEffWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+	end
+
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
 		settingsKey = "comboPoints",
@@ -2063,6 +2177,8 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		nodeCount = nil, -- Dynamic based on maxResource2
 		useApplyLayout = true,
 		defaultAnchorAbove = true,
+		rootEffectiveWidth = rootEffWidth,
+		cdmWidthMatched = cdmMatched,
 		textures = {
 			bar = "comboPointsBar",
 			border = "comboPointsBorder",

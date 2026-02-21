@@ -2854,12 +2854,15 @@ function TRB.Functions.Class:CheckCharacter()
 				local feralSettings = TRB.Data.specCache.druid_feral.settings
 
 				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
-					-- Get effective width (may be CDM-matched) from barGroups or fall back to feral settings
-					local effectiveWidth = (barGroups and barGroups.effectiveWidth) or feralSettings.bar.width
+					-- Get effective width for secondary bar, accounting for CDM width matching
+					local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
 					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
 					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
+					if cdmForced then
+						barGroups.secondary.fullWidth = true
+					end
 					barGroups.secondary:ApplyLayout(
 						effectiveWidth,
 						feralSettings.comboPoints.width,

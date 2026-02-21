@@ -135,11 +135,11 @@ end
 local function Setup_Affliction()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "affliction", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Affliction using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_affliction" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Affliction()
@@ -153,11 +153,11 @@ end
 local function Setup_Demonology()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "demonology", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Demonology using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_demonology" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Demonology()
@@ -173,11 +173,11 @@ end
 local function Setup_Destruction()
 	TRB.Functions.Character:FillSpecializationCacheSettings("warlock", "destruction", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Destruction using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_destruction" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Destruction()
@@ -253,8 +253,11 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 		barGroups.secondary:Show()
 		
-		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-		local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+		-- Get effective width for secondary bar, accounting for CDM width matching
+		local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+		if cdmForced then
+			barGroups.secondary.fullWidth = true
+		end
 		
 		-- Apply layout to position all nodes correctly
 		barGroups.secondary:ApplyLayout(

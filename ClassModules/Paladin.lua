@@ -131,11 +131,11 @@ end
 local function Setup_Holy()
 	TRB.Functions.Character:FillSpecializationCacheSettings("paladin", "holy", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Holy using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(1, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_holy" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(1, UIParent)
+	end
 end
 
 local function FillSpellData_Holy()
@@ -149,11 +149,11 @@ end
 local function Setup_Protection()
 	TRB.Functions.Character:FillSpecializationCacheSettings("paladin", "protection", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Protection using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(2, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_protection" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(2, UIParent)
+	end
 end
 
 local function FillSpellData_Protection()
@@ -167,11 +167,11 @@ end
 local function Setup_Retribution()
 	TRB.Functions.Character:FillSpecializationCacheSettings("paladin", "retribution", true)
 	
-	-- Destroy existing bar groups before creating new ones
-	TRB.Functions.Bar:DestroyBarGroups()
-	
-	-- Create bar groups for Retribution using new OOP system
-	TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(3, UIParent)
+	-- Only destroy and recreate bar groups when switching to this spec
+	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_retribution" then
+		TRB.Functions.Bar:DestroyBarGroups()
+		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(3, UIParent)
+	end
 end
 
 local function FillSpellData_Retribution()
@@ -259,8 +259,11 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 		barGroups.secondary:Show()
 		
-		-- Get effective width (may be CDM-matched) from barGroups or fall back to settings
-		local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+		-- Get effective width for secondary bar, accounting for CDM width matching
+		local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+		if cdmForced then
+			barGroups.secondary.fullWidth = true
+		end
 		
 		-- Apply layout to position all nodes correctly
 		barGroups.secondary:ApplyLayout(

@@ -28,6 +28,30 @@ local isInitialized = false
 -- Guard to prevent re-entrancy when temporarily showing CDM to get dimensions
 local isTemporarilyShowingCDM = false
 
+---Walks the anchor chain from a bar key up to its tree root.
+---Returns the root bar key. Used by the Druid per-tree guard in CalculateWrapperLayout.
+---@param barKey string # The bar key to find the root for
+---@param settings table # Spec settings table for anchor lookup
+---@param barGroups table # Current bar groups
+---@return string # The root bar key of the tree containing barKey
+local function findBarKeyRoot(barKey, settings, barGroups)
+	local current = barKey
+	local visited = {}
+	while current do
+		if visited[current] then return current end
+		visited[current] = true
+		local anchor = TRB.Functions.Bar:GetBarAnchor(settings, current)
+		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
+			return current -- this bar is a root
+		end
+		if not barGroups[anchor.barKey] then
+			return current -- orphan (anchor target doesn't exist)
+		end
+		current = anchor.barKey
+	end
+	return barKey
+end
+
 ---Initializes the Edit Mode integration
 ---Sets up callbacks for layout changes, renames, and deletions
 ---Safe to call multiple times - will only initialize once
@@ -221,6 +245,59 @@ function TRB.Functions.EditMode:UpdateAllWrapperSizes(settings)
 	end
 end
 
+---Hides or shows wrapper frames for Druid form-dependent bars.
+---When the Druid changes form, bars like combo points (secondary) and mana may become
+---invisible. If such a bar is the root of its own tree (screen-anchored), the wrapper
+---should be hidden so it doesn't linger as an empty container or capture mouse events.
+---@param settings table? # Spec settings table
+---@param forest table<string, table>? # Pre-built anchor forest (avoids rebuilding)
+function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
+	if TRB.Data.character.classId ~= 11 then
+		return
+	end
+
+	-- Don't hide wrappers during Edit Mode — all bars should remain visible
+	if self:IsInEditMode() then
+		return
+	end
+
+	local barGroups = TRB.Frames.barGroups
+	if not barGroups then
+		return
+	end
+
+	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+	local shouldShowSecondary = (currentForm == "cat")
+	local shouldShowMana = (currentForm == "moonkin" and TRB.Data.character.specId == 1)
+
+	-- Check if secondary is its own tree root (has a wrapper)
+	local secondaryWrapper = editModeWrapperFrames["secondary"]
+	if secondaryWrapper then
+		-- Only manage visibility if secondary is actually a root in the current forest
+		local isSecondaryRoot = forest and forest["secondary"] ~= nil
+		if isSecondaryRoot then
+			if shouldShowSecondary then
+				secondaryWrapper:Show()
+			else
+				secondaryWrapper:Hide()
+			end
+		end
+	end
+
+	-- Check if mana is its own tree root (has a wrapper)
+	local manaWrapper = editModeWrapperFrames["mana"]
+	if manaWrapper then
+		local isManaRoot = forest and forest["mana"] ~= nil
+		if isManaRoot then
+			if shouldShowMana then
+				manaWrapper:Show()
+			else
+				manaWrapper:Hide()
+			end
+		end
+	end
+end
+
 ---Calculates layout information for a specific wrapper frame based on settings.
 ---Uses the anchor forest to get the tree for the given root and recursively
 ---compute a 2D bounding box encompassing all bars in that tree.
@@ -260,7 +337,13 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		effectiveWidth = barGroups.effectiveWidth
 	else
 		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
-		effectiveWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+		-- For multi-node bars (secondary/combo points), barSettings.width is per-node.
+		-- Calculate total group width: nodeCount * nodeWidth + (nodeCount-1) * spacing
+		local rootGroup = barGroups[rootBarKey]
+		effectiveWidth = TRB.Functions.Bar:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
+		if effectiveWidth == 0 then
+			effectiveWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
+		end
 	end
 
 	-- DRUID SPECIAL CASE: Druids have form-based bar visibility that's controlled at
@@ -269,23 +352,50 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	-- - Combo points (secondary): only visible in Cat form (displaySpecId 2)
 	-- - Mana bar (custom): only visible in Balance/Moonkin form (displaySpecId 1)
 	-- Without matching, the wrapper is the wrong size and creates gaps/offsets.
+	--
+	-- PER-TREE LOGIC: Only inject/strip bars that belong to the tree rooted at rootBarKey.
+	-- In multi-root mode, secondary might be its own root (screen-anchored) or a child
+	-- of another tree. We must determine which tree it belongs to before modifying settings.
 	local treeSettings = settings
 	if TRB.Data.character.classId == 11 and not includeHidden then
 		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 		local shouldIncludeComboPoints = (currentForm == "cat")
 		local shouldIncludeMana = (currentForm == "moonkin" and TRB.Data.character.specId == 1)
 
-		-- Determine if we need to create a modified settings copy.
-		-- CRITICAL: For non-Feral Druids in cat form, ALWAYS inject Feral's comboPoints
-		-- settings, even if the current spec's settings already has a comboPoints table
-		-- (e.g., from saved vars or global settings resolution). The rendering path
-		-- (ApplyBarGroupsLayout) always overrides with Feral's comboPoints for non-Feral
-		-- Druids, so the anchoring path must match. Without this, the bounding box uses
-		-- the current spec's stale/global comboPoints dimensions instead of Feral's.
 		local isNonFeralDruid = (TRB.Data.character.specId ~= 2)
-		local needsComboPointsInject = shouldIncludeComboPoints and isNonFeralDruid
-		local needsComboPointsStrip = not shouldIncludeComboPoints and settings.comboPoints
-		local needsManaStrip = not shouldIncludeMana and settings.bars and settings.bars.mana
+		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+
+		-- Determine which tree "secondary" belongs to, so we only inject/strip when
+		-- calculating the bounding box for that specific tree.
+		local secondaryRoot = nil
+		if shouldIncludeComboPoints and isNonFeralDruid then
+			-- Inject case: non-Feral in cat form. Since the current spec has no comboPoints
+			-- settings (and thus no anchor), use Feral's anchor to determine secondary's tree.
+			-- Walk from Feral's comboPoints anchor target up through the current spec's
+			-- anchor chain to find the root.
+			if feralSettings and feralSettings.comboPoints then
+				local feralAnchor = feralSettings.comboPoints.anchor
+				if feralAnchor and feralAnchor.barKey and feralAnchor.barKey ~= "screen" then
+					secondaryRoot = findBarKeyRoot(feralAnchor.barKey, settings, barGroups)
+				else
+					secondaryRoot = "secondary" -- screen-anchored → secondary is its own root
+				end
+			end
+		elseif not shouldIncludeComboPoints and settings.comboPoints then
+			-- Strip case: not in cat form, but settings has comboPoints (e.g., Feral spec)
+			secondaryRoot = findBarKeyRoot("secondary", settings, barGroups)
+		end
+
+		-- Determine which tree "mana" belongs to for mana stripping
+		local manaRoot = nil
+		if not shouldIncludeMana and settings.bars and settings.bars.mana then
+			manaRoot = findBarKeyRoot("mana", settings, barGroups)
+		end
+
+		-- Only apply inject/strip for bars that are in THIS tree (rootBarKey)
+		local needsComboPointsInject = shouldIncludeComboPoints and isNonFeralDruid and secondaryRoot == rootBarKey
+		local needsComboPointsStrip = not shouldIncludeComboPoints and settings.comboPoints and secondaryRoot == rootBarKey
+		local needsManaStrip = manaRoot ~= nil and manaRoot == rootBarKey
 
 		if needsComboPointsInject or needsComboPointsStrip or needsManaStrip then
 			-- Create a shallow copy of settings so we can modify it without affecting the original
@@ -303,7 +413,6 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 
 			if needsComboPointsInject then
 				-- Cat form on non-Feral spec: always use Feral's comboPoints settings
-				local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 				if feralSettings and feralSettings.comboPoints then
 					treeSettings.comboPoints = feralSettings.comboPoints
 				end
@@ -403,6 +512,18 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			local nodeWidth = barSettings.width or 10
 			local nodeSpacing = barSettings.spacing or 2
 			w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+		end
+
+		-- CDM width matching override: Edit Mode may have CDM width matching enabled
+		-- for this bar's root, expanding it beyond the matchWidth/calculated width.
+		if node.barKey then
+			local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, node.barKey)
+			if cdmMatched then
+				local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
+				if cdmWidth and cdmWidth > w then
+					w = cdmWidth
+				end
+			end
 		end
 
 		return w, h
@@ -583,8 +704,34 @@ function TRB.Functions.EditMode:RegisterAllTreeRoots()
 		return
 	end
 
+	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's comboPoints settings
+	-- so the forest sees the correct anchor config for secondary (e.g., barKey="screen").
+	local layoutSettings = settings
+	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
+		local specName = TRB.Data.character.specName
+		local druidSettings = TRB.Data.settings.druid and TRB.Data.settings.druid[specName]
+		local enableFormSwitching = true
+		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		if enableFormSwitching then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if not feralSettings then
+				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			end
+			if feralSettings and feralSettings.comboPoints then
+				---@diagnostic disable-next-line: missing-fields
+				layoutSettings = {}
+				for k, v in pairs(settings) do
+					layoutSettings[k] = v
+				end
+				layoutSettings.comboPoints = feralSettings.comboPoints
+			end
+		end
+	end
+
 	-- Build the forest to find all tree roots
-	local forest = TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, false, true)
+	local forest = TRB.Functions.Bar:BuildAnchorForest(layoutSettings, barGroups, false, true)
 
 	-- Register each root
 	for rootBarKey, _ in pairs(forest) do
