@@ -241,7 +241,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -1293,7 +1293,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-			return primaryNode:GetResourceFrame(), true, isVisible
+			return primaryNode:GetFrame(), true, isVisible
 		end
 		return nil, true, false
 	end
@@ -1303,7 +1303,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1316,7 +1316,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local holyPowerNode = barGroups.secondary:GetNode(comboPoint)
 			if holyPowerNode then
 				local isVisible = barGroups.secondary.isVisible and holyPowerNode.isVisible
-				return holyPowerNode:GetResourceFrame(), true, isVisible
+				return holyPowerNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

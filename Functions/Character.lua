@@ -1191,7 +1191,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
 				primaryNode:ClearThresholds()
 				for _ = 1, #thresholdSpells do
-					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 					primaryNode:RegisterThreshold(thresholdFrame)
 				end

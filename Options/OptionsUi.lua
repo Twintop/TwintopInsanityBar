@@ -951,7 +951,7 @@ function TRB.Functions.OptionsUi:GetPrimaryBackdropFrame()
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
-			return primaryNode:GetContainerFrame()
+			return primaryNode:GetFrame()
 		end
 	end
 	return nil
@@ -967,7 +967,7 @@ function TRB.Functions.OptionsUi:GetSecondaryBackdropFrames()
 		for i = 1, nodeCount do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
-				local containerFrame = node:GetContainerFrame()
+				local containerFrame = node:GetFrame()
 				if containerFrame then
 					table.insert(frames, containerFrame)
 				end
@@ -984,7 +984,7 @@ function TRB.Functions.OptionsUi:GetHealthBackdropFrame()
 	if barGroups and barGroups.health then
 		local healthNode = barGroups.health:GetNode(1)
 		if healthNode then
-			return healthNode:GetContainerFrame()
+			return healthNode:GetFrame()
 		end
 	end
 	return nil
@@ -5333,7 +5333,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		local barFrame = nil
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
-			barFrame = node and node.GetResourceFrame and node:GetResourceFrame() or nil
+			barFrame = node and node.GetFrame and node:GetFrame() or nil
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
@@ -5355,7 +5355,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		local borderFrame = nil
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
-			borderFrame = node and node.GetBorderFrame and node:GetBorderFrame() or borderFrame
+			borderFrame = node and node.GetFrame and node:GetFrame() or borderFrame
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)

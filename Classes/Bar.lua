@@ -10,9 +10,6 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
----@field public containerFrame StatusBar # Alias for frame (backward compat)
----@field public borderFrame StatusBar # Alias for frame (backward compat)
----@field public resourceFrame StatusBar # Alias for frame (backward compat)
 ---@field public thresholds Frame[]
 ---@field public index integer
 ---@field public name string
@@ -55,11 +52,6 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.frame:SetFrameStrata("BACKGROUND")
 	-- Hide by default - nodes should only be shown explicitly
 	self.frame:Hide()
-
-	-- Alias all legacy accessors to the single frame for backward compatibility
-	self.containerFrame = self.frame
-	self.borderFrame = self.frame
-	self.resourceFrame = self.frame
 
 	-- Initialize the frame's thresholds array for compatibility
 ---@diagnostic disable-next-line: inject-field
@@ -290,24 +282,6 @@ function TRB.Classes.BarNode:GetFrame()
 	return self.frame
 end
 
----Returns the resource frame (alias for GetFrame, backward compat)
----@return StatusBar
-function TRB.Classes.BarNode:GetResourceFrame()
-	return self.frame
-end
-
----Returns the container frame (alias for GetFrame, backward compat)
----@return StatusBar
-function TRB.Classes.BarNode:GetContainerFrame()
-	return self.frame
-end
-
----Returns the border frame (alias for GetFrame, backward compat)
----@return StatusBar
-function TRB.Classes.BarNode:GetBorderFrame()
-	return self.frame
-end
-
 ---Registers a threshold frame with this node, or creates one at the specified index
 ---@param thresholdFrameOrIndex Frame|integer # Either a Frame to register, or an index to create a new threshold at
 ---@return Frame # The registered or created threshold frame
@@ -352,13 +326,6 @@ end
 function TRB.Classes.BarNode:GetThresholds()
 	return self.thresholds
 end
-
----Legacy no-op: With a single frame, there is nothing to position relative to itself.
----Retained for backward compatibility with callers.
-function TRB.Classes.BarNode:PositionResourceFrame()
-	-- No-op: single consolidated frame, nothing to reposition
-end
-
 
 --[[
 	BarGroup: A container for 1 or more BarNode instances.
