@@ -4275,7 +4275,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if type(specSettings) == "table" then
-						-- Migrate primary bar (only relevant if baseBarKey is changed from "primary")
 						MigrateBarAnchor(specSettings.bar)
 
 						-- Migrate secondary bar (combo points)
@@ -4293,10 +4292,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 							end
 						end
 
-						-- Create anchorLayout if not present
-						if specSettings.anchorLayout == nil then
-							specSettings.anchorLayout = TRB.Functions.Settings:DefaultAnchorLayout()
-						end
 					end
 				end
 			end
@@ -4691,13 +4686,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	}
 end
 
----Gets the default anchor layout configuration
----@return TRB.Classes.Settings.AnchorLayout
-function TRB.Functions.Settings:DefaultAnchorLayout()
-	return {
-		baseBarKey = "primary", -- Deprecated: no longer used in layout. Retained for backward compatibility.
-	}
-end
+
 
 ---Migrates anchor blocks for all bar settings in the provided settings table.
 ---Synthesizes anchor blocks from legacy relativeTo/xPos/yPos/fullWidth fields.
@@ -4757,9 +4746,6 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 								MigrateOne(barDimSettings)
 							end
 						end
-					end
-					if specSettings.anchorLayout == nil then
-						specSettings.anchorLayout = self:DefaultAnchorLayout()
 					end
 				end
 			end

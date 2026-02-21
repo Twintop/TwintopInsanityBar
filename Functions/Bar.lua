@@ -1546,33 +1546,9 @@ function TRB.Functions.Bar:GetBarDisplayName(barKey)
 	end
 end
 
----@deprecated Use BuildAnchorForest() instead. This function is no longer called from the layout path.
----Finds the root bar of the wrapper tree by walking up from baseBarKey.
----The root is the bar whose anchor has barKey="screen" (or no anchor), meaning it's positioned on UIParent.
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barGroups table<string, TRB.Classes.BarGroup>
----@return string # The barKey of the wrapper tree root
-function TRB.Functions.Bar:FindWrapperRoot(settings, barGroups)
-	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
-	local current = baseBarKey
-	local visited = {}
-	while true do
-		if visited[current] then return current end -- cycle, stop
-		visited[current] = true
-		local anchor = self:GetBarAnchor(settings, current)
-		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
-			return current -- reached a screen-anchored bar = this is the root
-		end
-		if not barGroups[anchor.barKey] then
-			return current -- parent doesn't exist in barGroups, this is effectively the root
-		end
-		current = anchor.barKey
-	end
-end
-
 ---Validates that an anchor configuration does not create a cycle.
 ---The tree is a forest: bars with barKey="screen" are roots (anchored to UIParent).
----A valid tree means every bar can reach either "screen" or the baseBarKey by
+---A valid tree means every bar can reach either "screen" or "primary" by
 ---following parent links without revisiting a node.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
@@ -1648,9 +1624,9 @@ function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGr
 end
 
 ---@deprecated Use BuildAnchorForest() instead. Retained as fallback for CalculateWrapperLayout edge cases.
----Builds the anchor tree from settings, returning the root node of the baseBarKey's tree.
+---Builds the anchor tree from settings, returning the root node of the "primary" bar's tree.
 ---The tree is a forest: bars with barKey="screen" are independent roots.
----This function finds the root that contains the baseBarKey and builds only that sub-tree.
+---This function finds the root that contains "primary" and builds only that sub-tree.
 ---Hidden bars are optionally collapsed: their children re-parent to the hidden bar's parent.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
@@ -1662,7 +1638,6 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 		return nil
 	end
 
-	local baseBarKey = (settings.anchorLayout and settings.anchorLayout.baseBarKey) or "primary"
 	local allKeys = self:GetAllBarKeys(barGroups)
 
 	-- Build all nodes; bars with barKey="screen" or no anchor are roots (anchor = nil)
@@ -1689,8 +1664,8 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 		end
 	end
 
-	-- Find the root of the baseBarKey's tree by walking up the parent chain
-	local rootKey = baseBarKey
+	-- Find the root of the "primary" bar's tree by walking up the parent chain
+	local rootKey = "primary"
 	local visited = {}
 	while parentOf[rootKey] and not visited[rootKey] do
 		visited[rootKey] = true

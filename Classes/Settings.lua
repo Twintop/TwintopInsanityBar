@@ -29,7 +29,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public precision TRB.Classes.Settings.Precision
 ---@field public audio { string: TRB.Classes.Settings.Audio }
 ---@field public maxResource table?
----@field public anchorLayout TRB.Classes.Settings.AnchorLayout?
+
 
 ---@class TRB.Classes.Settings.Core : TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public colors TRB.Classes.Settings.ColorsCore
@@ -187,10 +187,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public xOffset number # Horizontal pixel offset from the anchor point
 ---@field public yOffset number # Vertical pixel offset from the anchor point
 ---@field public matchWidth boolean # If true, this bar's width matches the anchor bar's effective width
-
----Defines the anchor tree root for a spec's bar layout.
----@class TRB.Classes.Settings.AnchorLayout
----@field public baseBarKey string # @deprecated No longer used in layout. Retained for backward compatibility.
 
 ---@class TRB.Classes.Settings.AnchorTreeNode
 ---@field public barKey string # Key of this bar
