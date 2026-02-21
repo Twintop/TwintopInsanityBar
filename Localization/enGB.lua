@@ -98,7 +98,7 @@ if locale == "enGB" then
     L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity"
     L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."
     L["PriestShadowTextColorsHeader"] = "Insanity Text Colours"
-    L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Devouring Plague"
+    L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Shadow Word: Madness"
     L["ShamanManaCheckboxAscendanceEnd"] = "Ascendance colour change when ending enabled"
     L["ShamanManaCheckboxAscendanceEndTooltip"] = "Changes the bar colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["ShamanElementalCheckboxAscendanceEnd"] = "Ascendance colour change when ending enabled"
