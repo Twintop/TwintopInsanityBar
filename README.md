@@ -144,6 +144,7 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
 - **Essence** (Devastation/Preservation/Augmentation Evoker) - displayed with timer-based regeneration progress
 - **Holy Power** (Holy/Protection/Retribution Paladin)
+- **Holy Words** (Holy Priest) - individually toggleable cooldown nodes for Holy Word: Serenity, Sanctify, and Chastise with real-time cooldown progress and CDR tracking
 - **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
@@ -186,6 +187,7 @@ Many specs can track important buff status and timers via color changes and dire
 
 | Spec | Tracked Cooldowns |
 | ------ | ------------------- |
+| Holy Priest | Apotheosis, Holy Word cooldown reduction tracking |
 | Shadow Priest | Voidform, Entropic Rift (including extensions remaining) |
 | Balance Druid | Eclipse/Incarnation |
 | Feral Druid | Berserk/Incarnation, including incoming combo point generation timing |
