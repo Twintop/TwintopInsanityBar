@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.9-release (2026-02-22)
+## General
+
+- Upgrade LibDbIcon.
+
+---
+
 # 12.0.1.8-release (2026-02-21)
 ## General
 
