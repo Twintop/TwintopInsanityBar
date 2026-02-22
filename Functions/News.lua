@@ -22,6 +22,11 @@ local content = [====[
 
 - [#632](#632) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
+## Demon Hunter
+### Vengeance
+
+- [#634](#634) Restore (almost all) original Soul Fragement functionality -- individual nodes instead of a single bar with thresholds, distinct colors for each node, and allow bar text areas to be placed in each.
+
 ---
 
 # 12.0.1.8-release (2026-02-21)
