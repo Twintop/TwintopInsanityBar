@@ -1933,3 +1933,4 @@ L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global settin
 L["SoulFragment6"] = "Soul Fragment 6"
 
 L["TabHolyWords"] = "Holy Words"
+L["TabPowerWords"] = "Power Words"

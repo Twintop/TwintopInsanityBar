@@ -67,10 +67,10 @@ end
 
 
 ---@class TRB.Classes.Priest.DisciplineSpells : TRB.Classes.Priest.HealerSpells
---[[---@field public atonement TRB.Classes.SpellBase
----@field public evangelism TRB.Classes.SpellBase
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
+--[[---@field public atonement TRB.Classes.SpellBase
+---@field public evangelism TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase]]
@@ -89,6 +89,16 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	-- Priest Talent Abilities
 
 	-- Discipline Talent Abilities
+	self.powerWordRadiance = TRB.Classes.SpellBase:New({
+		id = 194509,
+		isTalent = true,
+		hasCharges = true,
+		duration = 20
+	})
+	self.lightsPromise = TRB.Classes.SpellBase:New({
+		id = 322115,
+		isTalent = true
+	})
 	--[[self.atonement = TRB.Classes.SpellBase:New({
 		id = 194384,
 		isTalent = true,
@@ -100,15 +110,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	self.evangelism = TRB.Classes.SpellBase:New({
 		id = 472433,
 		atonementMod = 6
-	})
-	self.powerWordRadiance = TRB.Classes.SpellBase:New({
-		id = 194509,
-		isTalent = true,
-		hasCharges = true
-	})
-	self.lightsPromise = TRB.Classes.SpellBase:New({
-		id = 322115,
-		isTalent = true
 	})
 	self.shadowCovenant = TRB.Classes.SpellBase:New({
 		id = 322105,
@@ -142,10 +143,10 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
-		--[[{ variable = "#atonement", icon = spells.atonement.icon, description = spells.atonement.name, printInSettings = true },
-		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 		{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
 		{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
+		--[[{ variable = "#atonement", icon = spells.atonement.icon, description = spells.atonement.name, printInSettings = true },
+		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },]]
 	})
@@ -157,17 +158,17 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$manaMax", description = L["PriestDisciplineBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false },
-				
-		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
-		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },
 
 		{ variable = "$pwRadianceTime", description = L["PriestDisciplineBarTextVariable_pwRadianceTime"], printInSettings = true, color = false },
 		{ variable = "$radianceTime", description = "", printInSettings = false, color = false },
 		{ variable = "$powerWordRadianceTime", description = "", printInSettings = false, color = false },
-		
+
 		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false },
 		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false },]]
+		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false },
+
+		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
+		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },]]
 	})
 end
 
@@ -951,6 +952,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
+        -- Secondary Power Words bar (up to 2 nodes: PWR 1 base + 1 from Light's Promise)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Secondary",
+            2,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             parentFrame or UIParent,
@@ -1022,6 +1031,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            secondary = {
+                maxNodes = 2,
+                isPrimary = false,
+                resourceType = "PowerWords"
             },
             health = {
                 maxNodes = 1,
