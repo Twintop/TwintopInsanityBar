@@ -1183,14 +1183,13 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	
 	local entries = TRB.Functions.Table:Length(displayText.barText)
-	local frameCount = 0
+	local frameCount = 1
 	if entries > 0 then
 		if displayText.default.fontFace == nil or displayText.default.fontFace == "" or displayText.default.fontFaceName == nil or displayText.default.fontFaceName == "" then
 			displayText.default.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
 			displayText.default.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
 		end
 
-		frameCount = 1
 		for i = 1, entries do
 			local e = displayText.barText[i]
 
@@ -1270,8 +1269,8 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	
 	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
 	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
-	if textFramesEntries > frameCount then
-		for i = frameCount+1, textFramesEntries do
+	if textFramesEntries >= frameCount then
+		for i = frameCount, textFramesEntries do
 			textFrames[i]:Hide()
 			---@diagnostic disable-next-line: undefined-field
 			textFrames[i].font:Hide()

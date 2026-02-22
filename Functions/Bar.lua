@@ -1222,8 +1222,10 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				-- not with layout (move/resize), to avoid clamping current values.
 				if isDevourer and i == 1 then
 					node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
-				elseif isVengeance and i == 1 then
-					node:SetMinMax(0, 6) -- 0-6 Soul Fragments
+				elseif isVengeance then
+					-- Stepped min/max: node 1 = (0,1), node 2 = (1,2), ... node 6 = (5,6)
+					-- All nodes receive the same raw secret value; StatusBar clamping handles fill
+					node:SetMinMax(i - 1, i)
 				else
 					node:SetMinMax(0, 1)
 				end

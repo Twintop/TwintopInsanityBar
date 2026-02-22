@@ -1933,3 +1933,5 @@ L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mi
 
 -- Global Health Bar Colors
 L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colors will be used instead of the specialization-specific setting."
+
+L["SoulFragment6"] = "Soul Fragment 6"

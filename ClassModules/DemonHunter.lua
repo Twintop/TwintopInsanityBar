@@ -252,20 +252,43 @@ local function ConstructResourceBar(settings)
 		if barGroups and barGroups.secondary then
 			barGroups.secondary:Hide()
 		end
-	elseif TRB.Data.character.specId == 2 then -- Vengeance - Soul Fragments bar with threshold dividers
+	elseif TRB.Data.character.specId == 2 then -- Vengeance - Soul Fragments (6 independent nodes)
 		if barGroups and barGroups.secondary then
-			-- Set up the secondary bar structure with 1 node
-			barGroups.secondary:SetNodeCount(1)
-			local sfNode = barGroups.secondary:GetNode(1)
-			if sfNode then
-				sfNode:SetMinMax(0, 6) -- 0-6 Soul Fragments
-				
-				-- Create 5 threshold dividers to create 6 segments
-				sfNode:ClearThresholds()
-				for thresholdId = 1, 5 do
-					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
-					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
-					sfNode:RegisterThreshold(thresholdFrame)
+			local maxSoulFragments = 6
+
+			barGroups.secondary:SetMaxNodes(maxSoulFragments)
+			barGroups.secondary:SetNodeCount(maxSoulFragments)
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:Show()
+
+			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			if cdmForced then
+				barGroups.secondary.fullWidth = true
+			end
+
+			barGroups.secondary:ApplyLayout(
+				effectiveWidth,
+				settings.comboPoints.width,
+				settings.comboPoints.height,
+				settings.comboPoints.border
+			)
+
+			local frameLevels = TRB.Data.constants.frameLevels
+			for i = 1, maxSoulFragments do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:SetTextures(
+						settings.textures.comboPointsBar,
+						settings.textures.comboPointsBorder,
+						settings.textures.comboPointsBackground
+					)
+					-- Stepped min/max: node 1 = 0,1; node 2 = 1,2; ... node 6 = 5,6
+					-- All nodes receive the same raw secret value; StatusBar clamping handles fill
+					node:SetMinMax(i - 1, i)
+					node:SetBorderColor(settings.colors.comboPoints.border.color)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+					node:SetColor(settings.colors.comboPoints.base.color)
+					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
 		end
@@ -715,9 +738,6 @@ local function UpdateSnapshot_Vengeance()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	
-	-- Vengeance Soul Fragments max is 6
-	TRB.Data.character.maxResource2Value = 6
 end
 
 local function UpdateSnapshot_Devourer()
@@ -1024,35 +1044,32 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.secondary.visibility ~= "never" then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-				-- Soul Fragments bar (Vengeance, 0-5 fragments)
-				local current = snapshotData.attributes.resource2 or 0
-				local max = TRB.Data.character.maxResource2Value or 6
+				-- Soul Fragments bar (Vengeance, 0-6 fragments, 6 independent nodes)
+				local soulFragments = snapshotData.attributes.resource2 or 0
+				local maxSoulFragments = TRB.Data.character.maxResource2 or 6
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
-				local cpColor = specSettings.colors.comboPoints.base.color
 
-				-- Update secondary bar (Soul Fragments with threshold dividers)
+				-- Update all 6 Soul Fragment nodes with positional coloring
 				if barGroups.secondary then
-					local sfNode = barGroups.secondary:GetNode(1)
-					if sfNode then
-						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
-						sfNode:SetBorderColor(cpBorderColor)
-						sfNode:SetColor(cpColor)
-						sfNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
-						
-						-- Position 5 threshold dividers at 1, 2, 3, 4, 5 to create 6 segments
-						local thresholds = sfNode:GetThresholds()
-						local sfContainerFrame = sfNode:GetFrame()
-						
-						-- Get threshold line color from comboPoints border
-						local thresholdColor = specSettings.colors.comboPoints.border.color
-						
-						for thresholdId = 1, 5 do
-							if thresholds[thresholdId] then
-								TRB.Functions.Color:SetThresholdColor(thresholds[thresholdId], thresholdColor, true)
-								TRB.Functions.Threshold:RepositionThresholdComboPoint(specCacheSettings, "soulFragment" .. thresholdId, thresholds[thresholdId], true, sfContainerFrame, thresholdId, max)
+					for x = 1, maxSoulFragments do
+						local cpNode = barGroups.secondary:GetNode(x)
+						if cpNode then
+							-- All nodes get the same raw secret value; each node's stepped
+							-- SetMinMax(x-1, x) handles fill via StatusBar clamping
+							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "soulFragment" .. x, cpNode, soulFragments)
+							cpNode:SetBorderColor(cpBorderColor)
+							cpNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+
+							-- Positional coloring: base for 1-4, penultimate for 5, final for 6
+							local cpColor = specSettings.colors.comboPoints.base.color
+							if x == maxSoulFragments then
+								cpColor = specSettings.colors.comboPoints.final.color
+							elseif x == (maxSoulFragments - 1) then
+								cpColor = specSettings.colors.comboPoints.penultimate.color
 							end
+							cpNode:SetColor(cpColor)
 						end
 					end
 				end
@@ -1566,8 +1583,8 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "vengeance"
 		TRB.Data.character.compositeKey = "demonhunter_vengeance"
 		
-		-- Soul Fragments: 1 node with 5 thresholds, max 6 fragments
-		local maxComboPoints = 1
+		-- Soul Fragments: 6 nodes (one per fragment), max 6 fragments
+		local maxComboPoints = 6
 		TRB.Data.character.maxResource2Value = 6
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
@@ -1575,7 +1592,29 @@ function TRB.Functions.Class:CheckCharacter()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
 				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, TRB.Frames.barGroups)
+					local barGroups = TRB.Frames.barGroups
+					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+					-- Rebuild secondary nodes with stepped min/max
+					if barGroups.secondary then
+						barGroups.secondary:SetMaxNodes(maxComboPoints)
+						barGroups.secondary:SetNodeCount(maxComboPoints)
+						local frameLevels = TRB.Data.constants.frameLevels
+						for i = 1, maxComboPoints do
+							local node = barGroups.secondary:GetNode(i)
+							if node then
+								node:SetMinMax(i - 1, i)
+								node:SetTextures(
+									sharedSettings.textures.comboPointsBar,
+									sharedSettings.textures.comboPointsBorder,
+									sharedSettings.textures.comboPointsBackground
+								)
+								node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
+								node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
+								node:SetColor(sharedSettings.colors.comboPoints.base.color)
+								node:SetFrameLevel(frameLevels.comboPoint)
+							end
+						end
+					end
 				end
 			end
 		end
@@ -1691,7 +1730,11 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.secondary then
 				if showSecondary then
 					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(1)
+					if TRB.Data.character.specId == 2 then
+						barGroups.secondary:ShowNodes(6)
+					else
+						barGroups.secondary:ShowNodes(1)
+					end
 				else
 					barGroups.secondary:Hide()
 				end
@@ -1833,21 +1876,25 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			end
 		end
 		return nil, true, false
-	elseif relativeToFrame == "HealthBar" then
-		if barGroups and barGroups.health then
-			local healthNode = barGroups.health:GetNode(1)
-			if healthNode then
-				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetFrame(), true, isVisible
+	elseif relativeToFrame ~= nil then
+		-- Handle secondary resources (ComboPoint1, ComboPoint2, etc.)
+		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		if comboPointIndex ~= nil then
+			local index = tonumber(comboPointIndex)
+			if index ~= nil and barGroups and barGroups.secondary then
+				local secondaryNode = barGroups.secondary:GetNode(index)
+				if secondaryNode then
+					local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+					return secondaryNode:GetFrame(), true, isVisible
+				end
 			end
-		end
-		return nil, true, false
-	elseif relativeToFrame == "ComboPoint1" then
-		if barGroups and barGroups.secondary then
-			local secondaryNode = barGroups.secondary:GetNode(1)
-			if secondaryNode then
-				local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
-				return secondaryNode:GetFrame(), true, isVisible
+		elseif relativeToFrame == "HealthBar" or relativeToFrame == "Health" then
+			if barGroups and barGroups.health then
+				local healthNode = barGroups.health:GetNode(1)
+				if healthNode then
+					local isVisible = barGroups.health.isVisible and healthNode.isVisible
+					return healthNode:GetFrame(), true, isVisible
+				end
 			end
 		end
 		return nil, true, false
@@ -1877,20 +1924,25 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 		end
 	end
 
-	-- Vengeance: Soul Fragments bar with 5 threshold dividers (0-6 scale)
+	-- Vengeance: Soul Fragments bar with 6 independent nodes (stepped min/max)
 	if TRB.Data.character.specId == 2 and barGroups.secondary then
-		barGroups.secondary:SetNodeCount(1)
-		local sfNode = barGroups.secondary:GetNode(1)
-		if sfNode then
-			sfNode:SetMinMax(0, 6) -- 0-6 Soul Fragments
-			local existingThresholds = sfNode:GetThresholds()
-			if not existingThresholds or #existingThresholds ~= 5 then
-				sfNode:ClearThresholds()
-				for _ = 1, 5 do
-					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
-					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
-					sfNode:RegisterThreshold(thresholdFrame)
-				end
+		local maxSoulFragments = 6
+		barGroups.secondary:SetMaxNodes(maxSoulFragments)
+		barGroups.secondary:SetNodeCount(maxSoulFragments)
+		local frameLevels = TRB.Data.constants.frameLevels
+		for i = 1, maxSoulFragments do
+			local node = barGroups.secondary:GetNode(i)
+			if node then
+				node:SetMinMax(i - 1, i)
+				node:SetTextures(
+					settings.textures.comboPointsBar,
+					settings.textures.comboPointsBorder,
+					settings.textures.comboPointsBackground
+				)
+				node:SetBorderColor(settings.colors.comboPoints.border.color)
+				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+				node:SetColor(settings.colors.comboPoints.base.color)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end

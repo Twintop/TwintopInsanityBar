@@ -460,12 +460,12 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFr
             true -- isPrimary
         )
 
-        -- Soul Fragments (single bar with 5 threshold dividers creating 6 segments)
-        -- Uses C_Spell.GetSpellCastCount(spiritBomb.id) to get fragment count (0-5)
+        -- Soul Fragments (6 nodes, one per fragment, using stepped min/max ranges)
+        -- Uses C_Spell.GetSpellCastCount(spiritBomb.id) to get fragment count (0-6)
         barGroups.secondary = TRB.Classes.BarGroup:New(
             UIParent,
             "TwintopResourceBarFrame_ComboPoint",
-            1,
+            6,
             false -- not primary
         )
 
@@ -530,11 +530,9 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
                 isPrimary = true
             },
             secondary = {
-                maxNodes = 1,
+                maxNodes = 6,
                 isPrimary = false,
-                resourceType = "SoulFragments",
-                thresholdCount = 5, -- 5 dividers create 6 segments (0-5 Soul Fragments)
-                fillType = "discrete" -- Fills left-to-right based on fragment count
+                resourceType = "SoulFragments"
             },
             health = {
                 maxNodes = 1,
