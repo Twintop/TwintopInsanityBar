@@ -407,7 +407,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -456,7 +456,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				node:SetColor(settings.colors.comboPoints.base.color)
-				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end
@@ -959,7 +959,7 @@ local function UpdateResourceBar()
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
 				local thresholds = primaryNode and primaryNode:GetThresholds() or {}
-				local nodeResourceFrame = primaryNode and primaryNode:GetResourceFrame()
+				local nodeResourceFrame = primaryNode and primaryNode:GetFrame()
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1200,7 +1200,7 @@ local function UpdateResourceBar()
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
 				local thresholds = primaryNode and primaryNode:GetThresholds() or {}
-				local nodeResourceFrame = primaryNode and primaryNode:GetResourceFrame()
+				local nodeResourceFrame = primaryNode and primaryNode:GetFrame()
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1494,7 +1494,7 @@ local function UpdateResourceBar()
 				
 				local nodeResourceFrame = nil
 				if primaryNode then
-					nodeResourceFrame = primaryNode:GetResourceFrame()
+					nodeResourceFrame = primaryNode:GetFrame()
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				end
 
@@ -2129,7 +2129,7 @@ function TRB.Functions.Class:CheckCharacter()
 						node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 						node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 						node:SetColor(sharedSettings.colors.comboPoints.base.color)
-						node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+						node:SetFrameLevel(frameLevels.comboPoint)
 					end
 				end
 			end
@@ -2413,7 +2413,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-				return primaryNode:GetResourceFrame(), true, isVisible
+				return primaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -2426,7 +2426,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				local secondaryNode = barGroups.secondary:GetNode(index)
 				if secondaryNode then
 					local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
-					return secondaryNode:GetResourceFrame(), true, isVisible
+					return secondaryNode:GetFrame(), true, isVisible
 				end
 			end
 		-- Handle health bar
@@ -2435,7 +2435,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				local healthNode = barGroups.health:GetNode(1)
 				if healthNode then
 					local isVisible = barGroups.health.isVisible and healthNode.isVisible
-					return healthNode:GetResourceFrame(), true, isVisible
+					return healthNode:GetFrame(), true, isVisible
 				end
 			end
 		end

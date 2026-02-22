@@ -250,7 +250,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -697,7 +697,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				-- Get resourceFrame and thresholds from the BarNode
-				local resourceFrame = primaryNode:GetResourceFrame()
+				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 				
 				local pairOffset = 0
@@ -872,7 +872,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				-- Get resourceFrame and thresholds from the BarNode
-				local resourceFrame = primaryNode:GetResourceFrame()
+				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 				
 				local pairOffset = 0
@@ -1047,7 +1047,7 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				-- Get resourceFrame and thresholds from the BarNode
-				local resourceFrame = primaryNode:GetResourceFrame()
+				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 				
 				local pairOffset = 0
@@ -1635,7 +1635,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-			return primaryNode:GetResourceFrame(), true, isVisible
+			return primaryNode:GetFrame(), true, isVisible
 		end
 		return nil, true, false
 	elseif normalizedRelativeFrame == "HealthBar" then
@@ -1643,7 +1643,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

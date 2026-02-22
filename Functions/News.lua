@@ -15,7 +15,12 @@ local content = [====[
 # 12.0.1.9-release (2026-02-22)
 ## General
 
+- [#590](#590) Refactor how bars are generated to reduce the number of frames required.
 - Upgrade LibDbIcon.
+
+### Localization
+
+- [#632](#632) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 

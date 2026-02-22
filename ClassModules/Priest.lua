@@ -337,7 +337,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -1466,7 +1466,7 @@ local function UpdateResourceBar()
 				end
 
 				-- Get resourceFrame and thresholds from the BarNode
-				local resourceFrame = primaryNode:GetResourceFrame()
+				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 
 				local pairOffset = 0
@@ -2491,7 +2491,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-				return primaryNode:GetResourceFrame(), true, isVisible
+				return primaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -2500,7 +2500,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -2509,7 +2509,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local manaNode = barGroups.mana:GetNode(1)
 			if manaNode then
 				local isVisible = barGroups.mana.isVisible and manaNode.isVisible
-				return manaNode:GetResourceFrame(), true, isVisible
+				return manaNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

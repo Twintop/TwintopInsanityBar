@@ -235,7 +235,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -281,7 +281,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				node:SetColor(settings.colors.comboPoints.base.color)
-				node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end
@@ -1299,7 +1299,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-			return primaryNode:GetResourceFrame(), true, isVisible
+			return primaryNode:GetFrame(), true, isVisible
 		end
 		return nil, true, false
 	end
@@ -1311,7 +1311,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local shardNode = barGroups.secondary:GetNode(comboPoint)
 			if shardNode then
 				local isVisible = barGroups.secondary.isVisible and shardNode.isVisible
-				return shardNode:GetResourceFrame(), true, isVisible
+				return shardNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1322,7 +1322,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

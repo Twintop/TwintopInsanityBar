@@ -237,7 +237,7 @@ local function ConstructResourceBar(settings)
 
 			-- Create new threshold frames parented to the BarNode's resourceFrame
 			for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -263,7 +263,7 @@ local function ConstructResourceBar(settings)
 				-- Create 5 threshold dividers to create 6 segments
 				sfNode:ClearThresholds()
 				for thresholdId = 1, 5 do
-					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
 					sfNode:RegisterThreshold(thresholdFrame)
 				end
@@ -280,7 +280,7 @@ local function ConstructResourceBar(settings)
 				
 				-- Create 1 threshold for Collapsing Star
 				sfNode:ClearThresholds()
-				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
 				sfNode:RegisterThreshold(thresholdFrame)
 			end
@@ -785,7 +785,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					local resourceFrame = primaryNode:GetResourceFrame()
+					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
 					local pairOffset = 0
@@ -928,7 +928,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					local resourceFrame = primaryNode:GetResourceFrame()
+					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
 					local pairOffset = 0
@@ -1043,7 +1043,7 @@ local function UpdateResourceBar()
 						
 						-- Position 5 threshold dividers at 1, 2, 3, 4, 5 to create 6 segments
 						local thresholds = sfNode:GetThresholds()
-						local sfContainerFrame = sfNode:GetContainerFrame()
+						local sfContainerFrame = sfNode:GetFrame()
 						
 						-- Get threshold line color from comboPoints border
 						local thresholdColor = specSettings.colors.comboPoints.border.color
@@ -1094,7 +1094,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					local resourceFrame = primaryNode:GetResourceFrame()
+					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
 					local pairOffset = 0
@@ -1213,7 +1213,7 @@ local function UpdateResourceBar()
 						
 						-- Collapsing Star threshold (only visible when buff is active)
 						local thresholds = sfNode:GetThresholds()
-						local sfResourceFrame = sfNode:GetResourceFrame()
+						local sfResourceFrame = sfNode:GetFrame()
 						local spell = spells.collapsingStarThreshold
 						if thresholds[1] and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled then
 							local showThreshold = false
@@ -1829,7 +1829,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-				return primaryNode:GetResourceFrame(), true, isVisible
+				return primaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1838,7 +1838,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1847,7 +1847,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local secondaryNode = barGroups.secondary:GetNode(1)
 			if secondaryNode then
 				local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
-				return secondaryNode:GetResourceFrame(), true, isVisible
+				return secondaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1869,7 +1869,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
 				primaryNode:ClearThresholds()
 				for _ = 1, #thresholdSpells do
-					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 					primaryNode:RegisterThreshold(thresholdFrame)
 				end
@@ -1887,7 +1887,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			if not existingThresholds or #existingThresholds ~= 5 then
 				sfNode:ClearThresholds()
 				for _ = 1, 5 do
-					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
 					sfNode:RegisterThreshold(thresholdFrame)
 				end
@@ -1904,7 +1904,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			local existingThresholds = sfNode:GetThresholds()
 			if not existingThresholds or #existingThresholds ~= 1 then
 				sfNode:ClearThresholds()
-				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, sfNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLineComboPoint(thresholdFrame, settings)
 				sfNode:RegisterThreshold(thresholdFrame)
 			end

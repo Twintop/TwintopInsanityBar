@@ -290,7 +290,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -766,7 +766,7 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local primaryResourceFrame = primaryNode:GetResourceFrame()
+	local primaryResourceFrame = primaryNode:GetFrame()
 
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.blood
@@ -1597,7 +1597,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local primaryNode = barGroups.primary:GetNode(1)
 			if primaryNode then
 				local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-				return primaryNode:GetResourceFrame(), true, isVisible
+				return primaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1606,7 +1606,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1618,7 +1618,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				local runeNode = barGroups.secondary:GetNode(index)
 				if runeNode then
 					local isVisible = barGroups.secondary.isVisible and runeNode.isVisible
-					return runeNode:GetResourceFrame(), true, isVisible
+					return runeNode:GetFrame(), true, isVisible
 				end
 			end
 		end

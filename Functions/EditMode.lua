@@ -225,15 +225,11 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
 	-- Reposition the root bar within the wrapper to account for bars above/beside it.
 	local rootGroup = barGroups[rootBarKey]
 	if rootGroup and settings then
-		-- Only the primary bar needs border offset: its group.containerFrame is sized to
-		-- inner dimensions (border subtracted), so the borderFrame extends beyond it.
-		-- Non-primary roots (mana, etc.) use outer dimensions with SetAllPoints — no overhang.
-		local rootBorderOffset = 0
-		if rootBarKey == "primary" then
-			rootBorderOffset = (settings.bar and settings.bar.border) or 0
-		end
+		-- In the consolidated single-frame system, all bars (including primary) use outer
+		-- dimensions. No border offset is needed — the group container matches the node's
+		-- full visual extent.
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -(extendAbove + rootBorderOffset))
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
 	end
 end
 

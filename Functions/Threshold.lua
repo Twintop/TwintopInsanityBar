@@ -42,10 +42,10 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		end
 	end
 
-	-- Derive effective width directly from the parent frame's actual rendered width.
-	-- This ensures threshold positions always match the bar's true dimensions,
-	-- even after CDM width matching changes the bar width. The parent frame
-	-- (node container) already has borders subtracted, so no border adjustment needed.
+	-- Derive effective width from the parent frame's actual rendered width.
+	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
+	-- The StatusBar fill also covers the full frame width, so threshold positions should
+	-- use the full width to stay aligned with the fill edge.
 	local effectiveWidth = parentFrame:GetWidth()
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -287,10 +287,10 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 	end
 
-	-- Derive effective width from the threshold's own parent frame (resourceFrame).
-	-- Thresholds are children of the node's resourceFrame (inner content area, borders
-	-- already subtracted). Both width and anchor must use this frame so thresholds are
-	-- positioned within the content area, not offset into the border.
+	-- Derive effective width from the threshold's own parent frame.
+	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
+	-- The StatusBar fill covers the full frame width, so threshold positions use the full
+	-- width to stay aligned with the fill edge.
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 
@@ -346,18 +346,12 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 		maxResource = 100
 	end
 
-	-- Derive effective width from the threshold's own parent frame (resourceFrame).
-	-- For custom bars (stagger, defensives, etc.) using single-node direct sizing,
-	-- ConstructAnchoredBarGroup sets the BarGroup containerFrame to the full outer width
-	-- and then SetAllPoints propagates this to the BarNode containerFrame/resourceFrame.
-	-- Unlike the primary bar (where the group container is set to inner width) or
-	-- combo point bars (which use ApplyLayout with TOPLEFT anchoring that preserves
-	-- SetDimensions' inner width), single-node custom bars have resourceFrame at full
-	-- outer width. We must subtract 2*border to get the inner content width.
+	-- Derive effective width from the threshold's own parent frame.
+	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
+	-- The StatusBar fill covers the full frame width, so threshold positions use the full
+	-- width to stay aligned with the fill edge — no border subtraction needed.
 	local renderFrame = thresholdLine:GetParent()
-	local frameWidth = renderFrame and renderFrame:GetWidth() or 0
-	local effectiveWidth = frameWidth - (barBorder * 2)
-	if effectiveWidth < 0 then effectiveWidth = 0 end
+	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then

@@ -760,32 +760,26 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		-- effectiveWidth already accounts for CDM width matching.
 		local primaryWidth = effectiveWidth
 
-		primary.containerFrame:SetWidth(primaryWidth - (settings.bar.border * 2))
-		primary.containerFrame:SetHeight(settings.bar.height - (settings.bar.border * 2))
+		-- Primary group container matches the node's outer dimensions
+		primary.containerFrame:SetWidth(primaryWidth)
+		primary.containerFrame:SetHeight(settings.bar.height)
 
 		if primaryNode then
 			-- Set frame strata
 			primary:SetFrameStrata(strata)
 
-			-- Set dimensions (stores values and sizes border/resource frames)
+			-- Set dimensions (outer dimensions including border)
 			primaryNode:SetDimensions(primaryWidth, settings.bar.height, settings.bar.border)
 
-			-- Set frame levels
-			primaryNode:SetFrameLevels(
-				frameLevels.barContainer,
-				frameLevels.barBorder,
-				frameLevels.barResource
-			)
+			-- Set frame level
+			primaryNode:SetFrameLevel(frameLevels.bar)
 
 			-- Primary node should fill the primary group container
-			local primaryNodeContainer = primaryNode:GetContainerFrame()
-			if primaryNodeContainer then
-				primaryNodeContainer:ClearAllPoints()
-				primaryNodeContainer:SetAllPoints(primary.containerFrame)
+			local primaryNodeFrame = primaryNode:GetFrame()
+			if primaryNodeFrame then
+				primaryNodeFrame:ClearAllPoints()
+				primaryNodeFrame:SetAllPoints(primary.containerFrame)
 			end
-
-			-- Position the resource/border frames within the node container
-			primaryNode:PositionResourceFrame()
 
 			-- Set min/max values
 			local max = TRB.Data.character.maxResource or effectiveWidth
@@ -1011,16 +1005,10 @@ function TRB.Functions.Bar:ApplyCooldownManagerAnchoring(barGroups, anchorMode, 
 	-- Reposition the root bar within the wrapper.
 	local rootGroup = barGroups[rootBarKey]
 	if rootGroup then
-		-- Only the primary bar needs border offset: its group.containerFrame is sized to
-		-- inner dimensions (border subtracted), so the borderFrame extends beyond it.
-		-- Non-primary roots (mana, etc.) are constructed via ConstructAnchoredBarGroup
-		-- which sets group.containerFrame to outer dimensions with SetAllPoints — no overhang.
-		local rootBorderOffset = 0
-		if rootBarKey == "primary" then
-			rootBorderOffset = (settings and settings.bar and settings.bar.border) or 0
-		end
+		-- In the consolidated single-frame system, all bars (including primary) use outer
+		-- dimensions. No border offset is needed.
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -(extendAbove + rootBorderOffset))
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
 	end
 
 	-- Anchor the wrapper to the CDM frame, horizontally centered.
@@ -1139,11 +1127,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			primaryNode:SetColor(settings.colors.bar.base.color)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
-			primaryNode:SetFrameLevels(
-				frameLevels.barContainer,
-				frameLevels.barBorder,
-				frameLevels.barResource
-			)
+			primaryNode:SetFrameLevel(frameLevels.bar)
 		end
 	end
 
@@ -1246,11 +1230,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
 				node:SetColor(effectiveSettings.colors.comboPoints.base.color)
-				node:SetFrameLevels(
-					frameLevels.cpContainer,
-					frameLevels.cpBorder,
-					frameLevels.cpResource
-				)
+				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
 	end
@@ -1267,11 +1247,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
-			healthNode:SetFrameLevels(
-				frameLevels.cpContainer,
-				frameLevels.cpBorder,
-				frameLevels.cpResource
-			)
+			healthNode:SetFrameLevel(frameLevels.comboPoint)
 		end
 	end
 
@@ -2023,7 +1999,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	else
 		targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
 	end
-	targetGroup.containerFrame:SetFrameLevel(frameLevels.cpContainer)
+	targetGroup.containerFrame:SetFrameLevel(frameLevels.comboPoint)
 
 	-- Apply layout or size directly based on config
 	if config.useApplyLayout then
@@ -2053,19 +2029,14 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		local singleNode = targetGroup:GetNode(1)
 		if singleNode then
 			singleNode:SetDimensions(groupWidth, groupHeight, groupBorder)
-			singleNode:SetFrameLevels(
-				frameLevels.cpContainer,
-				frameLevels.cpBorder,
-				frameLevels.cpResource
-			)
+			singleNode:SetFrameLevel(frameLevels.comboPoint)
 
 			-- Position node within container
-			local nodeContainer = singleNode:GetContainerFrame()
-			if nodeContainer then
-				nodeContainer:ClearAllPoints()
-				nodeContainer:SetAllPoints(targetGroup.containerFrame)
+			local nodeFrame = singleNode:GetFrame()
+			if nodeFrame then
+				nodeFrame:ClearAllPoints()
+				nodeFrame:SetAllPoints(targetGroup.containerFrame)
 			end
-			singleNode:PositionResourceFrame()
 
 			-- Set min/max based on mode
 			if config.minMaxMode == "health" then
@@ -2109,11 +2080,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 						node:SetMinMax(0, 1)
 					end
 
-					node:SetFrameLevels(
-						frameLevels.cpContainer,
-						frameLevels.cpBorder,
-						frameLevels.cpResource
-					)
+					node:SetFrameLevel(frameLevels.comboPoint)
 
 					-- Handle color values that may be strings or tables with .color property
 					local borderColor = colorSettings[config.colors.border]
@@ -2369,11 +2336,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 						node:SetColor(barColor)
 					end
 					
-					node:SetFrameLevels(
-						frameLevels.cpContainer,
-						frameLevels.cpBorder,
-						frameLevels.cpResource
-					)
+					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
 		end

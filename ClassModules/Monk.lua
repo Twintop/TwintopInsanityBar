@@ -253,7 +253,7 @@ local function ConstructResourceBar(settings)
 		if primaryNode then
 			primaryNode:ClearThresholds()
 			for _ = 1, #TRB.Data.cache.thresholdSpells do
-				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
@@ -281,7 +281,7 @@ local function ConstructResourceBar(settings)
 					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 					
 					for _ = 1, 3 do
-						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
+						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetFrame())
 						TRB.Functions.Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
 						staggerNode:RegisterThreshold(thresholdFrame)
 					end
@@ -331,7 +331,7 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					node:SetColor(settings.colors.comboPoints.base.color)
-					node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
 		end
@@ -846,7 +846,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					
 					local thresholds = primaryNode:GetThresholds()
-					local nodeResourceFrame = primaryNode:GetResourceFrame()
+					local nodeResourceFrame = primaryNode:GetFrame()
 
 					local pairOffset = 0
 					for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -989,7 +989,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it exceeds the bar's max scale
 							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold <= maxScale or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
-							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetContainerFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
 
 						-- Heavy Stagger threshold (configurable position, discrete color)
@@ -999,7 +999,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it exceeds the bar's max scale
 							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold <= maxScale or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
-							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetContainerFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
 
 						-- Extremely Heavy Stagger threshold (configurable position, discrete color)
@@ -1009,7 +1009,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it exceeds the bar's max scale
 							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold <= maxScale or false
 							TRB.Functions.Color:SetThresholdColor(staggerThresholds[3], extremeColor, true)
-							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetContainerFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							TRB.Functions.Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
 					end
 				end
@@ -1094,7 +1094,7 @@ local function UpdateResourceBar()
 					TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 					local thresholds = primaryNode:GetThresholds()
-					local nodeResourceFrame = primaryNode:GetResourceFrame()
+					local nodeResourceFrame = primaryNode:GetFrame()
 
 					local pairOffset = 0
 					for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1657,7 +1657,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 							node:SetColor(sharedSettings.colors.comboPoints.base.color)
-							node:SetFrameLevels(frameLevels.cpContainer, frameLevels.cpBorder, frameLevels.cpResource)
+							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end
 				end
@@ -1936,7 +1936,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
 			local isVisible = barGroups.primary.isVisible and primaryNode.isVisible
-			return primaryNode:GetResourceFrame(), true, isVisible
+			return primaryNode:GetFrame(), true, isVisible
 		end
 		return nil, true, false
 	elseif normalizedRelativeFrame == "HealthBar" then
@@ -1944,7 +1944,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local healthNode = barGroups.health:GetNode(1)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
-				return healthNode:GetResourceFrame(), true, isVisible
+				return healthNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1954,7 +1954,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			local staggerNode = barGroups.stagger:GetNode(1)
 			if staggerNode then
 				local isVisible = barGroups.stagger.isVisible and staggerNode.isVisible
-				return staggerNode:GetResourceFrame(), true, isVisible
+				return staggerNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
@@ -1970,14 +1970,14 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				local staggerNode = barGroups.stagger:GetNode(comboPoint)
 				if staggerNode then
 					local isVisible = barGroups.stagger.isVisible and staggerNode.isVisible
-					return staggerNode:GetResourceFrame(), true, isVisible
+					return staggerNode:GetFrame(), true, isVisible
 				end
 			-- For Windwalker, ComboPointN refers to Chi
 			elseif barGroups.secondary then
 				local cpNode = barGroups.secondary:GetNode(comboPoint)
 				if cpNode then
 					local isVisible = barGroups.secondary.isVisible and cpNode.isVisible
-					return cpNode:GetResourceFrame(), true, isVisible
+					return cpNode:GetFrame(), true, isVisible
 				end
 			end
 		end
@@ -2001,7 +2001,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			if thresholdSpells and #thresholdSpells > 0 and (not existingThresholds or #existingThresholds ~= #thresholdSpells) then
 				primaryNode:ClearThresholds()
 				for _ = 1, #thresholdSpells do
-					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 					primaryNode:RegisterThreshold(thresholdFrame)
 				end
@@ -2023,7 +2023,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 				
 				for _ = 1, 3 do
-					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetResourceFrame())
+					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetFrame())
 					TRB.Functions.Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
 					staggerNode:RegisterThreshold(thresholdFrame)
 				end
