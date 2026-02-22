@@ -1963,7 +1963,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 							holyWordSanctifyEnabled = "holyWordSanctify",
 							holyWordChastiseEnabled = "holyWordChastise",
 							completeCooldownEnabled = "completeCooldown",
-							sacredReverenceEnabled = "sacredReverence",
 						}
 						
 						for oldFlag, colorKey in pairs(cpEnabledFlagMappings) do
@@ -2097,12 +2096,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			if enabled == nil then enabled = true end
 			cp.completeCooldown = { color = cp.completeCooldown, enabled = enabled }
 			cp.completeCooldownEnabled = nil
-		end
-		if type(cp.sacredReverence) == "string" then
-			local enabled = cp.sacredReverenceEnabled
-			if enabled == nil then enabled = true end
-			cp.sacredReverence = { color = cp.sacredReverence, enabled = enabled }
-			cp.sacredReverenceEnabled = nil
 		end
 	end
 

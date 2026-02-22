@@ -173,25 +173,29 @@ end
 
 
 ---@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
----@field public flashHeal TRB.Classes.SpellBase
+---@field public flashHeal TRB.Classes.Priest.HolyWordSpell
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
----@field public halo TRB.Classes.SpellBase
---[[---@field public holyWordSerenity TRB.Classes.SpellBase
+---@field public halo TRB.Classes.Priest.HolyWordSpell
+---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public smite TRB.Classes.Priest.HolyWordSpell
+---@field public holyFire TRB.Classes.Priest.HolyWordSpell
+---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
+---@field public energyCycle TRB.Classes.Priest.HolyWordSpell
+---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
----@field public resonantWords TRB.Classes.SpellBase
----@field public lightweaver TRB.Classes.SpellBase
+---@field public ultimateSerenity TRB.Classes.SpellBase
 ---@field public miracleWorker TRB.Classes.SpellBase
----@field public sacredReverence TRB.Classes.SpellBase
+---@field public holyCelerity TRB.Classes.SpellBase
+---@field public prophetsInsight TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
+--[[---@field public resonantWords TRB.Classes.SpellBase
+---@field public lightweaver TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
 ---@field public answeredPrayers TRB.Classes.SpellBase
----@field public smite TRB.Classes.Priest.HolyWordSpell
----@field public heal TRB.Classes.Priest.HolyWordSpell
----@field public holyFire TRB.Classes.Priest.HolyWordSpell
----@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell]]
+---@field public heal TRB.Classes.Priest.HolyWordSpell]]
 ---@field public benediction TRB.Classes.SpellBase
----@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public eternalSanctity TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
 ---@field public energyConservation TRB.Classes.SpellBase
@@ -204,7 +208,59 @@ function TRB.Classes.Priest.HolySpells:New()
 	local base = TRB.Classes.Priest.HealerSpells
 	self = setmetatable(base:New(), TRB.Classes.Priest.HolySpells) --[[@as TRB.Classes.Priest.HolySpells]]
 
-	-- Priest Class Baseline Abilities
+	-- Holy Word: Chastise
+	self.holyWordChastise = TRB.Classes.SpellBase:New({
+		id = 88625,
+		duration = 60,
+		isTalent = true
+	})
+	self.smite = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 585,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 4,
+		isTalent = false,
+		baseline = true
+	})
+	self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 14914,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 4, -- Per rank of Voice of Harmony
+		isTalent = true
+	})
+
+	-- Holy Word: Sanctify
+	self.holyWordSanctify = TRB.Classes.SpellBase:New({
+		id = 34861,
+		duration = 60,
+		isTalent = true,
+		hasCharges = true
+	})
+	self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 596,
+		holyWordKey = "holyWordSanctify",
+		holyWordReduction = 6,
+		isTalent = true
+	})
+	self.halo = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 120517,
+		isTalent = true,
+		resource = 5,
+		holyWordKey = "holyWordSanctify",
+		holyWordReduction = 4,
+	})
+	self.energyCycle = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 453828,
+		holyWordKey = "holyWordSanctify",
+		holyWordReduction = 4,
+		isTalent = true
+	})
+
+	-- Holy Word: Serenity
+	self.holyWordSerenity = TRB.Classes.SpellBase:New({
+		id = 2050,
+		duration = 60,
+		hasCharges = true
+	})
 	self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 2061,
 		holyWordKey = "holyWordSerenity",
@@ -216,44 +272,27 @@ function TRB.Classes.Priest.HolySpells:New()
 			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
 		}
 	})
-	--[[self.smite = TRB.Classes.Priest.HolyWordSpell:New({
-		id = 585,
-		holyWordKey = "holyWordChastise",
-		holyWordReduction = 4,
-		isTalent = false,
-		baseline = true
-	})]]
 
 	-- Holy Baseline Abilities
 
 	-- Holy Talent Abilities
-	self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
-		id = 596,
-		holyWordKey = "holyWordSanctify",
-		holyWordReduction = 6,
+	self.ultimateSerenity = TRB.Classes.SpellBase:New({
+		id = 1246517,
 		isTalent = true
 	})
-	--[[self.holyWordSerenity = TRB.Classes.SpellBase:New({
-		id = 2050,
-		duration = 60,
-		hasCharges = true
-	})
-	self.holyWordChastise = TRB.Classes.SpellBase:New({
-		id = 88625,
-		duration = 60,
+	self.miracleWorker = TRB.Classes.SpellBase:New({
+		id = 235587,
 		isTalent = true
 	})
-	self.holyWordSanctify = TRB.Classes.SpellBase:New({
-		id = 34861,
-		duration = 60,
+	self.holyCelerity = TRB.Classes.SpellBase:New({
+		id = 1215275,
 		isTalent = true,
-		hasCharges = true
+		durationMod = -15
 	})
-	self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
-		id = 14914,
-		holyWordKey = "holyWordChastise",
-		holyWordReduction = 2, -- Per rank of Voice of Harmony
-		isTalent = true
+	self.prophetsInsight = TRB.Classes.SpellBase:New({
+		id = 1272359,
+		isTalent = true,
+		durationMod = -5
 	})
 	self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 196985,
@@ -263,10 +302,10 @@ function TRB.Classes.Priest.HolySpells:New()
 	self.voiceOfHarmony = TRB.Classes.SpellBase:New({
 		id = 390994,
 		isTalent = true
-	})]]
+	})
 	self.apotheosis = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 200183,
-		holyWordModifier = 4, -- 300% more
+		holyWordModifier = 3, -- 200% more
 		duration = 20,
 		isTalent = true
 	})
@@ -278,10 +317,6 @@ function TRB.Classes.Priest.HolySpells:New()
 	self.lightweaver = TRB.Classes.SpellBase:New({
 		id = 390993,
 		talentId = 390992,
-		isTalent = true
-	})
-	self.miracleWorker = TRB.Classes.SpellBase:New({
-		id = 235587,
 		isTalent = true
 	})
 	self.lightwell = TRB.Classes.SpellBase:New({
@@ -298,6 +333,11 @@ function TRB.Classes.Priest.HolySpells:New()
 			[2] = 50
 		}
 	})]]
+	self.eternalSanctity = TRB.Classes.SpellBase:New({
+		id = 1215245,
+		isTalent = true,
+		durationMod = 12
+	})
 
 	self.benediction = TRB.Classes.SpellBase:New({
 		id = 1262755,
@@ -307,11 +347,6 @@ function TRB.Classes.Priest.HolySpells:New()
 
 
 	-- Archon
-	self.halo = TRB.Classes.SpellBase:New({
-		id = 120517,
-		isTalent = true,
-		resource = 5
-	})
 	self.manifestedPower = TRB.Classes.SpellBase:New({
 		id = 453783,
 		isTalent = true
@@ -364,9 +399,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
 
 		{ variable = "#apotheosis", icon = spells.apotheosis.icon, description = spells.apotheosis.name, printInSettings = true },
-
-		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },	
-		{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 		{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
 		{ variable = "#holyFire", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = false },
 		{ variable = "#hwChastise", icon = spells.holyWordChastise.icon, description = spells.holyWordChastise.name, printInSettings = true },
@@ -378,18 +410,17 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
 		{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 		{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
+		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true }
+
+		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },
 		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
 		{ variable = "#rw", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = true },
 		{ variable = "#resonantWords", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = false },
 		{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
 		{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
 		{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
-		{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
-		{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 		{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
-		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },
-		{ variable = "#sacredReverence", icon = spells.sacredReverence.icon, description = spells.sacredReverence.name, printInSettings = true },
-		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },]]
+		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },]]
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
@@ -399,7 +430,7 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["PriestHolyBarTextVariable_casting"], printInSettings = true, color = false },
-		--[[{ variable = "$hwChastiseTime", description = L["PriestHolyBarTextVariable_hwChastiseTime"], printInSettings = true, color = false },
+		{ variable = "$hwChastiseTime", description = L["PriestHolyBarTextVariable_hwChastiseTime"], printInSettings = true, color = false },
 		{ variable = "$chastiseTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordChastiseTime", description = "", printInSettings = false, color = false },
 		
@@ -418,8 +449,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false },
 		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },]]
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
@@ -898,7 +927,7 @@ end
     Creates the appropriate BarGroup instances for each Priest specialization.
     
     Discipline: Primary bar (N=1) only
-    Holy: Primary bar (N=1) only
+    Holy: Primary bar (N=1) + Secondary Holy Words (N=5)
     Shadow: Primary bar (N=1) only
 ]]
 
@@ -937,6 +966,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Secondary Holy Words bar (up to 5 nodes: Serenity 2 + Sanctify 2 + Chastise 1)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Secondary",
+            5,
+            false -- not primary
         )
 
         -- Health bar (1 node)
@@ -997,6 +1034,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "HolyWords"
             },
             health = {
                 maxNodes = 1,

@@ -683,6 +683,10 @@ end
 ---@field private isCustom boolean
 ---@field private retryForceTime number?
 ---@field private parent TRB.Classes.Snapshot
+---@field public useManualCharges boolean # When true, charges are tracked manually via events instead of API
+---@field public manualCharges integer # Manually tracked current charge count
+---@field public manualMaxCharges integer # Manually tracked max charge count
+---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -710,12 +714,16 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.maxCharges = 0
 	self.retryForceTime = nil
 	self.isCustom = false
+	self.useManualCharges = false
+	self.manualCharges = 0
+	self.manualMaxCharges = 0
+	self.durationObject = nil
 end
 
 ---Computes the time remaining on the Snapshot
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 ---@param totalTime boolean? # Return the total remaining time of all charges on the Snapshot
----@return number # Cooldown duration remaining on the Snapshot
+---@return number # Cooldown duration remaining on the Snapshot; nil if the startTime or duration is a secret value
 function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	if totalTime == nil then
 		totalTime = false
@@ -723,9 +731,40 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	
 	currentTime = currentTime or GetTime()
 
+	-- Manual charges mode: compute remaining time from our manual timer fields
+	if self.useManualCharges then
+		local remainingTime = 0
+
+		if self.manualCooldownExpires ~= nil and self.manualCooldownDuration ~= nil and self.manualCooldownDuration > 0 then
+			remainingTime = math.max(0, self.manualCooldownExpires - currentTime)
+		end
+
+		self.onCooldown = self.manualCharges < self.manualMaxCharges
+		self.charges = self.manualCharges
+		self.maxCharges = self.manualMaxCharges
+		self.remaining = remainingTime
+
+		if self.manualMaxCharges > 1 and self.manualCharges < self.manualMaxCharges and self.manualCooldownDuration ~= nil then
+			self.remainingTotal = remainingTime + ((self.manualMaxCharges - self.manualCharges - 1) * self.manualCooldownDuration)
+		else
+			self.remainingTotal = remainingTime
+		end
+
+		if totalTime then
+			return self.remainingTotal
+		else
+			return self.remaining
+		end
+	end
+
 	if self.retryForceTime ~= nil and currentTime > self.retryForceTime then
 		self.retryForceTime = nil
 		self:Refresh(true)
+	end
+
+	if issecretvalue(self.startTime) or issecretvalue(self.duration) then
+		local dObj = C_Spell.GetSpellChargeDuration(self.parent.spell.id)
+		return dObj:GetRemainingDuration()
 	end
 
 	local remainingTime = 0
@@ -784,6 +823,28 @@ end
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
 function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
+	-- Manual charges mode: skip normal API reads, just sync state
+	if self.useManualCharges then
+		self.charges = self.manualCharges
+		self.maxCharges = self.manualMaxCharges
+		self.onCooldown = self.manualCharges < self.manualMaxCharges
+		-- Manual timer-based cooldown tracking for all manual charge spells.
+		-- Check if the current recharge timer has expired.
+		if self.onCooldown and self.manualCooldownExpires ~= nil then
+			local currentTime = GetTime()
+			if currentTime >= self.manualCooldownExpires then
+				-- Carry any sub-frame overflow into the next charge's timer
+				local overflow = currentTime - self.manualCooldownExpires
+				self:GainCharge(self.manualCooldownDuration)
+				if overflow > 0 and self.onCooldown and self.manualCooldownExpires ~= nil then
+					self.manualCooldownExpires = self.manualCooldownExpires - overflow
+				end
+			end
+		end
+		self:GetRemainingTime()
+		return
+	end
+
 	if not self.isCustom and self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.parent.spell.hasCastCount or self.onCooldown) then
 		local startTime = nil
 		local duration = 0
@@ -834,6 +895,9 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 					self.retryForceTime = currentTime
 				end
 			end
+		else
+			self.startTime = startTime
+			self.duration = duration
 		end
 	end
 	self:GetRemainingTime()
@@ -854,6 +918,150 @@ end
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsUsable()
 	return not self.onCooldown
+end
+
+---Initializes manual charge tracking mode. When enabled, charges are tracked via events
+---instead of reading from C_Spell.GetSpellCharges() (which may return secret values).
+---@param maxCharges integer # Maximum charges for this spell
+---@param currentCharges integer? # Starting charge count. If nil, attempts to read from API; defaults to maxCharges if secret.
+function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, currentCharges)
+	self.useManualCharges = true
+	self.manualMaxCharges = maxCharges
+
+	if currentCharges ~= nil then
+		self.manualCharges = currentCharges
+	else
+		-- Try to read current charges from the API
+		if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
+			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+			if spellCharges ~= nil and not issecretvalue(spellCharges.currentCharges) then
+				self.manualCharges = spellCharges.currentCharges
+			else
+				-- Default to max charges when API returns secrets (assume fully charged)
+				self.manualCharges = maxCharges
+			end
+		else
+			self.manualCharges = maxCharges
+		end
+	end
+
+	-- Sync public fields
+	self.charges = self.manualCharges
+	self.maxCharges = self.manualMaxCharges
+	self.onCooldown = self.manualCharges < self.manualMaxCharges
+	self:RefreshDurationObject()
+end
+
+---Spends a charge (decrements manualCharges, floor at 0)
+---@param cooldownDuration number? # The total cooldown duration (with talent mods applied). When provided, starts a manual GetTime()-based timer.
+function TRB.Classes.SnapshotCooldown:SpendCharge(cooldownDuration)
+	if not self.useManualCharges then return end
+	-- Safety net: if charges are already 0 but the spell was cast, the previous cooldown
+	-- must have finished without our detection catching it. Reset to max first.
+	if self.manualCharges <= 0 then
+		self.manualCharges = self.manualMaxCharges
+	end
+
+	local wasAlreadyRecharging = self.onCooldown
+
+	self.manualCharges = math.max(0, self.manualCharges - 1)
+	self.charges = self.manualCharges
+	self.onCooldown = self.manualCharges < self.manualMaxCharges
+
+	-- Only start a new recharge timer if one isn't already running.
+	-- In WoW's charge system, spending a second charge while the first is recharging
+	-- does NOT reset the existing timer.
+	if self.onCooldown and not wasAlreadyRecharging and cooldownDuration ~= nil and cooldownDuration > 0 then
+		local now = GetTime()
+		self.manualCooldownStart = now
+		self.manualCooldownDuration = cooldownDuration
+		self.manualCooldownExpires = now + cooldownDuration
+		self.durationObject = nil
+	end
+end
+
+---Gains a charge (increments manualCharges, cap at manualMaxCharges)
+---@param cooldownDuration number? # If still on cooldown after gaining, start a new timer with this duration for the next recharge.
+function TRB.Classes.SnapshotCooldown:GainCharge(cooldownDuration)
+	if not self.useManualCharges then return end
+	self.manualCharges = math.min(self.manualMaxCharges, self.manualCharges + 1)
+	self.charges = self.manualCharges
+	self.onCooldown = self.manualCharges < self.manualMaxCharges
+
+	if self.onCooldown and cooldownDuration ~= nil and cooldownDuration > 0 then
+		-- Still recharging (multi-charge spell): start a new timer for the next charge
+		local now = GetTime()
+		self.manualCooldownStart = now
+		self.manualCooldownDuration = cooldownDuration
+		self.manualCooldownExpires = now + cooldownDuration
+	else
+		-- Fully charged or no duration provided: clear timer fields
+		self.manualCooldownStart = nil
+		self.manualCooldownDuration = nil
+		self.manualCooldownExpires = nil
+	end
+	self.durationObject = nil
+end
+
+---Reduces the remaining manual cooldown by the specified amount.
+---If the cooldown expires as a result, GainCharge() is called.
+---@param amount number # Seconds to subtract from remaining cooldown
+---@param rechargeDuration number? # If a charge is gained and still on cooldown, start a new timer with this duration
+function TRB.Classes.SnapshotCooldown:ReduceCooldown(amount, rechargeDuration)
+	if self.manualCooldownExpires == nil then return end
+	self.manualCooldownExpires = self.manualCooldownExpires - amount
+	local now = GetTime()
+	if self.manualCooldownExpires <= now then
+		-- Calculate how much CDR carried past the expiration point
+		local overflow = now - self.manualCooldownExpires
+		self:GainCharge(rechargeDuration)
+		-- If still recharging (multi-charge), apply the overflow to the new timer
+		if overflow > 0 and self.onCooldown and self.manualCooldownExpires ~= nil then
+			self.manualCooldownExpires = self.manualCooldownExpires - overflow
+		end
+	end
+end
+
+---Returns the progress (0 to 1) of the manual cooldown timer.
+---0 = just started (empty bar), 1 = complete (full bar).
+---@param currentTime number? # Current time from GetTime(). If nil, calls GetTime().
+---@return number # Progress fraction clamped to [0, 1]
+function TRB.Classes.SnapshotCooldown:GetManualCooldownProgress(currentTime)
+	if self.manualCooldownExpires == nil or self.manualCooldownDuration == nil or self.manualCooldownDuration <= 0 then
+		return self.onCooldown and 0 or 1
+	end
+	currentTime = currentTime or GetTime()
+	local remaining = self.manualCooldownExpires - currentTime
+	return math.max(0, math.min(1, 1 - (remaining / self.manualCooldownDuration)))
+end
+
+---Refreshes the cached DurationObject. Uses GetSpellChargeDuration for charge-based spells,
+---or GetSpellCooldownDuration for single-cooldown spells, mirroring the pattern in Refresh().
+function TRB.Classes.SnapshotCooldown:RefreshDurationObject()
+	if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
+		if self.parent.spell.hasCharges == true then
+			self.durationObject = C_Spell.GetSpellChargeDuration(self.parent.spell.id)
+		else
+			self.durationObject = C_Spell.GetSpellCooldownDuration(self.parent.spell.id)
+		end
+	else
+		self.durationObject = nil
+	end
+end
+
+---Returns the cached DurationObject, refreshing if nil
+---@return any? # DurationObject or nil
+function TRB.Classes.SnapshotCooldown:GetDurationObject()
+	if self.durationObject == nil then
+		self:RefreshDurationObject()
+	end
+	return self.durationObject
+end
+
+---Returns whether the cooldown is actively recharging (has fewer than max charges)
+---@return boolean
+function TRB.Classes.SnapshotCooldown:IsRechargingManual()
+	return self.useManualCharges and self.manualCharges < self.manualMaxCharges
 end
 
 

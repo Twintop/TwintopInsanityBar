@@ -196,6 +196,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		endOf = {
 			apotheosis = TRB.Functions.Settings:DefaultEndOfSettings()
@@ -278,10 +279,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				},
 				completeCooldown = {
 					color = "FF00B500",
-					enabled = true
-				},
-				sacredReverence = {
-					color = "FF90FF64",
 					enabled = true
 				}
 			},
@@ -763,8 +760,8 @@ local function DisciplineConstructManaBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_powerWordRadianceComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSerenityComboPointEnabled
+	controls.checkBoxes.powerWordRadianceComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_powerWordRadianceComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.powerWordRadianceComboPointEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxEnablePowerWordRadiance"])
 	f.tooltip = L["PriestDisciplineCheckboxEnablePowerWordRadianceTooltip"]
@@ -1126,27 +1123,24 @@ local function HolyConstructManaBarPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord)
 
-	--yCoord = yCoord - 30
-	--yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], L["PriestHolyHolyWords"])
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
 	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordChastiseEnabled
+	yCoord = yCoord - 30
+	controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.holyWordSerenityEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordChastise"])
-	f.tooltip = L["PriestHolyCheckboxHolyWordChastiseTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordChastise.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSerenity"])
+	f.tooltip = L["PriestHolyCheckboxHolyWordSerenityTooltip"]
+	f:SetChecked(spec.colors.bar.holyWordSerenity.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordChastise.enabled = self:GetChecked()
+		spec.colors.bar.holyWordSerenity.enabled = self:GetChecked()
 	end)
 
-	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.holyWordChastise
+	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.holyWordSerenity
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordChastise")
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSerenity")
 	end)
 
 	yCoord = yCoord - 30
@@ -1160,28 +1154,28 @@ local function HolyConstructManaBarPanel(parent)
 		spec.colors.bar.holyWordSanctify.enabled = self:GetChecked()
 	end)
 
-	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.holyWordSanctify
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSanctify")
 	end)
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSerenityEnabled
+	controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.holyWordChastiseEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSerenity"])
-	f.tooltip = L["PriestHolyCheckboxHolyWordSerenityTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordSerenity.enabled)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordChastise"])
+	f.tooltip = L["PriestHolyCheckboxHolyWordChastiseTooltip"]
+	f:SetChecked(spec.colors.bar.holyWordChastise.enabled)
 	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordSerenity.enabled = self:GetChecked()
+		spec.colors.bar.holyWordChastise.enabled = self:GetChecked()
 	end)
 
-	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.holyWordSerenity
+	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.holyWordChastise
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSerenity")
-	end)]]
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordChastise")
+	end)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 2, yCoord, {
@@ -1257,124 +1251,6 @@ local function HolyConstructManaBarPanel(parent)
 		spec.colors.bar.lightweaver.enabled = self:GetChecked()
 	end)]]
 
-	--[[yCoord = yCoord - 40
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyHolyWordColorsHeader"], oUi.xCoord, yCoord)
-	controls.colors.comboPoints = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSerenityComboPointEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSerenity"])
-	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSerenityTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordSerenity.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordSerenity.enabled = self:GetChecked()
-		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
-		end
-	end)
-
-	controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.comboPoints.holyWordSerenity, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.holyWordSerenity
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSanctifyComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSanctifyComboPointEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSanctify"])
-	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSanctifyTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordSanctify.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordSanctify.enabled = self:GetChecked()
-		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
-		end
-	end)
-
-	controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.comboPoints.holyWordSanctify, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.holyWordSanctify
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordChastiseComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordChastiseComboPointEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordChastise"])
-	f.tooltip = L["PriestHolyCheckboxEnableHolyWordChastiseTooltip"]
-	f:SetChecked(spec.colors.comboPoints.holyWordChastise.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.holyWordChastise.enabled = self:GetChecked()
-		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
-			TRB.Functions.Character:ResetCaches()
-			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_holy.settings)
-		end
-	end)
-
-	controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.comboPoints.holyWordChastise, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.holyWordChastise
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.completeCooldownEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
-	f.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
-	f:SetChecked(spec.colors.comboPoints.completeCooldown.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.completeCooldown.enabled = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], spec.colors.comboPoints.completeCooldown, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.completeCooldown
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.sacredReverenceEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_sacredReverenceEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sacredReverenceEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxSacredReverence"])
-	f.tooltip = L["PriestHolyCheckboxSacredReverenceTooltip"]
-	f:SetChecked(spec.colors.comboPoints.sacredReverence.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.sacredReverence.enabled = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.sacredReverence = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerSacredReverence"], spec.colors.comboPoints.sacredReverence, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.sacredReverence
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordBorder"], spec.colors.comboPoints.border, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordUnfilled"], spec.colors.comboPoints.background, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)]]
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 2, yCoord, {
 		endOfKey = "apotheosis",
@@ -1428,7 +1304,135 @@ local function HolyConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestHolyHolyWords"], true)
+end
+
+local function HolyConstructHolyWordsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_holy
+	local yCoord = 5
+	local f = nil
+
+	local spec = TRB.Data.settings.priest.holy
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], L["PriestHolyHolyWords"])
+
+	yCoord = yCoord - 60
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyHolyWordColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.holyWordSerenityComboPointEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSerenity"])
+	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSerenityTooltip"]
+	f:SetChecked(spec.colors.comboPoints.holyWordSerenity.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.holyWordSerenity.enabled = self:GetChecked()
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.comboPoints.holyWordSerenity.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.holyWordSerenity
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.holyWordSanctifyComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.holyWordSanctifyComboPointEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordSanctify"])
+	f.tooltip = L["PriestHolyCheckboxEnableHolyWordSanctifyTooltip"]
+	f:SetChecked(spec.colors.comboPoints.holyWordSanctify.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.holyWordSanctify.enabled = self:GetChecked()
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.comboPoints.holyWordSanctify.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.holyWordSanctify
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.holyWordChastiseComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.holyWordChastiseComboPointEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxEnableHolyWordChastise"])
+	f.tooltip = L["PriestHolyCheckboxEnableHolyWordChastiseTooltip"]
+	f:SetChecked(spec.colors.comboPoints.holyWordChastise.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.holyWordChastise.enabled = self:GetChecked()
+		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 2 then
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.comboPoints.holyWordChastise.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.holyWordChastise
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.completeCooldownEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
+	f.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.completeCooldown.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.completeCooldown.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], spec.colors.comboPoints.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.completeCooldown
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "completeCooldown")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorHolyWordUnfilled"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1578,6 +1582,7 @@ local function HolyConstructOptionsPanel(cache)
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
+		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },

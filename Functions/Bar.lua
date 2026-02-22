@@ -75,8 +75,6 @@ local function HideAllBarGroupsAndBarText()
 	end
 end
 
----Computes the width of each Combo Point node
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---Builds a map from barKey to its root barKey by traversing a forest
 ---@param forest table<string, table> # Forest from BuildAnchorForest
 ---@return table<string, string> # Map of barKey -> rootBarKey
@@ -96,6 +94,8 @@ local function BuildBarKeyToRootMap(forest)
 	return map
 end
 
+---Computes the width of each Combo Point node
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return number
 local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
@@ -308,8 +308,9 @@ function TRB.Functions.Bar:HideResourceBar(force)
 			if barGroups.primary then
 				barGroups.primary:Show()
 			end
-			-- Show secondary bar (combo points, etc.) unless set to "never"
-			if barGroups.secondary and (displayBar == nil or displayBar.secondary.visibility ~= "never") then
+			-- Show secondary bar (combo points, etc.) unless set to "never" or has 0 nodes
+			if barGroups.secondary and (displayBar == nil or displayBar.secondary.visibility ~= "never")
+				and (TRB.Data.character.maxResource2 or 0) > 0 then
 				barGroups.secondary:Show()
 				local maxNodes = TRB.Data.character.maxResource2 or barGroups.secondary.maxNodes or 5
 				barGroups.secondary:ShowNodes(maxNodes)
@@ -681,6 +682,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	barGroups.effectiveWidth = effectiveWidth
 
 	-- Store per-root effective widths for ResolveBarWidth
+---@diagnostic disable-next-line: missing-fields
 	barGroups.rootEffectiveWidths = {}
 	for rootBarKey, meta in pairs(rootMetadata) do
 		barGroups.rootEffectiveWidths[rootBarKey] = meta.effectiveWidth
@@ -1444,6 +1446,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
+	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
+	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
+		return false
+	end
 	local visKey = self:GetVisibilityKey(barKey)
 	local visibilitySetting = settings.displayBar and settings.displayBar[visKey]
 	return not visibilitySetting or visibilitySetting.visibility ~= "never"
@@ -1637,7 +1643,7 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 			width = barSettings and barSettings.width or 0,
 			height = barSettings and barSettings.height or 0,
 		}
-		if not isRoot then
+		if not isRoot and anchor then
 			parentOf[barKey] = anchor.barKey
 		end
 	end
@@ -1740,7 +1746,7 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
 
 		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
-		if not isRoot and not barGroups[anchor.barKey] then
+		if not isRoot and anchor and not barGroups[anchor.barKey] then
 			isRoot = true
 		end
 
@@ -1753,7 +1759,7 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 			width = barSettings and barSettings.width or 0,
 			height = barSettings and barSettings.height or 0,
 		}
-		if not isRoot then
+		if not isRoot and anchor then
 			parentOf[barKey] = anchor.barKey
 		end
 	end
@@ -2387,6 +2393,25 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
 	end
+end
+
+---Sets a BarNode's value using a DurationObject for secret-safe animation.
+---Uses StatusBar:SetTimerDuration() to let WoW natively animate the bar progress.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param node TRB.Classes.BarNode
+---@param durationObject any # A DurationObject from C_Spell.GetSpellChargeDuration() or similar
+function TRB.Functions.Bar:SetBarNodeTimerDuration(settings, key, node, durationObject)
+	if settings == nil or settings.bar == nil or node == nil or durationObject == nil then
+		return
+	end
+
+	-- Invalidate the value cache for this key so future SetBarNodeValue calls don't skip
+	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	TRB.Data.cache.values.bar[key].value = nil
+	TRB.Data.cache.values.bar[key].maxResource = nil
+
+	node:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
 end
 
 ---Sets the primary value on a BarNode

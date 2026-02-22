@@ -596,9 +596,6 @@ L["PriestHolyCheckboxEnableHolyWordChastiseTooltip"] = "Show the Holy Word bar f
 L["PriestHolyColorPickerCompleteHolyWordCooldown"] = "Color when your cast will complete the related Holy Word cooldown"
 L["PriestHolyCheckboxCompleteHolyWordCooldown"] = "Complete cooldown color change?"
 L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"] = "When checked, when the hardcasting of a spell will cause its related Holy Word to finish coming off of cooldown, that associated Holy Word bar will change to this color as an indication."
-L["PriestHolyColorPickerSacredReverence"] = "Color when this Holy Word will not consume a charge when cast"
-L["PriestHolyCheckboxSacredReverence"] = "Sacred Reverence (T31 4P) color change?"
-L["PriestHolyCheckboxSacredReverenceTooltip"] = "When checked, the highest completed Holy Word: Sanctify and Holy Word: Serenity will be changed to this color if you have a stack of Sacred Reverence (T31 4P) causing the next cast to not consume a charge. If you have two stacks, up to two off cooldown charges will be this color."
 L["PriestHolyColorHolyWordBorder"] = "Holy Word's border"
 L["PriestHolyColorHolyWordUnfilled"] = "Unfilled Holy Word background"
 L["PriestHolyHeaderEndOfApotheosisConfiguration"] = "End of Apotheosis Configuration"
@@ -958,7 +955,6 @@ L["PriestHolyBarTextVariable_hwSanctifyTime"] = "Time left on Holy Word: Sanctif
 L["PriestHolyBarTextVariable_hwSanctifyCharges"] = "Number of charges left on Holy Word: Sanctify"
 L["PriestHolyBarTextVariable_hwSerenityTime"] = "Time left on Holy Word: Serenity's cooldown"
 L["PriestHolyBarTextVariable_hwSerenityCharges"] = "Number of charges left on Holy Word: Serenity"
-L["PriestHolyBarTextVariable_sacredReverenceStacks"] = "Number Sacred Reverence (T31 4P) stacks"
 L["PriestHolyBarTextVariable_apotheosisTime"] = "Time remaining on Apotheosis"
 L["PriestHolyBarTextVariable_lightweaverStacks"] = "Number of Lightweaver stacks"
 L["PriestHolyBarTextVariable_lightweaverTime"] = "Time left on Lightweaver"
@@ -1935,3 +1931,5 @@ L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "Play an audio cue when a Mi
 L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colors will be used instead of the specialization-specific setting."
 
 L["SoulFragment6"] = "Soul Fragment 6"
+
+L["TabHolyWords"] = "Holy Words"

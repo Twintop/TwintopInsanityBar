@@ -6400,22 +6400,22 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	--		L["HealthBar"],
 	--		L["Screen"],
 	--	}
-	--elseif (classId == 5 and specId == 2) then -- Holy Priest
-	--	relativeToFrame[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
-	--	relativeToFrame[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
-	--	relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
-	--	relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
-	--	relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
-	--	relativeToFrameList = {
-	--		L["MainResourceBar"],
-	--		L["HolyWordSerenityCharge1"],
-	--		L["HolyWordSerenityCharge2"],
-	--		L["HolyWordSanctifyCharge1"],
-	--		L["HolyWordSanctifyCharge2"],
-	--		L["HolyWordChastiseCharge1"],
-	--		L["HealthBar"],
-	--		L["Screen"],
-	--	}
+	elseif (classId == 5 and specId == 2) then -- Holy Priest
+		relativeToFrame[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
+		relativeToFrame[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
+		relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
+		relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
+		relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["HolyWordSerenityCharge1"],
+			L["HolyWordSerenityCharge2"],
+			L["HolyWordSanctifyCharge1"],
+			L["HolyWordSanctifyCharge2"],
+			L["HolyWordChastiseCharge1"],
+			L["HealthBar"],
+			L["Screen"],
+		}
 	elseif (classId == 5 and specId == 3) then -- Shadow Priest (mana bar support)
 		relativeToFrame[L["ManaBar"]] = "ManaBar"
 		relativeToFrameList = {
