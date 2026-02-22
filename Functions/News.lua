@@ -25,7 +25,7 @@ local content = [====[
 ## Demon Hunter
 ### Vengeance
 
-- [#634](#634) Restore (almost all) original Soul Fragement functionality -- individual nodes instead of a single bar with thresholds, distinct colors for each node, and allow bar text areas to be placed in each.
+- [#634](#634) Restore (almost all) original Soul Fragment functionality -- individual nodes instead of a single bar with thresholds, distinct colors for each node, and allow bar text areas to be placed in each.
 
 ## Priest
 ### Holy
