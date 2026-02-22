@@ -5355,7 +5355,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		local borderFrame = nil
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
-			borderFrame = node and node.GetFrame and node:GetFrame() or borderFrame
+			borderFrame = node and node.GetFrame and node:GetFrame()
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
