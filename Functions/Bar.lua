@@ -75,8 +75,6 @@ local function HideAllBarGroupsAndBarText()
 	end
 end
 
----Computes the width of each Combo Point node
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---Builds a map from barKey to its root barKey by traversing a forest
 ---@param forest table<string, table> # Forest from BuildAnchorForest
 ---@return table<string, string> # Map of barKey -> rootBarKey
@@ -96,6 +94,8 @@ local function BuildBarKeyToRootMap(forest)
 	return map
 end
 
+---Computes the width of each Combo Point node
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return number
 local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
@@ -682,6 +682,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	barGroups.effectiveWidth = effectiveWidth
 
 	-- Store per-root effective widths for ResolveBarWidth
+---@diagnostic disable-next-line: missing-fields
 	barGroups.rootEffectiveWidths = {}
 	for rootBarKey, meta in pairs(rootMetadata) do
 		barGroups.rootEffectiveWidths[rootBarKey] = meta.effectiveWidth
@@ -1642,7 +1643,7 @@ function TRB.Functions.Bar:BuildAnchorTree(settings, barGroups, collapseHidden, 
 			width = barSettings and barSettings.width or 0,
 			height = barSettings and barSettings.height or 0,
 		}
-		if not isRoot then
+		if not isRoot and anchor then
 			parentOf[barKey] = anchor.barKey
 		end
 	end
@@ -1745,7 +1746,7 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
 
 		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
-		if not isRoot and not barGroups[anchor.barKey] then
+		if not isRoot and anchor and not barGroups[anchor.barKey] then
 			isRoot = true
 		end
 
@@ -1758,7 +1759,7 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 			width = barSettings and barSettings.width or 0,
 			height = barSettings and barSettings.height or 0,
 		}
-		if not isRoot then
+		if not isRoot and anchor then
 			parentOf[barKey] = anchor.barKey
 		end
 	end
