@@ -6140,6 +6140,11 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		d.btt:SetSelection()
 		table.remove(d.displayText.barText, d.row)
 		d.setTableValues(d.displayText, d.btt)
+		if d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId then
+			TRB.Data.cache.barText = {}
+			TRB.Data.cache.symbols = {}
+			TRB.Data.cache.barTextTree = {}
+		end
 		TRB.Functions.BarText:CreateBarTextFrames(d.classId, d.specId)
 		d.barTextOptionsFrame:Hide()
 	end,
@@ -6581,6 +6586,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["SoulFragment3"]] = "ComboPoint_3"
 		relativeToFrame[L["SoulFragment4"]] = "ComboPoint_4"
 		relativeToFrame[L["SoulFragment5"]] = "ComboPoint_5"
+		relativeToFrame[L["SoulFragment6"]] = "ComboPoint_6"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["SoulFragment1"],
@@ -6588,6 +6594,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["SoulFragment3"],
 			L["SoulFragment4"],
 			L["SoulFragment5"],
+			L["SoulFragment6"],
 			L["HealthBar"],
 			L["Screen"],
 		}
