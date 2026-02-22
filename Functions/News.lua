@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.1.9-release (2026-02-22)
+# 12.0.1.9-release (2026-02-23)
 ## General
 
 - [#590](#590) Refactor how bars are generated to reduce the number of frames required.
@@ -26,6 +26,12 @@ local content = [====[
 ### Vengeance
 
 - [#634](#634) Restore (almost all) original Soul Fragement functionality -- individual nodes instead of a single bar with thresholds, distinct colors for each node, and allow bar text areas to be placed in each.
+
+## Priest
+### Holy
+
+- [#508](#508) Restore the ability to track and show the status of Holy Words in its own bar group. Features returning include: charges, cooldown remaining, bar text, and color changes when your current hardcast will complete the cooldown of its associated Holy Word.
+- Add Eternal Sanctity support for extending the duration of Apotheosis.
 
 ---
 

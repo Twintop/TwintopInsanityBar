@@ -308,8 +308,9 @@ function TRB.Functions.Bar:HideResourceBar(force)
 			if barGroups.primary then
 				barGroups.primary:Show()
 			end
-			-- Show secondary bar (combo points, etc.) unless set to "never"
-			if barGroups.secondary and (displayBar == nil or displayBar.secondary.visibility ~= "never") then
+			-- Show secondary bar (combo points, etc.) unless set to "never" or has 0 nodes
+			if barGroups.secondary and (displayBar == nil or displayBar.secondary.visibility ~= "never")
+				and (TRB.Data.character.maxResource2 or 0) > 0 then
 				barGroups.secondary:Show()
 				local maxNodes = TRB.Data.character.maxResource2 or barGroups.secondary.maxNodes or 5
 				barGroups.secondary:ShowNodes(maxNodes)
@@ -1444,6 +1445,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
+	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
+	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
+		return false
+	end
 	local visKey = self:GetVisibilityKey(barKey)
 	local visibilitySetting = settings.displayBar and settings.displayBar[visKey]
 	return not visibilitySetting or visibilitySetting.visibility ~= "never"
@@ -2387,6 +2392,25 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
 	end
+end
+
+---Sets a BarNode's value using a DurationObject for secret-safe animation.
+---Uses StatusBar:SetTimerDuration() to let WoW natively animate the bar progress.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param key string
+---@param node TRB.Classes.BarNode
+---@param durationObject any # A DurationObject from C_Spell.GetSpellChargeDuration() or similar
+function TRB.Functions.Bar:SetBarNodeTimerDuration(settings, key, node, durationObject)
+	if settings == nil or settings.bar == nil or node == nil or durationObject == nil then
+		return
+	end
+
+	-- Invalidate the value cache for this key so future SetBarNodeValue calls don't skip
+	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	TRB.Data.cache.values.bar[key].value = nil
+	TRB.Data.cache.values.bar[key].maxResource = nil
+
+	node:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
 end
 
 ---Sets the primary value on a BarNode

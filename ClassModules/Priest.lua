@@ -182,16 +182,14 @@ local function FillSpecializationCache()
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
 	---@type TRB.Classes.Snapshot
-	specCache.priest_holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
+	specCache.priest_holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)]]
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(spells.holyWordSerenity)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(spells.holyWordSanctify)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
-	---@type TRB.Classes.Snapshot
-	specCache.priest_holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, "always")
-	---@type TRB.Classes.Snapshot
+	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.answeredPrayers.id] = TRB.Classes.Snapshot:New(spells.answeredPrayers, nil, "always")]]
 
 	-- Shadow
@@ -346,12 +344,75 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
+	-- Holy Words secondary bar (Holy only)
+	if TRB.Data.character.specId == 2 and barGroups and barGroups.secondary then
+		local maxHolyWordNodes = TRB.Data.character.maxResource2 or 0
+
+		if maxHolyWordNodes == 0 then
+			-- All Holy Word enables are unchecked — treat as visibility="never"
+			barGroups.secondary:Hide()
+		else
+			barGroups.secondary:SetMaxNodes(maxHolyWordNodes)
+			barGroups.secondary:SetNodeCount(maxHolyWordNodes)
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:Show()
+
+			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			if cdmForced then
+				barGroups.secondary.fullWidth = true
+			end
+
+			barGroups.secondary:ApplyLayout(
+				effectiveWidth,
+				settings.comboPoints.width,
+				settings.comboPoints.height,
+				settings.comboPoints.border
+			)
+
+			local frameLevels = TRB.Data.constants.frameLevels
+			for i = 1, maxHolyWordNodes do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:SetTextures(
+						settings.textures.comboPointsBar,
+						settings.textures.comboPointsBorder,
+						settings.textures.comboPointsBackground
+					)
+					node:SetMinMax(0, 1)
+					node:SetBorderColor(settings.colors.comboPoints.border.color)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+					node:SetColor(settings.colors.comboPoints.base.color)
+					node:SetFrameLevel(frameLevels.comboPoint)
+				end
+			end
+		end
+	end
+
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- TRB.Functions.Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---Calculates the effective cooldown duration for a Holy Word spell, factoring in talent mods.
+---@param holyWordSpell TRB.Classes.SpellBase # The Holy Word spell (holyWordSerenity, holyWordSanctify, or holyWordChastise)
+---@return number # The effective cooldown duration in seconds
+local function CalculateHolyWordDuration(holyWordSpell)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local duration = holyWordSpell.duration
+	if talents:IsTalentActive(spells.holyCelerity) then
+		duration = duration + spells.holyCelerity.attributes.durationMod
+	end
+	if talents:IsTalentActive(spells.prophetsInsight) then
+		duration = duration + spells.prophetsInsight.attributes.durationMod
+	end
+	return duration
+end
+
+---comment
+---@param base number
+---@param spellId integer
+---@return number
 local function CalculateHolyWordCooldown(base, spellId)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
@@ -360,6 +421,10 @@ local function CalculateHolyWordCooldown(base, spellId)
 
 	if snapshots[spells.apotheosis.id].buff.isActive then
 		mod = mod * spells.apotheosis--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier
+	end
+
+	if talents:IsTalentActive(spells.lightOfTheNaaru) then
+		mod = mod * (1 + (spells.lightOfTheNaaru--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
 	end
 
 	return mod * (base)
@@ -508,7 +573,6 @@ local function RefreshLookupData_Holy()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
-	--[[
 	--$hwChastiseTime
 	local _hwChastiseTime = snapshots[spells.holyWordChastise.id].cooldown.remaining
 	local hwChastiseTime = TRB.Functions.BarText:TimerPrecision(_hwChastiseTime)
@@ -527,7 +591,7 @@ local function RefreshLookupData_Holy()
 	
 	--$hwSerenityCharges
 	local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
-	local hwSerenityCharges = string.format("%.0f", _hwSerenityCharges)]]
+	local hwSerenityCharges = string.format("%.0f", _hwSerenityCharges)
 
 	--$apotheosisTime
 	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
@@ -557,10 +621,6 @@ local function RefreshLookupData_Holy()
 	--$rwTime
 	local _rwTime = snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime) or 0
 	local rwTime = TRB.Functions.BarText:TimerPrecision(_rwTime)
-	
-	--$lightweaverStacks
-	local _sacredReverenceStacks = snapshots[spells.sacredReverence.id].buff.applications or 0
-	local sacredReverenceStacks = string.format("%.0f", _sacredReverenceStacks)
 	]]
 
 	----------------
@@ -574,7 +634,6 @@ local function RefreshLookupData_Holy()
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
 	lookup["$apotheosisTime"] = apotheosisTime
-	--[[
 	lookup["$hwChastiseTime"] = hwChastiseTime
 	lookup["$chastiseTime"] = hwChastiseTime
 	lookup["$holyWordChastiseTime"] = hwChastiseTime
@@ -590,12 +649,11 @@ local function RefreshLookupData_Holy()
 	lookup["$hwSerenityCharges"] = hwSerenityCharges
 	lookup["$serenityCharges"] = hwSerenityCharges
 	lookup["$holyWordSerenityCharges"] = hwSerenityCharges
-	lookup["$lightweaverStacks"] = lightweaverStacks
+	--[[["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
 	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
 	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
 	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
-	lookup["$sacredReverenceStacks"] = sacredReverenceStacks
 	lookup["$rwTime"] = rwTime]]
 	TRB.Data.lookup = lookup
 
@@ -608,7 +666,6 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$apotheosisTime"] = _apotheosisTime
-	--[[
 	lookupLogic["$hwChastiseTime"] = _hwChastiseTime
 	lookupLogic["$chastiseTime"] = _hwChastiseTime
 	lookupLogic["$holyWordChastiseTime"] = _hwChastiseTime
@@ -624,12 +681,11 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
 	lookupLogic["$serenityCharges"] = _hwSerenityCharges
 	lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
-	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
+	--[[lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
 	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
 	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
 	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
-	lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
 	lookupLogic["$rwTime"] = rwTime]]
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -911,9 +967,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 
-			--[[if spellId == spells.heal.id then
-				casting.spellKey = "heal"
-			elseif spellId == spells.flashHeal.id then
+			if spellId == spells.flashHeal.id then
 				casting.spellKey = "flashHeal"
 			elseif spellId == spells.prayerOfHealing.id then
 				casting.spellKey = "prayerOfHealing"
@@ -923,7 +977,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if spellId == spells.holyFire.id then --Voice of Harmony
 					casting.spellKey = "holyFire"
 				end
-			end]]
+			end
 			UpdateCastingResourceFinal_Holy()
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -937,6 +991,19 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 									snapshots[spells.apotheosis.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 								else
 									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+								end
+							end
+
+							if talents:IsTalentActive(spells.voiceOfHarmony) then
+								local cooldown = snapshots[spells.holyWordSanctify.id].cooldown
+
+								if talents:IsTalentActive(spells.ultimateSerenity) then
+									cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+								end
+
+								if cooldown.onCooldown then
+									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction, spells.holyWordSanctify.id)
+									cooldown:ReduceCooldown(cdrAmount)
 								end
 							end
 						end
@@ -960,10 +1027,70 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 			elseif spellId == spells.apotheosis.id then
 				local duration = spells.apotheosis.duration + snapshots[spells.sustainedPotency.id].buff.applications * spells.sustainedPotency.attributes.durationMod
+
+				if talents:IsTalentActive(spells.eternalSanctity) then
+					duration = duration + spells.eternalSanctity.attributes.durationMod
+				end
+
  				snapshots[spells.sustainedPotency.id].buff:Reset()
 
 				snapshots[spells.apotheosis.id].buff:InitializeCustom(duration, currentTime)
 				snapshots[spells.apotheosis.id].buff.attributes["swmCasts"] = 0
+
+				snapshots[spells.holyWordSerenity.id].cooldown:GetRemainingTime(currentTime)
+				snapshots[spells.holyWordSerenity.id].cooldown:GainCharge(snapshots[spells.holyWordSerenity.id].cooldown.remaining)
+				snapshots[spells.holyWordSanctify.id].cooldown:GetRemainingTime(currentTime)
+				snapshots[spells.holyWordSanctify.id].cooldown:GainCharge(snapshots[spells.holyWordSanctify.id].cooldown.remaining)
+				snapshots[spells.holyWordChastise.id].cooldown:GainCharge()
+			elseif spellId == spells.holyWordSerenity.id then
+				snapshots[spells.holyWordSerenity.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordSerenity))
+			elseif spellId == spells.holyWordSanctify.id then
+				snapshots[spells.holyWordSanctify.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordSanctify))
+			elseif spellId == spells.holyWordChastise.id then
+				snapshots[spells.holyWordChastise.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordChastise))
+			end
+
+			-- Holy Word cooldown reduction from supporting spells
+			local cdrSpell = nil
+			if spellId == spells.smite.id then
+				cdrSpell = spells.smite
+			elseif spellId == spells.holyFire.id and talents:IsTalentActive(spells.voiceOfHarmony) then
+				cdrSpell = spells.holyFire
+			elseif spellId == spells.flashHeal.id then
+				cdrSpell = spells.flashHeal
+				if (snapshotData.attributes.surgeOfLightActive or snapshotData.attributes.surgeOfLightActiveGrace) and talents:IsTalentActive(spells.energyCycle) then
+					local cooldown = snapshots[spells.holyWordSanctify.id].cooldown
+
+					if talents:IsTalentActive(spells.ultimateSerenity) then
+						cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+					end
+
+					cooldown:ReduceCooldown(spells.energyCycle.holyWordReduction, CalculateHolyWordDuration(spells.holyWordSanctify))
+				end
+			elseif spellId == spells.prayerOfHealing.id then
+				cdrSpell = spells.prayerOfHealing
+			elseif spellId == spells.halo.id and talents:IsTalentActive(spells.voiceOfHarmony) and not talents:IsTalentActive(spells.powerSurge) then
+				-- If Power Surge is talented, Halo CDR gets handled above.
+				cdrSpell = spells.halo
+			end
+
+			if cdrSpell ~= nil then
+				local hwSpell = cdrSpell --[[@as TRB.Classes.Priest.HolyWordSpell]]
+				if hwSpell.holyWordKey ~= nil and hwSpell.holyWordReduction ~= nil then
+					local targetSpell = spells[hwSpell.holyWordKey]
+
+					if hwSpell.holyWordKey == "holyWordSanctify" and talents:IsTalentActive(spells.ultimateSerenity) then
+						targetSpell = spells.holyWordSerenity
+					end
+
+					if targetSpell and talents:IsTalentActive(targetSpell) then
+						local cooldown = snapshots[targetSpell.id].cooldown
+						if cooldown.onCooldown then
+							local cdrAmount = CalculateHolyWordCooldown(hwSpell.holyWordReduction, spellId)
+							cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
+						end
+					end
+				end
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -1151,6 +1278,14 @@ local function HandleSpellEvents(self, event, ...)
 			if spellId == spells.surgeOfLight.id then -- Surge of Light
 				snapshotData.attributes.surgeOfLightActive = false
 				snapshotData.audio.surgeOfLightPlayed = false
+				
+				snapshotData.attributes.surgeOfLightActiveGrace = true
+
+				C_Timer.After(0, function()
+					C_Timer.After(0.05, function()
+						snapshotData.attributes.surgeOfLightActiveGrace = false
+					end)
+				end)
 			end
 		end
 	end
@@ -1237,10 +1372,11 @@ local function UpdateSnapshot_Holy()
 
 	snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
-	--[[snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
+	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
-	snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
+
+	--[[snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)]]
 end
 
@@ -1345,6 +1481,28 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_holy.settings
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
+			local holyWordCooldownCompletes = false
+			local holyWordCooldownCompletesKey = nil
+
+			if snapshotData.casting.spellKey ~= nil then
+				local maybeHolyWordSpell = spells[snapshotData.casting.spellKey]--[[@as TRB.Classes.Priest.HolyWordSpell]]
+				if maybeHolyWordSpell ~= nil and
+					maybeHolyWordSpell.holyWordKey ~= nil and
+					maybeHolyWordSpell.holyWordReduction ~= nil and
+					maybeHolyWordSpell.holyWordReduction >= 0 and
+					talents:IsTalentActive(spells[maybeHolyWordSpell.holyWordKey]) then
+
+					local castTimeRemains = snapshotData.casting.endTime - currentTime
+					local holyWordCooldownRemaining = snapshots[spells[maybeHolyWordSpell.holyWordKey].id].cooldown:GetRemainingTime(currentTime)
+					local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
+
+					if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
+						holyWordCooldownCompletes = true
+						holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
+					end
+				end
+			end
+
 			if specSettings.displayBar.primary.visibility ~= "never" then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
@@ -1361,28 +1519,10 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				local barColor = nil
-				local holyWordCooldownCompletes = false
-				local holyWordCooldownCompletesKey = nil
 
-				if snapshotData.casting.spellKey ~= nil then
-					local maybeHolyWordSpell = spells[snapshotData.casting.spellKey]--[[@as TRB.Classes.Priest.HolyWordSpell]]
-					if maybeHolyWordSpell ~= nil and
-						maybeHolyWordSpell.holyWordKey ~= nil and
-						maybeHolyWordSpell.holyWordReduction ~= nil and
-						maybeHolyWordSpell.holyWordReduction >= 0 and
-						talents:IsTalentActive(spells[maybeHolyWordSpell.holyWordKey]) then
-
-						local castTimeRemains = snapshotData.casting.endTime - currentTime
-						local holyWordCooldownRemaining = snapshots[spells[maybeHolyWordSpell.holyWordKey].id].cooldown:GetRemainingTime(currentTime)
-						local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
-
-						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
-							holyWordCooldownCompletes = true
-							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
-							if specSettings.colors.bar[maybeHolyWordSpell.holyWordKey] and specSettings.colors.bar[maybeHolyWordSpell.holyWordKey].enabled then
-								barColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey].color
-							end
-						end
+				if holyWordCooldownCompletes then
+					if specSettings.colors.bar[holyWordCooldownCompletesKey] and specSettings.colors.bar[holyWordCooldownCompletesKey].enabled then
+						barColor = specSettings.colors.bar[holyWordCooldownCompletesKey].color
 					end
 				end
 
@@ -1415,6 +1555,61 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+			end
+
+			if specSettings.displayBar.secondary.visibility ~= "never" then
+				local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBorderColor = specSettings.colors.comboPoints.border.color
+				local currentCp = 1
+				
+				-- Holy Words: Serenity, Sanctify, Chastise
+				-- Each may have 1 or 2 charges (Miracle Worker grants +1 to Serenity/Sanctify)
+				local holyWordDefs = {
+					{ spell = spells.holyWordSerenity, color = specSettings.colors.comboPoints.holyWordSerenity.color, enabled = specSettings.colors.comboPoints.holyWordSerenity.enabled },
+					{ spell = spells.holyWordSanctify, color = specSettings.colors.comboPoints.holyWordSanctify.color, enabled = specSettings.colors.comboPoints.holyWordSanctify.enabled and not talents:IsTalentActive(spells.ultimateSerenity) },
+					{ spell = spells.holyWordChastise, color = specSettings.colors.comboPoints.holyWordChastise.color, enabled = specSettings.colors.comboPoints.holyWordChastise.enabled },
+				}
+
+				for _, hwDef in ipairs(holyWordDefs) do
+					if talents:IsTalentActive(hwDef.spell) and hwDef.enabled then
+						local cooldown = snapshots[hwDef.spell.id].cooldown
+						local charges = cooldown.manualCharges or 0
+						local maxCharges = cooldown.manualMaxCharges or 1
+
+						for chargeIndex = 1, maxCharges do
+							if barGroups and barGroups.secondary then
+								local cpNode = barGroups.secondary:GetNode(currentCp)
+								if cpNode then
+									local cpColor = hwDef.color
+									local cpKey = "comboPoint" .. currentCp
+									if chargeIndex <= charges then
+										-- Available charge: full bar
+										cpNode:ClearTimerDuration()
+										TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 1, 1)
+									elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+										-- Currently recharging: manual timer-based progress
+										cpNode:ClearTimerDuration()
+										local progress = cooldown:GetManualCooldownProgress(currentTime)
+										-- Invalidate cache so continuously changing progress always renders
+										TRB.Data.cache.values.bar[cpKey] = nil
+										TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
+										if holyWordCooldownCompletesKey and specSettings.colors.comboPoints.completeCooldown.enabled and specSettings.colors.comboPoints[holyWordCooldownCompletesKey] and specSettings.colors.comboPoints[holyWordCooldownCompletesKey].enabled then
+											cpColor = specSettings.colors.comboPoints.completeCooldown.color
+										end
+									else
+										-- Empty charge (not yet recharging)
+										cpNode:ClearTimerDuration()
+										TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
+									end
+									cpNode:SetColor(cpColor)
+									cpNode:SetBorderColor(cpBorderColor)
+									cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBA)
+								end
+							end
+							currentCp = currentCp + 1
+						end
+					end
+				end
 			end
 
 			-- Update health bar
@@ -1697,7 +1892,6 @@ local function SwitchSpec()
 	end
 	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization() or 0
-
 	if TRB.Data.character.specId == 1 then
 		specCache.priest_discipline.talents:GetTalents()
 		FillSpellData_Discipline()
@@ -1745,8 +1939,8 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#flashHeal"] = spells.flashHeal.icon
 		lookup["#apotheosis"] = spells.apotheosis.icon
-		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
-		lookup["#heal"] = spells.heal.icon
+		lookup["#hf"] = spells.holyFire.icon
+		lookup["#holyFire"] = spells.holyFire.icon
 		lookup["#hwChastise"] = spells.holyWordChastise.icon
 		lookup["#chastise"] = spells.holyWordChastise.icon
 		lookup["#holyWordChastise"] = spells.holyWordChastise.icon
@@ -1756,14 +1950,15 @@ local function SwitchSpec()
 		lookup["#hwSerenity"] = spells.holyWordSerenity.icon
 		lookup["#serenity"] = spells.holyWordSerenity.icon
 		lookup["#holyWordSerenity"] = spells.holyWordSerenity.icon
+		lookup["#smite"] = spells.smite.icon
+		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#lightweaver"] = spells.lightweaver.icon
 		lookup["#rw"] = spells.resonantWords.icon
 		lookup["#resonantWords"] = spells.resonantWords.icon
 		lookup["#lotn"] = spells.lightOfTheNaaru.icon
 		lookup["#lightOfTheNaaru"] = spells.lightOfTheNaaru.icon
 		lookup["#poh"] = spells.prayerOfHealing.icon
-		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
-		lookup["#smite"] = spells.smite.icon]]
+		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon]]
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1783,6 +1978,13 @@ local function SwitchSpec()
 				UnregisterSustainedPotencyEvents()
 			end
 		end
+
+		-- Initialize manual charge tracking for Holy Words (secret-value-safe)
+		local holySnapshots = specCache.priest_holy.snapshotData.snapshots
+		local hasMiracleWorker = specCache.priest_holy.talents:IsTalentActive(spells.miracleWorker)
+		holySnapshots[spells.holyWordSerenity.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
+		holySnapshots[spells.holyWordSanctify.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
+		holySnapshots[spells.holyWordChastise.id].cooldown:InitializeManualCharges(1)
 
 		talents = specCache.priest_holy.talents
 		TRB.Data.barConstructedForSpec = "priest_holy"
@@ -2057,29 +2259,34 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.holy
-		
 
 		local totalHolyWordCharges = 0
-		
-		--[[if talents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
-			totalHolyWordCharges = totalHolyWordCharges + 1
-			if talents:IsTalentActive(spells.miracleWorker) then
+
+		-- Use specCache talents directly instead of the upvalue `talents`, which may not
+		-- be assigned yet when CheckCharacter is called from EventRegistration during SwitchSpec.
+		local holyTalents = TRB.Data.specCache.priest_holy and TRB.Data.specCache.priest_holy.talents
+		if holyTalents then
+			if holyTalents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
+				totalHolyWordCharges = totalHolyWordCharges + 1
+				if holyTalents:IsTalentActive(spells.miracleWorker) then
+					totalHolyWordCharges = totalHolyWordCharges + 1
+				end
+			end
+
+			if holyTalents:IsTalentActive(spells.holyWordSanctify) and not holyTalents:IsTalentActive(spells.ultimateSerenity) and settings.colors.comboPoints.holyWordSanctify.enabled then
+				totalHolyWordCharges = totalHolyWordCharges + 1
+				if holyTalents:IsTalentActive(spells.miracleWorker) then
+					totalHolyWordCharges = totalHolyWordCharges + 1
+				end
+			end
+
+			if holyTalents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
 				totalHolyWordCharges = totalHolyWordCharges + 1
 			end
 		end
-		
-		if talents:IsTalentActive(spells.holyWordSanctify) and settings.colors.comboPoints.holyWordSanctify.enabled then
-			totalHolyWordCharges = totalHolyWordCharges + 1
-			if talents:IsTalentActive(spells.miracleWorker) then
-				totalHolyWordCharges = totalHolyWordCharges + 1
-			end
-		end
-		
-		if talents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
-			totalHolyWordCharges = totalHolyWordCharges + 1
-		end]]
+
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-	
+
 		if sharedSettings ~= nil then
 			if totalHolyWordCharges ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = totalHolyWordCharges
@@ -2144,7 +2351,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
 
 			-- Determine primary bar visibility independently
-			-- Priest has no secondary bar
 			local showPrimary = false
 			if not forceHideAll then
 				if sharedSettings.displayBar.primary.visibility == "always" then
@@ -2153,6 +2359,19 @@ function TRB.Functions.Class:HideResourceBar(force)
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary (Holy Words) bar visibility (Holy only)
+			-- If all 3 Holy Word enables are unchecked (maxResource2 == 0), treat as "never"
+			local showSecondary = false
+			if TRB.Data.character.specId == 2 and not forceHideAll and sharedSettings.displayBar.secondary ~= nil
+				and (TRB.Data.character.maxResource2 or 0) > 0 then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
 			end
 
 			-- Determine health bar visibility independently
@@ -2186,6 +2405,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
+			-- Apply secondary (Holy Words) bar visibility (Holy only)
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2 or 0)
+				else
+					barGroups.secondary:Hide()
+				end
+			end
+
 			-- Apply health bar visibility
 			if barGroups and barGroups.health then
 				if showHealth then
@@ -2207,7 +2436,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Track if the bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showHealth or showMana
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -2217,6 +2446,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			-- No settings - hide everything
 			if barGroups and barGroups.primary then
 				barGroups.primary:Hide()
+			end
+			if barGroups and barGroups.secondary then
+				barGroups.secondary:Hide()
 			end
 			if barGroups and barGroups.health then
 				barGroups.health:Hide()
@@ -2230,6 +2462,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		-- Unsupported spec - hide everything
 		if barGroups and barGroups.primary then
 			barGroups.primary:Hide()
+		end
+		if barGroups and barGroups.secondary then
+			barGroups.secondary:Hide()
 		end
 		if barGroups and barGroups.health then
 			barGroups.health:Hide()
@@ -2323,7 +2558,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$answeredPrayersRemainingStacks" then
 			if spells.answeredPrayers.attributes.maxStackRank[talents.talents[spells.answeredPrayers.talentId].currentRank] > 0 then
 				valid = true
-			end
+			end]]
 		elseif var == "$hwChastiseTime" or var == "$chastiseTime" or var == "$holyWordChastiseTime" then
 			if snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
 				valid = true
@@ -2344,10 +2579,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.holyWordSerenity.id].cooldown.charges > 0 then
 				valid = true
 			end
-		elseif var == "$sacredReverenceStacks" then
-			if snapshots[spells.sacredReverence.id].buff.isActive then
-				valid = true
-			end]]
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
@@ -2512,6 +2743,89 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				return manaNode:GetFrame(), true, isVisible
 			end
 		end
+		return nil, true, false
+	elseif relativeToFrame ~= nil then
+		-- Handle secondary resources (ComboPoint1, ComboPoint2, etc.)
+		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		if comboPointIndex ~= nil then
+			local index = tonumber(comboPointIndex)
+			if index ~= nil and barGroups and barGroups.secondary then
+				local secondaryNode = barGroups.secondary:GetNode(index)
+				if secondaryNode then
+					local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+					return secondaryNode:GetFrame(), true, isVisible
+				end
+			end
+			return nil, true, false
+		end
+
+		-- Handle Holy Word frames (HolyWordSerenity1, HolyWordSanctify1, HolyWordChastise1, etc.)
+		if TRB.Data.character.specId == 2 then
+			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+			local settings = TRB.Data.settings.priest.holy
+			local holyTalents = TRB.Data.specCache.priest_holy and TRB.Data.specCache.priest_holy.talents
+
+			if holyTalents and string.match(relativeToFrame, "^HolyWord") then
+				-- Calculate the node index by walking the same order as the rendering loop:
+				-- Serenity charges, then Sanctify charges, then Chastise charge
+				local nodeIndex = nil
+				local currentCp = 1
+
+				-- Serenity block
+				if holyTalents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
+					local serenityMaxCharges = holyTalents:IsTalentActive(spells.miracleWorker) and 2 or 1
+					if string.match(relativeToFrame, "^HolyWordSerenity(%d+)$") then
+						local chargeIndex = tonumber(string.match(relativeToFrame, "^HolyWordSerenity(%d+)$"))
+						if chargeIndex and chargeIndex >= 1 and chargeIndex <= serenityMaxCharges then
+							nodeIndex = currentCp + chargeIndex - 1
+						end
+					end
+					currentCp = currentCp + serenityMaxCharges
+				else
+					if string.match(relativeToFrame, "^HolyWordSerenity") then
+						return nil, false, false
+					end
+				end
+
+				-- Sanctify block
+				if holyTalents:IsTalentActive(spells.holyWordSanctify) and not holyTalents:IsTalentActive(spells.ultimateSerenity) and settings.colors.comboPoints.holyWordSanctify.enabled then
+					local sanctifyMaxCharges = holyTalents:IsTalentActive(spells.miracleWorker) and 2 or 1
+					if string.match(relativeToFrame, "^HolyWordSanctify(%d+)$") then
+						local chargeIndex = tonumber(string.match(relativeToFrame, "^HolyWordSanctify(%d+)$"))
+						if chargeIndex and chargeIndex >= 1 and chargeIndex <= sanctifyMaxCharges then
+							nodeIndex = currentCp + chargeIndex - 1
+						end
+					end
+					currentCp = currentCp + sanctifyMaxCharges
+				else
+					if string.match(relativeToFrame, "^HolyWordSanctify") then
+						return nil, false, false
+					end
+				end
+
+				-- Chastise block (always 1 charge max)
+				if holyTalents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
+					if relativeToFrame == "HolyWordChastise1" then
+						nodeIndex = currentCp
+					end
+				else
+					if string.match(relativeToFrame, "^HolyWordChastise") then
+						return nil, false, false
+					end
+				end
+
+				if nodeIndex ~= nil and barGroups and barGroups.secondary then
+					local secondaryNode = barGroups.secondary:GetNode(nodeIndex)
+					if secondaryNode then
+						local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+						return secondaryNode:GetFrame(), true, isVisible
+					end
+				end
+				return nil, false, false
+			end
+		end
+
 		return nil, true, false
 	end
 	return nil, true, false

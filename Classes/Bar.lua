@@ -77,6 +77,31 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	end
 end
 
+---Sets the StatusBar value using a DurationObject for secret-safe animation.
+---The StatusBar will automatically animate based on the DurationObject's internal timing.
+---@param durationObject any # A DurationObject from C_Spell.GetSpellChargeDuration() or similar
+---@param interpolation any? # Enum.StatusBarInterpolation value (default: Immediate)
+---@param direction any? # Enum.StatusBarTimerDirection value (default: ElapsedTime)
+function TRB.Classes.BarNode:SetTimerDuration(durationObject, interpolation, direction)
+	if durationObject == nil then return end
+	interpolation = interpolation or Enum.StatusBarInterpolation.Immediate
+	direction = direction or Enum.StatusBarTimerDirection.ElapsedTime
+	self.frame:SetTimerDuration(durationObject, interpolation, direction)
+	self.hasTimerDuration = true
+end
+
+---Clears any active DurationObject-driven animation, restoring normal SetValue behavior.
+---Hides and re-shows the StatusBar to force WoW to drop the timer binding.
+function TRB.Classes.BarNode:ClearTimerDuration()
+	if self.hasTimerDuration then
+		self.frame:Hide()
+		self.frame:SetMinMaxValues(0, 1)
+		self.frame:SetValue(0)
+		self.frame:Show()
+		self.hasTimerDuration = false
+	end
+end
+
 ---Sets the minimum and maximum values for the StatusBar
 ---@param min number
 ---@param max number

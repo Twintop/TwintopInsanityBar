@@ -565,9 +565,6 @@ if locale == "zhCN" then
     L["PriestHolyColorPickerCompleteHolyWordCooldown"] = "读条完成圣言术冷却时颜色"
     L["PriestHolyCheckboxCompleteHolyWordCooldown"] = "冷却完成时变色？"
     L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"] = "勾选后，读条可完成对应圣言术冷却时，对应资源条变色提示。"
-    L["PriestHolyColorPickerSacredReverence"] = "施放不消耗充能时圣言术颜色"
-    L["PriestHolyCheckboxSacredReverence"] = "圣洁崇敬（T31四件）变色"
-    L["PriestHolyCheckboxSacredReverenceTooltip"] = "圣洁崇敬叠层时，满冷却的圣言术：静/赎施放不耗充能，对应资源条变色，两层时最多两个条目变色。"
     L["PriestHolyColorHolyWordBorder"] = "圣言术边框色"
     L["PriestHolyColorHolyWordUnfilled"] = "空圣言术背景色"
     L["PriestHolyHeaderEndOfApotheosisConfiguration"] = "启迪末期设置"
@@ -924,7 +921,7 @@ if locale == "zhCN" then
     L["PriestHolyBarTextVariable_hwSanctifyCharges"] = "神圣真言：圣洁剩余层数"
     L["PriestHolyBarTextVariable_hwSerenityTime"] = "神圣真言：宁静冷却剩余时间"
     L["PriestHolyBarTextVariable_hwSerenityCharges"] = "神圣真言：宁静剩余层数"
-    L["PriestHolyBarTextVariable_sacredReverenceStacks"] = "神圣崇敬(T31四件套)层数"
+
     L["PriestHolyBarTextVariable_apotheosisTime"] = "神化剩余时间"
     L["PriestHolyBarTextVariable_lightweaverStacks"] = "织光者层数"
     L["PriestHolyBarTextVariable_lightweaverTime"] = "织光者剩余时间"
