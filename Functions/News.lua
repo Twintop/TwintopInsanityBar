@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix bar text on the resource bar not updating after using the "Reset Bar Text" buttons.
 
+### Localization
+
+- [#641](#641) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Demon Hunter
 ### Havoc
 
