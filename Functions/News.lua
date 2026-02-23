@@ -18,6 +18,7 @@ local content = [====[
 
 - [#508](#508) Fix an issue where Evangelism would improperly "spend" a charge when cast.
 
+---
 
 # 12.0.1.11-release (2026-02-23)
 ## General
