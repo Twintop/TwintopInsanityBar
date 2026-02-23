@@ -13,7 +13,7 @@ TRB.Options.Priest.Shadow = {}
 local SHADOW_MAX_INSANITY = 150
 
 
----Loads only the Holy Word bar text entries (no global mana text)
+---Loads only the Power Word bar text entries (no global mana text)
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function DisciplineLoadPowerWordBarTextSettings()
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
