@@ -12,14 +12,70 @@ TRB.Options.Priest.Shadow = {}
 
 local SHADOW_MAX_INSANITY = 150
 
+
+---Loads only the Power Word bar text entries (no global mana text)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DisciplineLoadPowerWordBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestDisciplineBarTextNamePWRadiance1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$pwRadianceTime&$pwRadianceCharges=0}[$pwRadianceTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "PowerWord_Radiance_1",
+				relativeToFrameName = L["PowerWordRadianceCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestDisciplineBarTextNamePWRadiance2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$pwRadianceTime&$pwRadianceCharges=1}[$pwRadianceTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "PowerWord_Radiance_2",
+				relativeToFrameName = L["PowerWordRadianceCharge2"],
+			},
+		},
+	}
+
+	return textSettings
+end
+TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings = DisciplineLoadPowerWordBarTextSettings
+
 ---Loads extra default bar text settings for Discipline
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function DisciplineLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-	}
-
+	local textSettings = DisciplineLoadPowerWordBarTextSettings()
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -56,11 +112,12 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 		},
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
+			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
@@ -140,6 +197,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 
 	if includeBarText then
 		settings.displayText.barText = DisciplineLoadDefaultBarTextSettings(classic)
+		settings.displayText.migrations = { powerWordBarTextSeeded = true }
 	end
 
 	return settings
@@ -316,7 +374,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
+			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
@@ -738,6 +796,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -764,6 +824,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -777,6 +839,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings(true)
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -879,9 +943,23 @@ local function DisciplineConstructManaBarPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.surgeOfLight.enabled = self:GetChecked()
 	end)
+end
 
-	--[[
-	yCoord = yCoord - 40
+local function DisciplineConstructPowerWordsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_discipline
+	local yCoord = 5
+	local f = nil
+
+	local spec = TRB.Data.settings.priest.discipline
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], L["PriestDisciplinePowerWords"])
+
+	yCoord = yCoord - 60
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplinePowerWordColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
@@ -897,29 +975,33 @@ local function DisciplineConstructManaBarPanel(parent)
 		if TRB.Data.character.classId == 5 and TRB.Data.character.specId == 1 then
 			TRB.Functions.Character:ResetCaches()
 			TRB.Functions.Class:CheckCharacter()
-			TRB.Functions.Bar:Construct(TRB.Data.specCache.priest_discipline.settings)
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
 		end
 	end)
 
-	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.powerWordRadiance
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordBorder"], spec.colors.comboPoints.border, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordUnfilled"], spec.colors.comboPoints.background, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordUnfilled"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)]]
+	end)
 end
 
 local function DisciplineConstructHealthBarPanel(parent)
@@ -950,7 +1032,7 @@ local function DisciplineConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord)--, true, L["PriestDisciplinePowerWords"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true, L["PriestDisciplinePowerWords"])
 end
 
 local function DisciplineConstructBarVisibilityPanel(parent)
@@ -964,7 +1046,7 @@ local function DisciplineConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestDisciplinePowerWords"], true)
 end
 
 local function DisciplineConstructThresholdPanel(parent)
@@ -1109,6 +1191,7 @@ local function DisciplineConstructOptionsPanel(cache)
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel },
+		{ key = "powerWordsBar", label = L["TabPowerWords"], width = oUi.tabWidth.medium, constructor = DisciplineConstructPowerWordsPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarVisibilityPanel },

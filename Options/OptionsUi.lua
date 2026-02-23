@@ -6393,16 +6393,16 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
-	--elseif (classId == 5 and specId == 1) then -- Discipline Priest
-	--	relativeToFrame[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
-	--	relativeToFrame[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
-	--	relativeToFrameList = {
-	--		L["MainResourceBar"],
-	--		L["PowerWordRadianceCharge1"],
-	--		L["PowerWordRadianceCharge2"],
-	--		L["HealthBar"],
-	--		L["Screen"],
-	--	}
+	elseif (classId == 5 and specId == 1) then -- Discipline Priest
+		relativeToFrame[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
+		relativeToFrame[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["PowerWordRadianceCharge1"],
+			L["PowerWordRadianceCharge2"],
+			L["HealthBar"],
+			L["Screen"],
+		}
 	elseif (classId == 5 and specId == 2) then -- Holy Priest
 		relativeToFrame[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
 		relativeToFrame[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"

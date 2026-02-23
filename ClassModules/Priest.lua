@@ -127,9 +127,9 @@ local function FillSpecializationCache()
 		innervateCue = false,
 		surgeOfLightPlayed = false
 	}
-	--[[---@type TRB.Classes.Snapshot
-	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
+	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift, {
@@ -344,6 +344,49 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
+	-- Power Words secondary bar (Discipline only)
+	if TRB.Data.character.specId == 1 and barGroups and barGroups.secondary then
+		local maxPowerWordNodes = TRB.Data.character.maxResource2 or 0
+
+		if maxPowerWordNodes == 0 then
+			barGroups.secondary:Hide()
+		else
+			barGroups.secondary:SetMaxNodes(maxPowerWordNodes)
+			barGroups.secondary:SetNodeCount(maxPowerWordNodes)
+			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:Show()
+
+			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			if cdmForced then
+				barGroups.secondary.fullWidth = true
+			end
+
+			barGroups.secondary:ApplyLayout(
+				effectiveWidth,
+				settings.comboPoints.width,
+				settings.comboPoints.height,
+				settings.comboPoints.border
+			)
+
+			local frameLevels = TRB.Data.constants.frameLevels
+			for i = 1, maxPowerWordNodes do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:SetTextures(
+						settings.textures.comboPointsBar,
+						settings.textures.comboPointsBorder,
+						settings.textures.comboPointsBackground
+					)
+					node:SetMinMax(0, 1)
+					node:SetBorderColor(settings.colors.comboPoints.border.color)
+					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+					node:SetColor(settings.colors.comboPoints.powerWordRadiance.color)
+					node:SetFrameLevel(frameLevels.comboPoint)
+				end
+			end
+		end
+	end
+
 	-- Holy Words secondary bar (Holy only)
 	if TRB.Data.character.specId == 2 and barGroups and barGroups.secondary then
 		local maxHolyWordNodes = TRB.Data.character.maxResource2 or 0
@@ -464,18 +507,18 @@ local function RefreshLookupData_Discipline()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
+	--$pwRadianceTime
+	local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
+	local pwRadianceTime = TRB.Functions.BarText:TimerPrecision(_pwRadianceTime)
+
+	--$pwRadianceCharges
+	local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
+	local pwRadianceCharges = string.format("%.0f", _pwRadianceCharges)
+
 	--[[
 	--$scTime
 	local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	local scTime = TRB.Functions.BarText:TimerPrecision(_scTime)
-
-	--$pwRadianceTime
-	local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
-	local pwRadianceTime = TRB.Functions.BarText:TimerPrecision(_pwRadianceTime)
-	
-	--$pwRadianceCharges
-	local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
-	local pwRadianceCharges = string.format("%.0f", _pwRadianceCharges)
 	
 	--$atonementMinTime
 	local _atonementMinTime = snapshots[spells.atonement.id].attributes.minRemainingTime
@@ -511,14 +554,13 @@ local function RefreshLookupData_Discipline()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
-	--[[
 	lookup["$pwRadianceTime"] = pwRadianceTime
 	lookup["$radianceTime"] = pwRadianceTime
 	lookup["$powerWordRadianceTime"] = pwRadianceTime
 	lookup["$pwRadianceCharges"] = pwRadianceCharges
 	lookup["$radianceCharges"] = pwRadianceCharges
 	lookup["$powerWordRadianceCharges"] = pwRadianceCharges
-	lookup["$scTime"] = scTime
+	--[[lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$entropicRiftTime"] = entropicRiftTime]]
 	TRB.Data.lookup = lookup
@@ -531,14 +573,13 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
-	--[[
 	lookupLogic["$pwRadianceTime"] = _pwRadianceTime
 	lookupLogic["$radianceTime"] = _pwRadianceTime
 	lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
 	lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
 	lookupLogic["$radianceCharges"] = _pwRadianceCharges
 	lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
-	lookupLogic["$scTime"] = _scTime
+	--[[lookupLogic["$scTime"] = _scTime
 	lookupLogic["$shadowCovenantTime"] = _scTime
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime]]
 	TRB.Data.lookupLogic = lookupLogic
@@ -956,10 +997,20 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+		local snapshots = snapshotData.snapshots
 		casting:SnapshotManaSpell()
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Discipline()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.powerWordRadiance.id then
+				local duration = spells.powerWordRadiance.duration
+				if talents:IsTalentActive(spells.brightPupil) then
+					duration = duration + spells.brightPupil.attributes.durationMod
+				end
+				snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(duration)
+			end
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
@@ -1356,9 +1407,10 @@ local function UpdateSnapshot_Discipline()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
-	--[[snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
-	snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
+	--[[snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)]]
+
+	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 end
 
 local function UpdateSnapshot_Holy()
@@ -1459,6 +1511,48 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+			end
+
+			-- Update Power Words secondary bar
+			if specSettings.displayBar.secondary.visibility ~= "never" then
+				local cpBorderColor = specSettings.colors.comboPoints.border.color
+				local currentCp = 1
+
+				if talents:IsTalentActive(spells.powerWordRadiance) and specSettings.colors.comboPoints.powerWordRadiance.enabled then
+					local cooldown = snapshots[spells.powerWordRadiance.id].cooldown
+					local charges = cooldown.manualCharges or 0
+					local maxCharges = cooldown.manualMaxCharges or 1
+
+					for chargeIndex = 1, maxCharges do
+						if barGroups and barGroups.secondary then
+							local cpNode = barGroups.secondary:GetNode(currentCp)
+							if cpNode then
+								local cpColor = specSettings.colors.comboPoints.powerWordRadiance.color
+								local cpKey = "comboPoint" .. currentCp
+								if chargeIndex <= charges then
+									-- Available charge: full bar
+									cpNode:ClearTimerDuration()
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 1, 1)
+								elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+									-- Currently recharging: manual timer-based progress
+									cpNode:ClearTimerDuration()
+									local progress = cooldown:GetManualCooldownProgress(currentTime)
+									TRB.Data.cache.values.bar[cpKey] = nil
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
+								else
+									-- Empty charge (not yet recharging)
+									cpNode:ClearTimerDuration()
+									TRB.Data.cache.values.bar[cpKey] = nil
+									TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
+								end
+								cpNode:SetColor(cpColor)
+								cpNode:SetBorderColor(cpBorderColor)
+								cpNode:SetBackgroundColorFromString(specSettings.colors.comboPoints.background.color)
+								currentCp = currentCp + 1
+							end
+						end
+					end
+				end
 			end
 
 			-- Update health bar
@@ -1906,10 +2000,10 @@ local function SwitchSpec()
 		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.priest_discipline.settings)
 
 		local lookup = TRB.Data.lookup or {}
-		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#pwRadiance"] = spells.powerWordRadiance.icon
 		lookup["#radiance"] = spells.powerWordRadiance.icon
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
+		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
 		lookup["#entropicRift"] = spells.entropicRift.icon]]
@@ -1919,6 +2013,13 @@ local function SwitchSpec()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
+
+		-- Initialize manual charge tracking for Power Word: Radiance (API returns secret values)
+		local pwrSnapshot = specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id]
+		if pwrSnapshot then
+			local maxCharges = specCache.priest_discipline.talents:IsTalentActive(spells.lightsPromise) and 2 or 1
+			pwrSnapshot.cooldown:InitializeManualCharges(maxCharges)
+		end
 
 		talents = specCache.priest_discipline.talents
 		TRB.Data.barConstructedForSpec = "priest_discipline"
@@ -2148,6 +2249,9 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						-- Mark Holy Word bar text as seeded since HolyLoadDefaultBarTextSettings includes them
 						TRB.Data.settings.priest.holy.displayText.migrations = TRB.Data.settings.priest.holy.displayText.migrations or {}
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+						-- Mark Power Word bar text as seeded since DisciplineLoadDefaultBarTextSettings includes them
+						TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
+						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
 					end
 
 					-- Seed Holy Word bar text entries for existing users who don't have them yet
@@ -2158,6 +2262,16 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 							table.insert(TRB.Data.settings.priest.holy.displayText.barText, v)
 						end
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+					end
+
+					-- Seed Power Word bar text entries for existing users who don't have them yet
+					TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
+					if TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded ~= true then
+						local extraEntries = TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings()
+						for _, v in ipairs(extraEntries) do
+							table.insert(TRB.Data.settings.priest.discipline.displayText.barText, v)
+						end
+						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
 					end
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)
@@ -2248,13 +2362,17 @@ function TRB.Functions.Class:CheckCharacter()
 		local settings = TRB.Data.settings.priest.discipline
 		
 		local totalPowerWordCharges = 0
-		
-		--[[if talents:IsTalentActive(spells.powerWordRadiance) and settings.colors.comboPoints.powerWordRadiance.enabled then
-			totalPowerWordCharges = totalPowerWordCharges + 1
-			if talents:IsTalentActive(spells.lightsPromise) then
+
+		local discTalents = TRB.Data.specCache.priest_discipline and TRB.Data.specCache.priest_discipline.talents
+		if discTalents then
+			if discTalents:IsTalentActive(spells.powerWordRadiance) and settings.colors.comboPoints.powerWordRadiance.enabled then
 				totalPowerWordCharges = totalPowerWordCharges + 1
+				if discTalents:IsTalentActive(spells.lightsPromise) then
+					totalPowerWordCharges = totalPowerWordCharges + 1
+				end
 			end
-		end]]
+		end
+
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	
 		if sharedSettings ~= nil then
@@ -2374,10 +2492,10 @@ function TRB.Functions.Class:HideResourceBar(force)
 				-- "never" means showPrimary stays false
 			end
 
-			-- Determine secondary (Holy Words) bar visibility (Holy only)
-			-- If all 3 Holy Word enables are unchecked (maxResource2 == 0), treat as "never"
+			-- Determine secondary bar visibility (Discipline Power Words / Holy Words)
+			-- If all enables are unchecked (maxResource2 == 0), treat as "never"
 			local showSecondary = false
-			if TRB.Data.character.specId == 2 and not forceHideAll and sharedSettings.displayBar.secondary ~= nil
+			if (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2) and not forceHideAll and sharedSettings.displayBar.secondary ~= nil
 				and (TRB.Data.character.maxResource2 or 0) > 0 then
 				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
@@ -2529,7 +2647,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
-		--[[if var == "$pwRadianceTime" or var == "$radianceTime" or var == "$powerWordRadianceTime" then
+		if var == "$pwRadianceTime" or var == "$radianceTime" or var == "$powerWordRadianceTime" then
 			if snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0 then
 				valid = true
 			end
@@ -2537,11 +2655,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.powerWordRadiance.id].cooldown.charges > 0 then
 				valid = true
 			end
-		elseif var == "$scTime" or var == "$shadowCovenantTime" then
+		--[[elseif var == "$scTime" or var == "$shadowCovenantTime" then
 			if snapshots[spells.shadowCovenant.id].buff.isActive then
 				valid = true
-			end
-		end]]
+			end]]
+		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		--[[if var == "$lightweaverTime" then
@@ -2770,6 +2888,33 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				end
 			end
 			return nil, true, false
+		end
+
+		-- Handle Power Word: Radiance frames (PowerWordRadiance1, PowerWordRadiance2)
+		if TRB.Data.character.specId == 1 then
+			local pwrMatch = string.match(relativeToFrame, "^PowerWordRadiance(%d+)$")
+			if pwrMatch ~= nil then
+				local chargeIndex = tonumber(pwrMatch)
+				if chargeIndex ~= nil then
+					local discTalents = TRB.Data.specCache.priest_discipline and TRB.Data.specCache.priest_discipline.talents
+					local discSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+					local discSettings = TRB.Data.settings.priest.discipline
+
+					if discTalents and discTalents:IsTalentActive(discSpells.powerWordRadiance) and discSettings.colors.comboPoints.powerWordRadiance.enabled then
+						local maxCharges = discTalents:IsTalentActive(discSpells.lightsPromise) and 2 or 1
+						if chargeIndex >= 1 and chargeIndex <= maxCharges then
+							if barGroups and barGroups.secondary then
+								local secondaryNode = barGroups.secondary:GetNode(chargeIndex)
+								if secondaryNode then
+									local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+									return secondaryNode:GetFrame(), true, isVisible
+								end
+							end
+						end
+					end
+				end
+				return nil, false, false
+			end
 		end
 
 		-- Handle Holy Word frames (HolyWordSerenity1, HolyWordSanctify1, HolyWordChastise1, etc.)
