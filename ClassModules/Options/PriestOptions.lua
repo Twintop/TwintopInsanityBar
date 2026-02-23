@@ -146,18 +146,143 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 end
 
 
----Loads extra default bar text settings for Holy
+---Loads only the Holy Word bar text entries (no global mana text)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HolyLoadHolyWordBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestHolyBarTextNameHWSerenity1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "HolyWord_Serenity_1",
+				relativeToFrameName = L["HolyWordSerenityCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestHolyBarTextNameHWSerenity2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "HolyWord_Serenity_2",
+				relativeToFrameName = L["HolyWordSerenityCharge2"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestHolyBarTextNameHWSanctify1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "HolyWord_Sanctify_1",
+				relativeToFrameName = L["HolyWordSanctifyCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestHolyBarTextNameHWSanctify2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "HolyWord_Sanctify_2",
+				relativeToFrameName = L["HolyWordSanctifyCharge2"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestHolyBarTextNameHWChastise"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$hwChastiseTime}[$hwChastiseTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "HolyWord_Chastise_1",
+				relativeToFrameName = L["HolyWordChastiseCharge1"],
+			},
+		}
+	}
+
+	return textSettings
+end
+TRB.Options.Priest.HolyLoadHolyWordBarTextSettings = HolyLoadHolyWordBarTextSettings
+
+---Loads extra default bar text settings for Holy (Holy Words + global mana text)
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function HolyLoadExtraBarTextSettings(classic)
-	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-	}
-
+	local textSettings = HolyLoadHolyWordBarTextSettings()
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
 end
+TRB.Options.Priest.HolyLoadExtraBarTextSettings = HolyLoadExtraBarTextSettings
 
 ---Loads default bar text settings for Holy
 ---@param classic boolean?
@@ -339,6 +464,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 
 	if includeBarText then
 		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
+		settings.displayText.migrations = { holyWordBarTextSeeded = true }
 	end
 
 	return settings
@@ -1031,6 +1157,8 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.holyWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1057,6 +1185,8 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.holyWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1070,6 +1200,8 @@ local function HolyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings(true)
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.holyWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

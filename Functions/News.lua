@@ -17,6 +17,11 @@ local content = [====[
 
 - Fix bar text on the resource bar not updating after using the "Reset Bar Text" buttons.
 
+## Priest
+### Holy
+
+-[#508](#508) Add default Holy Word bar text to show the remaining cooldown of its respective Holy Word.
+
 ---
 
 # 12.0.1.10-release (2026-02-23)
