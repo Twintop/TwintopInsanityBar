@@ -70,8 +70,8 @@ end
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
 ---@field public brightPupil TRB.Classes.SpellBase
---[[---@field public atonement TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
+--[[---@field public atonement TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
 ---@field public depthOfShadows TRB.Classes.SpellBase]]
@@ -105,6 +105,10 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		isTalent = true,
 		durationMod = -3
 	})
+	self.evangelism = TRB.Classes.SpellBase:New({
+		id = 472433,
+		isTalent = true
+	})
 	--[[self.atonement = TRB.Classes.SpellBase:New({
 		id = 194384,
 		isTalent = true,
@@ -112,10 +116,6 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		isFriend = true,
 		isSelfInitializeAllowed = true,
 		duration = 15
-	})
-	self.evangelism = TRB.Classes.SpellBase:New({
-		id = 472433,
-		atonementMod = 6
 	})
 	self.shadowCovenant = TRB.Classes.SpellBase:New({
 		id = 322105,

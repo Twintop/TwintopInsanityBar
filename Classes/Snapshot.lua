@@ -955,6 +955,27 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 	self.charges = self.manualCharges
 	self.maxCharges = self.manualMaxCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
+
+	-- If on cooldown, try to bootstrap a recharge timer from the API so charges
+	-- aren't permanently stuck after /reload.
+	if self.onCooldown and self.manualCooldownExpires == nil and self.parent.spell ~= nil and self.parent.spell.id ~= nil then
+		local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+		if spellCharges ~= nil then
+			local startTime = spellCharges.cooldownStartTime
+			local duration = spellCharges.cooldownDuration
+---@diagnostic disable-next-line: param-type-mismatch
+			if startTime ~= nil and duration ~= nil and not issecretvalue(startTime) and not issecretvalue(duration) and duration > 0 then
+				local now = GetTime()
+				local expires = startTime + duration
+				if expires > now then
+					self.manualCooldownStart = startTime
+					self.manualCooldownDuration = duration
+					self.manualCooldownExpires = expires
+				end
+			end
+		end
+	end
+
 	self:RefreshDurationObject()
 end
 
@@ -962,23 +983,30 @@ end
 ---@param cooldownDuration number? # The total cooldown duration (with talent mods applied). When provided, starts a manual GetTime()-based timer.
 function TRB.Classes.SnapshotCooldown:SpendCharge(cooldownDuration)
 	if not self.useManualCharges then return end
-	-- Safety net: if charges are already 0 but the spell was cast, the previous cooldown
-	-- must have finished without our detection catching it. Reset to max first.
+	-- If our manual tracking shows 0 charges but a cast succeeded (this is only called
+	-- from UNIT_SPELLCAST_SUCCEEDED), then the game must have had at least 1 real charge.
+	-- Resync by assuming exactly 1, so spending it brings us to 0 and starts the timer.
+	-- The old code reset to manualMaxCharges here, which caused a net INCREASE in charges.
+	local resynced = false
 	if self.manualCharges <= 0 then
-		self.manualCharges = self.manualMaxCharges
+		self.manualCharges = 1
+		resynced = true
 	end
 
-	local wasAlreadyRecharging = self.onCooldown
+	-- Capture AFTER resync so that a 0->1 correction doesn't leave wasAlreadyRecharging
+	-- as true (which would prevent the recharge timer from starting).
+	local wasAlreadyRecharging = self.onCooldown and not resynced
 
-	self.manualCharges = math.max(0, self.manualCharges - 1)
+	self.manualCharges = self.manualCharges - 1
 	self.charges = self.manualCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
 
-	-- Only start a new recharge timer if one isn't already running.
+	-- Start a recharge timer if one isn't already running.
 	-- In WoW's charge system, spending a second charge while the first is recharging
-	-- does NOT reset the existing timer.
-	if self.onCooldown and not wasAlreadyRecharging and cooldownDuration ~= nil and cooldownDuration > 0 then
-		local now = GetTime()
+	-- does NOT reset the existing timer — so only start if there's no active timer.
+	local now = GetTime()
+	local hasRunningTimer = self.manualCooldownExpires ~= nil and self.manualCooldownExpires > now
+	if self.onCooldown and not hasRunningTimer and cooldownDuration ~= nil and cooldownDuration > 0 then
 		self.manualCooldownStart = now
 		self.manualCooldownDuration = cooldownDuration
 		self.manualCooldownExpires = now + cooldownDuration

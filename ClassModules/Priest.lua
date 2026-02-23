@@ -1004,12 +1004,28 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Discipline()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			if spellId == spells.powerWordRadiance.id then
-				local duration = spells.powerWordRadiance.duration
-				if talents:IsTalentActive(spells.brightPupil) then
-					duration = duration + spells.brightPupil.attributes.durationMod
-				end
-				snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(duration)
+			if spellId == spells.evangelism.id then
+				-- Evangelism triggers a free, automatic Power Word: Radiance cast that
+				-- does NOT consume a charge. Record the timestamp so we can suppress the
+				-- deferred PWR SpendCharge. Uses a time window instead of a flag+frame
+				-- approach to avoid C_Timer.After(0) callback ordering issues.
+				snapshotData.attributes.evangelismCastTime = GetTime()
+			elseif spellId == spells.powerWordRadiance.id then
+				-- Defer by one frame so the Evangelism timestamp is recorded regardless
+				-- of which SUCCEEDED event fires first within the same frame.
+				local castTime = currentTime
+				C_Timer.After(0, function()
+					local evangelismTime = snapshotData.attributes.evangelismCastTime
+					-- Suppress if Evangelism was cast within a very short window (same frame batch).
+					-- Any real manual PWR cast would be at least a GCD (~1.5s) later.
+					if evangelismTime == nil or (castTime - evangelismTime) > 0.5 then
+						local duration = spells.powerWordRadiance.duration
+						if talents:IsTalentActive(spells.brightPupil) then
+							duration = duration + spells.brightPupil.attributes.durationMod
+						end
+						snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(duration)
+					end
+				end)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
