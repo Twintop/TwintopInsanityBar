@@ -24,6 +24,10 @@ local content = [====[
 
 - [#639](#639) Fix an issue where global bar text color options could sometimes cause Lua errors.
 
+### Localization
+
+- [#638](#638) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Warrior
 ### Protection
 

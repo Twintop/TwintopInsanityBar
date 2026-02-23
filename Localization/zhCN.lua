@@ -1770,15 +1770,15 @@ if locale == "zhCN" then
     L["CheckboxSmoothBarTooltip"] = "勾选后，此进度条的数值更新将以短暂平滑的动画效果呈现，而非瞬间跳变。"
 
     L["AnchorTo"] = "锚定至"
-    L["AnchorToTooltip"] = "选择此条锚定的目标条。此条将相对于所选目标条进行定位。"
+    L["AnchorToTooltip"] = "选择此资源条锚定的目标资源条。此资源条将相对于所选目标资源条进行定位。"
     L["AnchorPoint"] = "锚点位置"
-    L["AnchorPointTooltip"] = "此条附着在目标条上的对应位置。"
+    L["AnchorPointTooltip"] = "此资源条附着在目标资源条上的对应位置。"
     L["AttachPoint"] = "附着点位置"
-	L["AttachPointTooltip"] = "此条上与锚点接触的位置。"
-	L["MatchAnchorWidth"] = "匹配锚定条宽度"
-	L["MatchAnchorWidthTooltip"] = "启用后，此条的宽度将与所锚定的条保持一致。"
-	L["BaseBarDropdown"] = "基础锚定条"
-	L["BaseBarDropdownTooltip"] = "所有其他条定位的基准条。此条将通过编辑模式或传统位置设置获得绝对定位。"
+	L["AttachPointTooltip"] = "此资源条上与锚点接触的位置。"
+	L["MatchAnchorWidth"] = "匹配锚定资源条宽度"
+	L["MatchAnchorWidthTooltip"] = "启用后，此资源条的宽度将与所锚定的资源条保持一致。"
+	L["BaseBarDropdown"] = "基础锚定资源条"
+	L["BaseBarDropdownTooltip"] = "所有其他资源条定位的基准资源条。此资源条将通过编辑模式或传统位置设置获得绝对定位。"
 	L["AnchorHorizontalOffset"] = "水平偏移量"
 	L["AnchorVerticalOffset"] = "垂直偏移量"
 	L["AnchorCycleError"] = "无法锚定至 %s：这将造成循环依赖。"
@@ -1786,7 +1786,7 @@ if locale == "zhCN" then
 	L["AnchorBarSecondary"] = "副资源条"
 	L["AnchorBarHealth"] = "生命值条"
 	L["AnchorBarScreen"] = "屏幕（自由定位）"
-	L["AnchorBarScreenTooltip"] = "在屏幕上独立定位此条。它将不附着于任何其他条。"
+	L["AnchorBarScreenTooltip"] = "在屏幕上独立定位此资源条。它将不附着于任何其他资源条。"
 
 	L["AnchorPointTOPLEFT"] = "左上"
 	L["AnchorPointTOP"] = "上中"
@@ -1799,8 +1799,8 @@ if locale == "zhCN" then
 	L["AnchorPointBOTTOMRIGHT"] = "右下"
 
 	L["AnchorToBarLabel"] = "将 %s 锚定至："
-	L["AnchorPointLabel"] = "%s 上的位置（目标条栏）"
-	L["AttachPointLabel"] = "%s 上的位置（此条栏）"
+	L["AnchorPointLabel"] = "%s 上的位置（目标资源条）"
+	L["AttachPointLabel"] = "%s 上的位置（此资源条）"
     L["GlobalOptionsCheckboxNumberAbbreviation"] = "使用数字缩写格式"
     L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "勾选后，大数将以缩写形式显示（万、亿）。取消勾选则显示完整数字，并使用符合地区习惯的分隔符（例如 100,000 或 1.500.000）。"
 
@@ -1823,4 +1823,6 @@ if locale == "zhCN" then
 
 	L["CheckboxUseGlobalTooltip_HealthBarColors"] = "勾选后，生命值条颜色将使用全局设置，而非专精专属设置。"
 
+	L["TabHolyWords"] = "圣言术"
+	
 end
