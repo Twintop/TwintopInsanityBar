@@ -666,7 +666,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				
 				local newFuryAmount = snapshotData.attributes.shatteredDestinyFury + furyAmount
 				local extensions = math.floor(newFuryAmount / spells.shatteredDestiny.attributes.resourceRequired)
-				print(newFuryAmount, extensions)
 				if extensions > 0 then
 					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(extensions * spells.shatteredDestiny.attributes.durationMod, currentTime)
 					snapshotData.attributes.shatteredDestinyFury = newFuryAmount % spells.shatteredDestiny.attributes.resourceRequired
