@@ -146,6 +146,7 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Holy Power** (Holy/Protection/Retribution Paladin)
 - **Holy Words** (Holy Priest) - individually toggleable cooldown nodes for Holy Word: Serenity, Sanctify, and Chastise with real-time cooldown progress and CDR tracking
 - **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks
+- **Power Words** (Discipline Priest) - cooldown nodes for Power Word: Radiance with real-time cooldown progress
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
 - **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
@@ -187,19 +188,20 @@ Many specs can track important buff status and timers via color changes and dire
 
 | Spec | Tracked Cooldowns |
 | ------ | ------------------- |
-| Holy Priest | Apotheosis, Holy Word cooldown reduction tracking |
-| Shadow Priest | Voidform, Entropic Rift (including extensions remaining) |
+| Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
 | Balance Druid | Eclipse/Incarnation |
 | Feral Druid | Berserk/Incarnation, including incoming combo point generation timing |
 | Guardian Druid | Berserk/Incarnation |
 | Restoration Druid | Efflorescence, Incarnation |
-| Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
 | Augmentation Evoker | Ebon Might |
 | Devastation Evoker | Dragonrage |
 | Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
 | Marksmanship Hunter | Trueshot |
 | Survival Hunter | Takedown |
 | Brewmaster Monk | Invoke Niuzao, the Black Ox |
+| Discipline Priest | Power Word: Radiance |
+| Holy Priest | Apotheosis, Holy Word cooldown reduction tracking |
+| Shadow Priest | Voidform, Entropic Rift (including extensions remaining) |
 | Elemental/Enhancement/Restoration Shaman | Ascendance |
 
 ---
