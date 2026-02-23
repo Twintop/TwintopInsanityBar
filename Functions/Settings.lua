@@ -4306,11 +4306,11 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.demonhunter ~= nil and
 		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
 		TwintopInsanityBarSettings.demonhunter.havoc.thresholds ~= nil and
-		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.abyssalGaze == nil and
-		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary == nil then
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze == nil then
 
-		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.abyssalGaze = {
-			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.eyeBeam
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze = {
+			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.eyeBeam.enabled
 		}
 	end
 end
