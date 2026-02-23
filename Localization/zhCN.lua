@@ -1824,5 +1824,10 @@ if locale == "zhCN" then
 	L["CheckboxUseGlobalTooltip_HealthBarColors"] = "勾选后，生命值条颜色将使用全局设置，而非专精专属设置。"
 
 	L["TabHolyWords"] = "圣言术"
+	L["PriestHolyBarTextNameHWSerenity1"] = "圣言术：静 1"
+	L["PriestHolyBarTextNameHWSerenity2"] = "圣言术：静 2"
+	L["PriestHolyBarTextNameHWSanctify1"] = "圣言术：灵 1"
+	L["PriestHolyBarTextNameHWSanctify2"] = "圣言术：灵 2"
+	L["PriestHolyBarTextNameHWChastise"] = "圣言术：罚"
 	
 end
