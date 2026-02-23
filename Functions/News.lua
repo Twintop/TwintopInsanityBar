@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.11-release (2026-02-23)
+## General
+
+- Fix bar text on the resource bar not updating after using the "Reset Bar Text" buttons.
+
+---
+
 # 12.0.1.10-release (2026-02-23)
 ## General
 

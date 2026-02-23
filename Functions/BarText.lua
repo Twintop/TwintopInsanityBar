@@ -1253,6 +1253,9 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				font:SetJustifyH(fontJustifyHorizontal)
 				font:SetFont(fontFace, fontSize, "OUTLINE")
+				-- Clear any stale text from a previous configuration so old bar text
+				-- doesn't linger after a reset or entry change.
+				font:SetText("")
 				font:ClearAllPoints()
 				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
 				textFrames[frameCount]:SetParent(relativeToFrame)
@@ -1267,6 +1270,10 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 					textFrames[frameCount]:Show()
 				end
 			else
+				-- Clear stale text on disabled/hidden frames too
+				if font.SetText and font.GetFont and font:GetFont() then
+					font:SetText("")
+				end
 				textFrames[frameCount]:Hide()
 				font:Hide()
 			end
@@ -1280,7 +1287,11 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		for i = frameCount, textFramesEntries do
 			textFrames[i]:Hide()
 			---@diagnostic disable-next-line: undefined-field
-			textFrames[i].font:Hide()
+			local extraFont = textFrames[i].font
+			if extraFont and extraFont.GetFont and extraFont:GetFont() then
+				extraFont:SetText("")
+			end
+			extraFont:Hide()
 		end
 	end
 end
