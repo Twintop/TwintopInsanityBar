@@ -764,7 +764,13 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 
 	if issecretvalue(self.startTime) or issecretvalue(self.duration) then
 		local dObj = C_Spell.GetSpellChargeDuration(self.parent.spell.id)
-		return dObj:GetRemainingDuration()
+		if dObj ~= nil then
+			local remaining = dObj:GetRemainingDuration()
+			if not issecretvalue(remaining) then
+				return remaining
+			end
+		end
+		return 0
 	end
 
 	local remainingTime = 0

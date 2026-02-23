@@ -17,6 +17,11 @@ local content = [====[
 
 - [#639](#639) Fix an issue where global bar text color options could sometimes cause Lua errors.
 
+## Warrior
+### Protection
+
+- [#640](#640) Fix Lua errors due to Shield Block charges and `secret` values.
+
 ---
 
 # 12.0.1.9-release (2026-02-23)
