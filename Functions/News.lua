@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.10-release (2026-02-23)
+## General
+
+- [#639](#639) Fix an issue where global bar text color options could sometimes cause Lua errors.
+
+---
+
 # 12.0.1.9-release (2026-02-23)
 ## General
 
