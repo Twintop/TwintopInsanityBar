@@ -614,7 +614,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 
 				if talents:IsTalentActive(spells.demonic) then
-					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + (casting.endTime - casting.startTime), currentTime)
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + ((casting.endTime or 0) - (casting.startTime or 0)), currentTime)
 				end
 			elseif casting.spellId ~= spells.abyssalGaze.id and spellId == spells.abyssalGaze.id then
 				if talents:IsTalentActive(spells.blindFury) then
@@ -633,12 +633,18 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 
 				if talents:IsTalentActive(spells.demonic) then
-					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + (casting.endTime - casting.startTime), currentTime)
+					if not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+						snapshotData.attributes.shatteredDestinyFury = 0
+					end
+
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + ((casting.endTime or 0) - (casting.startTime or 0)), currentTime)
 				end
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.metamorphosis.castId then
-				snapshotData.attributes.shatteredDestinyFury = 0
+				if not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+					snapshotData.attributes.shatteredDestinyFury = 0
+				end
 				snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.metamorphosis.duration, currentTime)
 			end
 
@@ -757,7 +763,7 @@ local function DemonHunterEvent(self, event, ...)
 				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, GetTime())
 			end
 		end
-	elseif "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if TRB.Data.character.specId == 1 then
