@@ -358,6 +358,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 	if includeBarText then
 		configuration.displayText.barText = settings.displayText and settings.displayText.barText or {}
+		configuration.displayText.migrations = settings.displayText and settings.displayText.migrations
 	end
 
 	return configuration

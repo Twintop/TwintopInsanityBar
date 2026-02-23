@@ -6163,7 +6163,10 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 ---@param yCoord number
 function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord, cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	-- specCache keys use lowercase class names (e.g. "priest_discipline"), but
+	-- GetClassAndSpecializationNames without lowerCaseClass returns UPPERCASE (e.g. "PRIEST").
+	-- Use the lowercase form for specCache lookups so ResetTableValues actually updates the runtime cache.
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(string.lower(className), specName)
 	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
@@ -7089,6 +7092,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			-- Hide all existing bar text frames before recreating to prevent stale text from persisting
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			-- Force an immediate bar text update so the new strings render right away
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 		TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)
 	end

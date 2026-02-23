@@ -12,6 +12,44 @@ local content = [====[
 
 ---
 
+# 12.0.1.11-release (2026-02-23)
+## General
+
+- Fix bar text on the resource bar not updating after using the "Reset Bar Text" buttons.
+
+### Localization
+
+- [#641](#641) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Demon Hunter
+### Havoc
+
+- [#642](#642) Add support for Metamorphosis extensions via Fury spent while talented into Shattered Destiny.
+- [#642](#642) Show Abyssal Gaze as a threshold line instead of Eye Beam when in Demon Form and talented into Demonic Intensity (Fel-Scarred).
+
+## Priest
+### Holy
+
+-[#508](#508) Add default Holy Word bar text to show the remaining cooldown of its respective Holy Word.
+
+---
+
+# 12.0.1.10-release (2026-02-23)
+## General
+
+- [#639](#639) Fix an issue where global bar text color options could sometimes cause Lua errors.
+
+### Localization
+
+- [#638](#638) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Warrior
+### Protection
+
+- [#640](#640) Fix Lua errors due to Shield Block charges and `secret` values.
+
+---
+
 # 12.0.1.9-release (2026-02-23)
 ## General
 

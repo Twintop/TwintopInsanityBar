@@ -307,8 +307,6 @@ L["DemonHunterHavocThresholdCheckboxChaosNova"] = "Chaos Nova (no Unleashed Powe
 L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova. Only shown if Unleashed Power is not talented."
 L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"] = "Chaos Strike / Annihilation"
 L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike. Shows for Annihilation while in Demon Form."
-L["DemonHunterHavocThresholdCheckboxEyeBeam"] = "Eye Beam"
-L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam."
 L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Throw Glaive (Furious Throws)"
 L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Throw Glaive. Only visible if talented into Furious Throws."
 L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "End of Metamorphosis Configuration"
@@ -1933,4 +1931,12 @@ L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global settin
 L["SoulFragment6"] = "Soul Fragment 6"
 
 L["TabHolyWords"] = "Holy Words"
+L["PriestHolyBarTextNameHWSerenity1"] = "HW Serenity 1"
+L["PriestHolyBarTextNameHWSerenity2"] = "HW Serenity 2"
+L["PriestHolyBarTextNameHWSanctify1"] = "HW Sanctify 1"
+L["PriestHolyBarTextNameHWSanctify2"] = "HW Sanctify 2"
+L["PriestHolyBarTextNameHWChastise"] = "HW Chastise"
+L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"] = "Eye Beam / Abyssal Gaze"
+L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam. Shows for Abyssal Gaze while in Demon Form with Demonic Intensity talented (Fel-Scarred)."
+
 L["TabPowerWords"] = "Power Words"

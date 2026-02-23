@@ -1997,6 +1997,16 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate core displayText.default.color from flat string to table format
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and
+	   TwintopInsanityBarSettings.core.displayText and TwintopInsanityBarSettings.core.displayText.default and
+	   TwintopInsanityBarSettings.core.displayText.default.color and
+	   type(TwintopInsanityBarSettings.core.displayText.default.color) == "string" then
+		TwintopInsanityBarSettings.core.displayText.default.color = {
+			color = TwintopInsanityBarSettings.core.displayText.default.color
+		}
+	end
+
 	-- Priest Holy colors.bar migration from flat string to table format
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.priest ~= nil and
@@ -4289,6 +4299,19 @@ function TRB.Functions.Settings:PortForwardSettings()
 				end
 			end
 		end
+	end
+
+	-- Abyssal Gaze for Havoc Demon Hunters
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze == nil then
+
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze = {
+			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.eyeBeam.enabled
+		}
 	end
 end
 

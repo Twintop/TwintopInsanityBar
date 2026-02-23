@@ -2242,6 +2242,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TRB.Data.settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSettings()
 						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.priest = true
 						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Priest"])
+						-- Mark Holy Word bar text as seeded since HolyLoadDefaultBarTextSettings includes them
+						TRB.Data.settings.priest.holy.displayText.migrations = TRB.Data.settings.priest.holy.displayText.migrations or {}
+						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+					end
+
+					-- Seed Holy Word bar text entries for existing users who don't have them yet
+					TRB.Data.settings.priest.holy.displayText.migrations = TRB.Data.settings.priest.holy.displayText.migrations or {}
+					if TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded ~= true then
+						local extraEntries = TRB.Options.Priest.HolyLoadHolyWordBarTextSettings()
+						for _, v in ipairs(extraEntries) do
+							table.insert(TRB.Data.settings.priest.holy.displayText.barText, v)
+						end
+						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
 					end
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)

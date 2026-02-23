@@ -284,8 +284,6 @@ if locale == "deDE" then
     L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Jähzorn benötigt wird, um Chaosnova zu nutzen. Nur sichtbar, wenn das Talent 'Entfesselte Macht' nicht gewählt ist."
     L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"] = "Chaosstoß / Vernichtung"
     L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Jähzorn benötigt wird, um Chaosstoß zu nutzen. Wird für Vernichtung angezeigt, während man in Dämonenform ist."
-    L["DemonHunterHavocThresholdCheckboxEyeBeam"] = "Augenstrahl"
-    L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Jähzorn benötigt wird, um Augenstrahl zu nutzen."
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Gleve werfen (Wütende Würfe)"
     L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Jähzorn benötigt wird, um Gleve werfen zu nutzen. Nur sichtbar, wenn das Talent 'Wütende Würfe' gewählt ist."
     L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "Konfiguration für das Ende von Metamorphose"
