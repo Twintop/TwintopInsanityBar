@@ -7,6 +7,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public demonic TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public blindFury TRB.Classes.SpellBase
+---@field public shatteredDestiny TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -14,6 +15,7 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public deathSweep TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public eyeBeam TRB.Classes.SpellThreshold
+---@field public abyssalGaze TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.HavocSpells.__index = TRB.Classes.DemonHunter.HavocSpells
 
@@ -34,6 +36,12 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		isTalent = true,
 		duration = 5,
 		channelDuration = 2
+	})
+	self.shatteredDestiny = TRB.Classes.SpellBase:New({
+		id = 388116,
+		isTalent = true,
+		durationMod = 0.1,
+		resourceRequired = 12
 	})
 	self.throwGlaive = TRB.Classes.SpellThreshold:New({
 		id = 185123,
@@ -108,6 +116,16 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		settingKey = "eyeBeam",
 		hasCooldown = true,
 		isTalent = true,
+		isSnowflake = true,
+		rangeCheck = false
+	})
+	self.abyssalGaze = TRB.Classes.SpellThreshold:New({
+		id = 452497,
+		primaryResourceType = Enum.PowerType.Fury,
+		duration = 2,
+		settingKey = "abyssalGaze",
+		hasCooldown = true,
+		isSnowflake = true,
 		rangeCheck = false
 	})
 	self.blindFury = TRB.Classes.SpellBase:New({

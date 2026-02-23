@@ -4300,6 +4300,19 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Abyssal Gaze for Havoc Demon Hunters
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze == nil then
+
+		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze = {
+			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.eyeBeam.enabled
+		}
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)

@@ -285,8 +285,6 @@ if locale == "zhCN" then
     L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "资源条显示施放混乱新星所需狂乱值阈值线，仅未点释放能量时显示。"
     L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"] = "混乱打击/湮灭"
     L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"] = "资源条显示施放混乱打击所需狂乱值阈值线，恶魔形态下显示湮灭对应阈值。"
-    L["DemonHunterHavocThresholdCheckboxEyeBeam"] = "眼棱"
-    L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"] = "资源条显示施放眼棱所需狂乱值阈值线。"
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "投掷利刃（狂怒投掷天赋）"
     L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "资源条显示施放投掷利刃所需狂乱值阈值线，仅点狂怒投掷时显示。"
     L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "恶魔变形末期设置"
