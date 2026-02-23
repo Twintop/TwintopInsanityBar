@@ -17,6 +17,12 @@ local content = [====[
 
 - Fix bar text on the resource bar not updating after using the "Reset Bar Text" buttons.
 
+## Demon Hunter
+### Havoc
+
+- [#642](#642) Add support for Metamorphosis extensions via Fury spent while talented into Shattered Destiny.
+- [#642](#642) Show Abyssal Gaze as a threshold line instead of Eye Beam when in Demon Form and talented into Demonic Intensity (Fel-Scarred).
+
 ## Priest
 ### Holy
 

@@ -1165,7 +1165,7 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if spell:IsValid() then
-				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected			
+				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected	
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell

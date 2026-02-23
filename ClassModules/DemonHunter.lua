@@ -69,6 +69,8 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.eyeBeam.id] = TRB.Classes.Snapshot:New(spells.eyeBeam)
 	---@type TRB.Classes.Snapshot
+	specCache.demonhunter_havoc.snapshotData.snapshots[spells.abyssalGaze.id] = TRB.Classes.Snapshot:New(spells.abyssalGaze)
+	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.throwGlaive.id] = TRB.Classes.Snapshot:New(spells.throwGlaive)
@@ -612,12 +614,65 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 
 				if talents:IsTalentActive(spells.demonic) then
-					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + spells.demonic.attributes.channelDuration, currentTime)
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + (casting.endTime - casting.startTime), currentTime)
+				end
+			elseif casting.spellId ~= spells.abyssalGaze.id and spellId == spells.abyssalGaze.id then
+				if talents:IsTalentActive(spells.blindFury) then
+					local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
+
+					casting.spellId = spells.abyssalGaze.id
+					casting.startTime = currentChannelStartTime / 1000
+					casting.endTime = currentChannelEndTime / 1000
+					casting.icon = spells.abyssalGaze.icon
+					local remainingTime = casting.endTime - currentTime
+					--TODO: use SnapshotBuff:UpdateTicks() instead?
+					local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
+					local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
+					casting.resourceRaw = math.max(resource, 0)
+					casting.resourceFinal = casting.resourceRaw
+				end
+
+				if talents:IsTalentActive(spells.demonic) then
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.demonic.duration + (casting.endTime - casting.startTime), currentTime)
 				end
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.metamorphosis.castId then
+				snapshotData.attributes.shatteredDestinyFury = 0
 				snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(spells.metamorphosis.duration, currentTime)
+			end
+
+			if talents:IsTalentActive(spells.shatteredDestiny) and snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+				local furyAmount = 0
+				snapshotData.attributes.shatteredDestinyFury = snapshotData.attributes.shatteredDestinyFury or 0
+
+				if spellId == spells.throwGlaive.id then
+					furyAmount = spells.throwGlaive:GetPrimaryResourceCost(true)
+				elseif spellId == spells.bladeDance.id then
+					furyAmount = spells.bladeDance:GetPrimaryResourceCost(true)
+				elseif spellId == spells.deathSweep.id then
+					furyAmount = spells.deathSweep:GetPrimaryResourceCost(true)
+				elseif spellId == spells.chaosStrike.id then
+					furyAmount = spells.chaosStrike:GetPrimaryResourceCost(true)
+				elseif spellId == spells.annihilation.id then
+					furyAmount = spells.annihilation:GetPrimaryResourceCost(true)
+				elseif spellId == spells.chaosNova.id then
+					furyAmount = spells.chaosNova:GetPrimaryResourceCost(true)
+				elseif spellId == spells.eyeBeam.id then
+					furyAmount = spells.eyeBeam:GetPrimaryResourceCost(true)
+				elseif spellId == spells.abyssalGaze.id then
+					furyAmount = spells.abyssalGaze:GetPrimaryResourceCost(true)
+				end
+				
+				local newFuryAmount = snapshotData.attributes.shatteredDestinyFury + furyAmount
+				local extensions = math.floor(newFuryAmount / spells.shatteredDestiny.attributes.resourceRequired)
+				print(newFuryAmount, extensions)
+				if extensions > 0 then
+					snapshotData.snapshots[spells.metamorphosis.id].buff:AddTimeOrInitializeCustom(extensions * spells.shatteredDestiny.attributes.durationMod, currentTime)
+					snapshotData.attributes.shatteredDestinyFury = newFuryAmount % spells.shatteredDestiny.attributes.resourceRequired
+				else
+					snapshotData.attributes.shatteredDestinyFury = newFuryAmount
+				end
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -703,6 +758,19 @@ local function DemonHunterEvent(self, event, ...)
 				snapshotData.snapshots[spells.metamorphosis.id].buff:InitializeCustom(duration, GetTime())
 			end
 		end
+	elseif "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		local spellId, rSpellId = ...
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if TRB.Data.character.specId == 1 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+			if spellId == spells.eyeBeam.id then
+				if rSpellId == nil or rSpellId ~= spells.abyssalGaze.id then
+					snapshotData.attributes.eyeBeamOverride = false
+				else
+					snapshotData.attributes.eyeBeamOverride = true
+				end
+			end
+		end
 	end
 end
 local spellEventFrame = CreateFrame("Frame")
@@ -723,7 +791,7 @@ local function UpdateSnapshot_Havoc()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
-	if snapshotData.casting.spellId == spells.eyeBeam.id and talents:IsTalentActive(spells.blindFury) then
+	if (snapshotData.casting.spellId == spells.eyeBeam.id or snapshotData.casting.spellId == spells.abyssalGaze.id) and talents:IsTalentActive(spells.blindFury) then
 		local casting = snapshotData.casting
 		local remainingTime = casting.endTime - currentTime
 		local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
@@ -843,6 +911,22 @@ local function UpdateResourceBar()
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							elseif spell.id == spells.eyeBeam.id or spell.id == spells.abyssalGaze.id then
+								if spell.id == spells.eyeBeam.id and snapshotData.attributes.eyeBeamOverride then
+									showThreshold = false
+								elseif spell.id == spells.abyssalGaze.id and not snapshotData.attributes.eyeBeamOverride then
+									showThreshold = false
+								else
+									if snapshots[spell.id].cooldown:IsUnusable() then
+										thresholdColor = specCacheSettings.colors.threshold.unusable.color
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif isUsable then
+										thresholdColor = specCacheSettings.colors.threshold.over.color
+									else
+										thresholdColor = specCacheSettings.colors.threshold.under.color
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								end
 							end
 						elseif resourceAmount == 0 then
@@ -1303,6 +1387,7 @@ local function SwitchSpec()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 	if TRB.Data.character.specId == 1 then
 		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()
@@ -1330,6 +1415,8 @@ local function SwitchSpec()
 		lookup["#voidMeta"] = spells.metamorphosis.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 		if TRB.Data.barConstructedForSpec ~= "demonhunter_havoc" then
 			talents = specCache.demonhunter_havoc.talents

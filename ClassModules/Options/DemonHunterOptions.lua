@@ -81,6 +81,9 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
+				abyssalGaze = {
+					enabled = true,
+				},
 				annihilation = {
 					enabled = true,
 				},
@@ -867,10 +870,11 @@ local function HavocConstructThresholdPanel(parent)
 	controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.eyeBeamThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxEyeBeam"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"])
+	f.tooltip = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.eyeBeam.enabled)
 	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.abyssalGaze.enabled = self:GetChecked()
 		spec.thresholds.thresholdDictionary.eyeBeam.enabled = self:GetChecked()
 	end)
 
