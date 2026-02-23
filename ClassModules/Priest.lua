@@ -1005,7 +1005,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			UpdateCastingResourceFinal_Discipline()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.powerWordRadiance.id then
-				snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(spells.powerWordRadiance.duration)
+				local duration = spells.powerWordRadiance.duration
+				if talents:IsTalentActive(spells.brightPupil) then
+					duration = duration + spells.brightPupil.attributes.durationMod
+				end
+				snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(duration)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -2245,6 +2249,9 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						-- Mark Holy Word bar text as seeded since HolyLoadDefaultBarTextSettings includes them
 						TRB.Data.settings.priest.holy.displayText.migrations = TRB.Data.settings.priest.holy.displayText.migrations or {}
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+						-- Mark Power Word bar text as seeded since DisciplineLoadDefaultBarTextSettings includes them
+						TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
+						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
 					end
 
 					-- Seed Holy Word bar text entries for existing users who don't have them yet
@@ -2255,6 +2262,16 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 							table.insert(TRB.Data.settings.priest.holy.displayText.barText, v)
 						end
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+					end
+
+					-- Seed Power Word bar text entries for existing users who don't have them yet
+					TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
+					if TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded ~= true then
+						local extraEntries = TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings()
+						for _, v in ipairs(extraEntries) do
+							table.insert(TRB.Data.settings.priest.discipline.displayText.barText, v)
+						end
+						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
 					end
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)

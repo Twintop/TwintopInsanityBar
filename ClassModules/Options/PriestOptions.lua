@@ -12,14 +12,70 @@ TRB.Options.Priest.Shadow = {}
 
 local SHADOW_MAX_INSANITY = 150
 
+
+---Loads only the Holy Word bar text entries (no global mana text)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DisciplineLoadPowerWordBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestDisciplineBarTextNamePWRadiance1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$pwRadianceTime&$pwRadianceCharges=0}[$pwRadianceTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "PowerWord_Radiance_1",
+				relativeToFrameName = L["PowerWordRadianceCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestDisciplineBarTextNamePWRadiance2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$pwRadianceTime&$pwRadianceCharges=1}[$pwRadianceTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "PowerWord_Radiance_2",
+				relativeToFrameName = L["PowerWordRadianceCharge2"],
+			},
+		},
+	}
+
+	return textSettings
+end
+TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings = DisciplineLoadPowerWordBarTextSettings
+
 ---Loads extra default bar text settings for Discipline
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function DisciplineLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-	}
-
+	local textSettings = DisciplineLoadPowerWordBarTextSettings()
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -56,7 +112,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 		},
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
+			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
@@ -141,6 +197,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 
 	if includeBarText then
 		settings.displayText.barText = DisciplineLoadDefaultBarTextSettings(classic)
+		settings.displayText.migrations = { powerWordBarTextSeeded = true }
 	end
 
 	return settings
@@ -317,7 +374,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
+			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
@@ -739,6 +796,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -765,6 +824,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -778,6 +839,8 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings(true)
+			spec.displayText.migrations = spec.displayText.migrations or {}
+			spec.displayText.migrations.powerWordBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

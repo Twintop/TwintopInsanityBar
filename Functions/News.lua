@@ -28,9 +28,14 @@ local content = [====[
 - [#642](#642) Show Abyssal Gaze as a threshold line instead of Eye Beam when in Demon Form and talented into Demonic Intensity (Fel-Scarred).
 
 ## Priest
+### Discipline
+
+- [#508](#508) Restore the ability to track and show the status of Power Words (Radiance) in its own bar group. Features returning include: charges, cooldown remaining, and bar text.
+- [#508](#508) Add default Power Word bar text to show the remaining cooldown of its respective Power Word.
+
 ### Holy
 
--[#508](#508) Add default Holy Word bar text to show the remaining cooldown of its respective Holy Word.
+- [#508](#508) Add default Holy Word bar text to show the remaining cooldown of its respective Holy Word.
 
 ---
 

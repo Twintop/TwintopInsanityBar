@@ -1940,3 +1940,5 @@ L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"] = "Eye Beam / Abyssal G
 L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam. Shows for Abyssal Gaze while in Demon Form with Demonic Intensity talented (Fel-Scarred)."
 
 L["TabPowerWords"] = "Power Words"
+L["PriestDisciplineBarTextNamePWRadiance1"] = "PW Radiance 1"
+L["PriestDisciplineBarTextNamePWRadiance2"] = "PW Radiance 2"

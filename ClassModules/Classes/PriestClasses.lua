@@ -69,6 +69,7 @@ end
 ---@class TRB.Classes.Priest.DisciplineSpells : TRB.Classes.Priest.HealerSpells
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
+---@field public brightPupil TRB.Classes.SpellBase
 --[[---@field public atonement TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
@@ -93,11 +94,16 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		id = 194509,
 		isTalent = true,
 		hasCharges = true,
-		duration = 20
+		duration = 18
 	})
 	self.lightsPromise = TRB.Classes.SpellBase:New({
 		id = 322115,
 		isTalent = true
+	})
+	self.brightPupil = TRB.Classes.SpellBase:New({
+		id = 390684,
+		isTalent = true,
+		durationMod = -3
 	})
 	--[[self.atonement = TRB.Classes.SpellBase:New({
 		id = 194384,
