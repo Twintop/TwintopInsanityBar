@@ -1167,6 +1167,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
+				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 
@@ -1466,6 +1467,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
+				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 
@@ -1762,6 +1764,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
+				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 
@@ -2391,7 +2394,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		if IsStealthed() then
 			valid = true
 		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" then
+	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" then
 		valid = true
 	end
 

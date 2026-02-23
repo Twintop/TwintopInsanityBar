@@ -107,6 +107,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.HealthBarColors
 ---@field public border TRB.Classes.Settings.ColorEntry
 ---@field public background TRB.Classes.Settings.ColorEntry
+---@field public absorb TRB.Classes.Settings.ColorEntry
 ---@field public type trbBarColorType
 ---@field public low TRB.Classes.Settings.ColorThresholdEntry
 ---@field public medium TRB.Classes.Settings.ColorThresholdEntry

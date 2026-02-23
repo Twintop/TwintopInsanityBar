@@ -10,6 +10,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
+---@field public overlayFrame StatusBar? # Optional overlay StatusBar for layering additional fill on top
 ---@field public thresholds Frame[]
 ---@field public index integer
 ---@field public name string
@@ -46,6 +47,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.isVisible = false
 	self.smooth = nil
 	self.borderTexture = nil
+	self.overlayFrame = nil
 
 	-- Create a single consolidated StatusBar frame
 	self.frame = CreateFrame("StatusBar", self.name, parent, "BackdropTemplate")
@@ -184,6 +186,13 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	self.frame:SetWidth(width)
 	self.frame:SetHeight(height)
 
+	-- Re-anchor overlay if it exists
+	if self.overlayFrame then
+		self.overlayFrame:ClearAllPoints()
+		self.overlayFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	end
+
 	-- Update the backdrop edgeSize when border changes
 	if borderChanged and self.frame.backdropInfo then
 		if self.border < 1 then
@@ -254,6 +263,85 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 		insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
 	}
 	self.frame:ApplyBackdrop()
+
+	-- Re-anchor overlay if it exists (border insets may have changed)
+	if self.overlayFrame then
+		self.overlayFrame:ClearAllPoints()
+		self.overlayFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	end
+end
+
+---Creates a generic overlay StatusBar on top of this node's primary fill.
+---The overlay is anchored within the border insets and draws above the primary fill.
+---Idempotent: calling this multiple times is safe.
+function TRB.Classes.BarNode:CreateOverlay()
+	if self.overlayFrame then
+		return
+	end
+
+	local overlay = CreateFrame("StatusBar", self.name .. "_Overlay", self.frame)
+	overlay:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+	overlay:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	overlay:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	overlay:Hide()
+
+	self.overlayFrame = overlay
+end
+
+---Sets the overlay StatusBar value. No-op if overlay has not been created.
+---@param value number # The current value
+function TRB.Classes.BarNode:SetOverlayValue(value)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetValue(value)
+end
+
+---Sets the overlay StatusBar min/max values. No-op if overlay has not been created.
+---@param min number
+---@param max number
+function TRB.Classes.BarNode:SetOverlayMinMax(min, max)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetMinMaxValues(min, max)
+end
+
+---Sets the overlay StatusBar fill texture. No-op if overlay has not been created.
+---@param texture string # Path to the texture
+function TRB.Classes.BarNode:SetOverlayTexture(texture)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetStatusBarTexture(texture)
+	local fillTexture = self.overlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("ARTWORK", 0)
+	end
+end
+
+---Sets the overlay StatusBar fill color from an AARRGGBB hex string. No-op if overlay has not been created.
+---@param colorString string # ARGB hex color string (e.g., "66FFFFFF" for semi-transparent white)
+function TRB.Classes.BarNode:SetOverlayColor(colorString)
+	if not self.overlayFrame then return end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	local fillTexture = self.overlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetVertexColor(r, g, b, a)
+	end
+end
+
+---Shows the overlay StatusBar. No-op if overlay has not been created.
+function TRB.Classes.BarNode:ShowOverlay()
+	if not self.overlayFrame then return end
+	self.overlayFrame:Show()
+end
+
+---Hides the overlay StatusBar. No-op if overlay has not been created.
+function TRB.Classes.BarNode:HideOverlay()
+	if not self.overlayFrame then return end
+	self.overlayFrame:Hide()
+end
+
+---Returns the overlay frame, or nil if not created.
+---@return StatusBar?
+function TRB.Classes.BarNode:GetOverlayFrame()
+	return self.overlayFrame
 end
 
 ---Sets the frame level for the node

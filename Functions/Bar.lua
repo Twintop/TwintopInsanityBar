@@ -1252,6 +1252,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevel(frameLevels.comboPoint)
+
+			-- Apply absorb overlay appearance if it exists
+			if healthNode:GetOverlayFrame() then
+				healthNode:SetOverlayTexture(settings.textures.absorbBar)
+				if settings.colors.healthBar.absorb then
+					healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+				end
+			end
 		end
 	end
 
@@ -1261,6 +1269,42 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- Note: TriggerResourceBarUpdates is NOT called here because this function may be called
 	-- from EventRegistration before talents/spells are set up. The caller is responsible for
 	-- triggering updates after all setup is complete.
+end
+
+---Updates the absorb shield overlay on the health bar node.
+---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
+---@param healthNode TRB.Classes.BarNode # The health bar node
+---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
+---@param settings table # The spec cache settings (specCacheSettings)
+function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, settings)
+	if not healthNode then return end
+
+	local showAbsorb = settings.displayBar and settings.displayBar.health and settings.displayBar.health.showAbsorb
+	if not showAbsorb then
+		healthNode:HideOverlay()
+		return
+	end
+
+	-- Lazily create the overlay on first use
+	healthNode:CreateOverlay()
+
+	local healthMax = snapshotData.attributes.healthMax or 1
+	local absorbAmount = snapshotData.attributes.absorb or 0
+
+	healthNode:SetOverlayMinMax(0, healthMax)
+	healthNode:SetOverlayValue(absorbAmount)
+	healthNode:SetOverlayTexture(settings.textures.absorbBar)
+
+	if settings.colors.healthBar and settings.colors.healthBar.absorb then
+		healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+	end
+
+	-- Show overlay when there is absorb (or when absorb is secret, always show since we can't check)
+	if issecretvalue(absorbAmount) or absorbAmount > 0 then
+		healthNode:ShowOverlay()
+	else
+		healthNode:HideOverlay()
+	end
 end
 
 -- ============================================================================
