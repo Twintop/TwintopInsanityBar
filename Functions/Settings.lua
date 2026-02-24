@@ -4473,7 +4473,7 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },
 		background = { color = "66000000" },
-		absorb = { color = "66FFFFFF" },
+		absorb = { color = "CCFFFFB9" },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },

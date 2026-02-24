@@ -5473,10 +5473,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		end
 	)
 
-	-- ===== ABSORB OVERLAY SECTION =====
-	yCoord = yCoord - 40
-	controls.absorbSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarAbsorbHeader"], oUi.xCoord, yCoord)
-
 	yCoord = yCoord - 30
 	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showAbsorb
