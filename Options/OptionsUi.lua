@@ -3867,6 +3867,33 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	end
 end
 
+function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newValue, variable)
+	local newName = statusbarPairsByName[newValue]
+
+	textures[variable.."Bar"] = newValue
+	textures[variable.."BarName"] = newName
+	DropdownSetupMenuWrapper(controls[variable.."Bar"])
+	if textures.textureLock then
+		-- Sync all overlay textures to the changed value.
+		-- Currently only absorbBar; future overlays would be synced here.
+		textures.absorbBar = newValue
+		textures.absorbBarName = newName
+		DropdownSetupMenuWrapper(controls.absorbBar)
+	end
+
+	TRB.Functions.Character:ResetCaches()
+	if TRB.Frames.barGroups ~= nil then
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	else
+		TRB.Functions.Bar:Construct()
+	end
+end
+
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars)
 	if includeComboPoints == nil then
 		includeComboPoints = false
@@ -3930,6 +3957,10 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	end
 
+	local function OverlaySetValue(variable, newValue)
+		TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
+	end
+
 	local function RefreshBar()
 		if not TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			return
@@ -3963,7 +3994,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			StatusbarSetValue("health", newValue)
 		end)
 
-	-- Row 2: Secondary / Combo Points (left, if applicable), Mana Bar (right, if applicable)
+	-- Row 2: Secondary / Combo Points (left, if applicable), Mana Bar
 	if includeComboPoints then
 		yCoord = yCoord - 60
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
@@ -3972,7 +4003,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 	end
 
-	-- Row 3: Mana Bar (left, if applicable and no combo points), or add to row 2 right side
 	if includeManaBar then
 		if not includeComboPoints then
 			yCoord = yCoord - 60
@@ -4000,6 +4030,19 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 		customBarPlacedOnLeft = useLeftColumn
 	end
+
+	yCoord = yCoord - 70
+
+	-- ===== OVERLAY TEXTURES SUBSECTION =====
+	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+
+	yCoord = yCoord - 20
+
+	-- Row 1: Absorb Overlay
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			OverlaySetValue("absorb", newValue)
+		end)
 
 	yCoord = yCoord - 70
 
@@ -4409,6 +4452,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.healthBar = spec.textures.resourceBar
 			spec.textures.healthBarName = spec.textures.resourceBarName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBar)
+
+			-- Sync overlay textures
+			-- Currently only absorbBar; future overlays would be synced here.
 
 			-- Sync border textures
 			if includeComboPoints then
@@ -5454,12 +5500,81 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	}
 
 	-- Use the generic threshold color function with the Health Bar callback
-	return TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(
+	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(
 		parent, controls, spec, classId, specId, yCoord, healthBarTypeDef,
 		function()
 			TRB.Functions.Character:UpdateHealthValues()
 		end
 	)
+
+	yCoord = yCoord + 20
+	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showAbsorb
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["HealthBarShowAbsorbTooltip"]
+	f:SetChecked(spec.displayBar.health.showAbsorb)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.health.showAbsorb = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	controls.colors = controls.colors or {}
+	controls.colors.absorb = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarAbsorbColor"], spec.colors.healthBar.absorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.absorb:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
+	end)
+
+	-- Absorb Display Mode dropdown
+	yCoord = yCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.absorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AbsorbMode", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.absorbMode:SetWidth(oUi.sliderWidth)
+	controls.dropDown.absorbMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarAbsorbMode"], oUi.xCoord, yCoord)
+	controls.dropDown.absorbMode.label.font:SetFontObject(GameFontNormal)
+	---@diagnostic disable-next-line: inject-field
+	controls.dropDown.absorbMode.label.font.tooltip = L["HealthBarAbsorbModeTooltip"]
+
+	local function AbsorbModeIsSelected(value)
+		return value == spec.displayBar.health.absorbMode
+	end
+
+	local function AbsorbModeGetDisplayName(value)
+		if value == "appended" then
+			return L["AbsorbModeAppended"]
+		elseif value == "inset" then
+			return L["AbsorbModeInset"]
+		else
+			return L["AbsorbModeOverlay"]
+		end
+	end
+
+	local function AbsorbModeSetSelected(newValue)
+		spec.displayBar.health.absorbMode = newValue
+		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end
+
+	local function AbsorbModeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["AbsorbModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["AbsorbModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
+		rootDescription:CreateRadio(L["AbsorbModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
+	end
+
+	controls.dropDown.absorbMode:SetupMenu(AbsorbModeGenerator)
+	controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(spec.displayBar.health.absorbMode))
+	controls.dropDown.absorbMode:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	return yCoord - 30
 end
 
 function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, classId, specId, yCoord)

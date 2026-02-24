@@ -97,7 +97,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -363,7 +363,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -616,7 +616,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			defensives = { visibility = "always", smooth = true },
 			dragonriding = true
 		},

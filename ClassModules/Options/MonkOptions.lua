@@ -148,7 +148,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			stagger = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -302,7 +302,7 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -440,7 +440,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {

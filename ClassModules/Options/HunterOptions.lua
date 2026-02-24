@@ -85,7 +85,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -269,7 +269,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -434,7 +434,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		endOf = {

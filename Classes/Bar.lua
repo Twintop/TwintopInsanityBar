@@ -10,6 +10,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
+---@field public overlayFrame StatusBar? # Optional overlay StatusBar for layering additional fill on top
 ---@field public thresholds Frame[]
 ---@field public index integer
 ---@field public name string
@@ -19,6 +20,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field public isVisible boolean
 ---@field public smooth boolean?
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
+---@field public appendedClipFrame Frame? # Clip container for the appended overlay (SetClipsChildren)
+---@field public appendedOverlayFrame StatusBar? # StatusBar inside clipFrame, anchored to health fill's RIGHT edge
+---@field public insetClipFrame Frame? # Clip container for the inset overlay (SetClipsChildren)
+---@field public insetOverlayFrame StatusBar? # Reverse-fill StatusBar inside clipFrame, RIGHT anchored to health fill's RIGHT
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -46,6 +51,11 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.isVisible = false
 	self.smooth = nil
 	self.borderTexture = nil
+	self.overlayFrame = nil
+	self.appendedClipFrame = nil
+	self.appendedOverlayFrame = nil
+	self.insetClipFrame = nil
+	self.insetOverlayFrame = nil
 
 	-- Create a single consolidated StatusBar frame
 	self.frame = CreateFrame("StatusBar", self.name, parent, "BackdropTemplate")
@@ -184,6 +194,19 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	self.frame:SetWidth(width)
 	self.frame:SetHeight(height)
 
+	-- Re-anchor overlay if it exists
+	if self.overlayFrame then
+		self.overlayFrame:ClearAllPoints()
+		self.overlayFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	end
+
+	-- Re-anchor appended overlay if it exists
+	self:ReanchorAppendedOverlay()
+
+	-- Re-anchor inset overlay if it exists
+	self:ReanchorInsetOverlay()
+
 	-- Update the backdrop edgeSize when border changes
 	if borderChanged and self.frame.backdropInfo then
 		if self.border < 1 then
@@ -254,6 +277,335 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 		insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
 	}
 	self.frame:ApplyBackdrop()
+
+	-- Re-anchor overlay if it exists (border insets may have changed)
+	if self.overlayFrame then
+		self.overlayFrame:ClearAllPoints()
+		self.overlayFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	end
+
+	-- Re-anchor appended overlay if it exists (border insets and fill texture reference may have changed)
+	self:ReanchorAppendedOverlay()
+
+	-- Re-anchor inset overlay if it exists (border insets and fill texture reference may have changed)
+	self:ReanchorInsetOverlay()
+end
+
+---Creates a generic overlay StatusBar on top of this node's primary fill.
+---The overlay is anchored within the border insets and draws above the primary fill.
+---Idempotent: calling this multiple times is safe.
+function TRB.Classes.BarNode:CreateOverlay()
+	if self.overlayFrame then
+		return
+	end
+
+	local overlay = CreateFrame("StatusBar", self.name .. "_Overlay", self.frame)
+	overlay:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+	overlay:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	overlay:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	overlay:Hide()
+
+	self.overlayFrame = overlay
+end
+
+---Sets the overlay StatusBar value. No-op if overlay has not been created.
+---@param value number # The current value
+function TRB.Classes.BarNode:SetOverlayValue(value)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetValue(value)
+end
+
+---Sets the overlay StatusBar min/max values. No-op if overlay has not been created.
+---@param min number
+---@param max number
+function TRB.Classes.BarNode:SetOverlayMinMax(min, max)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetMinMaxValues(min, max)
+end
+
+---Sets the overlay StatusBar fill texture. No-op if overlay has not been created.
+---@param texture string # Path to the texture
+function TRB.Classes.BarNode:SetOverlayTexture(texture)
+	if not self.overlayFrame then return end
+	self.overlayFrame:SetStatusBarTexture(texture)
+	local fillTexture = self.overlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("ARTWORK", 0)
+	end
+end
+
+---Sets the overlay StatusBar fill color from an AARRGGBB hex string. No-op if overlay has not been created.
+---@param colorString string # ARGB hex color string (e.g., "66FFFFFF" for semi-transparent white)
+function TRB.Classes.BarNode:SetOverlayColor(colorString)
+	if not self.overlayFrame then return end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	local fillTexture = self.overlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetVertexColor(r, g, b, a)
+	end
+end
+
+---Shows the overlay StatusBar. No-op if overlay has not been created.
+function TRB.Classes.BarNode:ShowOverlay()
+	if not self.overlayFrame then return end
+	self.overlayFrame:Show()
+end
+
+---Hides the overlay StatusBar. No-op if overlay has not been created.
+function TRB.Classes.BarNode:HideOverlay()
+	if not self.overlayFrame then return end
+	self.overlayFrame:Hide()
+end
+
+---Returns the overlay frame, or nil if not created.
+---@return StatusBar?
+function TRB.Classes.BarNode:GetOverlayFrame()
+	return self.overlayFrame
+end
+
+-- ============================================================================
+-- Appended Overlay (clip-frame approach)
+-- ============================================================================
+-- The appended overlay anchors a child StatusBar's LEFT edge to the primary
+-- fill texture's RIGHT edge, inside a clip container that prevents the
+-- absorb region from extending past the bar's right boundary.
+-- This makes the overlay visually "appended" to the health fill.
+
+---Re-anchors the appended overlay clip frame and its child StatusBar.
+---Called from SetDimensions and SetTextures when border or fill texture changes.
+function TRB.Classes.BarNode:ReanchorAppendedOverlay()
+	if not self.appendedClipFrame then return end
+
+	-- Re-anchor clip frame to inner area
+	self.appendedClipFrame:ClearAllPoints()
+	self.appendedClipFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+
+	-- Re-anchor the absorb bar to the current fill texture's right edge
+	if self.appendedOverlayFrame then
+		local fillTexture = self.frame:GetStatusBarTexture()
+		if fillTexture then
+			self.appendedOverlayFrame:ClearAllPoints()
+			self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
+			self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			local innerWidth = math.max(1, self.width - 2 * self.border)
+			self.appendedOverlayFrame:SetWidth(innerWidth)
+		end
+	end
+end
+
+---Creates the appended overlay system: a clip container + child StatusBar.
+---The child StatusBar's LEFT edge is anchored to the primary fill texture's RIGHT edge.
+---Idempotent: calling this multiple times is safe.
+function TRB.Classes.BarNode:CreateAppendedOverlay()
+	if self.appendedClipFrame then
+		return
+	end
+
+	-- Create clip container that covers the inner bar area
+	local clip = CreateFrame("Frame", self.name .. "_AppendedClip", self.frame)
+	clip:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+	clip:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	clip:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	clip:SetClipsChildren(true)
+	clip:Hide()
+
+	-- Create absorb StatusBar inside the clip frame
+	local absorbBar = CreateFrame("StatusBar", self.name .. "_AppendedOverlay", clip)
+	absorbBar:SetFrameLevel(clip:GetFrameLevel() + 1)
+
+	-- Anchor LEFT to the health fill texture's RIGHT edge
+	local fillTexture = self.frame:GetStatusBarTexture()
+	if fillTexture then
+		absorbBar:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
+		absorbBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+	end
+
+	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
+	local innerWidth = math.max(1, self.width - 2 * self.border)
+	absorbBar:SetWidth(innerWidth)
+
+	self.appendedClipFrame = clip
+	self.appendedOverlayFrame = absorbBar
+end
+
+---Sets the appended overlay StatusBar value. No-op if not created.
+---@param value number
+function TRB.Classes.BarNode:SetAppendedOverlayValue(value)
+	if not self.appendedOverlayFrame then return end
+	self.appendedOverlayFrame:SetValue(value)
+end
+
+---Sets the appended overlay StatusBar min/max values. No-op if not created.
+---@param min number
+---@param max number
+function TRB.Classes.BarNode:SetAppendedOverlayMinMax(min, max)
+	if not self.appendedOverlayFrame then return end
+	self.appendedOverlayFrame:SetMinMaxValues(min, max)
+end
+
+---Sets the appended overlay StatusBar fill texture. No-op if not created.
+---@param texture string
+function TRB.Classes.BarNode:SetAppendedOverlayTexture(texture)
+	if not self.appendedOverlayFrame then return end
+	self.appendedOverlayFrame:SetStatusBarTexture(texture)
+	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("ARTWORK", 0)
+	end
+end
+
+---Sets the appended overlay StatusBar fill color from an AARRGGBB hex string. No-op if not created.
+---@param colorString string
+function TRB.Classes.BarNode:SetAppendedOverlayColor(colorString)
+	if not self.appendedOverlayFrame then return end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetVertexColor(r, g, b, a)
+	end
+end
+
+---Shows the appended overlay. No-op if not created.
+function TRB.Classes.BarNode:ShowAppendedOverlay()
+	if not self.appendedClipFrame then return end
+	self.appendedClipFrame:Show()
+end
+
+---Hides the appended overlay. No-op if not created.
+function TRB.Classes.BarNode:HideAppendedOverlay()
+	if not self.appendedClipFrame then return end
+	self.appendedClipFrame:Hide()
+end
+
+---Returns the appended overlay frame, or nil if not created.
+---@return StatusBar?
+function TRB.Classes.BarNode:GetAppendedOverlayFrame()
+	return self.appendedOverlayFrame
+end
+
+-- ============================================================================
+-- Inset Overlay (reverse-fill clip-frame approach)
+-- ============================================================================
+-- The inset overlay anchors a reverse-fill child StatusBar's RIGHT edge to the
+-- primary fill texture's RIGHT edge, inside a clip container. The reverse fill
+-- goes leftward from the health position, showing absorb "eating into" health.
+-- The clip frame prevents overflow past the bar's left boundary.
+
+---Re-anchors the inset overlay clip frame and its child StatusBar.
+---Called from SetDimensions and SetTextures when border or fill texture changes.
+function TRB.Classes.BarNode:ReanchorInsetOverlay()
+	if not self.insetClipFrame then return end
+
+	-- Re-anchor clip frame to inner area
+	self.insetClipFrame:ClearAllPoints()
+	self.insetClipFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	self.insetClipFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+
+	-- Re-anchor the absorb bar to the current fill texture's right edge
+	if self.insetOverlayFrame then
+		local fillTexture = self.frame:GetStatusBarTexture()
+		if fillTexture then
+			self.insetOverlayFrame:ClearAllPoints()
+			self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+			self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			local innerWidth = math.max(1, self.width - 2 * self.border)
+			self.insetOverlayFrame:SetWidth(innerWidth)
+		end
+	end
+end
+
+---Creates the inset overlay system: a clip container + reverse-fill child StatusBar.
+---The child StatusBar's RIGHT edge is anchored to the primary fill texture's RIGHT edge,
+---and it fills leftward via SetReverseFill(true).
+---Idempotent: calling this multiple times is safe.
+function TRB.Classes.BarNode:CreateInsetOverlay()
+	if self.insetClipFrame then
+		return
+	end
+
+	-- Create clip container that covers the inner bar area
+	local clip = CreateFrame("Frame", self.name .. "_InsetClip", self.frame)
+	clip:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+	clip:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
+	clip:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	clip:SetClipsChildren(true)
+	clip:Hide()
+
+	-- Create absorb StatusBar inside the clip frame with reverse fill
+	local absorbBar = CreateFrame("StatusBar", self.name .. "_InsetOverlay", clip)
+	absorbBar:SetFrameLevel(clip:GetFrameLevel() + 1)
+	absorbBar:SetReverseFill(true)
+
+	-- Anchor RIGHT to the health fill texture's RIGHT edge
+	local fillTexture = self.frame:GetStatusBarTexture()
+	if fillTexture then
+		absorbBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+		absorbBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+	end
+
+	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
+	local innerWidth = math.max(1, self.width - 2 * self.border)
+	absorbBar:SetWidth(innerWidth)
+
+	self.insetClipFrame = clip
+	self.insetOverlayFrame = absorbBar
+end
+
+---Sets the inset overlay StatusBar value. No-op if not created.
+---@param value number
+function TRB.Classes.BarNode:SetInsetOverlayValue(value)
+	if not self.insetOverlayFrame then return end
+	self.insetOverlayFrame:SetValue(value)
+end
+
+---Sets the inset overlay StatusBar min/max values. No-op if not created.
+---@param min number
+---@param max number
+function TRB.Classes.BarNode:SetInsetOverlayMinMax(min, max)
+	if not self.insetOverlayFrame then return end
+	self.insetOverlayFrame:SetMinMaxValues(min, max)
+end
+
+---Sets the inset overlay StatusBar fill texture. No-op if not created.
+---@param texture string
+function TRB.Classes.BarNode:SetInsetOverlayTexture(texture)
+	if not self.insetOverlayFrame then return end
+	self.insetOverlayFrame:SetStatusBarTexture(texture)
+	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("ARTWORK", 0)
+	end
+end
+
+---Sets the inset overlay StatusBar fill color from an AARRGGBB hex string. No-op if not created.
+---@param colorString string
+function TRB.Classes.BarNode:SetInsetOverlayColor(colorString)
+	if not self.insetOverlayFrame then return end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetVertexColor(r, g, b, a)
+	end
+end
+
+---Shows the inset overlay. No-op if not created.
+function TRB.Classes.BarNode:ShowInsetOverlay()
+	if not self.insetClipFrame then return end
+	self.insetClipFrame:Show()
+end
+
+---Hides the inset overlay. No-op if not created.
+function TRB.Classes.BarNode:HideInsetOverlay()
+	if not self.insetClipFrame then return end
+	self.insetClipFrame:Hide()
+end
+
+---Returns the inset overlay frame, or nil if not created.
+---@return StatusBar?
+function TRB.Classes.BarNode:GetInsetOverlayFrame()
+	return self.insetOverlayFrame
 end
 
 ---Sets the frame level for the node

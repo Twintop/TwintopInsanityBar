@@ -57,6 +57,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
 		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
 		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
+		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false },
 
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
@@ -914,6 +915,12 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$health"] = healthRaw
 	lookupLogic["$healthMax"] = healthMaxRaw
 	lookupLogic["$healthPercent"] = healthPercentRaw
+
+	--$absorb - always update since absorb changes frequently
+	local absorbRaw = snapshotData.attributes.absorb
+	local absorb = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(absorbRaw))
+	lookup["$absorb"] = absorb
+	lookupLogic["$absorb"] = absorbRaw
 
 	if checkSecondaryStats or lookup["$haste"] == nil then
 		--$critRating

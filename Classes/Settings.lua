@@ -107,6 +107,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.HealthBarColors
 ---@field public border TRB.Classes.Settings.ColorEntry
 ---@field public background TRB.Classes.Settings.ColorEntry
+---@field public absorb TRB.Classes.Settings.ColorEntry
 ---@field public type trbBarColorType
 ---@field public low TRB.Classes.Settings.ColorThresholdEntry
 ---@field public medium TRB.Classes.Settings.ColorThresholdEntry
@@ -211,6 +212,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class trbBarVisibilitySetting
 ---@field public visibility trbBarVisibility
 ---@field public smooth boolean
+
+---@alias trbAbsorbMode
+---| '"overlay"' # Fills from the left edge of the bar up to the absorb amount
+---| '"appended"' # Visually appends the absorb region to the right of the current health fill
+---| '"inset"' # Reverse-fill from the health fill's trailing edge going leftward
+
+---@class trbHealthBarVisibilitySetting : trbBarVisibilitySetting
+---@field public showAbsorb boolean?
+---@field public absorbMode trbAbsorbMode?
 
 ---@alias trbBarColorType
 ---| '"step"' # Step colors

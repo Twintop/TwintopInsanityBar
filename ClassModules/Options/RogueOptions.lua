@@ -120,7 +120,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -370,7 +370,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -637,7 +637,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		overcap = {

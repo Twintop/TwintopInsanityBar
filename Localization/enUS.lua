@@ -1964,3 +1964,20 @@ L["WhirlwindColorPickerFinal"] = "Whirlwind Charge (4)"
 L["WhirlwindColorPickerBackground"] = "Unfilled Whirlwind Charge background"
 L["WhirlwindCheckboxUseHighestForAll"] = "Use highest Whirlwind Charge color for all?"
 L["WhirlwindCheckboxUseHighestForAllTooltip"] = "When checked, the highest Whirlwind Charge's color will be used for all Whirlwind Charges. E.g., if you have 4 Whirlwind Charges and currently have 3, the Penultimate color will be used for all Whirlwind Charges instead of just the second to last."
+
+-- Absorb Shield
+L["BarTextVariable_absorb"] = "Your current total absorb shield amount."
+L["AbsorbBarTexture"] = "Absorb Shield Overlay Texture"
+L["HealthBarAbsorbColor"] = "Absorb Shield Overlay"
+L["HealthBarShowAbsorb"] = "Show absorb shield overlay on Health Bar"
+L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar representing your current total absorb shield amount, capped at 100% of maximum health."
+
+-- Absorb Display Mode
+L["HealthBarAbsorbMode"] = "Absorb Display Mode"
+L["HealthBarAbsorbModeTooltip"] = "Controls how the absorb shield is displayed on the Health Bar."
+L["AbsorbModeAppended"] = "Appended"
+L["AbsorbModeOverlay"] = "Overlay (from left)"
+L["AbsorbModeInset"] = "Overlay (from right / inset)"
+
+-- Overlay Textures
+L["OverlayTexturesSectionHeader"] = "Overlay Textures"

@@ -38,7 +38,7 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -159,7 +159,7 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -280,7 +280,7 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
+			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
