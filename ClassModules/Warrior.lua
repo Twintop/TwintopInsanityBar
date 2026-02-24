@@ -800,7 +800,7 @@ local function UpdateWhirlwindStacks(specSettings, specCacheSettings)
 	local snapshots = snapshotData.snapshots
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 	local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
-	wwBuff:GetRemainingTime(currentTime) -- Force a refresh since this event is likely happening on a frame where we aren't in the main update loopTimerDuration
+	wwBuff:GetRemainingTime(currentTime) -- Force a refresh since this event is likely happening on a frame where we aren't in the main update loop
 	local stacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
 	if stacks < 0 then stacks = 0 end
 	if stacks > 4 then stacks = 4 end
