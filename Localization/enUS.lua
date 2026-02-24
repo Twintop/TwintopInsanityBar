@@ -1967,7 +1967,7 @@ L["WhirlwindCheckboxUseHighestForAllTooltip"] = "When checked, the highest Whirl
 
 -- Absorb Shield
 L["BarTextVariable_absorb"] = "Your current total absorb shield amount."
-L["AbsorbBarTexture"] = "Absorb Overlay"
+L["AbsorbBarTexture"] = "Absorb Shield Overlay Texture"
 L["HealthBarAbsorbColor"] = "Absorb Shield Overlay"
 L["HealthBarShowAbsorb"] = "Show absorb shield overlay on Health Bar"
 L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar representing your current total absorb shield amount, capped at 100% of maximum health."
@@ -1976,5 +1976,8 @@ L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will
 L["HealthBarAbsorbMode"] = "Absorb Display Mode"
 L["HealthBarAbsorbModeTooltip"] = "Controls how the absorb shield is displayed on the Health Bar."
 L["AbsorbModeOverlay"] = "Overlay (from left)"
-L["AbsorbModeAppended"] = "Appended to health"
-L["AbsorbModeInset"] = "Inset into health"
+L["AbsorbModeAppended"] = "Appended"
+L["AbsorbModeInset"] = "Overlay (inset / from right)"
+
+-- Overlay Textures
+L["OverlayTexturesSectionHeader"] = "Overlay Textures"

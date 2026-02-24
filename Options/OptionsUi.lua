@@ -3852,12 +3852,35 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 		textures.healthBar = newValue
 		textures.healthBarName = newName
 		DropdownSetupMenuWrapper(controls.healthBar)
+	end
+	
+	TRB.Functions.Character:ResetCaches()
+	if TRB.Frames.barGroups ~= nil then
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	else
+		TRB.Functions.Bar:Construct()
+	end
+end
 
+function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newValue, variable)
+	local newName = statusbarPairsByName[newValue]
+
+	textures[variable.."Bar"] = newValue
+	textures[variable.."BarName"] = newName
+	DropdownSetupMenuWrapper(controls[variable.."Bar"])
+	if textures.textureLock then
+		-- Sync all overlay textures to the changed value.
+		-- Currently only absorbBar; future overlays would be synced here.
 		textures.absorbBar = newValue
 		textures.absorbBarName = newName
 		DropdownSetupMenuWrapper(controls.absorbBar)
 	end
-	
+
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
 		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -3934,6 +3957,10 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	end
 
+	local function OverlaySetValue(variable, newValue)
+		TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
+	end
+
 	local function RefreshBar()
 		if not TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			return
@@ -3967,26 +3994,20 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			StatusbarSetValue("health", newValue)
 		end)
 
-	yCoord = yCoord - 60
-
-	-- Row 2: Absorb Bar (left)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			StatusbarSetValue("absorb", newValue)
-		end)
-
-	-- Row 2/3: Secondary / Combo Points (right or left, if applicable), Mana Bar (if applicable)
+	-- Row 2: Secondary / Combo Points (left, if applicable), Mana Bar
 	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
+		yCoord = yCoord - 60
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
 			function(newValue)
 				StatusbarSetValue("comboPoints", newValue)
 			end)
 	end
 
-	-- Row 3: Mana Bar
 	if includeManaBar then
-		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "manaBarBar", L["ManaBarTexture"], L["StatusBarTextures"],
+		if not includeComboPoints then
+			yCoord = yCoord - 60
+		end
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, includeComboPoints and oUi.xCoord2 or oUi.xCoord, yCoord, "statusbar", "manaBarBar", L["ManaBarTexture"], L["StatusBarTextures"],
 			function(newValue)
 				StatusbarSetValue("manaBar", newValue)
 			end)
@@ -4009,6 +4030,19 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end)
 		customBarPlacedOnLeft = useLeftColumn
 	end
+
+	yCoord = yCoord - 70
+
+	-- ===== OVERLAY TEXTURES SUBSECTION =====
+	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+
+	yCoord = yCoord - 20
+
+	-- Row 1: Absorb Overlay
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			OverlaySetValue("absorb", newValue)
+		end)
 
 	yCoord = yCoord - 70
 
@@ -4418,9 +4452,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.healthBar = spec.textures.resourceBar
 			spec.textures.healthBarName = spec.textures.resourceBarName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBar)
-			spec.textures.absorbBar = spec.textures.resourceBar
-			spec.textures.absorbBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.absorbBar)
+
+			-- Sync overlay textures
+			-- Currently only absorbBar; future overlays would be synced here.
 
 			-- Sync border textures
 			if includeComboPoints then
