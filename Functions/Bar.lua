@@ -1253,11 +1253,23 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevel(frameLevels.comboPoint)
 
-			-- Apply absorb overlay appearance if it exists
+			-- Apply absorb overlay appearance (whichever mode is active)
 			if healthNode:GetOverlayFrame() then
 				healthNode:SetOverlayTexture(settings.textures.absorbBar)
 				if settings.colors.healthBar.absorb then
 					healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+				end
+			end
+			if healthNode:GetAppendedOverlayFrame() then
+				healthNode:SetAppendedOverlayTexture(settings.textures.absorbBar)
+				if settings.colors.healthBar.absorb then
+					healthNode:SetAppendedOverlayColor(settings.colors.healthBar.absorb.color)
+				end
+			end
+			if healthNode:GetInsetOverlayFrame() then
+				healthNode:SetInsetOverlayTexture(settings.textures.absorbBar)
+				if settings.colors.healthBar.absorb then
+					healthNode:SetInsetOverlayColor(settings.colors.healthBar.absorb.color)
 				end
 			end
 		end
@@ -1273,6 +1285,12 @@ end
 
 ---Updates the absorb shield overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
+---Supports three display modes:
+---  "overlay" (default): fills from the left edge of the bar up to the absorb amount.
+---  "appended": visually appends the absorb region to the right of the current health fill,
+---              using a clip frame so it never extends past the bar's right boundary.
+---  "inset": reverse-fill absorb bar RIGHT-anchored to the health fill's RIGHT edge,
+---           filling leftward to show absorb "eating into" visible health.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
 ---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
 ---@param settings table # The spec cache settings (specCacheSettings)
@@ -1282,28 +1300,74 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local showAbsorb = settings.displayBar and settings.displayBar.health and settings.displayBar.health.showAbsorb
 	if not showAbsorb then
 		healthNode:HideOverlay()
+		healthNode:HideAppendedOverlay()
+		healthNode:HideInsetOverlay()
 		return
 	end
 
-	-- Lazily create the overlay on first use
-	healthNode:CreateOverlay()
-
+	local absorbMode = (settings.displayBar and settings.displayBar.health and settings.displayBar.health.absorbMode) or "overlay"
 	local healthMax = snapshotData.attributes.healthMax or 1
 	local absorbAmount = snapshotData.attributes.absorb or 0
+	local hasAbsorb = issecretvalue(absorbAmount) or absorbAmount > 0
 
-	healthNode:SetOverlayMinMax(0, healthMax)
-	healthNode:SetOverlayValue(absorbAmount)
-	healthNode:SetOverlayTexture(settings.textures.absorbBar)
-
-	if settings.colors.healthBar and settings.colors.healthBar.absorb then
-		healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
-	end
-
-	-- Show overlay when there is absorb (or when absorb is secret, always show since we can't check)
-	if issecretvalue(absorbAmount) or absorbAmount > 0 then
-		healthNode:ShowOverlay()
-	else
+	if absorbMode == "appended" then
+		-- Appended mode: absorb bar LEFT anchored to health fill's RIGHT, inside a clip frame
 		healthNode:HideOverlay()
+		healthNode:HideInsetOverlay()
+		healthNode:CreateAppendedOverlay()
+
+		healthNode:SetAppendedOverlayMinMax(0, healthMax)
+		healthNode:SetAppendedOverlayValue(absorbAmount)
+		healthNode:SetAppendedOverlayTexture(settings.textures.absorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.absorb then
+			healthNode:SetAppendedOverlayColor(settings.colors.healthBar.absorb.color)
+		end
+
+		if hasAbsorb then
+			healthNode:ShowAppendedOverlay()
+		else
+			healthNode:HideAppendedOverlay()
+		end
+	elseif absorbMode == "inset" then
+		-- Inset mode: reverse-fill absorb bar RIGHT anchored to health fill's RIGHT,
+		-- fills leftward to show absorb "eating into" the visible health.
+		healthNode:HideOverlay()
+		healthNode:HideAppendedOverlay()
+		healthNode:CreateInsetOverlay()
+
+		healthNode:SetInsetOverlayMinMax(0, healthMax)
+		healthNode:SetInsetOverlayValue(absorbAmount)
+		healthNode:SetInsetOverlayTexture(settings.textures.absorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.absorb then
+			healthNode:SetInsetOverlayColor(settings.colors.healthBar.absorb.color)
+		end
+
+		if hasAbsorb then
+			healthNode:ShowInsetOverlay()
+		else
+			healthNode:HideInsetOverlay()
+		end
+	else
+		-- Overlay mode (default): fills from left edge
+		healthNode:HideAppendedOverlay()
+		healthNode:HideInsetOverlay()
+		healthNode:CreateOverlay()
+
+		healthNode:SetOverlayMinMax(0, healthMax)
+		healthNode:SetOverlayValue(absorbAmount)
+		healthNode:SetOverlayTexture(settings.textures.absorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.absorb then
+			healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+		end
+
+		if hasAbsorb then
+			healthNode:ShowOverlay()
+		else
+			healthNode:HideOverlay()
+		end
 	end
 end
 

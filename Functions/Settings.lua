@@ -2002,6 +2002,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 						specSettings.displayBar.health.showAbsorb = true
 					end
 
+					if specSettings.displayBar and specSettings.displayBar.health and type(specSettings.displayBar.health) == "table" and specSettings.displayBar.health.absorbMode == nil then
+						specSettings.displayBar.health.absorbMode = "overlay"
+					end
+
 					if specSettings.textures and not specSettings.textures.absorbBar then
 						specSettings.textures.absorbBar = specSettings.textures.healthBar or "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 						specSettings.textures.absorbBarName = specSettings.textures.healthBarName or L["LSMStatusBarSmoother"]

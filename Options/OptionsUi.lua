@@ -5473,7 +5473,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		end
 	)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord + 20
 	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showAbsorb
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -5496,7 +5496,51 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
 	end)
 
-	return yCoord
+	-- Absorb Display Mode dropdown
+	yCoord = yCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.absorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AbsorbMode", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.absorbMode:SetWidth(oUi.sliderWidth)
+	controls.dropDown.absorbMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarAbsorbMode"], oUi.xCoord, yCoord)
+	controls.dropDown.absorbMode.label.font:SetFontObject(GameFontNormal)
+	---@diagnostic disable-next-line: inject-field
+	controls.dropDown.absorbMode.label.font.tooltip = L["HealthBarAbsorbModeTooltip"]
+
+	local function AbsorbModeIsSelected(value)
+		return value == spec.displayBar.health.absorbMode
+	end
+
+	local function AbsorbModeGetDisplayName(value)
+		if value == "appended" then
+			return L["AbsorbModeAppended"]
+		elseif value == "inset" then
+			return L["AbsorbModeInset"]
+		else
+			return L["AbsorbModeOverlay"]
+		end
+	end
+
+	local function AbsorbModeSetSelected(newValue)
+		spec.displayBar.health.absorbMode = newValue
+		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end
+
+	local function AbsorbModeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["AbsorbModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")
+		rootDescription:CreateRadio(L["AbsorbModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["AbsorbModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
+	end
+
+	controls.dropDown.absorbMode:SetupMenu(AbsorbModeGenerator)
+	controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(spec.displayBar.health.absorbMode))
+	controls.dropDown.absorbMode:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	return yCoord - 30
 end
 
 function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, classId, specId, yCoord)

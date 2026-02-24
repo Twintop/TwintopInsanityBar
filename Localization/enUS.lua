@@ -1971,3 +1971,10 @@ L["AbsorbBarTexture"] = "Absorb Overlay"
 L["HealthBarAbsorbColor"] = "Absorb Shield Overlay"
 L["HealthBarShowAbsorb"] = "Show absorb shield overlay on Health Bar"
 L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar representing your current total absorb shield amount, capped at 100% of maximum health."
+
+-- Absorb Display Mode
+L["HealthBarAbsorbMode"] = "Absorb Display Mode"
+L["HealthBarAbsorbModeTooltip"] = "Controls how the absorb shield is displayed on the Health Bar."
+L["AbsorbModeOverlay"] = "Overlay (from left)"
+L["AbsorbModeAppended"] = "Appended to health"
+L["AbsorbModeInset"] = "Inset into health"
