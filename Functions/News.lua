@@ -15,7 +15,7 @@ local content = [====[
 # 12.0.1.13-release (2026-02-25)
 ## General
 
-- [#602](#602) Add support for absorbtion shields to be shown on the Health Bar or with the bar text variable `$absorb`. The absorb overlay can be configured to be shown appended to the end of the current health bar, as an overlay from the left (start) of the bar, or as an overlay starting from the right (current) as an inlay.
+- [#602](#602) Add support for absorption shields to be shown on the Health Bar or with the bar text variable `$absorb`. The absorb overlay can be configured to be shown appended to the end of the current health bar, as an overlay from the left (start) of the bar, or as an overlay starting from the right (current) as an inlay.
 
 ### Localization
 
