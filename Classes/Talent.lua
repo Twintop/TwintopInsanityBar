@@ -113,7 +113,7 @@ end
 ---@return boolean
 function TRB.Classes.Talents:IsTalentActive(spell)
 	return spell.baseline == true or
-		(self.talents[spell.id] ~= nil and self.talents[spell.id]:IsActive()) or
 		(self.talents[spell.talentId] ~= nil and self.talents[spell.talentId]:IsActive()) or
+		(self.talents[spell.id] ~= nil and self.talents[spell.id]:IsActive()) or
 		(spell.isPvp and C_SpellBook.IsSpellKnown(spell.id)) or false
 end

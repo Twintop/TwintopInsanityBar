@@ -105,7 +105,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
-	specCache.warrior_fury.snapshotData.snapshots[spells.whirlwind.id] = TRB.Classes.Snapshot:New(spells.whirlwind)
+	specCache.warrior_fury.snapshotData.snapshots[spells.improvedWhirlwind.id] = TRB.Classes.Snapshot:New(spells.improvedWhirlwind)
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.bladestorm.id] = TRB.Classes.Snapshot:New(spells.bladestorm)
 	---@type TRB.Classes.Snapshot
@@ -256,9 +256,50 @@ local function ConstructResourceBar(settings)
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 2 then
-		-- Fury: No secondary bar
+		-- Fury: Whirlwind stacks bar (nodes based on talent)
 		if barGroups and barGroups.defensives then
 			barGroups.defensives:Hide()
+		end
+		if barGroups and barGroups.secondary then
+			local maxWhirlwindNodes = TRB.Data.character.maxResource2 or 0
+
+			if maxWhirlwindNodes == 0 then
+				barGroups.secondary:Hide()
+			else
+				barGroups.secondary:SetMaxNodes(maxWhirlwindNodes)
+				barGroups.secondary:SetNodeCount(maxWhirlwindNodes)
+				barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				barGroups.secondary:Show()
+
+				local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+				if cdmForced then
+					barGroups.secondary.fullWidth = true
+				end
+
+				barGroups.secondary:ApplyLayout(
+					effectiveWidth,
+					settings.comboPoints.width,
+					settings.comboPoints.height,
+					settings.comboPoints.border
+				)
+
+				local frameLevels = TRB.Data.constants.frameLevels
+				for x = 1, maxWhirlwindNodes do
+					local wwNode = barGroups.secondary:GetNode(x)
+					if wwNode then
+						wwNode:SetTextures(
+							settings.textures.comboPointsBar,
+							settings.textures.comboPointsBorder,
+							settings.textures.comboPointsBackground
+						)
+						wwNode:SetMinMax(0, 1)
+						wwNode:SetBorderColor(settings.colors.comboPoints.border.color)
+						wwNode:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+						wwNode:SetColor(settings.colors.comboPoints.base.color)
+						wwNode:SetFrameLevel(frameLevels.comboPoint)
+					end
+				end
+			end
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 3 then
@@ -413,6 +454,21 @@ local function RefreshLookupData_Fury()
 	lookup["$resource"] = currentRage
 	lookup["$rage"] = currentRage
 	lookup["$casting"] = castingRage
+	
+	-- Whirlwind stacks & time
+	local wwSnapshot = snapshots[spells.improvedWhirlwind.id]
+	local wwStacks = 0
+	local wwTime = 0
+	if wwSnapshot and wwSnapshot.buff then
+		wwStacks = wwSnapshot.buff.applications or 0
+		wwTime = wwSnapshot.buff.remaining or 0
+	end
+
+	lookup["$wwStacks"] = string.format("%s", wwStacks)
+	lookup["$whirlwindStacks"] = lookup["$wwStacks"]
+	lookup["$wwTime"] = string.format("%.1f", wwTime)
+	lookup["$whirlwindTime"] = lookup["$wwTime"]
+
 	TRB.Data.lookup = lookup
 
 
@@ -422,6 +478,10 @@ local function RefreshLookupData_Fury()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = normalizedRage
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookupLogic["$wwStacks"] = wwStacks
+	lookupLogic["$whirlwindStacks"] = wwStacks
+	lookupLogic["$wwTime"] = wwTime
+	lookupLogic["$whirlwindTime"] = wwTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -525,13 +585,35 @@ end
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
-function TRB.Functions.Class:SpellCast(event, spellId)
+function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
 
-	if TRB.Data.character.specId == 3 then
+	if TRB.Data.character.specId == 2 then
+		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local snapshots = snapshotData.snapshots
+		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if talents:IsTalentActive(spells.improvedWhirlwind) then
+				if spellId == spells.bladestorm.id and talents:IsTalentActive(spells.unhinged) then
+					local duration = spells.bladestorm.duration / (1 + (snapshotData.attributes.haste / 100))
+					snapshots[spells.bladestorm.id].buff:InitializeCustom(duration, currentTime)
+				elseif spells.improvedWhirlwind.attributes.builderIds[spellId] or (spells.crashingThunder.attributes.builderIds[spellId] and talents:IsTalentActive(spells.crashingThunder)) then
+					snapshots[spells.improvedWhirlwind.id].buff:InitializeCustom(spells.improvedWhirlwind.duration, currentTime, true, spells.improvedWhirlwind.maxStacks)
+				elseif spells.improvedWhirlwind.attributes.spenderIds[spellId] and snapshots[spells.improvedWhirlwind.id].buff.applications > 0 then
+					if not talents:IsTalentActive(spells.unhinged) then
+						snapshots[spells.improvedWhirlwind.id].buff:RemoveStack()
+					else
+						snapshots[spells.bladestorm.id].buff:GetRemainingTime(currentTime) -- Force a refresh since this event is likely happening on a frame where we aren't in the main update loop
+						if not snapshots[spells.bladestorm.id].buff.isActive then
+							snapshots[spells.improvedWhirlwind.id].buff:RemoveStack()
+						end
+					end
+				end
+			end
+		end
+	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.shieldBlock.castId then
@@ -615,8 +697,8 @@ local function UpdateSnapshot_Fury()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
-	--[[snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
+	snapshots[spells.improvedWhirlwind.id].buff:GetRemainingTime(currentTime)
+	--[[snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
 	snapshots[spells.execute.id].cooldown:Refresh()]]
 end
 
@@ -700,6 +782,49 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			end
 			
 			currentDefensiveBar = currentDefensiveBar + 1
+		end
+	end
+end
+
+---Updates the Whirlwind stacks bar for Fury
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateWhirlwindStacks(specSettings, specCacheSettings)
+	local currentTime = GetTime()
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	if not (barGroups and barGroups.secondary) then
+		return
+	end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
+	wwBuff:GetRemainingTime(currentTime) -- Force a refresh since this event is likely happening on a frame where we aren't in the main update loopTimerDuration
+	local stacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
+	if stacks < 0 then stacks = 0 end
+	if stacks > 4 then stacks = 4 end
+
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	for x = 1, 4 do
+		local cpBorderColor = specSettings.colors.comboPoints.border.color
+		local cpColor = specSettings.colors.comboPoints.base.color
+		local filled = stacks >= x
+
+		if filled then
+			if (specSettings.comboPoints.sameColor and stacks == 3) or (not specSettings.comboPoints.sameColor and x == 3) then
+				cpColor = specSettings.colors.comboPoints.penultimate.color
+			elseif (specSettings.comboPoints.sameColor and stacks == 4) or x == 4 then
+				cpColor = specSettings.colors.comboPoints.final.color
+			end
+		end
+
+		local node = barGroups.secondary:GetNode(x)
+		if node then
+			TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
+			node:SetBorderColor(cpBorderColor)
+			node:SetColor(cpColor)
+			node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 		end
 	end
 end
@@ -968,6 +1093,12 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 			end
 
+			-- Whirlwind stacks bar (only when Improved Whirlwind is talented, i.e. maxResource2 > 0)
+			if specSettings.displayBar.secondary.visibility ~= "never" and (TRB.Data.character.maxResource2 or 0) > 0 then
+				refreshText = true
+				UpdateWhirlwindStacks(specSettings, specCacheSettings)
+			end
+
 			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -1165,7 +1296,7 @@ local function SwitchSpec()
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#suddenDeath"] = spells.suddenDeath.icon
-		lookup["#whirlwind"] = spells.whirlwind.icon
+		lookup["#whirlwind"] = spells.improvedWhirlwind.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 		
@@ -1285,6 +1416,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						TRB.Data.settings.manualUpdateChecks.midnightBarTextReset.warrior = true
 						TRB.Functions.Settings:ShowMidnightBarTextResetMessage(L["Warrior"])
 					end
+
+					-- Seed Whirlwind charge bar text entries for existing users
+					if TRB.Data.settings.warrior.fury.displayText.migrations == nil then
+						TRB.Data.settings.warrior.fury.displayText.migrations = {}
+					end
+
+					if not TRB.Data.settings.warrior.fury.displayText.migrations.whirlwindBarTextSeeded then
+						local whirlwindBarTextEntries = TRB.Options.Warrior.FuryLoadWhirlwindBarTextSettings()
+						for _, entry in ipairs(whirlwindBarTextEntries) do
+							table.insert(TRB.Data.settings.warrior.fury.displayText.barText, entry)
+						end
+						TRB.Data.settings.warrior.fury.displayText.migrations.whirlwindBarTextSeeded = true
+					end
 				else
 					local settings = TRB.Options.Warrior.LoadDefaultSettings(true)
 					TRB.Data.settings = settings
@@ -1377,6 +1521,24 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fury"
 		TRB.Data.character.compositeKey = "warrior_fury"
+
+		local furySpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local furyTalents = TRB.Data.specCache.warrior_fury and TRB.Data.specCache.warrior_fury.talents
+		local whirlwindStacks = 0
+		if furyTalents and furyTalents:IsTalentActive(furySpells.improvedWhirlwind) then
+			whirlwindStacks = 4
+		end
+
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+
+		if sharedSettings ~= nil then
+			if whirlwindStacks ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = whirlwindStacks
+				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
+				end
+			end
+		end
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "protection"
 		TRB.Data.character.compositeKey = "warrior_protection"
@@ -1443,7 +1605,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Determine secondary bar visibility independently
-			-- Only Protection (specId == 3) uses the secondary bar
+			-- Protection (specId == 3) uses defensives; Fury (specId == 2) uses whirlwind
 			local showSecondary = false
 			if not forceHideAll and TRB.Data.character.specId == 3 then
 				if sharedSettings.displayBar.defensives.visibility == "always" then
@@ -1451,7 +1613,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 				elseif sharedSettings.displayBar.defensives.visibility == "combat" then
 					showSecondary = affectingCombat or inVehicle
 				end
-				-- "never" means showSecondary stays false
+			end
+			-- Whirlwind bar uses secondary bar visibility (always / combat / never)
+			-- If maxResource2 == 0 (Improved Whirlwind not talented), treat as "never"
+			local showWhirlwind = false
+			if not forceHideAll and TRB.Data.character.specId == 2
+				and sharedSettings.displayBar.secondary ~= nil
+				and (TRB.Data.character.maxResource2 or 0) > 0 then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
+					showWhirlwind = true
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
+					showWhirlwind = affectingCombat or inVehicle
+				end
 			end
 
 			-- Determine health bar visibility independently
@@ -1483,6 +1656,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 					barGroups.defensives:Hide()
 				end
 			end
+			if barGroups and barGroups.secondary then
+				if showWhirlwind then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2 or 0)
+				else
+					barGroups.secondary:Hide()
+				end
+			end
 
 			-- Apply health bar visibility
 			if barGroups and barGroups.health then
@@ -1494,7 +1675,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Track if any bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showWhirlwind or showHealth
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -1506,6 +1687,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 			if barGroups and barGroups.defensives then
 				barGroups.defensives:Hide()
+			end
+			if barGroups and barGroups.secondary then
+				barGroups.secondary:Hide()
 			end
 			if barGroups and barGroups.health then
 				barGroups.health:Hide()
@@ -1519,6 +1703,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		if barGroups and barGroups.defensives then
 			barGroups.defensives:Hide()
+		end
+		if barGroups and barGroups.secondary then
+			barGroups.secondary:Hide()
 		end
 		if barGroups and barGroups.health then
 			barGroups.health:Hide()
@@ -1619,6 +1806,21 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		end
 		return nil, true, false
 	elseif relativeToFrame ~= nil then
+		-- Handle Fury's Whirlwind charge nodes
+		if TRB.Data.character.specId == 2 then
+			local whirlwindChargeIndex = string.match(relativeToFrame, "^WhirlwindCharge(%d+)$")
+			if whirlwindChargeIndex ~= nil then
+				local index = tonumber(whirlwindChargeIndex)
+				if index ~= nil and barGroups and barGroups.secondary then
+					local node = barGroups.secondary:GetNode(index)
+					if node then
+						local isVisible = barGroups.secondary.isVisible and node.isVisible
+						return node:GetFrame(), true, isVisible
+					end
+				end
+				return nil, true, false
+			end
+		end
 		-- Handle Protection's defensive buff nodes
 		if TRB.Data.character.specId == 3 then
 			if TRB.Functions.String:StartsWith(relativeToFrame, "IgnorePain") then

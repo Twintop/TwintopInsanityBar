@@ -42,7 +42,7 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 		end
 		return
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		TRB.Functions.Class:SpellCast(event, spellId)
+		TRB.Functions.Class:SpellCast(event, spellId, castGuid)
 	elseif event == "UNIT_MODEL_CHANGED" then
 		-- Some forms change the unit model. We can use this to detect loss or gain of a proc
 		TRB.Functions.Class:SpellCast(event, 0)
