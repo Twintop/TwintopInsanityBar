@@ -196,13 +196,115 @@ end
 ]]
 
 
+---Loads only the Whirlwind charge bar text entries (no global resource text)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FuryLoadWhirlwindBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["WarriorFuryBarTextNameWWCharge1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$wwStacks=1}[$wwStacks - $wwTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Whirlwind_Charge_1",
+				relativeToFrameName = L["WhirlwindCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["WarriorFuryBarTextNameWWCharge2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$wwStacks=2}[$wwStacks - $wwTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Whirlwind_Charge_2",
+				relativeToFrameName = L["WhirlwindCharge2"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["WarriorFuryBarTextNameWWCharge3"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$wwStacks=3}[$wwStacks - $wwTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Whirlwind_Charge_3",
+				relativeToFrameName = L["WhirlwindCharge3"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["WarriorFuryBarTextNameWWCharge4"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$wwStacks=4}[$wwStacks - $wwTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Whirlwind_Charge_4",
+				relativeToFrameName = L["WhirlwindCharge4"],
+			},
+		},
+	}
+
+	return textSettings
+end
+TRB.Options.Warrior.FuryLoadWhirlwindBarTextSettings = FuryLoadWhirlwindBarTextSettings
+
 ---Loads default bar text settings for Fury
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function FuryLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {
-	}
+	local textSettings = FuryLoadWhirlwindBarTextSettings()
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -270,6 +372,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			fixed = FURY_MAX_RAGE
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Table:Merge(TRB.Functions.Settings:DefaultComboPointsDimensions(classic), { sameColor = false }),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors = {
 			text = {
@@ -311,6 +414,23 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			comboPoints = {
+				border = {
+					color = "FFFFD300"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFFFFF00"
+				},
+				penultimate = {
+					color = "FFFF9900"
+				},
+				final = {
+					color = "FFFF0000"
+				},
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -349,7 +469,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -1277,6 +1397,68 @@ local function FuryConstructRageBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
 end
 
+local function FuryConstructWhirlwindBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_fury
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], L["ResourceWarriorWhirlwind"])
+
+	yCoord = yCoord - 60
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WhirlwindColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.penultimate
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.final
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sameColorComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WhirlwindCheckboxUseHighestForAll"])
+	f.tooltip = L["WhirlwindCheckboxUseHighestForAllTooltip"]
+	f:SetChecked(spec.comboPoints.sameColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.comboPoints.sameColor = self:GetChecked()
+	end)
+end
+
 local function FuryConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -1303,7 +1485,7 @@ local function FuryConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, true, L["ResourceWarriorWhirlwind"])
 end
 
 local function FuryConstructBarVisibilityPanel(parent)
@@ -1316,7 +1498,7 @@ local function FuryConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, true, L["ResourceWarriorWhirlwind"], true)
 end
 
 local function FuryConstructThresholdPanel(parent)
@@ -1582,6 +1764,7 @@ local function FuryConstructOptionsPanel(cache)
 
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel },
+		{ "whirlwindBar", L["TabWhirlwind"], oUi.tabWidth.small, FuryConstructWhirlwindBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },

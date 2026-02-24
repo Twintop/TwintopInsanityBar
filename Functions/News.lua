@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.13-release (2026-02-24)
+## Warrior
+### Fury
+
+- [#645](#645) Add support for tracking Whirlwind stacks from Improved Whirlwind as a secondary resource bar set. New bar text variables have been added to show the number of stacks (`$wwStacks`) and time remaining (`$wwTime`) on the buff.
+
+---
+
 # 12.0.1.12-release (2026-02-24)
 ## Priest
 ### Discipline
