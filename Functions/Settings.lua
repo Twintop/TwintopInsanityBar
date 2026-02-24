@@ -1992,25 +1992,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 							end
 						end
 					end
-
-					--[[
-					-- Migrate absorb overlay settings for the health bar
-					if specSettings.colors and specSettings.colors.healthBar and not specSettings.colors.healthBar.absorb then
-						specSettings.colors.healthBar.absorb = { color = "66FFFFFF" }
-					end
-
-					if specSettings.displayBar and specSettings.displayBar.health and type(specSettings.displayBar.health) == "table" and specSettings.displayBar.health.showAbsorb == nil then
-						specSettings.displayBar.health.showAbsorb = true
-					end
-
-					if specSettings.displayBar and specSettings.displayBar.health and type(specSettings.displayBar.health) == "table" and specSettings.displayBar.health.absorbMode == nil then
-						specSettings.displayBar.health.absorbMode = "appended"
-					end
-
-					if specSettings.textures and not specSettings.textures.absorbBar then
-						specSettings.textures.absorbBar = specSettings.textures.healthBar or "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
-						specSettings.textures.absorbBarName = specSettings.textures.healthBarName or L["LSMStatusBarSmoother"]
-					end]]
 				end
 			end
 		end
