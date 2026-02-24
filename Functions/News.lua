@@ -16,7 +16,7 @@ local content = [====[
 ## Warrior
 ### Fury
 
-- [#645](#645) Add support for tracking Whirlwind stacks from Improved Whirlwind as a secondary resource bar set. New bar text variables have been added to show the number of stacks (`$wwCharges`) and time remaining (`$wwTime`) on the buff.
+- [#645](#645) Add support for tracking Whirlwind stacks from Improved Whirlwind as a secondary resource bar set. New bar text variables have been added to show the number of charges (`$wwCharges`) and time remaining (`$wwTime`) on the buff.
 
 ---
 
