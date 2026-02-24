@@ -531,7 +531,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		local snapshots = snapshotData.snapshots
-		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START"  then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Devastation()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -563,7 +563,9 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			snapshotData.attributes.extendsEbonMight = true
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Augmentation()
-		elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+		elseif event == "UNIT_SPELLCAST_START" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Augmentation()
 			-- Track if we're casting an ability that extends Ebon Might
 			if spellId == spells.eruption.id then
 				snapshotData.attributes.extendsEbonMight = true
@@ -572,8 +574,6 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			else
 				snapshotData.attributes.extendsEbonMight = false
 			end
-			casting:SnapshotManaSpell()
-			UpdateCastingResourceFinal_Augmentation()
 		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			snapshotData.attributes.extendsEbonMight = false
 			casting:Reset()
