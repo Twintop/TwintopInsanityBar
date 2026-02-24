@@ -66,6 +66,10 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -187,6 +191,10 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -307,6 +315,10 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FF0000FF"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {

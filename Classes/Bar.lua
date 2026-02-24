@@ -381,6 +381,7 @@ function TRB.Classes.BarNode:ReanchorAppendedOverlay()
 	self.appendedClipFrame:ClearAllPoints()
 	self.appendedClipFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
 	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	self.appendedOverlayReady = true
 
 	-- Re-anchor the absorb bar to the current fill texture's right edge
 	if self.appendedOverlayFrame then
@@ -403,17 +404,20 @@ function TRB.Classes.BarNode:CreateAppendedOverlay()
 		return
 	end
 
-	-- Create clip container that covers the inner bar area
+	-- Create clip container off-screen so any initial flash is invisible to the user.
+	-- It will be reanchored to the correct position after one frame.
 	local clip = CreateFrame("Frame", self.name .. "_AppendedClip", self.frame)
 	clip:SetFrameLevel(self.frame:GetFrameLevel() + 1)
-	clip:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
-	clip:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	clip:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+	clip:SetSize(1, 1)
 	clip:SetClipsChildren(true)
-	clip:Hide()
 
 	-- Create absorb StatusBar inside the clip frame
 	local absorbBar = CreateFrame("StatusBar", self.name .. "_AppendedOverlay", clip)
 	absorbBar:SetFrameLevel(clip:GetFrameLevel() + 1)
+	absorbBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
+	absorbBar:SetMinMaxValues(0, 1)
+	absorbBar:SetValue(0)
 
 	-- Anchor LEFT to the health fill texture's RIGHT edge
 	local fillTexture = self.frame:GetStatusBarTexture()
@@ -428,6 +432,19 @@ function TRB.Classes.BarNode:CreateAppendedOverlay()
 
 	self.appendedClipFrame = clip
 	self.appendedOverlayFrame = absorbBar
+	self.appendedOverlayReady = false
+
+	-- After one frame, reanchor the clip to the correct position on the bar.
+	-- Any flash from initial geometry happens off-screen during this frame.
+	local node = self
+	C_Timer.After(0, function()
+		if node.appendedClipFrame then
+			node.appendedClipFrame:ClearAllPoints()
+			node.appendedClipFrame:SetPoint("TOPLEFT", node.frame, "TOPLEFT", node.border, -node.border)
+			node.appendedClipFrame:SetPoint("BOTTOMRIGHT", node.frame, "BOTTOMRIGHT", -node.border, node.border)
+			node.appendedOverlayReady = true
+		end
+	end)
 end
 
 ---Sets the appended overlay StatusBar value. No-op if not created.
@@ -502,6 +519,7 @@ function TRB.Classes.BarNode:ReanchorInsetOverlay()
 	self.insetClipFrame:ClearAllPoints()
 	self.insetClipFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
 	self.insetClipFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	self.insetOverlayReady = true
 
 	-- Re-anchor the absorb bar to the current fill texture's right edge
 	if self.insetOverlayFrame then
@@ -525,18 +543,21 @@ function TRB.Classes.BarNode:CreateInsetOverlay()
 		return
 	end
 
-	-- Create clip container that covers the inner bar area
+	-- Create clip container off-screen so any initial flash is invisible to the user.
+	-- It will be reanchored to the correct position after one frame.
 	local clip = CreateFrame("Frame", self.name .. "_InsetClip", self.frame)
 	clip:SetFrameLevel(self.frame:GetFrameLevel() + 1)
-	clip:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.border, -self.border)
-	clip:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -self.border, self.border)
+	clip:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+	clip:SetSize(1, 1)
 	clip:SetClipsChildren(true)
-	clip:Hide()
 
 	-- Create absorb StatusBar inside the clip frame with reverse fill
 	local absorbBar = CreateFrame("StatusBar", self.name .. "_InsetOverlay", clip)
 	absorbBar:SetFrameLevel(clip:GetFrameLevel() + 1)
 	absorbBar:SetReverseFill(true)
+	absorbBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
+	absorbBar:SetMinMaxValues(0, 1)
+	absorbBar:SetValue(0)
 
 	-- Anchor RIGHT to the health fill texture's RIGHT edge
 	local fillTexture = self.frame:GetStatusBarTexture()
@@ -551,6 +572,19 @@ function TRB.Classes.BarNode:CreateInsetOverlay()
 
 	self.insetClipFrame = clip
 	self.insetOverlayFrame = absorbBar
+	self.insetOverlayReady = false
+
+	-- After one frame, reanchor the clip to the correct position on the bar.
+	-- Any flash from initial geometry happens off-screen during this frame.
+	local node = self
+	C_Timer.After(0, function()
+		if node.insetClipFrame then
+			node.insetClipFrame:ClearAllPoints()
+			node.insetClipFrame:SetPoint("TOPLEFT", node.frame, "TOPLEFT", node.border, -node.border)
+			node.insetClipFrame:SetPoint("BOTTOMRIGHT", node.frame, "BOTTOMRIGHT", -node.border, node.border)
+			node.insetOverlayReady = true
+		end
+	end)
 end
 
 ---Sets the inset overlay StatusBar value. No-op if not created.

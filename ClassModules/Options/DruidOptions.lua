@@ -343,6 +343,10 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				flashPeriod=0.5,
 				flashEnabled=true,
 				flashSsEnabled=true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
@@ -664,7 +668,11 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				base = { color = "FFFFFF00" },
 				clearcasting = { color = "FF4A95CE", enabled = true },
 				maxBite = { color = "FF009900", enabled = true },
-				apexPredator = { color = "FFE75480", enabled = true }
+				apexPredator = { color = "FFE75480", enabled = true },
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			comboPoints = {
@@ -845,6 +853,10 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				berserkEnd = {
 					color = "FFFF5555"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -947,7 +959,11 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				noEfflorescence = { color = "FFFF0000", enabled = true },
 				clearcasting = { color = "FF4A95CE", enabled = true },
 				incarnation = { color = "FF005500", enabled = true },
-				incarnationEnd = { color = "FFDD5500" }
+				incarnationEnd = { color = "FFDD5500" },
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {

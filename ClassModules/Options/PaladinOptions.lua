@@ -74,6 +74,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "FFFCE58E",
 					enabled = true
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -209,6 +213,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -336,6 +344,10 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FF0000FF"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {

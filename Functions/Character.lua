@@ -913,6 +913,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specCache.settings.textures.manaBarBorderName = specCache.settings.textures.borderName
 			specCache.settings.textures.manaBarBackground = specCache.settings.textures.background
 			specCache.settings.textures.manaBarBackgroundName = specCache.settings.textures.backgroundName
+
+			-- Sync casting overlay bar texture to primary bar texture from global settings
+			specCache.settings.textures.castingBar = specCache.settings.textures.resourceBar
+			specCache.settings.textures.castingBarName = specCache.settings.textures.resourceBarName
 		else
 			-- Use spec-specific mana bar textures
 			if spec.textures.manaBarBar then

@@ -769,6 +769,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -810,7 +811,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -902,6 +903,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText

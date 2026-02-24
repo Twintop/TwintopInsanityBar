@@ -69,7 +69,11 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FF0000FF"
-				}
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -191,6 +195,10 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 		},
@@ -274,6 +282,10 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FF0000FF"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),

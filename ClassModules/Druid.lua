@@ -1817,6 +1817,7 @@ local function UpdateResourceBar()
 				if flashBar then
 					TRB.Functions.Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 				end
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 			
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric()
@@ -2114,6 +2115,7 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			-- Show combo points when in Cat form, OR when displaySpecId is Feral (enableFormSwitching disabled)
@@ -2363,6 +2365,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				primaryNode:SetColor(barColor)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric()
@@ -2446,6 +2449,7 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric()

@@ -3852,6 +3852,10 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 		textures.healthBar = newValue
 		textures.healthBarName = newName
 		DropdownSetupMenuWrapper(controls.healthBar)
+
+		textures.castingBar = newValue
+		textures.castingBarName = newName
+		DropdownSetupMenuWrapper(controls.castingBar)
 	end
 	
 	TRB.Functions.Character:ResetCaches()
@@ -3989,12 +3993,19 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			StatusbarSetValue("resource", newValue)
 		end)
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			StatusbarSetValue("casting", newValue)
+		end)
+
+	-- Row 2: Casting Overlay (left)
+	yCoord = yCoord - 60
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("health", newValue)
 		end)
 
-	-- Row 2: Secondary / Combo Points (left, if applicable), Mana Bar
+	-- Row 3: Secondary / Combo Points (left, if applicable), Mana Bar
 	if includeComboPoints then
 		yCoord = yCoord - 60
 		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
@@ -4452,6 +4463,10 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.healthBar = spec.textures.resourceBar
 			spec.textures.healthBarName = spec.textures.resourceBarName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBar)
+
+			spec.textures.castingBar = spec.textures.resourceBar
+			spec.textures.castingBarName = spec.textures.resourceBarName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
 
 			-- Sync overlay textures
 			-- Currently only absorbBar; future overlays would be synced here.
@@ -5369,6 +5384,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 end
 
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
 	local f = nil
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 
@@ -5382,6 +5399,27 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 			barFrame = node and node.GetFrame and node:GetFrame() or nil
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.casting
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+	end)
+
+	controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.castingOverlayEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["BarColorCastingOverlayCheckbox"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
+	f:SetChecked(spec.colors.bar.casting.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.casting.enabled = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
 	end)
 
 	return yCoord

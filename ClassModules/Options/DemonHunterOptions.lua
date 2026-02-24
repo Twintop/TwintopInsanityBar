@@ -167,7 +167,11 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				},
 				metamorphosisEnd = {
 					color = "FFFF0000"
-				}
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -324,6 +328,10 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				},
 				metamorphosisEnd = {
 					color = "FFFF0000"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {
@@ -511,6 +519,10 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				},
 				voidMetamorphosis = {
 					color = "FF431863",
+					enabled = true
+				},
+				casting = {
+					color = "FFFFFFFF",
 					enabled = true
 				},
 			},

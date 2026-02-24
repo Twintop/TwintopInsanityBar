@@ -169,6 +169,10 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FFFFFF00"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -426,6 +430,10 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {
@@ -689,6 +697,10 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FFFFFF00"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {

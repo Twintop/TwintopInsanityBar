@@ -1981,3 +1981,9 @@ L["AbsorbModeInset"] = "Overlay (from right / inset)"
 
 -- Overlay Textures
 L["OverlayTexturesSectionHeader"] = "Overlay Textures"
+
+-- Casting Overlay
+L["CastingBarTexture"] = "Casting Overlay Texture"
+L["BarColorCastingOverlay"] = "Casting Overlay"
+L["BarColorCastingOverlayCheckbox"] = "Show casting overlay on Resource Bar"
+L["BarColorCastingOverlayCheckboxTooltip"] = "When checked, an overlay will be displayed on the Resource Bar representing the resource change from your current cast."

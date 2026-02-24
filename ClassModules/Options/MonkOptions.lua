@@ -208,6 +208,10 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				invokeNiuzaoEnd = {
 					color = "FFFF0000"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			bars = {
 				stagger = {
@@ -339,6 +343,10 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				},
 				heartOfTheJadeSerpent = {
 					color = "FF00FFBB",
+					enabled = true
+				},
+				casting = {
+					color = "FFFFFFFF",
 					enabled = true
 				},
 			},
@@ -495,6 +503,10 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				},
 				heartOfTheJadeSerpent = {
 					color = "FF00FFBB",
+					enabled = true
+				},
+				casting = {
+					color = "FFFFFFFF",
 					enabled = true
 				},
 			},

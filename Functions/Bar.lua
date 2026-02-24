@@ -1130,6 +1130,22 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
 			primaryNode:SetFrameLevel(frameLevels.bar)
+
+			-- Apply casting overlay appearance (whichever mode is active)
+			local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
+			local castingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
+			if primaryNode:GetAppendedOverlayFrame() then
+				primaryNode:SetAppendedOverlayTexture(castingTexture)
+				if castingColor then
+					primaryNode:SetAppendedOverlayColor(castingColor)
+				end
+			end
+			if primaryNode:GetInsetOverlayFrame() then
+				primaryNode:SetInsetOverlayTexture(castingTexture)
+				if castingColor then
+					primaryNode:SetInsetOverlayColor(castingColor)
+				end
+			end
 		end
 	end
 
@@ -1368,6 +1384,75 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 		else
 			healthNode:HideOverlay()
 		end
+	end
+end
+
+---Updates the casting resource overlay on the primary resource bar node.
+---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
+---When casting.resourceFinal > 0, uses an appended overlay (resource gain, extends rightward).
+---When casting.resourceFinal < 0, uses an inset overlay (resource spend, fills leftward).
+---@param primaryNode TRB.Classes.BarNode # The primary resource bar node
+---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
+---@param settings table # The spec cache settings (specCacheSettings)
+function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, settings)
+	if not primaryNode then return end
+
+	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
+	if not castingSettings or not castingSettings.enabled then
+		-- Zero out any existing overlays but don't create them
+		primaryNode:SetAppendedOverlayValue(0)
+		primaryNode:SetInsetOverlayValue(0)
+		return
+	end
+
+	local resourceFactor = TRB.Data.resourceFactor or 1
+	local castingAmount = (snapshotData.casting.resourceFinal or 0) * resourceFactor
+	if castingAmount == 0 then
+		primaryNode:SetAppendedOverlayValue(0)
+		primaryNode:SetInsetOverlayValue(0)
+		return
+	end
+
+	local maxResource = TRB.Data.character.maxResource or 0
+	if maxResource <= 0 then
+		primaryNode:SetAppendedOverlayValue(0)
+		primaryNode:SetInsetOverlayValue(0)
+		return
+	end
+
+	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
+	local castingColor = castingSettings.color or "FFFFFFFF"
+
+	if castingAmount > 0 then
+		-- Resource gain: appended overlay extends rightward from current fill
+		primaryNode:SetInsetOverlayValue(0)
+		if not primaryNode.appendedClipFrame then
+			primaryNode:CreateAppendedOverlay()
+			-- Overlay is off-screen for one frame; skip rendering until reanchored
+			return
+		end
+		if not primaryNode.appendedOverlayReady then
+			return
+		end
+		primaryNode:SetAppendedOverlayMinMax(0, maxResource)
+		primaryNode:SetAppendedOverlayTexture(castingTexture)
+		primaryNode:SetAppendedOverlayColor(castingColor)
+		primaryNode:SetAppendedOverlayValue(castingAmount)
+	else
+		-- Resource spend: inset overlay fills leftward from current fill
+		primaryNode:SetAppendedOverlayValue(0)
+		if not primaryNode.insetClipFrame then
+			primaryNode:CreateInsetOverlay()
+			-- Overlay is off-screen for one frame; skip rendering until reanchored
+			return
+		end
+		if not primaryNode.insetOverlayReady then
+			return
+		end
+		primaryNode:SetInsetOverlayMinMax(0, maxResource)
+		primaryNode:SetInsetOverlayTexture(castingTexture)
+		primaryNode:SetInsetOverlayColor(castingColor)
+		primaryNode:SetInsetOverlayValue(math.abs(castingAmount))
 	end
 end
 

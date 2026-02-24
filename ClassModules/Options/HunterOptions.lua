@@ -148,7 +148,11 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				},
 				bestialWrathEnd = {
 					color = "FFFF0000"
-				}
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -329,6 +333,10 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -494,6 +502,10 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {

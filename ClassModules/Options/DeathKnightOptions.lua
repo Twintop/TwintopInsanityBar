@@ -262,6 +262,10 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF00D1FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -430,6 +434,10 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF00D1FF"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -590,6 +598,10 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FF00D1FF"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {

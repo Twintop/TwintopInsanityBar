@@ -141,6 +141,10 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FFFF0000"
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -412,6 +416,10 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFCC55",
 					enabled = true
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			comboPoints = {
@@ -663,6 +671,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				},
 				base = {
 					color = "FFFF0000"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			bars = {
