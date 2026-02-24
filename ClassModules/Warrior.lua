@@ -457,15 +457,15 @@ local function RefreshLookupData_Fury()
 	
 	-- Whirlwind stacks & time
 	local wwSnapshot = snapshots[spells.improvedWhirlwind.id]
-	local wwStacks = 0
+	local wwCharges = 0
 	local wwTime = 0
 	if wwSnapshot and wwSnapshot.buff then
-		wwStacks = wwSnapshot.buff.applications or 0
+		wwCharges = wwSnapshot.buff.applications or 0
 		wwTime = wwSnapshot.buff.remaining or 0
 	end
 
-	lookup["$wwStacks"] = string.format("%s", wwStacks)
-	lookup["$whirlwindStacks"] = lookup["$wwStacks"]
+	lookup["$wwCharges"] = string.format("%s", wwCharges)
+	lookup["$whirlwindCharges"] = lookup["$wwCharges"]
 	lookup["$wwTime"] = string.format("%.1f", wwTime)
 	lookup["$whirlwindTime"] = lookup["$wwTime"]
 
@@ -478,8 +478,8 @@ local function RefreshLookupData_Fury()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = normalizedRage
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$wwStacks"] = wwStacks
-	lookupLogic["$whirlwindStacks"] = wwStacks
+	lookupLogic["$wwCharges"] = wwCharges
+	lookupLogic["$whirlwindCharges"] = wwCharges
 	lookupLogic["$wwTime"] = wwTime
 	lookupLogic["$whirlwindTime"] = wwTime
 	TRB.Data.lookupLogic = lookupLogic
@@ -789,7 +789,7 @@ end
 ---Updates the Whirlwind stacks bar for Fury
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateWhirlwindStacks(specSettings, specCacheSettings)
+local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	local currentTime = GetTime()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.secondary) then
@@ -1096,7 +1096,7 @@ local function UpdateResourceBar()
 			-- Whirlwind stacks bar (only when Improved Whirlwind is talented, i.e. maxResource2 > 0)
 			if specSettings.displayBar.secondary.visibility ~= "never" and (TRB.Data.character.maxResource2 or 0) > 0 then
 				refreshText = true
-				UpdateWhirlwindStacks(specSettings, specCacheSettings)
+				UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			end
 
 			if specSettings.displayBar.health.visibility ~= "never" then
@@ -1524,16 +1524,16 @@ function TRB.Functions.Class:CheckCharacter()
 
 		local furySpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local furyTalents = TRB.Data.specCache.warrior_fury and TRB.Data.specCache.warrior_fury.talents
-		local whirlwindStacks = 0
+		local whirlwindCharges = 0
 		if furyTalents and furyTalents:IsTalentActive(furySpells.improvedWhirlwind) then
-			whirlwindStacks = 4
+			whirlwindCharges = 4
 		end
 
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
 		if sharedSettings ~= nil then
-			if whirlwindStacks ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = whirlwindStacks
+			if whirlwindCharges ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = whirlwindCharges
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 					TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
 				end

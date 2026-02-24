@@ -374,8 +374,8 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
 
-		{ variable = "$wwStacks", description = L["WarriorFuryBarTextVariable_wwStacks"], printInSettings = true, color = false },
-		{ variable = "$whirlwindStacks", description = "", printInSettings = false, color = false },
+		{ variable = "$wwCharges", description = L["WarriorFuryBarTextVariable_wwCharges"], printInSettings = true, color = false },
+		{ variable = "$whirlwindCharges", description = "", printInSettings = false, color = false },
 
 		{ variable = "$wwTime", description = L["WarriorFuryBarTextVariable_wwTime"], printInSettings = true, color = false },
 		{ variable = "$whirlwindTime", description = "", printInSettings = false, color = false },
@@ -629,7 +629,7 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
             secondary = {
                 maxNodes = 4,
                 isPrimary = false,
-                resourceType = "WhirlwindStacks"
+                resourceType = "WhirlwindCharges"
             },
             health = {
                 maxNodes = 1,
