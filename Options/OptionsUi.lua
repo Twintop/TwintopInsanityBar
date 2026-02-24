@@ -6350,7 +6350,21 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		L["Screen"],
 	}
 	
-	if (classId == 1 and specId == 3) then -- Protection Warrior
+	if (classId == 1 and specId == 2) then -- Fury Warrior
+		relativeToFrame[L["WhirlwindCharge1"]] = "Whirlwind_Charge_1"
+		relativeToFrame[L["WhirlwindCharge2"]] = "Whirlwind_Charge_2"
+		relativeToFrame[L["WhirlwindCharge3"]] = "Whirlwind_Charge_3"
+		relativeToFrame[L["WhirlwindCharge4"]] = "Whirlwind_Charge_4"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["WhirlwindCharge1"],
+			L["WhirlwindCharge2"],
+			L["WhirlwindCharge3"],
+			L["WhirlwindCharge4"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif (classId == 1 and specId == 3) then -- Protection Warrior
 		relativeToFrame[L["IgnorePain"]] = "IgnorePain"
 		relativeToFrame[L["ShieldBlock"]] = "ShieldBlock"
 		relativeToFrameList = {

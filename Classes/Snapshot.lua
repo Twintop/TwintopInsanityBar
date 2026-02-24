@@ -367,6 +367,10 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway, force
 		self.isActive = true
 	end
 
+	if not self.isActive then
+		self:Reset()
+	end
+
 	self.remaining = remainingTime
 	self.lastRefreshGetTime = currentTime
 	return remainingTime

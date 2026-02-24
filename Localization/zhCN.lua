@@ -1827,5 +1827,12 @@ if locale == "zhCN" then
 	L["PriestHolyBarTextNameHWSanctify1"] = "圣言术：灵 1"
 	L["PriestHolyBarTextNameHWSanctify2"] = "圣言术：灵 2"
 	L["PriestHolyBarTextNameHWChastise"] = "圣言术：罚"
-	
+
+	L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"] = "眼棱/深渊凝视"
+	L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"] = "此选项将在能量条上显示一条竖线，标记使用眼棱所需的狂怒值。当习得魔涌天赋（邪痕枭雄）并处于恶魔形态时，该竖线将显示使用深渊凝视所需的狂怒值。"
+
+	L["TabPowerWords"] = "真言术"
+	L["PriestDisciplineBarTextNamePWRadiance1"] = "真言术：耀 1"
+	L["PriestDisciplineBarTextNamePWRadiance2"] = "真言术：耀 2"
+
 end

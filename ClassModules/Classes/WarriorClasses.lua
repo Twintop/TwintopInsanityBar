@@ -198,7 +198,8 @@ end
 
 
 ---@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
----@field public whirlwind TRB.Classes.SpellBase
+---@field public improvedWhirlwind TRB.Classes.SpellBase
+---@field public unhinged TRB.Classes.SpellBase
 ---@field public enrage TRB.Classes.SpellBase
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public bladestorm TRB.Classes.SpellBase
@@ -255,8 +256,25 @@ function TRB.Classes.Warrior.FurySpells:New()
 		baseline = true,
 		hasCooldown = false
 	})
-	self.whirlwind = TRB.Classes.SpellBase:New({
-		id = 85739, --buff ID
+	self.improvedWhirlwind = TRB.Classes.SpellBase:New({
+		id = 85739,
+		talentId = 12950,
+		isTalent = true,
+		duration = 20,
+		maxStacks = 4,
+		builderIds = {
+			[190411] = true,	-- Whirlwind
+		},
+		spenderIds = {
+			[5308] = true,		-- Execute
+			[23881] = true, 	-- Bloodthirst
+			[85288] = true, 	-- Raging Blow
+			[184367] = true,	-- Rampage
+			[202168] = true,	-- Impending Victory
+			[280735] = true, 	-- Execute
+			[335096] = true,	-- Bloodbath
+			[335097] = true,	-- Crushing Blow
+		}
 	})
 	
 	--Fury base abilities
@@ -304,18 +322,26 @@ function TRB.Classes.Warrior.FurySpells:New()
 	})
 	
 	self.bladestorm = TRB.Classes.SpellBase:New({
-		id = 227847,
-		hasTicks = true,
-		tickRate = 1,
-		duration = 4,
-		resourcePerTick = 10,
-		energizeId = 50622,
+		id = 446035,
+		talentId = 227847,
+		isTalent = true,
+		duration = 4, -- hasted
 		isHasted = true
 	})
 
 	-- Mountain Thane	
 	self.crashingThunder = TRB.Classes.SpellBase:New({
 		id = 436707,
+		isTalent = true,
+		builderIds = {
+			[6343] = true, 	-- Thunder Clap
+			[435222] = true	-- Thunder Blast
+		},
+	})
+
+	-- Slayer
+	self.unhinged = TRB.Classes.SpellBase:New({
+		id = 386628,
 		isTalent = true
 	})
 
@@ -338,7 +364,7 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
-		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true }
+		{ variable = "#whirlwind", icon = spells.improvedWhirlwind.icon, description = spells.improvedWhirlwind.name, printInSettings = true }
 	})
 
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -347,6 +373,12 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
+
+		{ variable = "$wwCharges", description = L["WarriorFuryBarTextVariable_wwCharges"], printInSettings = true, color = false },
+		{ variable = "$whirlwindCharges", description = "", printInSettings = false, color = false },
+
+		{ variable = "$wwTime", description = L["WarriorFuryBarTextVariable_wwTime"], printInSettings = true, color = false },
+		{ variable = "$whirlwindTime", description = "", printInSettings = false, color = false },
 	})
 end
 
@@ -546,6 +578,16 @@ function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
     end
 
+    -- Fury has Whirlwind stacks bar (4 nodes) via secondary
+    if specId == 2 then
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Secondary",
+            4,
+            false
+        )
+    end
+
     -- Health bar (1 node) - all specs
     barGroups.health = TRB.Classes.BarGroup:New(
         UIParent,
@@ -578,7 +620,24 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
                 resourceType = "Health"
             }
         }
-    else -- Arms and Fury
+    elseif specId == 2 then -- Fury
+        return {
+            primary = {
+                maxNodes = 1,
+                isPrimary = true
+            },
+            secondary = {
+                maxNodes = 4,
+                isPrimary = false,
+                resourceType = "WhirlwindCharges"
+            },
+            health = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Health"
+            }
+        }
+    else -- Arms
         return {
             primary = {
                 maxNodes = 1,
