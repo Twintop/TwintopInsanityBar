@@ -1975,9 +1975,9 @@ L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will
 -- Absorb Display Mode
 L["HealthBarAbsorbMode"] = "Absorb Display Mode"
 L["HealthBarAbsorbModeTooltip"] = "Controls how the absorb shield is displayed on the Health Bar."
-L["AbsorbModeOverlay"] = "Overlay (from left)"
 L["AbsorbModeAppended"] = "Appended"
-L["AbsorbModeInset"] = "Overlay (inset / from right)"
+L["AbsorbModeOverlay"] = "Overlay (from left)"
+L["AbsorbModeInset"] = "Overlay (from right / inset)"
 
 -- Overlay Textures
 L["OverlayTexturesSectionHeader"] = "Overlay Textures"

@@ -5565,8 +5565,8 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	end
 
 	local function AbsorbModeGenerator(dropdown, rootDescription)
-		rootDescription:CreateRadio(L["AbsorbModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")
 		rootDescription:CreateRadio(L["AbsorbModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["AbsorbModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
 		rootDescription:CreateRadio(L["AbsorbModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
 	end
 

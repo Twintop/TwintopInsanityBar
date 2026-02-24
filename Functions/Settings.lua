@@ -1993,6 +1993,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 
+					--[[
 					-- Migrate absorb overlay settings for the health bar
 					if specSettings.colors and specSettings.colors.healthBar and not specSettings.colors.healthBar.absorb then
 						specSettings.colors.healthBar.absorb = { color = "66FFFFFF" }
@@ -2003,13 +2004,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 					end
 
 					if specSettings.displayBar and specSettings.displayBar.health and type(specSettings.displayBar.health) == "table" and specSettings.displayBar.health.absorbMode == nil then
-						specSettings.displayBar.health.absorbMode = "overlay"
+						specSettings.displayBar.health.absorbMode = "appended"
 					end
 
 					if specSettings.textures and not specSettings.textures.absorbBar then
 						specSettings.textures.absorbBar = specSettings.textures.healthBar or "Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 						specSettings.textures.absorbBarName = specSettings.textures.healthBarName or L["LSMStatusBarSmoother"]
-					end
+					end]]
 				end
 			end
 		end
@@ -4807,8 +4808,8 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		healthBorderName="1 Pixel",
 		healthBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
 		healthBarName=L["LSMStatusBarSmoother"],
-		absorbBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
-		absorbBarName=L["LSMStatusBarSmoother"],
+		absorbBar="Interface\\Buttons\\WHITE8X8",
+		absorbBarName="Solid",
 	}
 	if includeComboPoints then
 		textures.comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background"

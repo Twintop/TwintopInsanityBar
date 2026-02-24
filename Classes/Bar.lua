@@ -370,7 +370,7 @@ end
 -- The appended overlay anchors a child StatusBar's LEFT edge to the primary
 -- fill texture's RIGHT edge, inside a clip container that prevents the
 -- absorb region from extending past the bar's right boundary.
--- This makes the overlay visually "append" to the health fill.
+-- This makes the overlay visually "appended" to the health fill.
 
 ---Re-anchors the appended overlay clip frame and its child StatusBar.
 ---Called from SetDimensions and SetTextures when border or fill texture changes.
