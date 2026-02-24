@@ -13,6 +13,16 @@ local content = [====[
 ---
 
 # 12.0.1.13-release (2026-02-24)
+
+## Demon Hunter
+### Havoc
+
+- Fix the predicted incoming Fury from Eye Beam/Abyssal Gaze with Blind Fury talented.
+
+### Devourer
+
+- Add incoming Fury generation from hardcasts of Consume.
+
 ## Warrior
 ### Fury
 

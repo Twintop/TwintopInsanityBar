@@ -564,6 +564,11 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 	snapshotData.casting.icon = spell.icon
 end
 
+local function UpdateCastingResourceFinal_Enhancement()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+end
+
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
@@ -636,7 +641,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Enhancement()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local spells = spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 			if spellId == spells.ascendance.castId then
 				snapshotData.snapshots[spells.ascendance.id].buff:InitializeCustom(spells.ascendance.duration, currentTime)

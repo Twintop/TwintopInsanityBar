@@ -113,6 +113,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 		id = 198013,
 		primaryResourceType = Enum.PowerType.Fury,
 		duration = 2,
+		isHasted = true,
 		settingKey = "eyeBeam",
 		hasCooldown = true,
 		isTalent = true,
@@ -131,7 +132,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
 	self.blindFury = TRB.Classes.SpellBase:New({
 		id = 203550,
 		tickRate = 0.1,
-		resource = 3,
+		resource = 1.5,
 		isHasted = true,
 		isTalent = true
 	})
@@ -317,6 +318,8 @@ end
 
 
 ---@class TRB.Classes.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
+---@field public consume TRB.Classes.SpellBase
+---@field public predatorsThirst TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase -- Void Metamorphosis but keeping it simple naming to re-use existing code
 ---@field public voidRay TRB.Classes.SpellThreshold
 ---@field public soulFragments TRB.Classes.SpellBase
@@ -332,6 +335,17 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.DemonHunter.DevourerSpells) --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	--Demon Hunter Class Baseline Abilities
+	self.consume = TRB.Classes.SpellBase:New({
+		id = 473662,
+		resource = 8,
+		baseline = true
+	})
+	self.predatorsThirst = TRB.Classes.SpellBase:New({
+		id = 1215617,
+		resource = 1,
+		isTalent = true,
+	})
+	
 	self.metamorphosis = TRB.Classes.SpellBase:New({
 		id = 1217607,
 		castId = 1217605,
@@ -409,11 +423,11 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "#voidRay", icon = spells.voidRay.icon, description = spells.voidRay.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$fury", description = L["DemonHunterHavocBarTextVariable_fury"], printInSettings = true, color = false },
+		{ variable = "$fury", description = L["DemonHunterDevoureBarTextVariable_fury"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$furyMax", description = L["DemonHunterHavocBarTextVariable_furyMax"], printInSettings = true, color = false },
+		{ variable = "$furyMax", description = L["DemonHunterDevoureBarTextVariable_furyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DemonHunterHavocBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["DemonHunterDevoureBarTextVariable_casting"], printInSettings = true, color = false },
 		{ variable = "$soulFragments", description = L["DemonHunterDevourerBarTextVariable_soulFragments"], printInSettings = true, color = false },
 		{ variable = "$collapsingStar", description = "", printInSettings = false, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },

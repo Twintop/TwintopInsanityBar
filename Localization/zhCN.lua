@@ -1855,5 +1855,8 @@ if locale == "zhCN" then
 	L["WhirlwindColorPickerBackground"] = "未填满的旋风斩充能背景色"
 	L["WhirlwindCheckboxUseHighestForAll"] = "所有充能均使用最高层颜色？"
 	L["WhirlwindCheckboxUseHighestForAllTooltip"] = "勾选后，所有旋风斩充能槽都会使用当前最高层充能对应的颜色。例如：若你最多有4层旋风斩充能，当前拥有3层，则所有充能槽都会显示第3层（倒数第二层）的颜色，而非仅倒数第二层充能槽显示。"
+    L["DemonHunterDevourerBarTextVariable_fury"] = "当前狂怒"
+    L["DemonHunterDevourerBarTextVariable_furyMax"] = "狂怒上限"
+    L["DemonHunterDevourerBarTextVariable_casting"] = "读条技能产生的狂怒"
 
 end

@@ -521,6 +521,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Holy()
 		end
+	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Holy()
+		end
 	end
 end
 
