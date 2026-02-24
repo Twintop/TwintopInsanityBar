@@ -12,7 +12,10 @@ local content = [====[
 
 ---
 
-# 12.0.1.13-release (2026-02-24)
+# 12.0.1.14-release (2026-02-25)
+## General
+
+- Restore support for showing the incoming/outgoing Primary resource from hardcasted spells as a separate colored bar section.
 
 ## Demon Hunter
 ### Havoc
@@ -22,6 +25,17 @@ local content = [====[
 ### Devourer
 
 - Add incoming Fury generation from hardcasts of Consume.
+
+---
+
+# 12.0.1.13-release (2026-02-25)
+## General
+
+- [#602](#602) Add support for absorption shields to be shown on the Health Bar or with the bar text variable `$absorb`. The absorb overlay can be configured to be shown appended to the end of the current health bar, as an overlay from the left (start) of the bar, or as an overlay starting from the right (current) as an inlay.
+
+### Localization
+
+- [#644](#644), [#646](#646) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Warrior
 ### Fury

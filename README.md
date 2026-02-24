@@ -150,10 +150,17 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
 - **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
+- **Whirlwind Charges** (Fury Warrior) - 4 charges with cooldown remaining
 
 ### Health Bar
 
-A dedicated health bar is available for all specs, providing an at-a-glance view of your current health with customizable color thresholds.
+A dedicated health bar is available for all specs, providing an at-a-glance view of your current health with customizable color thresholds. An optional absorb shield overlay displays your current absorb amount on the health bar with three display modes:
+
+- **Overlay (from left)** - renders the absorb amount as a semi-transparent overlay on top of the health bar, filling from the left edge
+- **Appended** - extends the absorb shield visually past the end of your current health fill, clipped to the bar's right edge
+- **Overlay (from right / inset)** - fills leftward from the end of your current health, overlapping the health bar from right to left
+
+The absorb overlay has its own configurable texture and color, and the current absorb amount is available as a bar text variable (`$absorb`).
 
 ### Druid Shapeshifting
 
