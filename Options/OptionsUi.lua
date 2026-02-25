@@ -6525,6 +6525,18 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
+	elseif (classId == 3 and specId == 3) then -- Survival Hunter
+		relativeToFrame[L["TipOfTheSpear1"]] = "ComboPoint_1"
+		relativeToFrame[L["TipOfTheSpear2"]] = "ComboPoint_2"
+		relativeToFrame[L["TipOfTheSpear3"]] = "ComboPoint_3"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["TipOfTheSpear1"],
+			L["TipOfTheSpear2"],
+			L["TipOfTheSpear3"],
+			L["HealthBar"],
+			L["Screen"],
+		}
 	elseif (classId == 4 and specId == 1) then -- Assassination Rogue
 		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
 		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"
