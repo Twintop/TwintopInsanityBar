@@ -503,7 +503,7 @@ end
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
 ---@param aura AuraData # Data about the buff
 local function GetCustomProperties(buff, aura)
-	if buff.customPropertyDefinitions ~= nil then
+	if buff.customPropertyDefinitions ~= nil and not issecrettable(aura.points) then
 		for _, prop in ipairs(buff.customPropertyDefinitions) do
 			buff.customProperties[prop.name] = aura.points[prop.index]
 			if buff.customProperties[prop.name] ~= nil then
