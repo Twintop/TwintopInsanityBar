@@ -296,4 +296,8 @@ if locale == "enGB" then
     L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colours will be used instead of the specialization-specific setting."
 
     L["BarColorSpendingOverlayCheckboxTooltip"] = "When checked, spells that spend your resource will use this overlay colour."
+
+    L["MageFrostIciclesColorsHeader"] = "Icicle Colours"
+    L["MageFrostCheckboxSameColorIcicles"] = "Use highest stack colour for all filled Icicle nodes"
+    L["MageFrostCheckboxSameColorIciclesTooltip"] = "When checked, all filled Icicle nodes will use the colour of the highest applicable colour (e.g., if at max Icicles, all nodes use the Final colour)."
 end

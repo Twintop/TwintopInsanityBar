@@ -35,6 +35,13 @@ local content = [====[
 
 - Add incoming Fury generation from hardcasts of Consume.
 
+## Mage
+### Frost
+
+- [#537](#537) Add support for tracking Icicles as a separate bar section, similar to Arcane Charges.
+
+*NOTE:* **This will automatically begin tracking properly once Blizzard releases their data fix to allow the Icicles buff to not be treated as** `secret`**.**
+
 ---
 
 # 12.0.1.13-release (2026-02-25)
