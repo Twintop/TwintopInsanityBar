@@ -19,7 +19,7 @@ local content = [====[
 
 ### Localization
 
-- [#648](#648) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#648](#648), [#651](#651) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Death Knight
 ### Unholy
