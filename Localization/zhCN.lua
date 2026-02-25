@@ -1856,4 +1856,18 @@ if locale == "zhCN" then
 	L["WhirlwindCheckboxUseHighestForAll"] = "所有充能均使用最高层颜色？"
 	L["WhirlwindCheckboxUseHighestForAllTooltip"] = "勾选后，所有旋风斩充能槽都会使用当前最高层充能对应的颜色。例如：若你最多有4层旋风斩充能，当前拥有3层，则所有充能槽都会显示第3层（倒数第二层）的颜色，而非仅倒数第二层充能槽显示。"
 
+	L["BarTextVariable_absorb"] = "你当前的吸收护盾总数值。"
+	L["AbsorbBarTexture"] = "吸收护盾叠加纹理"
+	L["HealthBarAbsorbColor"] = "吸收护盾叠加层颜色"
+	L["HealthBarShowAbsorb"] = "在生命值条显示吸收护盾叠加层"
+	L["HealthBarShowAbsorbTooltip"] = "勾选后，生命值条上会显示半透明的叠加层，直观展示你当前的吸收护盾总数值，上限为最大生命值的100%。"
+	
+	L["HealthBarAbsorbMode"] = "吸收护盾显示模式"
+	L["HealthBarAbsorbModeTooltip"] = "控制吸收护盾在生命值条上的显示方式。"
+	L["AbsorbModeAppended"] = "追加显示"
+	L["AbsorbModeOverlay"] = "叠加显示（从左侧）"
+	L["AbsorbModeInset"] = "叠加显示（从右侧/内嵌）"
+	
+	L["OverlayTexturesSectionHeader"] = "叠加层纹理"
+
 end
