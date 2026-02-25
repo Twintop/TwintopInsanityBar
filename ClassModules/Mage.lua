@@ -232,10 +232,11 @@ local function ConstructResourceBar(settings)
 	end
 
 	-- Frost uses secondary bar (Icicles). maxResource2 must already be populated.
+	-- If maxResource2 == 0, Icicles is not talented; leave it at 0 to hide the bar.
 	if barGroups and barGroups.secondary and TRB.Data.character.specId == 3 then
 		local maxIcicles = TRB.Data.character.maxResource2
-		if maxIcicles == nil or maxIcicles == 0 then
-			maxIcicles = barGroups.secondary.maxNodes or 5
+		if maxIcicles == nil then
+			maxIcicles = 0
 		end
 		TRB.Data.character.maxResource2 = maxIcicles
 	end
@@ -297,42 +298,46 @@ local function ConstructResourceBar(settings)
 				end
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local maxIcicles = TRB.Data.character.maxResource2 or 5
+			local maxIcicles = TRB.Data.character.maxResource2 or 0
 
-			-- Ensure secondary group knows the correct node count
-			barGroups.secondary:SetNodeCount(maxIcicles)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
-			barGroups.secondary:Show()
+			if maxIcicles == 0 then
+				barGroups.secondary:Hide()
+			else
+				-- Ensure secondary group knows the correct node count
+				barGroups.secondary:SetNodeCount(maxIcicles)
+				barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				barGroups.secondary:Show()
 
-			-- Get effective width for secondary bar, accounting for CDM width matching
-			local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
+				-- Get effective width for secondary bar, accounting for CDM width matching
+				local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+				if cdmForced then
+					barGroups.secondary.fullWidth = true
+				end
 
-			-- Apply layout to position all nodes correctly
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
+				-- Apply layout to position all nodes correctly
+				barGroups.secondary:ApplyLayout(
+					effectiveWidth,
+					settings.comboPoints.width,
+					settings.comboPoints.height,
+					settings.comboPoints.border
+				)
 
-			-- Explicitly set textures and colors for each Icicle node
-			local frameLevels = TRB.Data.constants.frameLevels
-			for i = 1, maxIcicles do
-				local node = barGroups.secondary:GetNode(i)
-				if node then
-					node:SetTextures(
-						settings.textures.comboPointsBar,
-						settings.textures.comboPointsBorder,
-						settings.textures.comboPointsBackground
-					)
-					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.comboPoints.border.color)
-					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
-					node:SetFrameLevel(frameLevels.comboPoint)
+				-- Explicitly set textures and colors for each Icicle node
+				local frameLevels = TRB.Data.constants.frameLevels
+				for i = 1, maxIcicles do
+					local node = barGroups.secondary:GetNode(i)
+					if node then
+						node:SetTextures(
+							settings.textures.comboPointsBar,
+							settings.textures.comboPointsBorder,
+							settings.textures.comboPointsBackground
+						)
+						node:SetMinMax(0, 1)
+						node:SetBorderColor(settings.colors.comboPoints.border.color)
+						node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
+						node:SetColor(settings.colors.comboPoints.base.color)
+						node:SetFrameLevel(frameLevels.comboPoint)
+					end
 				end
 			end
 		end
@@ -757,7 +762,8 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			-- Icicles bar (only when Icicles is talented, i.e. maxResource2 > 0)
+			if specSettings.displayBar.secondary.visibility ~= "never" and (TRB.Data.character.maxResource2 or 0) > 0 then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 				local snapshots = snapshotData.snapshots
@@ -1121,17 +1127,17 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.compositeKey = "mage_frost"
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 
-		-- Icicles max is always 5 (fixed game value).
-		local maxIcicles = 5
+		local frostTalents = TRB.Data.specCache.mage_frost and TRB.Data.specCache.mage_frost.talents
+		local maxIcicles = 0
+		if frostTalents and frostTalents:IsTalentActive(spells.icicles) then
+			maxIcicles = 5
+		end
 
 		if sharedSettings ~= nil then
 			if maxIcicles ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxIcicles
-				local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-				if barGroups and barGroups.secondary then
-					barGroups.secondary:Show()
-					TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
+				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
 				end
 			end
 		end
@@ -1194,8 +1200,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 			-- Determine secondary bar visibility independently
 			-- Arcane (specId == 1) uses Arcane Charges bar; Frost (specId == 3) uses Icicles bar
+			-- If maxResource2 == 0 (Icicles not talented), treat as "never"
 			local showSecondary = false
-			if not forceHideAll and (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3) then
+			if not forceHideAll and (TRB.Data.character.specId == 1 or (TRB.Data.character.specId == 3 and (TRB.Data.character.maxResource2 or 0) > 0)) then
 				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
 				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
