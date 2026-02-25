@@ -913,10 +913,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specCache.settings.textures.manaBarBorderName = specCache.settings.textures.borderName
 			specCache.settings.textures.manaBarBackground = specCache.settings.textures.background
 			specCache.settings.textures.manaBarBackgroundName = specCache.settings.textures.backgroundName
-
-			-- Sync casting overlay bar texture to primary bar texture from global settings
-			specCache.settings.textures.castingBar = specCache.settings.textures.resourceBar
-			specCache.settings.textures.castingBarName = specCache.settings.textures.resourceBarName
 		else
 			-- Use spec-specific mana bar textures
 			if spec.textures.manaBarBar then
@@ -1006,6 +1002,17 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if spec.displayBar then
 			if spec.displayBar.enableFormSwitching ~= nil then
 				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
+			end
+		end
+		-- Override with spec-specific absorb display settings
+		-- showAbsorb and absorbMode are always spec-specific, not global
+		if spec.displayBar and spec.displayBar.health then
+			specCache.settings.displayBar.health = specCache.settings.displayBar.health or {}
+			if spec.displayBar.health.showAbsorb ~= nil then
+				specCache.settings.displayBar.health.showAbsorb = spec.displayBar.health.showAbsorb
+			end
+			if spec.displayBar.health.absorbMode ~= nil then
+				specCache.settings.displayBar.health.absorbMode = spec.displayBar.health.absorbMode
 			end
 		end
 	else

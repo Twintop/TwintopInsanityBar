@@ -1131,20 +1131,16 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
 			primaryNode:SetFrameLevel(frameLevels.bar)
 
-			-- Apply casting overlay appearance (whichever mode is active)
-			local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
-			local castingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
-			if primaryNode:GetAppendedOverlayFrame() then
-				primaryNode:SetAppendedOverlayTexture(castingTexture)
+			-- Apply casting overlay appearance via named slot (if it exists)
+			local castingSlot = primaryNode:GetOverlaySlot("casting")
+			if castingSlot then
+				local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
+				local castingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
+				castingSlot.texture = castingTexture
 				if castingColor then
-					primaryNode:SetAppendedOverlayColor(castingColor)
+					castingSlot.color = castingColor
 				end
-			end
-			if primaryNode:GetInsetOverlayFrame() then
-				primaryNode:SetInsetOverlayTexture(castingTexture)
-				if castingColor then
-					primaryNode:SetInsetOverlayColor(castingColor)
-				end
+				castingSlot:RefreshAppearance()
 			end
 		end
 	end
@@ -1269,24 +1265,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevel(frameLevels.comboPoint)
 
-			-- Apply absorb overlay appearance (whichever mode is active)
-			if healthNode:GetOverlayFrame() then
-				healthNode:SetOverlayTexture(settings.textures.absorbBar)
+			-- Apply absorb overlay appearance via named slot (if it exists)
+			local absorbSlot = healthNode:GetOverlaySlot("absorb")
+			if absorbSlot then
+				absorbSlot.texture = settings.textures.absorbBar
 				if settings.colors.healthBar.absorb then
-					healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+					absorbSlot.color = settings.colors.healthBar.absorb.color
 				end
-			end
-			if healthNode:GetAppendedOverlayFrame() then
-				healthNode:SetAppendedOverlayTexture(settings.textures.absorbBar)
-				if settings.colors.healthBar.absorb then
-					healthNode:SetAppendedOverlayColor(settings.colors.healthBar.absorb.color)
-				end
-			end
-			if healthNode:GetInsetOverlayFrame() then
-				healthNode:SetInsetOverlayTexture(settings.textures.absorbBar)
-				if settings.colors.healthBar.absorb then
-					healthNode:SetInsetOverlayColor(settings.colors.healthBar.absorb.color)
-				end
+				absorbSlot:RefreshAppearance()
 			end
 		end
 	end
@@ -1313,11 +1299,11 @@ end
 function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, settings)
 	if not healthNode then return end
 
+	local absorbSlot = healthNode:GetOrCreateOverlaySlot("absorb")
+
 	local showAbsorb = settings.displayBar and settings.displayBar.health and settings.displayBar.health.showAbsorb
 	if not showAbsorb then
-		healthNode:HideOverlay()
-		healthNode:HideAppendedOverlay()
-		healthNode:HideInsetOverlay()
+		absorbSlot:HideAll()
 		return
 	end
 
@@ -1326,63 +1312,69 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local absorbAmount = snapshotData.attributes.absorb or 0
 	local hasAbsorb = issecretvalue(absorbAmount) or absorbAmount > 0
 
+	-- Store for RefreshAppearance
+	absorbSlot.texture = settings.textures.absorbBar
+	if settings.colors.healthBar and settings.colors.healthBar.absorb then
+		absorbSlot.color = settings.colors.healthBar.absorb.color
+	end
+
 	if absorbMode == "appended" then
 		-- Appended mode: absorb bar LEFT anchored to health fill's RIGHT, inside a clip frame
-		healthNode:HideOverlay()
-		healthNode:HideInsetOverlay()
-		healthNode:CreateAppendedOverlay()
+		absorbSlot:HideOverlay()
+		absorbSlot:HideInsetOverlay()
+		absorbSlot:CreateAppendedOverlay()
 
-		healthNode:SetAppendedOverlayMinMax(0, healthMax)
-		healthNode:SetAppendedOverlayValue(absorbAmount)
-		healthNode:SetAppendedOverlayTexture(settings.textures.absorbBar)
+		absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+		absorbSlot:SetAppendedOverlayValue(absorbAmount)
+		absorbSlot:SetAppendedOverlayTexture(settings.textures.absorbBar)
 
 		if settings.colors.healthBar and settings.colors.healthBar.absorb then
-			healthNode:SetAppendedOverlayColor(settings.colors.healthBar.absorb.color)
+			absorbSlot:SetAppendedOverlayColor(settings.colors.healthBar.absorb.color)
 		end
 
 		if hasAbsorb then
-			healthNode:ShowAppendedOverlay()
+			absorbSlot:ShowAppendedOverlay()
 		else
-			healthNode:HideAppendedOverlay()
+			absorbSlot:HideAppendedOverlay()
 		end
 	elseif absorbMode == "inset" then
 		-- Inset mode: reverse-fill absorb bar RIGHT anchored to health fill's RIGHT,
 		-- fills leftward to show absorb "eating into" the visible health.
-		healthNode:HideOverlay()
-		healthNode:HideAppendedOverlay()
-		healthNode:CreateInsetOverlay()
+		absorbSlot:HideOverlay()
+		absorbSlot:HideAppendedOverlay()
+		absorbSlot:CreateInsetOverlay()
 
-		healthNode:SetInsetOverlayMinMax(0, healthMax)
-		healthNode:SetInsetOverlayValue(absorbAmount)
-		healthNode:SetInsetOverlayTexture(settings.textures.absorbBar)
+		absorbSlot:SetInsetOverlayMinMax(0, healthMax)
+		absorbSlot:SetInsetOverlayValue(absorbAmount)
+		absorbSlot:SetInsetOverlayTexture(settings.textures.absorbBar)
 
 		if settings.colors.healthBar and settings.colors.healthBar.absorb then
-			healthNode:SetInsetOverlayColor(settings.colors.healthBar.absorb.color)
+			absorbSlot:SetInsetOverlayColor(settings.colors.healthBar.absorb.color)
 		end
 
 		if hasAbsorb then
-			healthNode:ShowInsetOverlay()
+			absorbSlot:ShowInsetOverlay()
 		else
-			healthNode:HideInsetOverlay()
+			absorbSlot:HideInsetOverlay()
 		end
 	else
 		-- Overlay mode (default): fills from left edge
-		healthNode:HideAppendedOverlay()
-		healthNode:HideInsetOverlay()
-		healthNode:CreateOverlay()
+		absorbSlot:HideAppendedOverlay()
+		absorbSlot:HideInsetOverlay()
+		absorbSlot:CreateOverlay()
 
-		healthNode:SetOverlayMinMax(0, healthMax)
-		healthNode:SetOverlayValue(absorbAmount)
-		healthNode:SetOverlayTexture(settings.textures.absorbBar)
+		absorbSlot:SetOverlayMinMax(0, healthMax)
+		absorbSlot:SetOverlayValue(absorbAmount)
+		absorbSlot:SetOverlayTexture(settings.textures.absorbBar)
 
 		if settings.colors.healthBar and settings.colors.healthBar.absorb then
-			healthNode:SetOverlayColor(settings.colors.healthBar.absorb.color)
+			absorbSlot:SetOverlayColor(settings.colors.healthBar.absorb.color)
 		end
 
 		if hasAbsorb then
-			healthNode:ShowOverlay()
+			absorbSlot:ShowOverlay()
 		else
-			healthNode:HideOverlay()
+			absorbSlot:HideOverlay()
 		end
 	end
 end
@@ -1397,62 +1389,68 @@ end
 function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, settings)
 	if not primaryNode then return end
 
+	local castingSlot = primaryNode:GetOrCreateOverlaySlot("casting")
+
 	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
 	if not castingSettings or not castingSettings.enabled then
 		-- Zero out any existing overlays but don't create them
-		primaryNode:SetAppendedOverlayValue(0)
-		primaryNode:SetInsetOverlayValue(0)
+		castingSlot:SetAppendedOverlayValue(0)
+		castingSlot:SetInsetOverlayValue(0)
 		return
 	end
 
 	local resourceFactor = TRB.Data.resourceFactor or 1
 	local castingAmount = (snapshotData.casting.resourceFinal or 0) * resourceFactor
 	if castingAmount == 0 then
-		primaryNode:SetAppendedOverlayValue(0)
-		primaryNode:SetInsetOverlayValue(0)
+		castingSlot:SetAppendedOverlayValue(0)
+		castingSlot:SetInsetOverlayValue(0)
 		return
 	end
 
 	local maxResource = TRB.Data.character.maxResource or 0
 	if maxResource <= 0 then
-		primaryNode:SetAppendedOverlayValue(0)
-		primaryNode:SetInsetOverlayValue(0)
+		castingSlot:SetAppendedOverlayValue(0)
+		castingSlot:SetInsetOverlayValue(0)
 		return
 	end
 
 	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
 	local castingColor = castingSettings.color or "FFFFFFFF"
 
+	-- Store for RefreshAppearance
+	castingSlot.texture = castingTexture
+	castingSlot.color = castingColor
+
 	if castingAmount > 0 then
 		-- Resource gain: appended overlay extends rightward from current fill
-		primaryNode:SetInsetOverlayValue(0)
-		if not primaryNode.appendedClipFrame then
-			primaryNode:CreateAppendedOverlay()
+		castingSlot:SetInsetOverlayValue(0)
+		if not castingSlot.appendedClipFrame then
+			castingSlot:CreateAppendedOverlay()
 			-- Overlay is off-screen for one frame; skip rendering until reanchored
 			return
 		end
-		if not primaryNode.appendedOverlayReady then
+		if not castingSlot.appendedOverlayReady then
 			return
 		end
-		primaryNode:SetAppendedOverlayMinMax(0, maxResource)
-		primaryNode:SetAppendedOverlayTexture(castingTexture)
-		primaryNode:SetAppendedOverlayColor(castingColor)
-		primaryNode:SetAppendedOverlayValue(castingAmount)
+		castingSlot:SetAppendedOverlayMinMax(0, maxResource)
+		castingSlot:SetAppendedOverlayTexture(castingTexture)
+		castingSlot:SetAppendedOverlayColor(castingColor)
+		castingSlot:SetAppendedOverlayValue(castingAmount)
 	else
 		-- Resource spend: inset overlay fills leftward from current fill
-		primaryNode:SetAppendedOverlayValue(0)
-		if not primaryNode.insetClipFrame then
-			primaryNode:CreateInsetOverlay()
+		castingSlot:SetAppendedOverlayValue(0)
+		if not castingSlot.insetClipFrame then
+			castingSlot:CreateInsetOverlay()
 			-- Overlay is off-screen for one frame; skip rendering until reanchored
 			return
 		end
-		if not primaryNode.insetOverlayReady then
+		if not castingSlot.insetOverlayReady then
 			return
 		end
-		primaryNode:SetInsetOverlayMinMax(0, maxResource)
-		primaryNode:SetInsetOverlayTexture(castingTexture)
-		primaryNode:SetInsetOverlayColor(castingColor)
-		primaryNode:SetInsetOverlayValue(math.abs(castingAmount))
+		castingSlot:SetInsetOverlayMinMax(0, maxResource)
+		castingSlot:SetInsetOverlayTexture(castingTexture)
+		castingSlot:SetInsetOverlayColor(castingColor)
+		castingSlot:SetInsetOverlayValue(math.abs(castingAmount))
 	end
 end
 
