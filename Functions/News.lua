@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.15-release (2026-02-26)
+## General
+
+- [#655](#655) Enhance the Edit Mode implementation to support more sophisticated anchoring, additional Cooldown Manager frames, and any frame by name.
+
+---
+
 # 12.0.1.14-release (2026-02-25)
 ## General
 
