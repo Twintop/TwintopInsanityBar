@@ -1872,5 +1872,19 @@ if locale == "zhCN" then
 	L["AbsorbModeInset"] = "叠加显示（从右侧/内嵌）"
 	
 	L["OverlayTexturesSectionHeader"] = "叠加层纹理"
-
+	L["CastingBarTexture"] = "施法覆盖层材质"
+	L["BarColorCastingOverlay"] = "施法覆盖层"
+	L["BarColorCastingOverlayCheckbox"] = "在资源条上显示施法覆盖层"
+	L["BarColorCastingOverlayCheckboxTooltip"] = "勾选后，资源条上会显示一个覆盖层，用以表示当前施法所带来的资源变化量。"
+	L["DemonHunterDevourerBarTextVariable_fury"] = "当前狂怒值"
+	L["DemonHunterDevourerBarTextVariable_furyMax"] = "最大狂怒值"
+	L["DemonHunterDevourerBarTextVariable_casting"] = "手动施法技能获得的狂怒值（生成型）"
+	
+	L["BarColorSpendingOverlay"] = "消耗覆盖层"
+	L["BarColorSpendingOverlayCheckbox"] = "在资源条上显示消耗覆盖层"
+	L["BarColorSpendingOverlayCheckboxTooltip"] = "勾选后，消耗资源的技能将使用此覆盖层颜色进行标识。"
+	
+	L["DeathKnightUnholyThresholdCheckboxEpidemic"] = "传染"
+	L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"] = "此选项会在资源条上显示一条竖线，标识释放“传染”所需的符文能量值。"
+	
 end
