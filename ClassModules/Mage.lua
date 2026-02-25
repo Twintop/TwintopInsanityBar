@@ -322,22 +322,13 @@ local function ConstructResourceBar(settings)
 					settings.comboPoints.border
 				)
 
-				-- Explicitly set textures and colors for each Icicle node
-				local frameLevels = TRB.Data.constants.frameLevels
-				for i = 1, maxIcicles do
-					local node = barGroups.secondary:GetNode(i)
-					if node then
-						node:SetTextures(
-							settings.textures.comboPointsBar,
-							settings.textures.comboPointsBorder,
-							settings.textures.comboPointsBackground
-						)
-						node:SetMinMax(0, 1)
-						node:SetBorderColor(settings.colors.comboPoints.border.color)
-						node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-						node:SetColor(settings.colors.comboPoints.base.color)
-						node:SetFrameLevel(frameLevels.comboPoint)
-					end
+				-- Use the standard rebuild path so caches, textures, and colors are handled correctly
+				if barGroups.secondary.RebuildNodes then
+					barGroups.secondary:RebuildNodes(maxIcicles, settings)
+				else
+					-- Fallback: preserve visibility if RebuildNodes is unavailable
+					barGroups.secondary:SetNodeCount(maxIcicles)
+					barGroups.secondary:Show()
 				end
 			end
 		end
