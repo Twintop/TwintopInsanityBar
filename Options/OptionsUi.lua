@@ -5383,7 +5383,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
+function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap, includeSpendingOverlay)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -5421,6 +5421,29 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
+
+	if includeSpendingOverlay then
+		yCoord = yCoord - 30
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+		end)
+
+		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.spendingOverlayEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorSpendingOverlayCheckbox"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
+		f:SetChecked(spec.colors.bar.spending.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.spending.enabled = self:GetChecked()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end)
+	end
 
 	return yCoord
 end

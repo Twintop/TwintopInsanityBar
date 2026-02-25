@@ -14,6 +14,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public parentNode TRB.Classes.BarNode # Back-reference to the owning BarNode
 ---@field public texture string? # Last-applied texture path (for RefreshAppearance)
 ---@field public color string? # Last-applied color string (for RefreshAppearance)
+---@field public spendingColor string? # Last-applied spending color string (for inset overlay on spend)
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge

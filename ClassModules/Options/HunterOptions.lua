@@ -337,6 +337,10 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF",
 					enabled = true
 				},
+				spending = {
+					color = "FFAAAAAA",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -1202,7 +1206,7 @@ local function MarksmanshipConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 2, yCoord, {

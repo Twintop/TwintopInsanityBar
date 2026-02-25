@@ -1140,7 +1140,33 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				if castingColor then
 					castingSlot.color = castingColor
 				end
+				-- Resolve spending color for inset overlay
+				local spendingColor = castingColor
+				local spendingSettings = settings.colors.bar.spending
+				if spendingSettings and spendingSettings.color then
+					spendingColor = spendingSettings.color
+				end
+				castingSlot.spendingColor = spendingColor
 				castingSlot:RefreshAppearance()
+			end
+		end
+	end
+
+	-- Apply casting overlay appearance on secondary bar nodes (if they exist)
+	if barGroups.secondary then
+		for i = 1, barGroups.secondary:GetNodeCount() do
+			local secondaryNode = barGroups.secondary:GetNode(i)
+			if secondaryNode then
+				local secCastingSlot = secondaryNode:GetOverlaySlot("casting")
+				if secCastingSlot then
+					local secCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
+					local secCastingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
+					secCastingSlot.texture = secCastingTexture
+					if secCastingColor then
+						secCastingSlot.color = secCastingColor
+					end
+					secCastingSlot:RefreshAppearance()
+				end
 			end
 		end
 	end
@@ -1381,15 +1407,19 @@ end
 
 ---Updates the casting resource overlay on the primary resource bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----When casting.resourceFinal > 0, uses an appended overlay (resource gain, extends rightward).
----When casting.resourceFinal < 0, uses an inset overlay (resource spend, fills leftward).
----@param primaryNode TRB.Classes.BarNode # The primary resource bar node
+---When castingAmount > 0, uses an appended overlay (resource gain, extends rightward).
+---When castingAmount < 0, uses an inset overlay (resource spend, fills leftward).
+---If the spec defines a separate spending color (colors.bar.spending) and it is enabled,
+---the inset overlay uses that color instead of the casting color.
+---@param node TRB.Classes.BarNode # The bar node to apply the overlay on
 ---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
 ---@param settings table # The spec cache settings (specCacheSettings)
-function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, settings)
-	if not primaryNode then return end
+---@param castingAmountOverride number|nil # Optional: explicit casting amount (pre-factored). When nil, reads snapshotData.casting.resourceFinal * resourceFactor.
+---@param maxResourceOverride number|nil # Optional: explicit max resource. When nil, reads TRB.Data.character.maxResource.
+function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, settings, castingAmountOverride, maxResourceOverride)
+	if not node then return end
 
-	local castingSlot = primaryNode:GetOrCreateOverlaySlot("casting")
+	local castingSlot = node:GetOrCreateOverlaySlot("casting")
 
 	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
 	if not castingSettings or not castingSettings.enabled then
@@ -1399,15 +1429,27 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotDat
 		return
 	end
 
-	local resourceFactor = TRB.Data.resourceFactor or 1
-	local castingAmount = (snapshotData.casting.resourceFinal or 0) * resourceFactor
+	local castingAmount
+	if castingAmountOverride ~= nil then
+		castingAmount = castingAmountOverride
+	else
+		local resourceFactor = TRB.Data.resourceFactor or 1
+		castingAmount = (snapshotData.casting.resourceFinal or 0) * resourceFactor
+	end
+
 	if castingAmount == 0 then
 		castingSlot:SetAppendedOverlayValue(0)
 		castingSlot:SetInsetOverlayValue(0)
 		return
 	end
 
-	local maxResource = TRB.Data.character.maxResource or 0
+	local maxResource
+	if maxResourceOverride ~= nil then
+		maxResource = maxResourceOverride
+	else
+		maxResource = TRB.Data.character.maxResource or 0
+	end
+
 	if maxResource <= 0 then
 		castingSlot:SetAppendedOverlayValue(0)
 		castingSlot:SetInsetOverlayValue(0)
@@ -1417,9 +1459,17 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotDat
 	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
 	local castingColor = castingSettings.color or "FFFFFFFF"
 
+	-- Resolve spending color: use spending if explicitly defined + enabled, otherwise fall back to casting
+	local spendingColor = castingColor
+	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	if spendingSettings and spendingSettings.enabled and spendingSettings.color then
+		spendingColor = spendingSettings.color
+	end
+
 	-- Store for RefreshAppearance
 	castingSlot.texture = castingTexture
 	castingSlot.color = castingColor
+	castingSlot.spendingColor = spendingColor
 
 	if castingAmount > 0 then
 		-- Resource gain: appended overlay extends rightward from current fill
@@ -1449,7 +1499,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotDat
 		end
 		castingSlot:SetInsetOverlayMinMax(0, maxResource)
 		castingSlot:SetInsetOverlayTexture(castingTexture)
-		castingSlot:SetInsetOverlayColor(castingColor)
+		castingSlot:SetInsetOverlayColor(spendingColor)
 		castingSlot:SetInsetOverlayValue(math.abs(castingAmount))
 	end
 end

@@ -1990,3 +1990,8 @@ L["BarColorCastingOverlayCheckboxTooltip"] = "When checked, an overlay will be d
 L["DemonHunterDevourerBarTextVariable_fury"] = "Current Fury"
 L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximum Fury"
 L["DemonHunterDevourerBarTextVariable_casting"] = "Builder Fury from Hardcasting Spells"
+
+-- Spending Overlay
+L["BarColorSpendingOverlay"] = "Spending Overlay"
+L["BarColorSpendingOverlayCheckbox"] = "Show spending overlay on Resource Bar"
+L["BarColorSpendingOverlayCheckboxTooltip"] = "When checked, spells that spend your resource will use this overlay color."
