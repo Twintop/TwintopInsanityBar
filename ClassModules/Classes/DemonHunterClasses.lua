@@ -423,11 +423,11 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "#voidRay", icon = spells.voidRay.icon, description = spells.voidRay.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$fury", description = L["DemonHunterDevoureBarTextVariable_fury"], printInSettings = true, color = false },
+		{ variable = "$fury", description = L["DemonHunterDevourerBarTextVariable_fury"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$furyMax", description = L["DemonHunterDevoureBarTextVariable_furyMax"], printInSettings = true, color = false },
+		{ variable = "$furyMax", description = L["DemonHunterDevourerBarTextVariable_furyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DemonHunterDevoureBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["DemonHunterDevourerBarTextVariable_casting"], printInSettings = true, color = false },
 		{ variable = "$soulFragments", description = L["DemonHunterDevourerBarTextVariable_soulFragments"], printInSettings = true, color = false },
 		{ variable = "$collapsingStar", description = "", printInSettings = false, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
