@@ -1995,3 +1995,7 @@ L["DemonHunterDevourerBarTextVariable_casting"] = "Builder Fury from Hardcasting
 L["BarColorSpendingOverlay"] = "Spending Overlay"
 L["BarColorSpendingOverlayCheckbox"] = "Show spending overlay on Resource Bar"
 L["BarColorSpendingOverlayCheckboxTooltip"] = "When checked, spells that spend your resource will use this overlay color."
+
+-- Death Knight missed abilities
+L["DeathKnightUnholyThresholdCheckboxEpidemic"] = "Epidemic"
+L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"] = "This will show the vertical line on the bar denoting how much Runic Power is required to use Epidemic."

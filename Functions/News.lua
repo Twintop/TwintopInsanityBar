@@ -17,6 +17,11 @@ local content = [====[
 
 - Restore support for showing the incoming/outgoing Primary resource from hardcasted spells as a separate colored bar section.
 
+## Death Knight
+### Unholy
+
+- Add a threshold line option for Epidemic.
+
 ## Demon Hunter
 ### Havoc
 

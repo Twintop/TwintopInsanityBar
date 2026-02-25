@@ -546,6 +546,9 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				deathStrike = {
 					enabled = true
 				},
+				epidemic = {
+					enabled = true
+				},
 				raiseAlly = {
 					enabled = false
 				}
@@ -1901,6 +1904,17 @@ local function UnholyConstructThresholdPanel(parent)
 	f:SetChecked(spec.thresholds.thresholdDictionary.deathStrike.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.deathStrike.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.epidemicThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_Threshold_Option_epidemic", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.epidemicThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightUnholyThresholdCheckboxEpidemic"])
+	f.tooltip = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.epidemic.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.epidemic.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
