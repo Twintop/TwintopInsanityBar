@@ -28,6 +28,23 @@ local isInitialized = false
 -- Guard to prevent re-entrancy when temporarily showing CDM to get dimensions
 local isTemporarilyShowingCDM = false
 
+-- Guard to prevent re-entrancy in ReapplyAnchorFrameLayout
+local isReapplyingAnchorLayout = false
+
+-- Map of frameKey -> WoW global frame name for anchor targets
+local FRAME_KEY_TO_GLOBAL = {
+	["cdm-essential"] = "EssentialCooldownViewer",
+	["cdm-buffs"] = "BuffIconCooldownViewer",
+	["cdm-utility"] = "UtilityCooldownViewer",
+	["cdm-bars"] = "BuffBarCooldownViewer",
+}
+
+-- Track which frames have already been hooked (keyed by frame reference) to avoid double-hooking
+local hookedFrames = {}
+
+-- Track last known dimensions per hooked frame for change detection
+local lastKnownDimensions = {}
+
 ---Walks the anchor chain from a bar key up to its tree root.
 ---Returns the root bar key. Used by the Druid per-tree guard in CalculateWrapperLayout.
 ---@param barKey string # The bar key to find the root for
@@ -91,10 +108,11 @@ function TRB.Functions.EditMode:Initialize()
 		self:OnEditModeExit()
 	end)
 
-	-- Try to hook the Cooldown Manager resize and show events
-	-- This may fail if CDM doesn't exist yet; we'll retry in RegisterTreeRoot
-	self:HookCooldownManagerResize()
-	self:HookCooldownManagerShow()
+	-- Try to hook all known anchor frame targets for resize and show events
+	-- This may fail if frames don't exist yet; we'll retry in RegisterTreeRoot
+	for frameKey, _ in pairs(FRAME_KEY_TO_GLOBAL) do
+		self:HookAnchorFrame(frameKey)
+	end
 end
 
 ---Clears all registered frame references
@@ -199,6 +217,10 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
 			effectiveWidth = (rootBarSettings and rootBarSettings.width) or (settings and settings.bar and settings.bar.width) or 100
 		end
 		local rootHeight = (rootBarSettings and rootBarSettings.height) or (rootBarKey == "primary" and settings and settings.bar and settings.bar.height) or 100
+		-- Use effective height if available (accounts for anchor frame height matching)
+		if barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[rootBarKey] then
+			rootHeight = barGroups.rootEffectiveHeights[rootBarKey]
+		end
 		wrapperFrame:SetSize(effectiveWidth, rootHeight)
 
 		-- Root bar centered within the wrapper (legacy behavior)
@@ -457,21 +479,31 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			rootNode = fallbackRoot
 		end
 		if not rootNode then
-			return effectiveWidth, settings.bar.height, 0, 0, 0
+			local fallbackHeight = settings.bar.height
+			if barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[rootBarKey] then
+				fallbackHeight = barGroups.rootEffectiveHeights[rootBarKey]
+			end
+			return effectiveWidth, fallbackHeight, 0, 0, 0
 		end
 	end
 
 	-- Root node dimensions
 	-- Use effectiveWidth for all roots (accounts for CDM width matching).
 	-- The raw settings width is only a fallback when effectiveWidth isn't available.
+	-- Use effectiveHeight for all roots (accounts for anchor frame height matching).
+	local effectiveHeight
+	if barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[rootBarKey] then
+		effectiveHeight = barGroups.rootEffectiveHeights[rootBarKey]
+	end
+
 	local baseWidth, baseHeight
 	if rootBarKey == "primary" then
 		baseWidth = effectiveWidth
-		baseHeight = settings.bar.height or 0
+		baseHeight = effectiveHeight or settings.bar.height or 0
 	else
 		local rootBarSettings = rootNode.barSettings
 		baseWidth = effectiveWidth
-		baseHeight = (rootBarSettings and rootBarSettings.height) or 0
+		baseHeight = effectiveHeight or (rootBarSettings and rootBarSettings.height) or 0
 	end
 
 	-- Check if root bar is visible
@@ -530,14 +562,16 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			end
 		end
 
-		-- CDM width matching override: Edit Mode may have CDM width matching enabled
+		-- Anchor frame width matching override: Edit Mode may have width matching enabled
 		-- for this bar's root, expanding it beyond the matchWidth/calculated width.
 		if node.barKey then
-			local cdmMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, node.barKey)
-			if cdmMatched then
-				local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
-				if cdmWidth and cdmWidth > w then
-					w = cdmWidth
+			local anchorWidthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, node.barKey)
+			if anchorWidthMatched then
+				local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, node.barKey)
+				local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, node.barKey)
+				local anchorWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
+				if anchorWidth and anchorWidth > w then
+					w = anchorWidth
 				end
 			end
 		end
@@ -838,9 +872,20 @@ function TRB.Functions.EditMode:RegisterTreeRoot(rootBarKey, containerFrame)
 	-- Add per-root Edit Mode settings
 	self:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
 
-	-- Try to hook the Cooldown Manager resize and show events (retry in case they weren't available during Initialize)
-	self:HookCooldownManagerResize()
-	self:HookCooldownManagerShow()
+	-- Hook anchor frames for all known CDM frame keys, plus any configured custom frame.
+	-- This ensures that if the user switches anchor targets, the hooks are already in place.
+	for frameKey, _ in pairs(FRAME_KEY_TO_GLOBAL) do
+		self:HookAnchorFrame(frameKey)
+	end
+
+	-- Also hook any custom frame that's already configured for this root
+	local layoutName = LibEditMode and LibEditMode:GetActiveLayoutName()
+	if layoutName then
+		local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+		if barData and barData.anchor and barData.anchor.frameKey == "other" and barData.anchor.customFrameName then
+			self:HookAnchorFrame("other", barData.anchor.customFrameName)
+		end
+	end
 
 	-- If we're registering while Edit Mode is active (e.g., after a spec switch),
 	-- we need to show the selection frame and make the bar visible
@@ -868,7 +913,7 @@ function TRB.Functions.EditMode:GetWrapperDisplayName(rootBarKey)
 	return string.format(L["WrapperDisplayNameFormat"], L["TRBAddonName"], barDisplayName)
 end
 
----Adds Edit Mode frame settings (checkbox, dropdown, slider) for a specific tree root wrapper.
+---Adds Edit Mode frame settings (checkbox, dropdowns, sliders) for a specific tree root wrapper.
 ---@param wrapperFrame Frame
 ---@param rootBarKey string
 function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
@@ -877,9 +922,9 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 		return not self:IsLayoutEnabled(layoutName, rootBarKey)
 	end
 
-	-- Helper: returns true when the anchor mode is "none" (free position / screen)
+	-- Helper: returns true when the anchor frame key is "none" (free position)
 	local function isAnchorNone(layoutName)
-		return self:GetAnchorModeRaw(layoutName, rootBarKey) == "none"
+		return self:GetAnchorFrameKeyRaw(layoutName, rootBarKey) == "none"
 	end
 
 	-- Helper: returns true when the layout is disabled OR anchor is free position
@@ -887,7 +932,27 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 		return isLayoutDisabled(layoutName) or isAnchorNone(layoutName)
 	end
 
+	-- Helper: reapply layout after any anchor settings change
+	local function reapplyLayout()
+		if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(
+				TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
+				TRB.Frames.barGroups
+			)
+		end
+	end
+
+	-- Build the 9-point anchor values list for dropdowns
+	local anchorPointValues = {}
+	for _, point in ipairs(TRB.Data.constants.anchorPoints) do
+		table.insert(anchorPointValues, {
+			text = L["AnchorPoint" .. point],
+			value = point,
+		})
+	end
+
 	LibEditMode:AddFrameSettings(wrapperFrame, {
+		-- 1. Enable checkbox
 		{
 			kind = LibEditMode.SettingType.Checkbox,
 			name = L["EditModeEnableForLayout"],
@@ -905,7 +970,6 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 					self:EnsureLayoutSettings(layoutName, rootBarKey)
 					local layoutData = self:GetLayoutBarSettings(layoutName, rootBarKey)
 					if layoutData and not layoutData.position then
-						-- No position saved yet - capture current WRAPPER position
 						local thisWrapper = editModeWrapperFrames[rootBarKey]
 						if thisWrapper then
 							local point, x, y = self:NormalizePosition(thisWrapper)
@@ -916,7 +980,6 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 									y = y
 								}
 							else
-								-- Fallback to legacy settings if normalization fails
 								local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 								if specSettings and specSettings.settings and specSettings.settings.bar then
 									layoutData.position = {
@@ -930,72 +993,159 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 					end
 				end
 
-				-- Reapply position when toggling
-				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
-						TRB.Frames.barGroups
-					)
-				end
+				reapplyLayout()
 			end,
 		},
+		-- 2. Divider
 		{
 			kind = LibEditMode.SettingType.Divider,
 		},
+		-- 3. Anchor To Frame dropdown
 		{
 			kind = LibEditMode.SettingType.Dropdown,
-			name = L["EditModeAnchorTo"],
-			desc = L["EditModeAnchorToTooltip"],
+			name = L["EditModeAnchorToFrame"],
+			desc = L["EditModeAnchorToFrameTooltip"],
 			default = "none",
 			disabled = isLayoutDisabled,
-			values = {
-				{ text = L["EditModeAnchorFreePosition"], value = "none" },
-				{ text = L["EditModeAnchorAboveCDM"], value = "above" },
-				{ text = L["EditModeAnchorBelowCDM"], value = "below" },
-			},
+			values = function()
+				local otherText = L["EditModeAnchorOtherFrame"]
+				local currentKey = self:GetAnchorFrameKeyRaw(nil, rootBarKey)
+				if currentKey == "other" then
+					local customName = self:GetCustomFrameName(nil, rootBarKey)
+					if customName and customName ~= "" then
+						otherText = string.format(L["EditModeAnchorOtherFrameDisplay"], customName)
+					end
+				end
+				return {
+					{ text = L["EditModeAnchorFreePosition"], value = "none" },
+					{ text = L["EditModeAnchorCDMEssential"], value = "cdm-essential" },
+					{ text = L["EditModeAnchorCDMTrackedBuffs"], value = "cdm-buffs" },
+					{ text = L["EditModeAnchorCDMUtilityCooldowns"], value = "cdm-utility" },
+					{ text = L["EditModeAnchorCDMTrackedBars"], value = "cdm-bars" },
+					{ text = otherText, value = "other" },
+				}
+			end,
 			get = function(layoutName)
-				return self:GetAnchorModeRaw(layoutName, rootBarKey)
+				local frameKey = self:GetAnchorFrameKeyRaw(layoutName, rootBarKey)
+				-- For "other", show the custom display text in the dropdown
+				if frameKey == "other" then
+					return "other"
+				end
+				return frameKey
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetAnchorMode(layoutName, newValue, rootBarKey)
+				if newValue == "other" then
+					-- Show StaticPopup for custom frame name entry
+					local currentName = self:GetCustomFrameName(layoutName, rootBarKey) or ""
+					self:ShowCustomFrameDialog(currentName, function(frameName)
+						if frameName and frameName ~= "" then
+							self:SetAnchorFrameKey(layoutName, "other", rootBarKey)
+							self:SetCustomFrameName(layoutName, frameName, rootBarKey)
 
-				-- Reapply position when changing anchor mode
-				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
-						TRB.Frames.barGroups
-					)
+							-- Validate the frame exists and warn if not
+							if not _G[frameName] then
+								print("|cFFFF8800TwintopInsanityBar:|r " .. string.format(L["EditModeCustomFrameWarning"], frameName))
+							end
+
+							-- Hook the custom frame for resize/show
+							self:HookAnchorFrame("other", frameName)
+							reapplyLayout()
+							-- Refresh the settings dialog so the dropdown shows "Other: FrameName"
+							LibEditMode:RefreshFrameSettings(wrapperFrame)
+						else
+							-- Empty name entered, treat as cancel / revert to current
+							-- If they were already on "other", keep it. Otherwise revert to none.
+							local currentKey = self:GetAnchorFrameKeyRaw(layoutName, rootBarKey)
+							if currentKey ~= "other" then
+								self:SetAnchorFrameKey(layoutName, "none", rootBarKey)
+								reapplyLayout()
+								LibEditMode:RefreshFrameSettings(wrapperFrame)
+							end
+						end
+					end)
+				else
+					self:SetAnchorFrameKey(layoutName, newValue, rootBarKey)
+					if newValue ~= "none" then
+						-- Hook the selected frame for resize/show events
+						self:HookAnchorFrame(newValue)
+					end
+					reapplyLayout()
 				end
 			end,
 		},
+		-- 4. Anchor Point (where on the target frame)
+		{
+			kind = LibEditMode.SettingType.Dropdown,
+			name = L["EditModeAnchorPointEM"],
+			desc = L["EditModeAnchorPointEMTooltip"],
+			default = "BOTTOM",
+			disabled = isLayoutDisabledOrAnchorNone,
+			values = anchorPointValues,
+			get = function(layoutName)
+				return self:GetAnchorPoint(layoutName, rootBarKey)
+			end,
+			set = function(layoutName, newValue, fromReset)
+				self:SetAnchorPoint(layoutName, newValue, rootBarKey)
+				reapplyLayout()
+			end,
+		},
+		-- 5. Attach Point (where on this bar)
+		{
+			kind = LibEditMode.SettingType.Dropdown,
+			name = L["EditModeAttachPointEM"],
+			desc = L["EditModeAttachPointEMTooltip"],
+			default = "TOP",
+			disabled = isLayoutDisabledOrAnchorNone,
+			values = anchorPointValues,
+			get = function(layoutName)
+				return self:GetAttachPoint(layoutName, rootBarKey)
+			end,
+			set = function(layoutName, newValue, fromReset)
+				self:SetAttachPoint(layoutName, newValue, rootBarKey)
+				reapplyLayout()
+			end,
+		},
+		-- 6. Horizontal Offset slider
 		{
 			kind = LibEditMode.SettingType.Slider,
-			name = L["EditModeAnchorOffset"],
-			desc = L["EditModeAnchorOffsetTooltip"],
+			name = L["EditModeHorizontalOffset"],
+			desc = L["EditModeHorizontalOffsetTooltip"],
 			default = 0,
 			disabled = isLayoutDisabledOrAnchorNone,
-			minValue = -200,
-			maxValue = 200,
+			minValue = -500,
+			maxValue = 500,
 			valueStep = 1,
 			get = function(layoutName)
-				return self:GetAnchorOffset(layoutName, rootBarKey)
+				return self:GetHorizontalOffset(layoutName, rootBarKey)
 			end,
 			set = function(layoutName, newValue, fromReset)
-				self:SetAnchorOffset(layoutName, newValue, rootBarKey)
-
-				-- Reapply position when changing offset
-				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
-						TRB.Frames.barGroups
-					)
-				end
+				self:SetHorizontalOffset(layoutName, newValue, rootBarKey)
+				reapplyLayout()
 			end,
 		},
+		-- 7. Vertical Offset slider
+		{
+			kind = LibEditMode.SettingType.Slider,
+			name = L["EditModeVerticalOffset"],
+			desc = L["EditModeVerticalOffsetTooltip"],
+			default = 0,
+			disabled = isLayoutDisabledOrAnchorNone,
+			minValue = -500,
+			maxValue = 500,
+			valueStep = 1,
+			get = function(layoutName)
+				return self:GetVerticalOffset(layoutName, rootBarKey)
+			end,
+			set = function(layoutName, newValue, fromReset)
+				self:SetVerticalOffset(layoutName, newValue, rootBarKey)
+				reapplyLayout()
+			end,
+		},
+		-- 8. Match Width checkbox
 		{
 			kind = LibEditMode.SettingType.Checkbox,
-			name = L["EditModeMatchCDMWidth"],
-			desc = L["EditModeMatchCDMWidthTooltip"],
+			name = L["EditModeMatchAnchorWidth"],
+			desc = L["EditModeMatchAnchorWidthTooltip"],
 			default = false,
 			disabled = isLayoutDisabledOrAnchorNone,
 			get = function(layoutName)
@@ -1003,14 +1153,22 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 			end,
 			set = function(layoutName, newValue, fromReset)
 				self:SetWidthMatchingEnabled(layoutName, newValue, rootBarKey)
-
-				-- Reapply layout when toggling width matching
-				if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(
-						TRB.Data.specCache[TRB.Data.character.compositeKey].settings,
-						TRB.Frames.barGroups
-					)
-				end
+				reapplyLayout()
+			end,
+		},
+		-- 9. Match Height checkbox
+		{
+			kind = LibEditMode.SettingType.Checkbox,
+			name = L["EditModeMatchAnchorHeight"],
+			desc = L["EditModeMatchAnchorHeightTooltip"],
+			default = false,
+			disabled = isLayoutDisabledOrAnchorNone,
+			get = function(layoutName)
+				return self:IsHeightMatchingEnabledRaw(layoutName, rootBarKey)
+			end,
+			set = function(layoutName, newValue, fromReset)
+				self:SetHeightMatchingEnabled(layoutName, newValue, rootBarKey)
+				reapplyLayout()
 			end,
 		},
 	})
@@ -1083,17 +1241,20 @@ function TRB.Functions.EditMode:OnPositionChanged(frame, layoutName, point, x, y
 		return
 	end
 
-	-- Check if we're using CDM anchoring for this root - if so, ignore position changes
-	local anchorMode = self:GetAnchorMode(layoutName, rootBarKey)
-	if anchorMode ~= "none" and self:IsCooldownManagerAvailable() then
-		-- CDM anchored - revert to CDM position instead of saving
-		if TRB.Frames.barGroups then
-			local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
-			if specSettings and specSettings.settings then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+	-- Check if we're using anchor frame positioning for this root - if so, ignore position changes
+	local anchorFrameKey = self:GetAnchorFrameKey(layoutName, rootBarKey)
+	if anchorFrameKey ~= "none" then
+		local customFrameName = self:GetCustomFrameName(layoutName, rootBarKey)
+		if self:IsAnchorFrameAvailable(anchorFrameKey, customFrameName) then
+			-- Anchor frame active - revert to anchor position instead of saving
+			if TRB.Frames.barGroups then
+				local specSettings = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
+				if specSettings and specSettings.settings then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+				end
 			end
+			return
 		end
-		return
 	end
 
 	-- LibEditMode has moved the wrapper frame
@@ -1206,7 +1367,7 @@ end
 
 ---Ensures the layout settings structure exists for a given layout and root bar.
 ---Performs backward-compatible migration from the old flat structure to the new
----per-root structure: layouts[name].bars[rootBarKey] = { enabled, position, ... }
+---per-root structure: layouts[name].bars[rootBarKey] = { enabled, position, anchor = { ... } }
 ---@param layoutName string # The layout name
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
 function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
@@ -1230,7 +1391,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 
 	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
 
-	-- Migration: if old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
+	-- Migration Phase 1: if old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
 	if layoutData.enabled ~= nil and not layoutData.bars then
 		layoutData.bars = {}
 		layoutData.bars["primary"] = {
@@ -1253,28 +1414,77 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		layoutData.bars = {}
 	end
 
-	-- Ensure per-root entry exists
+	-- Ensure per-root entry exists with new anchor block
 	if not layoutData.bars[rootBarKey] then
 		layoutData.bars[rootBarKey] = {
 			enabled = false,
 			position = nil,
-			anchorToCooldownManager = "none",
-			anchorOffset = 0,
-			matchCooldownManagerWidth = false,
+			anchor = {
+				frameKey = "none",
+				customFrameName = nil,
+				anchorPoint = "BOTTOM",
+				attachPoint = "TOP",
+				xOffset = 0,
+				yOffset = 0,
+				matchWidth = false,
+				matchHeight = false,
+			},
 		}
 	end
 
-	-- Ensure all fields exist for this root (field-level migration)
+	-- Migration Phase 2: migrate old flat CDM fields into nested anchor block
 	local barData = layoutData.bars[rootBarKey]
-	if barData.anchorToCooldownManager == nil then
-		barData.anchorToCooldownManager = "none"
+	if barData.anchorToCooldownManager ~= nil then
+		local oldMode = barData.anchorToCooldownManager
+		local oldOffset = barData.anchorOffset or 0
+		local oldMatchWidth = barData.matchCooldownManagerWidth or false
+
+		barData.anchor = barData.anchor or {}
+		local anchor = barData.anchor
+
+		if oldMode == "above" then
+			anchor.frameKey = anchor.frameKey or "cdm-essential"
+			anchor.anchorPoint = anchor.anchorPoint or "TOP"
+			anchor.attachPoint = anchor.attachPoint or "BOTTOM"
+			anchor.xOffset = anchor.xOffset or 0
+			anchor.yOffset = anchor.yOffset or oldOffset
+		elseif oldMode == "below" then
+			anchor.frameKey = anchor.frameKey or "cdm-essential"
+			anchor.anchorPoint = anchor.anchorPoint or "BOTTOM"
+			anchor.attachPoint = anchor.attachPoint or "TOP"
+			anchor.xOffset = anchor.xOffset or 0
+			anchor.yOffset = anchor.yOffset or -oldOffset
+		else
+			anchor.frameKey = anchor.frameKey or "none"
+			anchor.anchorPoint = anchor.anchorPoint or "BOTTOM"
+			anchor.attachPoint = anchor.attachPoint or "TOP"
+			anchor.xOffset = anchor.xOffset or 0
+			anchor.yOffset = anchor.yOffset or 0
+		end
+
+		anchor.matchWidth = anchor.matchWidth or oldMatchWidth
+		anchor.matchHeight = anchor.matchHeight or false
+		anchor.customFrameName = anchor.customFrameName or nil
+
+		-- Clean up old flat CDM fields
+		barData.anchorToCooldownManager = nil
+		barData.anchorOffset = nil
+		barData.matchCooldownManagerWidth = nil
 	end
-	if barData.anchorOffset == nil then
-		barData.anchorOffset = 0
+
+	-- Ensure anchor block and all its fields exist (field-level migration for partial data)
+	if not barData.anchor then
+		barData.anchor = {}
 	end
-	if barData.matchCooldownManagerWidth == nil then
-		barData.matchCooldownManagerWidth = false
-	end
+	local anchor = barData.anchor
+	if anchor.frameKey == nil then anchor.frameKey = "none" end
+	if anchor.anchorPoint == nil then anchor.anchorPoint = "BOTTOM" end
+	if anchor.attachPoint == nil then anchor.attachPoint = "TOP" end
+	if anchor.xOffset == nil then anchor.xOffset = 0 end
+	if anchor.yOffset == nil then anchor.yOffset = 0 end
+	if anchor.matchWidth == nil then anchor.matchWidth = false end
+	if anchor.matchHeight == nil then anchor.matchHeight = false end
+	-- customFrameName can legitimately be nil, no default needed
 end
 
 ---Gets the per-root layout settings for a given layout and root bar key.
@@ -1367,12 +1577,8 @@ function TRB.Functions.EditMode:SetGlobalOptIn(enabled)
 end
 
 -- ============================================================================
--- Cooldown Manager Integration
+-- Anchor Frame Integration
 -- ============================================================================
-
--- Track whether we've hooked the CDM's OnSizeChanged and OnShow
-local cdmSizeHooked = false
-local cdmShowHooked = false
 
 ---Gets the Cooldown Manager (Essential Cooldowns) frame if available
 ---@param requireVisible boolean? # If true, only returns frame if visible (default: false)
@@ -1394,10 +1600,122 @@ function TRB.Functions.EditMode:IsCooldownManagerAvailable()
 	return self:GetCooldownManagerFrame() ~= nil
 end
 
----Helper function to reapply bar layout when CDM changes
+---Resolves a frameKey (and optional customFrameName) to a WoW frame reference.
+---For known CDM keys, uses FRAME_KEY_TO_GLOBAL mapping.
+---For "other", looks up the customFrameName in _G.
+---@param frameKey string # "none", "cdm-essential", "cdm-buffs", "cdm-utility", "cdm-bars", or "other"
+---@param customFrameName string? # Only used when frameKey == "other"
+---@return Frame? # The resolved frame, or nil if unavailable
+function TRB.Functions.EditMode:GetAnchorFrame(frameKey, customFrameName)
+	if frameKey == "none" then
+		return nil
+	end
+
+	if frameKey == "other" then
+		if customFrameName and customFrameName ~= "" then
+			return _G[customFrameName]
+		end
+		return nil
+	end
+
+	local globalName = FRAME_KEY_TO_GLOBAL[frameKey]
+	if globalName then
+		return _G[globalName]
+	end
+
+	return nil
+end
+
+---Gets the anchor frame for the current layout for a specific root
+---Convenience wrapper that reads frameKey/customFrameName from settings
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return Frame? # The resolved anchor frame, or nil
+function TRB.Functions.EditMode:GetAnchorFrameForRoot(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return nil
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if not barData or not barData.anchor then
+		return nil
+	end
+
+	return self:GetAnchorFrame(barData.anchor.frameKey, barData.anchor.customFrameName)
+end
+
+---Gets the anchor target frame's width, temporarily showing it if hidden
+---@param frameKey string # The frame key
+---@param customFrameName string? # Only used when frameKey == "other"
+---@return number? # The width in pixels, or nil if frame not available
+function TRB.Functions.EditMode:GetAnchorFrameWidth(frameKey, customFrameName)
+	local frame = self:GetAnchorFrame(frameKey, customFrameName)
+	if not frame then
+		return nil
+	end
+
+	local wasHidden = not frame:IsShown()
+	if wasHidden then
+		isTemporarilyShowingCDM = true
+		local originalAlpha = frame:GetAlpha()
+		frame:SetAlpha(0)
+		frame:Show()
+		local width = frame:GetWidth()
+		frame:Hide()
+		frame:SetAlpha(originalAlpha)
+		isTemporarilyShowingCDM = false
+		return width
+	else
+		return frame:GetWidth()
+	end
+end
+
+---Gets the anchor target frame's height, temporarily showing it if hidden
+---@param frameKey string # The frame key
+---@param customFrameName string? # Only used when frameKey == "other"
+---@return number? # The height in pixels, or nil if frame not available
+function TRB.Functions.EditMode:GetAnchorFrameHeight(frameKey, customFrameName)
+	local frame = self:GetAnchorFrame(frameKey, customFrameName)
+	if not frame then
+		return nil
+	end
+
+	local wasHidden = not frame:IsShown()
+	if wasHidden then
+		isTemporarilyShowingCDM = true
+		local originalAlpha = frame:GetAlpha()
+		frame:SetAlpha(0)
+		frame:Show()
+		local height = frame:GetHeight()
+		frame:Hide()
+		frame:SetAlpha(originalAlpha)
+		isTemporarilyShowingCDM = false
+		return height
+	else
+		return frame:GetHeight()
+	end
+end
+
+---Checks if the frame identified by a frameKey is available (exists in _G)
+---@param frameKey string # The frame key
+---@param customFrameName string? # Only used when frameKey == "other"
+---@return boolean # True if the frame exists
+function TRB.Functions.EditMode:IsAnchorFrameAvailable(frameKey, customFrameName)
+	return self:GetAnchorFrame(frameKey, customFrameName) ~= nil
+end
+
+---Helper function to reapply bar layout when an anchor frame changes size or visibility
 ---@param layoutName string? # Optional layout name override
 ---@param forceUpdate boolean? # If true, skip the "no change" optimization
-local function ReapplyCooldownManagerLayout(layoutName, forceUpdate)
+local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
+	-- Reentrancy guard: GetAnchorFrameWidth/Height may temporarily Show/Hide the
+	-- anchor frame to read its dimensions, which fires OnSizeChanged hooks that
+	-- would re-enter this function and create an infinite loop.
+	if isReapplyingAnchorLayout then
+		return
+	end
 	if not TRB.Data.specSupported then
 		return
 	end
@@ -1411,126 +1729,122 @@ local function ReapplyCooldownManagerLayout(layoutName, forceUpdate)
 		return
 	end
 
-	-- Check if any root bar uses CDM width matching or anchoring
-	local anyCdmUsage = false
+	-- Check if any root bar uses anchor frame features
+	local anyAnchorUsage = false
 	for _, barData in pairs(layoutData.bars) do
-		if barData.enabled and (barData.matchCooldownManagerWidth or (barData.anchorToCooldownManager and barData.anchorToCooldownManager ~= "none")) then
-			anyCdmUsage = true
+		if barData.enabled and barData.anchor and barData.anchor.frameKey ~= "none" then
+			anyAnchorUsage = true
 			break
 		end
 	end
 
-	if anyCdmUsage then
-		-- Reapply bar layout to update width/position
+	if anyAnchorUsage then
+		-- Reapply bar layout to update width/height/position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
-				-- Skip layout update if width hasn't changed (avoids flickering)
-				if not forceUpdate then
-					local currentEffectiveWidth = TRB.Frames.barGroups.effectiveWidth
-					local cdmWidth = TRB.Functions.EditMode:GetCooldownManagerWidth()
-					if currentEffectiveWidth and cdmWidth and math.abs(currentEffectiveWidth - cdmWidth) < 1 then
-						return
-					end
-				end
-
+				isReapplyingAnchorLayout = true
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:HideResourceBar()
+				isReapplyingAnchorLayout = false
 			end
 		end
 	end
 end
 
----Hooks the Cooldown Manager's OnSizeChanged to update bar layout when CDM width changes
----Safe to call multiple times - will only hook once
-function TRB.Functions.EditMode:HookCooldownManagerResize()
-	if cdmSizeHooked then
+-- Keep backward-compatible local reference
+local ReapplyCooldownManagerLayout = ReapplyAnchorFrameLayout
+
+---Hooks OnSizeChanged and OnShow on an anchor frame to trigger bar layout updates.
+---Safe to call multiple times for the same frame — will only hook once per frame reference.
+---@param frameKey string # The frame key (e.g., "cdm-essential", "other")
+---@param customFrameName string? # Only used when frameKey == "other"
+function TRB.Functions.EditMode:HookAnchorFrame(frameKey, customFrameName)
+	local frame = self:GetAnchorFrame(frameKey, customFrameName)
+	if not frame then
 		return
 	end
 
-	-- Wait for the frame to exist
-	if not EssentialCooldownViewer then
+	-- Avoid double-hooking the same frame reference
+	if hookedFrames[frame] then
 		return
 	end
 
-	-- Use HookScript to post-hook rather than replace (prevents taint)
-	EssentialCooldownViewer:HookScript("OnSizeChanged", function(frame, width, height)
-		ReapplyCooldownManagerLayout()
+	-- Hook OnSizeChanged (guard against temporary Show/Hide for measurement)
+	frame:HookScript("OnSizeChanged", function(f, width, height)
+		if isTemporarilyShowingCDM then
+			return
+		end
+		ReapplyAnchorFrameLayout()
 	end)
 
-	cdmSizeHooked = true
-end
-
----Hooks the Cooldown Manager's OnShow to update bar layout when CDM first becomes visible
----This ensures width matching works when CDM is shown after TRB is already initialized
----Safe to call multiple times - will only hook once
-function TRB.Functions.EditMode:HookCooldownManagerShow()
-	if cdmShowHooked then
-		return
-	end
-
-	-- Wait for the frame to exist
-	if not EssentialCooldownViewer then
-		return
-	end
-
-	-- Use HookScript to post-hook rather than replace (prevents taint)
-	-- Add a small delay to ensure CDM dimensions are finalized after showing
-	-- Use nested timers to ensure the callback actually fires.
-	-- Check the guard to prevent re-entrancy when we temporarily show CDM for dimension queries.
-	EssentialCooldownViewer:HookScript("OnShow", function(frame)
+	-- Hook OnShow with guard and delayed reapply
+	frame:HookScript("OnShow", function(f)
 		if isTemporarilyShowingCDM then
 			return
 		end
 		C_Timer.After(0, function()
 			C_Timer.After(0.1, function()
-				ReapplyCooldownManagerLayout()
+				ReapplyAnchorFrameLayout()
 			end)
 		end)
 	end)
 
-	cdmShowHooked = true
-	
-	-- If CDM is already visible when we hook it (e.g., "Always Show" setting),
-	-- trigger layout update immediately since OnShow won't fire.
-	-- Use nested timers to ensure the callback actually fires.
-	if EssentialCooldownViewer:IsShown() then
+	hookedFrames[frame] = true
+
+	-- If the frame is already visible when we hook it, trigger layout update immediately
+	if frame:IsShown() then
 		C_Timer.After(0, function()
 			C_Timer.After(0.1, function()
-				ReapplyCooldownManagerLayout()
+				ReapplyAnchorFrameLayout()
 			end)
 		end)
 	end
 end
 
----Gets the anchor mode for the current layout for a specific root
----This returns the EFFECTIVE anchor mode (for bar positioning)
----Returns "none" if layout is not enabled
+---Hooks the Cooldown Manager's OnSizeChanged to update bar layout when CDM width changes
+---@deprecated Use HookAnchorFrame("cdm-essential") instead
+---Safe to call multiple times - will only hook once
+function TRB.Functions.EditMode:HookCooldownManagerResize()
+	self:HookAnchorFrame("cdm-essential")
+end
+
+---Hooks the Cooldown Manager's OnShow to update bar layout when CDM first becomes visible
+---@deprecated Use HookAnchorFrame("cdm-essential") instead
+---Safe to call multiple times - will only hook once
+function TRB.Functions.EditMode:HookCooldownManagerShow()
+	self:HookAnchorFrame("cdm-essential")
+end
+
+-- ============================================================================
+-- Anchor Block Getters/Setters
+-- ============================================================================
+
+---Gets the anchor frame key for the current layout for a specific root.
+---This returns the EFFECTIVE value — "none" if layout is not enabled.
 ---@param layoutName string? # The layout name (uses active layout if nil)
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
----@return string # "none", "above", or "below"
-function TRB.Functions.EditMode:GetAnchorMode(layoutName, rootBarKey)
+---@return string # "none", "cdm-essential", "cdm-buffs", "cdm-utility", "cdm-bars", or "other"
+function TRB.Functions.EditMode:GetAnchorFrameKey(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		return "none"
 	end
 
-	-- If Edit Mode layout is not enabled for this root, anchor mode is always "none"
 	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		return "none"
 	end
 
 	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
-	return (barData and barData.anchorToCooldownManager) or "none"
+	return (barData and barData.anchor and barData.anchor.frameKey) or "none"
 end
 
----Gets the RAW saved anchor mode for the current layout (for UI display)
----This returns the actual saved value regardless of whether layout is enabled
+---Gets the RAW saved anchor frame key (for UI display, regardless of enabled state)
 ---@param layoutName string? # The layout name (uses active layout if nil)
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
----@return string # "none", "above", or "below"
-function TRB.Functions.EditMode:GetAnchorModeRaw(layoutName, rootBarKey)
+---@return string # "none", "cdm-essential", "cdm-buffs", "cdm-utility", "cdm-bars", or "other"
+function TRB.Functions.EditMode:GetAnchorFrameKeyRaw(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
@@ -1538,24 +1852,99 @@ function TRB.Functions.EditMode:GetAnchorModeRaw(layoutName, rootBarKey)
 	end
 
 	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
-	return (barData and barData.anchorToCooldownManager) or "none"
+	return (barData and barData.anchor and barData.anchor.frameKey) or "none"
 end
 
----Sets the anchor mode for a layout for a specific root
+---Sets the anchor frame key for a layout for a specific root
 ---@param layoutName string # The layout name
----@param mode string # "none", "above", or "below"
+---@param frameKey string # "none", "cdm-essential", "cdm-buffs", "cdm-utility", "cdm-bars", or "other"
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
-function TRB.Functions.EditMode:SetAnchorMode(layoutName, mode, rootBarKey)
+function TRB.Functions.EditMode:SetAnchorFrameKey(layoutName, frameKey, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	self:EnsureLayoutSettings(layoutName, rootBarKey)
-	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchorToCooldownManager = mode
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.frameKey = frameKey
 end
 
----Gets the anchor offset for the current layout for a specific root
+---Gets the custom frame name for "other" anchor frame key
 ---@param layoutName string? # The layout name (uses active layout if nil)
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
----@return number # The vertical offset in pixels
-function TRB.Functions.EditMode:GetAnchorOffset(layoutName, rootBarKey)
+---@return string? # The custom frame name or nil
+function TRB.Functions.EditMode:GetCustomFrameName(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return nil
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return barData and barData.anchor and barData.anchor.customFrameName
+end
+
+---Sets the custom frame name for "other" anchor frame key
+---@param layoutName string # The layout name
+---@param frameName string? # The WoW global frame name
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetCustomFrameName(layoutName, frameName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.customFrameName = frameName
+end
+
+---Gets the anchor point (where on the TRB bar to anchor FROM)
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return string # WoW anchor point string (e.g., "TOP", "BOTTOMLEFT")
+function TRB.Functions.EditMode:GetAnchorPoint(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return "BOTTOM"
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchor and barData.anchor.anchorPoint) or "BOTTOM"
+end
+
+---Sets the anchor point (where on the TRB bar to anchor FROM)
+---@param layoutName string # The layout name
+---@param point string # WoW anchor point string (e.g., "TOP", "BOTTOMLEFT")
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAnchorPoint(layoutName, point, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.anchorPoint = point
+end
+
+---Gets the attach point (where on the target frame to attach TO)
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return string # WoW anchor point string (e.g., "TOP", "BOTTOMLEFT")
+function TRB.Functions.EditMode:GetAttachPoint(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return "TOP"
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchor and barData.anchor.attachPoint) or "TOP"
+end
+
+---Sets the attach point (where on the target frame to attach TO)
+---@param layoutName string # The layout name
+---@param point string # WoW anchor point string (e.g., "TOP", "BOTTOMLEFT")
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAttachPoint(layoutName, point, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.attachPoint = point
+end
+
+---Gets the horizontal offset for the current layout for a specific root
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return number # The horizontal offset in pixels
+function TRB.Functions.EditMode:GetHorizontalOffset(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
@@ -1563,44 +1952,60 @@ function TRB.Functions.EditMode:GetAnchorOffset(layoutName, rootBarKey)
 	end
 
 	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
-	return (barData and barData.anchorOffset) or 0
+	return (barData and barData.anchor and barData.anchor.xOffset) or 0
 end
 
----Sets the anchor offset for a layout for a specific root
+---Sets the horizontal offset for a layout for a specific root
+---@param layoutName string # The layout name
+---@param offset number # The horizontal offset in pixels
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetHorizontalOffset(layoutName, offset, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.xOffset = offset
+end
+
+---Gets the vertical offset for the current layout for a specific root
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return number # The vertical offset in pixels
+function TRB.Functions.EditMode:GetVerticalOffset(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return 0
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return (barData and barData.anchor and barData.anchor.yOffset) or 0
+end
+
+---Sets the vertical offset for a layout for a specific root
 ---@param layoutName string # The layout name
 ---@param offset number # The vertical offset in pixels
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
-function TRB.Functions.EditMode:SetAnchorOffset(layoutName, offset, rootBarKey)
+function TRB.Functions.EditMode:SetVerticalOffset(layoutName, offset, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	self:EnsureLayoutSettings(layoutName, rootBarKey)
-	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchorOffset = offset
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.yOffset = offset
 end
 
----Gets whether width matching is enabled for the current layout for a specific root
----This returns the EFFECTIVE value (for bar positioning)
----Returns false if layout is not enabled or anchor mode is "none"
+---Gets whether width matching is enabled for the current layout for a specific root.
+---This returns the EFFECTIVE value — false if layout is not enabled or no anchor frame set.
 ---@param layoutName string? # The layout name (uses active layout if nil)
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
----@return boolean # True if width matching is enabled
+---@return boolean # True if width matching is enabled and applicable
 function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
-		-- LibEditMode hasn't initialized yet or no active layout
-		-- During early initialization, we need to check if width matching MIGHT apply
-		-- by looking at all saved layouts. If any enabled layout has width matching
-		-- and we're anchored to CDM, assume we should try to match width.
-		-- This prevents the bar from flashing to settings.bar.width during init.
+		-- Early init fallback: scan all layouts for potential width matching
 		if TRB.Data.settings.core.editMode and TRB.Data.settings.core.editMode.layouts then
 			for _, layoutData in pairs(TRB.Data.settings.core.editMode.layouts) do
-				-- Check per-root settings
 				if layoutData.bars and layoutData.bars[rootBarKey] then
 					local barData = layoutData.bars[rootBarKey]
-					if barData.enabled and
-					   barData.matchCooldownManagerWidth and
-					   barData.anchorToCooldownManager and
-					   barData.anchorToCooldownManager ~= "none" then
-						if self:IsCooldownManagerAvailable() then
+					if barData.enabled and barData.anchor and barData.anchor.matchWidth and barData.anchor.frameKey ~= "none" then
+						if self:IsAnchorFrameAvailable(barData.anchor.frameKey, barData.anchor.customFrameName) then
 							return true
 						end
 						break
@@ -1611,24 +2016,19 @@ function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName, rootBarKey)
 		return false
 	end
 
-	-- Width matching only applies when:
-	-- 1. Edit Mode layout is enabled for this root
-	-- 2. Anchor mode is not "none" (actually anchored to CDM)
 	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
 		return false
 	end
 
-	local anchorMode = self:GetAnchorMode(layoutName, rootBarKey)
-	if anchorMode == "none" then
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if not barData or not barData.anchor or barData.anchor.frameKey == "none" then
 		return false
 	end
 
-	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
-	return barData and barData.matchCooldownManagerWidth == true
+	return barData.anchor.matchWidth == true
 end
 
 ---Gets the RAW saved width matching setting (for UI display)
----This returns the actual saved value regardless of whether layout/anchor is enabled
 ---@param layoutName string? # The layout name (uses active layout if nil)
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
 ---@return boolean # True if width matching is enabled in settings
@@ -1640,7 +2040,7 @@ function TRB.Functions.EditMode:IsWidthMatchingEnabledRaw(layoutName, rootBarKey
 	end
 
 	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
-	return barData and barData.matchCooldownManagerWidth == true
+	return barData and barData.anchor and barData.anchor.matchWidth == true
 end
 
 ---Sets whether width matching is enabled for a layout for a specific root
@@ -1650,7 +2050,153 @@ end
 function TRB.Functions.EditMode:SetWidthMatchingEnabled(layoutName, enabled, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	self:EnsureLayoutSettings(layoutName, rootBarKey)
-	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].matchCooldownManagerWidth = enabled
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.matchWidth = enabled
+end
+
+---Gets whether height matching is enabled for the current layout for a specific root.
+---This returns the EFFECTIVE value — false if layout is not enabled or no anchor frame set.
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return boolean # True if height matching is enabled and applicable
+function TRB.Functions.EditMode:IsHeightMatchingEnabled(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return false
+	end
+
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
+		return false
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if not barData or not barData.anchor or barData.anchor.frameKey == "none" then
+		return false
+	end
+
+	return barData.anchor.matchHeight == true
+end
+
+---Gets the RAW saved height matching setting (for UI display)
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return boolean # True if height matching is enabled in settings
+function TRB.Functions.EditMode:IsHeightMatchingEnabledRaw(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return false
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return barData and barData.anchor and barData.anchor.matchHeight == true
+end
+
+---Sets whether height matching is enabled for a layout for a specific root
+---@param layoutName string # The layout name
+---@param enabled boolean # Whether to enable height matching
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetHeightMatchingEnabled(layoutName, enabled, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.matchHeight = enabled
+end
+
+-- ============================================================================
+-- Backward-Compatible Anchor Mode Helpers
+-- ============================================================================
+
+---Gets the anchor mode for the current layout for a specific root.
+---@deprecated Use GetAnchorFrameKey instead. Returns synthetic mode based on anchor block.
+---Returns "none" if layout is not enabled or no anchor frame set.
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return string # "none", "above", or "below" (synthetic from anchor block)
+function TRB.Functions.EditMode:GetAnchorMode(layoutName, rootBarKey)
+	local frameKey = self:GetAnchorFrameKey(layoutName, rootBarKey)
+	if frameKey == "none" then
+		return "none"
+	end
+
+	local anchorPoint = self:GetAnchorPoint(layoutName, rootBarKey)
+	-- If anchoring from the bar's BOTTOM to target's TOP → "above"
+	-- If anchoring from the bar's TOP to target's BOTTOM → "below"
+	if anchorPoint == "BOTTOM" or anchorPoint == "BOTTOMLEFT" or anchorPoint == "BOTTOMRIGHT" then
+		return "above"
+	elseif anchorPoint == "TOP" or anchorPoint == "TOPLEFT" or anchorPoint == "TOPRIGHT" then
+		return "below"
+	end
+	return "above" -- default fallback
+end
+
+---Gets the RAW saved anchor mode (for UI display)
+---@deprecated Use GetAnchorFrameKeyRaw instead.
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return string # "none", "above", or "below"
+function TRB.Functions.EditMode:GetAnchorModeRaw(layoutName, rootBarKey)
+	local frameKey = self:GetAnchorFrameKeyRaw(layoutName, rootBarKey)
+	if frameKey == "none" then
+		return "none"
+	end
+
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return "none"
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	if barData and barData.anchor then
+		local ap = barData.anchor.anchorPoint or "BOTTOM"
+		if ap == "BOTTOM" or ap == "BOTTOMLEFT" or ap == "BOTTOMRIGHT" then
+			return "above"
+		elseif ap == "TOP" or ap == "TOPLEFT" or ap == "TOPRIGHT" then
+			return "below"
+		end
+	end
+	return "above"
+end
+
+---Sets the anchor mode for a layout for a specific root. Translates to anchor block format.
+---@deprecated Use SetAnchorFrameKey/SetAnchorPoint/SetAttachPoint instead.
+---@param layoutName string # The layout name
+---@param mode string # "none", "above", or "below"
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAnchorMode(layoutName, mode, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+
+	local anchor = TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor
+	if mode == "none" then
+		anchor.frameKey = "none"
+	elseif mode == "above" then
+		anchor.frameKey = anchor.frameKey == "none" and "cdm-essential" or anchor.frameKey
+		anchor.anchorPoint = "BOTTOM"
+		anchor.attachPoint = "TOP"
+	elseif mode == "below" then
+		anchor.frameKey = anchor.frameKey == "none" and "cdm-essential" or anchor.frameKey
+		anchor.anchorPoint = "TOP"
+		anchor.attachPoint = "BOTTOM"
+	end
+end
+
+---Gets the anchor offset for the current layout for a specific root
+---@deprecated Use GetVerticalOffset instead.
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return number # The vertical offset in pixels
+function TRB.Functions.EditMode:GetAnchorOffset(layoutName, rootBarKey)
+	return self:GetVerticalOffset(layoutName, rootBarKey)
+end
+
+---Sets the anchor offset for a layout for a specific root
+---@deprecated Use SetVerticalOffset instead.
+---@param layoutName string # The layout name
+---@param offset number # The vertical offset in pixels
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetAnchorOffset(layoutName, offset, rootBarKey)
+	self:SetVerticalOffset(layoutName, offset, rootBarKey)
 end
 
 ---Calculates the bounding box of all TRB bar groups
@@ -1723,42 +2269,14 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 end
 
 ---Gets the Cooldown Manager's width
----If CDM is hidden (e.g., "show in combat only"), temporarily shows it to get valid dimensions
+---@deprecated Use GetAnchorFrameWidth("cdm-essential") instead
 ---@return number? # The width in pixels, or nil if CDM not available
 function TRB.Functions.EditMode:GetCooldownManagerWidth()
-	local cdm = self:GetCooldownManagerFrame()
-	if cdm then
-		-- If CDM is hidden, we need to temporarily show it to get valid dimensions
-		-- Hidden frames return 0 or stale values for GetWidth()
-		local wasHidden = not cdm:IsShown()
-		if wasHidden then
-			-- Set guard to prevent OnShow hook from triggering layout updates
-			isTemporarilyShowingCDM = true
-			
-			-- Store original alpha and set to 0 so user doesn't see the flash
-			local originalAlpha = cdm:GetAlpha()
-			cdm:SetAlpha(0)
-			cdm:Show()
-			
-			-- Get the width
-			local width = cdm:GetWidth()
-			
-			-- Restore original state
-			cdm:Hide()
-			cdm:SetAlpha(originalAlpha)
-			
-			-- Clear the guard
-			isTemporarilyShowingCDM = false
-			
-			return width
-		else
-			return cdm:GetWidth()
-		end
-	end
-	return nil
+	return self:GetAnchorFrameWidth("cdm-essential")
 end
 
 ---Gets the Cooldown Manager's center X position
+---@deprecated Prefer using anchor points directly
 ---@return number? # The center X coordinate, or nil if CDM not available
 function TRB.Functions.EditMode:GetCooldownManagerCenterX()
 	local cdm = self:GetCooldownManagerFrame()
@@ -1773,6 +2291,7 @@ function TRB.Functions.EditMode:GetCooldownManagerCenterX()
 end
 
 ---Gets the Cooldown Manager's top edge position
+---@deprecated Prefer using anchor points directly
 ---@return number? # The top Y coordinate, or nil if CDM not available
 function TRB.Functions.EditMode:GetCooldownManagerTop()
 	local cdm = self:GetCooldownManagerFrame()
@@ -1783,6 +2302,7 @@ function TRB.Functions.EditMode:GetCooldownManagerTop()
 end
 
 ---Gets the Cooldown Manager's bottom edge position
+---@deprecated Prefer using anchor points directly
 ---@return number? # The bottom Y coordinate, or nil if CDM not available
 function TRB.Functions.EditMode:GetCooldownManagerBottom()
 	local cdm = self:GetCooldownManagerFrame()
@@ -1790,4 +2310,59 @@ function TRB.Functions.EditMode:GetCooldownManagerBottom()
 		return cdm:GetBottom()
 	end
 	return nil
+end
+
+-- ============================================================================
+-- StaticPopup for "Other Frame" custom name entry
+-- ============================================================================
+
+StaticPopupDialogs["TRB_EDIT_MODE_CUSTOM_FRAME"] = {
+	text = L["EditModeCustomFrameDialogText"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = true,
+	editBoxWidth = 260,
+	maxLetters = 128,
+	OnShow = function(self)
+		-- Pre-populate with current custom frame name if any
+		local editBox = _G[self:GetName().."EditBox"]
+		local currentName = self.data and self.data.currentName or ""
+		if editBox then
+			editBox:SetText(currentName)
+			editBox:HighlightText()
+			editBox:SetFocus()
+		end
+	end,
+	OnAccept = function(self)
+		local editBox = _G[self:GetName().."EditBox"]
+		local frameName = editBox and editBox:GetText() or ""
+		if self.data and self.data.callback then
+			self.data.callback(frameName)
+		end
+	end,
+	EditBoxOnEnterPressed = function(editBox)
+		local parent = editBox:GetParent()
+		local frameName = editBox:GetText()
+		if parent.data and parent.data.callback then
+			parent.data.callback(frameName)
+		end
+		parent:Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+---Shows the StaticPopup for entering a custom frame name.
+---@param currentName string? # Current custom frame name to pre-populate
+---@param callback fun(frameName: string) # Called with the entered frame name on Accept
+function TRB.Functions.EditMode:ShowCustomFrameDialog(currentName, callback)
+	StaticPopup_Show("TRB_EDIT_MODE_CUSTOM_FRAME", nil, nil, {
+		currentName = currentName or "",
+		callback = callback,
+	})
 end
