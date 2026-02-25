@@ -1326,13 +1326,15 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
+	local yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "iciclesThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxIciclesThreshold1"], L["MageAudioCheckboxIciclesThreshold1Tooltip"])
 	controls.mage_iciclesThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageIciclesThresholdSliderTitle"], 0, 5, spec.audio["iciclesThreshold1"].configuration.thresholdValue, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.mage_iciclesThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		local newValue = value
-		spec.audio["iciclesThreshold1"].configuration.thresholdValue = newValue
-		self:SetValue(newValue)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["iciclesThreshold1"].configuration.thresholdValue = value
 	end)
 
 	yCoord = yCoord - 60
