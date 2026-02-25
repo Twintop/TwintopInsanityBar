@@ -1053,14 +1053,9 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 							-- Refresh the settings dialog so the dropdown shows "Other: FrameName"
 							LibEditMode:RefreshFrameSettings(wrapperFrame)
 						else
-							-- Empty name entered, treat as cancel / revert to current
-							-- If they were already on "other", keep it. Otherwise revert to none.
-							local currentKey = self:GetAnchorFrameKeyRaw(layoutName, rootBarKey)
-							if currentKey ~= "other" then
-								self:SetAnchorFrameKey(layoutName, "none", rootBarKey)
-								reapplyLayout()
-								LibEditMode:RefreshFrameSettings(wrapperFrame)
-							end
+							-- Empty name entered, treat as cancel — make no changes
+							-- Just refresh the UI so the dropdown reverts to the previous value
+							LibEditMode:RefreshFrameSettings(wrapperFrame)
 						end
 					end)
 				else
