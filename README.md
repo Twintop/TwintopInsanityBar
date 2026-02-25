@@ -131,7 +131,7 @@ Full integration with WoW's native Edit Mode system, allowing you to position an
 Every spec gets a primary resource bar that tracks your main resource (Mana, Rage, Energy, Focus, Runic Power, Fury, Insanity, Astral Power, or Maelstrom). The bar includes:
 
 - **Threshold lines** showing the cost of your abilities, color-coded by availability
-- **Predictive resource display** for some specs, showing expected resource gain from your current cast
+- **Predictive cast resource overlay** for some specs, showing expected resource changes during your current cast as an overlay on the bar or via bar text
 - **Maximum display customization** allows the bar to fill to a lower value than your maximum resource; useful for specs like Assassination Rogue with threshold lines and very high maximum resource pools
 - **Overcapping resource alert** change the bar border and resource text color when almost full on resources for specs with fast auto-regennerating resources (i.e. Rogues) and those with builder/spender playstyles (i.e. Shadow)
 
@@ -144,12 +144,14 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
 - **Essence** (Devastation/Preservation/Augmentation Evoker) - displayed with timer-based regeneration progress
 - **Holy Power** (Holy/Protection/Retribution Paladin)
+- **Icicles** (Frost Mage) - up to 5 stacks
 - **Holy Words** (Holy Priest) - individually toggleable cooldown nodes for Holy Word: Serenity, Sanctify, and Chastise with real-time cooldown progress and CDR tracking
 - **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks
 - **Power Words** (Discipline Priest) - cooldown nodes for Power Word: Radiance with real-time cooldown progress
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
 - **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
+- **Tip of the Spear** (Survival Hunter) - up to 3 stacks with duration timer
 - **Whirlwind Charges** (Fury Warrior) - 4 charges with cooldown remaining
 
 ### Health Bar
