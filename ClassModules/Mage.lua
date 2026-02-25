@@ -102,16 +102,21 @@ local function FillSpecializationCache()
 		classId = TRB.Data.character.classId,
 		specId = 3,
 		maxResource = 100,
+		maxResource2 = 5,
 		effects = {
 		},
 	}
 	
 	---@type TRB.Classes.Mage.FrostSpells
 	specCache.mage_frost.spellsData.spells = TRB.Classes.Mage.FrostSpells:New()
+	local frostSpells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 
 	specCache.mage_frost.snapshotData.attributes.manaRegen = 0
 	specCache.mage_frost.snapshotData.audio = {
+		iciclesThreshold1Played = false,
 	}
+
+	specCache.mage_frost.snapshotData.snapshots[frostSpells.icicles.id] = TRB.Classes.Snapshot:New(frostSpells.icicles, nil, "always")
 
 	specCache.mage_frost.barTextVariables = {
 		icons = {},
@@ -226,6 +231,16 @@ local function ConstructResourceBar(settings)
 		TRB.Data.character.maxResource2 = maxCharges
 	end
 
+	-- Frost uses secondary bar (Icicles). maxResource2 must already be populated.
+	-- If maxResource2 == 0, Icicles is not talented; leave it at 0 to hide the bar.
+	if barGroups and barGroups.secondary and TRB.Data.character.specId == 3 then
+		local maxIcicles = TRB.Data.character.maxResource2
+		if maxIcicles == nil then
+			maxIcicles = 0
+		end
+		TRB.Data.character.maxResource2 = maxIcicles
+	end
+
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -241,7 +256,7 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
-	-- Arcane uses secondary bar (Arcane Charges); Fire/Frost do not.
+	-- Arcane uses secondary bar (Arcane Charges); Frost uses secondary bar (Icicles); Fire does not.
 	if barGroups and barGroups.secondary then
 		if TRB.Data.character.specId == 1 then
 			local maxCharges = TRB.Data.character.maxResource2 or 4
@@ -280,6 +295,40 @@ local function ConstructResourceBar(settings)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					node:SetColor(settings.colors.comboPoints.base.color)
 					node:SetFrameLevel(frameLevels.comboPoint)
+				end
+			end
+		elseif TRB.Data.character.specId == 3 then
+			local maxIcicles = TRB.Data.character.maxResource2 or 0
+
+			if maxIcicles == 0 then
+				barGroups.secondary:Hide()
+			else
+				-- Ensure secondary group knows the correct node count
+				barGroups.secondary:SetNodeCount(maxIcicles)
+				barGroups.secondary:SetLayout(settings.comboPoints.spacing, TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				barGroups.secondary:Show()
+
+				-- Get effective width for secondary bar, accounting for CDM width matching
+				local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+				if cdmForced then
+					barGroups.secondary.fullWidth = true
+				end
+
+				-- Apply layout to position all nodes correctly
+				barGroups.secondary:ApplyLayout(
+					effectiveWidth,
+					settings.comboPoints.width,
+					settings.comboPoints.height,
+					settings.comboPoints.border
+				)
+
+				-- Use the standard rebuild path so caches, textures, and colors are handled correctly
+				if barGroups.secondary.RebuildNodes then
+					barGroups.secondary:RebuildNodes(maxIcicles, settings)
+				else
+					-- Fallback: preserve visibility if RebuildNodes is unavailable
+					barGroups.secondary:SetNodeCount(maxIcicles)
+					barGroups.secondary:Show()
 				end
 			end
 		end
@@ -435,6 +484,10 @@ local function RefreshLookupData_Frost()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
+	--$icicles
+	local _icicles = snapshots[spells.icicles.id].buff.applications or 0
+	local _iciclesMax = spells.icicles.maxStacks
+
 	----------
 
 	local lookup = TRB.Data.lookup or {}
@@ -445,6 +498,10 @@ local function RefreshLookupData_Frost()
 	lookup["$manaPercent"] = manaPercent
 	lookup["$resourcePercent"] = manaPercent
 	lookup["$casting"] = castingMana
+	lookup["$icicles"] = _icicles
+	lookup["$comboPoints"] = _icicles
+	lookup["$iciclesMax"] = _iciclesMax
+	lookup["$comboPointsMax"] = _iciclesMax
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -455,6 +512,10 @@ local function RefreshLookupData_Frost()
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
+	lookupLogic["$icicles"] = _icicles
+	lookupLogic["$comboPoints"] = _icicles
+	lookupLogic["$iciclesMax"] = _iciclesMax
+	lookupLogic["$comboPointsMax"] = _iciclesMax
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -500,7 +561,11 @@ local function UpdateSnapshot_Fire()
 end
 
 local function UpdateSnapshot_Frost()
+	local currentTime = GetTime()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 end
 
 local function UpdateResourceBar()
@@ -688,6 +753,42 @@ local function UpdateResourceBar()
 				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
+			-- Icicles bar (only when Icicles is talented, i.e. maxResource2 > 0)
+			if specSettings.displayBar.secondary.visibility ~= "never" and (TRB.Data.character.maxResource2 or 0) > 0 then
+				refreshText = true
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+				local snapshots = snapshotData.snapshots
+				local currentIcicles = snapshots[spells.icicles.id].buff.applications or 0
+				local maxIcicles = spells.icicles.maxStacks
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				for x = 1, maxIcicles do
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpBR = cpBackgroundRed
+					local cpBG = cpBackgroundGreen
+					local cpBB = cpBackgroundBlue
+					local filled = currentIcicles >= x
+
+					if filled then
+						if (specSettings.colors.comboPoints.sameColor and currentIcicles == (maxIcicles - 1)) or (not specSettings.colors.comboPoints.sameColor and x == (maxIcicles - 1)) then
+							cpColor = specSettings.colors.comboPoints.penultimate.color
+						elseif (specSettings.colors.comboPoints.sameColor and currentIcicles == maxIcicles) or x == maxIcicles then
+							cpColor = specSettings.colors.comboPoints.final.color
+						end
+					end
+
+					if barGroups and barGroups.secondary then
+						local icicleNode = barGroups.secondary:GetNode(x)
+						if icicleNode then
+							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
+							icicleNode:SetBorderColor(cpBorderColor)
+							icicleNode:SetColor(cpColor)
+							icicleNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+						end
+					end
+				end
+			end
+
 			if specSettings.displayBar.health.visibility ~= "never" then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
@@ -699,6 +800,29 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+			end
+		end
+
+		-- Icicles threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local coreSettings = TRB.Data.settings.core
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+				local snapshots = snapshotData.snapshots
+				local currentIcicles = snapshots[spells.icicles.id].buff.applications or 0
+				local threshold1 = specSettings.audio.iciclesThreshold1
+				local threshold1Value = threshold1.configuration.thresholdValue
+
+				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.iciclesThreshold1Played and currentIcicles >= threshold1Value
+
+				if threshold1ShouldFire then
+					snapshotData.audio.iciclesThreshold1Played = true
+					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+				end
+
+				if currentIcicles < threshold1Value then
+					snapshotData.audio.iciclesThreshold1Played = false
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -780,6 +904,7 @@ local function SwitchSpec()
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -798,6 +923,12 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "mage_frost"
 			ConstructResourceBar(specCache.mage_frost.settings)
 		end
+
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				snapshotData.snapshots[spells.icicles.id].buff:Refresh()
+			end)
+		end)
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end
@@ -982,9 +1113,25 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.compositeKey = "mage_fire"
 		TRB.Data.character.maxResource2 = 1
 	elseif TRB.Data.character.specId == 3 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 		TRB.Data.character.specName = "frost"
 		TRB.Data.character.compositeKey = "mage_frost"
-		TRB.Data.character.maxResource2 = 1
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+
+		local frostTalents = TRB.Data.specCache.mage_frost and TRB.Data.specCache.mage_frost.talents
+		local maxIcicles = 0
+		if frostTalents and frostTalents:IsTalentActive(spells.icicles) then
+			maxIcicles = 5
+		end
+
+		if sharedSettings ~= nil then
+			if maxIcicles ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxIcicles
+				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+					TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
+				end
+			end
+		end
 	end
 end
 
@@ -1005,7 +1152,8 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
-		TRB.Data.resource2 = nil
+		TRB.Data.resource2 = "SPELL"
+		TRB.Data.resource2Id = TRB.Data.specCache["mage_frost"].spellsData.spells.icicles.id
 		TRB.Data.resource2Factor = 1
 	else -- This should never happen
 		TRB.Data.specSupported = false
@@ -1042,9 +1190,10 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Determine secondary bar visibility independently
-			-- Only Arcane (specId == 1) uses the secondary (Arcane Charges) bar
+			-- Arcane (specId == 1) uses Arcane Charges bar; Frost (specId == 3) uses Icicles bar
+			-- If maxResource2 == 0 (Icicles not talented), treat as "never"
 			local showSecondary = false
-			if not forceHideAll and TRB.Data.character.specId == 1 then
+			if not forceHideAll and (TRB.Data.character.specId == 1 or (TRB.Data.character.specId == 3 and (TRB.Data.character.maxResource2 or 0) > 0)) then
 				if sharedSettings.displayBar.secondary.visibility == "always" then
 					showSecondary = true
 				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
@@ -1159,7 +1308,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	elseif TRB.Data.character.specId == 2 then --Fire
 		-- No spec-specific variables for Fire currently
 	elseif TRB.Data.character.specId == 3 then --Frost
-		-- No spec-specific variables for Frost currently
+		if var == "$comboPoints" or var == "$icicles" then
+			valid = true
+		elseif var == "$comboPointsMax" or var == "$iciclesMax" then
+			valid = true
+		end
 	end
 
 	--Spec agnostic

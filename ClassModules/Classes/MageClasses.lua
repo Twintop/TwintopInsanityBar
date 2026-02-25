@@ -87,6 +87,7 @@ end
 
 
 ---@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
+---@field icicles TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -94,7 +95,14 @@ function TRB.Classes.Mage.FrostSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Mage.FrostSpells) --[[@as TRB.Classes.Mage.FrostSpells]]
-   
+
+    self.icicles = TRB.Classes.SpellBase:New({
+        id = 205473,
+        talentId = 1246832,
+        isTalent = true,
+        maxStacks = 5
+    })
+
     return self
 end
 
@@ -117,6 +125,11 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$icicles", description = L["MageFrostBarTextVariable_icicles"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 	})
 end
 
@@ -127,7 +140,7 @@ end
     
     Arcane: Primary bar (N=1) + Arcane Charges (N=4)
     Fire: Primary bar (N=1) only
-    Frost: Primary bar (N=1) only
+    Frost: Primary bar (N=1) + Icicles (N=5)
 ]]
 
 ---@class TRB.Classes.Mage.BarGroupsFactory
@@ -185,12 +198,20 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
 
     elseif specId == 3 then -- Frost
-        -- Primary mana bar only (1 node)
+        -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
             UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Icicles (5 nodes)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            5,
+            false -- not primary
         )
 
         -- Health bar (1 node)
@@ -243,6 +264,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            secondary = {
+                maxNodes = 5,
+                isPrimary = false,
+                resourceType = "Icicles"
             },
             health = {
                 maxNodes = 1,

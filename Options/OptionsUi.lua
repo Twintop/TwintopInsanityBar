@@ -6683,6 +6683,22 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
+	elseif(classId == 8 and specId == 3) then -- Frost Mage
+		relativeToFrame[L["Icicle1"]] = "ComboPoint_1"
+		relativeToFrame[L["Icicle2"]] = "ComboPoint_2"
+		relativeToFrame[L["Icicle3"]] = "ComboPoint_3"
+		relativeToFrame[L["Icicle4"]] = "ComboPoint_4"
+		relativeToFrame[L["Icicle5"]] = "ComboPoint_5"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Icicle1"],
+			L["Icicle2"],
+			L["Icicle3"],
+			L["Icicle4"],
+			L["Icicle5"],
+			L["HealthBar"],
+			L["Screen"],
+		}
 	elseif (classId == 9) then -- Warlock
 		relativeToFrame[L["SoulShard1"]] = "ComboPoint_1"
 		relativeToFrame[L["SoulShard2"]] = "ComboPoint_2"

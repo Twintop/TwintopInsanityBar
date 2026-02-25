@@ -136,6 +136,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Fire
 			elseif specId == 3 then -- Frost
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 9 then -- Warlock
 			if specId == 1 then -- Affliction
