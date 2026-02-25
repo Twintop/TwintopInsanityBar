@@ -459,6 +459,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		colors = {
 			text = {
 				current = {
@@ -527,7 +528,15 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			comboPoints = {
+				border = { color = "FFAB5124" },
+				background = { color = "66000000" },
+				base = { color = "FFFF8040" },
+				penultimate = { color = "FFFF9900" },
+				final = { color = "FFFF0000" },
+				sameColor = false,
+			},
 		},
 		displayText={
 			default = {
@@ -543,8 +552,17 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			totsThreshold1 = {
+				name = L["HunterSurvivalAudioTotsThreshold1"],
+				enabled = false,
+				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					thresholdValue = 3,
+				},
+			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -1812,6 +1830,69 @@ local function SurvivalConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
 end
 
+local function SurvivalConstructTipOfTheSpearBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.hunter_survival
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], L["ResourceTipOfTheSpear"])
+
+	yCoord = yCoord - 60
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalTipOfTheSpearColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.penultimate
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.comboPoints.final
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sameColorComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxTipOfTheSpearSameColor"])
+	f.tooltip = L["HunterSurvivalCheckboxTipOfTheSpearSameColorTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sameColor)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sameColor = self:GetChecked()
+	end)
+end
+
 local function SurvivalConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -1841,7 +1922,7 @@ local function SurvivalConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, true, L["ResourceTipOfTheSpear"])
 end
 
 local function SurvivalConstructBarVisibilityPanel(parent)
@@ -1855,7 +1936,7 @@ local function SurvivalConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, true, L["ResourceTipOfTheSpear"], true)
 end
 
 local function SurvivalConstructThresholdPanel(parent)
@@ -2049,8 +2130,6 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
 	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
 	controls.buttons.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
@@ -2058,6 +2137,18 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	local yCoord2 = yCoord - 20
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "totsThreshold1", spec, classId, specId, yCoord, L["HunterSurvivalAudioCheckboxTotsThreshold1"], L["HunterSurvivalAudioCheckboxTotsThreshold1Tooltip"])
+
+	controls.totsThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["HunterSurvivalTotsThresholdSliderTitle"], 0, 3, spec.audio["totsThreshold1"].configuration.thresholdValue, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.totsThreshold1Slider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["totsThreshold1"].configuration.thresholdValue = value
+	end)
 end
 
 local function SurvivalConstructBarTextDisplayPanel(parent, cache)
@@ -2111,11 +2202,13 @@ local function SurvivalConstructOptionsPanel(cache)
 
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, SurvivalConstructFocusBarPanel },
+		{ "tipOfTheSpearBar", L["TabTipOfTheSpear"], oUi.tabWidth.small, SurvivalConstructTipOfTheSpearBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SurvivalConstructHealthBarPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SurvivalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SurvivalConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SurvivalConstructThresholdPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SurvivalConstructFontAndTextPanel },
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SurvivalConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SurvivalConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, SurvivalConstructResetDefaultsPanel },
 	}

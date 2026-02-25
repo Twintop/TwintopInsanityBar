@@ -35,6 +35,13 @@ local content = [====[
 
 - Add incoming Fury generation from hardcasts of Consume.
 
+## Hunter
+### Survival
+
+- [#654](#654) Add support for tracking Tip of the Spear as a separate bar section, similar to Arcane Charges.
+
+*NOTE:* **This will automatically begin tracking properly once Blizzard releases their data fix to allow the Tip of the Spear buff to not be treated as** `secret`**.**
+
 ## Mage
 ### Frost
 

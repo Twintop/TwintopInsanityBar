@@ -67,6 +67,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
 			elseif specId == 3 then -- Survival
+				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination

@@ -317,6 +317,7 @@ end
 ---@field public killCommand TRB.Classes.SpellBase
 ---@field public wildfireBomb TRB.Classes.SpellBase
 ---@field public takedown TRB.Classes.SpellBase
+---@field public tipOfTheSpear TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
 ---@field public boomstick TRB.Classes.SpellThreshold
 ---@field public hatchetToss TRB.Classes.SpellThreshold
@@ -375,6 +376,13 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         isTalent = true,
         duration = 8,
     })
+    self.tipOfTheSpear = TRB.Classes.SpellBase:New({
+        id = 260286,
+        talentId = 260285,
+        isTalent = true,
+        maxStacks = 3,
+        duration = 10,
+    })
 
     -- Sentinel
     self.cantMissWontMiss = TRB.Classes.SpellThreshold:New({
@@ -402,6 +410,7 @@ function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
 		{ variable = "#takedown", icon = spells.takedown.icon, description = spells.takedown.name, printInSettings = true },
+		{ variable = "#tipOfTheSpear", icon = spells.tipOfTheSpear.icon, description = spells.tipOfTheSpear.name, printInSettings = true },
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
 	})
@@ -412,6 +421,11 @@ function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false },
 
+		{ variable = "$tipOfTheSpear", description = L["HunterSurvivalBarTextVariable_tipOfTheSpear"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+		{ variable = "$tipOfTheSpearMax", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearMax"], printInSettings = true, color = false },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_totsTime"], printInSettings = true, color = false },
 		{ variable = "$takedownTime", description = L["HunterSurvivalBarTextVariable_takedownTime"], printInSettings = true, color = false },
 	})
 end
@@ -423,9 +437,7 @@ end
     
     Beast Mastery: Primary bar (N=1) only
     Marksmanship: Primary bar (N=1) only
-    Survival: Primary bar (N=1) only
-    
-    Note: Hunters do not have a secondary resource display (no combo points, runes, etc.)
+    Survival: Primary bar (N=1) + Secondary bar (N=3, Tip of the Spear stacks)
 ]]
 
 ---@class TRB.Classes.Hunter.BarGroupsFactory
@@ -439,13 +451,23 @@ TRB.Classes.Hunter.BarGroupsFactory.__index = TRB.Classes.Hunter.BarGroupsFactor
 function TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
-    -- All Hunter specs only have a primary Focus bar (1 node), no secondary resource
+    -- Primary Focus bar (1 node)
     barGroups.primary = TRB.Classes.BarGroup:New(
         UIParent,
         "TwintopResourceBarFrame",
         1,
         true -- isPrimary
     )
+
+    -- Survival has a secondary resource bar (Tip of the Spear stacks, 3 nodes)
+    if specId == 3 then
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            3,
+            false -- not primary
+        )
+    end
 
     -- Health bar (1 node)
     barGroups.health = TRB.Classes.BarGroup:New(
@@ -462,8 +484,7 @@ end
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
 function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
-    -- All Hunter specs have the same configuration: primary bar and health bar
-    return {
+    local config = {
         primary = {
             maxNodes = 1,
             isPrimary = true
@@ -474,6 +495,16 @@ function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
             resourceType = "Health"
         }
     }
+
+    if specId == 3 then -- Survival: Tip of the Spear stacks
+        config.secondary = {
+            maxNodes = 3,
+            isPrimary = false,
+            resourceType = "TipOfTheSpear"
+        }
+    end
+
+    return config
 end
 
 -- Register barTextVariables fillers for cross-class options panel support

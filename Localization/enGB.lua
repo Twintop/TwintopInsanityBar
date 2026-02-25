@@ -300,4 +300,8 @@ if locale == "enGB" then
     L["MageFrostIciclesColorsHeader"] = "Icicle Colours"
     L["MageFrostCheckboxSameColorIcicles"] = "Use highest stack colour for all filled Icicle nodes"
     L["MageFrostCheckboxSameColorIciclesTooltip"] = "When checked, all filled Icicle nodes will use the colour of the highest applicable colour (e.g., if at max Icicles, all nodes use the Final colour)."
+
+    L["HunterSurvivalTipOfTheSpearColorsHeader"] = "Tip of the Spear Colours"
+    L["HunterSurvivalCheckboxTipOfTheSpearSameColor"] = "Use highest stack colour for all filled Tip of the Spear nodes"
+    L["HunterSurvivalCheckboxTipOfTheSpearSameColorTooltip"] = "When checked, all filled Tip of the Spear nodes will use the colour of the highest applicable colour (e.g., if at max stacks, all nodes use the 3 Charges colour)."
 end

@@ -125,7 +125,8 @@ local function FillSpecializationCache()
 		raceId = TRB.Data.character.raceId,
 		classId = TRB.Data.character.classId,
 		specId = 3,
-		maxResource = 100
+		maxResource = 100,
+		maxResource2 = 3
 	}
 	
 	---@type TRB.Classes.Hunter.SurvivalSpells
@@ -135,6 +136,7 @@ local function FillSpecializationCache()
 
 	specCache.hunter_survival.snapshotData.attributes.resourceRegen = 0
 	specCache.hunter_survival.snapshotData.audio = {
+		totsThreshold1Played = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
@@ -144,6 +146,8 @@ local function FillSpecializationCache()
 	specCache.hunter_survival.snapshotData.snapshots[spells.boomstick.id] = TRB.Classes.Snapshot:New(spells.boomstick)
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_survival.snapshotData.snapshots[spells.takedown.id] = TRB.Classes.Snapshot:New(spells.takedown)
+	---@type TRB.Classes.Snapshot
+	specCache.hunter_survival.snapshotData.snapshots[spells.tipOfTheSpear.id] = TRB.Classes.Snapshot:New(spells.tipOfTheSpear)
 	
 
 	specCache.hunter_survival.barTextVariables = {
@@ -189,7 +193,7 @@ local function FillSpellData_Marksmanship()
 end
 
 local function Setup_Survival()
-	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "survival")
+	TRB.Functions.Character:FillSpecializationCacheSettings("hunter", "survival", true)
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_survival" then
@@ -244,6 +248,16 @@ local function ConstructResourceBar(settings)
 		return
 	end
 
+	-- Survival uses secondary bar (Tip of the Spear). maxResource2 must already be populated
+	-- by the snapshot pipeline (EventRegistration -> UpdateResourceValues) before this runs.
+	if barGroups and barGroups.secondary and TRB.Data.character.specId == 3 then
+		local maxStacks = TRB.Data.character.maxResource2
+		if maxStacks == nil or maxStacks == 0 then
+			maxStacks = barGroups.secondary.maxNodes or 3
+		end
+		TRB.Data.character.maxResource2 = maxStacks
+	end
+
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -257,6 +271,16 @@ local function ConstructResourceBar(settings)
 		end
 
 		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
+	end
+
+	-- Survival uses secondary bar (Tip of the Spear); BM/MM do not.
+	if barGroups and barGroups.secondary then
+		if TRB.Data.character.specId == 3 then
+			local maxStacks = TRB.Data.character.maxResource2 or 3
+			barGroups.secondary:RebuildNodes(maxStacks, settings)
+		else
+			barGroups.secondary:Hide()
+		end
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -477,6 +501,14 @@ local function RefreshLookupData_Survival()
 	local _takedownTime = snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime)
 	local takedownTime = TRB.Functions.BarText:TimerPrecision(_takedownTime)
 
+	--$totsTime
+	local _totsTime = snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
+	local totsTime = TRB.Functions.BarText:TimerPrecision(_totsTime)
+
+	--$tipOfTheSpear / $comboPoints
+	local _tipOfTheSpear = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+	local _tipOfTheSpearMax = spells.tipOfTheSpear.maxStacks
+
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -486,6 +518,11 @@ local function RefreshLookupData_Survival()
 	lookup["$focusMax"] = TRB.Data.character.maxResource
 	lookup["$casting"] = castingFocus
 	lookup["$takedownTime"] = takedownTime
+	lookup["$totsTime"] = totsTime
+	lookup["$tipOfTheSpear"] = _tipOfTheSpear
+	lookup["$comboPoints"] = _tipOfTheSpear
+	lookup["$tipOfTheSpearMax"] = _tipOfTheSpearMax
+	lookup["$comboPointsMax"] = _tipOfTheSpearMax
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -495,6 +532,11 @@ local function RefreshLookupData_Survival()
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$takedownTime"] = _takedownTime
+	lookupLogic["$totsTime"] = _totsTime
+	lookupLogic["$tipOfTheSpear"] = _tipOfTheSpear
+	lookupLogic["$comboPoints"] = _tipOfTheSpear
+	lookupLogic["$tipOfTheSpearMax"] = _tipOfTheSpearMax
+	lookupLogic["$comboPointsMax"] = _tipOfTheSpearMax
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -643,6 +685,13 @@ end
 
 local function UpdateSnapshot_Survival()
 	UpdateSnapshot()
+
+	local currentTime = GetTime()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+
+	snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -1143,6 +1192,83 @@ local function UpdateResourceBar()
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
+
+			-- Secondary resource bar: Tip of the Spear stacks
+			local maxResource2 = TRB.Data.character.maxResource2 or 0
+			if specSettings.displayBar.secondary.visibility ~= "never" and maxResource2 > 0 then
+				refreshText = true
+				if barGroups.secondary then
+					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+					local maxStacks = spells.tipOfTheSpear.maxStacks
+					local currentStacks = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+					local cpBorderColor = specSettings.colors.comboPoints.border.color
+
+					-- Standard view: 3 nodes, one per stack
+					for x = 1, maxStacks do
+						local cpColor = specSettings.colors.comboPoints.base.color
+						local isFilled = currentStacks >= x
+
+						local stackNode = barGroups.secondary:GetNode(x)
+						if stackNode then
+							if isFilled then
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
+
+								-- Determine color based on position and sameColor setting
+								if specSettings.colors.comboPoints.sameColor then
+									-- sameColor: all filled nodes share the highest applicable color
+									if currentStacks == maxStacks then
+										cpColor = specSettings.colors.comboPoints.final.color
+									elseif currentStacks == maxStacks - 1 then
+										cpColor = specSettings.colors.comboPoints.penultimate.color
+									else
+										cpColor = specSettings.colors.comboPoints.base.color
+									end
+								else
+									-- Per-node coloring
+									if x == maxStacks then
+										cpColor = specSettings.colors.comboPoints.final.color
+									elseif x == maxStacks - 1 then
+										cpColor = specSettings.colors.comboPoints.penultimate.color
+									else
+										cpColor = specSettings.colors.comboPoints.base.color
+									end
+								end
+							else
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+							end
+
+							stackNode:SetBorderColor(cpBorderColor)
+							stackNode:SetColor(cpColor)
+							stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+						end
+					end
+				end
+			end
+		end
+
+		-- Tip of the Spear threshold audio cues (independent of bar visibility)
+		if TRB.Data.character.inCombat then
+			do
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+				local coreSettings = TRB.Data.settings.core
+				local currentResource2 = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+				local threshold1 = specSettings.audio.totsThreshold1
+				if threshold1 ~= nil then
+					local threshold1Value = threshold1.configuration.thresholdValue
+
+					local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.totsThreshold1Played and currentResource2 >= threshold1Value
+
+					if threshold1ShouldFire then
+						snapshotData.audio.totsThreshold1Played = true
+						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
+					end
+
+					if currentResource2 < threshold1Value then
+						snapshotData.audio.totsThreshold1Played = false
+					end
+				end
+			end
 		end
 
 		-- Update health bar
@@ -1267,9 +1393,9 @@ local function SwitchSpec()
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
 		lookup["#takedown"] = spells.takedown.icon
+		lookup["#tipOfTheSpear"] = spells.tipOfTheSpear.icon
 		lookup["#wingClip"] = spells.wingClip.icon
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
-		lookup["#takedown"] = spells.takedown.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1450,6 +1576,30 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "survival"
 		TRB.Data.character.compositeKey = "hunter_survival"
+
+		-- Tip of the Spear: talent-gated secondary resource
+		local spellsData = TRB.Data.spellsData
+		if spellsData and spellsData.spells and talents then
+			local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local maxComboPoints = 0
+			if talents:IsTalentActive(spells.tipOfTheSpear) then
+				maxComboPoints = spells.tipOfTheSpear.maxStacks
+			end
+			local barGroups = TRB.Frames.barGroups
+			local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+				if barGroups and barGroups.secondary and sharedSettings then
+					if maxComboPoints > 0 then
+						barGroups.secondary:Show()
+						TRB.Functions.Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+						TRB.Functions.Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
+					else
+						barGroups.secondary:Hide()
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -1466,6 +1616,13 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Focus
 		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2 = "SPELL"
+		local spellsData = TRB.Data.spellsData
+		if spellsData and spellsData.spells then
+			local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			TRB.Data.resource2Id = spells.tipOfTheSpear.id
+		end
+		TRB.Data.resource2Factor = 1
 	else
 		TRB.Data.specSupported = false
 	end
@@ -1490,7 +1647,6 @@ function TRB.Functions.Class:HideResourceBar(force)
 			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
 
 			-- Determine primary bar visibility independently
-			-- Hunter has no secondary bar
 			local showPrimary = false
 			if not forceHideAll then
 				if sharedSettings.displayBar.primary.visibility == "always" then
@@ -1499,6 +1655,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 					showPrimary = affectingCombat or inVehicle
 				end
 				-- "never" means showPrimary stays false
+			end
+
+			-- Determine secondary bar visibility independently
+			-- Only Survival (specId == 3) uses the secondary (Tip of the Spear) bar
+			local showSecondary = false
+			if not forceHideAll and TRB.Data.character.specId == 3 and (TRB.Data.character.maxResource2 or 0) > 0 then
+				if sharedSettings.displayBar.secondary.visibility == "always" then
+					showSecondary = true
+				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
+					showSecondary = affectingCombat or inVehicle
+				end
+				-- "never" means showSecondary stays false
 			end
 
 			-- Determine health bar visibility independently
@@ -1521,6 +1689,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
+			-- Apply secondary bar visibility
+			if barGroups and barGroups.secondary then
+				if showSecondary then
+					barGroups.secondary:Show()
+					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
+				else
+					barGroups.secondary:Hide()
+				end
+			end
+
 			-- Apply health bar visibility
 			if barGroups and barGroups.health then
 				if showHealth then
@@ -1532,7 +1710,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 
 			-- Track if the bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showHealth
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -1605,6 +1783,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.takedown.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$totsTime" then
+			if snapshots[spells.tipOfTheSpear.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$tipOfTheSpear" or var == "$comboPoints" then
+			valid = true
+		elseif var == "$tipOfTheSpearMax" or var == "$comboPointsMax" then
+			valid = true
 		end
 	end
 
@@ -1650,6 +1836,19 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	local comboPointIndex = string.match(normalizedRelativeFrame, "^ComboPoint(%d+)$")
+	if comboPointIndex ~= nil then
+		local index = tonumber(comboPointIndex)
+		if index ~= nil and barGroups and barGroups.secondary then
+			local secondaryNode = barGroups.secondary:GetNode(index)
+			if secondaryNode then
+				local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
+				return secondaryNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

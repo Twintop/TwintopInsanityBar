@@ -796,10 +796,10 @@ local function ConstructImportExportPanel()
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 2, L["EvokerPreservation"], L["EvokerPreservationFull"], false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 3, L["EvokerAugmentation"], L["EvokerAugmentationFull"], false)
 	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, nil, L["Hunter"], L["Hunter"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, nil, L["Hunter"], L["Hunter"], true, true)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 1, L["HunterBeastMastery"], L["HunterBeastMasteryFull"], true, false)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 2, L["HunterMarksmanship"], L["HunterMarksmanshipFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 3, L["HunterSurvival"], L["HunterSurvivalFull"], true, false)
+	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 3, L["HunterSurvival"], L["HunterSurvivalFull"], true, true)
 	
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, nil, L["Mage"], L["Mage"], false, true)
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 1, L["MageArcane"], L["MageArcaneFull"], false, true)
