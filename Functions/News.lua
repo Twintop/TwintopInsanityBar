@@ -12,6 +12,31 @@ local content = [====[
 
 ---
 
+# 12.0.1.14-release (2026-02-25)
+## General
+
+- [#650](#650) Restore support for showing the incoming/outgoing Primary resource from hardcasted spells as a separate colored bar section.
+
+### Localization
+
+- [#648](#648) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Death Knight
+### Unholy
+
+- Add a threshold line option for Epidemic.
+
+## Demon Hunter
+### Havoc
+
+- Fix the predicted incoming Fury from Eye Beam/Abyssal Gaze with Blind Fury talented.
+
+### Devourer
+
+- Add incoming Fury generation from hardcasts of Consume.
+
+---
+
 # 12.0.1.13-release (2026-02-25)
 ## General
 

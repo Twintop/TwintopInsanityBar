@@ -149,6 +149,10 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 					color = "FFC4A5E2",
 					enabled = true
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -437,6 +441,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "FF00FFFF",
 					enabled = true
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = {
@@ -685,6 +693,10 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				flashAlpha = 0.70,
 				flashPeriod = 0.5,
 				flashEnabled = true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			threshold = {
 				under = {

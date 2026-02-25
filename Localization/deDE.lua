@@ -1671,4 +1671,8 @@ if locale == "deDE" then
     L["ShamanElementalBarTextVariable_mana"] = "Aktuelles Mana"
     L["ShamanElementalBarTextVariable_manaPercent"] = "Aktueller Mana Prozentsatz"
     L["ShamanElementalBarTextVariable_manaMax"] = "Maximales Mana"
+
+    L["DemonHunterDevourerBarTextVariable_fury"] = "Aktueller Jähzorn"
+    L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximaler Jähzorn"
+    L["DemonHunterDevourerBarTextVariable_casting"] = "Aufbau-Jähzorn von hart gezauberten Zaubern"
 end

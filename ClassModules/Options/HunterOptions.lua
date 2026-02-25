@@ -148,7 +148,11 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				},
 				bestialWrathEnd = {
 					color = "FFFF0000"
-				}
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -329,6 +333,14 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
+				spending = {
+					color = "FFAAAAAA",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -494,6 +506,10 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -1190,7 +1206,7 @@ local function MarksmanshipConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 2, yCoord, {

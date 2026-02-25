@@ -500,12 +500,22 @@ local function RefreshLookupData_Augmentation()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+local function UpdateCastingResourceFinal_Devastation()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+end
+
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Preservation()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	-- Do nothing for now
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+end
+
+local function UpdateCastingResourceFinal_Augmentation()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
@@ -521,7 +531,10 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		local snapshots = snapshotData.snapshots
-		if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START"  then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Devastation()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.dragonrage.id then
 				snapshots[spells.dragonrage.id].buff:InitializeCustom(spells.dragonrage.duration, currentTime)
 				snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] = 0
@@ -548,18 +561,18 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		if event == "UNIT_SPELLCAST_EMPOWER_START" then
 			snapshotData.attributes.extendsEbonMight = true
-			casting:SnapshotSpell()
-		elseif event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Augmentation()
+		elseif event == "UNIT_SPELLCAST_START" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Augmentation()
 			-- Track if we're casting an ability that extends Ebon Might
 			if spellId == spells.eruption.id then
 				snapshotData.attributes.extendsEbonMight = true
-				casting:SnapshotSpell()
 			elseif spellId == spells.emeraldBlossom.id and talents:IsTalentActive(spells.dreamOfSpring.talentId) then
 				snapshotData.attributes.extendsEbonMight = true
-				casting:SnapshotSpell()
 			else
 				snapshotData.attributes.extendsEbonMight = false
-				casting:Reset()
 			end
 		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			snapshotData.attributes.extendsEbonMight = false
@@ -769,6 +782,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -810,7 +824,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -902,6 +916,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText

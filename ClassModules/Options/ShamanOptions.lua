@@ -144,6 +144,10 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				flashAlpha = 0.70,
 				flashPeriod = 0.5,
 				flashEnabled = true,
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 				threshold = {
 				under = {
@@ -264,6 +268,10 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				},
 				ascendanceEnd = {
 					color = "FFFF0000"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			comboPoints = {
@@ -415,6 +423,10 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				},
 				ascendanceEnd = {
 					color = "FFFF0000"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),

@@ -585,6 +585,16 @@ local function RefreshLookupData_Devourer()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+local function CalculateResourceGain_Devourer(resource)
+	local modifier = 1.0
+
+	return resource * modifier
+end
+
+local function UpdateCastingResourceFinal_Devourer()
+	TRB.Data.snapshotData.casting.resourceFinal = CalculateResourceGain_Devourer(TRB.Data.snapshotData.casting.resourceRaw)
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -713,6 +723,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = math.max(resource, 0)
 				casting.resourceFinal = casting.resourceRaw]]
 			end
+		elseif event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.consume.id then
+				casting.startTime = currentTime
+				casting.resourceRaw = spells.consume.resource
+				casting.spellId = spells.consume.id
+				casting.icon = spells.consume.icon
+			end
+			UpdateCastingResourceFinal_Devourer()
 		end
 	end
 end
@@ -1000,6 +1018,7 @@ local function UpdateResourceBar()
 					end
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
@@ -1128,6 +1147,7 @@ local function UpdateResourceBar()
 					end
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
@@ -1286,6 +1306,7 @@ local function UpdateResourceBar()
 					end
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 

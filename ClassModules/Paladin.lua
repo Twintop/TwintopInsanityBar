@@ -521,6 +521,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Holy()
 		end
+	elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Holy()
+		end
 	end
 end
 
@@ -694,6 +699,7 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if specSettings.displayBar.secondary.visibility ~= "never" then
@@ -737,6 +743,7 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if specSettings.displayBar.secondary.visibility ~= "never" then
@@ -780,6 +787,7 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if specSettings.displayBar.secondary.visibility ~= "never" then

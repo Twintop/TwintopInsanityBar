@@ -294,4 +294,6 @@ if locale == "enGB" then
     L["CheckboxBorderStealthTooltip"] = "This will change the bar border colour when you are stealthed."
 
     L["CheckboxUseGlobalTooltip_HealthBarColors"] = "When checked, the global setting for health bar colours will be used instead of the specialization-specific setting."
+
+    L["BarColorSpendingOverlayCheckboxTooltip"] = "When checked, spells that spend your resource will use this overlay colour."
 end

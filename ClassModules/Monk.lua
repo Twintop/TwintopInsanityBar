@@ -606,6 +606,26 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 					snapshotData.snapshots[spells.cracklingJadeLightning.id].cooldown:InitializeCustom(cooldown, currentTime)
 				end
+				
+				snapshotData.casting.spellId = spells.cracklingJadeLightning.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.cracklingJadeLightning.icon
+				UpdateCastingResourceFinal()
+			elseif spellId == spells.soothingMist.id then
+				snapshotData.casting.spellId = spells.soothingMist.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.soothingMist:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.soothingMist.icon
+				UpdateCastingResourceFinal()
+			end
+		elseif event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.vivify.id then
+				snapshotData.casting.spellId = spells.vivify.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.vivify:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.vivify.icon
+				UpdateCastingResourceFinal()
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -633,12 +653,28 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-		if spellId == spells.cracklingJadeLightning.id then
-			snapshotData.casting.spellId = spells.cracklingJadeLightning.id
-			snapshotData.casting.startTime = currentTime
-			snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
-			snapshotData.casting.icon = spells.cracklingJadeLightning.icon
-			UpdateCastingResourceFinal()
+		if event == "UNIT_SPELLCAST_CHANNEL_START" then
+			if spellId == spells.cracklingJadeLightning.id then
+				snapshotData.casting.spellId = spells.cracklingJadeLightning.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.cracklingJadeLightning.icon
+				UpdateCastingResourceFinal()
+			elseif spellId == spells.soothingMist.id then
+				snapshotData.casting.spellId = spells.soothingMist.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.soothingMist:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.soothingMist.icon
+				UpdateCastingResourceFinal()
+			end
+		elseif event == "UNIT_SPELLCAST_START" then
+			if spellId == spells.vivify.id then
+				snapshotData.casting.spellId = spells.vivify.id
+				snapshotData.casting.startTime = currentTime
+				snapshotData.casting.resourceRaw = -spells.vivify:GetPrimaryResourceCost()
+				snapshotData.casting.icon = spells.vivify.icon
+				UpdateCastingResourceFinal()
+			end
 		end
 	end
 end
@@ -936,6 +972,7 @@ local function UpdateResourceBar()
 					end
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
@@ -1055,6 +1092,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
@@ -1191,6 +1229,7 @@ local function UpdateResourceBar()
 					end
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 			

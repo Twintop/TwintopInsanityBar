@@ -234,6 +234,10 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 					color = "FFFCE58E",
 					enabled = true
 				},
+				casting = {
+					color = "FFFFFFFF",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border = { color = "FF246759" },
@@ -357,6 +361,10 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				innervate = { color = "FF00FF00", enabled = true },
 				essenceBurst = {
 					color = "FFFCE58E",
+					enabled = true
+				},
+				casting = {
+					color = "FFFFFFFF",
 					enabled = true
 				},
 			},
@@ -535,6 +543,10 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
+					enabled = true
+				},
+				casting = {
+					color = "FFFFFFFF",
 					enabled = true
 				},
 			},

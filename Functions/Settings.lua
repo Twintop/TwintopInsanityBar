@@ -4791,6 +4791,8 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		healthBarName=L["LSMStatusBarSmoother"],
 		absorbBar="Interface\\Buttons\\WHITE8X8",
 		absorbBarName="Solid",
+		castingBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
+		castingBarName=L["LSMStatusBarSmoother"],
 	}
 	if includeComboPoints then
 		textures.comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background"

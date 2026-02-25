@@ -172,6 +172,7 @@ end
 
 
 ---@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@field epidemic TRB.Classes.SpellThreshold
 ---@field raiseAlly TRB.Classes.SpellThreshold
 TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
@@ -181,6 +182,13 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
     local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
     self = setmetatable(base:New(), TRB.Classes.DeathKnight.UnholySpells) --[[@as TRB.Classes.DeathKnight.UnholySpells]]
     
+    self.epidemic = TRB.Classes.SpellThreshold:New({
+        id = 207317,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "epidemic",
+        baseline = true
+    })
+
     self.raiseAlly = TRB.Classes.SpellThreshold:New({
         id = 61999,
         primaryResourceType = Enum.PowerType.RunicPower,

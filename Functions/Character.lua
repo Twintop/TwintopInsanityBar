@@ -1004,6 +1004,17 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
 			end
 		end
+		-- Override with spec-specific absorb display settings
+		-- showAbsorb and absorbMode are always spec-specific, not global
+		if spec.displayBar and spec.displayBar.health then
+			specCache.settings.displayBar.health = specCache.settings.displayBar.health or {}
+			if spec.displayBar.health.showAbsorb ~= nil then
+				specCache.settings.displayBar.health.showAbsorb = spec.displayBar.health.showAbsorb
+			end
+			if spec.displayBar.health.absorbMode ~= nil then
+				specCache.settings.displayBar.health.absorbMode = spec.displayBar.health.absorbMode
+			end
+		end
 	else
 		specCache.settings.displayBar = spec.displayBar
 	end

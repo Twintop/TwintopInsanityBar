@@ -1981,3 +1981,21 @@ L["AbsorbModeInset"] = "Overlay (from right / inset)"
 
 -- Overlay Textures
 L["OverlayTexturesSectionHeader"] = "Overlay Textures"
+
+-- Casting Overlay
+L["CastingBarTexture"] = "Casting Overlay Texture"
+L["BarColorCastingOverlay"] = "Casting Overlay"
+L["BarColorCastingOverlayCheckbox"] = "Show casting overlay on Resource Bar"
+L["BarColorCastingOverlayCheckboxTooltip"] = "When checked, an overlay will be displayed on the Resource Bar representing the resource change from your current cast."
+L["DemonHunterDevourerBarTextVariable_fury"] = "Current Fury"
+L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximum Fury"
+L["DemonHunterDevourerBarTextVariable_casting"] = "Builder Fury from Hardcasting Spells"
+
+-- Spending Overlay
+L["BarColorSpendingOverlay"] = "Spending Overlay"
+L["BarColorSpendingOverlayCheckbox"] = "Show spending overlay on Resource Bar"
+L["BarColorSpendingOverlayCheckboxTooltip"] = "When checked, spells that spend your resource will use this overlay color."
+
+-- Death Knight missed abilities
+L["DeathKnightUnholyThresholdCheckboxEpidemic"] = "Epidemic"
+L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"] = "This will show the vertical line on the bar denoting how much Runic Power is required to use Epidemic."
