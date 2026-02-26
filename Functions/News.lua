@@ -18,6 +18,10 @@ local content = [====[
 - [#659](#659) Add support for tracking incoming heals as an optional overlay on the health bar and via a new `$incomingHeal` bar text.
 - Fix a Lua error that could occur when tracking some durations.
 
+### Localization
+
+- [#658](#658) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Priest
 ### Holy
 
