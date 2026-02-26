@@ -1952,5 +1952,13 @@ if locale == "zhCN" then
 	L["EditModeMatchAnchorHeightTooltip"] = "启用后，本条高度会自动匹配锚点框架的高度。"
 	L["EditModeCustomFrameDialogText"] = "输入要锚定的魔兽框架全局名称（例如 PlayerFrame、TargetFrame）："
 	L["EditModeCustomFrameWarning"] = "警告：未找到框架“%s”。在框架可用前，将使用自由定位。"
+
+	L["BarTextVariable_incomingHeal"] = "你当前的总预期治疗量。"
+	L["IncomingHealBarTexture"] = "预期治疗覆盖层纹理"
+	L["HealthBarIncomingHealColor"] = "预期治疗覆盖层颜色"
+	L["HealthBarShowIncomingHeal"] = "在生命值条显示预期治疗覆盖层"
+	L["HealthBarShowIncomingHealTooltip"] = "勾选后，生命值条上会显示半透明的覆盖层，展示玩家即将获得的治疗量。"
+	L["HealthBarIncomingHealMode"] = "预期治疗显示模式"
+	L["HealthBarIncomingHealModeTooltip"] = "控制生命值条上预期治疗量的显示方式。"
 	
 end
