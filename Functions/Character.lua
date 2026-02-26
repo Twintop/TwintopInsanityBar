@@ -89,6 +89,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	snapshotData.attributes.healthMax = UnitHealthMax("player")
 	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 	snapshotData.attributes.absorb = UnitGetTotalAbsorbs("player")
+	snapshotData.attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
 
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
@@ -264,7 +265,7 @@ local function CharacterChange(self, event, ...)
 			UpdateResourceValues()
 			TRB.Functions.Character:UpdateOvercapColor()
 		end
-	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" then
+	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
 		local unitTarget = ...
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
@@ -307,6 +308,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_HEALTH")
 	characterChangeFrame:RegisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	characterChangeFrame:RegisterEvent("UNIT_HEAL_PREDICTION")
 	characterChangeFrame:RegisterEvent("UNIT_STATS")
 	characterChangeFrame:RegisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -325,6 +327,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	characterChangeFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
 	characterChangeFrame:UnregisterEvent("UNIT_STATS")
 	characterChangeFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -843,6 +846,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.healthBar.border = core.colors.healthBar.border
 		specCache.settings.colors.healthBar.background = core.colors.healthBar.background
 		specCache.settings.colors.healthBar.absorb = core.colors.healthBar.absorb
+		specCache.settings.colors.healthBar.incomingHeal = core.colors.healthBar.incomingHeal
 		specCache.settings.colors.healthBar.high = core.colors.healthBar.high
 		specCache.settings.colors.healthBar.medium = core.colors.healthBar.medium
 		specCache.settings.colors.healthBar.low = core.colors.healthBar.low
@@ -851,6 +855,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.healthBar.border = spec.colors.healthBar.border
 		specCache.settings.colors.healthBar.background = spec.colors.healthBar.background
 		specCache.settings.colors.healthBar.absorb = spec.colors.healthBar.absorb
+		specCache.settings.colors.healthBar.incomingHeal = spec.colors.healthBar.incomingHeal
 		specCache.settings.colors.healthBar.high = spec.colors.healthBar.high
 		specCache.settings.colors.healthBar.medium = spec.colors.healthBar.medium
 		specCache.settings.colors.healthBar.low = spec.colors.healthBar.low
@@ -1002,17 +1007,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if spec.displayBar then
 			if spec.displayBar.enableFormSwitching ~= nil then
 				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
-			end
-		end
-		-- Override with spec-specific absorb display settings
-		-- showAbsorb and absorbMode are always spec-specific, not global
-		if spec.displayBar and spec.displayBar.health then
-			specCache.settings.displayBar.health = specCache.settings.displayBar.health or {}
-			if spec.displayBar.health.showAbsorb ~= nil then
-				specCache.settings.displayBar.health.showAbsorb = spec.displayBar.health.showAbsorb
-			end
-			if spec.displayBar.health.absorbMode ~= nil then
-				specCache.settings.displayBar.health.absorbMode = spec.displayBar.health.absorbMode
 			end
 		end
 	else

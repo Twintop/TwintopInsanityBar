@@ -4301,6 +4301,71 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate health bar overlay settings from displayBar.health to colors.healthBar
+	-- Previously: displayBar.health.showAbsorb, .absorbMode, .showIncomingHeal, .incomingHealMode
+	-- Now:        colors.healthBar.absorb.enabled, .mode; colors.healthBar.incomingHeal.enabled, .mode
+	do
+		local function MigrateHealthBarOverlays(settings)
+			if settings == nil then
+				return
+			end
+			local dh = settings.displayBar and settings.displayBar.health
+			if dh == nil then
+				return
+			end
+
+			-- Ensure colors.healthBar.absorb and .incomingHeal exist as tables
+			if settings.colors == nil then settings.colors = {} end
+			if settings.colors.healthBar == nil then settings.colors.healthBar = {} end
+			if settings.colors.healthBar.absorb == nil then settings.colors.healthBar.absorb = {} end
+			if settings.colors.healthBar.incomingHeal == nil then settings.colors.healthBar.incomingHeal = {} end
+
+			-- Migrate absorb overlay
+			if dh.showAbsorb ~= nil then
+				if settings.colors.healthBar.absorb.enabled == nil then
+					settings.colors.healthBar.absorb.enabled = dh.showAbsorb
+				end
+				dh.showAbsorb = nil
+			end
+			if dh.absorbMode ~= nil then
+				if settings.colors.healthBar.absorb.mode == nil then
+					settings.colors.healthBar.absorb.mode = dh.absorbMode
+				end
+				dh.absorbMode = nil
+			end
+
+			-- Migrate incoming heal overlay
+			if dh.showIncomingHeal ~= nil then
+				if settings.colors.healthBar.incomingHeal.enabled == nil then
+					settings.colors.healthBar.incomingHeal.enabled = dh.showIncomingHeal
+				end
+				dh.showIncomingHeal = nil
+			end
+			if dh.incomingHealMode ~= nil then
+				if settings.colors.healthBar.incomingHeal.mode == nil then
+					settings.colors.healthBar.incomingHeal.mode = dh.incomingHealMode
+				end
+				dh.incomingHealMode = nil
+			end
+		end
+
+		-- Migrate core settings
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core then
+			MigrateHealthBarOverlays(TwintopInsanityBarSettings.core)
+		end
+
+		-- Migrate all class/spec settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if type(specSettings) == "table" then
+						MigrateHealthBarOverlays(specSettings)
+					end
+				end
+			end
+		end
+	end
+
 	-- Abyssal Gaze for Havoc Demon Hunters
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.demonhunter ~= nil and
@@ -4459,7 +4524,8 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },
 		background = { color = "66000000" },
-		absorb = { color = "CCFFFFB9" },
+		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended" },
+		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended" },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -4791,6 +4857,8 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		healthBarName=L["LSMStatusBarSmoother"],
 		absorbBar="Interface\\Buttons\\WHITE8X8",
 		absorbBarName="Solid",
+		incomingHealBar="Interface\\Buttons\\WHITE8X8",
+		incomingHealBarName="Solid",
 		castingBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
 		castingBarName=L["LSMStatusBarSmoother"],
 	}

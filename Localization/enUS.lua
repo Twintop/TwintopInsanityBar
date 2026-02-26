@@ -1975,9 +1975,9 @@ L["HealthBarShowAbsorbTooltip"] = "When checked, a semi-transparent overlay will
 -- Absorb Display Mode
 L["HealthBarAbsorbMode"] = "Absorb Display Mode"
 L["HealthBarAbsorbModeTooltip"] = "Controls how the absorb shield is displayed on the Health Bar."
-L["AbsorbModeAppended"] = "Appended"
-L["AbsorbModeOverlay"] = "Overlay (from left)"
-L["AbsorbModeInset"] = "Overlay (from right / inset)"
+L["OverlayModeAppended"] = "Appended"
+L["OverlayModeOverlay"] = "Overlay (from left)"
+L["OverlayModeInset"] = "Overlay (from right / inset)"
 
 -- Overlay Textures
 L["OverlayTexturesSectionHeader"] = "Overlay Textures"
@@ -2068,3 +2068,12 @@ L["EditModeMatchAnchorHeight"] = "Match Anchor Frame Height"
 L["EditModeMatchAnchorHeightTooltip"] = "When enabled, the bar's height will automatically match the height of the anchor frame."
 L["EditModeCustomFrameDialogText"] = "Enter the global name of a WoW frame to anchor to (e.g., PlayerFrame, TargetFrame):"
 L["EditModeCustomFrameWarning"] = "Warning: Frame '%s' was not found. Anchoring will use free positioning until the frame becomes available."
+
+-- Incoming Heal Overlay
+L["BarTextVariable_incomingHeal"] = "Your current total incoming heal amount."
+L["IncomingHealBarTexture"] = "Incoming Heal Overlay Texture"
+L["HealthBarIncomingHealColor"] = "Incoming Heal Overlay"
+L["HealthBarShowIncomingHeal"] = "Show incoming heal overlay on Health Bar"
+L["HealthBarShowIncomingHealTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar showing incoming heals for the player."
+L["HealthBarIncomingHealMode"] = "Incoming Heal Display Mode"
+L["HealthBarIncomingHealModeTooltip"] = "Controls how incoming heals are displayed on the Health Bar."

@@ -221,7 +221,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -393,7 +393,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {
@@ -561,7 +561,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		overcap = {

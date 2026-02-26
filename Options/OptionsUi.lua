@@ -3879,10 +3879,12 @@ function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newV
 	DropdownSetupMenuWrapper(controls[variable.."Bar"])
 	if textures.textureLock then
 		-- Sync all overlay textures to the changed value.
-		-- Currently only absorbBar; future overlays would be synced here.
 		textures.absorbBar = newValue
 		textures.absorbBarName = newName
 		DropdownSetupMenuWrapper(controls.absorbBar)
+		textures.incomingHealBar = newValue
+		textures.incomingHealBarName = newName
+		DropdownSetupMenuWrapper(controls.incomingHealBar)
 	end
 
 	TRB.Functions.Character:ResetCaches()
@@ -4049,10 +4051,15 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	yCoord = yCoord - 20
 
-	-- Row 1: Absorb Overlay
+	-- Row 1: Absorb Overlay + Incoming Heal Overlay
 	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			OverlaySetValue("absorb", newValue)
+		end)
+
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "incomingHealBar", L["IncomingHealBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			OverlaySetValue("incomingHeal", newValue)
 		end)
 
 	yCoord = yCoord - 70
@@ -4469,7 +4476,12 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
 
 			-- Sync overlay textures
-			-- Currently only absorbBar; future overlays would be synced here.
+			spec.textures.absorbBar = spec.textures.resourceBar
+			spec.textures.absorbBarName = spec.textures.resourceBarName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.absorbBar)
+			spec.textures.incomingHealBar = spec.textures.resourceBar
+			spec.textures.incomingHealBarName = spec.textures.resourceBarName
+			DropdownSetupMenuWrapper(controls.dropDown.textures.incomingHealBar)
 
 			-- Sync border textures
 			if includeComboPoints then
@@ -5569,30 +5581,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	)
 
 	yCoord = yCoord + 20
-	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.showAbsorb
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["HealthBarShowAbsorbTooltip"]
-	f:SetChecked(spec.displayBar.health.showAbsorb)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.health.showAbsorb = self:GetChecked()
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
-		end
-	end)
-
-	controls.colors = controls.colors or {}
-	controls.colors.absorb = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarAbsorbColor"], spec.colors.healthBar.absorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	controls.colors.absorb:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
-	end)
-
 	-- Absorb Display Mode dropdown
-	yCoord = yCoord - 30
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.absorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AbsorbMode", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.absorbMode:SetWidth(oUi.sliderWidth)
@@ -5602,21 +5591,21 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	controls.dropDown.absorbMode.label.font.tooltip = L["HealthBarAbsorbModeTooltip"]
 
 	local function AbsorbModeIsSelected(value)
-		return value == spec.displayBar.health.absorbMode
+		return value == spec.colors.healthBar.absorb.mode
 	end
 
 	local function AbsorbModeGetDisplayName(value)
 		if value == "appended" then
-			return L["AbsorbModeAppended"]
+			return L["OverlayModeAppended"]
 		elseif value == "inset" then
-			return L["AbsorbModeInset"]
+			return L["OverlayModeInset"]
 		else
-			return L["AbsorbModeOverlay"]
+			return L["OverlayModeOverlay"]
 		end
 	end
 
 	local function AbsorbModeSetSelected(newValue)
-		spec.displayBar.health.absorbMode = newValue
+		spec.colors.healthBar.absorb.mode = newValue
 		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -5626,14 +5615,106 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	end
 
 	local function AbsorbModeGenerator(dropdown, rootDescription)
-		rootDescription:CreateRadio(L["AbsorbModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
-		rootDescription:CreateRadio(L["AbsorbModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
-		rootDescription:CreateRadio(L["AbsorbModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
+		rootDescription:CreateRadio(L["OverlayModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["OverlayModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
+		rootDescription:CreateRadio(L["OverlayModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
 	end
 
 	controls.dropDown.absorbMode:SetupMenu(AbsorbModeGenerator)
-	controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(spec.displayBar.health.absorbMode))
+	controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(spec.colors.healthBar.absorb.mode))
 	controls.dropDown.absorbMode:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	yCoord = yCoord - 10
+
+	controls.colors = controls.colors or {}
+	controls.colors.absorb = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarAbsorbColor"], spec.colors.healthBar.absorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.absorb:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
+	end)
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showAbsorb
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["HealthBarShowAbsorbTooltip"]
+	f:SetChecked(spec.colors.healthBar.absorb.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.healthBar.absorb.enabled = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	-- Incoming Heal Display Mode dropdown
+	yCoord = yCoord - 20
+	controls.dropDown.incomingHealMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IncomingHealMode", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.incomingHealMode:SetWidth(oUi.sliderWidth)
+	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
+	controls.dropDown.incomingHealMode.label.font:SetFontObject(GameFontNormal)
+	---@diagnostic disable-next-line: inject-field
+	controls.dropDown.incomingHealMode.label.font.tooltip = L["HealthBarIncomingHealModeTooltip"]
+
+	local function IncomingHealModeIsSelected(value)
+		return value == spec.colors.healthBar.incomingHeal.mode
+	end
+
+	local function IncomingHealModeGetDisplayName(value)
+		if value == "appended" then
+			return L["OverlayModeAppended"]
+		elseif value == "inset" then
+			return L["OverlayModeInset"]
+		else
+			return L["OverlayModeOverlay"]
+		end
+	end
+
+	local function IncomingHealModeSetSelected(newValue)
+		spec.colors.healthBar.incomingHeal.mode = newValue
+		controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(newValue))
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end
+
+	local function IncomingHealModeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["OverlayModeAppended"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["OverlayModeOverlay"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "overlay")
+		rootDescription:CreateRadio(L["OverlayModeInset"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "inset")
+	end
+
+	controls.dropDown.incomingHealMode:SetupMenu(IncomingHealModeGenerator)
+	controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(spec.colors.healthBar.incomingHeal.mode))
+	controls.dropDown.incomingHealMode:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	yCoord = yCoord - 10
+	-- Incoming Heal Overlay
+	controls.colors.incomingHeal = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarIncomingHealColor"], spec.colors.healthBar.incomingHeal.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.incomingHeal:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "incomingHeal", "health")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.showIncomingHeal = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showIncomingHeal", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showIncomingHeal
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowIncomingHeal"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["HealthBarShowIncomingHealTooltip"]
+	f:SetChecked(spec.colors.healthBar.incomingHeal.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
 
 	return yCoord - 30
 end
