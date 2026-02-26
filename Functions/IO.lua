@@ -85,9 +85,31 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Discipline
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				-- Export utility bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.utility = settings.bars and settings.bars.utility
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
+				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
+				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
+				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
+				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
+				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
+				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
 			elseif specId == 2 then -- Holy
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				-- Export utility bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.utility = settings.bars and settings.bars.utility
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
+				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
+				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
+				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
+				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
+				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
+				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
 			elseif specId == 3 then -- Shadow
 				-- Export mana bar settings
 				configuration.bars = configuration.bars or {}
@@ -101,6 +123,15 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
 				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
 				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
+				-- Export utility bar settings
+				configuration.bars.utility = settings.bars and settings.bars.utility
+				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
+				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
+				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
+				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
+				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
+				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
+				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
 			end
 		elseif classId == 6 then -- Death Knight
 			if specId == 1 then -- Blood

@@ -257,17 +257,10 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false),
+		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger"),
+		}),
 	}
-
-	-- Add flat stagger bar texture keys (same pattern as manaBar)
-	local staggerTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
-	settings.textures.staggerBar = staggerTextures.bar
-	settings.textures.staggerBarName = staggerTextures.barName
-	settings.textures.staggerBorder = staggerTextures.border
-	settings.textures.staggerBorderName = staggerTextures.borderName
-	settings.textures.staggerBackground = staggerTextures.background
-	settings.textures.staggerBackgroundName = staggerTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = BrewmasterLoadDefaultBarTextSettings(classic)
@@ -862,15 +855,14 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
-	-- Primary and health bar visibility
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true)
-
-	-- Stagger bar visibility using custom bar system
-	yCoord = yCoord - 70
+	-- Primary, health, and stagger bar visibility
+	local customBars = {}
 	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
 	if staggerBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+		table.insert(customBars, staggerBarDef)
 	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true, nil, customBars)
 end
 
 local function BrewmasterConstructThresholdPanel(parent)

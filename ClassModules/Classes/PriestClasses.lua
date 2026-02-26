@@ -40,6 +40,7 @@ end
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
 ---@field public surgeOfLight TRB.Classes.SpellBase
+---@field public angelicFeather TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -60,6 +61,15 @@ function TRB.Classes.Priest.HealerSpells:New()
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255
+	})
+
+	-- Priest Class Talent Abilities
+	self.angelicFeather = TRB.Classes.SpellBase:New({
+		id = 121536,
+		isTalent = true,
+		hasCharges = true,
+		maxCharges = 3,
+		duration = 20
 	})
 
 	return self
@@ -155,6 +165,8 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 		{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },]]
+		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
+		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestDisciplineBarTextVariable_mana"], printInSettings = true, color = false },
@@ -175,6 +187,10 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 
 		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
 		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },]]
+
+		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
+		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
+		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 	})
 end
 
@@ -417,7 +433,9 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
 		{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 		{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
-		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true }
+		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
+		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
+		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false }
 
 		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },
 		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
@@ -467,11 +485,16 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
 
 		{ variable = "$rwTime", description = L["PriestHolyBarTextVariable_rwTime"], printInSettings = true, color = false },]]
+
+		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
+		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
+		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 	})
 end
 
 
 ---@class TRB.Classes.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
+---@field public angelicFeather TRB.Classes.SpellBase
 ---@field public mindBlast TRB.Classes.SpellBase
 ---@field public mindFlay TRB.Classes.SpellBase
 ---@field public surgeOfInsanity TRB.Classes.SpellBase
@@ -518,6 +541,15 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
 	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
 	
+	-- Priest Class Talent Abilities
+	self.angelicFeather = TRB.Classes.SpellBase:New({
+		id = 121536,
+		isTalent = true,
+		hasCharges = true,
+		maxCharges = 3,
+		duration = 20
+	})
+
 	-- Priest Class Baseline Abilities
 	self.mindBlast = TRB.Classes.SpellBase:New({
 		id = 8092,
@@ -880,6 +912,9 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 		
 		--[[{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
 		{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },]]
+
+		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
+		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$insanity", description = L["PriestShadowBarTextVariable_insanity"], printInSettings = true, color = false },
@@ -925,6 +960,10 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$reStacks", description = L["PriestShadowBarTextVariable_reStacks"], printInSettings = true, color = false },
 
 		{ variable = "$voidVolleyTime", description = L["PriestShadowBarTextVariable_voidVolleyTime"], printInSettings = true }]]
+
+		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
+		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
+		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 	})
 end
 
@@ -933,9 +972,9 @@ end
     BarGroups Factory for Priest
     Creates the appropriate BarGroup instances for each Priest specialization.
     
-    Discipline: Primary bar (N=1) only
-    Holy: Primary bar (N=1) + Secondary Holy Words (N=5)
-    Shadow: Primary bar (N=1) only
+    Discipline: Primary bar (N=1) + Secondary Power Words (N=2) + Utility Angelic Feather (N=3)
+    Holy: Primary bar (N=1) + Secondary Holy Words (N=5) + Utility Angelic Feather (N=3)
+    Shadow: Primary bar (N=1) + Mana bar (N=1) + Utility Angelic Feather (N=3)
 ]]
 
 ---@class TRB.Classes.Priest.BarGroupsFactory
@@ -974,6 +1013,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             false -- not primary
         )
 
+        -- Utility bar for Angelic Feather (3 charge nodes)
+        barGroups.utility = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Utility",
+            3,
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Holy
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -996,6 +1043,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             parentFrame or UIParent,
             "TwintopResourceBarFrame_Health",
             1,
+            false -- not primary
+        )
+
+        -- Utility bar for Angelic Feather (3 charge nodes)
+        barGroups.utility = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Utility",
+            3,
             false -- not primary
         )
 
@@ -1023,6 +1078,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             1,
             false -- not primary
         )
+
+        -- Utility bar for Angelic Feather (3 charge nodes)
+        barGroups.utility = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Utility",
+            3,
+            false -- not primary
+        )
     end
 
     return barGroups
@@ -1047,6 +1110,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Health"
+            },
+            utility = {
+                maxNodes = 3,
+                isPrimary = false,
+                resourceType = "AngelicFeather"
             }
         }
     elseif specId == 2 then -- Holy
@@ -1064,6 +1132,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Health"
+            },
+            utility = {
+                maxNodes = 3,
+                isPrimary = false,
+                resourceType = "AngelicFeather"
             }
         }
     elseif specId == 3 then -- Shadow
@@ -1076,11 +1149,47 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Health"
+            },
+            utility = {
+                maxNodes = 3,
+                isPrimary = false,
+                resourceType = "AngelicFeather"
             }
         }
     end
 
     return {}
+end
+
+-- Override the generic utility bar type with Angelic Feather-specific display name, node colors, and defaults
+---@return table
+function TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
+	return {
+		border = { color = "FFD6AA00" },
+		background = { color = "66000000" },
+		nodeColors = {
+			angelicFeather1 = { color = "FFFFE77A", enabled = true },
+			angelicFeather2 = { color = "FFFFE34B", enabled = true },
+			angelicFeather3 = { color = "FFEEC800", enabled = true }
+		}
+	}
+end
+
+do
+	local L = TRB.Localization
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local utilityDef = registry:Get("utility")
+	if utilityDef then
+		utilityDef.displayName = L["ResourceAngelicFeather"]
+		utilityDef.nodeColors = {
+			{ key = "angelicFeather1", displayName = L["AngelicFeatherCharge1"], hasEnabled = false },
+			{ key = "angelicFeather2", displayName = L["AngelicFeatherCharge2"], hasEnabled = false },
+			{ key = "angelicFeather3", displayName = L["AngelicFeatherCharge3"], hasEnabled = false }
+		}
+		utilityDef.defaultColorsFunc = function()
+			return TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
+		end
+	end
 end
 
 -- Register barTextVariables fillers for cross-class options panel support

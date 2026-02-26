@@ -4788,6 +4788,66 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	}
 end
 
+---Gets default Utility bar dimensions (anchored below health bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			relativeTo = "BOTTOM",
+			relativeToName = L["PositionBelowMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "health",
+				anchorPoint = "BOTTOM",
+				attachPoint = "TOP",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		relativeTo = "BOTTOM",
+		relativeToName = L["PositionBelowMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "health",
+			anchorPoint = "BOTTOM",
+			attachPoint = "TOP",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
+	}
+end
+
+---Gets default Utility bar colors (generic; class modules should override via BarTypeRegistry)
+---@return table
+function TRB.Functions.Settings:DefaultUtilityBarColors()
+	return {
+		border = { color = "FF888888" },
+		background = { color = "66000000" },
+		nodeColors = {
+			charge1 = { color = "FFAAAAAA", enabled = true },
+			charge2 = { color = "FFAAAAAA", enabled = true },
+			charge3 = { color = "FFAAAAAA", enabled = true }
+		}
+	}
+end
 
 
 ---Migrates anchor blocks for all bar settings in the provided settings table.
@@ -4858,8 +4918,9 @@ end
 ---Gets the default textures for bars
 ---@param includeComboPoints boolean?
 ---@param includeManaBar boolean?
+---@param customBars TRB.Classes.BarTypeDefinition[]?
 ---@return table
-function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaBar)
+function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaBar, customBars)
 	local textures = {
 		background="Interface\\Tooltips\\UI-Tooltip-Background",
 		backgroundName="Blizzard Tooltip",
@@ -4896,6 +4957,18 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		textures.manaBarBorderName="1 Pixel"
 		textures.manaBarBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 		textures.manaBarBarName=L["LSMStatusBarSmoother"]
+	end
+	if customBars then
+		for _, barTypeDef in ipairs(customBars) do
+			local defaults = barTypeDef:GetDefaultTextures()
+			local key = barTypeDef.key
+			textures[key .. "Bar"] = defaults.bar
+			textures[key .. "BarName"] = defaults.barName
+			textures[key .. "Border"] = defaults.border
+			textures[key .. "BorderName"] = defaults.borderName
+			textures[key .. "Background"] = defaults.background
+			textures[key .. "BackgroundName"] = defaults.backgroundName
+		end
 	end
 	return textures
 end
