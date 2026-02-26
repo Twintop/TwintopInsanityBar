@@ -15,7 +15,12 @@ local content = [====[
 # 12.0.1.16-release (2026-02-26)
 ## General
 
-- Add support for tracking incoming heals as an optional overlay on the health bar and via a new `$incomingHeal` bar text.
+- [#659](#659) Add support for tracking incoming heals as an optional overlay on the health bar and via a new `$incomingHeal` bar text.
+
+## Priest
+### Holy
+
+- Fix an issue where spells that would complete the cooldown of a Holy Word would sometimes light up the wrong node.
 
 ---
 
