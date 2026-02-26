@@ -438,6 +438,7 @@ end
 ---@param duration number # How much time to add
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 function TRB.Classes.SnapshotBuff:AddTimeOrInitializeCustom(duration, startTime)
+	local startTime = startTime or GetTime()
 	self:GetRemainingTime()
 	if not self.isActive then
 		self:InitializeCustom(duration, startTime)

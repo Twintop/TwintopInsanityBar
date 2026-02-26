@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - [#659](#659) Add support for tracking incoming heals as an optional overlay on the health bar and via a new `$incomingHeal` bar text.
+- Fix a Lua error that could occur when tracking some durations.
 
 ## Priest
 ### Holy
