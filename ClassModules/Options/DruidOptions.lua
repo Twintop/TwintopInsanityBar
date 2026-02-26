@@ -289,7 +289,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			mana = { visibility = "never", smooth = true },
 			dragonriding = true,
 			enableFormSwitching = true
@@ -628,7 +628,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true,
 			enableFormSwitching = true
 		},
@@ -810,7 +810,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true,
 			enableFormSwitching = true
 		},
@@ -931,7 +931,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true,
 			enableFormSwitching = true
 		},

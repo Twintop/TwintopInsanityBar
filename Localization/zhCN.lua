@@ -1867,9 +1867,9 @@ if locale == "zhCN" then
 	
 	L["HealthBarAbsorbMode"] = "吸收护盾显示模式"
 	L["HealthBarAbsorbModeTooltip"] = "控制吸收护盾在生命值条上的显示方式。"
-	L["AbsorbModeAppended"] = "追加显示"
-	L["AbsorbModeOverlay"] = "叠加显示（从左侧）"
-	L["AbsorbModeInset"] = "叠加显示（从右侧/内嵌）"
+	L["OverlayModeAppended"] = "追加显示"
+	L["OverlayModeOverlay"] = "叠加显示（从左侧）"
+	L["OverlayModeInset"] = "叠加显示（从右侧/内嵌）"
 	
 	L["OverlayTexturesSectionHeader"] = "叠加层纹理"
 	L["CastingBarTexture"] = "施法覆盖层材质"

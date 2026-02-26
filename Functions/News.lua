@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.16-release (2026-02-26)
+## General
+
+- Add support for tracking incoming heals as an optional overlay on the health bar and via a new `$incomingHeal` bar text.
+
+---
+
 # 12.0.1.15-release (2026-02-26)
 ## General
 
