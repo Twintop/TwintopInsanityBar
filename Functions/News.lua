@@ -27,6 +27,11 @@ local content = [====[
 
 - Fix an issue where spells that would complete the cooldown of a Holy Word would sometimes light up the wrong node.
 
+## Warrior
+### Protection
+
+*NOTE:* **Blizzard made a change in this week's build that causes the absorb amount from "Ignore Pain" to be unobtainable. This has caused the `$ignorePainAbsorb` bar text variable to always appear as `0` even when it is active. At this point it is unclear whether or not the underlying change that prevents this detection was introduced on purpose or is just a bug. As a result, I am leaving the bartext variable in place for now. If seeing the `0` value annoys you, you can remove it by modifying the Bar Text string.**
+
 ---
 
 # 12.0.1.15-release (2026-02-26)
