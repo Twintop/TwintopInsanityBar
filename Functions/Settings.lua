@@ -1918,6 +1918,25 @@ function TRB.Functions.Settings:PortForwardSettings()
 						}
 					end
 
+					-- Migrate colors.bar.casting / .spending from flat string to table format
+					-- Old configs stored these as plain color strings (e.g., "FFFFFFFF").
+					-- New code expects { color = "FFFFFFFF", enabled = true/false }.
+					if specSettings.colors and specSettings.colors.bar then
+						local bar = specSettings.colors.bar
+						if type(bar.casting) == "string" then
+							local enabled = bar.showCasting
+							if enabled == nil then enabled = true end
+							bar.casting = { color = bar.casting, enabled = enabled }
+							bar.showCasting = nil
+						elseif type(bar.casting) == "table" and bar.showCasting ~= nil then
+							bar.casting.enabled = bar.showCasting
+							bar.showCasting = nil
+						end
+						if type(bar.spending) == "string" then
+							bar.spending = { color = bar.spending, enabled = true }
+						end
+					end
+
 					-- Migrate old *BorderChange* and flat *Enabled flags to nested .enabled format
 					-- This runs after the color table migration above, so colors are already in { color = "..." } format
 					if specSettings.colors and specSettings.colors.bar then

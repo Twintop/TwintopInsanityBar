@@ -12,6 +12,17 @@ local content = [====[
 
 ---
 
+# 12.0.1.17-release (2026-02-26)
+## General
+
+- Fix an issue with the castbar overlay not working for some long time users of the bar.
+
+### Localization
+
+- [#660](#660) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
 # 12.0.1.16-release (2026-02-26)
 ## General
 
