@@ -198,7 +198,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -336,7 +336,7 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -505,7 +505,7 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),

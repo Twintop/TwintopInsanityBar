@@ -797,7 +797,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -839,7 +839,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -931,7 +931,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1428,7 +1428,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif var == "$comboPointsMax"or var == "$essenceMax" then
 		valid = true
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" then
+	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
 		valid = true
 	end
 

@@ -114,7 +114,7 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -274,7 +274,7 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {
@@ -469,7 +469,7 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true, absorbMode = "appended", showAbsorb = true },
+			health = { visibility = "always", smooth = true },
 			dragonriding = true
 		},
 		endOf = {

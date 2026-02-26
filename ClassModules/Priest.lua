@@ -1583,7 +1583,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1678,9 +1678,9 @@ local function UpdateResourceBar()
 				-- Holy Words: Serenity, Sanctify, Chastise
 				-- Each may have 1 or 2 charges (Miracle Worker grants +1 to Serenity/Sanctify)
 				local holyWordDefs = {
-					{ spell = spells.holyWordSerenity, color = specSettings.colors.comboPoints.holyWordSerenity.color, enabled = specSettings.colors.comboPoints.holyWordSerenity.enabled },
-					{ spell = spells.holyWordSanctify, color = specSettings.colors.comboPoints.holyWordSanctify.color, enabled = specSettings.colors.comboPoints.holyWordSanctify.enabled and not talents:IsTalentActive(spells.ultimateSerenity) },
-					{ spell = spells.holyWordChastise, color = specSettings.colors.comboPoints.holyWordChastise.color, enabled = specSettings.colors.comboPoints.holyWordChastise.enabled },
+					{ spell = spells.holyWordSerenity, key = "holyWordSerenity", color = specSettings.colors.comboPoints.holyWordSerenity.color, enabled = specSettings.colors.comboPoints.holyWordSerenity.enabled },
+					{ spell = spells.holyWordSanctify, key = "holyWordSanctify", color = specSettings.colors.comboPoints.holyWordSanctify.color, enabled = specSettings.colors.comboPoints.holyWordSanctify.enabled and not talents:IsTalentActive(spells.ultimateSerenity) },
+					{ spell = spells.holyWordChastise, key = "holyWordChastise", color = specSettings.colors.comboPoints.holyWordChastise.color, enabled = specSettings.colors.comboPoints.holyWordChastise.enabled },
 				}
 
 				for _, hwDef in ipairs(holyWordDefs) do
@@ -1706,7 +1706,7 @@ local function UpdateResourceBar()
 										-- Invalidate cache so continuously changing progress always renders
 										TRB.Data.cache.values.bar[cpKey] = nil
 										TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
-										if holyWordCooldownCompletesKey and specSettings.colors.comboPoints.completeCooldown.enabled and specSettings.colors.comboPoints[holyWordCooldownCompletesKey] and specSettings.colors.comboPoints[holyWordCooldownCompletesKey].enabled then
+										if holyWordCooldownCompletesKey == hwDef.key and specSettings.colors.comboPoints.completeCooldown.enabled and specSettings.colors.comboPoints[holyWordCooldownCompletesKey] and specSettings.colors.comboPoints[holyWordCooldownCompletesKey].enabled then
 											cpColor = specSettings.colors.comboPoints.completeCooldown.color
 										end
 									else
@@ -1736,7 +1736,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1969,7 +1969,7 @@ local function UpdateResourceBar()
 				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 			end
-			TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, specCacheSettings)
+			TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 		end
 
 		-- Update mana bar (Shadow only)
@@ -2853,7 +2853,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	-- Health variables (all specs)
-	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" then
+	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
 		valid = true
 	end
 
