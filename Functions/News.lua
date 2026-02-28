@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.1.20-release (2026-03-01)
+## Priest
+### Shadow
+
+- Fix the the Insanity generation value of Void Blast while talented into the Void Infusion talent.
+
+---
+
+
 # 12.0.1.19-release (2026-02-28)
 ## General
 

@@ -1196,7 +1196,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			elseif spellId == spells.voidBlast.id then
 				casting.startTime = currentTime
 				if talents:IsTalentActive(spells.voidInfusion) then
-					casting.resourceRaw = spells.voidBlast.resource * spells.voidInfusion.attributes.resourceMod
+					casting.resourceRaw = spells.voidBlast.resource + spells.voidInfusion.attributes.resourceMod
 				else
 					casting.resourceRaw = spells.voidBlast.resource
 				end
