@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.19-release (2026-02-28)
+## General
+
+- Add guards to prevent Lua errors when determining if threshold-based abilities are active.
+
+---
+
 # 12.0.1.18-release (2026-02-28)
 ## General
 
