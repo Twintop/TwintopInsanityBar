@@ -12,10 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.1.17-release (2026-02-26)
+# 12.0.1.18-release (2026-02-28)
 ## General
 
 - Fix an issue with the castbar overlay not working for some long time users of the bar.
+
+---
+
+# 12.0.1.17-release (2026-02-26)
+## General
 
 ### Localization
 
