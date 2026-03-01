@@ -13,6 +13,11 @@ local content = [====[
 ---
 
 # 12.0.1.20-release (2026-03-01)
+## Monk
+### Brewmaster
+
+- Fix an issue where the bar would disappear whenever an Bring Me Another (2/4 or higher) apex talent proc would occur.
+
 ## Priest
 ### Shadow
 
