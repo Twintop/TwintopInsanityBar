@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.21-release (2026-03-02)
+## Evoker
+### Devastation
+
+- Fix an issue where the Dragonrage buff would sometimes not be extended (with Animosity talented) due to spellIDs being changed by other talents.
+
+---
+
 # 12.0.1.20-release (2026-03-01)
 ## Monk
 ### Brewmaster

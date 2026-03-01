@@ -38,6 +38,7 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	})
 	self.fireBreath = TRB.Classes.SpellBase:New({
 		id = 382266,
+		id2 = 357208,
 		baseline = true
 	})
 	self.eternitySurge = TRB.Classes.SpellBase:New({
