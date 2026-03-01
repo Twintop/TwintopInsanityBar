@@ -1175,7 +1175,7 @@ function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 		self.endTime = endTime / 1000
 		self.resourceRaw = manaCost
 		self.spellId = spellInfo.spellID
-		self.icon = string.format("|T%s:0|t", spellInfo.iconID)
+		self.icon = string.format("|T%s:0|t", spellInfo.iconID or 134400) -- Default to question mark icon if spell icon is unavailable
 	end
 end
 
