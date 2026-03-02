@@ -31,7 +31,7 @@ local content = [====[
 
 ## Warrior
 
-- Restore correct usability threshold line color for Execute's max Energy cost.
+- Restore correct usability threshold line color for Execute's max Rage cost.
 
 ---
 
