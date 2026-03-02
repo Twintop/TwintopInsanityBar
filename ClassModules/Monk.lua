@@ -688,7 +688,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 				local currentHaste = snapshotData.attributes.haste or 0
 				cooldown = cooldown / (1 + currentHaste / 100)
-				snapshotData.snapshots[spells.strikeOfTheWindlord.id].cooldown:InitializeCustom(cooldown, currentTime, spells.strikeOfTheWindlord.isHasted, currentHaste)
+				snapshotData.snapshots[spells.strikeOfTheWindlord.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
 					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
@@ -701,7 +701,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 				local currentHaste = snapshotData.attributes.haste or 0
 				cooldown = cooldown / (1 + currentHaste / 100)
-				snapshotData.snapshots[spells.whirlingDragonPunch.id].cooldown:InitializeCustom(cooldown, currentTime, spells.whirlingDragonPunch.isHasted, currentHaste)
+				snapshotData.snapshots[spells.whirlingDragonPunch.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
 					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
@@ -718,7 +718,7 @@ local function HandleSpellEvents(self, event, ...)
 		local spellId = ...
 		if TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-			if spellId == spells.danceOfChiJi.id then -- Surge of Light
+			if spellId == spells.danceOfChiJi.id then
 				if snapshotData.attributes.danceOfChiJiActive ~= true then
 					local specSettings = TRB.Data.settings.monk[TRB.Data.character.specName]
 					if specSettings.audio.danceOfChiJi.enabled and not snapshotData.audio.danceOfChiJiPlayed then
@@ -734,7 +734,7 @@ local function HandleSpellEvents(self, event, ...)
 		local spellId = ...
 		if TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-			if spellId == spells.danceOfChiJi.id then -- Surge of Light
+			if spellId == spells.danceOfChiJi.id then
 				snapshotData.attributes.danceOfChiJiActive = false
 				snapshotData.audio.danceOfChiJiPlayed = false
 			end

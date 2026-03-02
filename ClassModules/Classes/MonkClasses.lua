@@ -383,13 +383,13 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		id = 392983,
 		hasCooldown = true,
 		isTalent = true,
-		cooldown = 30 -- Tooptip lies and says it is 35 as of 2026-03-02
+		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
 	})
 	self.whirlingDragonPunch = TRB.Classes.SpellBase:New({
 		id = 152175,
 		hasCooldown = true,
 		isTalent = true,
-		cooldown = 30 -- Tooptip lies and says it is 35 as of 2026-03-02
+		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
 	})
 	self.communionWithWind = TRB.Classes.SpellBase:New({
 		id = 451576,
