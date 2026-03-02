@@ -29,6 +29,13 @@ local content = [====[
 
 - Fix an issue where the Dragonrage buff would sometimes not be extended (with Animosity talented) due to spellIDs being changed by other talents.
 
+## Monk
+### Windwalker
+
+- [#663](#663) Add options to Windwalker Monk's settings to allow the display control of Heart of the Jade Serpent's border color changes.
+- [#668](#668) Restore support for Heart of the Jade Serpent triggering ability ready and buff active border color changes. Add Whirling Dragon Punch to Strike of the Windlord as potential triggers.
+- [#668](#668) Restore Dance of Chi-Ji proc detection, allowing for bar border color change and audio cues to return.
+
 ## Warrior
 
 - [#666](#666) Restore correct usability threshold line color for Execute's max Rage cost.
