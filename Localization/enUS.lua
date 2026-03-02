@@ -529,7 +529,6 @@ L["MonkWindwalkerAudioDanceOfChiJi"] = "Dance of Chi-Ji"
 L["MonkMistweaverColorPickerVivify"] = "Mana when Vivify is instant cast (via Vivacious Vivification talent)"
 L["MonkMistweaverCheckboxVivify"] = "Instant Vivify color change enabled"
 L["MonkMistweaverCheckboxVivifyTooltip"] = "This will change the bar color when Vivify is able to be cast instantly due to a the effect of Vivacious Vivification being active."
-L["MonkWindwalkerColorPickerDanceOfChiJi"] = "Resource Bar's border with Dance of Chi-Ji proc"
 L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Expel Harm"
 L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm."
 L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tiger Palm"
@@ -2076,3 +2075,9 @@ L["HealthBarIncomingHealModeTooltip"] = "Controls how incoming heals are display
 
 L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzy"] = "Feral Frenzy / Frantic Frenzy"
 L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzyTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy or Frantic Frenzy (if talented)."
+
+L["MonkWindwalkerColorPickerDanceOfChiJi"] = "Border when a Dance of Chi-Ji proc is active"
+L["MonkWindwalkerCheckboxDanceOfChiJi"] = "Dance of Chi-Ji proc"
+L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"] = "This will change the bar border color when you have a Dance of Chi-Ji proc and are able to use Spinning Crane Kick without spending Chi."
+L["MonkWindwalkerAudioCheckboxDanceOfChiJi"] = "Play audio cue when a Dance of Chi-Ji proc occurs"
+L["MonkWindwalkerAudioCheckboxDanceOfChiJiTooltip"] = "Play an audio cue when a Dance of Chi-Ji proc occurs. This will only play when you do not already have Dance of Chi-Ji."

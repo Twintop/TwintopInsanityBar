@@ -502,7 +502,6 @@ if locale == "deDE" then
     L["MonkMistweaverColorPickerVivify"] = "Mana wenn Beleben spontan ist (durch Lebhafte Belebung)"
     L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
     L["MonkMistweaverCheckboxVivifyTooltip"] = "Dies ändert die Leistenfarbe, wenn Beleben spontan gezaubert werden kann, weil der Effekt von Lebhafte Belebung aktiv ist."
-    L["MonkWindwalkerColorPickerDanceOfChiJi"] = "Rahmen der Ressourcenleiste mit Tanz von Chi-Ji Proc"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Schaden umleiten"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Schaden umleiten zu nutzen."
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tigerklaue"

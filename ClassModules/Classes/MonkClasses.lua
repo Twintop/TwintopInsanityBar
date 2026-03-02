@@ -250,6 +250,8 @@ end
 ---@field public danceOfChiJi TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
+---@field public communionWithWind TRB.Classes.SpellBase
+---@field public whirlingDragonPunch TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -382,10 +384,22 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		id = 392983,
 		hasCooldown = true,
 		isTalent = true,
-		cooldown = 40
+		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
+	})
+	self.whirlingDragonPunch = TRB.Classes.SpellBase:New({
+		id = 152175,
+		hasCooldown = true,
+		isTalent = true,
+		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
+	})
+	self.communionWithWind = TRB.Classes.SpellBase:New({
+		id = 451576,
+		isTalent = true,
+		cooldownMod = -5
 	})
 	self.danceOfChiJi = TRB.Classes.SpellBase:New({
-		id = 325202,
+		id = 322729,
+		talentId = 325201,
 		isTalent = true
 	})
 
@@ -393,7 +407,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 	self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
 		id = 443421,
 		talentId = 443294,
-		isTalent = true
+		isTalent = true,
+		duration = 6
 	})
 
 	return self
