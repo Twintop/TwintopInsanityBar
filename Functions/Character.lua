@@ -626,7 +626,14 @@ end
 function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
+	local oldHaste = snapshotData.attributes.haste
 	snapshotData.attributes.haste = UnitSpellHaste("player")
+
+	-- Recalculate hasted cooldowns when haste changes
+	if oldHaste ~= nil and oldHaste ~= snapshotData.attributes.haste then
+		snapshotData:RecalculateHastedCooldowns(snapshotData.attributes.haste)
+	end
+
 	snapshotData.attributes.crit = GetCritChance()
 	snapshotData.attributes.mastery = GetMasteryEffect()
 	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)

@@ -500,7 +500,6 @@ if locale == "zhCN" then
     L["MonkMistweaverColorPickerVivify"] = "活力氤氲天赋下瞬发抚慰时的法力"
     L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
     L["MonkMistweaverCheckboxVivifyTooltip"] = "活力氤氲触发抚慰瞬发时，资源条变色。"
-    L["MonkWindwalkerColorPickerDanceOfChiJi"] = "鹤舞触发时资源条边框色"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "氤氲破"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "资源条显示施放氤氲破所需能量阈值线。"
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "猛虎掌"
