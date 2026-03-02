@@ -20,9 +20,9 @@ local content = [====[
 ## Druid
 ### Feral
 
-- Restore correct usability threshold line color for Bite/Ravage's max Energy cost.
-- In addition to requiring 5 Combo Points, only show the "Max Bite" color when at or above 50 Energy, not just when Bite/Ravage is at any usable Energy level.
-- Remove outdated references to Brutal Slash.
+- [#666](#666) Restore correct usability threshold line color for Bite/Ravage's max Energy cost.
+- [#666](#666) In addition to requiring 5 Combo Points, only show the "Max Bite" color when at or above 50 Energy, not just when Bite/Ravage is at any usable Energy level.
+- [#666](#666) Remove outdated references to Brutal Slash.
 
 ## Evoker
 ### Devastation
@@ -31,7 +31,7 @@ local content = [====[
 
 ## Warrior
 
-- Restore correct usability threshold line color for Execute's max Rage cost.
+- [#666](#666) Restore correct usability threshold line color for Execute's max Rage cost.
 
 ---
 
