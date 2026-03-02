@@ -120,8 +120,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
-	specCache.druid_feral.snapshotData.snapshots[spells.brutalSlash.id] = TRB.Classes.Snapshot:New(spells.brutalSlash)
-	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.feralFrenzy.id] = TRB.Classes.Snapshot:New(spells.feralFrenzy)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.franticFrenzy.id] = TRB.Classes.Snapshot:New(spells.franticFrenzy)
@@ -1914,22 +1912,7 @@ local function UpdateResourceBar()
 							local snapshot = snapshots[spell.id]
 
 							if spell.attributes.isClearcasting and snapshots[spells.clearcasting.id].buff.applications ~= nil and snapshots[spells.clearcasting.id].buff.applications > 0 then
-								if spell.id == spells.brutalSlash.id then
-									if not talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif snapshots[spells.brutalSlash.id].cooldown.charges > 0 then
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									else
-										thresholdColor = specCacheSettings.colors.threshold.unusable.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									end
-								elseif spell.id == spells.swipe.id then
-									if talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									else
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									end
-								else
+								if spell.id == spells.swipe.id then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -2017,21 +2000,7 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.swipe.id then
-									if talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif isUsable then
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								elseif spell.id == spells.brutalSlash.id then
-									if not talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif snapshots[spells.brutalSlash.id].cooldown.charges == 0 then
-										thresholdColor = specCacheSettings.colors.threshold.unusable.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif isUsable then
+									if isUsable then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2608,7 +2577,6 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
-		lookup["#brutalSlash"] = spells.brutalSlash.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
