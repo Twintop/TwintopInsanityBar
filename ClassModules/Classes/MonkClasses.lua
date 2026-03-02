@@ -251,6 +251,7 @@ end
 ---@field public combatWisdom TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public communionWithWind TRB.Classes.SpellBase
+---@field public whirlingDragonPunch TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
