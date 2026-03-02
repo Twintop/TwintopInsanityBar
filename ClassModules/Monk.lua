@@ -737,14 +737,6 @@ local function HandleSpellEvents(self, event, ...)
 			if spellId == spells.danceOfChiJi.id then -- Surge of Light
 				snapshotData.attributes.danceOfChiJiActive = false
 				snapshotData.audio.danceOfChiJiPlayed = false
-				
-				snapshotData.attributes.danceOfChiJiActiveGrace = true
-
-				C_Timer.After(0, function()
-					C_Timer.After(0.05, function()
-						snapshotData.attributes.danceOfChiJiActiveGrace = false
-					end)
-				end)
 			end
 		end
 	end
