@@ -332,7 +332,7 @@ local function RefreshLookupData_Blood()
 	-- Apply overcap color if enabled
 	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	else
@@ -428,7 +428,7 @@ local function RefreshLookupData_Frost()
 	-- Apply overcap color if enabled
 	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	else
@@ -524,7 +524,7 @@ local function RefreshLookupData_Unholy()
 	-- Apply overcap color if enabled
 	local currentRunicPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRunicPower = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
 	else
@@ -782,7 +782,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -887,7 +887,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -992,7 +992,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else

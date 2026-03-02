@@ -639,7 +639,7 @@ local function RefreshLookupData_Balance()
 	local currentAstralPower
 	local castingAstralPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		--$astralPower
 		currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
@@ -784,7 +784,7 @@ local function RefreshLookupData_Feral()
 	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
 	-- Stealth takes precedence over overcap for Feral
 	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -888,7 +888,7 @@ local function RefreshLookupData_Guardian()
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
 	else
@@ -1803,7 +1803,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
 				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -1873,6 +1873,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				local apcActive = IsApexPredatorsCravingActive()
+				local barColorCurveResult = nil
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
@@ -2080,13 +2081,20 @@ local function UpdateResourceBar()
 							barColor = specSettings.colors.bar.clearcasting.color
 						end
 
-						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
-							barColor = specSettings.colors.bar.maxBite.color
-						end						
+						-- Use a ColorCurve to check the 50 Energy threshold for max bite color,
+						-- since Energy is a secret value and IsUsable() triggers at 25 (base cost) not 50 (max cost)
+						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 then
+							local maxBiteCost = spells.ferociousBiteMaximum:GetPrimaryResourceCost()
+							local maxEnergy = TRB.Data.character.maxEnergy or 100
+							local maxBitePercent = maxBiteCost / maxEnergy
+							local maxBiteCurve = TRB.Functions.Color:GetStepColorCurve("feralMaxBite", barColor, specSettings.colors.bar.maxBite.color, maxBitePercent)
+							barColorCurveResult = UnitPowerPercent("player", displayResourceType, true, maxBiteCurve)
+						end
 
 						if apcActive then
 							if specSettings.colors.bar.apexPredator.enabled then
 								barColor = specSettings.colors.bar.apexPredator.color
+								barColorCurveResult = nil -- APC overrides the maxBite curve
 							end
 
 							if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
@@ -2104,7 +2112,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2112,7 +2120,14 @@ local function UpdateResourceBar()
 					end
 				end
 
-				primaryNode:SetColor(barColor)
+				if barColorCurveResult ~= nil then
+					primaryNode:SetColorCurve(barColorCurveResult)
+					-- Invalidate the color cache so the next SetColor() call won't be skipped
+					-- (SetColorCurve bypasses the cache by setting vertex color directly)
+					TRB.Data.cache.colors.bar[primaryNode.name .. "_resource"] = nil
+				else
+					primaryNode:SetColor(barColor)
+				end
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
@@ -2354,7 +2369,7 @@ local function UpdateResourceBar()
 
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2438,7 +2453,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
 				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else

@@ -15,7 +15,7 @@ local content = [====[
 # 12.0.1.21-release (2026-03-02)
 ## General
 
-- When ghandling spell cast info, guard against spells that don't have any iconID supplied via the API.
+- When handling spell cast info, guard against spells that don't have any iconID supplied via the API.
 
 ## Evoker
 ### Devastation
