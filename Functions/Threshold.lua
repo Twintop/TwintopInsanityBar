@@ -434,12 +434,12 @@ function TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings)
 	)
 end
 
----Applies a ColorCurve-based color to a multicast threshold (e.g., 2x/3x spell costs).
+---Applies a ColorCurve-based color to a threshold (e.g., 2x/3x multicast or split-cost min/max).
 ---This method checks for valid target and range before applying the curve color.
 ---If no valid target or out of range, it returns false so the caller can fall back to normal color handling.
 ---@param spell TRB.Classes.SpellThreshold # The spell threshold being processed
 ---@param threshold table # The threshold frame
----@param thresholdCurve table # The ColorCurve created by BuildMulticastThresholdCurve
+---@param thresholdCurve table # The ColorCurve created by BuildThresholdCurve
 ---@param resourceType number # The resource type (e.g., TRB.Data.resource or Enum.PowerType.*)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase # The spec settings
 ---@param iconCurve table? # Optional icon vertex color curve for desaturation mimicry
@@ -447,7 +447,7 @@ end
 ---@param pairOffset integer # Offset for stacking multiple thresholds
 ---@param isUsable boolean # Whether the base (1x) threshold is usable (has enough resources)
 ---@return boolean # True if curve color was applied, false if caller should use normal color handling
-function TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable)
+function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable)
 	if not threshold or not thresholdCurve then
 		return false
 	end
@@ -502,7 +502,7 @@ function TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(spell, thresh
 			threshold.icon.texture:SetDesaturated(false)
 			-- Apply icon vertex color curve if provided (for desaturation mimicry)
 			if iconCurve and settings.thresholds.icons.desaturated then
-				local iconColorResult = TRB.Functions.Color:EvaluateMulticastThresholdCurve(iconCurve, resourceType)
+				local iconColorResult = TRB.Functions.Color:EvaluateThresholdCurve(iconCurve, resourceType)
 				if iconColorResult then
 					TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
 				end
@@ -519,7 +519,7 @@ function TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(spell, thresh
 	end
 
 	-- Valid target and in range - apply the curve color
-	local curveColorResult = TRB.Functions.Color:EvaluateMulticastThresholdCurve(thresholdCurve, resourceType)
+	local curveColorResult = TRB.Functions.Color:EvaluateThresholdCurve(thresholdCurve, resourceType)
 	if curveColorResult then
 		TRB.Functions.Color:SetThresholdColorFromCurve(threshold, curveColorResult)
 	end

@@ -312,7 +312,7 @@ local function RefreshLookupData_Elemental()
 	local currentMaelstrom
 	local castingMaelstrom
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		--$maelstrom
 		currentMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.attributes.resource))
@@ -881,7 +881,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else

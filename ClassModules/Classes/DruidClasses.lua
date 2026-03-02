@@ -370,7 +370,6 @@ end
 ---@field public swipe TRB.Classes.SpellComboPointThreshold
 ---@field public primalWrath TRB.Classes.SpellComboPointThreshold
 ---@field public moonfire TRB.Classes.SpellComboPointThreshold
----@field public brutalSlash TRB.Classes.SpellComboPointThreshold
 ---@field public feralFrenzy TRB.Classes.SpellComboPointThreshold
 ---@field public franticFrenzy TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
@@ -432,19 +431,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         tickRate = 1.5,
         duration = 15,
         offset = 0
-    })
-    self.brutalSlash = TRB.Classes.SpellComboPointThreshold:New({
-        id = 202028,
-        cooldown = 8,
-        isHasted = true,
-        primaryResourceType = Enum.PowerType.Energy,
-        comboPointsGenerated = 1,
-        settingKey = "brutalSlash",
-        isSnowflake = true,
-        isTalent = true,
-        hasCooldown = true,
-        isClearcasting = true,
-        hasCharges = true
     })
     self.feralFrenzy = TRB.Classes.SpellComboPointThreshold:New({
         id = 274837,
@@ -534,7 +520,6 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
-		{ variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBiteMinimum.icon, description = spells.ferociousBiteMinimum.name, printInSettings = true },

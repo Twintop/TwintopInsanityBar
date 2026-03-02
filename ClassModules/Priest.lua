@@ -769,7 +769,7 @@ local function RefreshLookupData_Shadow()
 
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
 		castingInsanity = textColorResult:WrapTextInColorCode(TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
@@ -1771,7 +1771,7 @@ local function UpdateResourceBar()
 				-- Build overcap border curve if enabled
 				local overcapBorderCurve = nil
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 				end
 
 				-- Get resourceFrame and thresholds from the BarNode
@@ -1821,7 +1821,7 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
-								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+								local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
 									specCacheSettings.colors.threshold.under.color,
@@ -1829,7 +1829,7 @@ local function UpdateResourceBar()
 								)
 								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+								local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 								)
 								if curveApplied then
@@ -1849,7 +1849,7 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
-								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+								local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
 									specCacheSettings.colors.threshold.under.color,
@@ -1857,7 +1857,7 @@ local function UpdateResourceBar()
 								)
 								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+								local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 								)
 								if curveApplied then

@@ -368,7 +368,7 @@ local function RefreshLookupData_Arms()
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
 		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -437,7 +437,7 @@ local function RefreshLookupData_Fury()
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
 		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -525,7 +525,7 @@ local function RefreshLookupData_Protection()
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
 		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -901,10 +901,34 @@ local function UpdateResourceBar()
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.executeMinimum.id then
-							if isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								showThreshold = false
+							if spell.settingKey == "executeMinimum" then
+								if isUsable then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									showThreshold = false
+								end
+							elseif spell.settingKey == "executeMaximum" then
+								if isUsable then
+									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
+										1,
+										resourceAmount,
+										specCacheSettings.colors.threshold.under.color,
+										specCacheSettings.colors.threshold.over.color
+									)
+									local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(1, resourceAmount)
+									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+									local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
+										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+									)
+									if curveApplied then
+										thresholdColor = nil -- Skip normal color application
+									else
+										thresholdColor = specCacheSettings.colors.threshold.under.color
+									end
+								else
+									showThreshold = false
+								end
 							end
 						elseif spell.id == spells.whirlwind.id then
 							if talents:IsTalentActive(spells.cleave) then
@@ -963,7 +987,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -1029,6 +1053,29 @@ local function UpdateResourceBar()
 						if spell.id == spells.execute.id then
 							if talents:IsTalentActive(spells.improvedExecute) then
 								showThreshold = false
+							elseif spell.settingKey == "executeMaximum" then
+								if isUsable then
+									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
+										1,
+										resourceAmount,
+										specCacheSettings.colors.threshold.under.color,
+										specCacheSettings.colors.threshold.over.color
+									)
+									local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(1, resourceAmount)
+									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+									local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
+										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+									)
+									if curveApplied then
+										thresholdColor = nil -- Skip normal color application
+									else
+										thresholdColor = specCacheSettings.colors.threshold.under.color
+									end
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							else
 								if isUsable then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1085,7 +1132,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -1158,12 +1205,36 @@ local function UpdateResourceBar()
 						showThreshold = false
 					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.executeMinimum.id then
-							if isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								showThreshold = false
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+							if spell.settingKey == "executeMinimum" then
+								if isUsable then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									showThreshold = false
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							elseif spell.settingKey == "executeMaximum" then
+								if isUsable then
+									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
+										1,
+										resourceAmount,
+										specCacheSettings.colors.threshold.under.color,
+										specCacheSettings.colors.threshold.over.color
+									)
+									local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(1, resourceAmount)
+									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+									local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
+										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+									)
+									if curveApplied then
+										thresholdColor = nil -- Skip normal color application
+									else
+										thresholdColor = specCacheSettings.colors.threshold.under.color
+									end
+								else
+									showThreshold = false
+								end
 							end
 						end
 					elseif resourceAmount == 0 then
@@ -1202,7 +1273,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else

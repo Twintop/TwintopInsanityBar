@@ -15,12 +15,23 @@ local content = [====[
 # 12.0.1.21-release (2026-03-02)
 ## General
 
-- When ghandling spell cast info, guard against spells that don't have any iconID supplied via the API.
+- When handling spell cast info, guard against spells that don't have any iconID supplied via the API.
+
+## Druid
+### Feral
+
+- [#666](#666) Restore correct usability threshold line color for Bite/Ravage's max Energy cost.
+- [#666](#666) In addition to requiring 5 Combo Points, only show the "Max Bite" color when at or above 50 Energy, not just when Bite/Ravage is at any usable Energy level.
+- [#666](#666) Remove outdated references to Brutal Slash.
 
 ## Evoker
 ### Devastation
 
 - Fix an issue where the Dragonrage buff would sometimes not be extended (with Animosity talented) due to spellIDs being changed by other talents.
+
+## Warrior
+
+- [#666](#666) Restore correct usability threshold line color for Execute's max Rage cost.
 
 ---
 

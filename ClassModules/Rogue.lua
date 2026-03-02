@@ -508,7 +508,7 @@ local function RefreshLookupData_Assassination()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
 	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -593,7 +593,7 @@ local function RefreshLookupData_Outlaw()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
 	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -746,7 +746,7 @@ local function RefreshLookupData_Subtlety()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
 	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -1095,7 +1095,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -1399,7 +1399,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbBad)]]
 					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -1686,7 +1686,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else

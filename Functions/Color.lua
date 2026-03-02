@@ -222,36 +222,36 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 	end
 end
 
--- Overcap ColorCurve cache
+-- Step ColorCurve cache (used for resource threshold color transitions)
 TRB.Data.cache = TRB.Data.cache or {}
-TRB.Data.cache.overcapColorCurves = TRB.Data.cache.overcapColorCurves or {}
+TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
----Creates and caches an overcap ColorCurve that transitions from normalColor to overcapColor at the overcap threshold
+---Creates and caches a Step ColorCurve that transitions from belowColor to aboveColor at the given threshold
 ---@param cacheKey string # Unique key for caching (e.g., specName + color combination)
----@param normalColor string # ARGB hex color string for below threshold
----@param overcapColor string # ARGB hex color string for at/above threshold
----@param overcapPercent number # The percentage (0-1) at which the color should change to overcapColor
+---@param belowColor string # ARGB hex color string for below threshold
+---@param aboveColor string # ARGB hex color string for at/above threshold
+---@param thresholdPercent number # The percentage (0-1) at which the color should change to aboveColor
 ---@return any # The cached ColorCurve
-function TRB.Functions.Color:GetOvercapColorCurve(cacheKey, normalColor, overcapColor, overcapPercent)
-	local cache = TRB.Data.cache.overcapColorCurves
-	local fullKey = cacheKey .. "_" .. normalColor .. "_" .. overcapColor .. "_" .. tostring(overcapPercent)
+function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor, thresholdPercent)
+	local cache = TRB.Data.cache.stepColorCurves
+	local fullKey = cacheKey .. "_" .. belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 	
 	if cache[fullKey] == nil then
 		local curve = C_CurveUtil.CreateColorCurve()
 		curve:SetType(Enum.LuaCurveType.Step)
 		
-		local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
-		local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
+		local belowR, belowG, belowB, belowA = TRB.Functions.Color:GetRGBAFromString(belowColor, true)
+		local aboveR, aboveG, aboveB, aboveA = TRB.Functions.Color:GetRGBAFromString(aboveColor, true)
 		
-		local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
-		local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
+		local belowColorObj = CreateColor(belowR, belowG, belowB, belowA)
+		local aboveColorObj = CreateColor(aboveR, aboveG, aboveB, aboveA)
 		
 		-- Step curve: color changes AT the threshold point
-		-- Add point at 0 for normal color, at threshold for overcap color
+		-- Add point at 0 for below color, at threshold for above color
 		-- Add point beyond 1.0 to handle values that exceed max resource
-		curve:AddPoint(0, normalColorObj)
-		curve:AddPoint(overcapPercent, overcapColorObj)
-		curve:AddPoint(2.0, overcapColorObj) -- Extend beyond 100% to handle overflow
+		curve:AddPoint(0, belowColorObj)
+		curve:AddPoint(thresholdPercent, aboveColorObj)
+		curve:AddPoint(2.0, aboveColorObj) -- Extend beyond 100% to handle overflow
 		
 		cache[fullKey] = curve
 	end
@@ -259,17 +259,17 @@ function TRB.Functions.Color:GetOvercapColorCurve(cacheKey, normalColor, overcap
 	return cache[fullKey]
 end
 
----Evaluates an overcap ColorCurve and returns the appropriate color string
+---Evaluates a Step ColorCurve and returns the appropriate color string
 ---@param spec table # The spec settings containing overcap configuration
----@param normalColor string # ARGB hex color string for below threshold
----@param overcapColor string # ARGB hex color string for at/above threshold  
+---@param belowColor string # ARGB hex color string for below threshold
+---@param aboveColor string # ARGB hex color string for at/above threshold  
 ---@param currentResourcePercent number # Current resource percentage (0-1)
 ---@param maxResource number # Maximum resource value
 ---@param cacheKey string # Unique key for caching
----@return string # The color string to use (either normalColor or overcapColor based on threshold)
-function TRB.Functions.Color:GetOvercapColor(spec, normalColor, overcapColor, currentResourcePercent, maxResource, cacheKey)
+---@return string # The color string to use (either belowColor or aboveColor based on threshold)
+function TRB.Functions.Color:EvaluateStepColor(spec, belowColor, aboveColor, currentResourcePercent, maxResource, cacheKey)
 	if spec.overcap == nil then
-		return normalColor
+		return belowColor
 	end
 	
 	-- Calculate the overcap threshold
@@ -280,11 +280,11 @@ function TRB.Functions.Color:GetOvercapColor(spec, normalColor, overcapColor, cu
 		overcapThreshold = spec.overcap.fixed or maxResource
 	end
 	
-	-- Calculate the percentage where overcap triggers
-	local overcapPercent = overcapThreshold / maxResource
+	-- Calculate the percentage where the threshold triggers
+	local thresholdPercent = overcapThreshold / maxResource
 	
 	-- Get the cached curve
-	local curve = TRB.Functions.Color:GetOvercapColorCurve(cacheKey, normalColor, overcapColor, overcapPercent)
+	local curve = TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor, thresholdPercent)
 	
 	-- Evaluate the curve at current resource percentage
 	local colorResult = curve:Evaluate(currentResourcePercent)
@@ -296,68 +296,68 @@ function TRB.Functions.Color:GetOvercapColor(spec, normalColor, overcapColor, cu
 		return result
 	end
 	
-	return normalColor
+	return belowColor
 end
 
----Clears the overcap ColorCurve cache (call when settings change)
-function TRB.Functions.Color:ClearOvercapColorCurveCache()
-	TRB.Data.cache.overcapColorCurves = {}
+---Clears the Step ColorCurve cache (call when settings change)
+function TRB.Functions.Color:ClearStepColorCurveCache()
+	TRB.Data.cache.stepColorCurves = {}
 end
 
----Builds an overcap ColorCurve for use with UnitPowerPercent
+---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
 ---@param specSettings table The spec-specific settings table (e.g., specSettings.overcap)
----@param normalColor string The normal color hex string (e.g., "FF00FF00")
----@param overcapColor string The overcap color hex string
+---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
+---@param aboveColor string The color hex string for at/above threshold
 ---@return table colorCurve A ColorCurve object ready for UnitPowerPercent
-function TRB.Functions.Color:BuildOvercapCurve(specSettings, normalColor, overcapColor)
+function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColor, aboveColor)
 	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
-	local overcapThreshold = maxResource
+	local thresholdValue = maxResource
 
 	if specSettings and specSettings.overcap then
 		if specSettings.overcap.mode == "relative" then
-			overcapThreshold = maxResource + (specSettings.overcap.relative or 0)
+			thresholdValue = maxResource + (specSettings.overcap.relative or 0)
 		else
-			overcapThreshold = specSettings.overcap.fixed or maxResource
+			thresholdValue = specSettings.overcap.fixed or maxResource
 		end
 	end
 
-	local overcapPercent = overcapThreshold / maxResource
+	local thresholdPercent = thresholdValue / maxResource
 
 	-- Check cache first
-	local cache = TRB.Data.cache.overcapColorCurves
-	local cacheKey = normalColor .. "_" .. overcapColor .. "_" .. tostring(overcapPercent)
+	local cache = TRB.Data.cache.stepColorCurves
+	local cacheKey = belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 	
 	if cache[cacheKey] then
 		return cache[cacheKey]
 	end
 
-	local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
-	local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
+	local belowR, belowG, belowB, belowA = TRB.Functions.Color:GetRGBAFromString(belowColor, true)
+	local aboveR, aboveG, aboveB, aboveA = TRB.Functions.Color:GetRGBAFromString(aboveColor, true)
 
-	local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
-	local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
+	local belowColorObj = CreateColor(belowR, belowG, belowB, belowA)
+	local aboveColorObj = CreateColor(aboveR, aboveG, aboveB, aboveA)
 
 	local colorCurve = C_CurveUtil.CreateColorCurve()
 	colorCurve:SetType(Enum.LuaCurveType.Step)
-	colorCurve:AddPoint(0, normalColorObj)
-	colorCurve:AddPoint(overcapPercent, overcapColorObj)
+	colorCurve:AddPoint(0, belowColorObj)
+	colorCurve:AddPoint(thresholdPercent, aboveColorObj)
 
 	cache[cacheKey] = colorCurve
 	return colorCurve
 end
 
--- Multicast threshold ColorCurve cache
-TRB.Data.cache.multicastThresholdCurves = TRB.Data.cache.multicastThresholdCurves or {}
+-- Threshold ColorCurve cache
+TRB.Data.cache.thresholdCurves = TRB.Data.cache.thresholdCurves or {}
 
----Builds a threshold ColorCurve for multicast thresholds (2x, 3x) that transitions from underColor to overColor
----at the specified cost percentage. Uses the existing cache infrastructure.
----@param costMultiplier number # The cost multiplier (2 for 2x, 3 for 3x)
----@param baseCost number # The base cost of the spell (1x cost)
+---Builds a threshold ColorCurve that transitions from underColor to overColor
+---at the specified cost percentage. Used for multicast (2x/3x) and split-cost (min/max) thresholds.
+---@param costMultiplier number # The cost multiplier (e.g., 2 for 2x cost, or primaryResourceTypeMod)
+---@param baseCost number # The base (1x) cost of the spell
 ---@param underColor string # ARGB hex color for when player cannot afford
 ---@param overColor string # ARGB hex color for when player can afford
 ---@return LuaColorCurveObject? colorCurve # A ColorCurve object ready for use with UnitPowerPercent
-function TRB.Functions.Color:BuildMulticastThresholdCurve(costMultiplier, baseCost, underColor, overColor)
-	local cache = TRB.Data.cache.multicastThresholdCurves
+function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, underColor, overColor)
+	local cache = TRB.Data.cache.thresholdCurves
 	
 	-- Use maxResourceUnmodified to match UnitPowerPercent's internal calculation
 	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
@@ -392,17 +392,17 @@ function TRB.Functions.Color:BuildMulticastThresholdCurve(costMultiplier, baseCo
 	return colorCurve
 end
 
----Clears the multicast threshold ColorCurve cache (call when settings change)
-function TRB.Functions.Color:ClearMulticastThresholdCurveCache()
-	TRB.Data.cache.multicastThresholdCurves = {}
+---Clears the threshold ColorCurve cache (call when settings change)
+function TRB.Functions.Color:ClearThresholdCurveCache()
+	TRB.Data.cache.thresholdCurves = {}
 end
 
----Evaluates a multicast threshold curve using UnitPowerPercent and returns the color object
+---Evaluates a threshold curve using UnitPowerPercent and returns the color object
 ---Uses UnitPowerPercent to safely handle secret resource values in Midnight
 ---@param colorCurve table # The ColorCurve to evaluate
 ---@param resourceType number # The Enum.PowerType for the resource (e.g., Enum.PowerType.Insanity)
 ---@return table|nil # The color object result from UnitPowerPercent, or nil if evaluation fails
-function TRB.Functions.Color:EvaluateMulticastThresholdCurve(colorCurve, resourceType)
+function TRB.Functions.Color:EvaluateThresholdCurve(colorCurve, resourceType)
 	-- Use UnitPowerPercent with the curve to safely evaluate against secret resource values
 	-- Returns a color object that can be passed directly to SetColorTexture/GetRGBA
 	return UnitPowerPercent("player", resourceType, true, colorCurve)
