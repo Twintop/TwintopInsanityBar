@@ -1121,6 +1121,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			local cdrSpell = nil
 			if spellId == spells.smite.id then
 				cdrSpell = spells.smite
+			elseif spellId == spells.holyNova.id then
+				cdrSpell = spells.holyNova
 			elseif spellId == spells.holyFire.id and talents:IsTalentActive(spells.voiceOfHarmony) then
 				cdrSpell = spells.holyFire
 			elseif spellId == spells.flashHeal.id then
@@ -1139,6 +1141,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			elseif spellId == spells.halo.id and talents:IsTalentActive(spells.voiceOfHarmony) and not talents:IsTalentActive(spells.powerSurge) then
 				-- If Power Surge is talented, Halo CDR gets handled above.
 				cdrSpell = spells.halo
+			elseif spellId == spells.prayerOfMending.id and talents:IsTalentActive(spells.voiceOfHarmony) then
+				cdrSpell = spells.prayerOfMending
 			end
 
 			if cdrSpell ~= nil then
@@ -1601,16 +1605,23 @@ local function UpdateResourceBar()
 				if maybeHolyWordSpell ~= nil and
 					maybeHolyWordSpell.holyWordKey ~= nil and
 					maybeHolyWordSpell.holyWordReduction ~= nil and
-					maybeHolyWordSpell.holyWordReduction >= 0 and
-					talents:IsTalentActive(spells[maybeHolyWordSpell.holyWordKey]) then
+					maybeHolyWordSpell.holyWordReduction >= 0 then
 
-					local castTimeRemains = snapshotData.casting.endTime - currentTime
-					local holyWordCooldownRemaining = snapshots[spells[maybeHolyWordSpell.holyWordKey].id].cooldown:GetRemainingTime(currentTime)
-					local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
+					-- Ultimate Serenity redirects Sanctify CDR to Serenity
+					local effectiveHolyWordKey = maybeHolyWordSpell.holyWordKey
+					if effectiveHolyWordKey == "holyWordSanctify" and talents:IsTalentActive(spells.ultimateSerenity) then
+						effectiveHolyWordKey = "holyWordSerenity"
+					end
 
-					if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
-						holyWordCooldownCompletes = true
-						holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
+					if talents:IsTalentActive(spells[effectiveHolyWordKey]) then
+						local castTimeRemains = snapshotData.casting.endTime - currentTime
+						local holyWordCooldownRemaining = snapshots[spells[effectiveHolyWordKey].id].cooldown:GetRemainingTime(currentTime)
+						local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
+
+						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
+							holyWordCooldownCompletes = true
+							holyWordCooldownCompletesKey = effectiveHolyWordKey
+						end
 					end
 				end
 			end

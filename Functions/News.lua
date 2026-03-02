@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.1.22-release (2026-03-02)
+## Priest
+### Holy
+
+- Include Prayer of Mending and Holy Nova in cooldown reduction tracking for Holy Words.
+- Prevent the Holy Word: Sanctify cooldown reduction from being misattributed when talented into Ultimate Serenity.
+
+---
+
 # 12.0.1.21-release (2026-03-02)
 ## General
 

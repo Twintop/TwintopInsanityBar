@@ -184,6 +184,7 @@ end
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public halo TRB.Classes.Priest.HolyWordSpell
 ---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
@@ -234,6 +235,12 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
 		isTalent = true
 	})
+	self.holyNova = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 132157,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 4,
+		isTalent = true
+	})
 
 	-- Holy Word: Sanctify
 	self.holyWordSanctify = TRB.Classes.SpellBase:New({
@@ -278,6 +285,11 @@ function TRB.Classes.Priest.HolySpells:New()
 		attributes = {
 			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
 		}
+	})
+	self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 33076,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 4, -- Per rank of Voice of Harmony
 	})
 
 	-- Holy Baseline Abilities
