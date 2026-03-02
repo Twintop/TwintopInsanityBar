@@ -1821,7 +1821,7 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
-								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+								local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
 									specCacheSettings.colors.threshold.under.color,
@@ -1829,7 +1829,7 @@ local function UpdateResourceBar()
 								)
 								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+								local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 								)
 								if curveApplied then
@@ -1849,7 +1849,7 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
-								local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+								local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
 									specCacheSettings.colors.threshold.under.color,
@@ -1857,7 +1857,7 @@ local function UpdateResourceBar()
 								)
 								local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-								local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+								local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 									spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 								)
 								if curveApplied then

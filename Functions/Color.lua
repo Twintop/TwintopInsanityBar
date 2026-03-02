@@ -346,18 +346,18 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 	return colorCurve
 end
 
--- Multicast threshold ColorCurve cache
-TRB.Data.cache.multicastThresholdCurves = TRB.Data.cache.multicastThresholdCurves or {}
+-- Threshold ColorCurve cache
+TRB.Data.cache.thresholdCurves = TRB.Data.cache.thresholdCurves or {}
 
----Builds a threshold ColorCurve for multicast thresholds (2x, 3x) that transitions from underColor to overColor
----at the specified cost percentage. Uses the existing cache infrastructure.
----@param costMultiplier number # The cost multiplier (2 for 2x, 3 for 3x)
----@param baseCost number # The base cost of the spell (1x cost)
+---Builds a threshold ColorCurve that transitions from underColor to overColor
+---at the specified cost percentage. Used for multicast (2x/3x) and split-cost (min/max) thresholds.
+---@param costMultiplier number # The cost multiplier (e.g., 2 for 2x cost, or primaryResourceTypeMod)
+---@param baseCost number # The base (1x) cost of the spell
 ---@param underColor string # ARGB hex color for when player cannot afford
 ---@param overColor string # ARGB hex color for when player can afford
 ---@return LuaColorCurveObject? colorCurve # A ColorCurve object ready for use with UnitPowerPercent
-function TRB.Functions.Color:BuildMulticastThresholdCurve(costMultiplier, baseCost, underColor, overColor)
-	local cache = TRB.Data.cache.multicastThresholdCurves
+function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, underColor, overColor)
+	local cache = TRB.Data.cache.thresholdCurves
 	
 	-- Use maxResourceUnmodified to match UnitPowerPercent's internal calculation
 	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
@@ -392,17 +392,17 @@ function TRB.Functions.Color:BuildMulticastThresholdCurve(costMultiplier, baseCo
 	return colorCurve
 end
 
----Clears the multicast threshold ColorCurve cache (call when settings change)
-function TRB.Functions.Color:ClearMulticastThresholdCurveCache()
-	TRB.Data.cache.multicastThresholdCurves = {}
+---Clears the threshold ColorCurve cache (call when settings change)
+function TRB.Functions.Color:ClearThresholdCurveCache()
+	TRB.Data.cache.thresholdCurves = {}
 end
 
----Evaluates a multicast threshold curve using UnitPowerPercent and returns the color object
+---Evaluates a threshold curve using UnitPowerPercent and returns the color object
 ---Uses UnitPowerPercent to safely handle secret resource values in Midnight
 ---@param colorCurve table # The ColorCurve to evaluate
 ---@param resourceType number # The Enum.PowerType for the resource (e.g., Enum.PowerType.Insanity)
 ---@return table|nil # The color object result from UnitPowerPercent, or nil if evaluation fails
-function TRB.Functions.Color:EvaluateMulticastThresholdCurve(colorCurve, resourceType)
+function TRB.Functions.Color:EvaluateThresholdCurve(colorCurve, resourceType)
 	-- Use UnitPowerPercent with the curve to safely evaluate against secret resource values
 	-- Returns a color object that can be passed directly to SetColorTexture/GetRGBA
 	return UnitPowerPercent("player", resourceType, true, colorCurve)
