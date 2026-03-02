@@ -2081,3 +2081,7 @@ L["MonkWindwalkerCheckboxDanceOfChiJi"] = "Dance of Chi-Ji proc"
 L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"] = "This will change the bar border color when you have a Dance of Chi-Ji proc and are able to use Spinning Crane Kick without spending Chi."
 L["MonkWindwalkerAudioCheckboxDanceOfChiJi"] = "Play audio cue when a Dance of Chi-Ji proc occurs"
 L["MonkWindwalkerAudioCheckboxDanceOfChiJiTooltip"] = "Play an audio cue when a Dance of Chi-Ji proc occurs. This will only play when you do not already have Dance of Chi-Ji."
+
+L["PaladinHolyPowerColorPickerBase"] = "1st Holy Power"
+L["PaladinHolyPowerColorPickerSecond"] = "2nd Holy Power"
+L["PaladinHolyPowerColorPickerThird"] = "3rd Holy Power"

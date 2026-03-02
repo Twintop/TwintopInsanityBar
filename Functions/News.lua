@@ -36,6 +36,10 @@ local content = [====[
 - [#668](#668) Restore support for Heart of the Jade Serpent triggering ability ready and buff active border color changes. Add Whirling Dragon Punch to Strike of the Windlord as potential triggers.
 - [#668](#668) Restore Dance of Chi-Ji proc detection, allowing for bar border color change and audio cues to return.
 
+## Paladin
+
+- [#662](#662) Add independent color options for the 2nd and 3rd Holy Power bars.
+
 ## Warrior
 
 - [#666](#666) Restore correct usability threshold line color for Execute's max Rage cost.

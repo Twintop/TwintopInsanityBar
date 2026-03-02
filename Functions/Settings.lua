@@ -3260,6 +3260,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
 		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FFFCE58E" }
+		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FFFFC800" }
+		end
 	end
 
 	-- Paladin Protection colors.bar migration from flat string to table format
@@ -3302,6 +3308,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
 		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FFFCE58E" }
+		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FFFCE58E" }
+		end
 	end
 
 	-- Paladin Retribution colors.bar migration from flat string to table format
@@ -3343,6 +3355,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
+		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FFFCE58E" }
+		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FFFCE58E" }
 		end
 	end
 
