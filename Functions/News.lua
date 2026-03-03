@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.23-release (2026-03-03)
+## Druid
+
+- Fix a Lua error when applying combo point bar appearance for non-Feral Druid specs during initialization, caused by accessing Feral's combo point color settings before they were fully populated.
+
+---
+
 # 12.0.1.22-release (2026-03-02)
 ## Priest
 ### Holy
