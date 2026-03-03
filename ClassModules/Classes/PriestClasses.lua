@@ -189,6 +189,7 @@ end
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
 ---@field public energyCycle TRB.Classes.Priest.HolyWordSpell
+---@field public benediction TRB.Classes.Priest.HolyWordSpell
 ---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -202,7 +203,6 @@ end
 ---@field public lightwell TRB.Classes.SpellBase
 ---@field public answeredPrayers TRB.Classes.SpellBase
 ---@field public heal TRB.Classes.Priest.HolyWordSpell]]
----@field public benediction TRB.Classes.SpellBase
 ---@field public eternalSanctity TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
@@ -291,6 +291,13 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
 	})
+	self.benediction = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 1262763,
+		talentId = 1262755,
+		isTalent = true,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 6,
+	})
 
 	-- Holy Baseline Abilities
 
@@ -356,11 +363,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		id = 1215245,
 		isTalent = true,
 		durationMod = 12
-	})
-
-	self.benediction = TRB.Classes.SpellBase:New({
-		id = 1262755,
-		isTalent = true
 	})
 	-- Set Bonuses
 

@@ -452,11 +452,10 @@ local function CalculateHolyWordDuration(holyWordSpell)
 	return duration
 end
 
----comment
+---Calculates the amount of CDR based on modifiers
 ---@param base number
----@param spellId integer
 ---@return number
-local function CalculateHolyWordCooldown(base, spellId)
+local function CalculateHolyWordCooldown(base)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
@@ -1036,6 +1035,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 			if spellId == spells.flashHeal.id then
 				casting.spellKey = "flashHeal"
+			elseif spellId == spells.benediction.id then
+				casting.spellKey = "benediction"
 			elseif spellId == spells.prayerOfHealing.id then
 				casting.spellKey = "prayerOfHealing"
 			elseif spellId == spells.smite.id then
@@ -1069,7 +1070,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								end
 
 								if cooldown.onCooldown then
-									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction, spells.holyWordSanctify.id)
+									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction)
 									cooldown:ReduceCooldown(cdrAmount)
 								end
 							end
@@ -1125,16 +1126,34 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				cdrSpell = spells.holyNova
 			elseif spellId == spells.holyFire.id and talents:IsTalentActive(spells.voiceOfHarmony) then
 				cdrSpell = spells.holyFire
-			elseif spellId == spells.flashHeal.id then
-				cdrSpell = spells.flashHeal
+			elseif spellId == spells.flashHeal.id then -- or spellId == spells.benediction.id then
+				if spellId == spells.flashHeal.id then
+					cdrSpell = spells.flashHeal
+				else
+					cdrSpell = spells.benediction
+				end
+
 				if (snapshotData.attributes.surgeOfLightActive or snapshotData.attributes.surgeOfLightActiveGrace) and talents:IsTalentActive(spells.energyCycle) then
-					local cooldown = snapshots[spells.holyWordSanctify.id].cooldown
+					local cooldownSpell = spells.holyWordSanctify
 
 					if talents:IsTalentActive(spells.ultimateSerenity) then
-						cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+						cooldownSpell = spells.holyWordSerenity
 					end
 
-					cooldown:ReduceCooldown(spells.energyCycle.holyWordReduction, CalculateHolyWordDuration(spells.holyWordSanctify))
+					local cooldown = snapshots[cooldownSpell.id].cooldown
+				
+					if cooldown.onCooldown then
+						local cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
+						cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(cooldownSpell))
+					end
+				end
+			elseif spellId == spells.benediction.id then
+				cdrSpell = spells.benediction
+				--NOTE: This is a bug. Remove the check and merge benediction in with 
+				if talents:IsTalentActive(spells.energyCycle) and talents:IsTalentActive(spells.ultimateSerenity) then
+					local cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+					local cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
+					cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(spells.holyWordSerenity))
 				end
 			elseif spellId == spells.prayerOfHealing.id then
 				cdrSpell = spells.prayerOfHealing
@@ -1157,7 +1176,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					if targetSpell and talents:IsTalentActive(targetSpell) then
 						local cooldown = snapshots[targetSpell.id].cooldown
 						if cooldown.onCooldown then
-							local cdrAmount = CalculateHolyWordCooldown(hwSpell.holyWordReduction, spellId)
+							local cdrAmount = CalculateHolyWordCooldown(hwSpell.holyWordReduction)
 							cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
 						end
 					end
@@ -1613,10 +1632,17 @@ local function UpdateResourceBar()
 						effectiveHolyWordKey = "holyWordSerenity"
 					end
 
+					local reduction = maybeHolyWordSpell.holyWordReduction
+
+					--NOTE: This is to handle the bug of always getting Energy Cycle CDR.
+					if maybeHolyWordSpell.id == spells.benediction.id and talents:IsTalentActive(spells.energyCycle) and talents:IsTalentActive(spells.ultimateSerenity) then
+						reduction = reduction + spells.energyCycle.holyWordReduction
+					end
+
 					if talents:IsTalentActive(spells[effectiveHolyWordKey]) then
 						local castTimeRemains = snapshotData.casting.endTime - currentTime
 						local holyWordCooldownRemaining = snapshots[spells[effectiveHolyWordKey].id].cooldown:GetRemainingTime(currentTime)
-						local calcHolyWordCooldown = CalculateHolyWordCooldown(maybeHolyWordSpell.holyWordReduction, spells[snapshotData.casting.spellKey].id)
+						local calcHolyWordCooldown = CalculateHolyWordCooldown(reduction)
 
 						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
 							holyWordCooldownCompletes = true
