@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix a Lua error when having your specialization forcebly changed by accepting a random dungeon queue with a different role.
 
+### Localization
+
+- [#669](#669) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Druid
 
 - Fix a Lua error when applying combo point bar appearance for non-Feral Druid specs during initialization, caused by accessing Feral's combo point color settings before they were fully populated.
@@ -102,7 +106,6 @@ local content = [====[
 
 # 12.0.1.17-release (2026-02-26)
 ## General
-
 ### Localization
 
 - [#660](#660) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
