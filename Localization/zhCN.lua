@@ -496,7 +496,7 @@ if locale == "zhCN" then
     L["ChiCheckboxUseHighestForAllTooltip"] = "勾选后所有真气使用最高阶颜色，例如上限5点当前4点时，全部显示倒数第二点颜色。"
     L["ChiColorPickerBackground"] = "真空气背景色"
     L["ThresholdCategoryGeneralUtility"] = "通用/功能性"
-    L["MonkWindwalkerAudioDanceOfChiJi"] = "鹤舞触发"
+    L["MonkWindwalkerAudioDanceOfChiJi"] = "赤精之舞触发"
     L["MonkMistweaverColorPickerVivify"] = "活力氤氲天赋下瞬发抚慰时的法力"
     L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
     L["MonkMistweaverCheckboxVivifyTooltip"] = "活力氤氲触发抚慰瞬发时，资源条变色。"
@@ -1945,5 +1945,18 @@ if locale == "zhCN" then
 	L["HealthBarShowIncomingHealTooltip"] = "勾选后，生命值条上会显示半透明的覆盖层，展示玩家即将获得的治疗量。"
 	L["HealthBarIncomingHealMode"] = "预期治疗显示模式"
 	L["HealthBarIncomingHealModeTooltip"] = "控制生命值条上预期治疗量的显示方式。"
+
+	L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzy"] = "野性狂怒/狂暴狂乱"
+	L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzyTooltip"] = "在能量条上显示竖线，提示使用野性狂怒或狂暴狂乱所需的能量值（已点天赋时生效）。"
+	
+	L["MonkWindwalkerColorPickerDanceOfChiJi"] = "赤精之舞触发时的边框颜色"
+	L["MonkWindwalkerCheckboxDanceOfChiJi"] = "赤精之舞触发"
+	L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"] = "当赤精之舞触发且可无需消耗真气使用神鹤引项踢时，改变条框颜色。"
+	L["MonkWindwalkerAudioCheckboxDanceOfChiJi"] = "赤精之舞触发时播放音效提示"
+	L["MonkWindwalkerAudioCheckboxDanceOfChiJiTooltip"] = "赤精之舞触发时播放音效提示。仅在尚未拥有赤精之舞效果时播放。"
+	
+	L["PaladinHolyPowerColorPickerBase"] = "第一点神圣能量"
+	L["PaladinHolyPowerColorPickerSecond"] = "第二点神圣能量"
+	L["PaladinHolyPowerColorPickerThird"] = "第三点神圣能量"
 	
 end
