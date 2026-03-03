@@ -15,7 +15,7 @@ local content = [====[
 # 12.0.1.23-release (2026-03-03)
 ## General
 
-- Fix a Lua error when having your specialization forcebly changed by accepting a random dungeon queue with a different role.
+- Fix a Lua error when having your specialization forcibly changed by accepting a random dungeon queue with a different role.
 
 ### Localization
 
