@@ -155,7 +155,8 @@ local settingKeyToCheckboxSuffix = {
 	thresholdColors = "thresholdColors",
 	displayText = "displayText",
 	textColors = "textColors",
-	precision = "precision"
+	precision = "precision",
+	globalBarText = "globalBarText"
 }
 
 -- Mapping from lowercase class name to classId for frame name resolution
@@ -318,8 +319,10 @@ end
 ---@param controlKey string # Key to store in controls.checkBoxes
 ---@param settingKey string # The global setting key (e.g., "bar", "comboPoints")
 ---@param yCoord number # Y coordinate for positioning
+---@param customLabel string? # Optional custom label text
+---@param customTooltip string? # Optional custom tooltip text
 ---@return number # Updated Y coordinate
-function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, controlKey, settingKey, yCoord)
+function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, controlKey, settingKey, yCoord, customLabel, customTooltip)
 	local f = nil
 	
 	yCoord = yCoord - 30
@@ -327,9 +330,9 @@ function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls,
 	controls.checkBoxes[controlKey] = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes[controlKey]
 	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnableForAllSpecs"])
+	getglobal(f:GetName() .. 'Text'):SetText(customLabel or L["CheckboxEnableForAllSpecs"])
 	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-	f.tooltip = L["CheckboxEnableForAllSpecsTooltip"]
+	f.tooltip = customTooltip or L["CheckboxEnableForAllSpecsTooltip"]
 	
 	-- Set initial tristate based on current values
 	local currentState = GetAllSpecsGlobalState(settingKey)
@@ -1441,8 +1444,13 @@ end
 ---@param specId integer
 ---@param tabKey string The tab key to switch to (e.g., "barText", "barDisplay")
 function TRB.Functions.OptionsUi:SwitchToTabByClassSpec(classId, specId, tabKey)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
+	local namePrefix
+	if classId == nil then
+		namePrefix = "Global"
+	else
+		local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+		namePrefix = className .. "_" .. specName
+	end
 	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. tabKey]
 	if tab then
 		TRB.Functions.OptionsUi:SwitchTab(tab, tab.id)
@@ -6427,7 +6435,40 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local namePrefix = className .. "_" .. specName .. "_barTextEditor"
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
-	
+
+	-- Per-spec "Use Global Bar Text" checkbox (skip for the global panel itself)
+	if classId ~= nil and specId ~= nil then
+		local lowerClassName = string.lower(className)
+		controls.checkBoxes = controls.checkBoxes or {}
+		controls.checkBoxes.useGlobalBarText = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_globalBarText", parent, "ChatConfigCheckButtonTemplate")
+		local f = controls.checkBoxes.useGlobalBarText
+		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalBarText"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalTooltip_GlobalBarText"]
+		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].globalBarText)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.global[lowerClassName][specName].globalBarText = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Data.cache.barText = {}
+			TRB.Data.cache.symbols = {}
+			TRB.Data.cache.barTextTree = {}
+			TRB.Functions.BarText:Hide(spec)
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				C_Timer.After(0, function()
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end)
+			end
+			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("globalBarText")
+		end)
+		yCoord = yCoord - 20
+	else
+		yCoord = yCoord + 10 -- Fix offset
+		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllGlobalBarText", "globalBarText", yCoord, L["GlobalBarTextBulkToggleLabel"], L["GlobalBarTextBulkToggleTooltip"])
+		yCoord = yCoord - 20
+	end
+
 	local columns = {
 		{
 			["name"] = "GUID",
@@ -6565,8 +6606,24 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		L["HealthBar"],
 		L["Screen"],
 	}
-	
-	if (classId == 1 and specId == 2) then -- Fury Warrior
+
+	if classId == nil then -- Global Bar Text
+		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
+		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"
+		relativeToFrame[L["ComboPoint3"]] = "ComboPoint_3"
+		relativeToFrame[L["ComboPoint4"]] = "ComboPoint_4"
+		relativeToFrame[L["ComboPoint5"]] = "ComboPoint_5"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["ComboPoint1"],
+			L["ComboPoint2"],
+			L["ComboPoint3"],
+			L["ComboPoint4"],
+			L["ComboPoint5"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif (classId == 1 and specId == 2) then -- Fury Warrior
 		relativeToFrame[L["WhirlwindCharge1"]] = "Whirlwind_Charge_1"
 		relativeToFrame[L["WhirlwindCharge2"]] = "Whirlwind_Charge_2"
 		relativeToFrame[L["WhirlwindCharge3"]] = "Whirlwind_Charge_3"
@@ -7384,7 +7441,20 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		SetTableValues(spec.displayText, barTextTable)
 		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
 		
-		if classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
+		if classId == nil then
+			-- Global bar text editor: rebuild the active spec if it uses global bar text
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+				TRB.Data.cache.barText = {}
+				TRB.Data.cache.symbols = {}
+				TRB.Data.cache.barTextTree = {}
+				TRB.Functions.BarText:Hide(spec)
+				TRB.Functions.BarText:CreateBarTextFrames()
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}

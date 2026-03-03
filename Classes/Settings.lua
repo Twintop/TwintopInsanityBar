@@ -10,6 +10,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public thresholdIcons boolean
 ---@field public displayBar boolean
 ---@field public displayText boolean
+---@field public globalBarText boolean
 ---@field public textColors boolean
 ---@field public thresholdColors boolean
 ---@field public healthBarColors boolean
@@ -151,6 +152,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
 ---@field public barText TRB.Classes.Settings.DisplayTextEntry[]
+---@field public globalBarTextCount integer?
+---@field public migrations table?
 
 ---@class TRB.Classes.Settings.DisplayTextDefault
 ---@field public fontFace string

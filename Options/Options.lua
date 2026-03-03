@@ -501,6 +501,40 @@ local function ConstructResetDefaultsPanel(parent)
 	end)
 end
 
+local function ConstructGlobalBarTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.global
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	controls.buttons.exportButton_Global_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
+	controls.buttons.exportButton_Global_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportGlobalBarTextPopup(L["GlobalBarTextExportMessage"])
+	end)
+
+	yCoord = yCoord - 10
+
+	-- Build a lightweight cache object with global-applicable barTextVariables
+	local globalCache = {
+		barTextVariables = {
+			icons = TRB.Functions.BarText:GetCommonIcons(),
+			values = TRB.Functions.BarText:GetCommonValues({
+				{ variable = "$resource", description = L["GlobalBarTextVariable_resource"], printInSettings = true, color = false },
+				{ variable = "$resourceMax", description = L["GlobalBarTextVariable_resourceMax"], printInSettings = true, color = false },
+				{ variable = "$casting", description = L["GlobalBarTextVariable_casting"], printInSettings = true, color = false },
+				{ variable = "$comboPoints", description = L["GlobalBarTextVariable_comboPoints"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false },
+				{ variable = "$comboPointsMax", description = L["GlobalBarTextVariable_comboPointsMax"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false },
+			}),
+		}
+	}
+
+	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, globalCache)
+end
+
 local function ConstructGlobalOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
@@ -520,15 +554,15 @@ local function ConstructGlobalOptionsPanel()
 
 	parent = interfaceSettingsFrame.optionsPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord-5)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord - 5)
 
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 479, yCoord-10, 90, 20)
 	controls.buttons.importButton:SetFrameLevel(10000)
 	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Import")
 	end)
 
-	yCoord = yCoord - 52
+	yCoord = yCoord - 37
 
 	-- Must assign controls before BuildTabGroup, since constructors read interfaceSettingsFrame.controls.global
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
@@ -541,6 +575,7 @@ local function ConstructGlobalOptionsPanel()
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ConstructFontAndTextPanel },
+		{ "barText", L["TabBarText"], oUi.tabWidth.small, ConstructGlobalBarTextPanel },
 		{ "miscellaneous", L["TabMiscellaneous"], oUi.tabWidth.medium, ConstructMiscellaneousPanel },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ConstructResetDefaultsPanel },
 	}

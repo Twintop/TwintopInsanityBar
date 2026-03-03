@@ -14,6 +14,7 @@ local function NewSpecGlobalDefaults()
 		thresholdIcons = false,
 		displayBar = false,
 		displayText = false,
+		globalBarText = false,
 		textColors = false,
 		thresholdColors = false,
 		healthBarColors = false,
@@ -167,7 +168,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 						color = "FFFFFFFF"
 					},
 				},
-				barText = {}
+				barText = {},
+				migrations = {}
 			},
 			global = {
 				globalEnable = false,
@@ -4414,6 +4416,46 @@ function TRB.Functions.Settings:PortForwardSettings()
 		TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.abyssalGaze = {
 			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.eyeBeam.enabled
 		}
+	end
+
+	-- Ensure core.displayText has barText and migrations tables for global bar text feature
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil then
+		if TwintopInsanityBarSettings.core.displayText == nil then
+			TwintopInsanityBarSettings.core.displayText = {
+				default = {
+					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+					fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = L["PositionLeft"],
+					fontSize = 18,
+					color = {
+						color = "FFFFFFFF"
+					},
+				},
+				barText = {},
+				migrations = {}
+			}
+		else
+			if TwintopInsanityBarSettings.core.displayText.barText == nil then
+				TwintopInsanityBarSettings.core.displayText.barText = {}
+			end
+			if TwintopInsanityBarSettings.core.displayText.migrations == nil then
+				TwintopInsanityBarSettings.core.displayText.migrations = {}
+			end
+		end
+
+		-- Ensure globalBarText exists in all per-spec global toggle tables
+		if TwintopInsanityBarSettings.core.global ~= nil then
+			for className, classGlobals in pairs(TwintopInsanityBarSettings.core.global) do
+				if type(classGlobals) == "table" and className ~= "globalEnable" then
+					for specName, specGlobals in pairs(classGlobals) do
+						if type(specGlobals) == "table" and specGlobals.globalBarText == nil then
+							specGlobals.globalBarText = false
+						end
+					end
+				end
+			end
+		end
 	end
 end
 

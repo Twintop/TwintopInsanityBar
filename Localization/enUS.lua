@@ -2072,3 +2072,18 @@ L["MonkWindwalkerAudioCheckboxDanceOfChiJiTooltip"] = "Play an audio cue when a 
 L["PaladinHolyPowerColorPickerBase"] = "1st Holy Power"
 L["PaladinHolyPowerColorPickerSecond"] = "2nd Holy Power"
 L["PaladinHolyPowerColorPickerThird"] = "3rd Holy Power"
+
+-- Global Bar Text
+L["CheckboxUseGlobalTooltip_GlobalBarText"] = "This will include any bar text entries configured in the Global Options Bar Text in addition to this specialization's own bar text entries."
+L["GlobalBarTextWarningComboPoints"] = "||n||nWarning: Not available on all specializations. Use in conditionals like {$comboPoints}[show $comboPoints][]."
+L["GlobalBarTextImportExport"] = "Global Bar Text"
+L["GlobalBarTextVariable_resource"] = "Current Primary Resource (varies per spec)"
+L["GlobalBarTextVariable_resourceMax"] = "Maximum Primary Resource (varies per spec)"
+L["GlobalBarTextVariable_casting"] = "Resource from Hardcasting Spells (varies per spec)"
+L["GlobalBarTextVariable_comboPoints"] = "Current Combo Points / Secondary Resource (not all specs)"
+L["GlobalBarTextVariable_comboPointsMax"] = "Maximum Combo Points / Secondary Resource (not all specs)"
+L["GlobalBarTextExportMessage"] = "Global Bar Text settings"
+L["GlobalBarTextBulkToggleLabel"] = "Show Global Bar Text on all specializations"
+L["GlobalBarTextBulkToggleTooltip"] = "When checked, Global Bar Text will be shown on all specializations across all classes in addition to that specialization's own bar text entries. When unchecked, it will be not be included on all specializations."
+L["CheckboxUseGlobalBarText"] = "Include Global Bar Text"
+L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, any bar text entries configured in the Global Options Bar Text will be shown in addition to this specialization's own bar text entries."

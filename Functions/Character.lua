@@ -791,9 +791,26 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.bars = spec.bars
 	end
 
+	-- Build merged bar text list: global entries first, then spec entries
+	local mergedBarText
+	local globalBarTextCount = 0
+	if s.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
+		mergedBarText = {}
+		for _, entry in ipairs(core.displayText.barText) do
+			mergedBarText[#mergedBarText + 1] = entry
+		end
+		globalBarTextCount = #mergedBarText
+		for _, entry in ipairs(spec.displayText.barText) do
+			mergedBarText[#mergedBarText + 1] = entry
+		end
+	else
+		mergedBarText = spec.displayText.barText
+	end
+
 ---@diagnostic disable-next-line: missing-fields
 	specCache.settings.displayText = {
-		barText = spec.displayText.barText
+		barText = mergedBarText,
+		globalBarTextCount = globalBarTextCount
 	}
 
 	if s.displayText then
