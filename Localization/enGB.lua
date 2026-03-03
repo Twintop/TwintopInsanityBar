@@ -82,7 +82,6 @@ if locale == "enGB" then
     L["PriestHolyCheckboxHolyWordSerenityTooltip"] = "This will change the mana bar colour when your current cast will complete the cooldown of Holy Word: Serenity."
     L["PriestHolyCheckboxApotheosisEnd"] = "Change bar colour at the end of Apotheosis"
     L["PriestHolyCheckboxApotheosisEndTooltip"] = "Changes the bar colour when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["PriestHolyCheckboxResonantWordsTooltip"] = "This will change the bar border colour when you have Resonant Words."
     L["PriestHolyCheckboxLightweaverTooltip"] = "This will change the bar border colour when you have any stacks of Lightweaver."
     L["PriestHolyHolyWordColorsHeader"] = "Holy Word Colours"
     L["PriestHolyColorPickerCompleteHolyWordCooldown"] = "Colour when your cast will complete the related Holy Word cooldown"

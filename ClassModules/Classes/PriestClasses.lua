@@ -199,10 +199,6 @@ end
 ---@field public prophetsInsight TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
 ---@field public lightweaver TRB.Classes.SpellBase
---[[---@field public resonantWords TRB.Classes.SpellBase
----@field public lightwell TRB.Classes.SpellBase
----@field public answeredPrayers TRB.Classes.SpellBase
----@field public heal TRB.Classes.Priest.HolyWordSpell]]
 ---@field public eternalSanctity TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
@@ -342,25 +338,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 20,
 		maxStacks = 4
 	})
-	--[[self.resonantWords = TRB.Classes.SpellBase:New({
-		id = 372313,
-		talentId = 372309,
-		isTalent = true
-	})
-	self.lightwell = TRB.Classes.SpellBase:New({
-		id = 372835,
-		isTalent = true
-	})
-	self.answeredPrayers = TRB.Classes.SpellBase:New({
-		id = 394289,
-		talentId = 391387,
-		isTalent = true,
-		maxStackRank = {
-			[0] = 0,
-			[1] = 100,
-			[2] = 50
-		}
-	})]]
 	self.eternalSanctity = TRB.Classes.SpellBase:New({
 		id = 1215245,
 		isTalent = true,
@@ -397,13 +374,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		pauseDuration = 20,
 		durationMod = 1
 	})
-	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
-		id = 453845,
-		debuffId = 453850,
-		isTalent = true,
-		duration = 8,
-		maxStacks = 5
-	})]]
 
 	return self
 end
@@ -435,15 +405,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
 		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
-
-		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },
-		{ variable = "#rw", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = true },
-		{ variable = "#resonantWords", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = false },
-		{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
-		{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
-		{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
-		{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
-		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },]]
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
@@ -477,12 +438,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
-		
-		--[[{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },		
-
-		{ variable = "$rwTime", description = L["PriestHolyBarTextVariable_rwTime"], printInSettings = true, color = false },]]
 	})
 end
 
