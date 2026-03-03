@@ -1490,8 +1490,6 @@ local function SwitchSpec()
 		specCache.demonhunter_devourer.talents:GetTalents()
 		FillSpellData_Devourer()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.demonhunter_devourer)
-		-- For whatever reason, this gets reset as Vengeance's specId after when going from Vengeance to Devourer. Manually re-set it.
-		TRB.Data.character.specId = 3
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]

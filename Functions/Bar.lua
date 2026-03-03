@@ -263,6 +263,15 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	renderTransitionState.active = false
 	renderTransitionState.reason = reason
 
+	-- Guard: if the WoW-reported spec no longer matches our stored specId, a spec switch is
+	-- still in progress (LoadFromSpecializationCache may not have run yet). Bail out — the
+	-- pending SwitchSpec will queue its own render transition and handle the update.
+	local currentSpec = GetSpecialization()
+	if currentSpec and TRB.Data.character and TRB.Data.character.specId ~= currentSpec then
+		SetBarGroupsAlpha(1)
+		return
+	end
+
 	TRB.Functions.Bar:HideResourceBar()
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()

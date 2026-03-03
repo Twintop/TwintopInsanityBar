@@ -673,6 +673,10 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
+	-- The cached character table may carry a stale specId from the previous time this spec
+	-- was active. Always stamp the current specId so downstream code (EventRegistration,
+	-- UpdateResourceBar, etc.) branches into the correct spec.
+	TRB.Data.character.specId = GetSpecialization() or TRB.Data.character.specId
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.spellsData = cache.spellsData
