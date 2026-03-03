@@ -180,9 +180,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
 	--[[---@type TRB.Classes.Snapshot
-	specCache.priest_holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
+	specCache.priest_holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)]]
 	---@type TRB.Classes.Snapshot
-	specCache.priest_holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)]]
+	specCache.priest_holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(spells.holyWordSerenity)
 	---@type TRB.Classes.Snapshot
@@ -635,8 +635,15 @@ local function RefreshLookupData_Holy()
 
 	--$apotheosisTime
 	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
-	local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
-	
+	local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)	
+
+	--$lightweaverStacks
+	local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
+	local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
+	--$lightweaverTime
+	local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
+	local lightweaverTime = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
+
 	--[[--$answeredPrayersStacks
 	local _answeredPrayersStacks = snapshots[spells.answeredPrayers.id].buff.applications or 0
 	local answeredPrayersStacks = string.format("%.0f", _answeredPrayersStacks)
@@ -651,12 +658,6 @@ local function RefreshLookupData_Holy()
 	local answeredPrayersRemainingStacks = string.format("%.0f", _answeredPrayersRemainingStacks)
 
 	--
-	--$lightweaverStacks
-	local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
-	local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
-	--$lightweaverTime
-	local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
-	local lightweaverTime = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
 	
 	--$rwTime
 	local _rwTime = snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime) or 0
@@ -689,9 +690,9 @@ local function RefreshLookupData_Holy()
 	lookup["$hwSerenityCharges"] = hwSerenityCharges
 	lookup["$serenityCharges"] = hwSerenityCharges
 	lookup["$holyWordSerenityCharges"] = hwSerenityCharges
-	--[[["$lightweaverStacks"] = lightweaverStacks
+	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
-	lookup["$answeredPrayersStacks"] = answeredPrayersStacks
+	--[[lookup["$answeredPrayersStacks"] = answeredPrayersStacks
 	lookup["$answeredPrayersMaxStacks"] = answeredPrayersMaxStacks
 	lookup["$answeredPrayersRemainingStacks"] = answeredPrayersRemainingStacks
 	lookup["$rwTime"] = rwTime]]
@@ -721,9 +722,9 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
 	lookupLogic["$serenityCharges"] = _hwSerenityCharges
 	lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
-	--[[lookupLogic["$lightweaverStacks"] = _lightweaverStacks
+	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
-	lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
+	--[[lookupLogic["$answeredPrayersStacks"] = _answeredPrayersStacks
 	lookupLogic["$answeredPrayersMaxStacks"] = _answeredPrayersMaxStacks
 	lookupLogic["$answeredPrayersRemainingStacks"] = _answeredPrayersRemainingStacks
 	lookupLogic["$rwTime"] = rwTime]]
@@ -1147,6 +1148,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(cooldownSpell))
 					end
 				end
+
+				if talents:IsTalentActive(spells.lightweaver) then
+					snapshots[spells.lightweaver.id].buff:AddStackOrInitializeCustom(spells.lightweaver.duration, currentTime, true, 1)
+				end
 			elseif spellId == spells.benediction.id then
 				cdrSpell = spells.benediction
 				--NOTE: This is a bug. Remove the check and merge benediction in with 
@@ -1157,6 +1162,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 			elseif spellId == spells.prayerOfHealing.id then
 				cdrSpell = spells.prayerOfHealing
+
+				if talents:IsTalentActive(spells.lightweaver) then
+					snapshots[spells.lightweaver.id].buff:RemoveStack()
+				end
 			elseif spellId == spells.halo.id and talents:IsTalentActive(spells.voiceOfHarmony) and not talents:IsTalentActive(spells.powerSurge) then
 				-- If Power Surge is talented, Halo CDR gets handled above.
 				cdrSpell = spells.halo
@@ -1463,12 +1472,13 @@ local function UpdateSnapshot_Holy()
 
 	snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
 
 	--[[snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)]]
+	]]
 end
 
 local function UpdateSnapshot_Shadow()
@@ -1662,6 +1672,10 @@ local function UpdateResourceBar()
 				if snapshotData.attributes.surgeOfLightActive then
 					if specSettings.colors.bar.surgeOfLight.enabled then
 						barBorderColor = specSettings.colors.bar.surgeOfLight.color
+					end
+				elseif snapshots[spells.lightweaver.id].buff.isActive then
+					if specSettings.colors.bar.lightweaver.enabled then
+						barBorderColor = specSettings.colors.bar.lightweaver.color
 					end
 				end
 				
@@ -2111,8 +2125,8 @@ local function SwitchSpec()
 		lookup["#serenity"] = spells.holyWordSerenity.icon
 		lookup["#holyWordSerenity"] = spells.holyWordSerenity.icon
 		lookup["#smite"] = spells.smite.icon
-		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#lightweaver"] = spells.lightweaver.icon
+		--[[lookup["#answeredPrayers"] = spells.answeredPrayers.icon
 		lookup["#rw"] = spells.resonantWords.icon
 		lookup["#resonantWords"] = spells.resonantWords.icon
 		lookup["#lotn"] = spells.lightOfTheNaaru.icon
@@ -2721,7 +2735,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-		--[[if var == "$lightweaverTime" then
+		if var == "$lightweaverTime" then
 			if snapshots[spells.lightweaver.id].buff.isActive then
 				valid = true
 			end
@@ -2729,11 +2743,11 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.lightweaver.id].buff.isActive then
 				valid = true
 			end
-		elseif var == "$rwTime" then
+		--[[elseif var == "$rwTime" then
 			if snapshots[spells.resonantWords.id].buff.isActive then
 				valid = true
-			end
-		else]]if var == "$apotheosisTime" then
+			end]]
+		elseif var == "$apotheosisTime" then
 			if snapshots[spells.apotheosis.id].buff.isActive then
 				valid = true
 			end

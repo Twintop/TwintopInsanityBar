@@ -21,6 +21,7 @@ local content = [====[
 ### Holy
 
 - Include Benediction in cooldown reduction tracking for Holy Word: Serenity.
+- Restore support for Lightweaver tracking via bar border color change and bar text variables, `$lightweaverTime` and `$lightweaverStacks`.
 
 ---
 
