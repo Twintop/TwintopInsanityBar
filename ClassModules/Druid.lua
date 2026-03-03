@@ -2880,7 +2880,8 @@ function TRB.Functions.Class:CheckCharacter()
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.druid_feral.settings
 
-				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
+				if feralSettings ~= nil and feralSettings.comboPoints ~= nil
+					and feralSettings.colors and feralSettings.colors.comboPoints then
 					-- Get effective width for secondary bar, accounting for CDM width matching
 					local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
 					

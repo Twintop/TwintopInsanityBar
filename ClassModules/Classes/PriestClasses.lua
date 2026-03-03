@@ -189,6 +189,7 @@ end
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
 ---@field public energyCycle TRB.Classes.Priest.HolyWordSpell
+---@field public benediction TRB.Classes.Priest.HolyWordSpell
 ---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -197,12 +198,11 @@ end
 ---@field public holyCelerity TRB.Classes.SpellBase
 ---@field public prophetsInsight TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
---[[---@field public resonantWords TRB.Classes.SpellBase
 ---@field public lightweaver TRB.Classes.SpellBase
+--[[---@field public resonantWords TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
 ---@field public answeredPrayers TRB.Classes.SpellBase
 ---@field public heal TRB.Classes.Priest.HolyWordSpell]]
----@field public benediction TRB.Classes.SpellBase
 ---@field public eternalSanctity TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
@@ -291,6 +291,13 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
 	})
+	self.benediction = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 1262763,
+		talentId = 1262755,
+		isTalent = true,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 6,
+	})
 
 	-- Holy Baseline Abilities
 
@@ -328,14 +335,16 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 20,
 		isTalent = true
 	})
-	--[[self.resonantWords = TRB.Classes.SpellBase:New({
-		id = 372313,
-		talentId = 372309,
-		isTalent = true
-	})
 	self.lightweaver = TRB.Classes.SpellBase:New({
 		id = 390993,
 		talentId = 390992,
+		isTalent = true,
+		duration = 20,
+		maxStacks = 4
+	})
+	--[[self.resonantWords = TRB.Classes.SpellBase:New({
+		id = 372313,
+		talentId = 372309,
 		isTalent = true
 	})
 	self.lightwell = TRB.Classes.SpellBase:New({
@@ -356,11 +365,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		id = 1215245,
 		isTalent = true,
 		durationMod = 12
-	})
-
-	self.benediction = TRB.Classes.SpellBase:New({
-		id = 1262755,
-		isTalent = true
 	})
 	-- Set Bonuses
 
@@ -429,10 +433,10 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
 		{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 		{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
-		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true }
+		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
+		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
 
 		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },
-		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
 		{ variable = "#rw", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = true },
 		{ variable = "#resonantWords", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = false },
 		{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
@@ -471,12 +475,12 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
-		--[[{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },
-		
 		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
+		
+		--[[{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
+		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },		
 
 		{ variable = "$rwTime", description = L["PriestHolyBarTextVariable_rwTime"], printInSettings = true, color = false },]]
 	})
