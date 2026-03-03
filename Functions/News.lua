@@ -23,7 +23,7 @@ local content = [====[
 
 ## Druid
 
-- Fix a Lua error when applying combo point bar appearance for non-Feral Druid specs during initialization, caused by accessing Feral's combo point color settings before they were fully populated.
+- [#670](#670) Fix a Lua error when applying combo point bar appearance for non-Feral Druid specs during initialization, caused by accessing Feral's combo point color settings before they were fully populated.
 
 ## Priest
 ### Holy
