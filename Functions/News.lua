@@ -12,13 +12,19 @@ local content = [====[
 
 ---
 
-# 12.0.1.24-release (2026-03-04)
+# 12.0.1.24-release (2026-03-05)
 ## General
 
-- Added Global Bar Text support. You can now configure bar text entries in the Global Options "Bar Text" tab that are shared across all specializations.
-- Each specialization has a "Use global settings" checkbox on its Bar Text tab to opt in. When enabled, global bar text entries are prepended before the specialization's own entries.
-- Global bar text entries support universal variables like `$resource`, `$resourceMax`, `$casting`, `$comboPoints`, and `$comboPointsMax`, plus all common stat/health variables.
-- Added export/import support for global bar text settings.
+- [#671](#671) Add Global Bar Text support. You can now configure bar text entries in the Global Options "Bar Text" tab that are shared across all specializations.
+- [#671](#671) Each specialization has a "Use global settings" checkbox on its Bar Text tab to opt in. When enabled, global bar text entries are prepended before the specialization's own entries.
+- [#671](#671) Global bar text entries support universal variables like `$resource`, `$resourceMax`, `$casting`, `$comboPoints`, and `$comboPointsMax`, plus all common stat/health variables.
+- [#671](#671) Added export/import support for global bar text settings.
+
+## Priest
+### Holy
+
+- Include extra CDR from Prayer of Healing when talented into Spiritwell and Energy Cycle.
+- Include a temporary bug support fix a bug with Spiritwell + Energy Cycle + Ultimate Serenity granting an extra 2 seconds of CDR.
 
 ---
 

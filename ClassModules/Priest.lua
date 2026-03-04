@@ -1130,6 +1130,24 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			elseif spellId == spells.prayerOfHealing.id then
 				cdrSpell = spells.prayerOfHealing
 
+				if talents:IsTalentActive(spells.spiritwell) and (snapshotData.attributes.surgeOfLightActive or snapshotData.attributes.surgeOfLightActiveGrace) and talents:IsTalentActive(spells.energyCycle) then
+					local cooldownSpell = spells.holyWordSanctify
+					local cdrAmount = 0
+
+					if talents:IsTalentActive(spells.ultimateSerenity) then
+						cooldownSpell = spells.holyWordSerenity
+						-- NOTE: This is a bug. We gain 6sec CDR from Spiritwell + Ultimate Serenity, but it should only be 4sec.
+						cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction * 1.5)
+					else
+						cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
+					end
+
+					local cooldown = snapshots[cooldownSpell.id].cooldown
+					if cooldown.onCooldown then
+						cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(cooldownSpell))
+					end
+				end
+
 				if talents:IsTalentActive(spells.lightweaver) then
 					snapshots[spells.lightweaver.id].buff:RemoveStack()
 				end

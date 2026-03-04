@@ -204,6 +204,7 @@ end
 ---@field public powerSurge TRB.Classes.SpellBase
 ---@field public energyConservation TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
+---@field public spiritwell TRB.Classes.SpellBase
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
@@ -262,6 +263,10 @@ function TRB.Classes.Priest.HolySpells:New()
 		id = 453828,
 		holyWordKey = "holyWordSanctify",
 		holyWordReduction = 4,
+		isTalent = true
+	})
+	self.spiritwell = TRB.Classes.SpellBase:New({
+		id = 1247178,
 		isTalent = true
 	})
 
