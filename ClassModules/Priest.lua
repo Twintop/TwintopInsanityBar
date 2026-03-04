@@ -2180,7 +2180,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local cooldown = snapshots[spells.angelicFeather.id].cooldown
 				local charges = cooldown.manualCharges or 0
-					local maxCharges = spells.angelicFeather.attributes.maxCharges
+				local maxCharges = spells.angelicFeather.attributes.maxCharges
 				local utilityColors = specSettings.colors.bars.utility
 
 				for chargeIndex = 1, maxCharges do
