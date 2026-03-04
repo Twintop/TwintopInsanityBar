@@ -1472,7 +1472,7 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	snapshots[spells.angelicFeather.id].cooldown:Refresh(true)
