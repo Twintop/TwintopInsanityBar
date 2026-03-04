@@ -14,6 +14,7 @@ local function NewSpecGlobalDefaults()
 		thresholdIcons = false,
 		displayBar = false,
 		displayText = false,
+		globalBarText = true,
 		textColors = false,
 		thresholdColors = false,
 		healthBarColors = false,
@@ -167,7 +168,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 						color = "FFFFFFFF"
 					},
 				},
-				barText = {}
+				barText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic),
+				migrations = {
+					healthBarText = true
+				}
 			},
 			global = {
 				globalEnable = false,
@@ -4415,6 +4419,209 @@ function TRB.Functions.Settings:PortForwardSettings()
 			enabled = TwintopInsanityBarSettings.demonhunter.havoc.thresholds.thresholdDictionary.eyeBeam.enabled
 		}
 	end
+
+	-- Ensure core.displayText has barText and migrations tables for global bar text feature
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil then
+		if TwintopInsanityBarSettings.core.displayText == nil then
+			TwintopInsanityBarSettings.core.displayText = {
+				default = {
+					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+					fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = L["PositionLeft"],
+					fontSize = 18,
+					color = {
+						color = "FFFFFFFF"
+					},
+				},
+				barText = {},
+				migrations = {}
+			}
+		else
+			if TwintopInsanityBarSettings.core.displayText.barText == nil then
+				TwintopInsanityBarSettings.core.displayText.barText = {}
+			end
+			if TwintopInsanityBarSettings.core.displayText.migrations == nil then
+				TwintopInsanityBarSettings.core.displayText.migrations = {}
+			end
+		end
+
+		-- Ensure globalBarText exists in all per-spec global toggle tables
+		if TwintopInsanityBarSettings.core.global ~= nil then
+			for className, classGlobals in pairs(TwintopInsanityBarSettings.core.global) do
+				if type(classGlobals) == "table" and className ~= "globalEnable" then
+					for specName, specGlobals in pairs(classGlobals) do
+						if type(specGlobals) == "table" and specGlobals.globalBarText == nil then
+							specGlobals.globalBarText = true
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Health bar text migration: extract common health bar text entries to global bar text
+	-- This runs once per user. After migration, specs that shared the most common health bar text
+	-- configuration get globalBarText enabled and their per-spec health entries removed.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
+		not TwintopInsanityBarSettings.core.displayText.migrations.healthBarText then
+
+		local specsByClass = {
+			deathknight = {"blood", "frost", "unholy"},
+			demonhunter = {"havoc", "vengeance", "devourer"},
+			druid = {"balance", "feral", "guardian", "restoration"},
+			evoker = {"devastation", "preservation", "augmentation"},
+			hunter = {"beastMastery", "marksmanship", "survival"},
+			mage = {"arcane", "fire", "frost"},
+			monk = {"brewmaster", "mistweaver", "windwalker"},
+			paladin = {"holy", "protection", "retribution"},
+			priest = {"discipline", "holy", "shadow"},
+			rogue = {"assassination", "outlaw", "subtlety"},
+			shaman = {"elemental", "enhancement", "restoration"},
+			warlock = {"affliction", "demonology", "destruction"},
+			warrior = {"arms", "fury", "protection"}
+		}
+
+		--- Serialize a bar text entry to a fingerprint string (excluding guid and display-only name fields)
+		local function SerializeEntry(entry)
+			local parts = {}
+			parts[#parts+1] = "t=" .. tostring(entry.text or "")
+			parts[#parts+1] = "e=" .. tostring(entry.enabled)
+			parts[#parts+1] = "fs=" .. tostring(entry.fontSize or 0)
+			parts[#parts+1] = "ff=" .. tostring(entry.fontFace or "")
+			parts[#parts+1] = "jh=" .. tostring(entry.fontJustifyHorizontal or "")
+			parts[#parts+1] = "dfc=" .. tostring(entry.useDefaultFontColor)
+			parts[#parts+1] = "dff=" .. tostring(entry.useDefaultFontFace)
+			parts[#parts+1] = "dfs=" .. tostring(entry.useDefaultFontSize)
+			if entry.color and entry.color.color then
+				parts[#parts+1] = "c=" .. entry.color.color
+			end
+			if entry.position then
+				parts[#parts+1] = "px=" .. tostring(entry.position.xPos or 0)
+				parts[#parts+1] = "py=" .. tostring(entry.position.yPos or 0)
+				parts[#parts+1] = "rt=" .. tostring(entry.position.relativeTo or "")
+				parts[#parts+1] = "rf=" .. tostring(entry.position.relativeToFrame or "")
+			end
+			return table.concat(parts, "|")
+		end
+
+		--- Fingerprint an ordered set of health bar text entries
+		local function FingerprintEntries(entries)
+			local serialized = {}
+			for _, entry in ipairs(entries) do
+				serialized[#serialized+1] = SerializeEntry(entry)
+			end
+			return table.concat(serialized, ";;")
+		end
+
+		local fingerprintCounts = {}  -- fingerprint -> count
+		local fingerprintEntries = {} -- fingerprint -> entries (first occurrence)
+		local specFingerprints = {}   -- "className.specName" -> fingerprint
+
+		for className, specs in pairs(specsByClass) do
+			for _, specName in ipairs(specs) do
+				local specSettings = TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+				if specSettings and specSettings.displayText and specSettings.displayText.barText then
+					local healthEntries = {}
+					for _, entry in ipairs(specSettings.displayText.barText) do
+						if entry.position and entry.position.relativeToFrame == "HealthBar" then
+							healthEntries[#healthEntries+1] = entry
+						end
+					end
+
+					if #healthEntries > 0 then
+						local fp = FingerprintEntries(healthEntries)
+						local key = className .. "." .. specName
+						specFingerprints[key] = fp
+						fingerprintCounts[fp] = (fingerprintCounts[fp] or 0) + 1
+						if not fingerprintEntries[fp] then
+							fingerprintEntries[fp] = healthEntries
+						end
+					end
+				end
+			end
+		end
+
+		-- Find the most common fingerprint
+		local bestFp = nil
+		local bestCount = 0
+		for fp, count in pairs(fingerprintCounts) do
+			if count > bestCount then
+				bestFp = fp
+				bestCount = count
+			end
+		end
+
+		-- Only migrate if at least 2 specs share the same health bar text
+		if bestFp and bestCount >= 2 then
+			-- Copy winning entries to global bar text with new GUIDs
+			local sourceEntries = fingerprintEntries[bestFp]
+			for _, entry in ipairs(sourceEntries) do
+				local globalEntry = {
+					useDefaultFontColor = entry.useDefaultFontColor,
+					useDefaultFontFace = entry.useDefaultFontFace,
+					useDefaultFontSize = entry.useDefaultFontSize,
+					enabled = entry.enabled,
+					name = entry.name,
+					guid = TRB.Functions.String:Guid(),
+					text = entry.text,
+					fontFace = entry.fontFace,
+					fontFaceName = entry.fontFaceName,
+					fontJustifyHorizontal = entry.fontJustifyHorizontal,
+					fontJustifyHorizontalName = entry.fontJustifyHorizontalName,
+					fontSize = entry.fontSize,
+					color = { color = entry.color and entry.color.color or "FFFFFFFF" },
+					position = {
+						xPos = entry.position.xPos,
+						yPos = entry.position.yPos,
+						relativeTo = entry.position.relativeTo,
+						relativeToName = entry.position.relativeToName,
+						relativeToFrame = entry.position.relativeToFrame,
+						relativeToFrameName = entry.position.relativeToFrameName
+					}
+				}
+				table.insert(TwintopInsanityBarSettings.core.displayText.barText, globalEntry)
+			end
+
+			-- Enable globalBarText and remove migrated entries for matching specs;
+			-- disable globalBarText for non-matching specs so they keep their unique per-spec entries
+			for key, fp in pairs(specFingerprints) do
+				local className, specName = key:match("^(.+)%.(.+)$")
+				if className and specName then
+					if fp == bestFp then
+						-- Enable global bar text for this spec
+						if TwintopInsanityBarSettings.core.global and
+							TwintopInsanityBarSettings.core.global[className] and
+							TwintopInsanityBarSettings.core.global[className][specName] then
+							TwintopInsanityBarSettings.core.global[className][specName].globalBarText = true
+						end
+
+						-- Remove health bar entries from per-spec list (iterate backwards to preserve indices)
+						local barText = TwintopInsanityBarSettings[className][specName].displayText.barText
+						for i = #barText, 1, -1 do
+							if barText[i].position and barText[i].position.relativeToFrame == "HealthBar" then
+								table.remove(barText, i)
+							end
+						end
+					else
+						-- Spec has health bar text entries that differ from the winning fingerprint.
+						-- Disable globalBarText so they keep their own per-spec entries without also
+						-- showing the global ones (which would cause double health text).
+						if TwintopInsanityBarSettings.core.global and
+							TwintopInsanityBarSettings.core.global[className] and
+							TwintopInsanityBarSettings.core.global[className][specName] then
+							TwintopInsanityBarSettings.core.global[className][specName].globalBarText = false
+						end
+					end
+				end
+			end
+		end
+
+		TwintopInsanityBarSettings.core.displayText.migrations.healthBarText = true
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -5135,6 +5342,48 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 	return textSettings
 end
 
+
+---Returns default global bar text
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			enabled = false,
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = "Center",
+			text = "{$inCombatTime}[$inCombatTime]",
+			useDefaultFontColor = false,
+			fontFaceName = "Friz Quadrata TT",
+			name = "Combat Time",
+			position = {
+				relativeToName = "Center",
+				relativeTo = "CENTER",
+				xPos = -400,
+				relativeToFrameName = "Screen",
+				yPos = -200,
+				relativeToFrame = "UIParent",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = false,
+			color = {
+				color = "fffe7878",
+			},
+			fontSize = 48,
+		},
+	}
+
+	local extraTextSettings = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
+	return textSettings
+end
+
 ---Returns default bar text for a secondary mana bar (used by DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
@@ -5229,7 +5478,7 @@ end
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResourceType, classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
+	local textSettings = {}
 
 	local relativeToFrame = "Resource"
 	local relativeToFrameName = L["MainResourceBar"]

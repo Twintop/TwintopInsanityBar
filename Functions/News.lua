@@ -12,6 +12,16 @@ local content = [====[
 
 ---
 
+# 12.0.1.24-release (2026-03-04)
+## General
+
+- Added Global Bar Text support. You can now configure bar text entries in the Global Options "Bar Text" tab that are shared across all specializations.
+- Each specialization has a "Use global settings" checkbox on its Bar Text tab to opt in. When enabled, global bar text entries are prepended before the specialization's own entries.
+- Global bar text entries support universal variables like `$resource`, `$resourceMax`, `$casting`, `$comboPoints`, and `$comboPointsMax`, plus all common stat/health variables.
+- Added export/import support for global bar text settings.
+
+---
+
 # 12.0.1.23-release (2026-03-03)
 ## General
 

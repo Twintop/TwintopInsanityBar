@@ -2072,3 +2072,22 @@ L["MonkWindwalkerAudioCheckboxDanceOfChiJiTooltip"] = "Play an audio cue when a 
 L["PaladinHolyPowerColorPickerBase"] = "1st Holy Power"
 L["PaladinHolyPowerColorPickerSecond"] = "2nd Holy Power"
 L["PaladinHolyPowerColorPickerThird"] = "3rd Holy Power"
+
+-- Global Bar Text
+L["GlobalBarTextWarningComboPoints"] = "|n|nWarning: Not available on all specializations. Use in conditionals like:|n{$comboPoints}[show $comboPoints][hidden]."
+L["GlobalBarTextImportExport"] = "Global Bar Text"
+L["GlobalBarTextVariable_resource"] = "Current Primary Resource (varies per spec)"
+L["GlobalBarTextVariable_resourceMax"] = "Maximum Primary Resource (varies per spec)"
+L["GlobalBarTextVariable_casting"] = "Resource from Hardcasting Spells (varies per spec)"
+L["GlobalBarTextVariable_comboPoints"] = "Current Combo Points / Secondary Resource (not all specs)"
+L["GlobalBarTextVariable_comboPointsMax"] = "Maximum Combo Points / Secondary Resource (not all specs)"
+L["GlobalBarTextExportMessage"] = "Global Bar Text settings"
+L["GlobalBarTextBulkToggleLabel"] = "Show Global Bar Text on all specializations"
+L["GlobalBarTextBulkToggleTooltip"] = "When checked, Global Bar Text will be shown on all specializations across all classes in addition to that specialization's own bar text entries. When unchecked, it will not be included on all specializations."
+L["CheckboxUseGlobalBarText"] = "Include Global Bar Text"
+L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, any bar text entries configured in the Global Options Bar Text will be shown in addition to this specialization's own bar text entries."
+
+-- Global Bar Text Reset
+L["ResetGlobalBarTextHeader"] = "Reset Global Bar Text"
+L["ResetGlobalBarText"] = "Reset Global Bar Text to Defaults"
+L["ResetGlobalBarTextDialog"] = "Do you want to reset the Global Bar Text entries back to their default configuration? While this only resets the Global Bar Text entries, it will have an effect on what bar text is shown for all specializations that have Global Bar Text enabled."
