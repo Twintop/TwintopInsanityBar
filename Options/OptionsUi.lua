@@ -6405,7 +6405,15 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		d.btt:SetSelection()
 		table.remove(d.displayText.barText, d.row)
 		d.setTableValues(d.displayText, d.btt)
-		if d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId then
+		-- If editing global bar text, refresh the active spec's merged bar text list
+		if d.classId == nil then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
+		end
+		if d.classId == nil or (d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId) then
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
@@ -7368,6 +7376,17 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		table.insert(displayText.barText, newEntry)
 		SetTableValues(displayText, barTextTable)
 		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
+		-- If editing global bar text, refresh the active spec's merged bar text list
+		if classId == nil then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
+			TRB.Data.cache.barText = {}
+			TRB.Data.cache.symbols = {}
+			TRB.Data.cache.barTextTree = {}
+		end
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
 	end)

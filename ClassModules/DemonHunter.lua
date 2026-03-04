@@ -1592,6 +1592,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.demonhunter.devourer.displayText.barText = TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings()
 					end
 
+					-- Clear core barText defaults before merge to prevent per-index array duplication.
+					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					if TwintopInsanityBarSettings.core
+						and TwintopInsanityBarSettings.core.displayText
+						and TwintopInsanityBarSettings.core.displayText.barText
+						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						settings.core.displayText.barText = {}
+					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 

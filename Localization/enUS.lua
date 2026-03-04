@@ -2075,7 +2075,7 @@ L["PaladinHolyPowerColorPickerThird"] = "3rd Holy Power"
 
 -- Global Bar Text
 L["CheckboxUseGlobalTooltip_GlobalBarText"] = "This will include any bar text entries configured in the Global Options Bar Text in addition to this specialization's own bar text entries."
-L["GlobalBarTextWarningComboPoints"] = "||n||nWarning: Not available on all specializations. Use in conditionals like {$comboPoints}[show $comboPoints][]."
+L["GlobalBarTextWarningComboPoints"] = "|n|nWarning: Not available on all specializations. Use in conditionals like:|n{$comboPoints}[show $comboPoints][hidden]."
 L["GlobalBarTextImportExport"] = "Global Bar Text"
 L["GlobalBarTextVariable_resource"] = "Current Primary Resource (varies per spec)"
 L["GlobalBarTextVariable_resourceMax"] = "Maximum Primary Resource (varies per spec)"
@@ -2087,3 +2087,8 @@ L["GlobalBarTextBulkToggleLabel"] = "Show Global Bar Text on all specializations
 L["GlobalBarTextBulkToggleTooltip"] = "When checked, Global Bar Text will be shown on all specializations across all classes in addition to that specialization's own bar text entries. When unchecked, it will be not be included on all specializations."
 L["CheckboxUseGlobalBarText"] = "Include Global Bar Text"
 L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, any bar text entries configured in the Global Options Bar Text will be shown in addition to this specialization's own bar text entries."
+
+-- Global Bar Text Reset
+L["ResetGlobalBarTextHeader"] = "Reset Global Bar Text"
+L["ResetGlobalBarText"] = "Reset Global Bar Text to Defaults"
+L["ResetGlobalBarTextDialog"] = "Do you want to reset the Global Bar Text entries back to their default configuration? While this only resets the Global Bar Text entries, it will have an affect on what bar text is shown for all specializations that have Global Bar Text enabled."

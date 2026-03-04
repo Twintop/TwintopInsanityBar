@@ -491,6 +491,19 @@ local function ConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
+	StaticPopupDialogs["TwintopResourceBar_ResetGlobalBarText"] = {
+		text = L["ResetGlobalBarTextDialog"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			local newBarText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings()
+			controls.barTextFields.ResetTableValues(newBarText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EditModeSettings"], oUi.xCoord, yCoord)
 
@@ -498,6 +511,15 @@ local function ConstructResetDefaultsPanel(parent)
 	controls.buttons.resetEditModeData = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetEditModeDataButton"], oUi.xCoord, yCoord, 200, 30)
 	controls.buttons.resetEditModeData:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_ResetEditModeData")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetGlobalBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.buttons.resetGlobalBarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetGlobalBarText"], oUi.xCoord, yCoord, 250, 30)
+	controls.buttons.resetGlobalBarText:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_ResetGlobalBarText")
 	end)
 end
 
