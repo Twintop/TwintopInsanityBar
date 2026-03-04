@@ -7469,9 +7469,14 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				TRB.Data.cache.barText = {}
 				TRB.Data.cache.symbols = {}
 				TRB.Data.cache.barTextTree = {}
-				TRB.Functions.BarText:Hide(spec)
+				-- Use the active spec's merged settings (not core) so frame indices match the merged barText list
+				local activeCompositeKey = TRB.Functions.Character:GetCompositeKey(charClassName, charSpecName)
+				local activeSettings = TRB.Data.specCache[activeCompositeKey] and TRB.Data.specCache[activeCompositeKey].settings
+				TRB.Functions.BarText:Hide(activeSettings or spec)
 				TRB.Functions.BarText:CreateBarTextFrames()
-				TRB.Functions.Class:TriggerResourceBarUpdates()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
 			end
 		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}
