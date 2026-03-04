@@ -650,7 +650,11 @@ local function UpdateResourceBar()
 			local filled = currentHolyPower >= x
 
 			if filled then
-				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
+					cpColor = specSettings.colors.comboPoints.second.color
+				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
+					cpColor = specSettings.colors.comboPoints.third.color
+				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 					cpColor = specSettings.colors.comboPoints.penultimate.color
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 					cpColor = specSettings.colors.comboPoints.final.color
@@ -978,6 +982,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.paladin.retribution.displayText.barText = TRB.Options.Paladin.RetributionLoadDefaultBarTextSettings()
 					end
 
+					-- Clear core barText defaults before merge to prevent per-index array duplication.
+					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					if TwintopInsanityBarSettings.core
+						and TwintopInsanityBarSettings.core.displayText
+						and TwintopInsanityBarSettings.core.displayText.barText
+						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						settings.core.displayText.barText = {}
+					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 

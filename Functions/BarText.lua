@@ -1107,8 +1107,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.RefreshLookupData()
 	
-	--Only parse bar text if we're we need to refresh the text
-	if settings ~= nil and settings.displayText ~= nil and refreshText then
+	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
+	if settings ~= nil and settings.displayText ~= nil then
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
 		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
@@ -1122,61 +1122,65 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		for i = 1, entries do
 			if displayText.barText[i].enabled then
 				local e = displayText.barText[i]
+				local isScreenText = e.position.relativeToFrame == "UIParent"
 				
-				-- Check if the target frame is visible before doing expensive text processing
-				local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
-				
-				-- UIParent-attached bar text is always considered visible
-				if e.position.relativeToFrame == "UIParent" then
-					isVisible = true
-				end
-				
-				TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
-				
-				-- Skip expensive text processing if the target bar is not visible
-				if not isEnabled or not isVisible then
-					TRB.Data.cache.values.frame["textFrames" .. i].text = ""
-				else
-					local color = e.color and e.color.color
+				-- Screen-bound text is always processed; other text only when refreshText is true
+				if refreshText or isScreenText then
+					-- Check if the target frame is visible before doing expensive text processing
+					local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
 					
-					if e.useDefaultFontColor then
-						-- displayText.default.color uses the new table format { color = "..." }
-						local defaultColor = displayText.default and displayText.default.color
-						if type(defaultColor) == "table" then
-							color = defaultColor.color
-						elseif type(defaultColor) == "string" then
-							color = defaultColor
-						end
+					-- UIParent-attached bar text is always considered visible
+					if isScreenText then
+						isVisible = true
 					end
-
-					color = color or "FFFFFFFF"
-
-					local barText = {
-						text = e.text,
-						color = string.format("|c%s", color)
-					}
-
-					local returnText = GetReturnText(barText)
-
-					if textFrames ~= nil and textFrames[i] ~= nil then
-						pcall(TryUpdateText, textFrames[i],  returnText)
+					
+					TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
+					
+					-- Skip expensive text processing if the target bar is not visible
+					if not isEnabled or not isVisible then
+						TRB.Data.cache.values.frame["textFrames" .. i].text = ""
 					else
-						-- Frame list is out of sync; rebuild and try once.
-						TRB.Functions.BarText:CreateBarTextFrames()
-						textFrames = TRB.Frames.textFrames
+						local color = e.color and e.color.color
+						
+						if e.useDefaultFontColor then
+							-- displayText.default.color uses the new table format { color = "..." }
+							local defaultColor = displayText.default and displayText.default.color
+							if type(defaultColor) == "table" then
+								color = defaultColor.color
+							elseif type(defaultColor) == "string" then
+								color = defaultColor
+							end
+						end
+
+						color = color or "FFFFFFFF"
+
+						local barText = {
+							text = e.text,
+							color = string.format("|c%s", color)
+						}
+
+						local returnText = GetReturnText(barText)
+
 						if textFrames ~= nil and textFrames[i] ~= nil then
 							pcall(TryUpdateText, textFrames[i],  returnText)
+						else
+							-- Frame list is out of sync; rebuild and try once.
+							TRB.Functions.BarText:CreateBarTextFrames()
+							textFrames = TRB.Frames.textFrames
+							if textFrames ~= nil and textFrames[i] ~= nil then
+								pcall(TryUpdateText, textFrames[i],  returnText)
+							end
 						end
+						TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
 					end
-					TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
-				end
-				
-				if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
-					if textFrames ~= nil and textFrames[i] ~= nil then
-						textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-						textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+					
+					if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
+						if textFrames ~= nil and textFrames[i] ~= nil then
+							textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+							textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+						end
+						TRB.Data.cache.values.frame["textFrames" .. i].level = TRB.Data.settings.core.strata.level
 					end
-					TRB.Data.cache.values.frame["textFrames" .. i].level = TRB.Data.settings.core.strata.level
 				end
 			end
 		end
@@ -1330,23 +1334,29 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 	end
 end
 
----Hides all bar text
+---Hides all bar text, except UIParent-bound ("Screen") entries which remain visible
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Hide(settings)
-	if 1 == 2 then-- settings ~= nil then
-		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-		---@type Frame[]
-		local textFrames = TRB.Frames.textFrames
-		local entries = TRB.Functions.Table:Length(displayText.barText)
-		if entries > 0 then
-			for i = 1, entries do
+	local textFrames = TRB.Frames.textFrames
+	if settings ~= nil and settings.displayText ~= nil then
+		local barText = settings.displayText.barText
+		local entries = barText and TRB.Functions.Table:Length(barText) or 0
+		for i = 1, #textFrames do
+			-- UIParent-attached bar text stays visible even when bars are hidden
+			if i <= entries and barText[i] ~= nil
+				and barText[i].enabled
+				and barText[i].position.relativeToFrame == "UIParent"
+				and not TRB.Functions.Bar:IsRenderTransitionActive() then
+				textFrames[i]:Show()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Show()
+			else
 				textFrames[i]:Hide()
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Hide()
 			end
 		end
 	else
-		local textFrames = TRB.Frames.textFrames
 		for i = 1, #textFrames do
 			textFrames[i]:Hide()
 			---@diagnostic disable-next-line: undefined-field

@@ -12,11 +12,116 @@ local content = [====[
 
 ---
 
-# 12.0.1.17-release (2026-02-26)
+# 12.0.1.24-release (2026-03-05)
+## General
+
+- [#671](#671) Add Global Bar Text support. You can now configure bar text entries in the Global Options "Bar Text" tab that are shared across all specializations.
+- [#671](#671) Each specialization has a "Use global settings" checkbox on its Bar Text tab to opt in. When enabled, global bar text entries are prepended before the specialization's own entries.
+- [#671](#671) Global bar text entries support universal variables like `$resource`, `$resourceMax`, `$casting`, `$comboPoints`, and `$comboPointsMax`, plus all common stat/health variables.
+- [#671](#671) Added export/import support for global bar text settings.
+
+## Priest
+### Holy
+
+- Include extra CDR from Prayer of Healing when talented into Spiritwell and Energy Cycle.
+- Include a temporary bug support fix a bug with Spiritwell + Energy Cycle + Ultimate Serenity granting an extra 2 seconds of CDR.
+
+---
+
+# 12.0.1.23-release (2026-03-03)
+## General
+
+- Fix a Lua error when having your specialization forcibly changed by accepting a random dungeon queue with a different role.
+
+### Localization
+
+- [#669](#669) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Druid
+
+- [#670](#670) Fix a Lua error when applying combo point bar appearance for non-Feral Druid specs during initialization, caused by accessing Feral's combo point color settings before they were fully populated.
+
+## Priest
+### Holy
+
+- Include Benediction in cooldown reduction tracking for Holy Word: Serenity.
+- Restore support for Lightweaver tracking via bar border color change and bar text variables, `$lightweaverTime` and `$lightweaverStacks`.
+
+---
+
+# 12.0.1.22-release (2026-03-02)
+## Priest
+### Holy
+
+- Include Prayer of Mending and Holy Nova in cooldown reduction tracking for Holy Words.
+- Prevent the Holy Word: Sanctify cooldown reduction from being misattributed when talented into Ultimate Serenity.
+
+---
+
+# 12.0.1.21-release (2026-03-02)
+## General
+
+- When handling spell cast info, guard against spells that don't have any iconID supplied via the API.
+
+## Druid
+### Feral
+
+- [#666](#666) Restore correct usability threshold line color for Bite/Ravage's max Energy cost.
+- [#666](#666) In addition to requiring 5 Combo Points, only show the "Max Bite" color when at or above 50 Energy, not just when Bite/Ravage is at any usable Energy level.
+- [#666](#666) Remove outdated references to Brutal Slash.
+
+## Evoker
+### Devastation
+
+- Fix an issue where the Dragonrage buff would sometimes not be extended (with Animosity talented) due to spellIDs being changed by other talents.
+
+## Monk
+### Windwalker
+
+- [#663](#663) Add options to Windwalker Monk's settings to allow the display control of Heart of the Jade Serpent's border color changes.
+- [#668](#668) Restore support for Heart of the Jade Serpent triggering ability ready and buff active border color changes. Add Whirling Dragon Punch to Strike of the Windlord as potential triggers.
+- [#668](#668) Restore Dance of Chi-Ji proc detection, allowing for bar border color change and audio cues to return.
+
+## Paladin
+
+- [#662](#662) Add independent color options for the 2nd and 3rd Holy Power bars.
+
+## Warrior
+
+- [#666](#666) Restore correct usability threshold line color for Execute's max Rage cost.
+
+---
+
+# 12.0.1.20-release (2026-03-01)
+## Monk
+### Brewmaster
+
+- Fix an issue where the bar would disappear whenever an Bring Me Another (2/4 or higher) apex talent proc would occur.
+
+## Priest
+### Shadow
+
+- Fix the the Insanity generation value of Void Blast while talented into the Void Infusion talent.
+
+---
+
+
+# 12.0.1.19-release (2026-02-28)
+## General
+
+- Add guards to prevent Lua errors when determining if threshold-based abilities are active.
+
+---
+
+# 12.0.1.18-release (2026-02-28)
 ## General
 
 - Fix an issue with the castbar overlay not working for some long time users of the bar.
 
+---
+
+# 12.0.1.17-release (2026-02-26)
+## General
 ### Localization
 
 - [#660](#660) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!

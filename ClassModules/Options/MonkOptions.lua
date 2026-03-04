@@ -480,7 +480,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					color = "FFFF0000",
 					enabled = true
 				},
-				borderChiJi = {
+				danceOfChiJi = {
 					color = "FF00FF00",
 					enabled = true
 				},
@@ -1723,13 +1723,6 @@ local function WindwalkerConstructEnergyBarPanel(parent)
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
 
-	--[[yCoord = yCoord - 30
-	controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.borderChiJi.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderChiJi
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderChiJi")
-	end)
-
 	yCoord = yCoord - 30
 	controls.checkBoxes.heartOfTheJadeSerpentReady = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_heartOfTheJadeSerpentReady", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.heartOfTheJadeSerpentReady
@@ -1762,8 +1755,25 @@ local function WindwalkerConstructEnergyBarPanel(parent)
 	f = controls.colors.heartOfTheJadeSerpent
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
-	end)]]
+	end)
 
+	yCoord = yCoord - 30
+	controls.checkBoxes.danceOfChiJi = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_danceOfChiJi", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.danceOfChiJi
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxDanceOfChiJi"])
+	f.tooltip = L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"]
+	f:SetChecked(spec.colors.bar.danceOfChiJi.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.danceOfChiJi.enabled = self:GetChecked()
+	end)
+
+	controls.colors.danceOfChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.danceOfChiJi.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.danceOfChiJi
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "danceOfChiJi")
+	end)
+	
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
 
@@ -2093,8 +2103,10 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
 
+	local yCoord2 = yCoord - 20
+	
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold1", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold1"], L["MonkAudioCheckboxChiThreshold1Tooltip"])
 
 	controls.chiThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold1"].configuration.thresholdValue, 1, 0,

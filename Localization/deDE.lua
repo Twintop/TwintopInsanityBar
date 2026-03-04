@@ -391,19 +391,15 @@ if locale == "deDE" then
     L["DruidFeralColorPickerApexPredatorsCraving"] = "Energie wenn du einen Heißhunger des Spitzenräubers Proc hast"
     L["DruidFeralCheckboxShowIncomingGeneration"] = "Zeige eingehende Combopunkt-Erzeugung?"
     L["DruidFeralCheckboxAlwaysDefaultBackgroundTooltip"] = "Wenn aktiviert, nutzen ungefüllte Combopunkte immer die Farbe 'Hintergrund für ungefüllten Combopunkt' oben. Rahmen ändern weiterhin ihre Farbe abhängig von 'Offene Wunden'-Einstellungen."
-    L["DruidFeralThresholdCheckboxBrutalSlash"] = "Brutales Schlitzen"
-    L["DruidFeralThresholdCheckboxBrutalSlashTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Brutales Schlitzen zu nutzen."
-    L["DruidFeralThresholdCheckboxFeralFrenzy"] = "Wilder Rausch"
-    L["DruidFeralThresholdCheckboxFeralFrenzyTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Wilder Rausch zu nutzen."
     L["DruidFeralThresholdCheckboxMoonfire"] = "Mondfeuer (wenn Mondinspiration geskillt)"
     L["DruidFeralThresholdCheckboxMoonfireTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Mondfeuer zu nutzen. Nur sichtbar, wenn das Talent 'Mondinspiration' gewählt ist."
     L["DruidFeralThresholdCheckboxRake"] = "Krallenhieb"
     L["DruidFeralThresholdCheckboxRakeTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Krallenhieb zu nutzen."
     L["DruidFeralThresholdCheckboxShred"] = "Schreddern"
     L["DruidFeralThresholdCheckboxShredTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Schreddern zu nutzen."
-    L["DruidFeralThresholdCheckboxSwipe"] = "Prankenhieb (wenn Brutales Schlitzen nicht geskillt)"
-    L["DruidFeralThresholdCheckboxSwipeTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Prankenhieb zu nutzen. Nur sichtbar, wenn das Talent 'Brutales Schlitzen' nicht gewählt ist."
-    L["DruidFeralThresholdCheckboxFerociousBite"] = "Wilder Biss (beweglich/dynamisch)"
+    L["DruidFeralThresholdCheckboxSwipe"] = "Prankenhieb"
+    L["DruidFeralThresholdCheckboxSwipeTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Prankenhieb zu nutzen."
+    L["DruidFeralThresholdLabelFerociousBite"] = "Wilder Biss"
     L["DruidFeralThresholdCheckboxFerociousBiteMinimum"] = "Wilder Biss (Minimum)"
     L["DruidFeralThresholdCheckboxFerociousBiteMinimumTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Wilder Biss mit minimalen Energiekosten zu nutzen. Wenn du keine Combopunkte hast, wird dies als 'nicht benutzbar' gefärbt."
     L["DruidFeralThresholdCheckboxFerociousBiteMaximum"] = "Wilder Biss (Maximum)"
@@ -506,7 +502,6 @@ if locale == "deDE" then
     L["MonkMistweaverColorPickerVivify"] = "Mana wenn Beleben spontan ist (durch Lebhafte Belebung)"
     L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
     L["MonkMistweaverCheckboxVivifyTooltip"] = "Dies ändert die Leistenfarbe, wenn Beleben spontan gezaubert werden kann, weil der Effekt von Lebhafte Belebung aktiv ist."
-    L["MonkWindwalkerColorPickerDanceOfChiJi"] = "Rahmen der Ressourcenleiste mit Tanz von Chi-Ji Proc"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Schaden umleiten"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Schaden umleiten zu nutzen."
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tigerklaue"
@@ -522,7 +517,6 @@ if locale == "deDE" then
     L["MonkWindwalkerThresholdCheckboxVivify"] = "Beleben"
     L["MonkWindwalkerThresholdCheckboxVivifyTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Beleben zu nutzen."
 
-    L["PriestHolyAudioResonantWords"] = "Resonierende Worte"
     L["PriestHolyAudioLightweaver"] = "Lichtweber"
     L["PriestShadowAudioMindDevourer"] = "Gedankenverschlinger Proc"
     L["PriestShadowAudioShadowWordMadness"] = "Schattenwort: Wahnsinn Bereit"
@@ -550,9 +544,6 @@ if locale == "deDE" then
     L["PriestHolyColorPickerApotheosisEnd"] = "Mana wenn Apotheose fast endet (wie konfiguriert)"
     L["PriestHolyCheckboxApotheosisEnd"] = "Ändere Leistenfarbe am Ende von Apotheose"
     L["PriestHolyCheckboxApotheosisEndTooltip"] = "Ändert die Leistenfarbe, wenn Apotheose in den nächsten X GCDs oder einer festen Zeitspanne endet. Wähle unten aus, welche Option verwendet werden soll."
-    L["PriestHolyColorPickerResonantWords"] = "Rahmen, wenn du Resonierende Worte hast"
-    L["PriestHolyCheckboxResonantWords"] = "Resonierende Worte"
-    L["PriestHolyCheckboxResonantWordsTooltip"] = "Dies ändert die Rahmenfarbe der Leiste, wenn du Resonierende Worte hast."
     L["PriestHolyColorPickerLightweaver"] = "Rahmen, wenn du Stapel von Lichtweber hast"
     L["PriestHolyCheckboxLightweaver"] = "Lichtweber"
     L["PriestHolyCheckboxLightweaverTooltip"] = "Dies ändert die Rahmenfarbe der Leiste, wenn du Stapel von Lichtweber hast."
@@ -573,8 +564,6 @@ if locale == "deDE" then
     L["PriestHolyApotheosisGcds"] = "Apotheose GCDs - 0.75s Minimum"
     L["PriestHolyCheckboxApotheosisTime"] = "Zeit bis Apotheose endet"
     L["PriestHolyApotheosisTime"] = "Apotheose verbleibende Zeit (Sek.)"
-    L["PriestHolyAudioCheckboxResonantWords"] = "Spiele Audio, wenn du Resonierende Worte erhältst"
-    L["PriestHolyAudioCheckboxResonantWordsTooltip"] = "Spiele Audio-Hinweis, wenn du einen Resonierende Worte Proc erhältst."
     L["PriestHolyAudioCheckboxLightweaver"] = "Spiele Audio, wenn du Lichtweber erhältst"
     L["PriestHolyAudioCheckboxLightweaverTooltip"] = "Spiele Audio-Hinweis, wenn du Lichtweber erhältst."
     L["PriestShadowShadowWordMadness"] = "Schattenwort: Wahnsinn"
@@ -1066,26 +1055,16 @@ if locale == "deDE" then
     L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentTooltip"] = "Dies ändert die Rahmenfarbe der Leiste, wenn Herz der Jadeschlange aktiv ist."
     L["WarriorArmsThresholdWhirlwindCleave"] = "Wirbelwind / Spalten"
     L["WarriorArmsThresholdWhirlwindCleaveTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Wut benötigt wird, um Wirbelwind oder Spalten (wenn geskillt) zu nutzen."
-
     L["PriestShadowBarTextVariable_entropicRiftTime"] = "Verbleibende Zeit deines Entropischen Risses"
     L["DruidFeralThresholdCheckboxFrenziedRegeneration"] = "Rasende Regeneration (Verstärktes Gestaltwandeln)"
     L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Rasende Regeneration in Katzengestalt zu nutzen. Nur sichtbar, wenn 'Verstärktes Gestaltwandeln' geskillt ist."
-
-
-
-    L["PriestHolyBarTextVariable_answeredPrayersStacks"] = "Anzahl der Stapel von Erhörte Gebete"
-    L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"] = "Maximale Anzahl an Stapeln von Erhörte Gebete, bis Apotheose gewährt wird"
-    L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"] = "Anzahl der noch benötigten Stapel von Erhörte Gebete, bevor Apotheose gewährt wird"
     L["TabMiscellaneous"] = "Sonstiges"
     L["BarSettings"] = "Leisteneinstellungen"
     L["CheckboxUseGlobal"] = "Benutze globale Einstellungen"
     L["CheckboxUseGlobalTooltip_Font"] = "Wenn aktiviert, werden die globalen Einstellungen für Schriftart, Farbe und Größe für alle Leistentexte verwendet, bei denen 'Benutze Standard' aktiviert ist."
-
     L["WarlockSoulShardsBorderColorsHeader"] = "Seelensplitter Rahmenfarben + Änderungen"
     L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"] = "Immer Standard-Hintergrund für ungefüllte nutzen"
     L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"] = "Wenn aktiviert, nutzen ungefüllte Seelensplitter immer die Farbe 'Hintergrund für ungefüllten Seelensplitter' oben."
-
-
     L["CheckboxUseGlobalTooltip_TextColors"] = "Wenn aktiviert, werden die globalen Einstellungen für Ressourcen-Textfarben verwendet."
     L["GlobalTextColorsHeader"] = "Ressourcen Textfarben"
     L["GlobalColorPickerTextCurrent"] = "Aktuelle Ressource"
@@ -1096,18 +1075,12 @@ if locale == "deDE" then
     L["GlobalCheckboxThresholdOverTooltip"] = "Dies ändert die Textfarbe der Ressource, wenn du eine Fähigkeit nutzen kannst, deren Schwellenwert du unter 'Leistenanzeige' aktiviert hast."
     L["CheckboxUseGlobalTooltip_Precision"] = "Wenn aktiviert, werden die globalen Einstellungen für Dezimal- und Ressourcen-Genauigkeit im Leistentext verwendet."
     L["Resource"] = "Ressource"
-
-
-
     L["CheckboxUseGlobalTooltip_BarDimensions"] = "Wenn aktiviert, werden die globalen Einstellungen für Leistenposition und -größe verwendet."
     L["CheckboxUseGlobalTooltip_Textures"] = "Wenn aktiviert, werden die globalen Einstellungen für Leistentexturen verwendet."
-
     L["GlobalAudioPowerInfusion"] = "Seele der Macht erhalten"
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "Raubtierhiebe Buff verloren"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "Spiele Audio-Hinweis, wenn Raubtierhiebe Buff verloren geht"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"] = "Spiele einen Audio-Hinweis ab, wenn du einen aktiven Raubtierhiebe Buff verlierst. Dieser Ton wird nur einmal gespielt."
-
-
     L["TabThresholds"] = "Schwellenwertlinien"
     L["ThresholdLinePositionHeader"] = "Schwellenwert-Linien und Icon Position und Größe"
     L["ThresholdLineColorsHeader"] = "Schwellenwert-Linien Farben"

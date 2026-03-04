@@ -540,9 +540,9 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] = 0
 			end
 		elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
-			if snapshots[spells.dragonrage.id].buff.isActive and talents:IsTalentActive(spells.animosity) then
+			if snapshots[spells.dragonrage.id].buff.isActive and talents:IsTalentActive(spells.animosity) then				
 				local success = ...
-				if success and (spellId == spells.fireBreath.id or spellId == spells.eternitySurge.id) then
+				if success and (spellId == spells.fireBreath.id or spellId == spells.fireBreath.attributes.id2 or spellId == spells.eternitySurge.id or spellId == spells.eternitySurge.talentId) then
 					local mod = spells.animosity.attributes.durationPerCastMod ^ (snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] or 0)
 					local increasedDuration = mod * spells.animosity.attributes.durationMod
 					snapshots[spells.dragonrage.id].buff:AddTimeOrInitializeCustom(increasedDuration, currentTime)
@@ -1097,6 +1097,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSettings()
 					end
 
+					-- Clear core barText defaults before merge to prevent per-index array duplication.
+					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					if TwintopInsanityBarSettings.core
+						and TwintopInsanityBarSettings.core.displayText
+						and TwintopInsanityBarSettings.core.displayText.barText
+						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						settings.core.displayText.barText = {}
+					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 

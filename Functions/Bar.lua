@@ -263,6 +263,15 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	renderTransitionState.active = false
 	renderTransitionState.reason = reason
 
+	-- Guard: if the WoW-reported spec no longer matches our stored specId, a spec switch is
+	-- still in progress (LoadFromSpecializationCache may not have run yet). Bail out — the
+	-- pending SwitchSpec will queue its own render transition and handle the update.
+	local currentSpec = GetSpecialization()
+	if currentSpec and TRB.Data.character and TRB.Data.character.specId ~= currentSpec then
+		SetBarGroupsAlpha(1)
+		return
+	end
+
 	TRB.Functions.Bar:HideResourceBar()
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1263,16 +1272,25 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
-		
+
 		if enableFormSwitching then
 			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
 			feralSettingsForDruid = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettingsForDruid then
 				feralSettingsForDruid = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
 			end
-			if feralSettingsForDruid and feralSettingsForDruid.comboPoints then
+			-- Non-Feral Druids require Feral's COMPLETE combo point data (dimensions AND colors)
+			-- to display the secondary bar. If any piece is missing (e.g. during early initialization
+			-- before Feral's FillSpecializationCacheSettings has run), skip combo point appearance.
+			if feralSettingsForDruid and feralSettingsForDruid.comboPoints
+				and feralSettingsForDruid.colors and feralSettingsForDruid.colors.comboPoints then
 				hasComboPointSettings = true
+			else
+				hasComboPointSettings = false
 			end
+		else
+			-- Form switching disabled for this spec — no combo points
+			hasComboPointSettings = false
 		end
 	end
 
@@ -1280,15 +1298,11 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings.
 		local effectiveSettings = settings
 		if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
-			-- Try specCache first, fall back to settings.druid.feral if specCache not populated
+			-- feralSettingsForDruid was already validated to have comboPoints, colors, and
+			-- colors.comboPoints in the hasComboPointSettings gate above.
 			local feralSettings = feralSettingsForDruid
-			if not feralSettings then
-				feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			end
-			if not feralSettings then
-				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
-			end
-			if feralSettings and feralSettings.comboPoints then
+			if feralSettings and feralSettings.comboPoints
+				and feralSettings.colors and feralSettings.colors.comboPoints then
 				-- Create a shallow copy with Feral's combo point settings
 				-- IMPORTANT: Must create NEW tables for nested objects, not just copy references
 ---@diagnostic disable-next-line: missing-fields

@@ -200,10 +200,12 @@ end
 ---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public halo TRB.Classes.Priest.HolyWordSpell
 ---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
+---@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
 ---@field public smite TRB.Classes.Priest.HolyWordSpell
 ---@field public holyFire TRB.Classes.Priest.HolyWordSpell
 ---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
 ---@field public energyCycle TRB.Classes.Priest.HolyWordSpell
+---@field public benediction TRB.Classes.Priest.HolyWordSpell
 ---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -212,17 +214,13 @@ end
 ---@field public holyCelerity TRB.Classes.SpellBase
 ---@field public prophetsInsight TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
---[[---@field public resonantWords TRB.Classes.SpellBase
 ---@field public lightweaver TRB.Classes.SpellBase
----@field public lightwell TRB.Classes.SpellBase
----@field public answeredPrayers TRB.Classes.SpellBase
----@field public heal TRB.Classes.Priest.HolyWordSpell]]
----@field public benediction TRB.Classes.SpellBase
 ---@field public eternalSanctity TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public powerSurge TRB.Classes.SpellBase
 ---@field public energyConservation TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
+---@field public spiritwell TRB.Classes.SpellBase
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
@@ -248,6 +246,12 @@ function TRB.Classes.Priest.HolySpells:New()
 		id = 14914,
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
+		isTalent = true
+	})
+	self.holyNova = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 132157,
+		holyWordKey = "holyWordChastise",
+		holyWordReduction = 4,
 		isTalent = true
 	})
 
@@ -277,6 +281,10 @@ function TRB.Classes.Priest.HolySpells:New()
 		holyWordReduction = 4,
 		isTalent = true
 	})
+	self.spiritwell = TRB.Classes.SpellBase:New({
+		id = 1247178,
+		isTalent = true
+	})
 
 	-- Holy Word: Serenity
 	self.holyWordSerenity = TRB.Classes.SpellBase:New({
@@ -294,6 +302,18 @@ function TRB.Classes.Priest.HolySpells:New()
 		attributes = {
 			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
 		}
+	})
+	self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 33076,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 4, -- Per rank of Voice of Harmony
+	})
+	self.benediction = TRB.Classes.Priest.HolyWordSpell:New({
+		id = 1262763,
+		talentId = 1262755,
+		isTalent = true,
+		holyWordKey = "holyWordSerenity",
+		holyWordReduction = 6,
 	})
 
 	-- Holy Baseline Abilities
@@ -332,39 +352,17 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 20,
 		isTalent = true
 	})
-	--[[self.resonantWords = TRB.Classes.SpellBase:New({
-		id = 372313,
-		talentId = 372309,
-		isTalent = true
-	})
 	self.lightweaver = TRB.Classes.SpellBase:New({
 		id = 390993,
 		talentId = 390992,
-		isTalent = true
-	})
-	self.lightwell = TRB.Classes.SpellBase:New({
-		id = 372835,
-		isTalent = true
-	})
-	self.answeredPrayers = TRB.Classes.SpellBase:New({
-		id = 394289,
-		talentId = 391387,
 		isTalent = true,
-		maxStackRank = {
-			[0] = 0,
-			[1] = 100,
-			[2] = 50
-		}
-	})]]
+		duration = 20,
+		maxStacks = 4
+	})
 	self.eternalSanctity = TRB.Classes.SpellBase:New({
 		id = 1215245,
 		isTalent = true,
 		durationMod = 12
-	})
-
-	self.benediction = TRB.Classes.SpellBase:New({
-		id = 1262755,
-		isTalent = true
 	})
 	-- Set Bonuses
 
@@ -397,13 +395,6 @@ function TRB.Classes.Priest.HolySpells:New()
 		pauseDuration = 20,
 		durationMod = 1
 	})
-	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
-		id = 453845,
-		debuffId = 453850,
-		isTalent = true,
-		duration = 8,
-		maxStacks = 5
-	})]]
 
 	return self
 end
@@ -433,19 +424,10 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
 		{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 		{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
+		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
-		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false }
-
-		--[[{ variable = "#answeredPrayers", icon = spells.answeredPrayers.icon, description = spells.answeredPrayers.name, printInSettings = true },
-		{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
-		{ variable = "#rw", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = true },
-		{ variable = "#resonantWords", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = false },
-		{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
-		{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
-		{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
-		{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
-		{ variable = "#prayerOfHealing", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = false },]]
+		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
@@ -477,14 +459,8 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
-		--[[{ variable = "$answeredPrayersStacks", description = L["PriestHolyBarTextVariable_answeredPrayersStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersMaxStacks", description = L["PriestHolyBarTextVariable_answeredPrayersMaxStacks"], printInSettings = true, color = false },
-		{ variable = "$answeredPrayersRemainingStacks", description = L["PriestHolyBarTextVariable_answeredPrayersRemainingStacks"], printInSettings = true, color = false },
-		
 		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
-
-		{ variable = "$rwTime", description = L["PriestHolyBarTextVariable_rwTime"], printInSettings = true, color = false },]]
 
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },

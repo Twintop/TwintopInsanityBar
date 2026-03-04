@@ -120,8 +120,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
-	specCache.druid_feral.snapshotData.snapshots[spells.brutalSlash.id] = TRB.Classes.Snapshot:New(spells.brutalSlash)
-	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.feralFrenzy.id] = TRB.Classes.Snapshot:New(spells.feralFrenzy)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.franticFrenzy.id] = TRB.Classes.Snapshot:New(spells.franticFrenzy)
@@ -639,7 +637,7 @@ local function RefreshLookupData_Balance()
 	local currentAstralPower
 	local castingAstralPower
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		--$astralPower
 		currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
@@ -759,7 +757,7 @@ local function RefreshLookupData_Feral()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
+				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -784,7 +782,7 @@ local function RefreshLookupData_Feral()
 	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
 	-- Stealth takes precedence over overcap for Feral
 	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -869,7 +867,7 @@ local function RefreshLookupData_Guardian()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
+				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -888,7 +886,7 @@ local function RefreshLookupData_Guardian()
 	local castingRage
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
 	else
@@ -1660,7 +1658,7 @@ local function UpdateResourceBar()
 									else
 										-- Use ColorCurve to dynamically change threshold color based on resource
 										local baseCost = resourceAmount / spell.primaryResourceTypeMod
-										local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+										local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 											spell.primaryResourceTypeMod,
 											baseCost,
 											specCacheSettings.colors.threshold.under.color,
@@ -1668,7 +1666,7 @@ local function UpdateResourceBar()
 										)
 										local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 										frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-										local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+										local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 											spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 										)
 										if curveApplied then
@@ -1684,7 +1682,7 @@ local function UpdateResourceBar()
 									else
 										-- Use ColorCurve to dynamically change threshold color based on resource
 										local baseCost = resourceAmount / spell.primaryResourceTypeMod
-										local thresholdCurve = TRB.Functions.Color:BuildMulticastThresholdCurve(
+										local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
 											spell.primaryResourceTypeMod,
 											baseCost,
 											specCacheSettings.colors.threshold.under.color,
@@ -1692,7 +1690,7 @@ local function UpdateResourceBar()
 										)
 										local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 										frameLevel = isUsable and TRB.Data.constants.frameLevels.thresholdOver or TRB.Data.constants.frameLevels.thresholdUnder
-										local curveApplied = TRB.Functions.Threshold:ApplyMulticastThresholdCurveColor(
+										local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
 											spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
 										)
 										if curveApplied then
@@ -1803,7 +1801,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
 				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -1873,6 +1871,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				local apcActive = IsApexPredatorsCravingActive()
+				local barColorCurveResult = nil
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
@@ -1913,22 +1912,7 @@ local function UpdateResourceBar()
 							local snapshot = snapshots[spell.id]
 
 							if spell.attributes.isClearcasting and snapshots[spells.clearcasting.id].buff.applications ~= nil and snapshots[spells.clearcasting.id].buff.applications > 0 then
-								if spell.id == spells.brutalSlash.id then
-									if not talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif snapshots[spells.brutalSlash.id].cooldown.charges > 0 then
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									else
-										thresholdColor = specCacheSettings.colors.threshold.unusable.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									end
-								elseif spell.id == spells.swipe.id then
-									if talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									else
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									end
-								else
+								if spell.id == spells.swipe.id then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -1943,8 +1927,27 @@ local function UpdateResourceBar()
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
-										if isUsable or apcActive then
+										if apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
+										elseif isUsable then
+											-- Use ColorCurve to correctly evaluate max cost against secret Energy
+											local baseCost = resourceAmount / spell.primaryResourceTypeMod
+											local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
+												spell.primaryResourceTypeMod,
+												baseCost,
+												specCacheSettings.colors.threshold.under.color,
+												specCacheSettings.colors.threshold.over.color
+											)
+											local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
+											frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+											local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
+												spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+											)
+											if curveApplied then
+												thresholdColor = nil -- Skip normal color application
+											else
+												thresholdColor = specCacheSettings.colors.threshold.under.color
+											end
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -1961,8 +1964,27 @@ local function UpdateResourceBar()
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.ravageMaximum.id and spell.settingKey == "ravageMaximum" then
-										if isUsable or apcActive then
+										if apcActive then
 											thresholdColor = specCacheSettings.colors.threshold.over.color
+										elseif isUsable then
+											-- Use ColorCurve to correctly evaluate max cost against secret Energy
+											local baseCost = resourceAmount / spell.primaryResourceTypeMod
+											local thresholdCurve = TRB.Functions.Color:BuildThresholdCurve(
+												spell.primaryResourceTypeMod,
+												baseCost,
+												specCacheSettings.colors.threshold.under.color,
+												specCacheSettings.colors.threshold.over.color
+											)
+											local iconCurve = TRB.Functions.Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
+											frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+											local curveApplied = TRB.Functions.Threshold:ApplyThresholdCurveColor(
+												spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+											)
+											if curveApplied then
+												thresholdColor = nil -- Skip normal color application
+											else
+												thresholdColor = specCacheSettings.colors.threshold.under.color
+											end
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
@@ -1978,21 +2000,7 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.swipe.id then
-									if talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif isUsable then
-										thresholdColor = specCacheSettings.colors.threshold.over.color
-									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								elseif spell.id == spells.brutalSlash.id then
-									if not talents:IsTalentActive(spells.brutalSlash) then
-										showThreshold = false
-									elseif snapshots[spells.brutalSlash.id].cooldown.charges == 0 then
-										thresholdColor = specCacheSettings.colors.threshold.unusable.color
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif isUsable then
+									if isUsable then
 										thresholdColor = specCacheSettings.colors.threshold.over.color
 									else
 										thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2080,13 +2088,20 @@ local function UpdateResourceBar()
 							barColor = specSettings.colors.bar.clearcasting.color
 						end
 
-						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 and spells.ferociousBiteMaximum:IsUsable() then
-							barColor = specSettings.colors.bar.maxBite.color
-						end						
+						-- Use a ColorCurve to check the 50 Energy threshold for max bite color,
+						-- since Energy is a secret value and IsUsable() triggers at 25 (base cost) not 50 (max cost)
+						if specSettings.colors.bar.maxBite.enabled and snapshotData.attributes.resource2 == 5 then
+							local maxBiteCost = spells.ferociousBiteMaximum:GetPrimaryResourceCost()
+							local maxEnergy = TRB.Data.character.maxEnergy or 100
+							local maxBitePercent = maxBiteCost / maxEnergy
+							local maxBiteCurve = TRB.Functions.Color:GetStepColorCurve("feralMaxBite", barColor, specSettings.colors.bar.maxBite.color, maxBitePercent)
+							barColorCurveResult = UnitPowerPercent("player", displayResourceType, true, maxBiteCurve)
+						end
 
 						if apcActive then
 							if specSettings.colors.bar.apexPredator.enabled then
 								barColor = specSettings.colors.bar.apexPredator.color
+								barColorCurveResult = nil -- APC overrides the maxBite curve
 							end
 
 							if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
@@ -2104,7 +2119,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2112,7 +2127,14 @@ local function UpdateResourceBar()
 					end
 				end
 
-				primaryNode:SetColor(barColor)
+				if barColorCurveResult ~= nil then
+					primaryNode:SetColorCurve(barColorCurveResult)
+					-- Invalidate the color cache so the next SetColor() call won't be skipped
+					-- (SetColorCurve bypasses the cache by setting vertex color directly)
+					TRB.Data.cache.colors.bar[primaryNode.name .. "_resource"] = nil
+				else
+					primaryNode:SetColor(barColor)
+				end
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
@@ -2354,7 +2376,7 @@ local function UpdateResourceBar()
 
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2438,7 +2460,7 @@ local function UpdateResourceBar()
 
 				-- Apply overcap border color if enabled (Cat/Feral uses Energy, Bear/Guardian uses Rage)
 				if formSpecSettings.colors.bar.borderOvercap ~= nil and formSpecSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
+					local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(formSpecSettings, barBorderColor, formSpecSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
@@ -2555,7 +2577,6 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
-		lookup["#brutalSlash"] = spells.brutalSlash.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
@@ -2732,6 +2753,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSettings()
 					end
 
+					-- Clear core barText defaults before merge to prevent per-index array duplication.
+					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					if TwintopInsanityBarSettings.core
+						and TwintopInsanityBarSettings.core.displayText
+						and TwintopInsanityBarSettings.core.displayText.barText
+						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						settings.core.displayText.barText = {}
+					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 
@@ -2859,7 +2888,8 @@ function TRB.Functions.Class:CheckCharacter()
 				-- Use Feral settings for combo point configuration
 				local feralSettings = TRB.Data.specCache.druid_feral.settings
 
-				if feralSettings ~= nil and feralSettings.comboPoints ~= nil then
+				if feralSettings ~= nil and feralSettings.comboPoints ~= nil
+					and feralSettings.colors and feralSettings.colors.comboPoints then
 					-- Get effective width for secondary bar, accounting for CDM width matching
 					local effectiveWidth, cdmForced = TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
 					

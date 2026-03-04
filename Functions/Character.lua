@@ -626,7 +626,14 @@ end
 function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
+	local oldHaste = snapshotData.attributes.haste
 	snapshotData.attributes.haste = UnitSpellHaste("player")
+
+	-- Recalculate hasted cooldowns when haste changes
+	if oldHaste ~= nil and oldHaste ~= snapshotData.attributes.haste then
+		snapshotData:RecalculateHastedCooldowns(snapshotData.attributes.haste)
+	end
+
 	snapshotData.attributes.crit = GetCritChance()
 	snapshotData.attributes.mastery = GetMasteryEffect()
 	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)
@@ -666,6 +673,10 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
+	-- The cached character table may carry a stale specId from the previous time this spec
+	-- was active. Always stamp the current specId so downstream code (EventRegistration,
+	-- UpdateResourceBar, etc.) branches into the correct spec.
+	TRB.Data.character.specId = GetSpecialization() or TRB.Data.character.specId
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.spellsData = cache.spellsData
@@ -780,9 +791,26 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.bars = spec.bars
 	end
 
+	-- Build merged bar text list: global entries first, then spec entries
+	local mergedBarText
+	local globalBarTextCount = 0
+	if s.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
+		mergedBarText = {}
+		for _, entry in ipairs(core.displayText.barText) do
+			mergedBarText[#mergedBarText + 1] = entry
+		end
+		globalBarTextCount = #mergedBarText
+		for _, entry in ipairs(spec.displayText.barText) do
+			mergedBarText[#mergedBarText + 1] = entry
+		end
+	else
+		mergedBarText = spec.displayText.barText
+	end
+
 ---@diagnostic disable-next-line: missing-fields
 	specCache.settings.displayText = {
-		barText = spec.displayText.barText
+		barText = mergedBarText,
+		globalBarTextCount = globalBarTextCount
 	}
 
 	if s.displayText then
@@ -1037,29 +1065,26 @@ local CLASS_OPTIONS_KEY = {
 	warrior = "Warrior",
 }
 
+-- Tracks which classes have had their defaults merged into TRB.Data.settings.
+-- The old .bar sentinel was unreliable: the ADDON_LOADED merge copies saved data
+-- for ALL classes, so a non-active class can have .bar from old saved vars while
+-- still missing newer default fields (e.g., colors.bar.casting).
+local classDefaultsMerged = {}
+
 ---Ensure that default spec settings exist in TRB.Data.settings for the given class.
----If any spec in the class has empty settings (no .bar field), loads defaults from the
----class's options module and merges them with any existing saved values.
+---Loads defaults from the class's options module and merges them (as base) with
+---any existing saved values so that new default fields are always present.
+---Only performs the merge once per class per session.
 ---@param className string Lowercase class name (e.g., "warrior")
 ---@return boolean success Whether settings were successfully ensured
 function TRB.Functions.Character:EnsureSpecSettings(className)
+	if classDefaultsMerged[className] then
+		return true
+	end
+
 	local settings = TRB.Data.settings
 	if not settings or not settings[className] then
 		return false
-	end
-
-	-- Check if defaults have already been loaded by testing a sentinel field (.bar)
-	-- on any spec in this class. If all have .bar, defaults are loaded.
-	local needsDefaults = false
-	for _, specSettings in pairs(settings[className]) do
-		if type(specSettings) == "table" and specSettings.bar == nil then
-			needsDefaults = true
-			break
-		end
-	end
-
-	if not needsDefaults then
-		return true
 	end
 
 	local optionsKey = CLASS_OPTIONS_KEY[className]
@@ -1082,6 +1107,7 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 		end
 	end
 
+	classDefaultsMerged[className] = true
 	return true
 end
 

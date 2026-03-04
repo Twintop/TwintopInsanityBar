@@ -396,6 +396,15 @@ TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1
 		return
 	end
 
+	if event == "PLAYER_TALENT_UPDATE" then
+		local specName = TRB.Data.barConstructedForSpec
+		if specName ~= nil and TRB.Data.specCache[specName] ~= nil and TRB.Data.specCache[specName].talents ~= nil then
+			if not TRB.Data.specCache[specName].talents:HaveTalentsChanged() then
+				return
+			end
+		end
+	end
+
 	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		-- Increase initial transition time to cover the loading sequence delay
 		TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)

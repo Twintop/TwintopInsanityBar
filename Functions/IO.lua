@@ -849,7 +849,17 @@ local function HandleImport(input)
 
 	local function TableMergeWrapper(existing, config)
 		local newBarText = {}
+		local newCoreBarText = nil
 		
+		-- Extract core displayText.barText before merge (array replacement, not merge)
+		if config.core and config.core.displayText and config.core.displayText.barText then
+			local entryCount = TRB.Functions.Table:Length(config.core.displayText.barText)
+			if entryCount > 0 then
+				newCoreBarText = config.core.displayText.barText
+				config.core.displayText.barText = {}
+			end
+		end
+
 		for className, class in pairs(config) do
 			if className ~= "core" then
 				for specName, spec in pairs(class) do
@@ -863,6 +873,11 @@ local function HandleImport(input)
 		end
 
 		local merged = TRB.Functions.Table:Merge(existing, config)
+
+		-- Re-apply core barText as full replacement
+		if newCoreBarText then
+			merged.core.displayText.barText = newCoreBarText
+		end
 
 		if TRB.Functions.Table:Length(newBarText) > 0 then
 			for className, class in pairs(merged) do
@@ -918,6 +933,21 @@ end
 
 function TRB.Functions.IO:ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	local output = HandleExport(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})
+end
+
+---Exports only the global bar text settings (core.displayText.barText).
+---@param exportMessage string
+function TRB.Functions.IO:ExportGlobalBarTextPopup(exportMessage)
+	local configuration = {
+		core = {
+			displayText = {
+				barText = TRB.Data.settings.core.displayText.barText,
+				migrations = TRB.Data.settings.core.displayText.migrations
+			}
+		}
+	}
+	local output = Export(configuration)
 	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})
 end
 

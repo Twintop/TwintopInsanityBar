@@ -140,6 +140,7 @@ local function FillSpecializationCache()
 
 	specCache.monk_windwalker.snapshotData.attributes.resourceRegen = 0
 	specCache.monk_windwalker.snapshotData.audio = {
+		danceOfChiJiPlayed = false,
 		chiThreshold1Played = false,
 		chiThreshold2Played = false,
 		chiThreshold3Played = false,
@@ -152,6 +153,8 @@ local function FillSpecializationCache()
 	specCache.monk_windwalker.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
 	---@type TRB.Classes.Snapshot
 	specCache.monk_windwalker.snapshotData.snapshots[spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(spells.strikeOfTheWindlord)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_windwalker.snapshotData.snapshots[spells.whirlingDragonPunch.id] = TRB.Classes.Snapshot:New(spells.whirlingDragonPunch)
 	---@type TRB.Classes.Snapshot
 	specCache.monk_windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
@@ -360,7 +363,7 @@ local function RefreshLookupData_Brewmaster()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
+				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -379,7 +382,7 @@ local function RefreshLookupData_Brewmaster()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
@@ -483,6 +486,7 @@ local function RefreshLookupData_Mistweaver()
 end
 
 local function RefreshLookupData_Windwalker()
+	local currentTime = GetTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
@@ -499,7 +503,7 @@ local function RefreshLookupData_Windwalker()
 		if sharedSettings.colors.text.overThreshold.enabled then
 			local _overThreshold = false
 			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:IsUsable() then
+				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
 					_overThreshold = true
 					break
 				end
@@ -519,7 +523,7 @@ local function RefreshLookupData_Windwalker()
 	local castingEnergy
 	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildOvercapCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
 		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
 		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
@@ -527,7 +531,7 @@ local function RefreshLookupData_Windwalker()
 		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
 		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 	end
-
+	
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
@@ -675,8 +679,81 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.casting.icon = spells.vivify.icon
 				UpdateCastingResourceFinal()
 			end
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spellId == spells.strikeOfTheWindlord.id then
+				local cooldown = spells.strikeOfTheWindlord.cooldown
+				if talents:IsTalentActive(spells.communionWithWind) then
+					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
+				end
+
+				local currentHaste = snapshotData.attributes.haste or 0
+				cooldown = cooldown / (1 + currentHaste / 100)
+				snapshotData.snapshots[spells.strikeOfTheWindlord.id].cooldown:InitializeCustom(cooldown, currentTime)
+
+				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
+					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
+				end
+			elseif spellId == spells.whirlingDragonPunch.id then
+				local cooldown = spells.whirlingDragonPunch.cooldown
+				if talents:IsTalentActive(spells.communionWithWind) then
+					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
+				end
+
+				local currentHaste = snapshotData.attributes.haste or 0
+				cooldown = cooldown / (1 + currentHaste / 100)
+				snapshotData.snapshots[spells.whirlingDragonPunch.id].cooldown:InitializeCustom(cooldown, currentTime)
+
+				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
+					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
+				end
+			end
 		end
 	end
+end
+
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			if spellId == spells.danceOfChiJi.id then
+				if snapshotData.attributes.danceOfChiJiActive ~= true then
+					local specSettings = TRB.Data.settings.monk[TRB.Data.character.specName]
+					if specSettings.audio.danceOfChiJi.enabled and not snapshotData.audio.danceOfChiJiPlayed then
+						PlaySoundFile(specSettings.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.danceOfChiJiPlayed = true
+					end
+				end
+				snapshotData.attributes.danceOfChiJiActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			if spellId == spells.danceOfChiJi.id then
+				snapshotData.attributes.danceOfChiJiActive = false
+				snapshotData.audio.danceOfChiJiPlayed = false
+			end
+		end
+	end
+end
+
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 end
 
 local function UpdateSnapshot()
@@ -837,6 +914,14 @@ end
 
 local function UpdateSnapshot_Windwalker()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
+	local currentTime = GetTime()
+	
+	snapshots[spells.whirlingDragonPunch.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.strikeOfTheWindlord.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -964,7 +1049,7 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -1210,18 +1295,19 @@ local function UpdateResourceBar()
 					local barColor = specSettings.colors.bar.base.color
 					local barBorderColor = specSettings.colors.bar.border.color
 
-					if specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable() and TRB.Data.character.inCombat then
-						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
+					if TRB.Data.character.inCombat and specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and
+						((talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable()) or (talents:IsTalentActive(spells.whirlingDragonPunch) and snapshots[spells.whirlingDragonPunch.id].cooldown:IsUsable()))  then
+							barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
 					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
 						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
-					elseif specSettings.colors.bar.borderChiJi.enabled and snapshots[spells.danceOfChiJi.id].buff.isActive then
-						barBorderColor = specSettings.colors.bar.borderChiJi.color
+					elseif specSettings.colors.bar.danceOfChiJi.enabled and snapshotData.attributes.danceOfChiJiActive then
+						barBorderColor = specSettings.colors.bar.danceOfChiJi.color
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = TRB.Functions.Color:BuildOvercapCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -1536,6 +1622,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.monk.windwalker.displayText.barText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSettings()
 					end
 
+					-- Clear core barText defaults before merge to prevent per-index array duplication.
+					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					if TwintopInsanityBarSettings.core
+						and TwintopInsanityBarSettings.core.displayText
+						and TwintopInsanityBarSettings.core.displayText.barText
+						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						settings.core.displayText.barText = {}
+					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 					TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 
@@ -1710,16 +1804,19 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.monk.brewmaster then
+		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
+		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy
 		TRB.Data.resourceFactor = 1
@@ -1727,6 +1824,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 	else
 		TRB.Data.specSupported = false
+		TRB.Functions.Class:DisableEvents()
 	end
 
 	TRB.Functions.Character:EventRegistration()

@@ -39,6 +39,14 @@ function TRB.Classes.SnapshotData:RefreshAllBuffs()
 	end
 end
 
+---Recalculates all hasted cooldowns when haste changes
+---@param newHaste number # The new haste percentage
+function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(newHaste)
+	for _, v in pairs(self.snapshots) do
+		v.cooldown:RecalculateForHaste(newHaste)
+	end
+end
+
 ---@class TRB.Classes.Snapshot
 ---@field public spell TRB.Classes.SpellBase?
 ---@field public buff TRB.Classes.SnapshotBuff
@@ -692,6 +700,8 @@ end
 ---@field public manualCharges integer # Manually tracked current charge count
 ---@field public manualMaxCharges integer # Manually tracked max charge count
 ---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
+---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
+---@field public lastKnownHaste number? # The haste percentage used when the cooldown was last initialized or recalculated
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -723,6 +733,8 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.manualCharges = 0
 	self.manualMaxCharges = 0
 	self.durationObject = nil
+	self.hastedCooldown = false
+	self.lastKnownHaste = nil
 end
 
 ---Computes the time remaining on the Snapshot
@@ -818,11 +830,46 @@ end
 ---Initializes the cooldown information for the snapshot with custom startTime and duration values
 ---@param duration number
 ---@param startTime? number
-function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime)
+---@param hastedCooldown? boolean # When true, the cooldown remaining will be dynamically adjusted when haste changes
+---@param currentHaste? number # The current haste percentage (from snapshotData.attributes.haste). Required when hastedCooldown is true.
+function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hastedCooldown, currentHaste)
 	self.startTime = startTime or GetTime()
 	self.duration = duration
 	self.isCustom = true
+	self.hastedCooldown = hastedCooldown or false
+	self.lastKnownHaste = self.hastedCooldown and currentHaste or nil
 	self:GetRemainingTime()
+end
+
+---Recalculates the remaining cooldown time when haste changes, using the formula:
+---  newRemaining = oldRemaining * (1 + oldHaste/100) / (1 + newHaste/100)
+---@param newHaste number # The new haste percentage
+function TRB.Classes.SnapshotCooldown:RecalculateForHaste(newHaste)
+	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownHaste == nil then
+		return
+	end
+
+	local oldHaste = self.lastKnownHaste
+	if oldHaste == newHaste then
+		return
+	end
+
+	local currentTime = GetTime()
+	local oldRemaining = self:GetRemainingTime(currentTime)
+
+	if oldRemaining <= 0 then
+		return
+	end
+
+	local newRemaining = oldRemaining * (1 + oldHaste / 100) / (1 + newHaste / 100)
+	newRemaining = math.max(0, newRemaining)
+
+	-- Reset duration and startTime from "now" so that GetRemainingTime computes newRemaining directly,
+	-- avoiding cumulative floating-point drift from back-calculating startTime through the old duration.
+	self.duration = newRemaining
+	self.startTime = currentTime
+	self.lastKnownHaste = newHaste
+	self:GetRemainingTime(currentTime)
 end
 
 ---Initializes the cooldown information for the snapshot by forcing a refresh and a retry on the next frame, if needed
@@ -1175,7 +1222,7 @@ function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 		self.endTime = endTime / 1000
 		self.resourceRaw = manaCost
 		self.spellId = spellInfo.spellID
-		self.icon = string.format("|T%s:0|t", spellInfo.iconID)
+		self.icon = string.format("|T%s:0|t", spellInfo.iconID or 134400) -- Default to question mark icon if spell icon is unavailable
 	end
 end
 
