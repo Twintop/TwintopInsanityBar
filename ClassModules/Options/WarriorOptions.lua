@@ -719,16 +719,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false),
+		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"),
+		}),
 	}
-
-	-- Add defensives bar textures
-	settings.textures.defensivesBackground="Interface\\Tooltips\\UI-Tooltip-Background"
-	settings.textures.defensivesBackgroundName="Blizzard Tooltip"
-	settings.textures.defensivesBorder="Interface\\Buttons\\WHITE8X8"
-	settings.textures.defensivesBorderName="1 Pixel"
-	settings.textures.defensivesBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
-	settings.textures.defensivesBarName=L["LSMStatusBarSmoother"]
 
 	if includeBarText then
 		settings.displayText.barText = ProtectionLoadDefaultBarTextSettings(classic)
@@ -1999,11 +1993,13 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
+	local customBars = {}
+	local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
+	if defensivesBarDef then
+		table.insert(customBars, defensivesBarDef)
+	end
 
-	-- Defensives bar visibility using custom bar system
-	yCoord = yCoord - 70
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"))
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true, nil, customBars)
 end
 
 local function ProtectionConstructThresholdPanel(parent)

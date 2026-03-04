@@ -2481,6 +2481,18 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			groupSettings.height,
 			groupSettings.border
 		)
+
+		-- Set min/max for multi-node discrete bars (e.g., utility charge bars).
+		-- ApplyLayout does not set min/max, and StatusBar frames default to (0,0),
+		-- which causes all SetValue() calls to scale to 0 (empty).
+		if config.minMaxMode == "discrete" then
+			for i = 1, nodes do
+				local multiNode = targetGroup:GetNode(i)
+				if multiNode then
+					multiNode:SetMinMax(0, 1)
+				end
+			end
+		end
 	else
 		-- Single-node direct sizing (health bar, etc.)
 		targetGroup.containerFrame:SetWidth(groupWidth)

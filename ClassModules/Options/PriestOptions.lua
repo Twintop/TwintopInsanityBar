@@ -13,6 +13,86 @@ TRB.Options.Priest.Shadow = {}
 local SHADOW_MAX_INSANITY = 150
 
 
+---Loads only the Angelic Feather charge bar text entries (shared across all Priest specs)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function LoadAngelicFeatherBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestBarTextNameAFCharge1"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$afCharges=0}[$afTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Angelic_Feather_Charge_1",
+				relativeToFrameName = L["AngelicFeatherCharge1"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestBarTextNameAFCharge2"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$afCharges=1}[$afTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Angelic_Feather_Charge_2",
+				relativeToFrameName = L["AngelicFeatherCharge2"],
+			},
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PriestBarTextNameAFCharge3"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$afCharges=2}[$afTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Angelic_Feather_Charge_3",
+				relativeToFrameName = L["AngelicFeatherCharge3"],
+			},
+		},
+	}
+
+	return textSettings
+end
+TRB.Options.Priest.LoadAngelicFeatherBarTextSettings = LoadAngelicFeatherBarTextSettings
+
 ---Loads only the Power Word bar text entries (no global mana text)
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function DisciplineLoadPowerWordBarTextSettings()
@@ -76,6 +156,8 @@ TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings = DisciplineLoadPowerW
 local function DisciplineLoadExtraBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = DisciplineLoadPowerWordBarTextSettings()
+	local afTextSettings = LoadAngelicFeatherBarTextSettings()
+	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -114,11 +196,15 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
+			utility = { visibility = "never", smooth = false },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			utility = TRB.Functions.Settings:DefaultUtilityBarDimensions(classic),
+		},
 		colors={
 			text = {
 				current = {
@@ -170,6 +256,9 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
+			},
 		},
 		displayText={
 			default = {
@@ -196,12 +285,14 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
+		}),
 	}
 
 	if includeBarText then
 		settings.displayText.barText = DisciplineLoadDefaultBarTextSettings(classic)
-		settings.displayText.migrations = { powerWordBarTextSeeded = true }
+		settings.displayText.migrations = { powerWordBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
 	end
 
 	return settings
@@ -340,6 +431,8 @@ TRB.Options.Priest.HolyLoadHolyWordBarTextSettings = HolyLoadHolyWordBarTextSett
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function HolyLoadExtraBarTextSettings(classic)
 	local textSettings = HolyLoadHolyWordBarTextSettings()
+	local afTextSettings = LoadAngelicFeatherBarTextSettings()
+	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return textSettings
@@ -380,11 +473,15 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			primary = { visibility = "always", smooth = true },
 			secondary = { visibility = "always", smooth = true },
 			health = { visibility = "always", smooth = true },
+			utility = { visibility = "never", smooth = false },
 			dragonriding = true
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			utility = TRB.Functions.Settings:DefaultUtilityBarDimensions(classic),
+		},
 		endOf = {
 			apotheosis = TRB.Functions.Settings:DefaultEndOfSettings()
 		},
@@ -483,6 +580,9 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
+			},
 		},
 		displayText={
 			default = {
@@ -515,12 +615,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
+		}),
 	}
 
 	if includeBarText then
 		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
-		settings.displayText.migrations = { holyWordBarTextSeeded = true }
+		settings.displayText.migrations = { holyWordBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
 	end
 
 	return settings
@@ -535,6 +637,9 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 	}
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("vfTime", "voidform", classic, "CENTER", "RIGHT"))
+
+	local afTextSettings = LoadAngelicFeatherBarTextSettings()
+	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -590,6 +695,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			secondary = { visibility = "always", smooth = false },
 			health = { visibility = "always", smooth = true },
 			mana = { visibility = "never", smooth = true },
+			utility = { visibility = "never", smooth = false },
 			dragonriding = true
 		},
 		overcap = {
@@ -601,6 +707,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
 			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+			utility = TRB.Functions.Settings:DefaultUtilityBarDimensions(classic),
 		},
 		endOf = {
 			voidform = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -704,6 +811,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 		},
 		displayText={
@@ -737,11 +845,14 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, true),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
+		}),
 	}
 
 	if includeBarText then
 		settings.displayText.barText = ShadowLoadDefaultBarTextSettings(classic)
+		settings.displayText.migrations = { angelicFeatherBarTextSeeded = true }
 	end
 
 	return settings
@@ -1034,7 +1145,7 @@ local function DisciplineConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true, L["PriestDisciplinePowerWords"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true, L["PriestDisciplinePowerWords"], false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function DisciplineConstructBarVisibilityPanel(parent)
@@ -1048,7 +1159,13 @@ local function DisciplineConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestDisciplinePowerWords"], true)
+	local customBars = {}
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	if utilityBarDef then
+		table.insert(customBars, utilityBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestDisciplinePowerWords"], true, nil, customBars)
 end
 
 local function DisciplineConstructThresholdPanel(parent)
@@ -1160,6 +1277,26 @@ local function DisciplineConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 5, 1, yCoord, cache)
 end
 
+local function PriestConstructAngelicFeatherBarPanel(spec, controls, classId, specId)
+	return function(parent)
+		if parent == nil then
+			return
+		end
+
+		local yCoord = 5
+
+		local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+		if utilityBarDef then
+			yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, utilityBarDef)
+		end
+
+		yCoord = yCoord - 90
+		if utilityBarDef then
+			yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, utilityBarDef)
+		end
+	end
+end
+
 local function DisciplineConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 1)
 	local namePrefix = className .. "_" .. specName
@@ -1194,6 +1331,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel },
 		{ key = "powerWordsBar", label = L["TabPowerWords"], width = oUi.tabWidth.medium, constructor = DisciplineConstructPowerWordsPanel },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.discipline, controls, 5, 1) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarVisibilityPanel },
@@ -1490,7 +1628,7 @@ local function HolyConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord)--, true, L["PriestHolyHolyWords"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function HolyConstructBarVisibilityPanel(parent)
@@ -1504,7 +1642,13 @@ local function HolyConstructBarVisibilityPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestHolyHolyWords"], true)
+	local customBars = {}
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	if utilityBarDef then
+		table.insert(customBars, utilityBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestHolyHolyWords"], true, nil, customBars)
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -1781,6 +1925,7 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
 		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },
@@ -2110,7 +2255,7 @@ local function ShadowConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function ShadowConstructBarVisibilityPanel(parent)
@@ -2124,7 +2269,13 @@ local function ShadowConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true)
+	local customBars = {}
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	if utilityBarDef then
+		table.insert(customBars, utilityBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true, customBars)
 end
 
 local function ShadowConstructThresholdPanel(parent)
@@ -2371,6 +2522,7 @@ local function ShadowConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "insanityBar", label = L["TabInsanity"], width = oUi.tabWidth.small, constructor = ShadowConstructInsanityBarPanel },
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ShadowConstructManaBarPanel },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.shadow, controls, 5, 3) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ShadowConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },

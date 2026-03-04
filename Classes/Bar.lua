@@ -1271,4 +1271,25 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
 	}))
+
+	-- Utility bar (generic multi-node discrete bar; class modules override displayName, nodeColors, and defaultColorsFunc)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "utility",
+		isMultiNode = true,
+		maxNodes = 3,
+		minMaxMode = "discrete",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "utility",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultUtilityBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
 end

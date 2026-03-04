@@ -2091,3 +2091,18 @@ L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, any bar text entrie
 L["ResetGlobalBarTextHeader"] = "Reset Global Bar Text"
 L["ResetGlobalBarText"] = "Reset Global Bar Text to Defaults"
 L["ResetGlobalBarTextDialog"] = "Do you want to reset the Global Bar Text entries back to their default configuration? While this only resets the Global Bar Text entries, it will have an effect on what bar text is shown for all specializations that have Global Bar Text enabled."
+
+-- Utility Bar (Angelic Feather - Priest)
+L["TabAngelicFeather"] = "Angelic Feather"
+L["ResourceUtility"] = "Utility"
+L["AngelicFeatherCharge1"] = "Angelic Feather Charge 1"
+L["AngelicFeatherCharge2"] = "Angelic Feather Charge 2"
+L["AngelicFeatherCharge3"] = "Angelic Feather Charge 3"
+L["UtilityBarColor"] = "Utility Bar"
+L["PriestBarTextVariable_afTime"] = "Time until next Angelic Feather charge is available"
+L["PriestBarTextVariable_afCharges"] = "Current number of Angelic Feather charges"
+L["PriestBarTextVariable_afMaxCharges"] = "Maximum number of Angelic Feather charges"
+L["PriestBarTextNameAFCharge1"] = "AF Charge 1"
+L["PriestBarTextNameAFCharge2"] = "AF Charge 2"
+L["PriestBarTextNameAFCharge3"] = "AF Charge 3"
+L["ResourceAngelicFeather"] = "Angelic Feather"

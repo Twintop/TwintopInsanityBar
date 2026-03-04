@@ -3701,122 +3701,6 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	return math.min(yCoord, yCoord2)
 end
 
----Generates visibility options for a custom bar
----@param parent Frame # Parent frame for the controls
----@param controls table # Table to store control references
----@param spec table # Spec settings table
----@param classId integer # Class ID
----@param specId integer # Spec ID
----@param yCoord number # Starting Y coordinate
----@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
----@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateCustomBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
-	local f = nil
-	
-	-- Check if displayBar has the visibility key for this bar
-	if not spec.displayBar or spec.displayBar[barTypeDef.visibilityKey] == nil then
-		return yCoord
-	end
-	
-	local displayName = barTypeDef.displayName
-	
-	-- Visibility options mapping
-	local visibilityOptions = {
-		[L["ShowBarVisibilityAlways"]] = "always",
-		[L["ShowBarVisibilityCombat"]] = "combat",
-		[L["ShowBarVisibilityNever"]] = "never"
-	}
-	local visibilityOptionsList = {
-		L["ShowBarVisibilityAlways"],
-		L["ShowBarVisibilityCombat"],
-		L["ShowBarVisibilityNever"]
-	}
-
-	-- Get display name for current value
-	local function GetVisibilityDisplayName(value)
-		for displayNameItem, enumValue in pairs(visibilityOptions) do
-			if enumValue == value then
-				return displayNameItem
-			end
-		end
-		return L["ShowBarVisibilityCombat"] -- Default fallback
-	end
-
-	-- Visibility dropdown
-	local visibilityLabel = string.format(L["ShowBarVisibilityCustom"], displayName)
-	controls.dropDown = controls.dropDown or {}
-	controls.dropDown[barTypeDef.key .. "Visibility"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Visibility", parent, "WowStyle1DropdownTemplate")
-	controls.dropDown[barTypeDef.key .. "Visibility"]:SetWidth(oUi.sliderWidth)
-	controls.dropDown[barTypeDef.key .. "Visibility"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, visibilityLabel, oUi.xCoord, yCoord)
-	controls.dropDown[barTypeDef.key .. "Visibility"].label.font:SetFontObject(GameFontNormal)
-
-	local function VisibilityIsSelected(value)
-		return value == spec.displayBar[barTypeDef.visibilityKey].visibility
-	end
-
-	local function VisibilitySetSelected(newValue)
-		spec.displayBar[barTypeDef.visibilityKey].visibility = newValue
-		controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(newValue))
-		
-		-- Refresh cache to ensure global settings pick up spec-specific overrides
-		TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-		TRB.Functions.Character:ResetCaches()
-		
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-				TRB.Functions.EditMode:UpdateWrapperSize(settings)
-				TRB.Functions.Bar:HideResourceBar()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
-			else
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		end
-	end
-
-	local function VisibilityGenerator(dropdown, rootDescription)
-		for _, displayNameItem in ipairs(visibilityOptionsList) do
-			rootDescription:CreateRadio(displayNameItem, VisibilityIsSelected, VisibilitySetSelected, visibilityOptions[displayNameItem])
-		end
-	end
-
-	controls.dropDown[barTypeDef.key .. "Visibility"]:SetupMenu(VisibilityGenerator)
-	controls.dropDown[barTypeDef.key .. "Visibility"]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[barTypeDef.visibilityKey].visibility))
-	controls.dropDown[barTypeDef.key .. "Visibility"]:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-
-	yCoord = yCoord - 70
-
-	-- Custom bar smooth checkbox
-	yCoord = yCoord - 65
-	controls.checkBoxes = controls.checkBoxes or {}
-	controls.checkBoxes[barTypeDef.key .. "Smooth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Smooth", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes[barTypeDef.key .. "Smooth"]
-	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
-	f.tooltip = L["CheckboxSmoothBarTooltip"]
-	f:SetChecked(spec.displayBar[barTypeDef.visibilityKey].smooth)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar[barTypeDef.visibilityKey].smooth = self:GetChecked()
-		-- Refresh cache
-		TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-		TRB.Functions.Character:ResetCaches()
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-			if TRB.Frames.barGroups ~= nil then
-				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			end
-		end
-	end)
-
-	return yCoord
-end
-
 function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
@@ -4008,48 +3892,26 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			StatusbarSetValue("casting", newValue)
 		end)
 
-	-- Row 2: Casting Overlay (left)
-	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healthBar", L["HealthBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			StatusbarSetValue("health", newValue)
-		end)
-
-	-- Row 3: Secondary / Combo Points (left, if applicable), Mana Bar
+	-- Collect remaining bar texture items, then place in two-column layout (left-to-right fill)
+	local barTextureItems = {}
+	table.insert(barTextureItems, { key = "healthBar", label = L["HealthBarTexture"], callback = function(newValue) StatusbarSetValue("health", newValue) end })
 	if includeComboPoints then
-		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"],
-			function(newValue)
-				StatusbarSetValue("comboPoints", newValue)
-			end)
+		table.insert(barTextureItems, { key = "comboPointsBar", label = string.format(L["SecondaryBarTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPoints", newValue) end })
 	end
-
 	if includeManaBar then
-		if not includeComboPoints then
-			yCoord = yCoord - 60
-		end
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, includeComboPoints and oUi.xCoord2 or oUi.xCoord, yCoord, "statusbar", "manaBarBar", L["ManaBarTexture"], L["StatusBarTextures"],
-			function(newValue)
-				StatusbarSetValue("manaBar", newValue)
-			end)
+		table.insert(barTextureItems, { key = "manaBarBar", label = L["ManaBarTexture"], callback = function(newValue) StatusbarSetValue("manaBar", newValue) end })
+	end
+	for _, barTypeDef in ipairs(customBars) do
+		local barKey = barTypeDef.key .. "Bar"
+		table.insert(barTextureItems, { key = barKey, label = string.format(L["CustomBarTextureBar"], barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
 	end
 
-	-- Custom bars (e.g., Stagger) - uses flat keys like staggerBar, staggerBarName
-	local customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
-	for i, barTypeDef in ipairs(customBars) do
-		-- Determine position: alternate left/right, starting new row as needed
-		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
-		if useLeftColumn then
+	for i, item in ipairs(barTextureItems) do
+		if i % 2 == 1 then
 			yCoord = yCoord - 60
 		end
-		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
-		local barKey = barTypeDef.key .. "Bar"
-		local barLabel = string.format(L["CustomBarTextureBar"], barTypeDef.displayName)
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", barKey, barLabel, L["StatusBarTextures"],
-			function(newValue)
-				StatusbarSetValue(barTypeDef.key, newValue)
-			end)
-		customBarPlacedOnLeft = useLeftColumn
+		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", item.key, item.label, L["StatusBarTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
@@ -4145,10 +4007,10 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		end)
 
 
-	-- Row 2: Secondary / Combo Points (left, if applicable)
+	-- Collect remaining border texture items, then place in two-column layout (left-to-right fill)
+	local borderItems = {}
 	if includeComboPoints then
-		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"],
+		table.insert(borderItems, { key = "comboPointsBorder", label = string.format(L["SecondaryBorderTexture"], secondaryResourceString), callback =
 			function(newValue)
 				local newName = borderPairsByName[newValue]
 				spec.textures.comboPointsBorder = newValue
@@ -4167,18 +4029,19 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.manaBarBorderName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
 					end
+					for _, barTypeDef in ipairs(customBars) do
+						local bKey = barTypeDef.key .. "Border"
+						spec.textures[bKey] = newValue
+						spec.textures[bKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
+					end
 				end
 
 				RefreshBar()
-			end)
+			end })
 	end
-
-	-- Row 3: Mana Bar Border (left, if applicable and no combo points), or add to row 2 right side
 	if includeManaBar then
-		if not includeComboPoints then
-			yCoord = yCoord - 60
-		end
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, includeComboPoints and oUi.xCoord2 or oUi.xCoord, yCoord, "border", "manaBarBorder", L["ManaBarBorderTexture"], L["BorderTextures"],
+		table.insert(borderItems, { key = "manaBarBorder", label = L["ManaBarBorderTexture"], callback =
 			function(newValue)
 				local newName = borderPairsByName[newValue]
 				spec.textures.manaBarBorder = newValue
@@ -4197,29 +4060,27 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.comboPointsBorderName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
 					end
+					for _, barTypeDef in ipairs(customBars) do
+						local bKey = barTypeDef.key .. "Border"
+						spec.textures[bKey] = newValue
+						spec.textures[bKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
+					end
 				end
 
 				RefreshBar()
-			end)
+			end })
 	end
-
-	-- Custom bar borders (e.g., Stagger) - uses flat keys like staggerBorder
-	customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
-	for i, barTypeDef in ipairs(customBars) do
-		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
-		if useLeftColumn then
-			yCoord = yCoord - 60
-		end
-		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
+	for _, barTypeDef in ipairs(customBars) do
 		local borderKey = barTypeDef.key .. "Border"
 		local borderLabel = string.format(L["CustomBarTextureBorder"], barTypeDef.displayName)
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", borderKey, borderLabel, L["BorderTextures"],
+		table.insert(borderItems, { key = borderKey, label = borderLabel, callback =
 			function(newValue)
 				local newName = borderPairsByName[newValue]
 				spec.textures[borderKey] = newValue
 				spec.textures[borderKey .. "Name"] = newName
 				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-				
+
 				if spec.textures.textureLock then
 					spec.textures.border = newValue
 					spec.textures.borderName = newName
@@ -4237,7 +4098,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.manaBarBorderName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
 					end
-					-- Sync other custom bars
 					for _, otherBarTypeDef in ipairs(customBars) do
 						if otherBarTypeDef.key ~= barTypeDef.key then
 							local otherBorderKey = otherBarTypeDef.key .. "Border"
@@ -4247,10 +4107,17 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						end
 					end
 				end
-				
+
 				RefreshBar()
-			end)
-		customBarPlacedOnLeft = useLeftColumn
+			end })
+	end
+
+	for i, item in ipairs(borderItems) do
+		if i % 2 == 1 then
+			yCoord = yCoord - 60
+		end
+		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", item.key, item.label, L["BorderTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
@@ -4328,16 +4195,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		end)
 
 
-	-- Row 2: Secondary / Combo Points (left, if applicable)
+	-- Collect remaining background texture items, then place in two-column layout (left-to-right fill)
+	local bgItems = {}
 	if includeComboPoints then
-	yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"],
+		table.insert(bgItems, { key = "comboPointsBackground", label = string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), callback =
 			function(newValue)
 				local newName = backgroundPairsByName[newValue]
 				spec.textures.comboPointsBackground = newValue
 				spec.textures.comboPointsBackgroundName = newName
 				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-				
+
 				if spec.textures.textureLock then
 					spec.textures.background = newValue
 					spec.textures.backgroundName = newName
@@ -4350,31 +4217,25 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.manaBarBackgroundName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
 					end
-					-- Sync custom bar backgrounds
 					for _, barTypeDef in ipairs(customBars) do
-						local bgKey = barTypeDef.key .. "Background"
-						spec.textures[bgKey] = newValue
-						spec.textures[bgKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+						local bKey = barTypeDef.key .. "Background"
+						spec.textures[bKey] = newValue
+						spec.textures[bKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
 					end
 				end
-				
-				RefreshBar()
-			end)
-	end
 
-	-- Row 3: Mana Bar Background (left, if applicable and no combo points), or add to row 2 right side
+				RefreshBar()
+			end })
+	end
 	if includeManaBar then
-		if not includeComboPoints then
-			yCoord = yCoord - 60
-		end
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, includeComboPoints and oUi.xCoord2 or oUi.xCoord, yCoord, "background", "manaBarBackground", L["ManaBarBackgroundTexture"], L["BackgroundTextures"],
+		table.insert(bgItems, { key = "manaBarBackground", label = L["ManaBarBackgroundTexture"], callback =
 			function(newValue)
 				local newName = backgroundPairsByName[newValue]
 				spec.textures.manaBarBackground = newValue
 				spec.textures.manaBarBackgroundName = newName
 				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-				
+
 				if spec.textures.textureLock then
 					spec.textures.background = newValue
 					spec.textures.backgroundName = newName
@@ -4387,36 +4248,27 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.comboPointsBackgroundName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
 					end
-					-- Sync custom bar backgrounds
 					for _, barTypeDef in ipairs(customBars) do
-						local bgKey = barTypeDef.key .. "Background"
-						spec.textures[bgKey] = newValue
-						spec.textures[bgKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+						local bKey = barTypeDef.key .. "Background"
+						spec.textures[bKey] = newValue
+						spec.textures[bKey .. "Name"] = newName
+						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
 					end
 				end
-				
-				RefreshBar()
-			end)
-	end
 
-	-- Custom bar backgrounds (e.g., Stagger) - uses flat keys like staggerBackground
-	customBarPlacedOnLeft = not (includeComboPoints and includeManaBar)
-	for i, barTypeDef in ipairs(customBars) do
-		local useLeftColumn = (i % 2 == 1) or not customBarPlacedOnLeft
-		if useLeftColumn then
-			yCoord = yCoord - 60
-		end
-		local xPos = useLeftColumn and oUi.xCoord or oUi.xCoord2
+				RefreshBar()
+			end })
+	end
+	for _, barTypeDef in ipairs(customBars) do
 		local bgKey = barTypeDef.key .. "Background"
 		local bgLabel = string.format(L["CustomBarTextureBackground"], barTypeDef.displayName)
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", bgKey, bgLabel, L["BackgroundTextures"],
+		table.insert(bgItems, { key = bgKey, label = bgLabel, callback =
 			function(newValue)
 				local newName = backgroundPairsByName[newValue]
 				spec.textures[bgKey] = newValue
 				spec.textures[bgKey .. "Name"] = newName
 				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
-				
+
 				if spec.textures.textureLock then
 					spec.textures.background = newValue
 					spec.textures.backgroundName = newName
@@ -4434,7 +4286,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						spec.textures.manaBarBackgroundName = newName
 						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
 					end
-					-- Sync other custom bars
 					for _, otherBarTypeDef in ipairs(customBars) do
 						if otherBarTypeDef.key ~= barTypeDef.key then
 							local otherBgKey = otherBarTypeDef.key .. "Background"
@@ -4444,10 +4295,17 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						end
 					end
 				end
-				
+
 				RefreshBar()
-			end)
-		customBarPlacedOnLeft = useLeftColumn
+			end })
+	end
+
+	for i, item in ipairs(bgItems) do
+		if i % 2 == 1 then
+			yCoord = yCoord - 60
+		end
+		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", item.key, item.label, L["BackgroundTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
@@ -4547,11 +4405,14 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility)
+function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
+	if customBars == nil then
+		customBars = {}
+	end
 
 	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
@@ -4789,163 +4650,131 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end)
 	end
 
-	-- Secondary bar visibility dropdown (only if includeSecondaryVisibility is true)
+	-- Collect remaining visibility items, then place in two-column layout (left-to-right fill)
+	local visibilityItems = {}
 	if includeSecondaryVisibility then
-		yCoord = yCoord - 30
-		local secondaryLabel = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"])
-		controls.dropDown.secondaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SecondaryVisibility", parent, "WowStyle1DropdownTemplate")
-		controls.dropDown.secondaryVisibility:SetWidth(oUi.sliderWidth)
-		controls.dropDown.secondaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryLabel, oUi.xCoord, yCoord)
-		controls.dropDown.secondaryVisibility.label.font:SetFontObject(GameFontNormal)
-
-		local function SecondaryVisibilityIsSelected(value)
-			return value == spec.displayBar.secondary.visibility
+		table.insert(visibilityItems, {
+			key = "Secondary",
+			displayBarKey = "secondary",
+			label = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"]),
+			controlDropdownKey = "secondaryVisibility",
+			controlCheckboxKey = "secondarySmooth",
+		})
+	end
+	if includeManaBarVisibility and spec.displayBar.mana ~= nil then
+		table.insert(visibilityItems, {
+			key = "Mana",
+			displayBarKey = "mana",
+			label = L["ShowBarVisibilityMana"],
+			controlDropdownKey = "manaVisibility",
+			controlCheckboxKey = "manaSmooth",
+			isMana = true,
+		})
+	end
+	for _, barTypeDef in ipairs(customBars) do
+		if spec.displayBar and spec.displayBar[barTypeDef.visibilityKey] ~= nil then
+			table.insert(visibilityItems, {
+				key = barTypeDef.key,
+				displayBarKey = barTypeDef.visibilityKey,
+				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
+				controlDropdownKey = barTypeDef.key .. "Visibility",
+				controlCheckboxKey = barTypeDef.key .. "Smooth",
+				isCustomBar = true,
+			})
 		end
-
-		local function SecondaryVisibilitySetSelected(newValue)
-			spec.displayBar.secondary.visibility = newValue
-			controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			if classId ~= nil and specId ~= nil then
-				-- Spec panel
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					-- Reapply layout to adjust positioning for the visibility change
-					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-					end
-					TRB.Functions.Bar:HideResourceBar()
-				end
-			else
-				-- Global panel: refresh current character's cache if using global displayBar
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-					end
-					TRB.Functions.Bar:HideResourceBar()
-				end
-			end
-		end
-
-		local function SecondaryVisibilityGenerator(dropdown, rootDescription)
-			for _, displayName in ipairs(visibilityOptionsList) do
-				rootDescription:CreateRadio(displayName, SecondaryVisibilityIsSelected, SecondaryVisibilitySetSelected, visibilityOptions[displayName])
-			end
-		end
-
-		controls.dropDown.secondaryVisibility:SetupMenu(SecondaryVisibilityGenerator)
-		controls.dropDown.secondaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.secondary.visibility))
-		controls.dropDown.secondaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-
-		-- Secondary smooth checkbox
-		yCoord = yCoord - 65
-		controls.checkBoxes.secondarySmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_SecondarySmooth", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.secondarySmooth
-		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
-		f.tooltip = L["CheckboxSmoothBarTooltip"]
-		f:SetChecked(spec.displayBar.secondary.smooth)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayBar.secondary.smooth = self:GetChecked()
-			-- Refresh cache to pick up the new smooth setting
-			if classId ~= nil and specId ~= nil then
-				-- Spec panel: refresh that spec's cache
-				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
-				end
-			else
-				-- Global panel: refresh current character's cache if using global displayBar
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
-				end
-			end
-		end)
 	end
 
-	-- Mana bar visibility dropdown (only if includeManaBarVisibility is true)
-	if includeManaBarVisibility and spec.displayBar.mana ~= nil then
-		yCoord = yCoord - 30
-		local manaLabel = L["ShowBarVisibilityMana"]
-		controls.dropDown.manaVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ManaVisibility", parent, "WowStyle1DropdownTemplate")
-		controls.dropDown.manaVisibility:SetWidth(oUi.sliderWidth)
-		controls.dropDown.manaVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, manaLabel, oUi.xCoord, yCoord)
-		controls.dropDown.manaVisibility.label.font:SetFontObject(GameFontNormal)
+	for i, item in ipairs(visibilityItems) do
+		local isLeft = (i % 2 == 1)
+		if isLeft then
+			yCoord = yCoord - 30
+		end
+		local xPos = isLeft and oUi.xCoord or oUi.xCoord2
+		local displayBarKey = item.displayBarKey
+		local controlDropdownKey = item.controlDropdownKey
+		local controlCheckboxKey = item.controlCheckboxKey
+		local isMana = item.isMana
+		local isCustom = item.isCustomBar
 
-		local function ManaVisibilityIsSelected(value)
-			return value == spec.displayBar.mana.visibility
+		-- Visibility dropdown
+		controls.dropDown[controlDropdownKey] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. item.key .. "Visibility", parent, "WowStyle1DropdownTemplate")
+		controls.dropDown[controlDropdownKey]:SetWidth(oUi.sliderWidth)
+		controls.dropDown[controlDropdownKey].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, item.label, xPos, yCoord)
+		controls.dropDown[controlDropdownKey].label.font:SetFontObject(GameFontNormal)
+
+		local function ItemVisibilityIsSelected(value)
+			return value == spec.displayBar[displayBarKey].visibility
 		end
 
-		local function ManaVisibilitySetSelected(newValue)
-			spec.displayBar.mana.visibility = newValue
-			controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
-			if classId ~= nil and specId ~= nil then
-				-- Spec panel: also update specCache for immediate effect
-				if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
-					TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar.mana.visibility = newValue
-				end
+		local function ItemVisibilitySetSelected(newValue)
+			spec.displayBar[displayBarKey].visibility = newValue
+			controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(newValue))
+
+			if isCustom then
+				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+				TRB.Functions.Character:ResetCaches()
 				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					-- Reapply layout to adjust positioning for the visibility change
 					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+						TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+						TRB.Functions.EditMode:UpdateWrapperSize(settings)
+						TRB.Functions.Bar:HideResourceBar()
+						if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+							TRB.Functions.Class:TriggerResourceBarUpdates()
+						end
+					else
+						TRB.Functions.Bar:HideResourceBar()
 					end
-					TRB.Functions.Bar:HideResourceBar()
 				end
 			else
-				-- Global panel: refresh current character's cache if using global displayBar
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+				if classId ~= nil and specId ~= nil then
+					if isMana and TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
+						TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar[displayBarKey].visibility = newValue
 					end
-					TRB.Functions.Bar:HideResourceBar()
+					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+						if TRB.Frames.barGroups ~= nil then
+							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+						end
+						TRB.Functions.Bar:HideResourceBar()
+					end
+				else
+					if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+						local lowerClassName = string.lower(TRB.Data.character.className)
+						local currentSpecName = TRB.Data.character.specName
+						TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+						TRB.Functions.Character:ResetCaches()
+						if TRB.Frames.barGroups ~= nil then
+							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
+						end
+						TRB.Functions.Bar:HideResourceBar()
+					end
 				end
 			end
 		end
 
-		local function ManaVisibilityGenerator(dropdown, rootDescription)
+		local function ItemVisibilityGenerator(dropdown, rootDescription)
 			for _, displayName in ipairs(visibilityOptionsList) do
-				rootDescription:CreateRadio(displayName, ManaVisibilityIsSelected, ManaVisibilitySetSelected, visibilityOptions[displayName])
+				rootDescription:CreateRadio(displayName, ItemVisibilityIsSelected, ItemVisibilitySetSelected, visibilityOptions[displayName])
 			end
 		end
 
-		controls.dropDown.manaVisibility:SetupMenu(ManaVisibilityGenerator)
-		controls.dropDown.manaVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.mana.visibility))
-		controls.dropDown.manaVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+		controls.dropDown[controlDropdownKey]:SetupMenu(ItemVisibilityGenerator)
+		controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey].visibility))
+		controls.dropDown[controlDropdownKey]:SetPoint("TOPLEFT", xPos, yCoord - 30)
 
-		-- Mana smooth checkbox
-		yCoord = yCoord - 65
-		controls.checkBoxes.manaSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ManaSmooth", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.manaSmooth
-		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		-- Smooth checkbox
+		controls.checkBoxes[controlCheckboxKey] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. item.key .. "Smooth", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes[controlCheckboxKey]
+		f:SetPoint("TOPLEFT", xPos + oUi.xPadding, yCoord - 65)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
 		f.tooltip = L["CheckboxSmoothBarTooltip"]
-		f:SetChecked(spec.displayBar.mana.smooth)
+		f:SetChecked(spec.displayBar[displayBarKey].smooth)
 		f:SetScript("OnClick", function(self, ...)
-			spec.displayBar.mana.smooth = self:GetChecked()
-			-- Refresh cache to pick up the new smooth setting
+			spec.displayBar[displayBarKey].smooth = self:GetChecked()
 			if classId ~= nil and specId ~= nil then
-				-- Spec panel: refresh that spec's cache
 				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 					TRB.Functions.Character:ResetCaches()
@@ -4955,7 +4784,6 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					end
 				end
 			else
-				-- Global panel: refresh current character's cache if using global displayBar
 				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
 					local lowerClassName = string.lower(TRB.Data.character.className)
 					local currentSpecName = TRB.Data.character.specName
@@ -4968,6 +4796,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 				end
 			end
 		end)
+
+		-- Advance yCoord after right column item or last item
+		if not isLeft or i == #visibilityItems then
+			yCoord = yCoord - 65
+		end
 	end
 
 	if includeFlashAlpha then
@@ -6744,10 +6577,16 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	elseif (classId == 5 and specId == 1) then -- Discipline Priest
 		relativeToFrame[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
 		relativeToFrame[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
+		relativeToFrame[L["AngelicFeatherCharge1"]] = "Angelic_Feather_Charge_1"
+		relativeToFrame[L["AngelicFeatherCharge2"]] = "Angelic_Feather_Charge_2"
+		relativeToFrame[L["AngelicFeatherCharge3"]] = "Angelic_Feather_Charge_3"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["PowerWordRadianceCharge1"],
 			L["PowerWordRadianceCharge2"],
+			L["AngelicFeatherCharge1"],
+			L["AngelicFeatherCharge2"],
+			L["AngelicFeatherCharge3"],
 			L["HealthBar"],
 			L["Screen"],
 		}
@@ -6757,6 +6596,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
 		relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
 		relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
+		relativeToFrame[L["AngelicFeatherCharge1"]] = "Angelic_Feather_Charge_1"
+		relativeToFrame[L["AngelicFeatherCharge2"]] = "Angelic_Feather_Charge_2"
+		relativeToFrame[L["AngelicFeatherCharge3"]] = "Angelic_Feather_Charge_3"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["HolyWordSerenityCharge1"],
@@ -6764,14 +6606,23 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HolyWordSanctifyCharge1"],
 			L["HolyWordSanctifyCharge2"],
 			L["HolyWordChastiseCharge1"],
+			L["AngelicFeatherCharge1"],
+			L["AngelicFeatherCharge2"],
+			L["AngelicFeatherCharge3"],
 			L["HealthBar"],
 			L["Screen"],
 		}
 	elseif (classId == 5 and specId == 3) then -- Shadow Priest (mana bar support)
 		relativeToFrame[L["ManaBar"]] = "ManaBar"
+		relativeToFrame[L["AngelicFeatherCharge1"]] = "Angelic_Feather_Charge_1"
+		relativeToFrame[L["AngelicFeatherCharge2"]] = "Angelic_Feather_Charge_2"
+		relativeToFrame[L["AngelicFeatherCharge3"]] = "Angelic_Feather_Charge_3"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["ManaBar"],
+			L["AngelicFeatherCharge1"],
+			L["AngelicFeatherCharge2"],
+			L["AngelicFeatherCharge3"],
 			L["HealthBar"],
 			L["Screen"],
 		}

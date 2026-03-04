@@ -129,6 +129,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -186,6 +188,8 @@ local function FillSpecializationCache()
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(spells.holyWordSanctify)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_holy.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 
 	-- Shadow
 	specCache.priest_shadow.Global_TwintopResourceBar = {
@@ -231,6 +235,8 @@ local function FillSpecializationCache()
 	specCache.priest_shadow.snapshotData.snapshots[spells.entropicRift.id] = TRB.Classes.Snapshot:New(spells.entropicRift)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_shadow.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 	--[[
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
@@ -539,6 +545,15 @@ local function RefreshLookupData_Discipline()
 	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
 	local entropicRiftTime = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)]]
 
+	--$afTime
+	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+	local afTime = TRB.Functions.BarText:TimerPrecision(_afTime)
+	--$afCharges
+	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+	local afCharges = string.format("%.0f", _afCharges)
+	--$afMaxCharges
+	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+	local afMaxCharges = string.format("%.0f", _afMaxCharges)
 
 	local lookup = TRB.Data.lookup
 	lookup["$resourceMax"] = manaMax
@@ -554,6 +569,13 @@ local function RefreshLookupData_Discipline()
 	lookup["$pwRadianceCharges"] = pwRadianceCharges
 	lookup["$radianceCharges"] = pwRadianceCharges
 	lookup["$powerWordRadianceCharges"] = pwRadianceCharges
+	lookup["$afTime"] = afTime
+	lookup["$angelicFeatherTime"] = afTime
+	lookup["$afCharges"] = afCharges
+	lookup["$angelicFeatherCharges"] = afCharges
+	lookup["$afMaxCharges"] = afMaxCharges
+	lookup["$angelicFeatherMaxCharges"] = afMaxCharges
+
 	--[[lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$entropicRiftTime"] = entropicRiftTime]]
@@ -573,6 +595,12 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
 	lookupLogic["$radianceCharges"] = _pwRadianceCharges
 	lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
+	lookupLogic["$afTime"] = _afTime
+	lookupLogic["$angelicFeatherTime"] = _afTime
+	lookupLogic["$afCharges"] = _afCharges
+	lookupLogic["$angelicFeatherCharges"] = _afCharges
+	lookupLogic["$afMaxCharges"] = _afMaxCharges
+	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
 	--[[lookupLogic["$scTime"] = _scTime
 	lookupLogic["$shadowCovenantTime"] = _scTime
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime]]
@@ -639,6 +667,16 @@ local function RefreshLookupData_Holy()
 	local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
 	local lightweaverTime = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
 
+	--$afTime
+	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+	local afTime = TRB.Functions.BarText:TimerPrecision(_afTime)
+	--$afCharges
+	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+	local afCharges = string.format("%.0f", _afCharges)
+	--$afMaxCharges
+	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+	local afMaxCharges = string.format("%.0f", _afMaxCharges)
+
 	----------------
 
 	local lookup = TRB.Data.lookup
@@ -667,6 +705,12 @@ local function RefreshLookupData_Holy()
 	lookup["$holyWordSerenityCharges"] = hwSerenityCharges
 	lookup["$lightweaverStacks"] = lightweaverStacks
 	lookup["$lightweaverTime"] = lightweaverTime
+	lookup["$afTime"] = afTime
+	lookup["$angelicFeatherTime"] = afTime
+	lookup["$afCharges"] = afCharges
+	lookup["$angelicFeatherCharges"] = afCharges
+	lookup["$afMaxCharges"] = afMaxCharges
+	lookup["$angelicFeatherMaxCharges"] = afMaxCharges
 	TRB.Data.lookup = lookup
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -695,6 +739,12 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
 	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 	lookupLogic["$lightweaverTime"] = _lightweaverTime
+	lookupLogic["$afTime"] = _afTime
+	lookupLogic["$angelicFeatherTime"] = _afTime
+	lookupLogic["$afCharges"] = _afCharges
+	lookupLogic["$angelicFeatherCharges"] = _afCharges
+	lookupLogic["$afMaxCharges"] = _afMaxCharges
+	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -857,7 +907,15 @@ local function RefreshLookupData_Shadow()
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
-
+	--$afTime
+	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+	local afTime = TRB.Functions.BarText:TimerPrecision(_afTime)
+	--$afCharges
+	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+	local afCharges = string.format("%.0f", _afCharges)
+	--$afMaxCharges
+	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+	local afMaxCharges = string.format("%.0f", _afMaxCharges)
 	----------------------------
 
 	local lookup = TRB.Data.lookup
@@ -876,6 +934,12 @@ local function RefreshLookupData_Shadow()
 	lookup["$mana"] = currentMana
 	lookup["$manaMax"] = manaMax
 	lookup["$manaPercent"] = manaPercent
+	lookup["$afTime"] = afTime
+	lookup["$angelicFeatherTime"] = afTime
+	lookup["$afCharges"] = afCharges
+	lookup["$angelicFeatherCharges"] = afCharges
+	lookup["$afMaxCharges"] = afMaxCharges
+	lookup["$angelicFeatherMaxCharges"] = afMaxCharges
 	--[[
 	lookup["$spTime"] = spTime
 	lookup["$mmTime"] = spTime
@@ -912,6 +976,12 @@ local function RefreshLookupData_Shadow()
 	lookupLogic["$mana"] = normalizedMana
 	lookupLogic["$manaMax"] = normalizedManaMax
 	lookupLogic["$manaPercent"] = _manaPercent
+	lookupLogic["$afTime"] = _afTime
+	lookupLogic["$angelicFeatherTime"] = _afTime
+	lookupLogic["$afCharges"] = _afCharges
+	lookupLogic["$angelicFeatherCharges"] = _afCharges
+	lookupLogic["$afMaxCharges"] = _afMaxCharges
+	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
 	--[[
 	lookupLogic["$spTime"] = _spTime
 	lookupLogic["$mmTime"] = _spTime
@@ -962,6 +1032,17 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
+
+	-- Angelic Feather charge tracking (shared across all specs)
+	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells]]
+		if spells.angelicFeather and spellId == spells.angelicFeather.id then
+			local snapshots = snapshotData.snapshots
+			if snapshots[spells.angelicFeather.id] then
+				snapshots[spells.angelicFeather.id].cooldown:SpendCharge(spells.angelicFeather.duration)
+			end
+		end
+	end
 
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
@@ -1391,9 +1472,10 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
+	snapshots[spells.angelicFeather.id].cooldown:Refresh(true)
 end
 
 local function UpdateSnapshot_Healers()
@@ -1600,6 +1682,42 @@ local function UpdateResourceBar()
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
+
+			-- Update utility bar (Angelic Feather charges)
+			if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+				if talents:IsTalentActive(spells.angelicFeather) then
+					refreshText = true
+					local cooldown = snapshots[spells.angelicFeather.id].cooldown
+					local charges = cooldown.manualCharges or 0
+					local maxCharges = spells.angelicFeather.attributes.maxCharges
+					local utilityColors = specSettings.colors.bars.utility
+
+					for chargeIndex = 1, maxCharges do
+						local utilNode = barGroups.utility:GetNode(chargeIndex)
+						if utilNode then
+							local nodeKey = "utility" .. chargeIndex
+							local nodeColorKey = "angelicFeather" .. chargeIndex
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							if chargeIndex <= charges then
+								utilNode:ClearTimerDuration()
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)
+							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+								utilNode:ClearTimerDuration()
+								local progress = cooldown:GetManualCooldownProgress(currentTime)
+								TRB.Data.cache.values.bar[nodeKey] = nil
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
+							else
+								utilNode:ClearTimerDuration()
+								TRB.Data.cache.values.bar[nodeKey] = nil
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
+							end
+							utilNode:SetColor(nodeColor)
+							utilNode:SetBorderColor(utilityColors.border.color)
+							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
+						end
+					end
+				end
+			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
@@ -1770,6 +1888,42 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			end
+
+			-- Update utility bar (Angelic Feather charges)
+			if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+				if talents:IsTalentActive(spells.angelicFeather) then
+					refreshText = true
+					local cooldown = snapshots[spells.angelicFeather.id].cooldown
+					local charges = cooldown.manualCharges or 0
+					local maxCharges = spells.angelicFeather.attributes.maxCharges
+					local utilityColors = specSettings.colors.bars.utility
+
+					for chargeIndex = 1, maxCharges do
+						local utilNode = barGroups.utility:GetNode(chargeIndex)
+						if utilNode then
+							local nodeKey = "utility" .. chargeIndex
+							local nodeColorKey = "angelicFeather" .. chargeIndex
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							if chargeIndex <= charges then
+								utilNode:ClearTimerDuration()
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)
+							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+								utilNode:ClearTimerDuration()
+								local progress = cooldown:GetManualCooldownProgress(currentTime)
+								TRB.Data.cache.values.bar[nodeKey] = nil
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
+							else
+								utilNode:ClearTimerDuration()
+								TRB.Data.cache.values.bar[nodeKey] = nil
+								TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
+							end
+							utilNode:SetColor(nodeColor)
+							utilNode:SetBorderColor(utilityColors.border.color)
+							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
+						end
+					end
+				end
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2020,6 +2174,42 @@ local function UpdateResourceBar()
 			end
 		end
 
+		-- Update utility bar (Angelic Feather charges)
+		if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+			if talents:IsTalentActive(spells.angelicFeather) then
+				refreshText = true
+				local cooldown = snapshots[spells.angelicFeather.id].cooldown
+				local charges = cooldown.manualCharges or 0
+				local maxCharges = spells.angelicFeather.attributes.maxCharges
+				local utilityColors = specSettings.colors.bars.utility
+
+				for chargeIndex = 1, maxCharges do
+					local utilNode = barGroups.utility:GetNode(chargeIndex)
+					if utilNode then
+						local nodeKey = "utility" .. chargeIndex
+						local nodeColorKey = "angelicFeather" .. chargeIndex
+						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+						if chargeIndex <= charges then
+							utilNode:ClearTimerDuration()
+							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)
+						elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+							utilNode:ClearTimerDuration()
+							local progress = cooldown:GetManualCooldownProgress(currentTime)
+							TRB.Data.cache.values.bar[nodeKey] = nil
+							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
+						else
+							utilNode:ClearTimerDuration()
+							TRB.Data.cache.values.bar[nodeKey] = nil
+							TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
+						end
+						utilNode:SetColor(nodeColor)
+						utilNode:SetBorderColor(utilityColors.border.color)
+						utilNode:SetBackgroundColorFromString(utilityColors.background.color)
+					end
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
@@ -2058,6 +2248,8 @@ local function SwitchSpec()
 		lookup["#pwRadiance"] = spells.powerWordRadiance.icon
 		lookup["#radiance"] = spells.powerWordRadiance.icon
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
+		lookup["#af"] = spells.angelicFeather.icon
+		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
@@ -2074,6 +2266,12 @@ local function SwitchSpec()
 		if pwrSnapshot then
 			local maxCharges = specCache.priest_discipline.talents:IsTalentActive(spells.lightsPromise) and 2 or 1
 			pwrSnapshot.cooldown:InitializeManualCharges(maxCharges)
+		end
+
+		-- Initialize manual charge tracking for Angelic Feather
+		local afSnapshot = specCache.priest_discipline.snapshotData.snapshots[spells.angelicFeather.id]
+		if afSnapshot then
+			afSnapshot.cooldown:InitializeManualCharges(spells.angelicFeather.attributes.maxCharges)
 		end
 
 		talents = specCache.priest_discipline.talents
@@ -2108,6 +2306,8 @@ local function SwitchSpec()
 		lookup["#holyWordSerenity"] = spells.holyWordSerenity.icon
 		lookup["#smite"] = spells.smite.icon
 		lookup["#lightweaver"] = spells.lightweaver.icon
+		lookup["#af"] = spells.angelicFeather.icon
+		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2134,6 +2334,12 @@ local function SwitchSpec()
 		holySnapshots[spells.holyWordSerenity.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
 		holySnapshots[spells.holyWordSanctify.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
 		holySnapshots[spells.holyWordChastise.id].cooldown:InitializeManualCharges(1)
+
+		-- Initialize manual charge tracking for Angelic Feather
+		local afSnapshot = holySnapshots[spells.angelicFeather.id]
+		if afSnapshot then
+			afSnapshot.cooldown:InitializeManualCharges(spells.angelicFeather.attributes.maxCharges)
+		end
 
 		talents = specCache.priest_holy.talents
 		TRB.Data.barConstructedForSpec = "priest_holy"
@@ -2173,6 +2379,8 @@ local function SwitchSpec()
 		lookup["#swm"] = spells.shadowWordMadness.icon
 		lookup["#shadowWordMadness"] = spells.shadowWordMadness.icon
 		lookup["#halo"] = spells.halo.icon
+		lookup["#af"] = spells.angelicFeather.icon
+		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		--[[
 		lookup["#si"] = spells.shadowyInsight.icon
 		lookup["#shadowyInsight"] = spells.shadowyInsight.icon
@@ -2210,6 +2418,12 @@ local function SwitchSpec()
 				voidformSnapshot.buff:SetPauseMaxDuration(nil)
 				UnregisterSustainedPotencyEvents()
 			end
+		end
+
+		-- Initialize manual charge tracking for Angelic Feather
+		local afSnapshot = specCache.priest_shadow.snapshotData.snapshots[spells.angelicFeather.id]
+		if spells and afSnapshot then
+			afSnapshot.cooldown:InitializeManualCharges(spells.angelicFeather.attributes.maxCharges)
 		end
 
 		talents = specCache.priest_shadow.talents
@@ -2308,6 +2522,11 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						-- Mark Power Word bar text as seeded since DisciplineLoadDefaultBarTextSettings includes them
 						TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
 						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
+						-- Mark Angelic Feather bar text as seeded since all specs' LoadDefaultBarTextSettings include them
+						TRB.Data.settings.priest.discipline.displayText.migrations.angelicFeatherBarTextSeeded = true
+						TRB.Data.settings.priest.holy.displayText.migrations.angelicFeatherBarTextSeeded = true
+						TRB.Data.settings.priest.shadow.displayText.migrations = TRB.Data.settings.priest.shadow.displayText.migrations or {}
+						TRB.Data.settings.priest.shadow.displayText.migrations.angelicFeatherBarTextSeeded = true
 					end
 
 					-- Seed Holy Word bar text entries for existing users who don't have them yet
@@ -2328,6 +2547,19 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 							table.insert(TRB.Data.settings.priest.discipline.displayText.barText, v)
 						end
 						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
+					end
+
+					-- Seed Angelic Feather bar text entries for existing users who don't have them yet (all 3 specs)
+					local priestSpecs = { "discipline", "holy", "shadow" }
+					for _, specName in ipairs(priestSpecs) do
+						TRB.Data.settings.priest[specName].displayText.migrations = TRB.Data.settings.priest[specName].displayText.migrations or {}
+						if TRB.Data.settings.priest[specName].displayText.migrations.angelicFeatherBarTextSeeded ~= true then
+							local afEntries = TRB.Options.Priest.LoadAngelicFeatherBarTextSettings()
+							for _, v in ipairs(afEntries) do
+								table.insert(TRB.Data.settings.priest[specName].displayText.barText, v)
+							end
+							TRB.Data.settings.priest[specName].displayText.migrations.angelicFeatherBarTextSeeded = true
+						end
 					end
 				else
 					local settings = TRB.Options.Priest.LoadDefaultSettings(true)
@@ -2582,6 +2814,26 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 				-- "never" means showMana stays false
 			end
+			
+			local spells = nil --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells|nil]]
+
+			if TRB.Data.spellsData and TRB.Data.spellsData.spells then
+				spells = TRB.Data.spellsData.spells
+			end
+
+			-- Determine utility bar visibility (all specs, talent-gated)
+			local showUtility = false
+			if not forceHideAll and sharedSettings.displayBar.utility ~= nil then
+				local specTalents = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].talents
+				if specTalents and spells and specTalents:IsTalentActive(spells.angelicFeather) then
+					if sharedSettings.displayBar.utility.visibility == "always" then
+						showUtility = true
+					elseif sharedSettings.displayBar.utility.visibility == "combat" then
+						showUtility = affectingCombat or inVehicle
+					end
+					-- "never" means showUtility stays false
+				end
+			end
 
 			-- Apply primary bar visibility
 			if barGroups and barGroups.primary then
@@ -2622,8 +2874,18 @@ function TRB.Functions.Class:HideResourceBar(force)
 				end
 			end
 
+			-- Apply utility bar visibility (all specs)
+			if barGroups and barGroups.utility then
+				if showUtility then
+					barGroups.utility:Show()
+					barGroups.utility:ShowNodes(spells.angelicFeather.attributes.maxCharges)
+				else
+					barGroups.utility:Hide()
+				end
+			end
+
 			-- Track if the bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana
+			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana or showUtility
 			if snapshotData.attributes.isTracking then
 				TRB.Functions.BarText:Show(sharedSettings)
 			else
@@ -2643,6 +2905,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			if barGroups and barGroups.mana then
 				barGroups.mana:Hide()
 			end
+			if barGroups and barGroups.utility then
+				barGroups.utility:Hide()
+			end
 			snapshotData.attributes.isTracking = false
 		end
 	else
@@ -2658,6 +2923,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		if barGroups and barGroups.mana then
 			barGroups.mana:Hide()
+		end
+		if barGroups and barGroups.utility then
+			barGroups.utility:Hide()
 		end
 		snapshotData.attributes.isTracking = false
 	end
@@ -2875,6 +3143,20 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = true
 	end
 
+	spells = spells --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells]]
+	-- Angelic Feather variables (all specs)
+	if var == "$afTime" or var == "$angelicFeatherTime" then
+		if snapshots[spells.angelicFeather.id].cooldown.remaining > 0 then
+			valid = true
+		end
+	elseif var == "$afCharges" or var == "$angelicFeatherCharges" then
+		if snapshots[spells.angelicFeather.id].cooldown.charges > 0 then
+			valid = true
+		end
+	elseif var == "$afMaxCharges" or var == "$angelicFeatherMaxCharges" then
+		valid = true
+	end
+
 	return valid
 end
 
@@ -3021,6 +3303,22 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 					end
 				end
 				return nil, false, false
+			end
+		end
+
+		-- Handle Angelic Feather Charge frames (AngelicFeatherCharge1, AngelicFeatherCharge2, AngelicFeatherCharge3)
+		local afMatch = string.match(relativeToFrame, "^AngelicFeatherCharge(%d+)$")
+		if afMatch ~= nil then
+			local chargeIndex = tonumber(afMatch)
+			if chargeIndex ~= nil and chargeIndex >= 1 and chargeIndex <= 3 then
+				if barGroups and barGroups.utility then
+					local utilityNode = barGroups.utility:GetNode(chargeIndex)
+					if utilityNode then
+						local isVisible = barGroups.utility.isVisible and utilityNode.isVisible
+						return utilityNode:GetFrame(), true, isVisible
+					end
+				end
+				return nil, true, false
 			end
 		end
 
