@@ -21,6 +21,9 @@ local content = [====[
 - [#671](#671) Added export/import support for global bar text settings.
 
 ## Priest
+
+- [#526](#526) Add support for tracking Angelic Feather charges and cooldown. This is represented as its own separate bar node group that can be positioned, sized, and styled like any other bar. New bar text variables include: `$afTime`, `$afCharges`, and `$afMaxCharges`. This is disabled by default.
+
 ### Holy
 
 - Include extra CDR from Prayer of Healing when talented into Spiritwell and Energy Cycle.
