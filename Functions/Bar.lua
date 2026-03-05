@@ -888,6 +888,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			if sfNode then
 				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
 			end
+		-- Demon Hunter Vengeance: 6 Soul Fragment nodes use stepped min/max ranges.
+		-- ConstructAnchoredBarGroup resets all nodes to (0,1); restore (i-1, i) here.
+		elseif TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
+			for i = 1, barGroups.secondary.maxNodes do
+				local node = barGroups.secondary:GetNode(i)
+				if node then
+					node:SetMinMax(i - 1, i)
+				end
+			end
 		end
 
 		-- Redraw thresholds on secondary nodes to match new bar dimensions

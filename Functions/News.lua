@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.25-release (2026-03-05)
+## Demon Hunter
+### Vengeance
+
+- Fix an issue with Soul Fragments bar nodes completely filling when gaining any Soul Fragment.
+
+---
+
 # 12.0.1.24-release (2026-03-05)
 ## General
 
