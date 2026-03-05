@@ -47,7 +47,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		TRB.Data.character.advancedFlight or false,
 		dragonridingEnabled,
 		TRB.Data.character.inCombat or false,
-		UnitInVehicle("player") or false
+		TRB.Data.character.inVehicle or false
 	)
 end
 
@@ -79,6 +79,34 @@ end
 
 ---@class TRB.Functions.BarVisibility
 TRB.Functions.BarVisibility = {}
+
+-- Dirty-flag cache: visibility results are deterministic for a given set of inputs.
+-- We skip re-evaluation unless an input has changed (MarkDirty was called).
+TRB.Functions.BarVisibility.dirtyToken = 0
+TRB.Functions.BarVisibility.lastAppliedToken = -1
+
+---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
+---Call this whenever any input to visibility evaluation changes:
+---  inCombat, inVehicle, advancedFlight, inPetBattle, onTaxi, specSupported,
+---  dragonridingEnabled, per-bar visibility settings, talent gates, maxResource2.
+function TRB.Functions.BarVisibility:MarkDirty()
+	self.dirtyToken = self.dirtyToken + 1
+end
+
+---Returns true if a re-evaluation is needed (inputs have changed since last ProcessBars).
+---@param force boolean|nil # If true, always returns true (bypasses cache)
+---@return boolean
+function TRB.Functions.BarVisibility:IsDirty(force)
+	if force then
+		return true
+	end
+	return self.dirtyToken ~= self.lastAppliedToken
+end
+
+---Marks the cache as up-to-date after a successful ProcessBars evaluation.
+function TRB.Functions.BarVisibility:MarkClean()
+	self.lastAppliedToken = self.dirtyToken
+end
 
 ---Evaluates whether a single bar should be shown. Pure function, no side effects.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
@@ -151,6 +179,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		TRB.Functions.BarText:Hide(settings)
 	end
 
+	self:MarkClean()
 	return anyShowing
 end
 
@@ -171,6 +200,8 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 	if settings ~= nil then
 		TRB.Functions.BarText:Hide(settings)
 	end
+
+	self:MarkClean()
 end
 
 ---Hides all bar groups in TRB.Frames.barGroups unconditionally. Used when no entries are available.
@@ -185,6 +216,8 @@ function TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 		end
 	end
 	snapshotData.attributes.isTracking = false
+
+	self:MarkClean()
 end
 
 ---Convenience: Builds entries from barGroups for Edit Mode display.

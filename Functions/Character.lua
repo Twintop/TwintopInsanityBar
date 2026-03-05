@@ -6,11 +6,13 @@ TRB.Functions.Character = {}
 --TODO: Find a better home for this.
 local function OnAdvFlyEnabled()
 	TRB.Data.character.advancedFlight = true
+	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
 local function OnAdvFlyDisabled()
 	TRB.Data.character.advancedFlight = false
+	TRB.Functions.BarVisibility:MarkDirty()
 	if TRB.Data.specSupported == true then
 		TRB.Functions.Bar:ShowResourceBar()
 	end
@@ -282,14 +284,22 @@ local function CharacterChange(self, event, ...)
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
 				TRB.Data.character.onTaxi = UnitOnTaxi("player")
+				TRB.Functions.BarVisibility:MarkDirty()
 			end)
 		end)
 	elseif event == "PET_BATTLE_OPENING_START" or event == "PET_BATTLE_CLOSE" then
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
 				TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
+				TRB.Functions.BarVisibility:MarkDirty()
 			end)
 		end)
+	elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
+		local unitTarget = ...
+		if unitTarget == "player" then
+			TRB.Data.character.inVehicle = UnitInVehicle("player") or false
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		TRB.Functions.Character:CheckCharacter()
 	else
@@ -316,6 +326,8 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_LOST")
 	characterChangeFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 	characterChangeFrame:RegisterEvent("PET_BATTLE_CLOSE")
+	characterChangeFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	characterChangeFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -335,6 +347,8 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
 	characterChangeFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
 	characterChangeFrame:UnregisterEvent("PET_BATTLE_CLOSE")
+	characterChangeFrame:UnregisterEvent("UNIT_ENTERED_VEHICLE")
+	characterChangeFrame:UnregisterEvent("UNIT_EXITED_VEHICLE")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
@@ -679,6 +693,8 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.character.specId = GetSpecialization() or TRB.Data.character.specId
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.character.inCombat = InCombatLockdown()
+	TRB.Data.character.inVehicle = UnitInVehicle("player") or false
+	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
@@ -686,6 +702,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
 	TRB.Functions.Character:ResetCaches()
+	TRB.Functions.BarVisibility:MarkDirty()
 end
 
 function TRB.Functions.Character:ResetColorCaches()
@@ -1313,6 +1330,7 @@ function TRB.Functions.Character:EventRegistration()
 
 				TRB.Functions.BarText:CreateBarTextFrames()
 				TRB.Functions.BarText:Hide(specSettings.settings)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Class:HideResourceBar()
 			end
 		end
@@ -1348,5 +1366,6 @@ function TRB.Functions.Character:EventRegistration()
 		end
 	end
 
+	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:HideResourceBar()
 end

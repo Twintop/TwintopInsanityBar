@@ -1663,6 +1663,10 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
+	if not TRB.Functions.BarVisibility:IsDirty(force) then
+		return
+	end
+
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
