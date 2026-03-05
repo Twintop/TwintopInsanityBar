@@ -3048,144 +3048,40 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
+		-- Determine form-based display spec for secondary and mana bar routing
+		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
+
+		-- Secondary (Combo Points): enabled when displaySpecId is Feral (2)
+		-- Uses Feral's specCache for visibility settings
+		local hasSecondary = displaySpecId == 2
+		local secondaryVisSettings = nil
+		if hasSecondary then
+			local feralSettings = TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings or sharedSettings
+			if feralSettings ~= nil and feralSettings.displayBar ~= nil then
+				secondaryVisSettings = feralSettings.displayBar.secondary
+			end
+		end
+
+		-- Mana bar: Balance (specId == 1) in Balance form (displaySpecId == 1)
+		local hasMana = TRB.Data.character.specId == 1 and displaySpecId == 1
+		local manaVisSettings = (sharedSettings and sharedSettings.displayBar.mana) or nil
+
+		local entries = {
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, nil, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
+		}
+
 		if sharedSettings ~= nil then
-			local affectingCombat = TRB.Data.character.inCombat
-			local inVehicle = UnitInVehicle("player")
-			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
-
-			-- Determine primary bar visibility independently
-			local showPrimary = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.primary.visibility == "always" then
-					showPrimary = true
-				elseif sharedSettings.displayBar.primary.visibility == "combat" then
-					showPrimary = affectingCombat or inVehicle
-				end
-				-- "never" means showPrimary stays false
-			end
-
-			-- Determine secondary bar visibility independently
-			-- Combo points should show whenever the energy bar is being shown (Feral spec or Cat form)
-			-- and should respect their visibility setting
-			local showSecondary = false
-			local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-			local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
-			
-			-- Show combo points when displaySpecId is Feral (energy bar is shown)
-			if not forceHideAll and displaySpecId == 2 then
-				-- Use Feral's secondary bar settings for visibility
-				local secondarySettings = TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings or sharedSettings
-				
-				if secondarySettings ~= nil and secondarySettings.displayBar ~= nil then
-					if secondarySettings.displayBar.secondary.visibility == "always" then
-						showSecondary = true
-					elseif secondarySettings.displayBar.secondary.visibility == "combat" then
-						showSecondary = affectingCombat or inVehicle
-					end
-					-- "never" means showSecondary stays false
-				end
-			end
-
-			-- Determine health bar visibility independently
-			local showHealth = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.health.visibility == "always" then
-					showHealth = true
-				elseif sharedSettings.displayBar.health.visibility == "combat" then
-					showHealth = affectingCombat or inVehicle
-				end
-				-- "never" means showHealth stays false
-			end
-
-			-- Determine mana bar visibility independently (Balance only)
-			-- Show mana bar when displaySpecId is Balance (1), not just when in Moonkin form
-			-- This ensures mana bar persists when form switching is disabled
-			local showMana = false
-			if TRB.Data.character.specId == 1 and displaySpecId == 1 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
-				if sharedSettings.displayBar.mana.visibility == "always" then
-					showMana = true
-				elseif sharedSettings.displayBar.mana.visibility == "combat" then
-					showMana = affectingCombat or inVehicle
-				end
-				-- "never" means showMana stays false
-			end
-
-			-- Apply primary bar visibility
-			if barGroups and barGroups.primary then
-				if showPrimary then
-					barGroups.primary:Show()
-				else
-					barGroups.primary:Hide()
-				end
-			end
-
-			-- Apply secondary bar visibility
-			if barGroups and barGroups.secondary then
-				if showSecondary then
-					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
-				else
-					barGroups.secondary:Hide()
-				end
-			end
-
-			-- Apply health bar visibility
-			if barGroups and barGroups.health then
-				if showHealth then
-					barGroups.health:Show()
-					barGroups.health:ShowNodes(1)
-				else
-					barGroups.health:Hide()
-				end
-			end
-
-			-- Apply mana bar visibility (Balance only)
-			if barGroups and barGroups.mana then
-				if showMana then
-					barGroups.mana:Show()
-					barGroups.mana:ShowNodes(1)
-				else
-					barGroups.mana:Hide()
-				end
-			end
-
-			-- Track if any bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana
-			if snapshotData.attributes.isTracking then
-				TRB.Functions.BarText:Show(sharedSettings)
-			else
-				TRB.Functions.BarText:Hide(sharedSettings)
-			end
+			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
-			if barGroups and barGroups.primary then
-				barGroups.primary:Hide()
-			end
-			if barGroups and barGroups.secondary then
-				barGroups.secondary:Hide()
-			end
-			if barGroups and barGroups.health then
-				barGroups.health:Hide()
-			end
-			if barGroups and barGroups.mana then
-				barGroups.mana:Hide()
-			end
-			TRB.Functions.BarText:Hide(sharedSettings)
-			snapshotData.attributes.isTracking = false
+			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
 		end
 	else
-		if barGroups and barGroups.primary then
-			barGroups.primary:Hide()
-		end
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
-		end
-		if barGroups and barGroups.health then
-			barGroups.health:Hide()
-		end
-		if barGroups and barGroups.mana then
-			barGroups.mana:Hide()
-		end
-		snapshotData.attributes.isTracking = false
+		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 	end
 end
 
