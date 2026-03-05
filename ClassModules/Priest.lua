@@ -2764,170 +2764,48 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
+		-- Secondary (Power Words / Holy Words): Discipline (1) and Holy (2) only, gated on maxResource2 > 0
+		local hasSecondary = (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2)
+			and (TRB.Data.character.maxResource2 or 0) > 0
+		local secondaryVisSettings = (sharedSettings and sharedSettings.displayBar.secondary) or nil
+
+		-- Mana bar: Shadow (3) only
+		local hasMana = TRB.Data.character.specId == 3
+		local manaVisSettings = (sharedSettings and sharedSettings.displayBar.mana) or nil
+
+		-- Utility bar (Angelic Feather): all specs, talent-gated
+		local spells = nil --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells|nil]]
+		if TRB.Data.spellsData and TRB.Data.spellsData.spells then
+			spells = TRB.Data.spellsData.spells
+		end
+
+		local hasUtility = false
+		local utilityNodes = nil
+		if sharedSettings and sharedSettings.displayBar.utility ~= nil and spells then
+			local specTalents = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].talents
+			if specTalents and specTalents:IsTalentActive(spells.angelicFeather) then
+				hasUtility = true
+				utilityNodes = spells.angelicFeather.attributes.maxCharges
+			end
+		end
+		local utilityVisSettings = (sharedSettings and sharedSettings.displayBar.utility) or nil
+
+		local entries = {
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, nil, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2 or 0, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil),
+		}
+
 		if sharedSettings ~= nil then
-			local affectingCombat = TRB.Data.character.inCombat
-			local inVehicle = UnitInVehicle("player")
-			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
-
-			-- Determine primary bar visibility independently
-			local showPrimary = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.primary.visibility == "always" then
-					showPrimary = true
-				elseif sharedSettings.displayBar.primary.visibility == "combat" then
-					showPrimary = affectingCombat or inVehicle
-				end
-				-- "never" means showPrimary stays false
-			end
-
-			-- Determine secondary bar visibility (Discipline Power Words / Holy Words)
-			-- If all enables are unchecked (maxResource2 == 0), treat as "never"
-			local showSecondary = false
-			if (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2) and not forceHideAll and sharedSettings.displayBar.secondary ~= nil
-				and (TRB.Data.character.maxResource2 or 0) > 0 then
-				if sharedSettings.displayBar.secondary.visibility == "always" then
-					showSecondary = true
-				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
-					showSecondary = affectingCombat or inVehicle
-				end
-				-- "never" means showSecondary stays false
-			end
-
-			-- Determine health bar visibility independently
-			local showHealth = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.health.visibility == "always" then
-					showHealth = true
-				elseif sharedSettings.displayBar.health.visibility == "combat" then
-					showHealth = affectingCombat or inVehicle
-				end
-				-- "never" means showHealth stays false
-			end
-
-			-- Determine mana bar visibility independently (Shadow only)
-			local showMana = false
-			if TRB.Data.character.specId == 3 and not forceHideAll and sharedSettings.displayBar.mana ~= nil then
-				if sharedSettings.displayBar.mana.visibility == "always" then
-					showMana = true
-				elseif sharedSettings.displayBar.mana.visibility == "combat" then
-					showMana = affectingCombat or inVehicle
-				end
-				-- "never" means showMana stays false
-			end
-			
-			local spells = nil --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells|nil]]
-
-			if TRB.Data.spellsData and TRB.Data.spellsData.spells then
-				spells = TRB.Data.spellsData.spells
-			end
-
-			-- Determine utility bar visibility (all specs, talent-gated)
-			local showUtility = false
-			if not forceHideAll and sharedSettings.displayBar.utility ~= nil then
-				local specTalents = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].talents
-				if specTalents and spells and specTalents:IsTalentActive(spells.angelicFeather) then
-					if sharedSettings.displayBar.utility.visibility == "always" then
-						showUtility = true
-					elseif sharedSettings.displayBar.utility.visibility == "combat" then
-						showUtility = affectingCombat or inVehicle
-					end
-					-- "never" means showUtility stays false
-				end
-			end
-
-			-- Apply primary bar visibility
-			if barGroups and barGroups.primary then
-				if showPrimary then
-					barGroups.primary:Show()
-				else
-					barGroups.primary:Hide()
-				end
-			end
-
-			-- Apply secondary (Holy Words) bar visibility (Holy only)
-			if barGroups and barGroups.secondary then
-				if showSecondary then
-					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2 or 0)
-				else
-					barGroups.secondary:Hide()
-				end
-			end
-
-			-- Apply health bar visibility
-			if barGroups and barGroups.health then
-				if showHealth then
-					barGroups.health:Show()
-					barGroups.health:ShowNodes(1)
-				else
-					barGroups.health:Hide()
-				end
-			end
-
-			-- Apply mana bar visibility (Shadow only)
-			if barGroups and barGroups.mana then
-				if showMana then
-					barGroups.mana:Show()
-					barGroups.mana:ShowNodes(1)
-				else
-					barGroups.mana:Hide()
-				end
-			end
-
-			-- Apply utility bar visibility (all specs)
-			if barGroups and barGroups.utility then
-				if showUtility then
-					barGroups.utility:Show()
-					barGroups.utility:ShowNodes(spells.angelicFeather.attributes.maxCharges)
-				else
-					barGroups.utility:Hide()
-				end
-			end
-
-			-- Track if the bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth or showMana or showUtility
-			if snapshotData.attributes.isTracking then
-				TRB.Functions.BarText:Show(sharedSettings)
-			else
-				TRB.Functions.BarText:Hide(sharedSettings)
-			end
+			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
-			-- No settings - hide everything
-			if barGroups and barGroups.primary then
-				barGroups.primary:Hide()
-			end
-			if barGroups and barGroups.secondary then
-				barGroups.secondary:Hide()
-			end
-			if barGroups and barGroups.health then
-				barGroups.health:Hide()
-			end
-			if barGroups and barGroups.mana then
-				barGroups.mana:Hide()
-			end
-			if barGroups and barGroups.utility then
-				barGroups.utility:Hide()
-			end
-			snapshotData.attributes.isTracking = false
+			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
 		end
 	else
-		-- Unsupported spec - hide everything
-		if barGroups and barGroups.primary then
-			barGroups.primary:Hide()
-		end
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
-		end
-		if barGroups and barGroups.health then
-			barGroups.health:Hide()
-		end
-		if barGroups and barGroups.mana then
-			barGroups.mana:Hide()
-		end
-		if barGroups and barGroups.utility then
-			barGroups.utility:Hide()
-		end
-		snapshotData.attributes.isTracking = false
+		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 	end
 end
 

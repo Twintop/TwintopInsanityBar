@@ -13,6 +13,11 @@ local content = [====[
 ---
 
 # 12.0.1.25-release (2026-03-05)
+## General
+### Behind the Scenes
+
+- Refactor how individual bars handle their visibility to be more consistent and generic. This is precursor work to adding more visibility options.
+
 ## Demon Hunter
 ### Vengeance
 

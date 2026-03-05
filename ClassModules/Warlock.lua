@@ -1155,104 +1155,20 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
+		local entries = {
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, nil, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+		}
+
 		if sharedSettings ~= nil then
-			local affectingCombat = TRB.Data.character.inCombat
-			local inVehicle = UnitInVehicle("player")
-			local forceHideAll = not TRB.Data.specSupported or force or (TRB.Data.character.advancedFlight and not sharedSettings.displayBar.dragonriding)
-
-			-- Determine primary bar visibility independently
-			local showPrimary = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.primary.visibility == "always" then
-					showPrimary = true
-				elseif sharedSettings.displayBar.primary.visibility == "combat" then
-					showPrimary = affectingCombat or inVehicle
-				end
-				-- "never" means showPrimary stays false
-			end
-
-			-- Determine secondary bar visibility independently
-			-- All Warlock specs use the secondary (Soul Shards) bar
-			local showSecondary = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.secondary.visibility == "always" then
-					showSecondary = true
-				elseif sharedSettings.displayBar.secondary.visibility == "combat" then
-					showSecondary = affectingCombat or inVehicle
-				end
-				-- "never" means showSecondary stays false
-			end
-
-			-- Determine health bar visibility independently
-			local showHealth = false
-			if not forceHideAll then
-				if sharedSettings.displayBar.health.visibility == "always" then
-					showHealth = true
-				elseif sharedSettings.displayBar.health.visibility == "combat" then
-					showHealth = affectingCombat or inVehicle
-				end
-				-- "never" means showHealth stays false
-			end
-
-			-- Apply primary bar visibility
-			if barGroups and barGroups.primary then
-				if showPrimary then
-					barGroups.primary:Show()
-				else
-					barGroups.primary:Hide()
-				end
-			end
-
-			-- Apply secondary bar visibility
-			if barGroups and barGroups.secondary then
-				if showSecondary then
-					barGroups.secondary:Show()
-					barGroups.secondary:ShowNodes(TRB.Data.character.maxResource2)
-				else
-					barGroups.secondary:Hide()
-				end
-			end
-
-			-- Apply health bar visibility
-			if barGroups and barGroups.health then
-				if showHealth then
-					barGroups.health:Show()
-				else
-					barGroups.health:Hide()
-				end
-			end
-
-			-- Track if any bar is showing
-			snapshotData.attributes.isTracking = showPrimary or showSecondary or showHealth
-			if snapshotData.attributes.isTracking then
-				TRB.Functions.BarText:Show(sharedSettings)
-			else
-				TRB.Functions.BarText:Hide(sharedSettings)
-			end
+			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
-			if barGroups and barGroups.primary then
-				barGroups.primary:Hide()
-			end
-			if barGroups and barGroups.secondary then
-				barGroups.secondary:Hide()
-			end
-			if barGroups and barGroups.health then
-				barGroups.health:Hide()
-			end
-			TRB.Functions.BarText:Hide(sharedSettings)
-			snapshotData.attributes.isTracking = false
+			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
 		end
 	else
-		if barGroups and barGroups.primary then
-			barGroups.primary:Hide()
-		end
-		if barGroups and barGroups.secondary then
-			barGroups.secondary:Hide()
-		end
-		if barGroups and barGroups.health then
-			barGroups.health:Hide()
-		end
-		snapshotData.attributes.isTracking = false
+		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 	end
 end
 
