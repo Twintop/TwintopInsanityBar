@@ -498,7 +498,121 @@ local function GetFromBarTextTreeCache(input)
 end
 
 
----Removes invalid variables from the bar text represented within the tree
+---Compiles a conditional expression node into a reusable Lua function.
+---The compiled function accepts variable values as positional arguments, eliminating
+---the need to rebuild the expression string and call loadstring() every frame.
+---@param node table A conditional node from the bar text tree
+---@return table compiledExpression { fn, varCount, varInfos } or { invalid = true }
+local function CompileConditionalExpression(node)
+	local templateParts = {}
+	local varInfos = {}
+	local varCount = 0
+	local s = 1
+	local index = 1
+
+	while s <= #node.logic do
+		local nextVariable = node.logicVariables[index]
+		if nextVariable then
+			varCount = varCount + 1
+			local paramName = "v" .. varCount
+
+			-- Pre-compute whether this variable occurrence should use lookupLogic values
+			-- (numeric context) vs IsValidVariableForSpec (boolean context), based on
+			-- the surrounding symbols which are fixed at parse time.
+			local useLookupLogic = nextVariable.prevSymbol ~= "!" and
+				((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or
+				 (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")"))
+
+			varInfos[varCount] = {
+				variable = nextVariable.variable,
+				useLookupLogic = useLookupLogic
+			}
+
+			if nextVariable.beforeVarIsNot then
+				table.insert(templateParts, " ")
+				table.insert(templateParts, nextVariable.beforeVarIsNotSubString)
+				table.insert(templateParts, " (not ")
+				table.insert(templateParts, paramName)
+				table.insert(templateParts, ") ")
+			else
+				table.insert(templateParts, " ")
+				table.insert(templateParts, nextVariable.beforeVar)
+				table.insert(templateParts, " ")
+				table.insert(templateParts, paramName)
+			end
+
+			s = nextVariable.variableEnd + 1
+			index = index + 1
+		else
+			local remainder = string.trim(string.sub(node.logic, s))
+			table.insert(templateParts, " ")
+			table.insert(templateParts, remainder)
+			s = #node.logic + 2
+		end
+	end
+
+	local templateString = table.concat(templateParts)
+
+	-- Apply the same operator normalizations as the original code
+	templateString = string.lower(templateString)
+	templateString = string.gsub(templateString, "%(%)", "")
+	templateString = string.gsub(templateString, "=", "==")
+	templateString = string.gsub(templateString, "!==", "!=")
+	templateString = string.gsub(templateString, "~==", "~=")
+	templateString = string.gsub(templateString, ">==", ">=")
+	templateString = string.gsub(templateString, "<==", "<=")
+	templateString = string.gsub(templateString, "===", "==")
+	templateString = string.gsub(templateString, "!=", "~=")
+	templateString = string.gsub(templateString, "!", " not ")
+	templateString = string.gsub(templateString, "&", " and ")
+	templateString = string.gsub(templateString, "||", " or ")
+
+	-- Build the compiled function with positional parameters
+	local paramList = {}
+	for i = 1, varCount do
+		paramList[i] = "v" .. i
+	end
+	local paramString = table.concat(paramList, ",")
+	local funcSource = "return function(" .. paramString .. ") return (" .. templateString .. ") end"
+
+	local chunk = loadstring(funcSource)
+	if chunk then
+		local ok, evalFn = pcall(chunk)
+		if ok and type(evalFn) == "function" then
+			return {
+				fn = evalFn,
+				varCount = varCount,
+				varInfos = varInfos
+			}
+		end
+	end
+
+	return { invalid = true }
+end
+
+---Resolves the current values for a compiled expression's variables
+---@param compiledExpr table The compiledExpression table with varInfos
+---@return table args Array of resolved values in parameter order
+local function ResolveConditionalValues(compiledExpr)
+	local args = {}
+	for i = 1, compiledExpr.varCount do
+		local info = compiledExpr.varInfos[i]
+		local val = TRB.Functions.Class:IsValidVariableForSpec(info.variable)
+		if info.useLookupLogic and TRB.Data.lookupLogic[info.variable] then
+			val = TRB.Data.lookupLogic[info.variable]
+			if issecretvalue(val) then
+				val = false
+			end
+		end
+		args[i] = val
+	end
+	return args
+end
+
+---Removes invalid variables from the bar text represented within the tree.
+---Conditional expressions are compiled to reusable Lua functions on first evaluation,
+---then re-evaluated each frame by passing current values as arguments — avoiding
+---per-frame string building, operator normalization, and loadstring() compilation.
 ---@param tree table
 ---@return string
 local function RemoveInvalidVariablesFromBarText(tree)
@@ -512,85 +626,27 @@ local function RemoveInvalidVariablesFromBarText(tree)
 		if type(v) == "string" then
 			table.insert(returnText, v)
 		else
-			local canCache = true
-			local outputStringTable = {}
-			local s = 1
-			local index = 1
-			while s <= #v.logic do
-				local nextVariable = v.logicVariables[index]
-				if nextVariable then
-					local valid = TRB.Functions.Class:IsValidVariableForSpec(nextVariable.variable)
-					if TRB.Data.lookupLogic[nextVariable.variable] and nextVariable.prevSymbol ~= "!" and ((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")")) then
-						valid = TRB.Data.lookupLogic[nextVariable.variable]
-
-						if issecretvalue(valid) then
-							valid = false
-						end
-
-						if type(valid) == "number" and not TRB.Functions.Number:IsInteger(tostring(valid)) then
-							canCache = false
-						end
-					end
-
-					if nextVariable.beforeVarIsNot then
-						table.insert(outputStringTable, " ")
-						table.insert(outputStringTable, nextVariable.beforeVarIsNotSubString)
-						table.insert(outputStringTable, " (not ")
-						table.insert(outputStringTable, tostring(valid))
-						table.insert(outputStringTable, ") ")
-					else
-						table.insert(outputStringTable, " ")
-						table.insert(outputStringTable, nextVariable.beforeVar)
-						table.insert(outputStringTable, " ")
-						table.insert(outputStringTable, tostring(valid))
-					end
-
-					s = nextVariable.variableEnd + 1
-					index = index + 1
-				else
-					local remainder = string.trim(string.sub(v.logic, s))
-					table.insert(outputStringTable, " ")
-					table.insert(outputStringTable, remainder)
-					s = #v.logic + 2
-				end
+			-- Compile the expression template on first evaluation of this node
+			if v.compiledExpression == nil then
+				v.compiledExpression = CompileConditionalExpression(v)
 			end
-			local outputString = table.concat(outputStringTable)
-			local cacheKey = outputString
-			local processResult = v.processedLogicStrings[cacheKey]
-		
-			if processResult == nil or canCache == false then
-				outputString = string.lower(outputString)
-				--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
-				outputString = string.gsub(outputString, "%(%)", "")
-				outputString = string.gsub(outputString, "=", "==")
-				outputString = string.gsub(outputString, "!==", "!=")
-				outputString = string.gsub(outputString, "~==", "~=")
-				outputString = string.gsub(outputString, ">==", ">=")
-				outputString = string.gsub(outputString, "<==", "<=")
-				outputString = string.gsub(outputString, "===", "==")
-				outputString = string.gsub(outputString, "!=", "~=")
-				outputString = string.gsub(outputString, "!", " not ")
-				outputString = string.gsub(outputString, "&", " and ")
-				outputString = string.gsub(outputString, "||", " or ")
-				
-				local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
-				if resultCode then
-					local pcallSuccess, result = pcall(resultFunc)
-					if not pcallSuccess then-- Something went wrong
-						processResult = "INVALID"
-					elseif result == true or result then
-						processResult = "TRUE"
-					elseif v.falseResult then
-						processResult = "FALSE"
-					else
-						processResult = "NONE"
-					end
-				else -- Something went wrong
-					processResult = "INVALID"
-				end
 
-				if canCache then
-					v.processedLogicStrings[cacheKey] = processResult
+			local processResult
+			local ce = v.compiledExpression
+
+			if ce.invalid then
+				processResult = "INVALID"
+			else
+				local args = ResolveConditionalValues(ce)
+				local ok, result = pcall(ce.fn, unpack(args, 1, ce.varCount))
+				if not ok then
+					processResult = "INVALID"
+				elseif result == true or result then
+					processResult = "TRUE"
+				elseif v.falseResult then
+					processResult = "FALSE"
+				else
+					processResult = "NONE"
 				end
 			end
 
