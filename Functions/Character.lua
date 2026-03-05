@@ -721,6 +721,7 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barText = {}
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
+	TRB.Data.activeVariables = nil
 	TRB.Data.cache.values.bar = {}
 	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}

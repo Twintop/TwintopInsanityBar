@@ -616,126 +616,136 @@ local function RefreshLookupData_Balance()
 	---@type TRB.Classes.Target
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local currentTime = GetTime()
-	local normalizedAstralPower = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentAstralPowerColor = sharedSettings.colors.text.current.color
-	local castingAstralPowerColor = sharedSettings.colors.text.casting.color
-
-	-- $starsurgeUsable and $starfallUsable
-	local _starsurgeUsable = spells.starsurge:IsUsable() or spells.starsurge:IsFree()
-	local _starfallUsable = spells.starfall:IsUsable() or spells.starfall:IsFree()
-
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and (_starsurgeUsable or _starfallUsable) then
-			currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
-			castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
-		end
-	end
-
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentAstralPower = normalizedAstralPower
-
-	local currentMoonIcon = spells.newMoon.icon
-
-	--$eclipseTime
-	local _eclispeTime, eclipseIcon, eclipseSpellId = GetEclipseRemainingTime()
-
-	-- Mana lookups (Balance uses mana as secondary resource display)
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	lookupLogic["$resource"] = normalizedAstralPower
-	lookupLogic["$astralPower"] = normalizedAstralPower
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$eclipseTime"] = _eclispeTime
-	lookupLogic["$eclipse"] = _eclispeTime > 0
-	lookupLogic["$lunar"] = false
-	lookupLogic["$lunarEclipse"] = false
-	lookupLogic["$eclipseLunar"] = false
-	lookupLogic["$solar"] = false
-	lookupLogic["$solarEclipse"] = false
-	lookupLogic["$eclipseSolar"] = false
-	lookupLogic["$celestialAlignment"] = false
-	lookupLogic["$starsurgeUsable"] = _starsurgeUsable
-	lookupLogic["$starfallUsable"] = _starfallUsable
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaMax"] = normalizedManaMax
-	lookupLogic["$manaPercent"] = _manaPercent
+	-- Block A: Core resource ($resource, $astralPower, $casting, $resourceMax, $astralPowerMax, $starsurgeUsable, $starfallUsable)
+	if not activeVars or activeVars["$resource"] or activeVars["$astralPower"] or activeVars["$casting"]
+		or activeVars["$resourceMax"] or activeVars["$astralPowerMax"]
+		or activeVars["$starsurgeUsable"] or activeVars["$starfallUsable"] then
 
-	if eclipseSpellId == spells.eclipseLunar.id then
-		lookupLogic["$lunar"] = true
-		lookupLogic["$lunarEclipse"] = true
-		lookupLogic["$eclipseLunar"] = true
-	elseif eclipseSpellId == spells.eclipseSolar.id then
-		lookupLogic["$solar"] = true
-		lookupLogic["$solarEclipse"] = true
-		lookupLogic["$eclipseSolar"] = true
-	elseif eclipseSpellId == spells.celestialAlignment.id or eclipseSpellId == spells.incarnationChosenOfElune.id then
-		lookupLogic["$celestialAlignment"] = true
-	end
+		local normalizedAstralPower = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+		local currentAstralPowerColor = sharedSettings.colors.text.current.color
+		local castingAstralPowerColor = sharedSettings.colors.text.casting.color
 
-	-- OVERCAP: $astralPower/$resource + $casting
-	local resourceChanged = lookupChanged(prevState, "$astralPower", normalizedAstralPower, currentAstralPowerColor, true)
-	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingAstralPowerColor)
-	if resourceChanged or castingChanged then
-		local currentAstralPower
-		local castingAstralPower
-		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
-			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
-			castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-		else
-			currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
-			castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+		local _starsurgeUsable = spells.starsurge:IsUsable() or spells.starsurge:IsFree()
+		local _starfallUsable = spells.starfall:IsUsable() or spells.starfall:IsFree()
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled and (_starsurgeUsable or _starfallUsable) then
+				currentAstralPowerColor = sharedSettings.colors.text.overThreshold.color
+				castingAstralPowerColor = sharedSettings.colors.text.overThreshold.color
+			end
 		end
-		lookup["$resource"] = currentAstralPower
-		lookup["$astralPower"] = currentAstralPower
-		lookup["$casting"] = castingAstralPower
-	end
-	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 
-	-- RAW: icons and booleans
-	lookup["#moon"] = currentMoonIcon
-	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
-	lookup["$eclipse"] = ""
-	lookup["$lunar"] = ""
-	lookup["$lunarEclipse"] = ""
-	lookup["$eclipseLunar"] = ""
-	lookup["$solar"] = ""
-	lookup["$solarEclipse"] = ""
-	lookup["$eclipseSolar"] = ""
-	lookup["$celestialAlignment"] = ""
-	lookup["$starsurgeUsable"] = ""
-	lookup["$starfallUsable"] = ""
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local _currentAstralPower = normalizedAstralPower
 
-	-- TMR: $eclipseTime
-	if lookupChanged(prevState, "$eclipseTime", _eclispeTime) then
-		lookup["$eclipseTime"] = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
+		lookupLogic["$resource"] = normalizedAstralPower
+		lookupLogic["$astralPower"] = normalizedAstralPower
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+		lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+		lookupLogic["$starsurgeUsable"] = _starsurgeUsable
+		lookupLogic["$starfallUsable"] = _starfallUsable
+
+		-- OVERCAP: $astralPower/$resource + $casting
+		local resourceChanged = lookupChanged(prevState, "$astralPower", normalizedAstralPower, currentAstralPowerColor, true)
+		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingAstralPowerColor)
+		if resourceChanged or castingChanged then
+			local currentAstralPower
+			local castingAstralPower
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
+				castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+			else
+				currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
+				castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentAstralPower
+			lookup["$astralPower"] = currentAstralPower
+			lookup["$casting"] = castingAstralPower
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+		lookup["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+		lookup["$starsurgeUsable"] = ""
+		lookup["$starfallUsable"] = ""
 	end
 
-	-- FCS: mana variables
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	-- Block B: Eclipse ($eclipseTime, $eclipse, $lunar, $solar, $celestialAlignment, #eclipse, #moon)
+	if not activeVars or activeVars["$eclipseTime"] or activeVars["$eclipse"]
+		or activeVars["$lunar"] or activeVars["$lunarEclipse"] or activeVars["$eclipseLunar"]
+		or activeVars["$solar"] or activeVars["$solarEclipse"] or activeVars["$eclipseSolar"]
+		or activeVars["$celestialAlignment"] or activeVars["#eclipse"] or activeVars["#moon"] then
+
+		local currentMoonIcon = spells.newMoon.icon
+		local _eclispeTime, eclipseIcon, eclipseSpellId = GetEclipseRemainingTime()
+
+		lookupLogic["$eclipseTime"] = _eclispeTime
+		lookupLogic["$eclipse"] = _eclispeTime > 0
+		lookupLogic["$lunar"] = false
+		lookupLogic["$lunarEclipse"] = false
+		lookupLogic["$eclipseLunar"] = false
+		lookupLogic["$solar"] = false
+		lookupLogic["$solarEclipse"] = false
+		lookupLogic["$eclipseSolar"] = false
+		lookupLogic["$celestialAlignment"] = false
+
+		if eclipseSpellId == spells.eclipseLunar.id then
+			lookupLogic["$lunar"] = true
+			lookupLogic["$lunarEclipse"] = true
+			lookupLogic["$eclipseLunar"] = true
+		elseif eclipseSpellId == spells.eclipseSolar.id then
+			lookupLogic["$solar"] = true
+			lookupLogic["$solarEclipse"] = true
+			lookupLogic["$eclipseSolar"] = true
+		elseif eclipseSpellId == spells.celestialAlignment.id or eclipseSpellId == spells.incarnationChosenOfElune.id then
+			lookupLogic["$celestialAlignment"] = true
+		end
+
+		lookup["#moon"] = currentMoonIcon
+		lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
+		lookup["$eclipse"] = ""
+		lookup["$lunar"] = ""
+		lookup["$lunarEclipse"] = ""
+		lookup["$eclipseLunar"] = ""
+		lookup["$solar"] = ""
+		lookup["$solarEclipse"] = ""
+		lookup["$eclipseSolar"] = ""
+		lookup["$celestialAlignment"] = ""
+
+		if lookupChanged(prevState, "$eclipseTime", _eclispeTime) then
+			lookup["$eclipseTime"] = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
+		end
 	end
-	if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
-		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
-	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+
+	-- Block C: Mana ($mana, $manaMax, $manaPercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
+		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
+		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+		local manaPrecision = sharedSettings.precision.mana or 1
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$manaMax"] = normalizedManaMax
+		lookupLogic["$manaPercent"] = _manaPercent
+
+		if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		end
+		if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
+		end
+		if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+			lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		end
 	end
 
 	TRB.Data.lookup = lookup

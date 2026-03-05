@@ -804,268 +804,172 @@ local function RefreshLookupData_Shadow()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
-	local normalizedInsanity = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	--$vfTime
-	local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
-
-	local currentInsanityColor = sharedSettings.colors.text.current.color
-	local castingInsanityColor = sharedSettings.colors.text.casting.color
-
-	-- $shadowWordMadnessUsable
-	local _shadowWordMadnessUsable = spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree()
-
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and _shadowWordMadnessUsable then
-			currentInsanityColor = sharedSettings.colors.text.overThreshold.color
-			--castingInsanityColor = sharedSettings.colors.text.overThreshold.color
-		end
-	end	
-
-	--$insanity
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentInsanity = normalizedInsanity
-	--$casting
-	local _castingInsanity = snapshotData.casting.resourceFinal
-
-	--[[
-	--$loiInsanity
-	local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
-	local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, resourcePrecision, "floor"))
-	--$loiTicks
-	local _loiTicks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining
-	local loiTicks = string.format("%.0f", _loiTicks)
-	--$ecttvCount
-	local _ecttvCount = snapshots[spells.idolOfCthun.id].attributes.numberActive
-	local ecttvCount = string.format("%.0f", _ecttvCount)
-	--$hvInsanity
-	local _hvInsanity = snapshots[spells.horrificVisions.id].attributes.resourceFinal or 0
-	local hvInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_hvInsanity, resourcePrecision, "ceil"))
-	--$hvTicks
-	local _hvTicks = snapshots[spells.horrificVisions.id].buff.ticks or 0
-	local hvTicks = string.format("%.0f", _hvTicks)	
-	--$hvStacks
-	local _hvStacks = 0
-	if target ~= nil then
-		_hvStacks = target.spells[spells.horrificVisions.id].stacks or 0
-	end
-	local hvStacks = string.format("%.0f", _hvStacks)]]
-	
-	--$mfiTime
-	local _mfiTime = 0
-	--$mfiStacks
-	local _mfiStacks = 0
-	
-	if snapshots[spells.mindFlayInsanity.id].buff.isActive then
-		_mfiTime = snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
-		_mfiStacks = snapshots[spells.mindFlayInsanity.id].buff.applications or 0
-	end
-	
-	--$sotvTime
-	local _sotvTime = 0
-	if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
-		_sotvTime = snapshots[spells.screamsOfTheVoid.id].buff:GetRemainingTime(currentTime)
-	end
-
-	--[[
-	--$mindBlastCharges
-	local mindBlastCharges = snapshots[spells.mindBlast.id].cooldown.charges or 0
-	
-	--$mindBlastMaxCharges
-	local mindBlastMaxCharges = snapshots[spells.mindBlast.id].cooldown.maxCharges or 0
-
-	--$siTime
-	local _siTime = snapshots[spells.shadowyInsight.id].buff:GetRemainingTime(currentTime)
-	local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
-	
-	--$spTime
-	local _spTime = snapshots[spells.shatteredPsyche.id].buff:GetRemainingTime(currentTime)
-	local spTime = TRB.Functions.BarText:TimerPrecision(_spTime)
-	--$spStacks
-	local spStacks = snapshots[spells.shatteredPsyche.id].buff.applications or 0
-	--$spCrit
-	local spCrit = snapshots[spells.shatteredPsyche.id].buff.customProperties["crit"] or 0
-
-	--$ysTime
-	local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
-	local ysTime = TRB.Functions.BarText:TimerPrecision(_ysTime)
-	--$ysStacks
-	local ysStacks = snapshots[spells.idolOfYoggSaron.id].buff.applications or 0
-	--$ysRemainingStacks
-	local ysRemainingStacks = (spells.idolOfYoggSaron.attributes.requiredStacks - ysStacks) or spells.idolOfYoggSaron.attributes.requiredStacks
-	--$tfbTime
-	local _tfbTime = snapshots[spells.thingFromBeyond.id].buff:GetRemainingTime(currentTime)
-	local tfbTime = TRB.Functions.BarText:TimerPrecision(_tfbTime)
-	
-	--$reStacks
-	local reStacks = 0
-	--$reTime
-	local _reTime = 0
-	if target ~= nil then
-		reStacks = target.spells[spells.resonantEnergy.debuffId].stacks or 0
-		_reTime = target.spells[spells.resonantEnergy.debuffId].remainingTime
-	end
-	local reTime = TRB.Functions.BarText:TimerPrecision(_reTime)]]
-
-	--$entropicRiftTime
-	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
-
-	--$entropicRiftExtensionsRemaining
-	local entropicRiftExtensionsRemaining = snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] or 0
-
-	--[[--$voidVolleyTime
-	local _voidVolleyTime = snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
-	local voidVolleyTime = TRB.Functions.BarText:TimerPrecision(_voidVolleyTime)
-	]]
-
-	-- Mana lookups (Shadow uses mana as secondary resource display)
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	--$afTime
-	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
-	--$afCharges
-	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
-	--$afMaxCharges
-	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
-
-	----------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
-	lookupLogic["$insanity"] = _currentInsanity
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = _currentInsanity
-	lookupLogic["$casting"] = _castingInsanity
-	lookupLogic["$mfiTime"] = _mfiTime
-	lookupLogic["$mfiStacks"] = _mfiStacks
-	lookupLogic["$sotvTime"] = _sotvTime
-	lookupLogic["$entropicRiftTime"] = _entropicRiftTime
-	lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
-	lookupLogic["$vfTime"] = _voidformTime
-	lookupLogic["$shadowWordMadnessUsable"] = _shadowWordMadnessUsable
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaMax"] = normalizedManaMax
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$afTime"] = _afTime
-	lookupLogic["$angelicFeatherTime"] = _afTime
-	lookupLogic["$afCharges"] = _afCharges
-	lookupLogic["$angelicFeatherCharges"] = _afCharges
-	lookupLogic["$afMaxCharges"] = _afMaxCharges
-	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
-	--[[
-	lookupLogic["$spTime"] = _spTime
-	lookupLogic["$mmTime"] = _spTime
-	lookupLogic["$spStacks"] = spStacks
-	lookupLogic["$mmStacks"] = spStacks
-	lookupLogic["$spCrit"] = spCrit
-	lookupLogic["$ysTime"] = _ysTime
-	lookupLogic["$ysStacks"] = ysStacks
-	lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
-	lookupLogic["$reStacks"] = reStacks
-	lookupLogic["$reTime"] = _reTime
-	lookupLogic["$tfbTime"] = _tfbTime
-	lookupLogic["$siTime"] = _siTime
-	lookupLogic["$mindBlastCharges"] = mindBlastCharges
-	lookupLogic["$mindBlastMaxCharges"] = mindBlastMaxCharges
-	lookupLogic["$hvTicks"] = _hvTicks
-	lookupLogic["$hvStacks"] = _hvStacks
-	lookupLogic["$voidVolleyTime"] = _voidVolleyTime]]
+	-- Block A: Core resource ($insanity, $resource, $casting, $insanityMax, $resourceMax, $shadowWordMadnessUsable)
+	if not activeVars or activeVars["$insanity"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$insanityMax"] or activeVars["$resourceMax"]
+		or activeVars["$shadowWordMadnessUsable"] then
 
-	-- RAW assignments (unmemoized)
-	lookup["$insanityMax"] = TRB.Data.character.maxResource
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
-	lookup["$shadowWordMadnessUsable"] = ""
+		local normalizedInsanity = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+		local currentInsanityColor = sharedSettings.colors.text.current.color
+		local castingInsanityColor = sharedSettings.colors.text.casting.color
 
-	-- OVERCAP pattern: insanity + casting
-	local insanityChanged = lookupChanged(prevState, "$insanity", _currentInsanity, currentInsanityColor, true)
-	local castingChanged = lookupChanged(prevState, "$casting", _castingInsanity, castingInsanityColor)
-	if insanityChanged or castingChanged then
-		local currentInsanity
-		local castingInsanity
-		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
-			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
-			castingInsanity = textColorResult:WrapTextInColorCode(TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
-		else
-			currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)
-			castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
+		local _shadowWordMadnessUsable = spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree()
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled and _shadowWordMadnessUsable then
+				currentInsanityColor = sharedSettings.colors.text.overThreshold.color
+				--castingInsanityColor = sharedSettings.colors.text.overThreshold.color
+			end
 		end
-		lookup["$insanity"] = currentInsanity
-		lookup["$resource"] = currentInsanity
-		lookup["$casting"] = castingInsanity
-	end
-	if lookupChanged(prevState, "$vfTime", _voidformTime) then
-		lookup["$vfTime"] = TRB.Functions.BarText:TimerPrecision(_voidformTime)
-	end
-	if lookupChanged(prevState, "$mfiTime", _mfiTime) then
-		lookup["$mfiTime"] = TRB.Functions.BarText:TimerPrecision(_mfiTime)
-	end
-	if lookupChanged(prevState, "$mfiStacks", _mfiStacks) then
-		lookup["$mfiStacks"] = string.format("%.0f", _mfiStacks)
-	end
-	if lookupChanged(prevState, "$sotvTime", _sotvTime) then
-		lookup["$sotvTime"] = TRB.Functions.BarText:TimerPrecision(_sotvTime)
-	end
-	if lookupChanged(prevState, "$entropicRiftTime", _entropicRiftTime) then
-		lookup["$entropicRiftTime"] = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)
-	end
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
-	end
-	if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
-		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
-	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
-	end
-	if lookupChanged(prevState, "$afTime", _afTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_afTime)
-		lookup["$afTime"] = f
-		lookup["$angelicFeatherTime"] = f
-	end
-	if lookupChanged(prevState, "$afCharges", _afCharges) then
-		local f = string.format("%.0f", _afCharges)
-		lookup["$afCharges"] = f
-		lookup["$angelicFeatherCharges"] = f
-	end
-	if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
-		local f = string.format("%.0f", _afMaxCharges)
-		lookup["$afMaxCharges"] = f
-		lookup["$angelicFeatherMaxCharges"] = f
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local _currentInsanity = normalizedInsanity
+		local _castingInsanity = snapshotData.casting.resourceFinal
+
+		lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
+		lookupLogic["$insanity"] = _currentInsanity
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = _currentInsanity
+		lookupLogic["$casting"] = _castingInsanity
+		lookupLogic["$shadowWordMadnessUsable"] = _shadowWordMadnessUsable
+
+		lookup["$insanityMax"] = TRB.Data.character.maxResource
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$shadowWordMadnessUsable"] = ""
+
+		local insanityChanged = lookupChanged(prevState, "$insanity", _currentInsanity, currentInsanityColor, true)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingInsanity, castingInsanityColor)
+		if insanityChanged or castingChanged then
+			local currentInsanity
+			local castingInsanity
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
+				castingInsanity = textColorResult:WrapTextInColorCode(TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
+			else
+				currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)
+				castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
+			end
+			lookup["$insanity"] = currentInsanity
+			lookup["$resource"] = currentInsanity
+			lookup["$casting"] = castingInsanity
+		end
 	end
 
-	--[[
-	lookup["$spTime"] = spTime
-	lookup["$mmTime"] = spTime
-	lookup["$spStacks"] = spStacks
-	lookup["$mmStacks"] = spStacks
-	lookup["$spCrit"] = spCrit
-	lookup["$ysTime"] = ysTime
-	lookup["$ysStacks"] = ysStacks
-	lookup["$ysRemainingStacks"] = ysRemainingStacks
-	lookup["$reStacks"] = reStacks
-	lookup["$reTime"] = reTime
-	lookup["$tfbTime"] = tfbTime
-	lookup["$siTime"] = siTime
-	lookup["$mindBlastCharges"] = mindBlastCharges
-	lookup["$mindBlastMaxCharges"] = mindBlastMaxCharges
-	lookup["$hvTicks"] = hvTicks
-	lookup["$hvStacks"] = hvStacks
-	lookup["$voidVolleyTime"] = voidVolleyTime]]
+	-- Block B: Voidform ($vfTime)
+	if not activeVars or activeVars["$vfTime"] then
+		local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
+		lookupLogic["$vfTime"] = _voidformTime
+		if lookupChanged(prevState, "$vfTime", _voidformTime) then
+			lookup["$vfTime"] = TRB.Functions.BarText:TimerPrecision(_voidformTime)
+		end
+	end
+
+	-- Block C: Mind Flay Insanity ($mfiTime, $mfiStacks)
+	if not activeVars or activeVars["$mfiTime"] or activeVars["$mfiStacks"] then
+		local _mfiTime = 0
+		local _mfiStacks = 0
+		if snapshots[spells.mindFlayInsanity.id].buff.isActive then
+			_mfiTime = snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
+			_mfiStacks = snapshots[spells.mindFlayInsanity.id].buff.applications or 0
+		end
+		lookupLogic["$mfiTime"] = _mfiTime
+		lookupLogic["$mfiStacks"] = _mfiStacks
+		if lookupChanged(prevState, "$mfiTime", _mfiTime) then
+			lookup["$mfiTime"] = TRB.Functions.BarText:TimerPrecision(_mfiTime)
+		end
+		if lookupChanged(prevState, "$mfiStacks", _mfiStacks) then
+			lookup["$mfiStacks"] = string.format("%.0f", _mfiStacks)
+		end
+	end
+
+	-- Block D: Screams of the Void ($sotvTime)
+	if not activeVars or activeVars["$sotvTime"] then
+		local _sotvTime = 0
+		if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
+			_sotvTime = snapshots[spells.screamsOfTheVoid.id].buff:GetRemainingTime(currentTime)
+		end
+		lookupLogic["$sotvTime"] = _sotvTime
+		if lookupChanged(prevState, "$sotvTime", _sotvTime) then
+			lookup["$sotvTime"] = TRB.Functions.BarText:TimerPrecision(_sotvTime)
+		end
+	end
+
+	-- Block E: Entropic Rift ($entropicRiftTime, $entropicRiftExtensionsRemaining)
+	if not activeVars or activeVars["$entropicRiftTime"] or activeVars["$entropicRiftExtensionsRemaining"] then
+		local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
+		local entropicRiftExtensionsRemaining = snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] or 0
+		lookupLogic["$entropicRiftTime"] = _entropicRiftTime
+		lookupLogic["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
+		lookup["$entropicRiftExtensionsRemaining"] = entropicRiftExtensionsRemaining
+		if lookupChanged(prevState, "$entropicRiftTime", _entropicRiftTime) then
+			lookup["$entropicRiftTime"] = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)
+		end
+	end
+
+	-- Block F: Mana ($mana, $manaMax, $manaPercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
+		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
+		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+		local manaPrecision = sharedSettings.precision.mana or 1
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$manaMax"] = normalizedManaMax
+		lookupLogic["$manaPercent"] = _manaPercent
+		if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		end
+		if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
+		end
+		if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+			lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		end
+	end
+
+	-- Block G: Angelic Feather ($afTime, $angelicFeatherTime, $afCharges, $angelicFeatherCharges, $afMaxCharges, $angelicFeatherMaxCharges)
+	if not activeVars or activeVars["$afTime"] or activeVars["$angelicFeatherTime"]
+		or activeVars["$afCharges"] or activeVars["$angelicFeatherCharges"]
+		or activeVars["$afMaxCharges"] or activeVars["$angelicFeatherMaxCharges"] then
+
+		local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+		local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+		local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+
+		lookupLogic["$afTime"] = _afTime
+		lookupLogic["$angelicFeatherTime"] = _afTime
+		lookupLogic["$afCharges"] = _afCharges
+		lookupLogic["$angelicFeatherCharges"] = _afCharges
+		lookupLogic["$afMaxCharges"] = _afMaxCharges
+		lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
+
+		if lookupChanged(prevState, "$afTime", _afTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_afTime)
+			lookup["$afTime"] = f
+			lookup["$angelicFeatherTime"] = f
+		end
+		if lookupChanged(prevState, "$afCharges", _afCharges) then
+			local f = string.format("%.0f", _afCharges)
+			lookup["$afCharges"] = f
+			lookup["$angelicFeatherCharges"] = f
+		end
+		if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
+			local f = string.format("%.0f", _afMaxCharges)
+			lookup["$afMaxCharges"] = f
+			lookup["$angelicFeatherMaxCharges"] = f
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end

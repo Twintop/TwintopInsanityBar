@@ -6329,6 +6329,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 		end
 		TRB.Functions.BarText:CreateBarTextFrames(d.classId, d.specId)
 		d.barTextOptionsFrame:Hide()
@@ -6373,6 +6374,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -7318,6 +7320,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 		end
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
@@ -7342,6 +7345,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Data.cache.barText = {}
 		TRB.Data.cache.symbols = {}
 		TRB.Data.cache.barTextTree = {}
+		TRB.Data.activeVariables = nil
 	end)
 
 	-- Attach undo/redo AFTER SetScript("OnTextChanged") so the HookScript
@@ -7401,6 +7405,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				TRB.Data.cache.barText = {}
 				TRB.Data.cache.symbols = {}
 				TRB.Data.cache.barTextTree = {}
+				TRB.Data.activeVariables = nil
 				-- Use the active spec's merged settings (not core) so frame indices match the merged barText list
 				local activeCompositeKey = TRB.Functions.Character:GetCompositeKey(charClassName, charSpecName)
 				local activeSettings = TRB.Data.specCache[activeCompositeKey] and TRB.Data.specCache[activeCompositeKey].settings
@@ -7416,6 +7421,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Data.cache.barText = {}
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 			-- Hide all existing bar text frames before recreating to prevent stale text from persisting
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)

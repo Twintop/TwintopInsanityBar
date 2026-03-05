@@ -45,6 +45,34 @@ function TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Data.lookupDirty = true
 end
 
+---Scans all enabled bar text entries and builds a set of which $variable and #icon
+---keys are actually referenced. This set is used by RefreshLookupData functions to
+---skip computation of variables that no enabled bar text entry uses.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.BarText:BuildActiveVariableSet(settings)
+	local activeVars = {}
+	if settings ~= nil and settings.displayText ~= nil then
+		local displayText = settings.displayText
+		local entries = #displayText.barText
+		for i = 1, entries do
+			if displayText.barText[i].enabled then
+				local text = displayText.barText[i].text
+				if text and text ~= "" then
+					-- Extract $variable references (e.g., $resource, $eclipseTime)
+					for var in string.gmatch(text, "%$[%a_][%w_]*") do
+						activeVars[var] = true
+					end
+					-- Extract #icon references (e.g., #casting, #eclipse)
+					for icon in string.gmatch(text, "#[%a_][%w_]*") do
+						activeVars[icon] = true
+					end
+				end
+			end
+		end
+	end
+	TRB.Data.activeVariables = activeVars
+end
+
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
 ---@param additionalIcons table|nil Optional array of spec-specific icon entries to append
 ---@return table # Combined icons table
@@ -1229,6 +1257,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		return
 	end
 	TRB.Data.lookupDirty = false
+
+	-- Rebuild the active variable set if it was invalidated (bar text changed, spec switch, etc.)
+	if TRB.Data.activeVariables == nil then
+		TRB.Functions.BarText:BuildActiveVariableSet(settings)
+	end
 
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
