@@ -18,6 +18,10 @@ local content = [====[
 
 - Refactor how individual bars handle their visibility to be more consistent and generic. This is precursor work to adding more visibility options.
 
+### Localization
+
+- [#675](#675) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Demon Hunter
 ### Vengeance
 
