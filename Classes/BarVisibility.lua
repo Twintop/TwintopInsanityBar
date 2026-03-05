@@ -145,12 +145,10 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	end
 
 	snapshotData.attributes.isTracking = anyShowing
-	if anyShowing then
+	if anyShowing and settings ~= nil then
 		TRB.Functions.BarText:Show(settings)
 	else
-		if settings ~= nil then
-			TRB.Functions.BarText:Hide(settings)
-		end
+		TRB.Functions.BarText:Hide(settings)
 	end
 
 	return anyShowing
