@@ -190,45 +190,42 @@ function TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 end
 
 ---Convenience: Builds entries from barGroups for Edit Mode display.
----Shows all bars except those set to "never". Primary always shows.
+---Shows ALL bars unconditionally so they can be previewed and repositioned.
 ---@param barGroups table # TRB.Frames.barGroups
----@param displayBar table|nil # The displayBar settings table
+---@param displayBar table|nil # The displayBar settings table (unused; kept for API compat)
 ---@param maxResource2 number|nil # Max secondary resource count (for ShowNodes)
 ---@return TRB.Classes.BarVisibilityEntry[]
 function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar, maxResource2)
 	local entries = {}
+	local alwaysVis = { visibility = "always" }
 
 	-- Primary always shows in Edit Mode
 	if barGroups.primary then
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.primary,
-			{ visibility = "always" }, -- Override: always show in Edit Mode
+			alwaysVis,
 			true,
 			nil,
 			nil
 		)
 	end
 
-	-- Secondary: show unless "never", needs nodes
+	-- Secondary: always show in Edit Mode if nodes exist
 	if barGroups.secondary and (maxResource2 or 0) > 0 then
-		local vis = (displayBar and displayBar.secondary) or { visibility = "always" }
-		local show = vis.visibility ~= "never"
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.secondary,
-			show and { visibility = "always" } or { visibility = "never" },
+			alwaysVis,
 			true,
 			maxResource2,
 			nil
 		)
 	end
 
-	-- Health: show unless "never"
+	-- Health: always show in Edit Mode
 	if barGroups.health then
-		local vis = (displayBar and displayBar.health) or { visibility = "always" }
-		local show = vis.visibility ~= "never"
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.health,
-			show and { visibility = "always" } or { visibility = "never" },
+			alwaysVis,
 			true,
 			1,
 			nil
@@ -236,15 +233,13 @@ function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar,
 	end
 
 	-- Iterate remaining bar groups (custom bar types: mana, stagger, defensives, utility, etc.)
+	-- All shown unconditionally in Edit Mode
 	for key, group in pairs(barGroups) do
 		if type(group) == "table" and group.Hide and key ~= "primary" and key ~= "secondary" and key ~= "health" then
-			local vis = (displayBar and displayBar[key]) or { visibility = "always" }
-			local show = vis.visibility ~= "never"
-			-- Determine node count: single-node bars use 1, multi-node use maxNodes from the group
 			local nodeCount = group.maxNodes or 1
 			entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 				group,
-				show and { visibility = "always" } or { visibility = "never" },
+				alwaysVis,
 				true,
 				nodeCount,
 				nil
