@@ -1487,6 +1487,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -2115,6 +2116,23 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			end
 		end
 	end
+end
+
+---Returns true when Invoke Niuzao buff is active (Brewmaster only).
+---Mistweaver and Windwalker have no timer variables.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	if TRB.Data.character.specId == 1 then -- Brewmaster
+		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if snapshotData and spells and spells.invokeNiuzao then
+			local snapshot = snapshotData.snapshots[spells.invokeNiuzao.id]
+			if snapshot and snapshot.buff and snapshot.buff.isActive then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

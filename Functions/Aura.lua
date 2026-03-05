@@ -28,6 +28,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if unit == "player" then
 		TRB.Data.cache.values.resource = {}
 		TRB.Data.cache.values.castTime = {}
+		TRB.Data.lookupDirty = true
 		--return
 	elseif unit ~= "player" then
 		return

@@ -1351,6 +1351,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1844,6 +1845,32 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+---Returns true when any spec-specific buff timer is actively counting down.
+---BM: Beast Cleave, Bestial Wrath; MM: Trueshot; SV: Takedown, Terms of Engagement.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then -- Beast Mastery
+		if (spells.beastCleave and snapshots[spells.beastCleave.id] and snapshots[spells.beastCleave.id].buff and snapshots[spells.beastCleave.id].buff.isActive)
+			or (spells.bestialWrath and snapshots[spells.bestialWrath.id] and snapshots[spells.bestialWrath.id].buff and snapshots[spells.bestialWrath.id].buff.isActive) then
+			return true
+		end
+	elseif specId == 2 then -- Marksmanship
+		if spells.trueshot and snapshots[spells.trueshot.id] and snapshots[spells.trueshot.id].buff and snapshots[spells.trueshot.id].buff.isActive then
+			return true
+		end
+	elseif specId == 3 then -- Survival
+		if (spells.takedown and snapshots[spells.takedown.id] and snapshots[spells.takedown.id].buff and snapshots[spells.takedown.id].buff.isActive) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

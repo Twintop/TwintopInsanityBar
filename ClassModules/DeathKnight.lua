@@ -1056,6 +1056,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1519,6 +1520,20 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 	return nil, true, false
+end
+
+---Returns true when any rune is on cooldown, producing time-dependent $runeXTime variables.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local runes = TRB.Data.character.runes
+	if runes then
+		for i = 1, 6 do
+			if runes[i] and runes[i].ready == false then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

@@ -852,6 +852,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then

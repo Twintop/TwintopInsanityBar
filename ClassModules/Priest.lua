@@ -2293,6 +2293,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -3276,6 +3277,42 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 	return nil, true, false
+end
+
+---Returns true when any spec-specific cooldown or buff timer is counting down.
+---Disc: PW:Radiance CD, Angelic Feather CD; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD;
+---Shadow: Voidform, MFI, SotV, Entropic Rift, AF CD.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then -- Discipline
+		if (spells.powerWordRadiance and snapshots[spells.powerWordRadiance.id] and snapshots[spells.powerWordRadiance.id].cooldown and snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0)
+			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
+			return true
+		end
+	elseif specId == 2 then -- Holy
+		if (spells.holyWordChastise and snapshots[spells.holyWordChastise.id] and snapshots[spells.holyWordChastise.id].cooldown and snapshots[spells.holyWordChastise.id].cooldown.remaining > 0)
+			or (spells.holyWordSanctify and snapshots[spells.holyWordSanctify.id] and snapshots[spells.holyWordSanctify.id].cooldown and snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0)
+			or (spells.holyWordSerenity and snapshots[spells.holyWordSerenity.id] and snapshots[spells.holyWordSerenity.id].cooldown and snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0)
+			or (spells.apotheosis and snapshots[spells.apotheosis.id] and snapshots[spells.apotheosis.id].buff and snapshots[spells.apotheosis.id].buff.isActive)
+			or (spells.lightweaver and snapshots[spells.lightweaver.id] and snapshots[spells.lightweaver.id].buff and snapshots[spells.lightweaver.id].buff.isActive)
+			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
+			return true
+		end
+	elseif specId == 3 then -- Shadow
+		if (spells.voidform and snapshots[spells.voidform.id] and snapshots[spells.voidform.id].buff and snapshots[spells.voidform.id].buff.isActive)
+			or (spells.mindFlayInsanity and snapshots[spells.mindFlayInsanity.id] and snapshots[spells.mindFlayInsanity.id].buff and snapshots[spells.mindFlayInsanity.id].buff.isActive)
+			or (spells.screamsOfTheVoid and snapshots[spells.screamsOfTheVoid.id] and snapshots[spells.screamsOfTheVoid.id].buff and snapshots[spells.screamsOfTheVoid.id].buff.isActive)
+			or (spells.entropicRift and snapshots[spells.entropicRift.id] and snapshots[spells.entropicRift.id].buff and snapshots[spells.entropicRift.id].buff.isActive)
+			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

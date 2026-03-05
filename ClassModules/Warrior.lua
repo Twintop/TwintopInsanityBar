@@ -1353,6 +1353,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1892,6 +1893,31 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 	return nil, true, false
+end
+
+---Returns true when spec-specific buff timers are counting down.
+---Arms: no timers; Fury: Whirlwind buff; Protection: Ignore Pain, Shield Block.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 2 then -- Fury
+		if spells.improvedWhirlwind and snapshots[spells.improvedWhirlwind.id] then
+			local buff = snapshots[spells.improvedWhirlwind.id].buff
+			if buff and buff.isActive then
+				return true
+			end
+		end
+	elseif specId == 3 then -- Protection
+		if (spells.ignorePain and snapshots[spells.ignorePain.id] and snapshots[spells.ignorePain.id].buff and snapshots[spells.ignorePain.id].buff.isActive)
+			or (spells.shieldBlock and snapshots[spells.shieldBlock.id] and snapshots[spells.shieldBlock.id].buff and snapshots[spells.shieldBlock.id].buff.isActive) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

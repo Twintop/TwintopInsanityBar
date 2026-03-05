@@ -1243,6 +1243,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1812,6 +1813,20 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+---Returns true when Ascendance buff is active (all 3 specs).
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if snapshotData and spells and spells.ascendance then
+		local snapshot = snapshotData.snapshots[spells.ascendance.id]
+		if snapshot and snapshot.buff and snapshot.buff.isActive then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

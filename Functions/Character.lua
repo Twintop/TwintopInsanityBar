@@ -266,20 +266,24 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			UpdateResourceValues()
 			TRB.Functions.Character:UpdateOvercapColor()
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
 		local unitTarget = ...
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_STATS" then
 		if unitTarget == "player" then
 			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 			snapshotData.attributes.primaryRefresh = true
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "COMBAT_RATING_UPDATE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		snapshotData.attributes.secondaryRefresh = true
+		TRB.Data.lookupDirty = true
 	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
@@ -302,10 +306,12 @@ local function CharacterChange(self, event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.lookupDirty = true
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+		TRB.Data.lookupDirty = true
 	end
 end
 

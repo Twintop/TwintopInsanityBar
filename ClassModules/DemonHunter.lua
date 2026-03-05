@@ -1461,6 +1461,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -2062,6 +2063,24 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 			end
 		end
 	end
+end
+
+---Returns true when Metamorphosis buff is active (Havoc/Vengeance), producing $metaTime.
+---Devourer (specId 3) has no timers.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local specId = TRB.Data.character.specId
+	if specId == 1 or specId == 2 then -- Havoc / Vengeance
+		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if snapshotData and spells and spells.metamorphosis then
+			local snapshot = snapshotData.snapshots[spells.metamorphosis.id]
+			if snapshot and snapshot.buff and snapshot.buff.isActive then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

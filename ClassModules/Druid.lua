@@ -2562,6 +2562,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -3401,6 +3402,42 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+---Returns true when any spec-specific buff timer is actively counting down.
+---Balance: eclipse/celestial alignment/incarnation; Feral: berserk/incarnation;
+---Guardian: berserk/incarnation; Restoration: efflorescence/incarnation.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then -- Balance
+		if (spells.celestialAlignment and snapshots[spells.celestialAlignment.id] and snapshots[spells.celestialAlignment.id].buff and snapshots[spells.celestialAlignment.id].buff.isActive)
+			or (spells.incarnationChosenOfElune and snapshots[spells.incarnationChosenOfElune.id] and snapshots[spells.incarnationChosenOfElune.id].buff and snapshots[spells.incarnationChosenOfElune.id].buff.isActive)
+			or (spells.eclipseSolar and snapshots[spells.eclipseSolar.id] and snapshots[spells.eclipseSolar.id].buff and snapshots[spells.eclipseSolar.id].buff.isActive)
+			or (spells.eclipseLunar and snapshots[spells.eclipseLunar.id] and snapshots[spells.eclipseLunar.id].buff and snapshots[spells.eclipseLunar.id].buff.isActive) then
+			return true
+		end
+	elseif specId == 2 then -- Feral
+		if (spells.berserk and snapshots[spells.berserk.id] and snapshots[spells.berserk.id].buff and snapshots[spells.berserk.id].buff.isActive)
+			or (spells.incarnationAvatarOfAshamane and snapshots[spells.incarnationAvatarOfAshamane.id] and snapshots[spells.incarnationAvatarOfAshamane.id].buff and snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive) then
+			return true
+		end
+	elseif specId == 3 then -- Guardian
+		if (spells.berserk and snapshots[spells.berserk.id] and snapshots[spells.berserk.id].buff and snapshots[spells.berserk.id].buff.isActive)
+			or (spells.incarnationGuardianOfUrsoc and snapshots[spells.incarnationGuardianOfUrsoc.id] and snapshots[spells.incarnationGuardianOfUrsoc.id].buff and snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive) then
+			return true
+		end
+	elseif specId == 4 then -- Restoration
+		if (spells.efflorescence and snapshots[spells.efflorescence.id] and snapshots[spells.efflorescence.id].buff and snapshots[spells.efflorescence.id].buff.isActive)
+			or (spells.incarnationTreeOfLife and snapshots[spells.incarnationTreeOfLife.id] and snapshots[spells.incarnationTreeOfLife.id].buff and snapshots[spells.incarnationTreeOfLife.id].buff.isActive) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

@@ -1326,6 +1326,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 				TRB.Functions.Class:CheckCharacter()
 			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -1993,6 +1994,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 				TRB.Functions.Class:CheckCharacter()
 			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -2586,6 +2588,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 				TRB.Functions.Class:CheckCharacter()
 			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -3066,6 +3069,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 				TRB.Functions.Class:CheckCharacter()
 			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()

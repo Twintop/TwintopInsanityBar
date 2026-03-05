@@ -992,6 +992,7 @@ end
 
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1448,6 +1449,35 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 	return nil, true, false
+end
+
+---Returns true when Essence is regenerating (not at max) or a spec buff is active.
+---Devastation: $essenceRegenTime, $dragonrageTime; Preservation: $essenceRegenTime;
+---Augmentation: $essenceRegenTime, $ebonMightTime.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	if not snapshotData then return false end
+	-- All 3 specs: essence regeneration is time-dependent when not at max
+	local resource = snapshotData.attributes.resource
+	local maxResource = snapshotData.attributes.maxResource
+	if resource ~= nil and maxResource ~= nil and resource < maxResource then
+		return true
+	end
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then -- Devastation
+		if spells.dragonrage and snapshots[spells.dragonrage.id] and snapshots[spells.dragonrage.id].buff and snapshots[spells.dragonrage.id].buff.isActive then
+			return true
+		end
+	elseif specId == 3 then -- Augmentation
+		if spells.ebonMight and snapshots[spells.ebonMight.id] and snapshots[spells.ebonMight.id].buff and snapshots[spells.ebonMight.id].buff.isActive then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

@@ -31,9 +31,18 @@ function TRB.Functions.BarText.LookupChanged(prevState, key, rawValue, color, is
 	return true
 end
 
+---Marks the lookup data as dirty so the next tick will refresh all lookup variables.
+---This is very cheap (a single boolean write) and should be called from any event handler
+---that changes data consumed by RefreshLookupData.
+function TRB.Functions.BarText:MarkLookupDirty()
+	TRB.Data.lookupDirty = true
+end
+
 ---Clears the lookup memoization state, forcing all variables to be recomputed on next tick.
+---Also marks lookup data as dirty.
 function TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 end
 
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
@@ -1212,6 +1221,15 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
+	-- Early-out: if nothing changed since the last refresh and no timers are
+	-- ticking down, all lookup values are identical to last tick — skip the refresh and
+	-- bar text rendering entirely. During combat $inCombatTime keeps changing, so we
+	-- always refresh when in combat.
+	if not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not TRB.Functions.Class:HasActiveTimers() then
+		return
+	end
+	TRB.Data.lookupDirty = false
+
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.RefreshLookupData()
