@@ -1356,6 +1356,7 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		TRB.Functions.BarText:CreateBarTextFrames()
 
 		-- Let HideResourceBar determine if the bar should be visible now
+		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Functions.Class:HideResourceBar()
 	end
 end
@@ -1740,6 +1741,7 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 			if specSettings and specSettings.settings then
 				isReapplyingAnchorLayout = true
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 				isReapplyingAnchorLayout = false
 			end

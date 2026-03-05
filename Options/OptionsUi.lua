@@ -304,6 +304,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Functions.Bar:HideResourceBar()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -2315,6 +2316,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -2350,6 +2352,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -2381,6 +2384,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 
@@ -2411,6 +2415,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2430,6 +2435,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2483,6 +2489,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2690,6 +2697,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
@@ -2731,6 +2739,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2757,6 +2766,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2781,6 +2791,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2801,6 +2812,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2821,6 +2833,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2874,6 +2887,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -2967,6 +2981,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -3832,6 +3847,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -4435,6 +4451,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -4497,6 +4514,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 				end
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		else
@@ -4510,6 +4528,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 				end
+				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
@@ -4548,6 +4567,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 					end
+					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 				end
 			else
@@ -4561,6 +4581,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 					end
+					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 				end
 			end
@@ -4719,11 +4740,13 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 						TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 						TRB.Functions.EditMode:UpdateWrapperSize(settings)
+						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 						if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 							TRB.Functions.Class:TriggerResourceBarUpdates()
 						end
 					else
+						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 					end
 				end
@@ -4737,6 +4760,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 						end
+						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 					end
 				else
@@ -4749,6 +4773,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
 						end
+						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 					end
 				end

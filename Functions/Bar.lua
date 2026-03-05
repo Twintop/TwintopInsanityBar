@@ -272,6 +272,7 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 		return
 	end
 
+	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:HideResourceBar()
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -541,6 +542,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	-- Create bar text frames (essential for bar text display)
 	TRB.Functions.BarText:CreateBarTextFrames()
 	TRB.Functions.BarText:Hide(settings)
+	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Class:HideResourceBar()
 
 	if self:IsRenderTransitionActive() then

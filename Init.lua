@@ -381,6 +381,7 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 		TRB.Data.character.inCombat = false
 		TRB.Data.character.combatStartTime = nil
 	end
+	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:ShowResourceBar()
 end)
 
