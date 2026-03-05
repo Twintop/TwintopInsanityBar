@@ -3,6 +3,39 @@ local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
+---Returns true if the value or color has changed for this key, indicating the
+---formatted lookup string needs updating. Reuses existing prevState entries to
+---avoid table allocation after initial warm-up.
+---@param prevState table Memoization state table (TRB.Data.prevLookupState)
+---@param key string The lookup key (e.g., "$resource")
+---@param rawValue any The current raw value (used for equality comparison only)
+---@param color string|nil The current color hex string (nil for uncolored variables)
+---@param isSecret boolean|nil When true, the value originates from a WoW API that returns
+---        "secret" numbers (e.g., UnitPower, UnitHealth). Secret numbers cannot be
+---        compared or stored safely, so we always assume the value has changed.
+---@return boolean changed True if the formatted lookup[key] needs rewriting
+function TRB.Functions.BarText.LookupChanged(prevState, key, rawValue, color, isSecret)
+	if isSecret then
+		return true
+	end
+	local prev = prevState[key]
+	if prev ~= nil and prev[1] == rawValue and prev[2] == color then
+		return false
+	end
+	if prev == nil then
+		prevState[key] = { rawValue, color }
+	else
+		prev[1] = rawValue
+		prev[2] = color
+	end
+	return true
+end
+
+---Clears the lookup memoization state, forcing all variables to be recomputed on next tick.
+function TRB.Functions.BarText:InvalidateLookupMemoization()
+	TRB.Data.prevLookupState = {}
+end
+
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
 ---@param additionalIcons table|nil Optional array of spec-specific icon entries to append
 ---@return table # Combined icons table
@@ -54,11 +87,11 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
 		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false },
-		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false },
-		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false },
-		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false },
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true },
+		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true },
 
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
@@ -553,7 +586,7 @@ local function CompileConditionalExpression(node)
 
 	local templateString = table.concat(templateParts)
 
-	-- Apply the same operator normalizations as the original code
+	-- Apply operator normalizations
 	templateString = string.lower(templateString)
 	templateString = string.gsub(templateString, "%(%)", "")
 	templateString = string.gsub(templateString, "=", "==")
@@ -907,6 +940,10 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 
+	TRB.Data.prevLookupState = TRB.Data.prevLookupState or {}
+	local prevState = TRB.Data.prevLookupState
+	local lookupChanged = TRB.Functions.BarText.LookupChanged
+
 	local checkPrimaryStats = true
 	local checkSecondaryStats = true
 	local primary = ArePrimaryRatingsNil()
@@ -921,6 +958,11 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	elseif snapshotData.attributes.cacheRefresh == false then
 		checkSecondaryStats = false
+	end
+
+	-- Wipe memoization state when stats/precision changed so per-spec functions also reformat
+	if checkPrimaryStats or checkSecondaryStats then
+		wipe(prevState)
 	end
 
 	if checkPrimaryStats or lookup["$int"] == nil then
@@ -955,35 +997,38 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		snapshotData.attributes.cacheRefresh = false
 	end
 
-	--$health, $healthMax, $healthPercent - always update these since health changes frequently
+	--$health, $healthMax, $healthPercent
 	local healthRaw = snapshotData.attributes.health-- or UnitHealth("player", true)
 	local healthMaxRaw = snapshotData.attributes.healthMax-- or UnitHealthMax("player")
 	local healthPercentRaw = snapshotData.attributes.healthPercent-- or UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
-
-	local healthPrecision = settings.precision.health or 1
-	local health = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthRaw))
-	local healthMax = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthMaxRaw))
-	local healthPercent = string.format("%." .. healthPrecision .. "f", healthPercentRaw)
-
-	lookup["$health"] = health
-	lookup["$healthMax"] = healthMax
-	lookup["$healthPercent"] = healthPercent
 
 	lookupLogic["$health"] = healthRaw
 	lookupLogic["$healthMax"] = healthMaxRaw
 	lookupLogic["$healthPercent"] = healthPercentRaw
 
-	--$absorb - always update since absorb changes frequently
-	local absorbRaw = snapshotData.attributes.absorb
-	local absorb = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(absorbRaw))
-	lookup["$absorb"] = absorb
-	lookupLogic["$absorb"] = absorbRaw
+	if lookupChanged(prevState, "$health", healthRaw, nil, true) then
+		lookup["$health"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthRaw))
+	end
+	if lookupChanged(prevState, "$healthMax", healthMaxRaw, nil, true) then
+		lookup["$healthMax"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthMaxRaw))
+	end
+	if lookupChanged(prevState, "$healthPercent", healthPercentRaw, nil, true) then
+		lookup["$healthPercent"] = string.format("%." .. (settings.precision.health or 1) .. "f", healthPercentRaw)
+	end
 
-	--$incomingHeal - always update since incoming heals change frequently
+	--$absorb
+	local absorbRaw = snapshotData.attributes.absorb
+	lookupLogic["$absorb"] = absorbRaw
+	if lookupChanged(prevState, "$absorb", absorbRaw, nil, true) then
+		lookup["$absorb"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(absorbRaw))
+	end
+
+	--$incomingHeal
 	local incomingHealRaw = snapshotData.attributes.incomingHeal or 0
-	local incomingHeal = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(incomingHealRaw))
-	lookup["$incomingHeal"] = incomingHeal
 	lookupLogic["$incomingHeal"] = incomingHealRaw
+	if lookupChanged(prevState, "$incomingHeal", incomingHealRaw, nil, true) then
+		lookup["$incomingHeal"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(incomingHealRaw))
+	end
 
 	if checkSecondaryStats or lookup["$haste"] == nil then
 		--$critRating
@@ -1075,22 +1120,30 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		snapshotData.attributes.cacheRefresh = false
 	end
 
-	lookup["||n"] = string.format("\n")
-	lookup["||c"] = string.format("%s", "|c")
-	lookup["||r"] = string.format("%s", "|r")
-	lookup["%%"] = "%"
+	if lookup["||n"] == nil then
+		lookup["||n"] = "\n"
+		lookup["||c"] = "|c"
+		lookup["||r"] = "|r"
+		lookup["%%"] = "%"
+	end
 
 	--$inCombatTime
-	local inCombatTime = "00:00"
 	local _inCombatTime = 0
 	if TRB.Data.character.inCombat and TRB.Data.character.combatStartTime ~= nil then
 		_inCombatTime = GetTime() - TRB.Data.character.combatStartTime
-		local minutes = math.floor(_inCombatTime / 60)
-		local seconds = math.floor(_inCombatTime - (minutes * 60))
-		inCombatTime = string.format("%02d:%02d", minutes, seconds)
 	end
-	lookup["$inCombatTime"] = inCombatTime
 	lookupLogic["$inCombatTime"] = _inCombatTime
+	-- Floor to seconds so we only reformat once per second instead of every tick
+	local _inCombatTimeSeconds = math.floor(_inCombatTime)
+	if lookupChanged(prevState, "$inCombatTime", _inCombatTimeSeconds) then
+		if _inCombatTime > 0 then
+			local minutes = math.floor(_inCombatTime / 60)
+			local seconds = _inCombatTimeSeconds - (minutes * 60)
+			lookup["$inCombatTime"] = string.format("%02d:%02d", minutes, seconds)
+		else
+			lookup["$inCombatTime"] = "00:00"
+		end
+	end
 	--#castingIcon
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0

@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -277,63 +278,78 @@ local function RefreshLookupData_Devastation()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	--$mana
 	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
-
-	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
-	
+
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	--$dragonrageTime
 	local _dragonrageTime = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
-	local dragonrageTime = TRB.Functions.BarText:TimerPrecision(_dragonrageTime)
 
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$manaMax"] = manaMax
-	lookup["$mana"] = currentMana
-	lookup["$resourceMax"] = manaMax
-	lookup["$resource"] = currentMana
-	lookup["$manaPercent"] = manaPercent
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$essence"] = snapshotData.attributes.resource2
-	lookup["$essenceRegenTime"] = essenceRegenTime
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$essenceMax"] = TRB.Data.character.maxResource
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$dragonrageTime"] = dragonrageTime
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$dragonrageTime"] = _dragonrageTime
+
+	-- FCS: $mana/$resource
+	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		lookup["$mana"] = formatted
+		lookup["$resource"] = formatted
+	end
+	-- FCS: $casting
+	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+	end
+	-- FCS: $manaMax/$resourceMax
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+		lookup["$manaMax"] = formatted
+		lookup["$resourceMax"] = formatted
+	end
+	-- FCP: $manaPercent/$resourcePercent
+	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+		local formatted = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		lookup["$manaPercent"] = formatted
+		lookup["$resourcePercent"] = formatted
+	end
+	-- RAW: $essence/$comboPoints
+	lookup["$essence"] = snapshotData.attributes.resource2
+	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	-- TMR: $essenceRegenTime
+	if lookupChanged(prevState, "$essenceRegenTime", _essenceRegenTime) then
+		lookup["$essenceRegenTime"] = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
+	end
+	-- RAW: $essenceMax/$comboPointsMax
+	lookup["$essenceMax"] = TRB.Data.character.maxResource
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	-- TMR: $dragonrageTime
+	if lookupChanged(prevState, "$dragonrageTime", _dragonrageTime) then
+		lookup["$dragonrageTime"] = TRB.Functions.BarText:TimerPrecision(_dragonrageTime)
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -359,50 +375,27 @@ local function RefreshLookupData_Preservation()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	--$mana
 	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
-
-	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	----------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentMana
-	lookup["$mana"] = currentMana
-	lookup["$resourceMax"] = manaMax
-	lookup["$manaMax"] = manaMax
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$manaPercent"] = manaPercent
-	lookup["$casting"] = castingMana
-	lookup["$essence"] = snapshotData.attributes.resource2
-	lookup["$essenceRegenTime"] = essenceRegenTime
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$essenceMax"] = TRB.Data.character.maxResource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resourceMax"] = manaMax
-	lookupLogic["$manaMax"] = manaMax
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
@@ -411,6 +404,41 @@ local function RefreshLookupData_Preservation()
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+	-- FCS: $mana/$resource
+	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		lookup["$mana"] = formatted
+		lookup["$resource"] = formatted
+	end
+	-- FCS: $casting
+	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+	end
+	-- FCS: $manaMax/$resourceMax
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+		lookup["$manaMax"] = formatted
+		lookup["$resourceMax"] = formatted
+	end
+	-- FCP: $manaPercent/$resourcePercent
+	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+		local formatted = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		lookup["$manaPercent"] = formatted
+		lookup["$resourcePercent"] = formatted
+	end
+	-- RAW: $essence/$comboPoints
+	lookup["$essence"] = snapshotData.attributes.resource2
+	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	-- TMR: $essenceRegenTime
+	if lookupChanged(prevState, "$essenceRegenTime", _essenceRegenTime) then
+		lookup["$essenceRegenTime"] = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
+	end
+	-- RAW: $essenceMax/$comboPointsMax
+	lookup["$essenceMax"] = TRB.Data.character.maxResource2
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -440,63 +468,78 @@ local function RefreshLookupData_Augmentation()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	--$mana
 	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
-
-	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 		_essenceRegenTime = 0
 	end
-	local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 	--$ebonMightTime
 	local _ebonMightTime = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
-	local ebonMightTime = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
 
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$manaMax"] = manaMax
-	lookup["$mana"] = currentMana
-	lookup["$resourceMax"] = manaMax
-	lookup["$resource"] = currentMana
-	lookup["$manaPercent"] = manaPercent
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$essence"] = snapshotData.attributes.resource2
-	lookup["$essenceRegenTime"] = essenceRegenTime
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$essenceMax"] = TRB.Data.character.maxResource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$ebonMightTime"] = ebonMightTime
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$ebonMightTime"] = _ebonMightTime
+
+	-- FCS: $mana/$resource
+	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		lookup["$mana"] = formatted
+		lookup["$resource"] = formatted
+	end
+	-- FCS: $casting
+	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+	end
+	-- FCS: $manaMax/$resourceMax
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+		lookup["$manaMax"] = formatted
+		lookup["$resourceMax"] = formatted
+	end
+	-- FCP: $manaPercent/$resourcePercent
+	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+		local formatted = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		lookup["$manaPercent"] = formatted
+		lookup["$resourcePercent"] = formatted
+	end
+	-- RAW: $essence/$comboPoints
+	lookup["$essence"] = snapshotData.attributes.resource2
+	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	-- TMR: $essenceRegenTime
+	if lookupChanged(prevState, "$essenceRegenTime", _essenceRegenTime) then
+		lookup["$essenceRegenTime"] = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
+	end
+	-- RAW: $essenceMax/$comboPointsMax
+	lookup["$essenceMax"] = TRB.Data.character.maxResource2
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	-- TMR: $ebonMightTime
+	if lookupChanged(prevState, "$ebonMightTime", _ebonMightTime) then
+		lookup["$ebonMightTime"] = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -948,6 +991,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then

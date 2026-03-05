@@ -10,6 +10,7 @@ local MANA_RESOURCE_FACTOR = 1
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -631,84 +632,33 @@ local function RefreshLookupData_Balance()
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentAstralPower = normalizedAstralPower
-	local currentAstralPower
-	local castingAstralPower
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		--$astralPower
-		currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
-		--$casting
-		castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		--$astralPower
-		currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
-		--$casting
-		castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-	
+
 	local currentMoonIcon = spells.newMoon.icon
-	--New Moon
-	
+
 	--$eclipseTime
 	local _eclispeTime, eclipseIcon, eclipseSpellId = GetEclipseRemainingTime()
-	local eclipseTime = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
-	
-	local _nonEclipseTime = 0
-	local nonEclipseTime = TRB.Functions.BarText:TimerPrecision(0)
 
 	-- Mana lookups (Balance uses mana as secondary resource display)
 	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
 	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
 	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
-
-	--$mana
 	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
-
-	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
 
 	----------------------------
-	
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentAstralPower
-	lookup["$astralPower"] = currentAstralPower
-	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$casting"] = castingAstralPower
-	lookup["#moon"] = currentMoonIcon
-	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
-	lookup["$eclipseTime"] = eclipseTime
-	lookup["$eclipse"] = ""
-	lookup["$lunar"] = ""
-	lookup["$lunarEclipse"] = ""
-	lookup["$eclipseLunar"] = ""
-	lookup["$solar"] = ""
-	lookup["$solarEclipse"] = ""
-	lookup["$eclipseSolar"] = ""
-	lookup["$celestialAlignment"] = ""
-	lookup["$starsurgeUsable"] = ""
-	lookup["$starfallUsable"] = ""
-	lookup["$mana"] = currentMana
-	lookup["$manaMax"] = manaMax
-	lookup["$manaPercent"] = manaPercent
-	TRB.Data.lookup = lookup
 
+	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$resource"] = normalizedAstralPower
 	lookupLogic["$astralPower"] = normalizedAstralPower
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookupLogic["$casting"] = currentAstralPower
+	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$eclipseTime"] = _eclispeTime
 	lookupLogic["$eclipse"] = _eclispeTime > 0
 	lookupLogic["$lunar"] = false
@@ -735,6 +685,60 @@ local function RefreshLookupData_Balance()
 	elseif eclipseSpellId == spells.celestialAlignment.id or eclipseSpellId == spells.incarnationChosenOfElune.id then
 		lookupLogic["$celestialAlignment"] = true
 	end
+
+	-- OVERCAP: $astralPower/$resource + $casting
+	local resourceChanged = lookupChanged(prevState, "$astralPower", normalizedAstralPower, currentAstralPowerColor, true)
+	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingAstralPowerColor)
+	if resourceChanged or castingChanged then
+		local currentAstralPower
+		local castingAstralPower
+		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
+			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+			currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
+			castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+		else
+			currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
+			castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+		end
+		lookup["$resource"] = currentAstralPower
+		lookup["$astralPower"] = currentAstralPower
+		lookup["$casting"] = castingAstralPower
+	end
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookup["$astralPowerMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+
+	-- RAW: icons and booleans
+	lookup["#moon"] = currentMoonIcon
+	lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
+	lookup["$eclipse"] = ""
+	lookup["$lunar"] = ""
+	lookup["$lunarEclipse"] = ""
+	lookup["$eclipseLunar"] = ""
+	lookup["$solar"] = ""
+	lookup["$solarEclipse"] = ""
+	lookup["$eclipseSolar"] = ""
+	lookup["$celestialAlignment"] = ""
+	lookup["$starsurgeUsable"] = ""
+	lookup["$starfallUsable"] = ""
+
+	-- TMR: $eclipseTime
+	if lookupChanged(prevState, "$eclipseTime", _eclispeTime) then
+		lookup["$eclipseTime"] = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
+	end
+
+	-- FCS: mana variables
+	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	end
+	if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
+		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
+	end
+	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+		lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -777,30 +781,15 @@ local function RefreshLookupData_Feral()
 	--$energy
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy
-	local castingEnergy
-	-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
-	-- Stealth takes precedence over overcap for Feral
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
-		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
-		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
 
 	--$berserkTime (and $incarnationTime)
 	local _berserkTime = GetBerserkRemainingTime()
-	local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
 
 	--$incarnationTicks 
 	local _incarnationTicks = snapshotData.snapshots[spells.berserk.id].attributes.ticks
 	
 	--$incarnationTickTime
 	local _incarnationTickTime = snapshotData.snapshots[spells.berserk.id].attributes.untilNextTick
-	local incarnationTickTime = TRB.Functions.BarText:TimerPrecision(_incarnationTickTime)
 
 	--$incarnationNextCp
 	local incarnationNextCp = 0
@@ -816,23 +805,9 @@ local function RefreshLookupData_Feral()
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$resource"] = currentEnergy
-	lookup["$casting"] = castingEnergy
-	lookup["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$energy"] = currentEnergy
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$inStealth"] = ""
-	lookup["$berserkTime"] = berserkTime
-	lookup["$incarnationTime"] = berserkTime
-	lookup["$incarnationTicks"] = _incarnationTicks
-	lookup["$incarnationTickTime"] = incarnationTickTime
-	lookup["$incarnationNextCp"] = incarnationNextCp
-	TRB.Data.lookup = lookup
-	
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
@@ -846,6 +821,51 @@ local function RefreshLookupData_Feral()
 	lookupLogic["$incarnationTicks"] = _incarnationTicks
 	lookupLogic["$incarnationTickTime"] = _incarnationTickTime
 	lookupLogic["$incarnationNextCp"] = incarnationNextCp
+
+	-- OVERCAP: $energy/$resource + $casting
+	local energyChanged = lookupChanged(prevState, "$energy", normalizedEnergy, currentEnergyColor, true)
+	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingEnergyColor)
+	if energyChanged or castingChanged then
+		local currentEnergy
+		local castingEnergy
+		-- Apply overcap color if enabled (takes precedence over overThreshold, but not stealth)
+		-- Stealth takes precedence over overcap for Feral
+		if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+			currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
+			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+		else
+			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
+			castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+		end
+		lookup["$resource"] = currentEnergy
+		lookup["$energy"] = currentEnergy
+		lookup["$casting"] = castingEnergy
+	end
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookup["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+
+	-- RAW: combo points, stealth, incarnation values
+	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	lookup["$inStealth"] = ""
+	lookup["$incarnationTicks"] = _incarnationTicks
+	lookup["$incarnationNextCp"] = incarnationNextCp
+
+	-- TMR: $berserkTime/$incarnationTime
+	if lookupChanged(prevState, "$berserkTime", _berserkTime) then
+		local f = TRB.Functions.BarText:TimerPrecision(_berserkTime)
+		lookup["$berserkTime"] = f
+		lookup["$incarnationTime"] = f
+	end
+
+	-- TMR: $incarnationTickTime
+	if lookupChanged(prevState, "$incarnationTickTime", _incarnationTickTime) then
+		lookup["$incarnationTickTime"] = TRB.Functions.BarText:TimerPrecision(_incarnationTickTime)
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -882,16 +902,6 @@ local function RefreshLookupData_Guardian()
 	--$rage
 	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 	local _currentRage = normalizedRage
-	local currentRage
-	local castingRage
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
-	else
-		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
-	end
 
 	
 	--$berserkTime (and $incarnationTime)
@@ -902,26 +912,44 @@ local function RefreshLookupData_Guardian()
 	end
 
 	local _berserkTime = berserkSnapshotBuff:GetRemainingTime(currentTime)
-	local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
 
 	----------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentRage
-	lookup["$rage"] = currentRage
-	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
-	lookup["$berserkTime"] = berserkTime
-	lookup["$incarnationTime"] = berserkTime
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$resource"] = snapshotData.attributes.resource
 	lookupLogic["$rage"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 	lookupLogic["$berserkTime"] = _berserkTime
 	lookupLogic["$incarnationTime"] = _berserkTime
+
+	-- OVERCAP: $rage/$resource (no $casting)
+	if lookupChanged(prevState, "$rage", normalizedRage, currentRageColor, true) then
+		local currentRage
+		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+			currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+		else
+			currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+		end
+		lookup["$resource"] = currentRage
+		lookup["$rage"] = currentRage
+	end
+	lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+	lookup["$rageMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
+
+	-- TMR: $berserkTime/$incarnationTime
+	if lookupChanged(prevState, "$berserkTime", _berserkTime) then
+		local f = TRB.Functions.BarText:TimerPrecision(_berserkTime)
+		lookup["$berserkTime"] = f
+		lookup["$incarnationTime"] = f
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -945,42 +973,25 @@ local function RefreshLookupData_Restoration()
 
 	--$mana
 	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
 
 	--$efflorescenceTime
 	local _efflorescenceTime = snapshots[spells.efflorescence.id].buff:GetRemainingTime(currentTime) --TODO: This isn't actually how this works, double check/fix it
-	local efflorescenceTime = TRB.Functions.BarText:TimerPrecision(_efflorescenceTime)
 
 	--$incarnationTime
 	local _incarnationTime = snapshots[spells.incarnationTreeOfLife.id].buff:GetRemainingTime(currentTime)
-	local incarnationTime = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
 
 	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$mana"] = currentMana
-	lookup["$resource"] = currentMana
-	lookup["$manaMax"] = manaMax
-	lookup["$resourceMax"] = manaMax
-	lookup["$manaPercent"] = manaPercent
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$casting"] = castingMana
-	lookup["$incarnationTime"] = incarnationTime
-	lookup["$efflorescenceTime"] = efflorescenceTime
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = normalizedMana
@@ -990,6 +1001,38 @@ local function RefreshLookupData_Restoration()
 	lookupLogic["$casting"] = _castingMana
 	lookupLogic["$efflorescenceTime"] = _efflorescenceTime
 	lookupLogic["$incarnationTime"] = _incarnationTime
+
+	-- FCS: mana variables
+	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
+		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+		lookup["$mana"] = f
+		lookup["$resource"] = f
+	end
+	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+	end
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+		lookup["$manaMax"] = f
+		lookup["$resourceMax"] = f
+	end
+	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
+		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+		lookup["$manaPercent"] = f
+		lookup["$resourcePercent"] = f
+	end
+
+	-- TMR: $efflorescenceTime
+	if lookupChanged(prevState, "$efflorescenceTime", _efflorescenceTime) then
+		lookup["$efflorescenceTime"] = TRB.Functions.BarText:TimerPrecision(_efflorescenceTime)
+	end
+
+	-- TMR: $incarnationTime
+	if lookupChanged(prevState, "$incarnationTime", _incarnationTime) then
+		lookup["$incarnationTime"] = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1023,6 +1066,7 @@ local function RefreshLookupData_Unified()
 	
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
 	
 	-- Get all resource values from snapshot attributes
 	local energy = snapshotData.attributes.energy or 0
@@ -1037,70 +1081,82 @@ local function RefreshLookupData_Unified()
 	local rageColor =  TRB.Data.settings.druid.guardian.colors.text.current.color
 	local manaColor =  TRB.Data.settings.druid.restoration.colors.text.current.color
 	
-	-- Energy variables ($energy, $energyMax)
-		local energyFormatted = string.format("|c%s%s|r", energyColor, energy)
-	lookup["$energy"] = energyFormatted
-	lookup["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
-	lookupLogic["$energy"] = energy
-	lookupLogic["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
-	
-	-- Rage variables ($rage, $rageMax)
-	local rageFormatted = string.format("|c%s%s|r", rageColor, rage)
-	lookup["$rage"] = rageFormatted
-	lookup["$rageMax"] = TRB.Data.character.maxRage  / RAGE_RESOURCE_FACTOR
-	lookupLogic["$rage"] = rage
-	lookupLogic["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
-	
-	-- Mana variables ($mana, $manaMax, $manaPercent)
+	-- Mana color override
 	local manaColorOverride = sharedSettings.colors.text and sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color
 	local manaColor = manaColorOverride or manaColor
-	local manaFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(mana))
-	local manaMaxFormatted = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana))
 	local manaPrecision = sharedSettings.precision.mana or 1
 	local manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercentFormatted = string.format("|c%s%." .. manaPrecision .. "f|r", manaColor, manaPercent)
-	lookup["$mana"] = manaFormatted
-	lookup["$manaMax"] = manaMaxFormatted
-	lookup["$manaPercent"] = manaPercentFormatted
+	
+	-- Write all lookupLogic entries (unconditional)
+	lookupLogic["$energy"] = energy
+	lookupLogic["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
+	lookupLogic["$rage"] = rage
+	lookupLogic["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 	lookupLogic["$mana"] = mana
 	lookupLogic["$manaMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 	lookupLogic["$manaPercent"] = manaPercent
+	lookupLogic["$comboPoints"] = comboPoints
+	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxComboPoints
 	
-	-- Astral Power variables ($astralPower, $astralPowerMax) - Balance only
 	if specId == 1 then
-		local astralPowerFormatted = string.format("|c%s%s|r", astralPowerColor, astralPower)
-		lookup["$astralPower"] = astralPowerFormatted
-		lookup["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 		lookupLogic["$astralPower"] = astralPower
 		lookupLogic["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 	end
 	
-	-- Combo Points variables ($comboPoints, $comboPointsMax)
+	-- FCS: Energy ($energy)
+	if lookupChanged(prevState, "u$energy", energy, energyColor, true) then
+		lookup["$energy"] = string.format("|c%s%s|r", energyColor, energy)
+	end
+	lookup["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
+	
+	-- FCS: Rage ($rage)
+	if lookupChanged(prevState, "u$rage", rage, rageColor, true) then
+		lookup["$rage"] = string.format("|c%s%s|r", rageColor, rage)
+	end
+	lookup["$rageMax"] = TRB.Data.character.maxRage  / RAGE_RESOURCE_FACTOR
+	
+	-- FCS: Mana ($mana, $manaMax, $manaPercent)
+	if lookupChanged(prevState, "u$mana", mana, manaColor, true) then
+		lookup["$mana"] = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(mana))
+	end
+	if lookupChanged(prevState, "u$manaMax", TRB.Data.character.maxMana, manaColor, true) then
+		lookup["$manaMax"] = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana))
+	end
+	if lookupChanged(prevState, "u$manaPercent", manaPercent, manaColor, true) then
+		lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", manaColor, manaPercent)
+	end
+	
+	-- FCS: Astral Power ($astralPower, $astralPowerMax) - Balance only
+	if specId == 1 then
+		if lookupChanged(prevState, "u$astralPower", astralPower, astralPowerColor, true) then
+			lookup["$astralPower"] = string.format("|c%s%s|r", astralPowerColor, astralPower)
+		end
+		lookup["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
+	end
+	
+	-- RAW: Combo Points
 	lookup["$comboPoints"] = comboPoints
 	lookup["$comboPointsMax"] = TRB.Data.character.maxComboPoints
-	lookupLogic["$comboPoints"] = comboPoints
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxComboPoints
 	
 	-- Primary $resource and $resourceMax - mapped to current form's resource
 	if currentForm == "cat" then
-		lookup["$resource"] = energyFormatted
+		lookup["$resource"] = lookup["$energy"]
 		lookup["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 		lookupLogic["$resource"] = energy
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 	elseif currentForm == "bear" then
-		lookup["$resource"] = rageFormatted
+		lookup["$resource"] = lookup["$rage"]
 		lookup["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 		lookupLogic["$resource"] = rage
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 	elseif currentForm == "moonkin" and specId == 1 then
-		local astralPowerFormatted = string.format("|c%s%s|r", astralPowerColor, astralPower)
-		lookup["$resource"] = astralPowerFormatted
+		lookup["$resource"] = lookup["$astralPower"]
 		lookup["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 		lookupLogic["$resource"] = astralPower
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 	else
 		-- Humanoid/other forms use mana
-		lookup["$resource"] = manaFormatted
+		lookup["$resource"] = lookup["$mana"]
 		lookup["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 		lookupLogic["$resource"] = mana
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
@@ -2505,6 +2561,7 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
