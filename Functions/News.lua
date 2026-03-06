@@ -19,6 +19,11 @@ local content = [====[
 - [#560](#560) Added a per-specialization visibility option for Combo Points.
 - [#677](#677) Fix an issue where Combo Points were appearing when they shouldn't be and without the correct colors/textures.
 
+## Warrior
+### Protection
+
+- [#665](#665) Fix an issue where specific ability usage would result in Shield Charge duration not being properly applied.
+
 ---
 
 # 12.0.1.25-release (2026-03-05)
