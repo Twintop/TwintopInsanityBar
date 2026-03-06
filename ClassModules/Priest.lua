@@ -574,21 +574,23 @@ local function RefreshLookupData_Discipline()
 	lookupLogic["$shadowCovenantTime"] = _scTime
 	lookupLogic["$entropicRiftTime"] = _entropicRiftTime]]
 
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = f
 		lookup["$resource"] = f
 	end
 	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
 		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
 		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$manaMax"] = f
 		lookup["$resourceMax"] = f
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = f
 		lookup["$resourcePercent"] = f
 	end
@@ -718,21 +720,23 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$afMaxCharges"] = _afMaxCharges
 	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
 
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = f
 		lookup["$resource"] = f
 	end
 	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
 		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
 		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$manaMax"] = f
 		lookup["$resourceMax"] = f
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = f
 		lookup["$resourcePercent"] = f
 	end
@@ -815,7 +819,8 @@ local function RefreshLookupData_Shadow()
 		or activeVars["$insanityMax"] or activeVars["$resourceMax"]
 		or activeVars["$shadowWordMadnessUsable"] then
 
-		local normalizedInsanity = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+		-- Use the pre-formatted resource string (consumes secret at event time, normal here)
+		local insanityFormatted = snapshotData.formatted.resource or ""
 		local currentInsanityColor = sharedSettings.colors.text.current.color
 		local castingInsanityColor = sharedSettings.colors.text.casting.color
 
@@ -829,13 +834,12 @@ local function RefreshLookupData_Shadow()
 		end
 
 		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-		local _currentInsanity = normalizedInsanity
 		local _castingInsanity = snapshotData.casting.resourceFinal
 
 		lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
-		lookupLogic["$insanity"] = _currentInsanity
+		lookupLogic["$insanity"] = snapshotData.attributes.resourceModified
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = _currentInsanity
+		lookupLogic["$resource"] = snapshotData.attributes.resourceModified
 		lookupLogic["$casting"] = _castingInsanity
 		lookupLogic["$shadowWordMadnessUsable"] = _shadowWordMadnessUsable
 
@@ -843,7 +847,8 @@ local function RefreshLookupData_Shadow()
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$shadowWordMadnessUsable"] = ""
 
-		local insanityChanged = lookupChanged(prevState, "$insanity", _currentInsanity, currentInsanityColor, true)
+		-- insanityFormatted is a normal string so lookupChanged can memoize (no isSecret)
+		local insanityChanged = lookupChanged(prevState, "$insanity", insanityFormatted, currentInsanityColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingInsanity, castingInsanityColor)
 		if insanityChanged or castingChanged then
 			local currentInsanity
@@ -851,10 +856,10 @@ local function RefreshLookupData_Shadow()
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentInsanityColor, sharedSettings.colors.text.overcap.color)
 				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-				currentInsanity = textColorResult:WrapTextInColorCode(_currentInsanity)
+				currentInsanity = textColorResult:WrapTextInColorCode(insanityFormatted)
 				castingInsanity = textColorResult:WrapTextInColorCode(TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
 			else
-				currentInsanity = string.format("|c%s%s|r", currentInsanityColor, _currentInsanity)
+				currentInsanity = string.format("|c%s%s|r", currentInsanityColor, insanityFormatted)
 				castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
 			end
 			lookup["$insanity"] = currentInsanity
@@ -2787,233 +2792,164 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local healthVars = {
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local castingShadowFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw > 0
+	end
+	local afTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.angelicFeather.id].cooldown.remaining > 0
+	end
+	local afChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.angelicFeather.id].cooldown.charges > 0
+	end
+	-- Discipline
+	local pwRadTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0
+	end
+	local pwRadChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.powerWordRadiance.id].cooldown.charges > 0
+	end
+	local discipline = {
+		["$resource"] = false, ["$mana"] = false,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$casting"] = castingFn,
+		["$pwRadianceTime"] = pwRadTimeFn,
+		["$radianceTime"] = pwRadTimeFn,
+		["$powerWordRadianceTime"] = pwRadTimeFn,
+		["$pwRadianceCharges"] = pwRadChargesFn,
+		["$radianceCharges"] = pwRadChargesFn,
+		["$powerWordRadianceCharges"] = pwRadChargesFn,
+		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
+		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
+		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
+	}
+	for k, v in pairs(healthVars) do discipline[k] = v end
+	-- Holy
+	local lwTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.lightweaver.id].buff.isActive
+	end
+	local hwChastiseTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordChastise.id].cooldown.remaining > 0
+	end
+	local hwSerenityTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0
+	end
+	local hwSanctifyTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0
+	end
+	local hwChastiseChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordChastise.id].cooldown.charges > 0
+	end
+	local hwSerenityChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordSerenity.id].cooldown.charges > 0
+	end
+	local holy = {
+		["$resource"] = false, ["$mana"] = false,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$casting"] = castingFn,
+		["$lightweaverTime"] = lwTimeFn,
+		["$lightweaverStacks"] = lwTimeFn,
+		["$apotheosisTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.apotheosis.id].buff.isActive
+		end,
+		["$hwChastiseTime"] = hwChastiseTimeFn,
+		["$chastiseTime"] = hwChastiseTimeFn,
+		["$holyWordChastiseTime"] = hwChastiseTimeFn,
+		["$hwSerenityTime"] = hwSerenityTimeFn,
+		["$serenityTime"] = hwSerenityTimeFn,
+		["$holyWordSerenityTime"] = hwSerenityTimeFn,
+		["$hwSanctifyTime"] = hwSanctifyTimeFn,
+		["$sanctifyTime"] = hwSanctifyTimeFn,
+		["$holyWordSanctifyTime"] = hwSanctifyTimeFn,
+		["$hwChastiseCharges"] = hwChastiseChargesFn,
+		["$chastiseCharges"] = hwChastiseChargesFn,
+		["$holyWordChastiseCharges"] = hwChastiseChargesFn,
+		["$hwSerenityCharges"] = hwSerenityChargesFn,
+		["$serenityCharges"] = hwSerenityChargesFn,
+		["$holyWordSerenityCharges"] = hwSerenityChargesFn,
+		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
+		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
+		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
+	}
+	for k, v in pairs(healthVars) do holy[k] = v end
+	-- Shadow
+	local mfiBuffFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.mindFlayInsanity.id].buff.isActive
+	end
+	local entropicRiftTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.entropicRift.id].buff.isActive
+	end
+	local shadow = {
+		["$resource"] = false, ["$insanity"] = false,
+		["$resourceMax"] = true, ["$insanityMax"] = true,
+		["$casting"] = castingShadowFn,
+		["$vfTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			local b = TRB.Data.snapshotData.snapshots[spells.voidform.id].buff
+			return b.remaining ~= nil and b.remaining > 0
+		end,
+		["$mfiTime"] = mfiBuffFn,
+		["$mfiStacks"] = mfiBuffFn,
+		["$sotvTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.screamsOfTheVoid.id].buff.isActive
+		end,
+		["$shadowWordMadnessUsable"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree()
+		end,
+		["$mana"] = false, ["$manaPercent"] = false, ["$manaMax"] = true,
+		["$entropicRiftTime"] = entropicRiftTimeFn,
+		["$entropicRiftExtensionsRemaining"] = function()
+			local spells = TRB.Data.spellsData.spells
+			local s = TRB.Data.snapshotData.snapshots[spells.entropicRift.id]
+			return s.buff.isActive and s.buff.attributes["extensionsRemaining"] > 0
+		end,
+		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
+		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
+		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
+	}
+	for k, v in pairs(healthVars) do shadow[k] = v end
+
+	specValidVars = { [1] = discipline, [2] = holy, [3] = shadow }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells
-	local settings = nil
-	if TRB.Data.character.specId == 1 then
-		settings = TRB.Data.settings.priest.discipline
-	elseif TRB.Data.character.specId == 2 then
-		settings = TRB.Data.settings.priest.holy
-	elseif TRB.Data.character.specId == 3 then
-		settings = TRB.Data.settings.priest.shadow
-	else
-		return false
-	end
+	if valid then return valid end
 
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells]]
-		if var == "$resource" or var == "$mana" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourcePercent" or var == "$manaPercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		end
-	end
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
-		if var == "$pwRadianceTime" or var == "$radianceTime" or var == "$powerWordRadianceTime" then
-			if snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0 then
-				valid = true
-			end
-		elseif var == "$pwRadianceCharges" or var == "$radianceCharges" or var == "$powerWordRadianceCharges" then
-			if snapshots[spells.powerWordRadiance.id].cooldown.charges > 0 then
-				valid = true
-			end
-		--[[elseif var == "$scTime" or var == "$shadowCovenantTime" then
-			if snapshots[spells.shadowCovenant.id].buff.isActive then
-				valid = true
-			end]]
-		end
-	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-		if var == "$lightweaverTime" then
-			if snapshots[spells.lightweaver.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$lightweaverStacks" then
-			if snapshots[spells.lightweaver.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$apotheosisTime" then
-			if snapshots[spells.apotheosis.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$hwChastiseTime" or var == "$chastiseTime" or var == "$holyWordChastiseTime" then
-			if snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
-				valid = true
-			end
-		elseif var == "$hwSerenityTime" or var == "$serenityTime" or var == "$holyWordSerenityTime" then
-			if snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0 then
-				valid = true
-			end
-		elseif var == "$hwSanctifyTime" or var == "$sanctifyTime" or var == "$holyWordSanctifyTime" then
-			if snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0 then
-				valid = true
-			end
-		elseif var == "$hwChastiseCharges" or var == "$chastiseCharges" or var == "$holyWordChastiseCharges" then
-			if snapshots[spells.holyWordChastise.id].cooldown.charges > 0 then
-				valid = true
-			end
-		elseif var == "$hwSerenityCharges" or var == "$serenityCharges" or var == "$holyWordSerenityCharges" then
-			if snapshots[spells.holyWordSerenity.id].cooldown.charges > 0 then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
-		if var == "$resource" or var == "$insanity" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$insanityMax" then
-			valid = true
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0 then
-				valid = true
-			end
-		elseif var == "$vfTime" then
-			if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) then
-				valid = true
-			end
-		--[[elseif var == "$hvTicks" then
-			if snapshots[spells.horrificVisions.id].buff.ticks > 0 then
-				valid = true
-			end
-		elseif var == "$hvStacks" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				target ~= nil and
-				target.spells[spells.vampiricTouch.id] ~= nil and
-				target.spells[spells.vampiricTouch.id].stacks > 0 then
-				valid = true
-			end]]
-		elseif var == "$mfiTime" then
-			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$mfiStacks" then
-			if snapshots[spells.mindFlayInsanity.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$sotvTime" then
-			if snapshots[spells.screamsOfTheVoid.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$shadowWordMadnessUsable" then
-			if spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree() then
-				valid = true
-			end
-		--[[elseif var == "$siTime" then
-			if snapshots[spells.shadowyInsight.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$mmTime" or var == "$spTime" then
-			if snapshots[spells.shatteredPsyche.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$mmStacks" or var == "$spStacks" then
-			if snapshots[spells.shatteredPsyche.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ysTime" then
-			if snapshots[spells.idolOfYoggSaron.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ysStacks" then
-			if snapshots[spells.idolOfYoggSaron.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ysRemainingStacks" then
-			if talents:IsTalentActive(spells.idolOfYoggSaron) then
-				valid = true
-			end
-		elseif var == "$tfbTime" then
-			if snapshots[spells.thingFromBeyond.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$reTime" then
-			if target and target.spells[spells.resonantEnergy.debuffId].active then
-				valid = true
-			end
-		elseif var == "$reStacks" then
-			if target and target.spells[spells.resonantEnergy.debuffId].active then
-				valid = true
-			end
-		elseif var == "$mindBlastCharges" then
-			if snapshots[spells.mindBlast.id].cooldown.charges > 0 then
-				valid = true
-			end
-		elseif var == "$mindBlastMaxCharges" then
-			if snapshots[spells.mindBlast.id].cooldown.charges > 0  then
-				valid = true
-			end
-		elseif var == "$voidVolleyTime" then
-			if snapshots[spells.voidVolley.id].buff.isActive  then
-				valid = true
-			end]]
-		elseif var == "$mana" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$manaPercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$manaMax" then
-			valid = true
-		else
-			valid = false
-		end
-	end
-
-	-- Voidweaver
-	--if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 3 then
-	if TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]]
-		if var == "$entropicRiftTime" then
-			if snapshots[spells.entropicRift.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$entropicRiftExtensionsRemaining" then
-			if snapshots[spells.entropicRift.id].buff.isActive and snapshots[spells.entropicRift.id].buff.attributes["extensionsRemaining"] > 0 then
-				valid = true
-			end
-		end
-	end
-
-	-- Health variables (all specs)
-	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	spells = spells --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells]]
-	-- Angelic Feather variables (all specs)
-	if var == "$afTime" or var == "$angelicFeatherTime" then
-		if snapshots[spells.angelicFeather.id].cooldown.remaining > 0 then
-			valid = true
-		end
-	elseif var == "$afCharges" or var == "$angelicFeatherCharges" then
-		if snapshots[spells.angelicFeather.id].cooldown.charges > 0 then
-			valid = true
-		end
-	elseif var == "$afMaxCharges" or var == "$angelicFeatherMaxCharges" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

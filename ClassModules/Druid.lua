@@ -657,7 +657,8 @@ local function RefreshLookupData_Balance()
 		lookupLogic["$starfallUsable"] = _starfallUsable
 
 		-- OVERCAP: $astralPower/$resource + $casting
-		local resourceChanged = lookupChanged(prevState, "$astralPower", normalizedAstralPower, currentAstralPowerColor, true)
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$astralPower", resourceFormatted, currentAstralPowerColor)
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingAstralPowerColor)
 		if resourceChanged or castingChanged then
 			local currentAstralPower
@@ -665,10 +666,10 @@ local function RefreshLookupData_Balance()
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentAstralPowerColor, sharedSettings.colors.text.overcap.color)
 				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-				currentAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentAstralPower))
+				currentAstralPower = textColorResult:WrapTextInColorCode(resourceFormatted)
 				castingAstralPower = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 			else
-				currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, _currentAstralPower)
+				currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, resourceFormatted)
 				castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 			end
 			lookup["$resource"] = currentAstralPower
@@ -837,7 +838,8 @@ local function RefreshLookupData_Feral()
 	lookupLogic["$incarnationNextCp"] = incarnationNextCp
 
 	-- OVERCAP: $energy/$resource + $casting
-	local energyChanged = lookupChanged(prevState, "$energy", normalizedEnergy, currentEnergyColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local energyChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingEnergyColor)
 	if energyChanged or castingChanged then
 		local currentEnergy
@@ -847,10 +849,10 @@ local function RefreshLookupData_Feral()
 		if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
+			currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 		else
-			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
+			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
 			castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		end
 		lookup["$resource"] = currentEnergy
@@ -861,7 +863,7 @@ local function RefreshLookupData_Feral()
 	lookup["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 
 	-- RAW: combo points, stealth, incarnation values
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	lookup["$inStealth"] = ""
 	lookup["$incarnationTicks"] = _incarnationTicks
@@ -941,14 +943,15 @@ local function RefreshLookupData_Guardian()
 	lookupLogic["$incarnationTime"] = _berserkTime
 
 	-- OVERCAP: $rage/$resource (no $casting)
-	if lookupChanged(prevState, "$rage", normalizedRage, currentRageColor, true) then
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	if lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor) then
 		local currentRage
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+			currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
 		else
-			currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+			currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
 		end
 		lookup["$resource"] = currentRage
 		lookup["$rage"] = currentRage
@@ -1017,21 +1020,23 @@ local function RefreshLookupData_Restoration()
 	lookupLogic["$incarnationTime"] = _incarnationTime
 
 	-- FCS: mana variables
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = f
 		lookup["$resource"] = f
 	end
 	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
 		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
 		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$manaMax"] = f
 		lookup["$resourceMax"] = f
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = f
 		lookup["$resourcePercent"] = f
 	end
@@ -3229,151 +3234,118 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local healthVars = {
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	local sharedResourceVars = {
+		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,
+		["$resource"] = false, ["$resourceMax"] = true,
+		["$astralPower"] = false, ["$astralPowerMax"] = true,
+		["$energy"] = false, ["$energyMax"] = true,
+		["$comboPoints"] = true, ["$comboPointsMax"] = true,
+		["$rage"] = false, ["$rageMax"] = true,
+	}
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	-- Balance
+	local eclipseFn = function()
+		local spells = TRB.Data.spellsData.spells
+		local snaps = TRB.Data.snapshotData.snapshots
+		return snaps[spells.eclipseSolar.id].buff.isActive or snaps[spells.eclipseLunar.id].buff.isActive or snaps[spells.celestialAlignment.id].buff.isActive or snaps[spells.incarnationChosenOfElune.id].buff.isActive
+	end
+	local solarFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive
+	end
+	local lunarFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.eclipseLunar.id].buff.isActive
+	end
+	local caFn = function()
+		local spells = TRB.Data.spellsData.spells
+		local snaps = TRB.Data.snapshotData.snapshots
+		return snaps[spells.celestialAlignment.id].buff.isActive or snaps[spells.incarnationChosenOfElune.id].buff.isActive
+	end
+	local balance = {
+		["$eclipse"] = eclipseFn,
+		["$solar"] = solarFn, ["$eclipseSolar"] = solarFn, ["$solarEclipse"] = solarFn,
+		["$lunar"] = lunarFn, ["$eclipseLunar"] = lunarFn, ["$lunarEclipse"] = lunarFn,
+		["$celestialAlignment"] = caFn,
+		["$eclipseTime"] = eclipseFn,
+		["$starsurgeUsable"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return spells.starsurge:IsUsable() or spells.starsurge:IsFree()
+		end,
+		["$starfallUsable"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return spells.starfall:IsUsable() or spells.starfall:IsFree()
+		end,
+		["$casting"] = castingFn,
+	}
+	for k, v in pairs(healthVars) do balance[k] = v end
+	for k, v in pairs(sharedResourceVars) do balance[k] = v end
+	-- Feral
+	local berserkFeralFn = function() return GetBerserkRemainingTime() > 0 end
+	local incarnFeralBuffFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
+	end
+	local feral = {
+		["$berserkTime"] = berserkFeralFn, ["$incarnationTime"] = berserkFeralFn,
+		["$incarnationTicks"] = incarnFeralBuffFn,
+		["$incarnationTickTime"] = incarnFeralBuffFn,
+		["$incarnationNextCp"] = incarnFeralBuffFn,
+		["$inStealth"] = function() return IsStealthed() end,
+		["$casting"] = castingFn,
+	}
+	for k, v in pairs(healthVars) do feral[k] = v end
+	for k, v in pairs(sharedResourceVars) do feral[k] = v end
+	-- Guardian (no $casting check - intentional)
+	local berserkGuardianFn = function()
+		local spells = TRB.Data.spellsData.spells
+		local snaps = TRB.Data.snapshotData.snapshots
+		return snaps[spells.berserk.id].buff.isActive or snaps[spells.incarnationGuardianOfUrsoc.id].buff.isActive
+	end
+	local guardian = {
+		["$berserkTime"] = berserkGuardianFn, ["$incarnationTime"] = berserkGuardianFn,
+	}
+	for k, v in pairs(healthVars) do guardian[k] = v end
+	for k, v in pairs(sharedResourceVars) do guardian[k] = v end
+	-- Restoration
+	local restoration = {
+		["$resourcePercent"] = false,
+		["$efflorescenceTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.efflorescence.id].buff.isActive
+		end,
+		["$incarnationTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff.isActive
+		end,
+		["$casting"] = castingFn,
+	}
+	for k, v in pairs(healthVars) do restoration[k] = v end
+	for k, v in pairs(sharedResourceVars) do restoration[k] = v end
+
+	specValidVars = { [1] = balance, [2] = feral, [3] = guardian, [4] = restoration }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	-- Health variables are valid for all specs
-	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-		return valid
-	end
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	local spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local settings = nil
-
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-		settings = TRB.Data.settings.druid.balance
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-		settings = TRB.Data.settings.druid.feral
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
-		settings = TRB.Data.settings.druid.guardian
-	elseif TRB.Data.character.specId == 4 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-		settings = TRB.Data.settings.druid.restoration
-	else
-		return false
-	end
-	
-	if var == "$mana" or var == "$manaMax" or var == "$manaPercent" then
-		valid = true
-	elseif var == "$resource" or var == "$astralPower" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$astralPowerMax" then
-		valid = true
-	elseif var == "$resource" or var == "$energy" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$energyMax" then
-		valid = true
-	elseif var == "$comboPoints" then
-		valid = true
-	elseif var == "$comboPointsMax" then
-		valid = true
-	elseif var == "$resource" or var == "$rage" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$rageMax" then
-		valid = true
-	end
-
-	if TRB.Data.character.specId == 1 then -- Balance
-		if var == "$eclipse" then
-			if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$solar" or var == "$eclipseSolar" or var == "$solarEclipse" then
-			if snapshots[spells.eclipseSolar.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$lunar" or var == "$eclipseLunar" or var == "$lunarEclipse" then
-			if snapshots[spells.eclipseLunar.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$celestialAlignment" then
-			if snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$eclipseTime" then
-			if snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$starsurgeUsable" then
-			if spells.starsurge:IsUsable() or spells.starsurge:IsFree() then
-				valid = true
-			end
-		elseif var == "$starfallUsable" then
-			if spells.starfall:IsUsable() or spells.starfall:IsFree() then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 2 then -- Feral
-		if var == "$berserkTime" or var == "$incarnationTime" then
-			if GetBerserkRemainingTime() > 0 then
-				valid = true
-			end
-		elseif var == "$incarnationTicks" then
-			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$incarnationTickTime" then
-			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$incarnationNextCp" then
-			if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$inStealth" then
-			if IsStealthed() then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 3 then -- Guardian
-		if var == "$berserkTime" or var == "$incarnationTime" then
-			if snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 4 then --Restoration
-		if var == "$resourcePercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$efflorescenceTime" then
-			if snapshots[spells.efflorescence.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$incarnationTime" then
-			if snapshots[spells.incarnationTreeOfLife.id].buff.isActive  then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		end
-	else
-		valid = false
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

@@ -378,7 +378,8 @@ local function RefreshLookupData_Arms()
 	lookupLogic["$rage"] = normalizedRage
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 
-	local rageChanged = lookupChanged(prevState, "$rage", normalizedRage, currentRageColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
 	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 
 	if rageChanged or castingChanged then
@@ -388,10 +389,10 @@ local function RefreshLookupData_Arms()
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+			currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 		else
-			currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+			currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
 			castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		end
 		lookup["$resource"] = currentRage
@@ -457,7 +458,8 @@ local function RefreshLookupData_Fury()
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 
-		local rageChanged = lookupChanged(prevState, "$rage", normalizedRage, currentRageColor, true)
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 		if rageChanged or castingChanged then
 			local currentRage
@@ -466,10 +468,10 @@ local function RefreshLookupData_Fury()
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-				currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+				currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
 				castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 			else
-				currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+				currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
 				castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 			end
 			lookup["$resource"] = currentRage
@@ -582,7 +584,8 @@ local function RefreshLookupData_Protection()
 	lookupLogic["$shieldBlockCharges"] = shieldBlockCharges
 	lookupLogic["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
 
-	local rageChanged = lookupChanged(prevState, "$rage", normalizedRage, currentRageColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
 	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 
 	if rageChanged or castingChanged then
@@ -592,10 +595,10 @@ local function RefreshLookupData_Protection()
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
+			currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
 		else
-			currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
+			currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
 			castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		end
 		lookup["$resource"] = currentRage
@@ -1773,76 +1776,56 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local common = {
+		["$resource"] = false, ["$rage"] = false,
+		["$resourceMax"] = true, ["$rageMax"] = true,
+		["$casting"] = castingFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	-- Protection
+	local protection = {}
+	for k, v in pairs(common) do protection[k] = v end
+	protection["$ignorePainTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff.isActive
+	end
+	protection["$ignorePainAbsorb"] = false
+	protection["$shieldBlockTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].buff.isActive
+	end
+	protection["$shieldBlockCharges"] = function()
+		local spells = TRB.Data.spellsData.spells
+		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
+		return issecretvalue(charges) or charges > 0
+	end
+	protection["$shieldBlockMaxCharges"] = function()
+		local spells = TRB.Data.spellsData.spells
+		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
+		return issecretvalue(charges) or charges > 0
+	end
+
+	specValidVars = { [1] = common, [2] = common, [3] = protection }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local spells
-	local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
-		settings = TRB.Data.settings.warrior.arms
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
-		settings = TRB.Data.settings.warrior.fury
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
-		settings = TRB.Data.settings.warrior.protection
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then --Arms
-	elseif TRB.Data.character.specId == 2 then --Fury
-	elseif TRB.Data.character.specId == 3 then --Protection
-		if var == "$ignorePainTime" then
-			if snapshots[spells.ignorePain.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ignorePainAbsorb" then
-			-- Always secret, return false
-			valid = false
-		elseif var == "$shieldBlockTime" then
-			if snapshots[spells.shieldBlock.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$shieldBlockCharges" then
-			if issecretvalue(snapshots[spells.shieldBlock.id].cooldown.charges) or snapshots[spells.shieldBlock.id].cooldown.charges > 0 then
-				valid = true
-			end
-		elseif var == "$shieldBlockMaxCharges" then
-			if issecretvalue(snapshots[spells.shieldBlock.id].cooldown.charges) or snapshots[spells.shieldBlock.id].cooldown.charges > 0  then
-				valid = true
-			end
-		end
-	end
-
-	if valid == true then
-		return valid
-	end
-
-	if var == "$resource" or var == "$rage" then
-		-- Do not compare resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$rageMax" then
-		valid = true
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

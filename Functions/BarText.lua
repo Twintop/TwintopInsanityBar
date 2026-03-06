@@ -15,7 +15,7 @@ TRB.Functions.BarText = {}
 ---        compared or stored safely, so we always assume the value has changed.
 ---@return boolean changed True if the formatted lookup[key] needs rewriting
 function TRB.Functions.BarText.LookupChanged(prevState, key, rawValue, color, isSecret)
-	if isSecret then
+	if isSecret or issecretvalue(rawValue) then
 		return true
 	end
 	local prev = prevState[key]
@@ -349,7 +349,7 @@ local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, min
 		return nil
 	end
 
-	local len = TRB.Functions.Table:Length(t)
+	local len = #t
 	if len == 0 then
 		return nil
 	end
@@ -386,7 +386,7 @@ local function FindNextSymbolLevel(t, symbol, minIndex, level)
 
 	minIndex = minIndex or 0
 
-	local len = TRB.Functions.Table:Length(t)
+	local len = #t
 
 	if len > 0 then
 		for k, _ in ipairs(t) do
@@ -664,7 +664,12 @@ end
 ---@param compiledExpr table The compiledExpression table with varInfos
 ---@return table args Array of resolved values in parameter order
 local function ResolveConditionalValues(compiledExpr)
-	local args = {}
+	-- Reuse the args table stored on compiledExpr to avoid per-tick allocation
+	local args = compiledExpr.args
+	if args == nil then
+		args = {}
+		compiledExpr.args = args
+	end
 	for i = 1, compiledExpr.varCount do
 		local info = compiledExpr.varInfos[i]
 		local val = TRB.Functions.Class:IsValidVariableForSpec(info.variable)
@@ -738,10 +743,10 @@ end
 ---@return table
 local function AddToBarTextCache(input)
 	local barTextVariables = TRB.Data.barTextVariables
-	local iconEntries = TRB.Functions.Table:Length(barTextVariables.icons)
-	local valueEntries = TRB.Functions.Table:Length(barTextVariables.values)
-	local pipeEntries = TRB.Functions.Table:Length(barTextVariables.pipe)
-	local percentEntries = TRB.Functions.Table:Length(barTextVariables.percent)
+	local iconEntries = #barTextVariables.icons
+	local valueEntries = #barTextVariables.values
+	local pipeEntries = #barTextVariables.pipe
+	local percentEntries = #barTextVariables.percent
 	local returnText = ""
 	local returnVariables = {}
 	local p = 0
@@ -904,7 +909,7 @@ end
 ---@param barText string
 ---@return table
 local function GetFromBarTextCache(barText)
-	local entries = TRB.Functions.Table:Length(TRB.Data.cache.barText)
+	local entries = #TRB.Data.cache.barText
 
 	if entries > 0 then
 		for x = 1, entries do
@@ -917,6 +922,9 @@ local function GetFromBarTextCache(barText)
 	return AddToBarTextCache(barText)
 end
 
+-- Reusable buffer for GetReturnText to avoid allocating a new table every call
+local mappingBuffer = {}
+
 ---Gets the return text after processing the input text
 ---@param inputText table
 ---@return string
@@ -926,17 +934,26 @@ local function GetReturnText(inputText)
 	inputText.text = RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(inputText.text))
 
 	local cache = GetFromBarTextCache(inputText.text)
-	local mapping = {}
-	local cachedTextVariableLength = TRB.Functions.Table:Length(cache.variables)
+	local cachedTextVariableLength = #cache.variables
+
+	-- Reuse the shared mapping buffer; clear previous entries
+	local mapping = mappingBuffer
+	local mappingLen = 0
 
 	if cachedTextVariableLength > 0 then
 		for y = 1, cachedTextVariableLength do
-			table.insert(mapping, lookup[cache.variables[y]])
+			mappingLen = mappingLen + 1
+			mapping[mappingLen] = lookup[cache.variables[y]]
 		end
 	end
 
-	if TRB.Functions.Table:Length(mapping) > 0 then
-		_, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
+	-- Nil out any stale entries beyond current length
+	for i = mappingLen + 1, #mapping do
+		mapping[i] = nil
+	end
+
+	if mappingLen > 0 then
+		_, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping, 1, mappingLen))
 	elseif string.len(cache.stringFormat) > 0 then
 		inputText.text = cache.stringFormat
 	else
@@ -981,181 +998,116 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local prevState = TRB.Data.prevLookupState
 	local lookupChanged = TRB.Functions.BarText.LookupChanged
 
-	local checkPrimaryStats = true
-	local checkSecondaryStats = true
-	local primary = ArePrimaryRatingsNil()
-	local secondary = AreSecondaryRatingsNil()
-	if primary then
+	-- Ensure stats are populated if this is the first call
+	if ArePrimaryRatingsNil() then
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
-	elseif snapshotData.attributes.cacheRefresh == false then
-		checkPrimaryStats = false
 	end
-	
-	if secondary then
+	if AreSecondaryRatingsNil() then
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
-	elseif snapshotData.attributes.cacheRefresh == false then
-		checkSecondaryStats = false
 	end
 
-	-- Wipe memoization state when stats/precision changed so per-spec functions also reformat
-	if checkPrimaryStats or checkSecondaryStats then
-		wipe(prevState)
-	end
+	-- Primary stat display strings – pre-formatted at event time in UpdatePrimaryStatsSnapshot
+	local formatted = snapshotData.formatted
+	local fmtInt  = formatted.int  or ""
+	local fmtStr  = formatted.str  or ""
+	local fmtAgi  = formatted.agi  or ""
+	local fmtStam = formatted.stam or ""
 
-	if checkPrimaryStats or lookup["$int"] == nil then
-		--$int
-		local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.precision.secondary, "floor", true))
-		--$agi
-		local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.precision.secondary, "floor", true))
-		--$str
-		local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.precision.secondary, "floor", true))
-		--$stam
-		local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.precision.secondary, "floor", true))
+	lookup["$int"]       = fmtInt
+	lookup["$intellect"] = fmtInt
+	lookup["$str"]       = fmtStr
+	lookup["$strength"]  = fmtStr
+	lookup["$agi"]       = fmtAgi
+	lookup["$agility"]   = fmtAgi
+	lookup["$stam"]      = fmtStam
+	lookup["$stamina"]   = fmtStam
 
-		
-		lookup["$int"] = int
-		lookup["$intellect"] = int
-		lookup["$str"] = str
-		lookup["$strength"] = str
-		lookup["$agi"] = agi
-		lookup["$agility"] = agi
-		lookup["$stam"] = stam
-		lookup["$stamina"] = stam
-	
-		lookupLogic["$int"] = snapshotData.attributes.intellect
-		lookupLogic["$intellect"] = snapshotData.attributes.intellect
-		lookupLogic["$str"] = snapshotData.attributes.strength
-		lookupLogic["$strength"] = snapshotData.attributes.strength
-		lookupLogic["$agi"] = snapshotData.attributes.agility
-		lookupLogic["$agility"] = snapshotData.attributes.agility
-		lookupLogic["$stam"] = snapshotData.attributes.stamina
-		lookupLogic["$stamina"] = snapshotData.attributes.stamina
-
-		snapshotData.attributes.cacheRefresh = false
-	end
+	lookupLogic["$int"]       = snapshotData.attributes.intellect
+	lookupLogic["$intellect"] = snapshotData.attributes.intellect
+	lookupLogic["$str"]       = snapshotData.attributes.strength
+	lookupLogic["$strength"]  = snapshotData.attributes.strength
+	lookupLogic["$agi"]       = snapshotData.attributes.agility
+	lookupLogic["$agility"]   = snapshotData.attributes.agility
+	lookupLogic["$stam"]      = snapshotData.attributes.stamina
+	lookupLogic["$stamina"]   = snapshotData.attributes.stamina
 
 	--$health, $healthMax, $healthPercent
-	local healthRaw = snapshotData.attributes.health-- or UnitHealth("player", true)
-	local healthMaxRaw = snapshotData.attributes.healthMax-- or UnitHealthMax("player")
-	local healthPercentRaw = snapshotData.attributes.healthPercent-- or UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+	-- Raw secret values for lookupLogic (conditionals use arithmetic, not equality)
+	lookupLogic["$health"] = snapshotData.attributes.health
+	lookupLogic["$healthMax"] = snapshotData.attributes.healthMax
+	lookupLogic["$healthPercent"] = snapshotData.attributes.healthPercent
 
-	lookupLogic["$health"] = healthRaw
-	lookupLogic["$healthMax"] = healthMaxRaw
-	lookupLogic["$healthPercent"] = healthPercentRaw
-
-	if lookupChanged(prevState, "$health", healthRaw, nil, true) then
-		lookup["$health"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthRaw))
-	end
-	if lookupChanged(prevState, "$healthMax", healthMaxRaw, nil, true) then
-		lookup["$healthMax"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(healthMaxRaw))
-	end
-	if lookupChanged(prevState, "$healthPercent", healthPercentRaw, nil, true) then
-		lookup["$healthPercent"] = string.format("%." .. (settings.precision.health or 1) .. "f", healthPercentRaw)
-	end
+	-- Use pre-formatted strings from event time (see UpdateHealthValues)
+	local formatted = snapshotData.formatted
+	lookup["$health"] = formatted.health or ""
+	lookup["$healthMax"] = formatted.healthMax or ""
+	lookup["$healthPercent"] = formatted.healthPercent or ""
 
 	--$absorb
-	local absorbRaw = snapshotData.attributes.absorb
-	lookupLogic["$absorb"] = absorbRaw
-	if lookupChanged(prevState, "$absorb", absorbRaw, nil, true) then
-		lookup["$absorb"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(absorbRaw))
-	end
+	lookupLogic["$absorb"] = snapshotData.attributes.absorb
+	lookup["$absorb"] = formatted.absorb or ""
 
 	--$incomingHeal
-	local incomingHealRaw = snapshotData.attributes.incomingHeal or 0
-	lookupLogic["$incomingHeal"] = incomingHealRaw
-	if lookupChanged(prevState, "$incomingHeal", incomingHealRaw, nil, true) then
-		lookup["$incomingHeal"] = string.format("%s", TRB.Functions.String:ConvertToAbbreviatedNumber(incomingHealRaw))
-	end
+	lookupLogic["$incomingHeal"] = snapshotData.attributes.incomingHeal or 0
+	lookup["$incomingHeal"] = formatted.incomingHeal or ""
 
-	if checkSecondaryStats or lookup["$haste"] == nil then
-		--$critRating
-		local critRating = nil
+	-- Secondary stat display strings – pre-formatted at event time in UpdateSecondaryStatsSnapshot
+	local fmtHaste      = formatted.haste      or ""
+	local fmtCrit       = formatted.crit       or ""
+	local fmtMastery    = formatted.mastery    or ""
+	local fmtVersOff    = formatted.versOff    or ""
+	local fmtVersDef    = formatted.versDef    or ""
+	local fmtHasteRat   = formatted.hasteRating  or ""
+	local fmtCritRat    = formatted.critRating   or ""
+	local fmtMasteryRat = formatted.masteryRating or ""
+	local fmtVersRat    = formatted.versRating    or ""
+	local fmtGcd        = formatted.gcd        or ""
 
-		--$masteryRating
-		local masteryRating = nil
+	lookup["$haste"]              = fmtHaste
+	lookup["$hastePercent"]       = fmtHaste
+	lookup["$crit"]               = fmtCrit
+	lookup["$critPercent"]        = fmtCrit
+	lookup["$mastery"]            = fmtMastery
+	lookup["$masteryPercent"]     = fmtMastery
+	lookup["$vers"]               = fmtVersOff
+	lookup["$versPercent"]        = fmtVersOff
+	lookup["$versatility"]        = fmtVersOff
+	lookup["$versatilityPercent"] = fmtVersOff
+	lookup["$oVers"]              = fmtVersOff
+	lookup["$oVersPercent"]       = fmtVersOff
+	lookup["$dVers"]              = fmtVersDef
+	lookup["$dVersPercent"]       = fmtVersDef
 
-		--$hasteRating
-		local hasteRating = nil
+	lookup["$hasteRating"]        = fmtHasteRat
+	lookup["$critRating"]         = fmtCritRat
+	lookup["$masteryRating"]      = fmtMasteryRat
+	lookup["$versRating"]         = fmtVersRat
+	lookup["$versatilityRating"]  = fmtVersRat
 
-		--$vers
-		local versOff = nil
-		local versDef = nil
+	lookup["$gcd"] = fmtGcd
 
-		critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.precision.secondary, "floor", true))
-		masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.precision.secondary, "floor", true))
-		hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.precision.secondary, "floor", true))
-		versOff = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.precision.secondary))
-		versDef = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.precision.secondary))
-		
-		--$crit
-		local critPercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.precision.secondary))
+	lookupLogic["$haste"]              = snapshotData.attributes.haste
+	lookupLogic["$hastePercent"]       = snapshotData.attributes.haste
+	lookupLogic["$crit"]               = snapshotData.attributes.crit
+	lookupLogic["$critPercent"]        = snapshotData.attributes.crit
+	lookupLogic["$mastery"]            = snapshotData.attributes.mastery
+	lookupLogic["$masteryPercent"]     = snapshotData.attributes.mastery
+	lookupLogic["$vers"]               = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versPercent"]        = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versatility"]        = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$oVers"]              = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$oVersPercent"]       = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$dVers"]              = snapshotData.attributes.versatilityDefensive
+	lookupLogic["$dVersPercent"]       = snapshotData.attributes.versatilityDefensive
 
-		--$versRating
-		local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.precision.secondary, "floor", true))
+	lookupLogic["$hasteRating"]        = snapshotData.attributes.hasteRating
+	lookupLogic["$critRating"]         = snapshotData.attributes.critRating
+	lookupLogic["$masteryRating"]      = snapshotData.attributes.masteryRating
+	lookupLogic["$versRating"]         = snapshotData.attributes.versatilityRating
+	lookupLogic["$versatilityRating"]  = snapshotData.attributes.versatilityRating
 
-		--$mastery
-		local masteryPercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.precision.secondary))
-
-		--$haste
-		local hastePercent = string.format("%." .. settings.precision.secondary .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.precision.secondary))
-			
-		--$gcd
-		local _gcd = 1.5 / (1 + ((snapshotData.attributes.haste or 0)  / 100))
-		if _gcd > 1.5 then
-			_gcd = 1.5
-		elseif _gcd < 0.75 then
-			_gcd = 0.75
-		end
-		local gcd = string.format("%.2f", _gcd)
-
-		lookup["$haste"] = hastePercent
-		lookup["$hastePercent"] = hastePercent
-		lookup["$crit"] = critPercent
-		lookup["$critPercent"] = critPercent
-		lookup["$mastery"] = masteryPercent
-		lookup["$masteryPercent"] = masteryPercent
-		lookup["$vers"] = versOff
-		lookup["$versPercent"] = versOff
-		lookup["$versatility"] = versOff
-		lookup["$versatilityPercent"] = versOff
-		lookup["$oVers"] = versOff
-		lookup["$oVersPercent"] = versOff
-		lookup["$dVers"] = versDef
-		lookup["$dVersPercent"] = versDef
-
-		lookup["$hasteRating"] = hasteRating
-		lookup["$critRating"] = critRating
-		lookup["$masteryRating"] = masteryRating
-		lookup["$versRating"] = versRating
-		lookup["$versatilityRating"] = versRating
-
-		lookup["$gcd"] = gcd
-
-		lookupLogic["$haste"] = snapshotData.attributes.haste
-		lookupLogic["$hastePercent"] = snapshotData.attributes.haste
-		lookupLogic["$crit"] = snapshotData.attributes.crit
-		lookupLogic["$critPercent"] = snapshotData.attributes.crit
-		lookupLogic["$mastery"] = snapshotData.attributes.mastery
-		lookupLogic["$masteryPercent"] = snapshotData.attributes.mastery
-		lookupLogic["$vers"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$versPercent"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$versatility"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$oVers"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$oVersPercent"] = snapshotData.attributes.versatilityOffensive
-		lookupLogic["$dVers"] = snapshotData.attributes.versatilityDefensive
-		lookupLogic["$dVersPercent"] = snapshotData.attributes.versatilityDefensive
-	
-		lookupLogic["$hasteRating"] = snapshotData.attributes.hasteRating
-		lookupLogic["$critRating"] = snapshotData.attributes.critRating
-		lookupLogic["$masteryRating"] = snapshotData.attributes.masteryRating
-		lookupLogic["$versRating"] = snapshotData.attributes.versatilityRating
-		lookupLogic["$versatilityRating"] = snapshotData.attributes.versatilityRating
-	
-		lookupLogic["$gcd"] = _gcd
-
-		snapshotData.attributes.cacheRefresh = false
-	end
+	lookupLogic["$gcd"] = formatted.gcdRaw or 0
 
 	if lookup["||n"] == nil then
 		lookup["||n"] = "\n"
@@ -1200,50 +1152,36 @@ end
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
 ---@param var string
 ---@return boolean
-function TRB.Functions.BarText:IsValidVariableBase(var)
-	local valid = false
-	if var == "$crit" or var == "$critPercent" then
-		valid = true
-	elseif var == "$mastery" or var == "$masteryPercent" then
-		valid = true
-	elseif var == "$haste" or var == "$hastePercent" then
-		valid = true
-	elseif var == "$gcd" then
-		valid = true
-	elseif var == "$vers" or var == "$versatility" or var == "$oVers" or var == "$versPercent" or var == "$versatilityPercent" or var == "$oVersPercent" then
-		valid = true
-	elseif var == "$dVers" or var == "$dversPercent" then
-		valid = true
-	elseif var == "$critRating" then
-		valid = true
-	elseif var == "$masteryRating" then
-		valid = true
-	elseif var == "$hasteRating" then
-		valid = true
-	elseif var == "$versRating" or var == "$versatilityRating" then
-		valid = true
-	elseif var == "$dVersRating" then
-		valid = true
-	elseif var == "$int" or var == "$intellect" then
-		valid = true
-	elseif var == "$agi" or var == "$agility" then
-		valid = true
-	elseif var == "$str" or var == "$strength" then
-		valid = true
-	elseif var == "$stam" or var == "$stamina" then
-		valid = true
-	elseif var == "$inCombat" then
-		if TRB.Data.character.inCombat then
-			valid = true
-		end
-	elseif var == "$inCombatTime" then
-		if TRB.Data.character.inCombat then
-			valid = true
-		end
-	end
 
-	return valid
+-- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
+local validBaseVars = {
+	["$crit"] = true, ["$critPercent"] = true,
+	["$mastery"] = true, ["$masteryPercent"] = true,
+	["$haste"] = true, ["$hastePercent"] = true,
+	["$gcd"] = true,
+	["$vers"] = true, ["$versatility"] = true, ["$oVers"] = true, ["$versPercent"] = true, ["$versatilityPercent"] = true, ["$oVersPercent"] = true,
+	["$dVers"] = true, ["$dversPercent"] = true,
+	["$critRating"] = true, ["$masteryRating"] = true, ["$hasteRating"] = true,
+	["$versRating"] = true, ["$versatilityRating"] = true,
+	["$dVersRating"] = true,
+	["$int"] = true, ["$intellect"] = true,
+	["$agi"] = true, ["$agility"] = true,
+	["$str"] = true, ["$strength"] = true,
+	["$stam"] = true, ["$stamina"] = true,
+}
+
+function TRB.Functions.BarText:IsValidVariableBase(var)
+	if validBaseVars[var] then
+		return true
+	end
+	if var == "$inCombat" or var == "$inCombatTime" then
+		return TRB.Data.character.inCombat == true
+	end
+	return false
 end
+
+-- Reused per-call cache for GetBarTextFrame results (avoids redundant frame lookups)
+local showFrameCache = {}
 
 ---Updates the resource bar text based on the settings
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -1269,6 +1207,9 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	
 	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
 	if settings ~= nil and settings.displayText ~= nil then
+		-- Clear the per-call frame cache so entries get fresh visibility data
+		for k in pairs(showFrameCache) do showFrameCache[k] = nil end
+
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
 		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
@@ -1287,11 +1228,20 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				-- Screen-bound text is always processed; other text only when refreshText is true
 				if refreshText or isScreenText then
 					-- Check if the target frame is visible before doing expensive text processing
-					local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
-					
-					-- UIParent-attached bar text is always considered visible
-					if isScreenText then
-						isVisible = true
+					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
+					local key = e.position.relativeToFrame
+					local isEnabled, isVisible
+					local fCache = showFrameCache
+					local cached = fCache[key]
+					if cached then
+						isEnabled = cached[1]
+						isVisible = cached[2]
+					else
+						_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(key)
+						if isScreenText then
+							isVisible = true
+						end
+						fCache[key] = { isEnabled, isVisible }
 					end
 					
 					TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
@@ -1367,7 +1317,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	local textFrames = TRB.Frames.textFrames
 	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	
-	local entries = TRB.Functions.Table:Length(displayText.barText)
+	local entries = #displayText.barText
 	local frameCount = 1
 	if entries > 0 then
 		if displayText.default.fontFace == nil or displayText.default.fontFace == "" or displayText.default.fontFaceName == nil or displayText.default.fontFaceName == "" then
@@ -1459,7 +1409,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end
 	end
 	
-	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
+	local textFramesEntries = #textFrames
 	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
 	if textFramesEntries >= frameCount then
 		for i = frameCount, textFramesEntries do
@@ -1500,7 +1450,7 @@ function TRB.Functions.BarText:Hide(settings)
 	local textFrames = TRB.Frames.textFrames
 	if settings ~= nil and settings.displayText ~= nil then
 		local barText = settings.displayText.barText
-		local entries = barText and TRB.Functions.Table:Length(barText) or 0
+		local entries = barText and #barText or 0
 		for i = 1, #textFrames do
 			-- UIParent-attached bar text stays visible even when bars are hidden
 			if i <= entries and barText[i] ~= nil
@@ -1531,19 +1481,31 @@ function TRB.Functions.BarText:Show(settings)
 	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	---@type Frame[]
 	local textFrames = TRB.Frames.textFrames
-	local entries = TRB.Functions.Table:Length(displayText.barText)
+	local entries = #displayText.barText
 	if entries > 0 then
+		-- Per-call cache: entries sharing the same relativeToFrame skip redundant GetBarTextFrame calls
+		local fCache = showFrameCache
+		for k in pairs(fCache) do fCache[k] = nil end
+
+		local isTransition = TRB.Functions.Bar:IsRenderTransitionActive()
 		for i = 1, entries do
 			local e = displayText.barText[i]
-			local _, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
-			
-			-- UIParent-attached bar text is always considered visible
-			if e.position.relativeToFrame == "UIParent" then
-				isVisible = true
+			local key = e.position.relativeToFrame
+			local isEnabled, isVisible
+			local cached = fCache[key]
+			if cached then
+				isEnabled = cached[1]
+				isVisible = cached[2]
+			else
+				_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(key)
+				if key == "UIParent" then
+					isVisible = true
+				end
+				fCache[key] = { isEnabled, isVisible }
 			end
-			
+
 			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
-				if TRB.Functions.Bar:IsRenderTransitionActive() then
+				if isTransition then
 					textFrames[i]:Hide()
 					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Hide()

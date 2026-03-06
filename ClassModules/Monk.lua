@@ -413,7 +413,8 @@ local function RefreshLookupData_Brewmaster()
 	lookupLogic["$niuzaoTime"] = _niuzaoTime
 
 	-- OVERCAP: $energy/$resource + $casting
-	local resourceChanged = lookupChanged(prevState, "$energy", _currentEnergy, currentEnergyColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 	local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 	if resourceChanged or castingChanged then
 		local currentEnergy
@@ -421,10 +422,10 @@ local function RefreshLookupData_Brewmaster()
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentEnergy))
+			currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingEnergy))
 		else
-			currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, _currentEnergy)
+			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
 			castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, _castingEnergy)
 		end
 		lookup["$resource"] = currentEnergy
@@ -487,14 +488,15 @@ local function RefreshLookupData_Mistweaver()
 	lookupLogic["$casting"] = _castingMana
 
 	-- FCS: $mana/$resource
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = formatted
 		lookup["$resource"] = formatted
 	end
 
 	-- FCS: $manaMax/$resourceMax
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
 		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$manaMax"] = formatted
 		lookup["$resourceMax"] = formatted
@@ -502,8 +504,9 @@ local function RefreshLookupData_Mistweaver()
 
 	-- FCP: $manaPercent/$resourcePercent
 	local manaPrecision = sharedSettings.precision.mana or 1
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local formatted = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local formatted = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = formatted
 		lookup["$resourcePercent"] = formatted
 	end
@@ -571,7 +574,8 @@ local function RefreshLookupData_Windwalker()
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
 	-- OVERCAP: $energy/$resource + $casting
-	local resourceChanged = lookupChanged(prevState, "$energy", _normalizedEnergy, currentEnergyColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 	local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 	if resourceChanged or castingChanged then
 		local currentEnergy
@@ -579,10 +583,10 @@ local function RefreshLookupData_Windwalker()
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
+			currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
 		else
-			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
+			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
 			castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
 		end
 		lookup["$resource"] = currentEnergy
@@ -595,8 +599,8 @@ local function RefreshLookupData_Windwalker()
 	lookup["$energyMax"] = TRB.Data.character.maxResource
 
 	-- RAW: $chi/$comboPoints
-	lookup["$chi"] = snapshotData.attributes.resource2
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
+	lookup["$chi"] = snapshotData.formatted.resource2 or ""
+	lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
 
 	-- RAW: $chiMax/$comboPointsMax
 	lookup["$chiMax"] = TRB.Data.character.maxResource2
@@ -1916,94 +1920,67 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local healthVars = {
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	-- Brewmaster
+	local brewmaster = {
+		["$resource"] = false, ["$energy"] = false,
+		["$resourceMax"] = true, ["$energyMax"] = true,
+		["$casting"] = castingFn,
+		["$stagger"] = function()
+			local s = TRB.Data.snapshotData.attributes.stagger
+			return s ~= nil and s > 0
+		end,
+		["$staggerPercent"] = function()
+			local s = TRB.Data.snapshotData.attributes.staggerPercent
+			return s ~= nil and s > 0
+		end,
+		["$niuzaoTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.invokeNiuzao.id].buff.isActive
+		end,
+	}
+	for k, v in pairs(healthVars) do brewmaster[k] = v end
+	-- Mistweaver
+	local mistweaver = {
+		["$resource"] = false, ["$mana"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$casting"] = castingFn,
+	}
+	for k, v in pairs(healthVars) do mistweaver[k] = v end
+	-- Windwalker
+	local windwalker = {
+		["$casting"] = castingFn,
+		["$resource"] = false, ["$energy"] = false,
+		["$resourceMax"] = true, ["$energyMax"] = true,
+		["$comboPoints"] = true, ["$chi"] = true,
+		["$comboPointsMax"] = true, ["$chiMax"] = true,
+	}
+	for k, v in pairs(healthVars) do windwalker[k] = v end
+
+	specValidVars = { [1] = brewmaster, [2] = mistweaver, [3] = windwalker }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
-		settings = TRB.Data.settings.monk.brewmaster
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
-		settings = TRB.Data.settings.monk.mistweaver
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-		settings = TRB.Data.settings.monk.windwalker
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then -- Brewmaster
-		if var == "$resource" or var == "$energy" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$energyMax" then
-			valid = true
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$stagger" then
-			if snapshotData.attributes.stagger ~= nil and snapshotData.attributes.stagger > 0 then
-				valid = true
-			end
-		elseif var == "$staggerPercent" then
-			if snapshotData.attributes.staggerPercent ~= nil and snapshotData.attributes.staggerPercent > 0 then
-				valid = true
-			end
-		elseif var == "$niuzaoTime" then
-			if snapshots[spells.invokeNiuzao.id].buff.isActive then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 2 then --Mistweaver
-		if var == "$resource" or var == "$mana" then
-			valid = false
-		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true
-		elseif var == "$resourcePercent" or var == "$manaPercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 3 then --Windwalker
-		if var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		elseif var == "$resource" or var == "$energy" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$energyMax" then
-			valid = true
-		elseif var == "$comboPoints" or var == "$chi" then
-			valid = true
-		elseif var == "$comboPointsMax"or var == "$chiMax" then
-			valid = true
-		end
-	end
-
-	-- Health variables - valid for all specs
-	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	-- Mistweaver or Windwalker / Conduit of the Celestials shared abilities
-	if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

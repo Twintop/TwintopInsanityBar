@@ -378,7 +378,8 @@ local function RefreshLookupData_Elemental()
 	lookup["$earthquakeUsable"] = ""
 
 	-- OVERCAP pattern: maelstrom + casting
-	local resourceChanged = lookupChanged(prevState, "$maelstrom", snapshotData.attributes.resource, currentMaelstromColor, true)
+	local resourceFormatted = snapshotData.formatted.resource or ""
+	local resourceChanged = lookupChanged(prevState, "$maelstrom", resourceFormatted, currentMaelstromColor)
 	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingMaelstromColor)
 	if resourceChanged or castingChanged then
 		local currentMaelstrom
@@ -386,10 +387,10 @@ local function RefreshLookupData_Elemental()
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.attributes.resource))
+			currentMaelstrom = textColorResult:WrapTextInColorCode(resourceFormatted)
 			castingMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
 		else
-			currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, snapshotData.attributes.resource)
+			currentMaelstrom = string.format("|c%s%s|r", currentMaelstromColor, resourceFormatted)
 			castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshotData.casting.resourceFinal)
 		end
 		lookup["$maelstrom"] = currentMaelstrom
@@ -483,13 +484,15 @@ local function RefreshLookupData_Enhancement()
 	lookup["$maelstromWeaponMax"] = _maelstromWeaponMax
 
 	-- Memoized formatted writes
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = f
 		lookup["$resource"] = f
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = f
 		lookup["$resourcePercent"] = f
 	end
@@ -547,17 +550,19 @@ local function RefreshLookupData_Restoration()
 	lookupLogic["$ascendanceTime"] = _ascendanceTime
 
 	-- Memoized formatted writes
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		lookup["$mana"] = f
 		lookup["$resource"] = f
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor, true) then
+	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
 		lookup["$manaMax"] = manaMax
 		lookup["$resourceMax"] = manaMax
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		local f = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		lookup["$manaPercent"] = f
 		lookup["$resourcePercent"] = f
 	end
@@ -1617,140 +1622,81 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local healthVars = {
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	local ascendanceFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.ascendance.id].buff.isActive
+	end
+	-- Elemental
+	local earthShockFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+	end
+	local elemental = {
+		["$resource"] = false, ["$maelstrom"] = false,
+		["$resourceMax"] = true, ["$maelstromMax"] = true,
+		["$casting"] = function()
+			local sd = TRB.Data.snapshotData
+			local spells = TRB.Data.spellsData.spells
+			return sd.casting.resourceRaw ~= nil and (sd.casting.resourceRaw > 0 or sd.casting.spellId == spells.chainLightning.id)
+		end,
+		["$ascendanceTime"] = ascendanceFn,
+		["$earthShockUsable"] = earthShockFn,
+		["$elementalBlastUsable"] = earthShockFn,
+		["$earthquakeUsable"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+		end,
+		-- Mana override: Elemental has mana bar visible
+		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,
+	}
+	for k, v in pairs(healthVars) do elemental[k] = v end
+	-- Enhancement
+	local enhancement = {
+		["$casting"] = function()
+			local c = TRB.Data.snapshotData.casting
+			return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+		end,
+		["$resource"] = false, ["$mana"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$comboPoints"] = true, ["$maelstromWeapon"] = true,
+		["$comboPointsMax"] = true, ["$maelstromWeaponMax"] = true,
+		["$ascendanceTime"] = ascendanceFn,
+	}
+	for k, v in pairs(healthVars) do enhancement[k] = v end
+	-- Restoration
+	local restoration = {
+		["$resource"] = false, ["$mana"] = false,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$casting"] = function()
+			local c = TRB.Data.snapshotData.casting
+			return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+		end,
+		["$ascendanceTime"] = ascendanceFn,
+	}
+	for k, v in pairs(healthVars) do restoration[k] = v end
+
+	specValidVars = { [1] = elemental, [2] = enhancement, [3] = restoration }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells
-	local settings = nil
+	if valid then return valid end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
-		settings = TRB.Data.settings.shaman.elemental
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
-		settings = TRB.Data.settings.shaman.enhancement
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
-		settings = TRB.Data.settings.shaman.restoration
-	else
-		return false
-	end
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		if var == "$resource" or var == "$maelstrom" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$maelstromMax" then
-			valid = true
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id) then
-				valid = true
-			end
-		--[[
-		elseif var == "$ifStacks" then
-			if snapshots[spells.icefury.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ifTime" then
-			if snapshots[spells.icefury.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$skStacks" then
-			if snapshots[spells.stormkeeper.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$skTime" then
-			if snapshots[spells.stormkeeper.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$eogsTime" then
-			if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
-				valid = true
-			end]]
-		elseif var == "$ascendanceTime" then
-			if snapshots[spells.ascendance.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$earthShockUsable" or var == "$elementalBlastUsable" then
-			if (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree())) then
-				valid = true
-			end
-		elseif var == "$earthquakeUsable" then
-			if (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree())) then
-				valid = true
-			end
-		elseif var == "$mana" then
-			-- Do not compare snapshotData.attributes.mana as it may be a secret value
-			valid = false
-		elseif var == "$manaMax" then
-			valid = true
-		elseif var == "$manaPercent" then
-			-- Do not compare mana percent as it may be a secret value
-			valid = false
-		end
-	elseif TRB.Data.character.specId == 2 then --Enhancement
-		if var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		elseif var == "$resource" or var == "$mana" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true
-		elseif var == "$resourcePercent" or var == "$manaPercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$comboPoints" or var == "$maelstromWeapon" then
-			valid = true
-		elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
-			valid = true
-		elseif var == "$ascendanceTime" then
-			if snapshots[spells.ascendance.id].buff.isActive then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 3 then
-		if var == "$resource" or var == "$mana" then
-			-- Do not compare snapshotData.attributes.resource as it may be a secret value
-			valid = false
-		elseif var == "$resourcePercent" or var == "$manaPercent" then
-			-- Do not compare resource percent as it may be a secret value
-			valid = false
-		elseif var == "$resourceMax" or var == "$manaMax" then
-			valid = true
-		elseif var == "$casting" then
-			if snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$ascendanceTime" then
-			if snapshots[spells.ascendance.id].buff.isActive then
-				valid = true
-			end
-		end
-	else
-		valid = false
-	end
-
-	-- Health variables are valid for all specs
-	if var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-	
-
-	-- Mana variables (Balance only)
-	if TRB.Data.character.specId == 1 then
-		if var == "$mana" or var == "$manaMax" or var == "$manaPercent" then
-			valid = true
-		end
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

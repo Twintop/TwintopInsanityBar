@@ -369,14 +369,15 @@ local function RefreshLookupData_Blood()
 	lookupLogic["$rune6Ready"] = _rune6Ready
 	lookupLogic["$runesReadyCount"] = _runesReadyCount
 
-	if lookupChanged(prevState, "$runicPower", normalizedRunicPower, currentRunicPowerColor, true) then
+	local resourceAbbrevFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$runicPower", resourceAbbrevFormatted, currentRunicPowerColor) then
 		local rp
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			rp = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = textColorResult:WrapTextInColorCode(resourceAbbrevFormatted)
 		else
-			rp = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = string.format("|c%s%s|r", currentRunicPowerColor, resourceAbbrevFormatted)
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
@@ -451,14 +452,15 @@ local function RefreshLookupData_Frost()
 	lookupLogic["$rune6Ready"] = _rune6Ready
 	lookupLogic["$runesReadyCount"] = _runesReadyCount
 
-	if lookupChanged(prevState, "$runicPower", normalizedRunicPower, currentRunicPowerColor, true) then
+	local resourceAbbrevFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$runicPower", resourceAbbrevFormatted, currentRunicPowerColor) then
 		local rp
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			rp = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = textColorResult:WrapTextInColorCode(resourceAbbrevFormatted)
 		else
-			rp = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = string.format("|c%s%s|r", currentRunicPowerColor, resourceAbbrevFormatted)
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
@@ -533,14 +535,15 @@ local function RefreshLookupData_Unholy()
 	lookupLogic["$rune6Ready"] = _rune6Ready
 	lookupLogic["$runesReadyCount"] = _runesReadyCount
 
-	if lookupChanged(prevState, "$runicPower", normalizedRunicPower, currentRunicPowerColor, true) then
+	local resourceAbbrevFormatted = snapshotData.formatted.resourceAbbrev or ""
+	if lookupChanged(prevState, "$runicPower", resourceAbbrevFormatted, currentRunicPowerColor) then
 		local rp
 		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
 			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRunicPowerColor, sharedSettings.colors.text.overcap.color)
 			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			rp = textColorResult:WrapTextInColorCode(TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = textColorResult:WrapTextInColorCode(resourceAbbrevFormatted)
 		else
-			rp = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedRunicPower))
+			rp = string.format("|c%s%s|r", currentRunicPowerColor, resourceAbbrevFormatted)
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
@@ -1380,101 +1383,46 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local shared = {
+		["$resource"] = false, ["$runicPower"] = false,
+		["$resourceMax"] = true, ["$runicPowerMax"] = true,
+		["$rune1Time"] = function() return TRB.Data.character.runes[1].remaining > 0 end,
+		["$rune2Time"] = function() return TRB.Data.character.runes[2].remaining > 0 end,
+		["$rune3Time"] = function() return TRB.Data.character.runes[3].remaining > 0 end,
+		["$rune4Time"] = function() return TRB.Data.character.runes[4].remaining > 0 end,
+		["$rune5Time"] = function() return TRB.Data.character.runes[5].remaining > 0 end,
+		["$rune6Time"] = function() return TRB.Data.character.runes[6].remaining > 0 end,
+		["$rune1Ready"] = function() return TRB.Data.character.runes[1].ready end,
+		["$rune2Ready"] = function() return TRB.Data.character.runes[2].ready end,
+		["$rune3Ready"] = function() return TRB.Data.character.runes[3].ready end,
+		["$rune4Ready"] = function() return TRB.Data.character.runes[4].ready end,
+		["$rune5Ready"] = function() return TRB.Data.character.runes[5].ready end,
+		["$rune6Ready"] = function() return TRB.Data.character.runes[6].ready end,
+		["$runesReadyCount"] = function()
+			for x = 1, TRB.Data.character.maxResource2 do
+				if TRB.Data.character.runes[x].ready then return true end
+			end
+			return false
+		end,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
-	
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
-	local settings = nil
+	if valid then return valid end
 
-	if TRB.Data.character.specId == 1 then
-		settings = TRB.Data.settings.deathknight.blood
-	elseif TRB.Data.character.specId == 2 then
-		settings = TRB.Data.settings.deathknight.frost
-	elseif TRB.Data.character.specId == 3 then
-		settings = TRB.Data.settings.deathknight.unholy
-	else
-		return false
-	end
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then --Blood
-		-- No spec-specific variables for Blood currently
-	elseif TRB.Data.character.specId == 2 then --Frost
-		-- No spec-specific variables for Frost currently
-	elseif TRB.Data.character.specId == 3 then --Unholy
-		-- No spec-specific variables for Unholy currently
-	end
-
-	--Spec agnostic
-	if var == "$resource" or var == "$runicPower" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$runicPowerMax" then
-		valid = true
-	elseif var == "$rune1Time" then
-		if TRB.Data.character.runes[1].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune2Time" then
-		if TRB.Data.character.runes[2].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune3Time" then
-		if TRB.Data.character.runes[3].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune4Time" then
-		if TRB.Data.character.runes[4].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune5Time" then
-		if TRB.Data.character.runes[5].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune6Time" then
-		if TRB.Data.character.runes[6].remaining > 0 then
-			valid = true
-		end
-	elseif var == "$rune1Ready" then
-		if TRB.Data.character.runes[1].ready then
-			valid = true
-		end
-	elseif var == "$rune2Ready" then
-		if TRB.Data.character.runes[2].ready then
-			valid = true
-		end
-	elseif var == "$rune3Ready" then
-		if TRB.Data.character.runes[3].ready then
-			valid = true
-		end
-	elseif var == "$rune4Ready" then
-		if TRB.Data.character.runes[4].ready then
-			valid = true
-		end
-	elseif var == "$rune5Ready" then
-		if TRB.Data.character.runes[5].ready then
-			valid = true
-		end
-	elseif var == "$rune6Ready" then
-		if TRB.Data.character.runes[6].ready then
-			valid = true
-		end
-	elseif var == "$runesReadyCount" then
-		for x = 1, TRB.Data.character.maxResource2 do
-			if TRB.Data.character.runes[x].ready then
-				valid = true
-				break
-			end
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

@@ -6205,6 +6205,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		spec.precision.secondary = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
 		TRB.Data.lookupDirty = true
+		TRB.Functions.Character:RecomputeFormattedValues()
 	end)
 
 	if (classId == nil and specId == nil) or -- Global
@@ -6227,6 +6228,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			spec.precision.mana = value
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
 			TRB.Data.lookupDirty = true
+			TRB.Functions.Character:RecomputeFormattedValues()
 		end)
 	end
 
@@ -6242,6 +6244,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		spec.precision.health = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
 		TRB.Data.lookupDirty = true
+		TRB.Functions.Character:RecomputeFormattedValues()
 	end)
 
 
