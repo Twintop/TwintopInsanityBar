@@ -913,18 +913,18 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- Configure health bar group (apply appearance immediately to ensure textures are set)
 	if barGroups.health and settings.healthBar then
 		-- Resolve anchor group for health bar from settings
-		local healthAnchor = self:GetBarAnchor(settings, "health")
+		local healthAnchor = self:GetBarAnchor(layoutSettings, "health")
 		local healthAnchorKey = (healthAnchor and healthAnchor.barKey) or "primary"
 		local healthAnchorGroup
 		if healthAnchorKey ~= "screen" then
 			healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
 		end
 		-- healthAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
-		self:ConstructHealthBarGroup(settings, healthAnchorGroup, barGroups.health, true)
+		self:ConstructHealthBarGroup(layoutSettings, healthAnchorGroup, barGroups.health, true)
 	end
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
-	self:ApplyCustomBarGroupsLayout(settings, barGroups)
+	self:ApplyCustomBarGroupsLayout(layoutSettings, barGroups)
 
 	-- Apply per-bar smooth animation settings from displayBar
 	if settings.displayBar then
@@ -1928,7 +1928,14 @@ end
 function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
 	local keys = {}
 	if settings.bar then table.insert(keys, "primary") end
-	if settings.comboPoints then table.insert(keys, "secondary") end
+	if settings.comboPoints then
+		table.insert(keys, "secondary")
+	elseif settings.displayBar and settings.displayBar.enableFormSwitching ~= nil then
+		-- Druid: non-Feral specs don't have comboPoints in their settings (they inherit
+		-- Feral's at runtime), but "secondary" must still be available as an anchor target
+		-- so users can anchor other bars to combo points.
+		table.insert(keys, "secondary")
+	end
 	if settings.healthBar then table.insert(keys, "health") end
 
 	-- Custom bars from BarTypeRegistry that have settings
