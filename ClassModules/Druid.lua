@@ -1386,6 +1386,7 @@ local function UpdateResourceBar()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local isInEditMode = TRB.Functions.EditMode:IsInEditMode()
 
 	-- Always call HideResourceBar first to ensure visibility is correctly determined
 	-- even if we return early due to missing data
@@ -1599,7 +1600,7 @@ local function UpdateResourceBar()
 		-- consumes the hide. Explicitly hiding here on every frame guarantees the
 		-- secondary bar stays invisible when visibility is "never" or showComboPoints
 		-- is disabled.
-		if barGroups and barGroups.secondary then
+		if barGroups and barGroups.secondary and not isInEditMode then
 			barGroups.secondary:Hide()
 		end
 	end
@@ -1871,7 +1872,7 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health then
+			elseif barGroups and barGroups.health and not isInEditMode then
 				barGroups.health:Hide()
 			end
 
@@ -1888,7 +1889,7 @@ local function UpdateResourceBar()
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
 				end
-			elseif barGroups and barGroups.mana then
+			elseif barGroups and barGroups.mana and not isInEditMode then
 				barGroups.mana:Hide()
 			end
 		end
@@ -2250,7 +2251,7 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health then
+			elseif barGroups and barGroups.health and not isInEditMode then
 				barGroups.health:Hide()
 			end
 		end
@@ -2455,7 +2456,7 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health then
+			elseif barGroups and barGroups.health and not isInEditMode then
 				barGroups.health:Hide()
 			end
 		end
@@ -2541,7 +2542,7 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health then
+			elseif barGroups and barGroups.health and not isInEditMode then
 				barGroups.health:Hide()
 			end
 		end
