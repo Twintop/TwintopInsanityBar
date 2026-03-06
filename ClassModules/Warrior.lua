@@ -659,7 +659,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			if spellId == spells.shieldBlock.castId then
 				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
-			elseif spellId == spells.shieldCharge.id then -- Button press
+			--[[elseif spellId == spells.shieldCharge.id then -- Button press
 				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = true
 				C_Timer.After(0, function()
 					C_Timer.After((1 + (TRB.Data.character.latency * 2)), function()
@@ -673,7 +673,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			elseif spellId == spells.shieldCharge.castId then -- Stun
 				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
-				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false
+				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false]]
 			elseif spellId == spells.ignorePain.castId then
 				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
 				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
@@ -690,6 +690,35 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			end
 		end
 	end
+end
+
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+			if spellId == spells.shieldCharge.castId then
+				local currentTime = GetTime()
+				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
+				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
+				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false
+			end
+		end
+	end
+end
+
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 end
 
 local function UpdateSnapshot()
@@ -1685,6 +1714,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:DisableEvents()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
@@ -1697,6 +1727,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Rage
 		TRB.Data.resourceFactor = 10
 		TRB.Data.specSupported = true
+		TRB.Functions.Class:EnableEvents()
 	else
 		TRB.Data.specSupported = false
 	end
