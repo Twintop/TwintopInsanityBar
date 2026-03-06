@@ -3,6 +3,10 @@ local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
+-- Hash table for O(1) bar text cache lookups (keyed by cleanedText).
+-- Declared at file scope so ClearBarTextCacheHash and GetFromBarTextCache share the same upvalue.
+local barTextCacheHash = {}
+
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
 ---avoid table allocation after initial warm-up.
@@ -43,6 +47,13 @@ end
 function TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Data.prevLookupState = {}
 	TRB.Data.lookupDirty = true
+end
+
+---Clears the bar text format cache hash. Must be called whenever TRB.Data.cache.barText
+---is reassigned (spec switch, settings edit, etc.) to keep the O(1) hash in sync.
+function TRB.Functions.BarText:ClearBarTextCacheHash()
+	-- The hash is a local upvalue; wipe it here where it's in scope
+	for k in pairs(barTextCacheHash) do barTextCacheHash[k] = nil end
 end
 
 ---Scans all enabled bar text entries and builds a set of which $variable and #icon
@@ -690,16 +701,39 @@ end
 ---per-frame string building, operator normalization, and loadstring() compilation.
 ---@param tree table
 ---@return string
+
+-- Reusable buffer stack for RemoveInvalidVariablesFromBarText to avoid per-call table allocation.
+-- Stack depth handles recursive calls (conditional true/false branches).
+local rivBufferStack = {}
+local rivBufferDepth = 0
+
 local function RemoveInvalidVariablesFromBarText(tree)
 	if tree == nil or tree.barText == nil then
 		return ""
 	end
-	
-	local returnText = {}
 
-	for _, v in ipairs(tree.barText) do
+	local barText = tree.barText
+	local barTextLen = #barText
+
+	-- Fast path: single-element tree with a plain string (very common for true/false branches)
+	if barTextLen == 1 and type(barText[1]) == "string" then
+		return barText[1]
+	end
+
+	-- Acquire a buffer from the stack (or create one)
+	rivBufferDepth = rivBufferDepth + 1
+	local returnText = rivBufferStack[rivBufferDepth]
+	if returnText == nil then
+		returnText = {}
+		rivBufferStack[rivBufferDepth] = returnText
+	end
+	local rtLen = 0
+
+	for idx = 1, barTextLen do
+		local v = barText[idx]
 		if type(v) == "string" then
-			table.insert(returnText, v)
+			rtLen = rtLen + 1
+			returnText[rtLen] = v
 		else
 			-- Compile the expression template on first evaluation of this node
 			if v.compiledExpression == nil then
@@ -726,16 +760,25 @@ local function RemoveInvalidVariablesFromBarText(tree)
 			end
 
 			if processResult == "INVALID" then-- Something went wrong, show the error text instead
-				table.insert(returnText, L["BarTextInvalidIfElseLogic"])
+				rtLen = rtLen + 1
+				returnText[rtLen] = L["BarTextInvalidIfElseLogic"]
 			elseif processResult == "TRUE" then
-				table.insert(returnText, RemoveInvalidVariablesFromBarText(v.trueResult))
+				rtLen = rtLen + 1
+				returnText[rtLen] = RemoveInvalidVariablesFromBarText(v.trueResult)
 			elseif processResult == "FALSE" then
-				table.insert(returnText, RemoveInvalidVariablesFromBarText(v.falseResult))
+				rtLen = rtLen + 1
+				returnText[rtLen] = RemoveInvalidVariablesFromBarText(v.falseResult)
 			end
 		end
 	end
 
-    return table.concat(returnText)
+	-- Clear trailing stale entries and release buffer back to stack
+	for i = rtLen + 1, #returnText do
+		returnText[i] = nil
+	end
+	local result = table.concat(returnText, "", 1, rtLen)
+	rivBufferDepth = rivBufferDepth - 1
+    return result
 end
 
 ---Adds the input to the bar text cache
@@ -909,17 +952,14 @@ end
 ---@param barText string
 ---@return table
 local function GetFromBarTextCache(barText)
-	local entries = #TRB.Data.cache.barText
-
-	if entries > 0 then
-		for x = 1, entries do
-			if TRB.Data.cache.barText[x].cleanedText == barText then
-				return TRB.Data.cache.barText[x]
-			end
-		end
+	local cached = barTextCacheHash[barText]
+	if cached then
+		return cached
 	end
 
-	return AddToBarTextCache(barText)
+	local result = AddToBarTextCache(barText)
+	barTextCacheHash[barText] = result
+	return result
 end
 
 -- Reusable buffer for GetReturnText to avoid allocating a new table every call
@@ -960,7 +1000,7 @@ local function GetReturnText(inputText)
 		inputText.text = ""
 	end
 
-	return string.format("%s%s", inputText.color, inputText.text)
+	return inputText.color .. inputText.text
 end
 
 ---Checks if any primary stat ratings are nil
@@ -1183,6 +1223,20 @@ end
 -- Reused per-call cache for GetBarTextFrame results (avoids redundant frame lookups)
 local showFrameCache = {}
 
+-- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
+local barTextBuffer = { text = "", color = "" }
+
+-- Pre-computed "textFrames"..i key strings (populated on demand, avoids per-frame string concat)
+local textFrameKeys = {}
+local function GetTextFrameKey(i)
+	local key = textFrameKeys[i]
+	if key == nil then
+		key = "textFrames" .. i
+		textFrameKeys[i] = key
+	end
+	return key
+end
+
 ---Updates the resource bar text based on the settings
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param refreshText boolean
@@ -1229,26 +1283,30 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				if refreshText or isScreenText then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
-					local key = e.position.relativeToFrame
+					local frameKey = e.position.relativeToFrame
 					local isEnabled, isVisible
-					local fCache = showFrameCache
-					local cached = fCache[key]
+					local cached = showFrameCache[frameKey]
 					if cached then
 						isEnabled = cached[1]
 						isVisible = cached[2]
 					else
-						_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(key)
+						_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(frameKey)
 						if isScreenText then
 							isVisible = true
 						end
-						fCache[key] = { isEnabled, isVisible }
+						showFrameCache[frameKey] = { isEnabled, isVisible }
 					end
 					
-					TRB.Data.cache.values.frame["textFrames" .. i] = TRB.Data.cache.values.frame["textFrames" .. i] or {}
+					local tfKey = GetTextFrameKey(i)
+					local frameCache = TRB.Data.cache.values.frame[tfKey]
+					if frameCache == nil then
+						frameCache = {}
+						TRB.Data.cache.values.frame[tfKey] = frameCache
+					end
 					
 					-- Skip expensive text processing if the target bar is not visible
 					if not isEnabled or not isVisible then
-						TRB.Data.cache.values.frame["textFrames" .. i].text = ""
+						frameCache.text = ""
 					else
 						local color = e.color and e.color.color
 						
@@ -1264,12 +1322,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 						color = color or "FFFFFFFF"
 
-						local barText = {
-							text = e.text,
-							color = string.format("|c%s", color)
-						}
+						barTextBuffer.text = e.text
+						barTextBuffer.color = "|c" .. color
 
-						local returnText = GetReturnText(barText)
+						local returnText = GetReturnText(barTextBuffer)
 
 						if textFrames ~= nil and textFrames[i] ~= nil then
 							pcall(TryUpdateText, textFrames[i],  returnText)
@@ -1281,15 +1337,15 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 								pcall(TryUpdateText, textFrames[i],  returnText)
 							end
 						end
-						TRB.Data.cache.values.frame["textFrames" .. i].text = returnText
+						frameCache.text = returnText
 					end
 					
-					if TRB.Data.cache.values.frame["textFrames" .. i].level ~= TRB.Data.settings.core.strata.level then
+					if frameCache.level ~= TRB.Data.settings.core.strata.level then
 						if textFrames ~= nil and textFrames[i] ~= nil then
 							textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 							textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 						end
-						TRB.Data.cache.values.frame["textFrames" .. i].level = TRB.Data.settings.core.strata.level
+						frameCache.level = TRB.Data.settings.core.strata.level
 					end
 				end
 			end

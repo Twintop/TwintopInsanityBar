@@ -800,6 +800,7 @@ end
 
 function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barText = {}
+	TRB.Functions.BarText:ClearBarTextCacheHash()
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
 	TRB.Data.activeVariables = nil

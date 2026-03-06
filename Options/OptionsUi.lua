@@ -6333,6 +6333,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		end
 		if d.classId == nil or (d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId) then
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
 			TRB.Data.activeVariables = nil
@@ -6378,6 +6379,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Data.settings.core.global[lowerClassName][specName].globalBarText = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
 			TRB.Data.activeVariables = nil
@@ -7324,6 +7326,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
 			end
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
 			TRB.Data.activeVariables = nil
@@ -7349,6 +7352,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		SetTableValues(displayText, barTextTable)
 		TRB.Data.cache.barText = {}
+		TRB.Functions.BarText:ClearBarTextCacheHash()
 		TRB.Data.cache.symbols = {}
 		TRB.Data.cache.barTextTree = {}
 		TRB.Data.activeVariables = nil
@@ -7409,6 +7413,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
 				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
 				TRB.Data.cache.barText = {}
+				TRB.Functions.BarText:ClearBarTextCacheHash()
 				TRB.Data.cache.symbols = {}
 				TRB.Data.cache.barTextTree = {}
 				TRB.Data.activeVariables = nil
@@ -7425,6 +7430,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			end
 		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
 			TRB.Data.activeVariables = nil
