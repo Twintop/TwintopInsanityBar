@@ -1989,5 +1989,8 @@ if locale == "zhCN" then
 	L["PriestBarTextNameAFCharge2"] = "天堂之羽充能2（简写）"
 	L["PriestBarTextNameAFCharge3"] = "天堂之羽充能3（简写）"
 	L["ResourceAngelicFeather"] = "天堂之羽"
+
+	L["DruidCheckboxShowComboPoints"] = "所有变形形态显示连击点"
+	L["DruidCheckboxShowComboPointsTooltip"] = "勾选后，无论当前处于何种变形形态，连击点条均会显示；取消勾选则仅在猎豹形态下显示连击点条。上方的「连击点显示时机」下拉选项仍会控制连击点条的整体显示规则。"
 	
 end
