@@ -575,10 +575,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local frameLevels = TRB.Data.constants.frameLevels
 
 	-- ========================
-	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's combo point settings
+	-- DRUID SPECIAL CASE: Non-Feral Druids use Feral's combo point settings
 	-- for layout purposes (anchor, dimensions, textures, colors). This must happen
 	-- BEFORE building the anchor forest so the correct anchor config (e.g.,
 	-- barKey="screen" for CDM binding) is used for tree construction.
+	-- Triggers when form switching OR showComboPoints is enabled.
 	-- ========================
 	local layoutSettings = settings
 	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
@@ -588,8 +589,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
+		local showComboPoints = druidSettings and druidSettings.displayBar and druidSettings.displayBar.showComboPoints
 
-		if enableFormSwitching then
+		if enableFormSwitching or showComboPoints then
 			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettings then
 				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
@@ -1118,7 +1120,7 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 
 	local editModeLayoutEnabled = TRB.Functions.EditMode:IsLayoutEnabled()
 
-	-- DRUID SPECIAL CASE: Non-Feral Druids ALWAYS use Feral's comboPoints for forest building
+	-- DRUID SPECIAL CASE: Non-Feral Druids use Feral's comboPoints for forest building
 	local layoutSettings = settings
 	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 and barGroups.secondary then
 		local specName = TRB.Data.character.specName
@@ -1127,7 +1129,8 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
-		if enableFormSwitching then
+		local showComboPoints = druidSettings and druidSettings.displayBar and druidSettings.displayBar.showComboPoints
+		if enableFormSwitching or showComboPoints then
 			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettings then
 				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral

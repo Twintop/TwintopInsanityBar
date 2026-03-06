@@ -1038,9 +1038,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 		
 		-- Override with spec-specific custom bar visibility settings
-		-- These are always spec-specific (mana, stagger, defensives, etc.)
+		-- These are always spec-specific (mana, stagger, defensives, secondary/combo points, etc.)
 		if spec.displayBar and spec.displayBar.mana ~= nil then
 			specCache.settings.displayBar.mana = spec.displayBar.mana
+		end
+		if spec.displayBar and spec.displayBar.secondary ~= nil then
+			specCache.settings.displayBar.secondary = spec.displayBar.secondary
 		end
 		if spec.displayBar and spec.displayBar.stagger ~= nil then
 			specCache.settings.displayBar.stagger = spec.displayBar.stagger
@@ -1052,6 +1055,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if spec.displayBar then
 			if spec.displayBar.enableFormSwitching ~= nil then
 				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
+			end
+			if spec.displayBar.showComboPoints ~= nil then
+				specCache.settings.displayBar.showComboPoints = spec.displayBar.showComboPoints
 			end
 		end
 	else

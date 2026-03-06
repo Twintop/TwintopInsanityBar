@@ -292,7 +292,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			health = { visibility = "always", smooth = true },
 			mana = { visibility = "never", smooth = true },
 			dragonriding = true,
-			enableFormSwitching = true
+			enableFormSwitching = true,
+			showComboPoints = false
 		},
 		endOf = {
 			eclipse = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0, { celestialAlignmentOnly = false })
@@ -627,7 +628,8 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			secondary = { visibility = "always", smooth = false },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true,
-			enableFormSwitching = true
+			enableFormSwitching = true,
+			showComboPoints = true
 		},
 		overcap = {
 			mode = "relative",
@@ -809,7 +811,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			secondary = { visibility = "always", smooth = false },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true,
-			enableFormSwitching = true
+			enableFormSwitching = true,
+			showComboPoints = false
 		},
 		overcap = {
 			mode = "relative",
@@ -930,7 +933,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			secondary = { visibility = "always", smooth = false },
 			health = { visibility = "always", smooth = true },
 			dragonriding = true,
-			enableFormSwitching = true
+			enableFormSwitching = true,
+			showComboPoints = false
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -1298,7 +1302,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], false, nil, true, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], true, L["ResourceComboPoints"], true, true)
 
 	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
@@ -1316,21 +1320,43 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.colors.backdrop = {}
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-				TRB.Functions.Class:CheckCharacter()
-			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
 			TRB.Data.cache.values.frame = {}
-			TRB.Functions.BarText:CreateBarTextFrames(11, 1)
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showComboPoints
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
+	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
+	f:SetChecked(spec.displayBar.showComboPoints)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.showComboPoints = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 1) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
 		end
 	end)
 end
@@ -1983,21 +2009,43 @@ local function FeralConstructBarVisibilityPanel(parent)
 			TRB.Functions.Character:ResetCaches()
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-				TRB.Functions.Class:CheckCharacter()
-			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
 			TRB.Data.cache.values.frame = {}
-			TRB.Functions.BarText:CreateBarTextFrames(11, 2)
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showComboPoints
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
+	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
+	f:SetChecked(spec.displayBar.showComboPoints)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.showComboPoints = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 2) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
 		end
 	end)
 end
@@ -2558,7 +2606,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, true, L["ResourceComboPoints"], true)
 
 	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
@@ -2576,21 +2624,43 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.colors.backdrop = {}
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-				TRB.Functions.Class:CheckCharacter()
-			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
 			TRB.Data.cache.values.frame = {}
-			TRB.Functions.BarText:CreateBarTextFrames(11, 3)
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showComboPoints
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
+	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
+	f:SetChecked(spec.displayBar.showComboPoints)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.showComboPoints = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 3) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
 		end
 	end)
 end
@@ -3038,7 +3108,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
 
 	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
@@ -3056,21 +3126,43 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.colors.backdrop = {}
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-			-- Force re-apply layout and appearance to ensure secondary bar gets Feral settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-				TRB.Functions.Class:CheckCharacter()
-			end
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
 			TRB.Data.cache.values.frame = {}
-			TRB.Functions.BarText:CreateBarTextFrames(11, 4)
+		end
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showComboPoints
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
+	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
+	f:SetChecked(spec.displayBar.showComboPoints)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.showComboPoints = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 4) then
+			-- Clear all caches before rebuilding
+			TRB.Functions.Character:ResetCaches()
+			TRB.Data.cache.colors.border = {}
+			TRB.Data.cache.colors.backdrop = {}
+			-- Destroy and recreate bar groups to add/remove secondary bar
+			TRB.Functions.Bar:DestroyBarGroups()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+			TRB.Functions.Character:ResetColorCaches()
+			TRB.Data.cache.values.frame = {}
 		end
 	end)
 end

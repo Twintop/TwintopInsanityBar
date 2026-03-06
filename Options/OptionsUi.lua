@@ -4752,7 +4752,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 				end
 			else
 				if classId ~= nil and specId ~= nil then
-					if isMana and TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar then
+					-- Also update specCache directly: when global displayBar is active,
+					-- specCache.settings.displayBar is a deep copy of core.displayBar,
+					-- so the spec.displayBar update above doesn't flow through.
+					if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar[displayBarKey] then
 						TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar[displayBarKey].visibility = newValue
 					end
 					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then

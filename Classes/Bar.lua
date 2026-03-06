@@ -262,6 +262,13 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	}
 	self.frame:ApplyBackdrop()
 
+	-- ApplyBackdrop resets border/background colors to white, and SetStatusBarTexture may
+	-- reset the fill vertex color. Invalidate color caches so the next SetColor/SetBorderColor/
+	-- SetBackgroundColor calls aren't skipped as no-ops.
+	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
+	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
+	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
+
 	-- Re-anchor all overlay slots (border insets and fill texture reference may have changed)
 	for _, slot in pairs(self.overlaySlots) do
 		slot:Reanchor()
