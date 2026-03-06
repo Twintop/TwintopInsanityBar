@@ -759,9 +759,16 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
     if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
         enableFormSwitching = false
     end
+
+    -- showComboPoints allows specs to display combo points (Feral defaults to true, others to false)
+    local showComboPoints = false
+    if druidSettings and druidSettings.displayBar and druidSettings.displayBar.showComboPoints then
+        showComboPoints = true
+    end
     
-    -- For Feral, always create secondary bar. For others, only if form switching is enabled.
-    local createSecondary = (specId == 2) or enableFormSwitching
+    -- Create secondary bar when showComboPoints is enabled (or not explicitly disabled for Feral),
+    -- or when form switching could require it.
+    local createSecondary = (specId == 2 and showComboPoints ~= false) or enableFormSwitching or showComboPoints
 
     if specId == 1 then -- Balance
         -- Primary Astral Power bar only (1 node)
