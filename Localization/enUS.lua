@@ -2106,3 +2106,7 @@ L["PriestBarTextNameAFCharge1"] = "AF Charge 1"
 L["PriestBarTextNameAFCharge2"] = "AF Charge 2"
 L["PriestBarTextNameAFCharge3"] = "AF Charge 3"
 L["ResourceAngelicFeather"] = "Angelic Feather"
+
+-- Druid Combo Points outside Cat Form
+L["DruidCheckboxShowComboPoints"] = "Show Combo Points in every shapeshift form"
+L["DruidCheckboxShowComboPointsTooltip"] = "When checked, the Combo Points bar will be displayed regardless of current shapeshift form. When unchecked, the Combo Points bar will only be shown in Cat Form. The Combo Points visibility dropdown above will still control when the Combo Points bar appears in general."

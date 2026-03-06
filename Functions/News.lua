@@ -12,11 +12,24 @@ local content = [====[
 
 ---
 
+# 12.0.1.26-release (2026-03-06)
+## Druid
+
+- [#560](#560) Allow Combo Points to be shown in all shapeshift forms instead of just Cat Form. This is controlled by a new checkbox option in the Druid options.
+- [#560](#560) Added a per-specialization visibility option for Combo Points.
+- [#677](#677) Fix an issue where Combo Points were appearing when they shouldn't be and without the correct colors/textures.
+
+---
+
 # 12.0.1.25-release (2026-03-05)
 ## General
 ### Behind the Scenes
 
 - Refactor how individual bars handle their visibility to be more consistent and generic. This is precursor work to adding more visibility options.
+
+### Localization
+
+- [#675](#675) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Demon Hunter
 ### Vengeance

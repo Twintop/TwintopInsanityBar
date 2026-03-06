@@ -285,8 +285,46 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	end
 
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-	local shouldShowSecondary = (currentForm == "cat")
-	local shouldShowMana = (currentForm == "moonkin" and TRB.Data.character.specId == 1)
+	local specId = TRB.Data.character.specId
+
+	-- Determine displaySpecId (mirrors GetFormSpecForSettings in Druid.lua)
+	local enableFormSwitching = true
+	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
+		enableFormSwitching = false
+	end
+	local displaySpecId = specId
+	if enableFormSwitching then
+		if currentForm == "cat" then displaySpecId = 2
+		elseif currentForm == "bear" then displaySpecId = 3
+		elseif currentForm == "moonkin" then
+			displaySpecId = (specId == 1) and 1 or 4
+		else displaySpecId = 4 end
+	end
+
+	-- Secondary (Combo Points): In cat form (displaySpecId == 2), CPs are the native resource
+	-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
+	-- (defaults ON for Feral, OFF for non-Feral).
+	local shouldShowSecondary
+	local secondaryVis = settings and settings.displayBar and settings.displayBar.secondary
+	local secondaryNotNever = not secondaryVis or secondaryVis.visibility ~= "never"
+	if displaySpecId == 2 then
+		-- Cat form (or Feral with form-switching off): CPs are native, always eligible
+		shouldShowSecondary = secondaryNotNever
+	elseif specId == 2 then
+		-- Feral in non-cat form: checkbox defaults ON (nil → show)
+		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		shouldShowSecondary = (showCP ~= false) and secondaryNotNever
+	else
+		-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
+		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		shouldShowSecondary = (showCP == true) and secondaryNotNever
+	end
+
+	-- Mana bar: eligible when specId == 1 (Balance) and displaySpecId == 1 (primary shows Astral Power,
+	-- not Mana). This matches HideResourceBar, UpdateResourceBar, and GetBarTextFrame.
+	-- When form switching is OFF, displaySpecId == specId == 1, so mana wrapper always shows.
+	-- When form switching is ON, only moonkin gives displaySpecId == 1.
+	local shouldShowMana = (specId == 1 and displaySpecId == 1)
 
 	-- Check if secondary is its own tree root (has a wrapper)
 	local secondaryWrapper = editModeWrapperFrames["secondary"]
@@ -377,10 +415,45 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	local treeSettings = settings
 	if TRB.Data.character.classId == 11 and not includeHidden then
 		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-		local shouldIncludeComboPoints = (currentForm == "cat")
-		local shouldIncludeMana = (currentForm == "moonkin" and TRB.Data.character.specId == 1)
+		local specId = TRB.Data.character.specId
 
-		local isNonFeralDruid = (TRB.Data.character.specId ~= 2)
+		-- Compute displaySpecId (mirrors GetFormSpecForSettings / RefreshDruidWrapperVisibility)
+		local enableFormSwitching = true
+		if settings.displayBar and settings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+		local displaySpecId = specId
+		if enableFormSwitching then
+			if currentForm == "cat" then displaySpecId = 2
+			elseif currentForm == "bear" then displaySpecId = 3
+			elseif currentForm == "moonkin" then
+				displaySpecId = (specId == 1) and 1 or 4
+			else displaySpecId = 4 end
+		end
+
+		-- Secondary (Combo Points): In cat form (displaySpecId == 2), CPs are the native resource
+		-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
+		-- (defaults ON for Feral, OFF for non-Feral).
+		local shouldIncludeComboPoints
+		local secondaryVis = settings.displayBar and settings.displayBar.secondary
+		local secondaryNotNever = not secondaryVis or secondaryVis.visibility ~= "never"
+		if displaySpecId == 2 then
+			-- Cat form (or Feral with form-switching off): CPs are native, always eligible
+			shouldIncludeComboPoints = secondaryNotNever
+		elseif specId == 2 then
+			-- Feral in non-cat form: checkbox defaults ON (nil → show)
+			local showCP = settings.displayBar and settings.displayBar.showComboPoints
+			shouldIncludeComboPoints = (showCP ~= false) and secondaryNotNever
+		else
+			-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
+			local showCP = settings.displayBar and settings.displayBar.showComboPoints
+			shouldIncludeComboPoints = (showCP == true) and secondaryNotNever
+		end
+
+		-- Mana bar: eligible when Balance (specId==1) and displaySpecId==1
+		local shouldIncludeMana = (specId == 1 and displaySpecId == 1)
+
+		local isNonFeralDruid = (specId ~= 2)
 		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 
 		-- Determine which tree "secondary" belongs to, so we only inject/strip when
@@ -757,7 +830,8 @@ function TRB.Functions.EditMode:RegisterAllTreeRoots()
 		if druidSettings and druidSettings.displayBar and druidSettings.displayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
-		if enableFormSwitching then
+		local showComboPoints = druidSettings and druidSettings.displayBar and druidSettings.displayBar.showComboPoints
+		if enableFormSwitching or showComboPoints then
 			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
 			if not feralSettings then
 				feralSettings = TRB.Data.settings.druid and TRB.Data.settings.druid.feral
