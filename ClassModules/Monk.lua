@@ -353,103 +353,100 @@ local function RefreshLookupData_Brewmaster()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.brewmaster
 	local sharedSettings = TRB.Data.specCache["monk_brewmaster"].settings
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
-
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
-				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	--$energy
-	local _currentEnergy = snapshotData.attributes.resource
-	local _castingEnergy = snapshotData.casting.resourceFinal
-
-	--$stagger and $staggerPercent
-	local _stagger = snapshotData.attributes.stagger or 0
-	local _staggerPercent = snapshotData.attributes.staggerPercent or 0
-
-	-- Get stagger color from ColorCurve result, fallback to low color from custom bar settings
-	local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
-	local staggerColor = staggerColors.low and staggerColors.low.color
-	if snapshotData.attributes.staggerColor then
-		local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
-		staggerColor = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
-	end
-
-	--$niuzaoTime
-	local _niuzaoTime = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$resource"] = _currentEnergy
-	lookupLogic["$energy"] = _currentEnergy
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = _castingEnergy
-	lookupLogic["$stagger"] = _stagger
-	lookupLogic["$staggerPercent"] = _staggerPercent
-	lookupLogic["$niuzaoTime"] = _niuzaoTime
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax)
+	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] then
 
-	-- OVERCAP: $energy/$resource + $casting
-	local resourceFormatted = snapshotData.formatted.resource or ""
-	local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
-	local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
-	if resourceChanged or castingChanged then
-		local currentEnergy
-		local castingEnergy
-		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
-			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingEnergy))
-		else
-			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
-			castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, _castingEnergy)
+		local currentEnergyColor = sharedSettings.colors.text.current.color
+		local castingEnergyColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+					castingEnergyColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
 		end
-		lookup["$resource"] = currentEnergy
-		lookup["$energy"] = currentEnergy
-		lookup["$casting"] = castingEnergy
+
+		local _currentEnergy = snapshotData.attributes.resource
+		local _castingEnergy = snapshotData.casting.resourceFinal
+
+		lookupLogic["$resource"] = _currentEnergy
+		lookupLogic["$energy"] = _currentEnergy
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingEnergy
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
+		if resourceChanged or castingChanged then
+			local currentEnergy
+			local castingEnergy
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingEnergy))
+			else
+				currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
+				castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, _castingEnergy)
+			end
+			lookup["$resource"] = currentEnergy
+			lookup["$energy"] = currentEnergy
+			lookup["$casting"] = castingEnergy
+		end
+
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$energyMax"] = TRB.Data.character.maxResource
 	end
 
-	-- RAW: $resourceMax/$energyMax
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$energyMax"] = TRB.Data.character.maxResource
+	-- Block B: Stagger ($stagger, $staggerPercent)
+	if not activeVars or activeVars["$stagger"] or activeVars["$staggerPercent"] then
+		local _stagger = snapshotData.attributes.stagger or 0
+		local _staggerPercent = snapshotData.attributes.staggerPercent or 0
 
-	-- FCS: $stagger
-	if lookupChanged(prevState, "$stagger", _stagger, staggerColor, true) then
-		lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
+		local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
+		local staggerColor = staggerColors.low and staggerColors.low.color
+		if snapshotData.attributes.staggerColor then
+			local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
+			staggerColor = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
+		end
+
+		lookupLogic["$stagger"] = _stagger
+		lookupLogic["$staggerPercent"] = _staggerPercent
+
+		if lookupChanged(prevState, "$stagger", _stagger, staggerColor, true) then
+			lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
+		end
+		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor, true) then
+			lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
+		end
 	end
 
-	-- FCP: $staggerPercent
-	if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor, true) then
-		lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
-	end
-
-	-- TMR: $niuzaoTime
-	if lookupChanged(prevState, "$niuzaoTime", _niuzaoTime) then
-		lookup["$niuzaoTime"] = TRB.Functions.BarText:TimerPrecision(_niuzaoTime)
+	-- Block C: Niuzao ($niuzaoTime)
+	if not activeVars or activeVars["$niuzaoTime"] then
+		local _niuzaoTime = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
+		lookupLogic["$niuzaoTime"] = _niuzaoTime
+		if lookupChanged(prevState, "$niuzaoTime", _niuzaoTime) then
+			lookup["$niuzaoTime"] = TRB.Functions.BarText:TimerPrecision(_niuzaoTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -457,63 +454,53 @@ local function RefreshLookupData_Brewmaster()
 end
 
 local function RefreshLookupData_Mistweaver()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local specSettings = TRB.Data.settings.monk.mistweaver
 	local sharedSettings = TRB.Data.specCache["monk_mistweaver"].settings
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentManaColor = TRB.Data.settings.monk.mistweaver.colors.text.current.color
-	local castingManaColor = TRB.Data.settings.monk.mistweaver.colors.text.casting.color
-
-	local _castingMana = snapshotData.casting.resourceFinal
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	----------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = _castingMana
+	-- Block A: Core mana ($mana, $resource, $casting, $manaMax, $resourceMax, $manaPercent, $resourcePercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
 
-	-- FCS: $mana/$resource
-	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		local formatted = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		lookup["$mana"] = formatted
-		lookup["$resource"] = formatted
-	end
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = TRB.Data.settings.monk.mistweaver.colors.text.current.color
+		local castingManaColor = TRB.Data.settings.monk.mistweaver.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 
-	-- FCS: $manaMax/$resourceMax
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
-		local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-		lookup["$manaMax"] = formatted
-		lookup["$resourceMax"] = formatted
-	end
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$casting"] = _castingMana
 
-	-- FCP: $manaPercent/$resourcePercent
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		local formatted = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
-		lookup["$manaPercent"] = formatted
-		lookup["$resourcePercent"] = formatted
-	end
-
-	-- FCS: $casting
-	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
-		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local formatted = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = formatted
+			lookup["$resource"] = formatted
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local formatted = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = formatted
+			lookup["$resourceMax"] = formatted
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local formatted = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = formatted
+			lookup["$resourcePercent"] = formatted
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -521,90 +508,88 @@ local function RefreshLookupData_Mistweaver()
 end
 
 local function RefreshLookupData_Windwalker()
-	local currentTime = GetTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.windwalker
 	local sharedSettings = TRB.Data.specCache["monk_windwalker"].settings
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
-				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	--$energy
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _normalizedEnergy = normalizedEnergy
-	local _castingEnergy = snapshotData.casting.resourceFinal
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = _castingEnergy
-	lookupLogic["$chi"] = snapshotData.attributes.resource2
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax)
+	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] then
 
-	-- OVERCAP: $energy/$resource + $casting
-	local resourceFormatted = snapshotData.formatted.resource or ""
-	local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
-	local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
-	if resourceChanged or castingChanged then
-		local currentEnergy
-		local castingEnergy
-		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
-			castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
-		else
-			currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
-			castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
+		local normalizedEnergy = snapshotData.attributes.resourceModified
+		local currentEnergyColor = sharedSettings.colors.text.current.color
+		local castingEnergyColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+					castingEnergyColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
 		end
-		lookup["$resource"] = currentEnergy
-		lookup["$energy"] = currentEnergy
-		lookup["$casting"] = castingEnergy
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local _castingEnergy = snapshotData.casting.resourceFinal
+
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingEnergy
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
+		if resourceChanged or castingChanged then
+			local currentEnergy
+			local castingEnergy
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
+			else
+				currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
+				castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentEnergy
+			lookup["$energy"] = currentEnergy
+			lookup["$casting"] = castingEnergy
+		end
+
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$energyMax"] = TRB.Data.character.maxResource
 	end
 
-	-- RAW: $resourceMax/$energyMax
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$energyMax"] = TRB.Data.character.maxResource
+	-- Block B: Chi ($chi, $comboPoints, $chiMax, $comboPointsMax)
+	if not activeVars or activeVars["$chi"] or activeVars["$comboPoints"]
+		or activeVars["$chiMax"] or activeVars["$comboPointsMax"] then
+		lookupLogic["$chi"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
-	-- RAW: $chi/$comboPoints
-	lookup["$chi"] = snapshotData.formatted.resource2 or ""
-	lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
-
-	-- RAW: $chiMax/$comboPointsMax
-	lookup["$chiMax"] = TRB.Data.character.maxResource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$chi"] = snapshotData.formatted.resource2 or ""
+		lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
+		lookup["$chiMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
 
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic

@@ -481,145 +481,113 @@ local function CalculateResourceGain(resource)
 end
 
 local function RefreshLookupData_Discipline()
-	local specSettings = TRB.Data.settings.priest.discipline
 	local sharedSettings = TRB.Data.specCache["priest_discipline"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	--$pwRadianceTime
-	local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
-
-	--$pwRadianceCharges
-	local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
-
-	--[[
-	--$scTime
-	local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
-	local scTime = TRB.Functions.BarText:TimerPrecision(_scTime)
-	
-	--$atonementMinTime
-	local _atonementMinTime = snapshots[spells.atonement.id].attributes.minRemainingTime
-	local atonementMinTime = TRB.Functions.BarText:TimerPrecision(_atonementMinTime)
-	
-	--$atonementMaxTime
-	local _atonementMaxTime = snapshots[spells.atonement.id].attributes.maxRemainingTime
-	local atonementMaxTime = TRB.Functions.BarText:TimerPrecision(_atonementMaxTime)
-
-	
-	--$atonementTime
-	local _atonementTime = 0
-
-	if target ~= nil then
-		_atonementTime = target.spells[spells.atonement.id].remainingTime or 0
-	end
-	local atonementTime = TRB.Functions.BarText:TimerPrecision(_atonementTime)
-
-	--$atonementCount
-	local _atonementCount = snapshotData.targetData.count[spells.atonement.id] or 0
-	local atonementCount = string.format("%s", _atonementCount)]]
-
-	--[[--$entropicRiftTime
-	local _entropicRiftTime = snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
-	local entropicRiftTime = TRB.Functions.BarText:TimerPrecision(_entropicRiftTime)]]
-
-	--$afTime
-	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
-	--$afCharges
-	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
-	--$afMaxCharges
-	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
-
-	----------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$pwRadianceTime"] = _pwRadianceTime
-	lookupLogic["$radianceTime"] = _pwRadianceTime
-	lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
-	lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
-	lookupLogic["$radianceCharges"] = _pwRadianceCharges
-	lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
-	lookupLogic["$afTime"] = _afTime
-	lookupLogic["$angelicFeatherTime"] = _afTime
-	lookupLogic["$afCharges"] = _afCharges
-	lookupLogic["$angelicFeatherCharges"] = _afCharges
-	lookupLogic["$afMaxCharges"] = _afMaxCharges
-	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
-	--[[lookupLogic["$scTime"] = _scTime
-	lookupLogic["$shadowCovenantTime"] = _scTime
-	lookupLogic["$entropicRiftTime"] = _entropicRiftTime]]
+	-- Block A: Core mana ($mana, $resource, $manaMax, $resourceMax, $manaPercent, $resourcePercent, $casting)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 
-	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		lookup["$mana"] = f
-		lookup["$resource"] = f
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
 	end
-	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
-		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+
+	-- Block B: PW Radiance ($pwRadianceTime, $radianceTime, $powerWordRadianceTime, $pwRadianceCharges, $radianceCharges, $powerWordRadianceCharges)
+	if not activeVars or activeVars["$pwRadianceTime"] or activeVars["$radianceTime"] or activeVars["$powerWordRadianceTime"]
+		or activeVars["$pwRadianceCharges"] or activeVars["$radianceCharges"] or activeVars["$powerWordRadianceCharges"] then
+		local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
+		local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
+
+		lookupLogic["$pwRadianceTime"] = _pwRadianceTime
+		lookupLogic["$radianceTime"] = _pwRadianceTime
+		lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
+		lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
+		lookupLogic["$radianceCharges"] = _pwRadianceCharges
+		lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
+
+		if lookupChanged(prevState, "$pwRadianceTime", _pwRadianceTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_pwRadianceTime)
+			lookup["$pwRadianceTime"] = f
+			lookup["$radianceTime"] = f
+			lookup["$powerWordRadianceTime"] = f
+		end
+		if lookupChanged(prevState, "$pwRadianceCharges", _pwRadianceCharges) then
+			local f = string.format("%.0f", _pwRadianceCharges)
+			lookup["$pwRadianceCharges"] = f
+			lookup["$radianceCharges"] = f
+			lookup["$powerWordRadianceCharges"] = f
+		end
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-		lookup["$manaMax"] = f
-		lookup["$resourceMax"] = f
-	end
-	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
-		lookup["$manaPercent"] = f
-		lookup["$resourcePercent"] = f
-	end
-	if lookupChanged(prevState, "$pwRadianceTime", _pwRadianceTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_pwRadianceTime)
-		lookup["$pwRadianceTime"] = f
-		lookup["$radianceTime"] = f
-		lookup["$powerWordRadianceTime"] = f
-	end
-	if lookupChanged(prevState, "$pwRadianceCharges", _pwRadianceCharges) then
-		local f = string.format("%.0f", _pwRadianceCharges)
-		lookup["$pwRadianceCharges"] = f
-		lookup["$radianceCharges"] = f
-		lookup["$powerWordRadianceCharges"] = f
-	end
-	if lookupChanged(prevState, "$afTime", _afTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_afTime)
-		lookup["$afTime"] = f
-		lookup["$angelicFeatherTime"] = f
-	end
-	if lookupChanged(prevState, "$afCharges", _afCharges) then
-		local f = string.format("%.0f", _afCharges)
-		lookup["$afCharges"] = f
-		lookup["$angelicFeatherCharges"] = f
-	end
-	if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
-		local f = string.format("%.0f", _afMaxCharges)
-		lookup["$afMaxCharges"] = f
-		lookup["$angelicFeatherMaxCharges"] = f
+
+	-- Block C: Angelic Feather ($afTime, $angelicFeatherTime, $afCharges, $angelicFeatherCharges, $afMaxCharges, $angelicFeatherMaxCharges)
+	if not activeVars or activeVars["$afTime"] or activeVars["$angelicFeatherTime"]
+		or activeVars["$afCharges"] or activeVars["$angelicFeatherCharges"]
+		or activeVars["$afMaxCharges"] or activeVars["$angelicFeatherMaxCharges"] then
+		local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+		local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+		local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+
+		lookupLogic["$afTime"] = _afTime
+		lookupLogic["$angelicFeatherTime"] = _afTime
+		lookupLogic["$afCharges"] = _afCharges
+		lookupLogic["$angelicFeatherCharges"] = _afCharges
+		lookupLogic["$afMaxCharges"] = _afMaxCharges
+		lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
+
+		if lookupChanged(prevState, "$afTime", _afTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_afTime)
+			lookup["$afTime"] = f
+			lookup["$angelicFeatherTime"] = f
+		end
+		if lookupChanged(prevState, "$afCharges", _afCharges) then
+			local f = string.format("%.0f", _afCharges)
+			lookup["$afCharges"] = f
+			lookup["$angelicFeatherCharges"] = f
+		end
+		if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
+			local f = string.format("%.0f", _afMaxCharges)
+			lookup["$afMaxCharges"] = f
+			lookup["$angelicFeatherMaxCharges"] = f
+		end
 	end
 
 	--[[lookup["$scTime"] = scTime
@@ -633,166 +601,172 @@ local function RefreshLookupData_Holy()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local specSettings = TRB.Data.settings.priest.holy
 	local sharedSettings = TRB.Data.specCache["priest_holy"].settings
-	---@type TRB.Classes.Target
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	--$hwChastiseTime
-	local _hwChastiseTime = snapshots[spells.holyWordChastise.id].cooldown.remaining
-
-	--$hwSanctifyTime
-	local _hwSanctifyTime = snapshots[spells.holyWordSanctify.id].cooldown.remaining
-
-	--$hwSerenityTime
-	local _hwSerenityTime = snapshots[spells.holyWordSerenity.id].cooldown.remaining
-	
-	--$hwSanctifyCharges
-	local _hwSanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges
-	
-	--$hwSerenityCharges
-	local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
-
-	--$apotheosisTime
-	local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
-
-	--$lightweaverStacks
-	local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
-	--$lightweaverTime
-	local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
-
-	--$afTime
-	local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
-	--$afCharges
-	local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
-	--$afMaxCharges
-	local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
-
-	----------
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$apotheosisTime"] = _apotheosisTime
-	lookupLogic["$hwChastiseTime"] = _hwChastiseTime
-	lookupLogic["$chastiseTime"] = _hwChastiseTime
-	lookupLogic["$holyWordChastiseTime"] = _hwChastiseTime
-	lookupLogic["$hwSanctifyTime"] = _hwSanctifyTime
-	lookupLogic["$sanctifyTime"] = _hwSanctifyTime
-	lookupLogic["$holyWordSanctifyTime"] = _hwSanctifyTime
-	lookupLogic["$hwSerenityTime"] = _hwSerenityTime
-	lookupLogic["$serenityTime"] = _hwSerenityTime
-	lookupLogic["$holyWordSerenityTime"] = _hwSerenityTime
-	lookupLogic["$hwSanctifyCharges"] = _hwSanctifyCharges
-	lookupLogic["$sanctifyCharges"] = _hwSanctifyCharges
-	lookupLogic["$holyWordSanctifyCharges"] = _hwSanctifyCharges
-	lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
-	lookupLogic["$serenityCharges"] = _hwSerenityCharges
-	lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
-	lookupLogic["$lightweaverStacks"] = _lightweaverStacks
-	lookupLogic["$lightweaverTime"] = _lightweaverTime
-	lookupLogic["$afTime"] = _afTime
-	lookupLogic["$angelicFeatherTime"] = _afTime
-	lookupLogic["$afCharges"] = _afCharges
-	lookupLogic["$angelicFeatherCharges"] = _afCharges
-	lookupLogic["$afMaxCharges"] = _afMaxCharges
-	lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
+	-- Block A: Core mana ($mana, $resource, $manaMax, $resourceMax, $manaPercent, $resourcePercent, $casting)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 
-	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		lookup["$mana"] = f
-		lookup["$resource"] = f
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
 	end
-	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
-		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+
+	-- Block B: Holy Words ($hwChastiseTime, $hwSanctifyTime, $hwSerenityTime + charges)
+	if not activeVars or activeVars["$hwChastiseTime"] or activeVars["$chastiseTime"] or activeVars["$holyWordChastiseTime"]
+		or activeVars["$hwSanctifyTime"] or activeVars["$sanctifyTime"] or activeVars["$holyWordSanctifyTime"]
+		or activeVars["$hwSerenityTime"] or activeVars["$serenityTime"] or activeVars["$holyWordSerenityTime"]
+		or activeVars["$hwSanctifyCharges"] or activeVars["$sanctifyCharges"] or activeVars["$holyWordSanctifyCharges"]
+		or activeVars["$hwSerenityCharges"] or activeVars["$serenityCharges"] or activeVars["$holyWordSerenityCharges"] then
+		local _hwChastiseTime = snapshots[spells.holyWordChastise.id].cooldown.remaining
+		local _hwSanctifyTime = snapshots[spells.holyWordSanctify.id].cooldown.remaining
+		local _hwSerenityTime = snapshots[spells.holyWordSerenity.id].cooldown.remaining
+		local _hwSanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges
+		local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
+
+		lookupLogic["$hwChastiseTime"] = _hwChastiseTime
+		lookupLogic["$chastiseTime"] = _hwChastiseTime
+		lookupLogic["$holyWordChastiseTime"] = _hwChastiseTime
+		lookupLogic["$hwSanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$sanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$holyWordSanctifyTime"] = _hwSanctifyTime
+		lookupLogic["$hwSerenityTime"] = _hwSerenityTime
+		lookupLogic["$serenityTime"] = _hwSerenityTime
+		lookupLogic["$holyWordSerenityTime"] = _hwSerenityTime
+		lookupLogic["$hwSanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$sanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$holyWordSanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
+		lookupLogic["$serenityCharges"] = _hwSerenityCharges
+		lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
+
+		if lookupChanged(prevState, "$hwChastiseTime", _hwChastiseTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_hwChastiseTime)
+			lookup["$hwChastiseTime"] = f
+			lookup["$chastiseTime"] = f
+			lookup["$holyWordChastiseTime"] = f
+		end
+		if lookupChanged(prevState, "$hwSanctifyTime", _hwSanctifyTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_hwSanctifyTime)
+			lookup["$hwSanctifyTime"] = f
+			lookup["$sanctifyTime"] = f
+			lookup["$holyWordSanctifyTime"] = f
+		end
+		if lookupChanged(prevState, "$hwSerenityTime", _hwSerenityTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_hwSerenityTime)
+			lookup["$hwSerenityTime"] = f
+			lookup["$serenityTime"] = f
+			lookup["$holyWordSerenityTime"] = f
+		end
+		if lookupChanged(prevState, "$hwSanctifyCharges", _hwSanctifyCharges) then
+			local f = string.format("%.0f", _hwSanctifyCharges)
+			lookup["$hwSanctifyCharges"] = f
+			lookup["$sanctifyCharges"] = f
+			lookup["$holyWordSanctifyCharges"] = f
+		end
+		if lookupChanged(prevState, "$hwSerenityCharges", _hwSerenityCharges) then
+			local f = string.format("%.0f", _hwSerenityCharges)
+			lookup["$hwSerenityCharges"] = f
+			lookup["$serenityCharges"] = f
+			lookup["$holyWordSerenityCharges"] = f
+		end
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-		lookup["$manaMax"] = f
-		lookup["$resourceMax"] = f
+
+	-- Block C: Apotheosis ($apotheosisTime)
+	if not activeVars or activeVars["$apotheosisTime"] then
+		local currentTime = GetTime()
+		local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$apotheosisTime"] = _apotheosisTime
+
+		if lookupChanged(prevState, "$apotheosisTime", _apotheosisTime) then
+			lookup["$apotheosisTime"] = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
+		end
 	end
-	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
-		lookup["$manaPercent"] = f
-		lookup["$resourcePercent"] = f
+
+	-- Block D: Lightweaver ($lightweaverStacks, $lightweaverTime)
+	if not activeVars or activeVars["$lightweaverStacks"] or activeVars["$lightweaverTime"] then
+		local currentTime = GetTime()
+		local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
+		local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
+
+		lookupLogic["$lightweaverStacks"] = _lightweaverStacks
+		lookupLogic["$lightweaverTime"] = _lightweaverTime
+
+		if lookupChanged(prevState, "$lightweaverStacks", _lightweaverStacks) then
+			lookup["$lightweaverStacks"] = string.format("%.0f", _lightweaverStacks)
+		end
+		if lookupChanged(prevState, "$lightweaverTime", _lightweaverTime) then
+			lookup["$lightweaverTime"] = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
+		end
 	end
-	if lookupChanged(prevState, "$apotheosisTime", _apotheosisTime) then
-		lookup["$apotheosisTime"] = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
-	end
-	if lookupChanged(prevState, "$hwChastiseTime", _hwChastiseTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_hwChastiseTime)
-		lookup["$hwChastiseTime"] = f
-		lookup["$chastiseTime"] = f
-		lookup["$holyWordChastiseTime"] = f
-	end
-	if lookupChanged(prevState, "$hwSanctifyTime", _hwSanctifyTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_hwSanctifyTime)
-		lookup["$hwSanctifyTime"] = f
-		lookup["$sanctifyTime"] = f
-		lookup["$holyWordSanctifyTime"] = f
-	end
-	if lookupChanged(prevState, "$hwSerenityTime", _hwSerenityTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_hwSerenityTime)
-		lookup["$hwSerenityTime"] = f
-		lookup["$serenityTime"] = f
-		lookup["$holyWordSerenityTime"] = f
-	end
-	if lookupChanged(prevState, "$hwSanctifyCharges", _hwSanctifyCharges) then
-		local f = string.format("%.0f", _hwSanctifyCharges)
-		lookup["$hwSanctifyCharges"] = f
-		lookup["$sanctifyCharges"] = f
-		lookup["$holyWordSanctifyCharges"] = f
-	end
-	if lookupChanged(prevState, "$hwSerenityCharges", _hwSerenityCharges) then
-		local f = string.format("%.0f", _hwSerenityCharges)
-		lookup["$hwSerenityCharges"] = f
-		lookup["$serenityCharges"] = f
-		lookup["$holyWordSerenityCharges"] = f
-	end
-	if lookupChanged(prevState, "$lightweaverStacks", _lightweaverStacks) then
-		lookup["$lightweaverStacks"] = string.format("%.0f", _lightweaverStacks)
-	end
-	if lookupChanged(prevState, "$lightweaverTime", _lightweaverTime) then
-		lookup["$lightweaverTime"] = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
-	end
-	if lookupChanged(prevState, "$afTime", _afTime) then
-		local f = TRB.Functions.BarText:TimerPrecision(_afTime)
-		lookup["$afTime"] = f
-		lookup["$angelicFeatherTime"] = f
-	end
-	if lookupChanged(prevState, "$afCharges", _afCharges) then
-		local f = string.format("%.0f", _afCharges)
-		lookup["$afCharges"] = f
-		lookup["$angelicFeatherCharges"] = f
-	end
-	if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
-		local f = string.format("%.0f", _afMaxCharges)
-		lookup["$afMaxCharges"] = f
-		lookup["$angelicFeatherMaxCharges"] = f
+
+	-- Block E: Angelic Feather ($afTime, $angelicFeatherTime, $afCharges, $angelicFeatherCharges, $afMaxCharges, $angelicFeatherMaxCharges)
+	if not activeVars or activeVars["$afTime"] or activeVars["$angelicFeatherTime"]
+		or activeVars["$afCharges"] or activeVars["$angelicFeatherCharges"]
+		or activeVars["$afMaxCharges"] or activeVars["$angelicFeatherMaxCharges"] then
+		local _afTime = snapshots[spells.angelicFeather.id].cooldown.remaining
+		local _afCharges = snapshots[spells.angelicFeather.id].cooldown.charges
+		local _afMaxCharges = spells.angelicFeather.attributes.maxCharges
+
+		lookupLogic["$afTime"] = _afTime
+		lookupLogic["$angelicFeatherTime"] = _afTime
+		lookupLogic["$afCharges"] = _afCharges
+		lookupLogic["$angelicFeatherCharges"] = _afCharges
+		lookupLogic["$afMaxCharges"] = _afMaxCharges
+		lookupLogic["$angelicFeatherMaxCharges"] = _afMaxCharges
+
+		if lookupChanged(prevState, "$afTime", _afTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_afTime)
+			lookup["$afTime"] = f
+			lookup["$angelicFeatherTime"] = f
+		end
+		if lookupChanged(prevState, "$afCharges", _afCharges) then
+			local f = string.format("%.0f", _afCharges)
+			lookup["$afCharges"] = f
+			lookup["$angelicFeatherCharges"] = f
+		end
+		if lookupChanged(prevState, "$afMaxCharges", _afMaxCharges) then
+			local f = string.format("%.0f", _afMaxCharges)
+			lookup["$afMaxCharges"] = f
+			lookup["$angelicFeatherMaxCharges"] = f
+		end
 	end
 
 	TRB.Data.lookup = lookup

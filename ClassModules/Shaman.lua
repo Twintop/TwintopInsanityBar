@@ -279,145 +279,105 @@ local function RefreshLookupData_Elemental()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
 	local currentTime = GetTime()
 
-	local currentMaelstromColor = sharedSettings.colors.text.current.color
-	local castingMaelstromColor = sharedSettings.colors.text.casting.color
-
-	local maelstromThreshold = TRB.Data.character.maxResource
-
-	if talents:IsTalentActive(spells.earthquake) then
-		maelstromThreshold = math.min(maelstromThreshold, spells.earthquake:GetPrimaryResourceCost())
-	end
-	
-	if talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) then
-		maelstromThreshold = math.min(maelstromThreshold, spells.earthShock:GetPrimaryResourceCost())
-	elseif talents:IsTalentActive(spells.elementalBlast) then
-		maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
-	end
-
-	-- $earthShockUsable, $elementalBlastUsable (synonyms), $earthquakeUsable
-	local _earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
-	local _earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
-
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled and _earthShockUsable then
-			currentMaelstromColor = sharedSettings.colors.text.overThreshold.color
-			castingMaelstromColor = sharedSettings.colors.text.overThreshold.color
-		end
-	end
-
-	--[[
-	----------
-	--Icefury
-	--$ifMaelstrom
-	local icefuryMaelstrom = snapshots[spells.icefury.id].attributes.resource or 0
-	--$ifStacks
-	local icefuryStacks = snapshots[spells.icefury.id].buff.applications or 0
-	--$ifStacks
-	local _icefuryTime = snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
-	local icefuryTime = TRB.Functions.BarText:TimerPrecision(_icefuryTime)
-
-	--$skStacks
-	local stormkeeperStacks = snapshots[spells.stormkeeper.id].buff.applications or 0
-	--$skStacks
-	local _stormkeeperTime = snapshots[spells.stormkeeper.id].buff:GetRemainingTime(currentTime)
-	local stormkeeperTime = TRB.Functions.BarText:TimerPrecision(_stormkeeperTime)
-
-	--$eogsTime
-	local _eogsTime = snapshots[spells.echoesOfGreatSundering.id].buff:GetRemainingTime(currentTime)
-	local eogsTime = TRB.Functions.BarText:TimerPrecision(_eogsTime)]]
-
-	--$ascendanceTime
-	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-
-	-- Mana lookups
-	local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-	local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-	local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
-
-	--$manaPercent
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	----------------------------
-
-	local prevState = TRB.Data.prevLookupState or {}
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$maelstrom"] = snapshotData.attributes.resource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$maelstromMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$ascendanceTime"] = _ascendanceTime
-	lookupLogic["$earthShockUsable"] = _earthShockUsable
-	lookupLogic["$elementalBlastUsable"] = _earthShockUsable
-	lookupLogic["$earthquakeUsable"] = _earthquakeUsable
-	--[[
-	lookupLogic["$ifStacks"] = icefuryStacks
-	lookupLogic["$ifTime"] = icefuryTime
-	lookupLogic["$skStacks"] = stormkeeperStacks
-	lookupLogic["$skTime"] = _stormkeeperTime
-	lookupLogic["$eogsTime"] = _eogsTime
-	lookupLogic["$pfTime"] = _pfTime]]
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaMax"] = normalizedManaMax
-	lookupLogic["$manaPercent"] = _manaPercent
+	-- Block A: Core resource ($maelstrom, $resource, $casting, $maelstromMax, $resourceMax,
+	--          $earthShockUsable, $elementalBlastUsable, $earthquakeUsable)
+	if not activeVars or activeVars["$maelstrom"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$maelstromMax"] or activeVars["$resourceMax"]
+		or activeVars["$earthShockUsable"] or activeVars["$elementalBlastUsable"] or activeVars["$earthquakeUsable"] then
 
-	-- RAW assignments (unmemoized)
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$maelstromMax"] = TRB.Data.character.maxResource
-	lookup["$earthShockUsable"] = ""
-	lookup["$elementalBlastUsable"] = ""
-	lookup["$earthquakeUsable"] = ""
+		local currentMaelstromColor = sharedSettings.colors.text.current.color
+		local castingMaelstromColor = sharedSettings.colors.text.casting.color
 
-	-- OVERCAP pattern: maelstrom + casting
-	local resourceFormatted = snapshotData.formatted.resource or ""
-	local resourceChanged = lookupChanged(prevState, "$maelstrom", resourceFormatted, currentMaelstromColor)
-	local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingMaelstromColor)
-	if resourceChanged or castingChanged then
-		local currentMaelstrom
-		local castingMaelstrom
-		if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-			local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
-			local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-			currentMaelstrom = textColorResult:WrapTextInColorCode(resourceFormatted)
-			castingMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
-		else
-			currentMaelstrom = string.format("|c%s%s|r", currentMaelstromColor, resourceFormatted)
-			castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshotData.casting.resourceFinal)
+		-- $earthShockUsable, $elementalBlastUsable (synonyms), $earthquakeUsable
+		local _earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+		local _earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled and _earthShockUsable then
+				currentMaelstromColor = sharedSettings.colors.text.overThreshold.color
+				castingMaelstromColor = sharedSettings.colors.text.overThreshold.color
+			end
 		end
-		lookup["$maelstrom"] = currentMaelstrom
-		lookup["$resource"] = currentMaelstrom
-		lookup["$casting"] = castingMaelstrom
+
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$maelstrom"] = snapshotData.attributes.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$maelstromMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+		lookupLogic["$earthShockUsable"] = _earthShockUsable
+		lookupLogic["$elementalBlastUsable"] = _earthShockUsable
+		lookupLogic["$earthquakeUsable"] = _earthquakeUsable
+
+		-- RAW assignments (unmemoized)
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$maelstromMax"] = TRB.Data.character.maxResource
+		lookup["$earthShockUsable"] = ""
+		lookup["$elementalBlastUsable"] = ""
+		lookup["$earthquakeUsable"] = ""
+
+		-- OVERCAP pattern: maelstrom + casting
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$maelstrom", resourceFormatted, currentMaelstromColor)
+		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingMaelstromColor)
+		if resourceChanged or castingChanged then
+			local currentMaelstrom
+			local castingMaelstrom
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentMaelstromColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentMaelstrom = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingMaelstrom = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
+			else
+				currentMaelstrom = string.format("|c%s%s|r", currentMaelstromColor, resourceFormatted)
+				castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshotData.casting.resourceFinal)
+			end
+			lookup["$maelstrom"] = currentMaelstrom
+			lookup["$resource"] = currentMaelstrom
+			lookup["$casting"] = castingMaelstrom
+		end
 	end
-	if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
-		lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+
+	-- Block B: Ascendance ($ascendanceTime)
+	if not activeVars or activeVars["$ascendanceTime"] then
+		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+		lookupLogic["$ascendanceTime"] = _ascendanceTime
+		if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
+			lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+		end
 	end
-	--[[
-	lookup["$ifStacks"] = icefuryStacks
-	lookup["$ifTime"] = icefuryTime
-	lookup["$skStacks"] = stormkeeperStacks
-	lookup["$skTime"] = stormkeeperTime
-	lookup["$eogsTime"] = eogsTime
-	lookup["$pfTime"] = pfTime]]
-	local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-	end
-	local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
-	if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
-		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
-	end
-	local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+
+	-- Block C: Mana ($mana, $manaMax, $manaPercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
+		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
+		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+		local manaPrecision = sharedSettings.precision.mana or 1
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$manaMax"] = normalizedManaMax
+		lookupLogic["$manaPercent"] = _manaPercent
+
+		local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+		end
+		local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
+		if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
+		end
+		local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -425,82 +385,77 @@ local function RefreshLookupData_Elemental()
 end
 
 local function RefreshLookupData_Enhancement()
-	local specSettings = TRB.Data.settings.shaman.enhancement
 	local sharedSettings = TRB.Data.specCache["shaman_enhancement"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	--Spec specific implementation
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	-- This probably needs to be pulled every refresh
-
-	local currentManaColor = specSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	local manaPrecision = sharedSettings.precision.mana or 1
-
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-
-	--$maelstromWeapon
-	local _maelstromWeapon = snapshots[spells.maelstromWeapon.id].buff.applications or 0
-
-	--$maelstromWeaponMax
-	local _maelstromWeaponMax = spells.maelstromWeapon.maxStacks
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	--$ascendanceTime
-	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-
-	----------------------------
 
 	local prevState = TRB.Data.prevLookupState or {}
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$mana"] = snapshotData.attributes.resource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$ascendanceTime"] = _ascendanceTime
-	lookupLogic["$comboPoints"] = _maelstromWeapon
-	lookupLogic["$maelstromWeapon"] = _maelstromWeapon
-	lookupLogic["$maelstromWeaponMax"] = _maelstromWeaponMax
-	lookupLogic["$comboPointsMax"] = _maelstromWeaponMax
+	local currentManaColor = TRB.Data.settings.shaman.enhancement.colors.text.current.color
 
-	-- RAW assignments (unmemoized)
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$manaMax"] = TRB.Data.character.maxResource
-	lookup["$comboPoints"] = _maelstromWeapon
-	lookup["$maelstromWeapon"] = _maelstromWeapon
-	lookup["$comboPointsMax"] = _maelstromWeaponMax
-	lookup["$maelstromWeaponMax"] = _maelstromWeaponMax
+	-- Block A: Core mana ($mana, $resource, $manaMax, $resourceMax, $manaPercent, $resourcePercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
 
-	-- Memoized formatted writes
-	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		lookup["$mana"] = f
-		lookup["$resource"] = f
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$mana"] = snapshotData.attributes.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+
+		-- RAW assignments (unmemoized)
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$manaMax"] = TRB.Data.character.maxResource
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
 	end
-	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
-		lookup["$manaPercent"] = f
-		lookup["$resourcePercent"] = f
+
+	-- Block B: Maelstrom Weapon ($maelstromWeapon, $comboPoints, $maelstromWeaponMax, $comboPointsMax)
+	if not activeVars or activeVars["$maelstromWeapon"] or activeVars["$comboPoints"]
+		or activeVars["$maelstromWeaponMax"] or activeVars["$comboPointsMax"] then
+		local _maelstromWeapon = snapshots[spells.maelstromWeapon.id].buff.applications or 0
+		local _maelstromWeaponMax = spells.maelstromWeapon.maxStacks
+
+		lookupLogic["$comboPoints"] = _maelstromWeapon
+		lookupLogic["$maelstromWeapon"] = _maelstromWeapon
+		lookupLogic["$maelstromWeaponMax"] = _maelstromWeaponMax
+		lookupLogic["$comboPointsMax"] = _maelstromWeaponMax
+
+		lookup["$comboPoints"] = _maelstromWeapon
+		lookup["$maelstromWeapon"] = _maelstromWeapon
+		lookup["$comboPointsMax"] = _maelstromWeaponMax
+		lookup["$maelstromWeaponMax"] = _maelstromWeaponMax
 	end
-	if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
-		lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+
+	-- Block C: Ascendance ($ascendanceTime)
+	if not activeVars or activeVars["$ascendanceTime"] then
+		local currentTime = GetTime()
+		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$ascendanceTime"] = _ascendanceTime
+
+		if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
+			lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -508,72 +463,67 @@ local function RefreshLookupData_Enhancement()
 end
 
 local function RefreshLookupData_Restoration()
-	local specSettings = TRB.Data.settings.shaman.restoration
 	local sharedSettings = TRB.Data.specCache["shaman_restoration"].settings
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	local manaPrecision = sharedSettings.precision.mana or 1
-
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-
-	--$manaMax
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-	--$ascendanceTime
-	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-
-	----------------------
 
 	local prevState = TRB.Data.prevLookupState or {}
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
+	local activeVars = TRB.Data.activeVariables
 
-	-- lookupLogic (unconditional)
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$ascendanceTime"] = _ascendanceTime
+	-- Block A: Core mana ($mana, $resource, $manaMax, $resourceMax, $manaPercent, $resourcePercent, $casting)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
 
-	-- Memoized formatted writes
-	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
-	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		lookup["$mana"] = f
-		lookup["$resource"] = f
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
 	end
-	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-		lookup["$manaMax"] = f
-		lookup["$resourceMax"] = f
-	end
-	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
-	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-		local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
-		lookup["$manaPercent"] = f
-		lookup["$resourcePercent"] = f
-	end
-	if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
-		lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
-	end
-	if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
-		lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+
+	-- Block B: Ascendance ($ascendanceTime)
+	if not activeVars or activeVars["$ascendanceTime"] then
+		local currentTime = GetTime()
+		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$ascendanceTime"] = _ascendanceTime
+
+		if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
+			lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup

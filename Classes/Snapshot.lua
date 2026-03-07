@@ -10,7 +10,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public casting TRB.Classes.SnapshotCasting
 ---@field public audio table
 ---@field public attributes table
----@field public formatted table<string, string> Pre-formatted display strings, populated at event time
+---@field public formatted table<string, string|number|boolean> Pre-formatted display strings, populated at event time
 TRB.Classes.SnapshotData = {}
 TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
