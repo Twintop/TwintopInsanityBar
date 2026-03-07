@@ -6303,8 +6303,14 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		d.btt:SetSelection()
 		table.remove(d.displayText.barText, d.row)
 		d.setTableValues(d.displayText, d.btt)
-		-- If editing global bar text, refresh the active spec's merged bar text list
+		-- Refresh the active spec's merged bar text list when global bar text is in use
 		if d.classId == nil then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
+		elseif d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
@@ -6317,6 +6323,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
 			TRB.Data.activeVariables = nil
+			TRB.Data.lookupDirty = true
 		end
 		TRB.Functions.BarText:CreateBarTextFrames(d.classId, d.specId)
 		d.barTextOptionsFrame:Hide()
@@ -7297,19 +7304,27 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		table.insert(displayText.barText, newEntry)
 		SetTableValues(displayText, barTextTable)
 		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
-		-- If editing global bar text, refresh the active spec's merged bar text list
+		-- Refresh the active spec's merged bar text list when global bar text is in use
+		-- (the merged table is a copy, so the insert above won't be reflected without a rebuild)
 		if classId == nil then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
 				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
 			end
-			TRB.Data.cache.barText = {}
-			TRB.Functions.BarText:ClearBarTextCacheHash()
-			TRB.Data.cache.symbols = {}
-			TRB.Data.cache.barTextTree = {}
-			TRB.Data.activeVariables = nil
+		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
 		end
+		TRB.Data.cache.barText = {}
+		TRB.Functions.BarText:ClearBarTextCacheHash()
+		TRB.Data.cache.symbols = {}
+		TRB.Data.cache.barTextTree = {}
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
 	end)
@@ -7317,6 +7332,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextEntryEnabled:SetScript("OnClick", function(self, ...)
 		workingBarText.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
@@ -7335,6 +7352,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Data.cache.symbols = {}
 		TRB.Data.cache.barTextTree = {}
 		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 	end)
 
 	-- Attach undo/redo AFTER SetScript("OnTextChanged") so the HookScript
