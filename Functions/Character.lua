@@ -98,7 +98,7 @@ function TRB.Functions.Character:UpdateResourceValues()
 		else
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, false)
 			snapshotData.attributes.resource2Modified = UnitPower("player", TRB.Data.resource2, true)
-			formatted.resource2 = string.format("%s", snapshotData.attributes.resource2)
+			formatted.resource2 = string.format("%s", snapshotData.attributes.resource2Modified)
 		end
 	end
 end

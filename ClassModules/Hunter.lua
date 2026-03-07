@@ -1840,7 +1840,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true when any spec-specific buff timer is actively counting down.
----BM: Beast Cleave, Bestial Wrath; MM: Trueshot; SV: Takedown, Terms of Engagement.
+---BM: Beast Cleave, Bestial Wrath; MM: Trueshot; SV: Takedown, Tip of the Spear.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -1858,7 +1858,8 @@ function TRB.Functions.Class:HasActiveTimers()
 			return true
 		end
 	elseif specId == 3 then -- Survival
-		if (spells.takedown and snapshots[spells.takedown.id] and snapshots[spells.takedown.id].buff and snapshots[spells.takedown.id].buff.isActive) then
+		if (spells.takedown and snapshots[spells.takedown.id] and snapshots[spells.takedown.id].buff and snapshots[spells.takedown.id].buff.isActive)
+			or (spells.tipOfTheSpear and snapshots[spells.tipOfTheSpear.id] and snapshots[spells.tipOfTheSpear.id].buff and snapshots[spells.tipOfTheSpear.id].buff.isActive) then
 			return true
 		end
 	end

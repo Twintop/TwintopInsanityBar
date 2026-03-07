@@ -501,7 +501,7 @@ local function RefreshLookupData_Vengeance()
 	end
 
 	-- $soulFragments/$comboPoints
-	if lookupChanged(prevState, "$soulFragments", _soulFragments, true) then
+	if lookupChanged(prevState, "$soulFragments", _soulFragments, nil, true) then
 		local soulFragments = string.format("%s", _soulFragments)
 		lookup["$soulFragments"] = soulFragments
 		lookup["$comboPoints"] = soulFragments
