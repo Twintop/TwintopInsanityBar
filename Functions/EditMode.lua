@@ -1461,7 +1461,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 
 	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
 
-	-- Migration Phase 1: if old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
+	-- If old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
 	if layoutData.enabled ~= nil and not layoutData.bars then
 		layoutData.bars = {}
 		layoutData.bars["primary"] = {
@@ -1502,7 +1502,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		}
 	end
 
-	-- Migration Phase 2: migrate old flat CDM fields into nested anchor block
+	-- Migrate old flat CDM fields into nested anchor block
 	local barData = layoutData.bars[rootBarKey]
 	if barData.anchorToCooldownManager ~= nil then
 		local oldMode = barData.anchorToCooldownManager

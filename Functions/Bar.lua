@@ -1746,7 +1746,7 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 		return barSettings.anchor
 	end
 
-	-- Phase 1 fallback: synthesize from legacy fields
+	-- Fallback: synthesize from legacy fields
 	if barSettings.relativeTo then
 		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
 		if mapping then
@@ -1783,7 +1783,7 @@ function TRB.Functions.Bar:GetMatchWidth(barSettings)
 	if barSettings and barSettings.anchor then
 		return barSettings.anchor.matchWidth or false
 	end
-	-- Phase 1 fallback to legacy field
+	-- Fallback to legacy field
 	return barSettings and barSettings.fullWidth or false
 end
 
@@ -2356,10 +2356,10 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)
 
-	-- Resolve anchor: new system with Phase 1 legacy fallback
+	-- Resolve anchor: new system with legacy fallback
 	local anchor = groupSettings.anchor
 	if not anchor then
-		-- Phase 1 fallback: synthesize from legacy fields
+		-- Fallback: synthesize from legacy fields
 		if groupSettings.relativeTo then
 			local mapping = TRB.Data.constants.relativeToAnchorMap[groupSettings.relativeTo]
 			if mapping then

@@ -68,7 +68,7 @@ end
 
 -- Working data
 TRB.Data = {}
--- Phase 3 dirty flag: set to true whenever data consumed by lookup refresh changes.
+-- Dirty flag: set to true whenever data consumed by lookup refresh changes.
 -- When false and no timers are active, UpdateResourceBarText skips the refresh entirely.
 TRB.Data.lookupDirty = true
 
