@@ -142,6 +142,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	end
 
 	-- Use configurable settings or defaults
+	---@type integer?
 	local curveType = Enum.LuaCurveType.Step
 
 	if healthBarSettings then

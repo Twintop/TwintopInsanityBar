@@ -830,6 +830,7 @@ local function UpdateStaggerColor()
 	end
 
 	-- Use configurable settings or defaults
+	---@type Enum.LuaCurveType?
 	local curveType = Enum.LuaCurveType.Step
 
 	local lightThreshold = 0.0

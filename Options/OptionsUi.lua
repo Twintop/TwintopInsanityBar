@@ -1586,10 +1586,15 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	tabs[firstKey].Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	tabs[firstKey].bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
+---@diagnostic disable-next-line: inject-field
 	parent.tabs = tabs
+---@diagnostic disable-next-line: inject-field
 	parent.tabsheets = tabsheets
+---@diagnostic disable-next-line: inject-field
 	parent.lastTab = tabsheets[firstKey]
+---@diagnostic disable-next-line: inject-field
 	parent.lastTabId = firstKey
+---@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
 
 	-- Call each tab's constructor to populate its content

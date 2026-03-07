@@ -991,6 +991,10 @@ end
 ---@param wrapperFrame Frame
 ---@param rootBarKey string
 function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
+	if not LibEditMode then
+		return
+	end
+	
 	-- Helper: returns true when the layout checkbox is unchecked (controls should be disabled)
 	local function isLayoutDisabled(layoutName)
 		return not self:IsLayoutEnabled(layoutName, rootBarKey)

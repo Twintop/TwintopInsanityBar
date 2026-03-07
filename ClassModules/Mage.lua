@@ -1178,11 +1178,12 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.mage.frost then
+		local spells = TRB.Data.specCache["mage_frost"].spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "SPELL"
-		TRB.Data.resource2Id = TRB.Data.specCache["mage_frost"].spellsData.spells.icicles.id
+		TRB.Data.resource2Id = spells.icicles.id
 		TRB.Data.resource2Factor = 1
 	else -- This should never happen
 		TRB.Data.specSupported = false
