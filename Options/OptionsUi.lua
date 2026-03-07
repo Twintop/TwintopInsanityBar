@@ -943,7 +943,6 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 				TRB.Data.cache.colors.bar = {}
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					TRB.Data.lookupDirty = true
-					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
@@ -2331,7 +2330,6 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
 					TRB.Data.lookupDirty = true
-					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2369,7 +2367,6 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
 					TRB.Data.lookupDirty = true
-					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2403,7 +2400,6 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
@@ -2470,7 +2466,6 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
@@ -2719,7 +2714,6 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
@@ -3600,7 +3594,6 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
-				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -3792,7 +3785,6 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
-			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else
@@ -3822,7 +3814,6 @@ function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newV
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
@@ -3875,7 +3866,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Data.lookupDirty = true
-						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
 				else
@@ -3911,7 +3901,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
@@ -4483,7 +4472,6 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Data.lookupDirty = true
-						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
 				else
@@ -4773,7 +4761,6 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 						if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-							TRB.Data.lookupDirty = true
 							TRB.Data.lookupDirty = true
 							TRB.Functions.Class:TriggerResourceBarUpdates()
 						end
@@ -5332,7 +5319,6 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		spec.colors.bar.casting.enabled = self:GetChecked()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
-			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
@@ -5355,7 +5341,6 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
@@ -5438,7 +5423,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 					TRB.Data.lookupDirty = true
-					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				else
 					TRB.Functions.Bar:Construct()
@@ -5517,7 +5501,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
-				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5554,7 +5537,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
-				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5588,7 +5570,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
@@ -5624,7 +5605,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
@@ -5670,7 +5650,6 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
-				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5707,7 +5686,6 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
-				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5732,7 +5710,6 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
@@ -5877,7 +5854,6 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
@@ -6391,7 +6367,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
@@ -7428,7 +7403,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				TRB.Functions.BarText:CreateBarTextFrames()
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 					TRB.Data.lookupDirty = true
-					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
@@ -7442,7 +7416,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			-- Force an immediate bar text update so the new strings render right away
-			TRB.Data.lookupDirty = true
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
