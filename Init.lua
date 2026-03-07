@@ -393,7 +393,9 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 		TRB.Data.character.inCombat = false
 		TRB.Data.character.combatStartTime = nil
 	end
-	TRB.Data.lookupDirty = true
+	-- Fully invalidate memoization so formatting branches that depend on inCombat
+	-- (e.g., overcap text coloring) rewrite all lookup strings on the next refresh.
+	TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:ShowResourceBar()
 end)

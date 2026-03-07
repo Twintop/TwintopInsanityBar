@@ -32,7 +32,7 @@ function TRB.Classes.SnapshotData:New(attributes)
 	---Pre-formatted display strings, populated at event time so the render tick
 	---can copy them into lookup[] without redoing expensive string.format / number
 	---abbreviation work.  Keys mirror the lookup variable names minus the "$" prefix.
-	---@type table<string, string>
+	---@type table<string, string|number|boolean>
 	self.formatted = {}
 
 	return self

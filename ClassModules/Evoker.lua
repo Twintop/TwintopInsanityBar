@@ -344,7 +344,7 @@ local function RefreshLookupData_Devastation()
 		lookup["$essenceRegenTime"] = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 	end
 	-- RAW: $essenceMax/$comboPointsMax
-	lookup["$essenceMax"] = TRB.Data.character.maxResource
+	lookup["$essenceMax"] = TRB.Data.character.maxResource2
 	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	-- TMR: $dragonrageTime
 	if lookupChanged(prevState, "$dragonrageTime", _dragonrageTime) then

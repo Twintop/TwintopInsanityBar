@@ -308,10 +308,8 @@ local function RefreshLookupData_Affliction()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	local manaPrecision = sharedSettings.precision.mana or 1
 	local _castingMana = snapshotData.casting.resourceFinal
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 
 	----------------------------
 
@@ -379,7 +377,6 @@ local function RefreshLookupData_Demonology()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	local manaPrecision = sharedSettings.precision.mana or 1
 	local _castingMana = snapshotData.casting.resourceFinal
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 
@@ -452,7 +449,6 @@ local function RefreshLookupData_Destruction()
 	local currentManaColor = sharedSettings.colors.text.current.color
 	local castingManaColor = sharedSettings.colors.text.casting.color
 
-	local manaPrecision = sharedSettings.precision.mana or 1
 	local _castingMana = snapshotData.casting.resourceFinal
 	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 
