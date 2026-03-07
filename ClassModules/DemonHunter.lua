@@ -577,9 +577,11 @@ local function RefreshLookupData_Devourer()
 	lookupLogic["$casting"] = _castingFury
 	lookupLogic["$soulFragments"] = _soulFragments
 	lookupLogic["$comboPoints"] = _soulFragments
+	lookupLogic["$collapsingStar"] = _soulFragments
 	lookupLogic["$collapsingStars"] = _soulFragments
 	lookupLogic["$soulFragmentsMax"] = _soulFragmentsMax
 	lookupLogic["$comboPointsMax"] = _soulFragmentsMax
+	lookupLogic["$collapsingStarMax"] = _soulFragmentsMax
 	lookupLogic["$collapsingStarsMax"] = _soulFragmentsMax
 	lookupLogic["$metaTime"] = 0
 	lookupLogic["$metamorphosisTime"] = 0
@@ -587,6 +589,7 @@ local function RefreshLookupData_Devourer()
 	lookupLogic["$voidMetamorphosisTime"] = 0
 	lookupLogic["$voidRayUsable"] = _voidRayUsable
 	lookupLogic["$collapsingStarUsable"] = _collapsingStarUsable
+	lookupLogic["$collapsingStarsUsable"] = _collapsingStarUsable
 
 	-- OVERCAP: $fury/$resource + $casting
 	local resourceFormatted = snapshotData.formatted.resource or ""
@@ -613,19 +616,21 @@ local function RefreshLookupData_Devourer()
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$furyMax"] = TRB.Data.character.maxResource
 
-	-- $soulFragments/$comboPoints/$collapsingStars
+	-- $soulFragments/$comboPoints/$collapsingStar
 	if lookupChanged(prevState, "$soulFragments", _soulFragments) then
 		local soulFragments = string.format("%s", _soulFragments)
 		lookup["$soulFragments"] = soulFragments
 		lookup["$comboPoints"] = soulFragments
+		lookup["$collapsingStar"] = soulFragments
 		lookup["$collapsingStars"] = soulFragments
 	end
 
-	-- $soulFragmentsMax/$comboPointsMax/$collapsingStarsMax
+	-- $soulFragmentsMax/$comboPointsMax/$collapsingStarMax
 	if lookupChanged(prevState, "$soulFragmentsMax", _soulFragmentsMax) then
 		local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
 		lookup["$soulFragmentsMax"] = soulFragmentsMax
 		lookup["$comboPointsMax"] = soulFragmentsMax
+		lookup["$collapsingStarMax"] = soulFragmentsMax
 		lookup["$collapsingStarsMax"] = soulFragmentsMax
 	end
 
@@ -638,6 +643,7 @@ local function RefreshLookupData_Devourer()
 	-- RAW: $voidRayUsable/$collapsingStarUsable (empty strings/booleans)
 	lookup["$voidRayUsable"] = ""
 	lookup["$collapsingStarUsable"] = ""
+	lookup["$collapsingStarsUsable"] = ""
 
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
@@ -1921,26 +1927,29 @@ do
 		["$casting"] = castingFn,
 	}
 	-- Devourer
+	local collapsingStarFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
+	end
+	local collapsingStarMaxFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
+	end
+	local collapsingStarUsableFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
+	end
 	local devourer = {
 		["$comboPoints"] = true, ["$comboPointsMax"] = true,
 		["$soulFragments"] = true, ["$soulFragmentsMax"] = true,
-		["$collapsingStar"] = function()
-			local spells = TRB.Data.spellsData.spells
-			return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
-		end,
-		["$collapsingStarMax"] = function()
-			local spells = TRB.Data.spellsData.spells
-			return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
-		end,
+		["$collapsingStar"] = collapsingStarFn, ["$collapsingStars"] = collapsingStarFn,
+		["$collapsingStarMax"] =collapsingStarMaxFn, ["$collapsingStarsMax"] = collapsingStarMaxFn,
 		["$voidRayUsable"] = function()
 			local spells = TRB.Data.spellsData.spells
 			local sd = TRB.Data.snapshotData
 			return (not sd.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
 		end,
-		["$collapsingStarUsable"] = function()
-			local spells = TRB.Data.spellsData.spells
-			return TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
-		end,
+		["$collapsingStarUsable"] = collapsingStarUsableFn, ["$collapsingStarsUsable"] = collapsingStarUsableFn,
 		["$metamorphosisTime"] = metaFn, ["$metaTime"] = metaFn,
 		["$voidMetaTime"] = metaFn, ["$voidMetamorphosisTime"] = metaFn,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,

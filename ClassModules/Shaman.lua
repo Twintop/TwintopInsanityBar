@@ -407,14 +407,17 @@ local function RefreshLookupData_Elemental()
 	lookup["$skTime"] = stormkeeperTime
 	lookup["$eogsTime"] = eogsTime
 	lookup["$pfTime"] = pfTime]]
-	if lookupChanged(prevState, "$mana", normalizedMana, currentManaColor, true) then
-		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
+	local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
+	if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+		lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 	end
-	if lookupChanged(prevState, "$manaMax", normalizedManaMax, currentManaColor, true) then
-		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax))
+	local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
+	if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
+		lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
 	end
-	if lookupChanged(prevState, "$manaPercent", manaPercentRaw, currentManaColor, true) then
-		lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
+	local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
+	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+		lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 	end
 
 	TRB.Data.lookup = lookup
