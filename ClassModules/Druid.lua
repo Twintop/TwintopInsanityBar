@@ -420,13 +420,21 @@ local function UpdateShapeshiftForm()
 	end
 	
 	if TRB.Data.snapshotData ~= nil and TRB.Data.snapshotData.snapshots ~= nil then
+		TRB.Functions.Character:ResetColorCaches()
+
+		-- Recreate bar text frames BEFORE triggering updates. Form changes alter which
+		-- bar aliases (AstralPowerBar, EnergyBar, etc.) resolve to an actual frame, so
+		-- CreateBarTextFrames must re-parent text frames for the new form first. It also
+		-- clears font strings to "", so the lookup memoization must be invalidated
+		-- afterwards to ensure UpdateResourceBarText repopulates them instead of hitting
+		-- the OOC idle-skip (lookupDirty=false, not inCombat, no active timers).
+		TRB.Data.cache.values.frame = {}
+		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
+		TRB.Functions.BarText:InvalidateLookupMemoization()
+
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
-		TRB.Functions.Character:ResetColorCaches()
-		
-		TRB.Data.cache.values.frame = {}
-		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
 	end
 
 	-- Recalculate wrapper/CDM positioning for the new form.
@@ -2830,6 +2838,11 @@ local function SwitchSpec()
 			DruidPowerEvent(nil, "UNIT_MAXPOWER", "MANA")
 			DruidPowerEvent(nil, "UNIT_MAXPOWER", "LUNAR_POWER")
 			TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
+			-- CreateBarTextFrames wipes all font text to "". If EndRenderTransition
+			-- already ran (consuming lookupDirty), the OOC idle-skip in
+			-- UpdateResourceBarText would prevent text from being repopulated.
+			-- Invalidate memoization so the next periodic tick re-renders text.
+			TRB.Functions.BarText:InvalidateLookupMemoization()
 		end)
 	end)
 end
