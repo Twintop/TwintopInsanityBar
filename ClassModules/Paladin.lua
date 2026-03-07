@@ -334,7 +334,7 @@ local function RefreshLookupData_Holy()
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$holyPower"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource
+	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
 	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
@@ -402,7 +402,7 @@ local function RefreshLookupData_Protection()
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$holyPower"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource
+	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
 	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
@@ -470,7 +470,7 @@ local function RefreshLookupData_Retribution()
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$holyPower"] = snapshotData.attributes.resource2
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource
+	lookupLogic["$holyPowerMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
 	local manaFormatted = snapshotData.formatted.resourceAbbrev or ""

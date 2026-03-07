@@ -381,6 +381,8 @@ local function RefreshLookupData_Blood()
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
+	end
+	if lookupChanged(prevState, "$runicPowerMax", TRB.Data.character.maxResource, currentRunicPowerColor) then
 		local rpMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$runicPowerMax"] = rpMax
 		lookup["$resourceMax"] = rpMax
@@ -464,6 +466,8 @@ local function RefreshLookupData_Frost()
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
+	end
+	if lookupChanged(prevState, "$runicPowerMax", TRB.Data.character.maxResource, currentRunicPowerColor) then
 		local rpMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$runicPowerMax"] = rpMax
 		lookup["$resourceMax"] = rpMax
@@ -547,6 +551,8 @@ local function RefreshLookupData_Unholy()
 		end
 		lookup["$runicPower"] = rp
 		lookup["$resource"] = rp
+	end
+	if lookupChanged(prevState, "$runicPowerMax", TRB.Data.character.maxResource, currentRunicPowerColor) then
 		local rpMax = string.format("|c%s%s|r", currentRunicPowerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
 		lookup["$runicPowerMax"] = rpMax
 		lookup["$resourceMax"] = rpMax
