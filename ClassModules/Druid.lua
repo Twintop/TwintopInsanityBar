@@ -3275,6 +3275,7 @@ do
 		local snaps = TRB.Data.snapshotData.snapshots
 		return snaps[spells.celestialAlignment.id].buff.isActive or snaps[spells.incarnationChosenOfElune.id].buff.isActive
 	end
+	---@type table<string, boolean|function>
 	local balance = {
 		["$eclipse"] = eclipseFn,
 		["$solar"] = solarFn, ["$eclipseSolar"] = solarFn, ["$solarEclipse"] = solarFn,
@@ -3299,6 +3300,7 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 	end
+	---@type table<string, boolean|function>
 	local feral = {
 		["$berserkTime"] = berserkFeralFn, ["$incarnationTime"] = berserkFeralFn,
 		["$incarnationTicks"] = incarnFeralBuffFn,
@@ -3315,6 +3317,7 @@ do
 		local snaps = TRB.Data.snapshotData.snapshots
 		return snaps[spells.berserk.id].buff.isActive or snaps[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 	end
+	---@type table<string, boolean|function>
 	local guardian = {
 		["$berserkTime"] = berserkGuardianFn, ["$incarnationTime"] = berserkGuardianFn,
 	}

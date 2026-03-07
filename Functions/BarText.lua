@@ -695,18 +695,17 @@ local function ResolveConditionalValues(compiledExpr)
 	return args
 end
 
+-- Reusable buffer stack for RemoveInvalidVariablesFromBarText to avoid per-call table allocation.
+-- Stack depth handles recursive calls (conditional true/false branches).
+local rivBufferStack = {}
+local rivBufferDepth = 0
+
 ---Removes invalid variables from the bar text represented within the tree.
 ---Conditional expressions are compiled to reusable Lua functions on first evaluation,
 ---then re-evaluated each frame by passing current values as arguments — avoiding
 ---per-frame string building, operator normalization, and loadstring() compilation.
 ---@param tree table
 ---@return string
-
--- Reusable buffer stack for RemoveInvalidVariablesFromBarText to avoid per-call table allocation.
--- Stack depth handles recursive calls (conditional true/false branches).
-local rivBufferStack = {}
-local rivBufferDepth = 0
-
 local function RemoveInvalidVariablesFromBarText(tree)
 	if tree == nil or tree.barText == nil then
 		return ""
@@ -1189,10 +1188,6 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	Global_TwintopResourceBar.resource.casting = castingAmount
 end
 
----Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
----@param var string
----@return boolean
-
 -- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
 local validBaseVars = {
 	["$crit"] = true, ["$critPercent"] = true,
@@ -1210,6 +1205,9 @@ local validBaseVars = {
 	["$stam"] = true, ["$stamina"] = true,
 }
 
+---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
+---@param var string
+---@return boolean
 function TRB.Functions.BarText:IsValidVariableBase(var)
 	if validBaseVars[var] then
 		return true

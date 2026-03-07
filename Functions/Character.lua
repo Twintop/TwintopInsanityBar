@@ -742,6 +742,7 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste / 100))
 	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
 	formatted.gcd = string.format("%.2f", _gcd)
+---@diagnostic disable-next-line: assign-type-mismatch
 	formatted.gcdRaw = _gcd
 
 	snapshotData.attributes.cacheRefresh = true

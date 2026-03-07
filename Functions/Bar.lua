@@ -711,6 +711,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local primaryRootKey = barKeyToRoot["primary"] or "primary"
 	local primaryRootMeta = rootMetadata[primaryRootKey]
 	local effectiveWidth = primaryRootMeta and primaryRootMeta.effectiveWidth or settings.bar.width
+---@diagnostic disable-next-line: inject-field, assign-type-mismatch
 	barGroups.effectiveWidth = effectiveWidth
 
 	-- Store per-root effective widths for ResolveBarWidth
