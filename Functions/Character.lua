@@ -79,7 +79,16 @@ function TRB.Functions.Character:UpdateResourceValues()
 	local formatted = snapshotData.formatted
 	formatted.resource = string.format("%s", snapshotData.attributes.resourceModified)
 	formatted.resourceAbbrev = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.resourceModified)
-	formatted.resourcePercent = string.format("%s", snapshotData.attributes.resourcePercent)
+	-- resourcePercent: all consumers are mana-based specs whose RefreshLookupData expects
+	-- precision.mana formatting (e.g., "%.1f").  Mirror the healthPercent pattern.
+	local resourcePercentPrecision = 1
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
+		local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if entry and entry.settings and entry.settings.precision then
+			resourcePercentPrecision = entry.settings.precision.mana or 1
+		end
+	end
+	formatted.resourcePercent = string.format("%." .. resourcePercentPrecision .. "f", snapshotData.attributes.resourcePercent)
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" then
@@ -301,6 +310,7 @@ local function CharacterChange(self, event, ...)
 			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_STATS" then
+		local unitTarget = ...
 		if unitTarget == "player" then
 			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 			snapshotData.attributes.primaryRefresh = true

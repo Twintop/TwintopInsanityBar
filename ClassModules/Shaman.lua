@@ -523,8 +523,7 @@ local function RefreshLookupData_Restoration()
 	--$casting
 	local _castingMana = snapshotData.casting.resourceFinal
 
-	--$manaMax (formatted — intentionally used for both lookup and lookupLogic)
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+	--$manaMax
 
 	--$manaPercent
 	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
@@ -542,8 +541,8 @@ local function RefreshLookupData_Restoration()
 	-- lookupLogic (unconditional)
 	lookupLogic["$resource"] = normalizedMana
 	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$resourceMax"] = manaMax
-	lookupLogic["$manaMax"] = manaMax
+	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$resourcePercent"] = _manaPercent
 	lookupLogic["$manaPercent"] = _manaPercent
 	lookupLogic["$casting"] = _castingMana
@@ -557,8 +556,9 @@ local function RefreshLookupData_Restoration()
 		lookup["$resource"] = f
 	end
 	if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
-		lookup["$manaMax"] = manaMax
-		lookup["$resourceMax"] = manaMax
+		local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+		lookup["$manaMax"] = f
+		lookup["$resourceMax"] = f
 	end
 	local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
 	if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then

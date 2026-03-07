@@ -308,7 +308,6 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		TRB.Functions.Bar:HideResourceBar()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
-			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else

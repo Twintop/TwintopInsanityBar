@@ -1440,9 +1440,9 @@ function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
 	if not snapshotData then return false end
 	-- All 3 specs: essence regeneration is time-dependent when not at max
-	local resource = snapshotData.attributes.resource
-	local maxResource = snapshotData.attributes.maxResource
-	if resource ~= nil and maxResource ~= nil and resource < maxResource then
+	local resource2 = snapshotData.attributes.resource2
+	local maxResource2 = TRB.Data.character.maxResource2
+	if resource2 ~= nil and maxResource2 ~= nil and resource2 < maxResource2 then
 		return true
 	end
 	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
