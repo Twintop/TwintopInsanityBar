@@ -343,6 +343,7 @@ local function DruidPowerEvent(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		UpdateResourceValues()
 		TRB.Functions.Character:UpdateOvercapColor()
+		TRB.Data.lookupDirty = true
 	elseif event == "UNIT_MAXPOWER" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" then
