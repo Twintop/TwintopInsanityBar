@@ -901,7 +901,7 @@ local function UpdateResourceBar()
 
 				-- Ebon Might bar color changes
 				if snapshots[spells.ebonMight.id].buff.isActive then
-					local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff.remaining
+					local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
 					local ebonMightTimeThreshold = 0
 					local useEndOfEbonMightColor = false
 
@@ -933,7 +933,7 @@ local function UpdateResourceBar()
 							snapshotData.audio.playedEbonMightCue = true
 							PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
 						end
-					elseif useEndOfEbonMightColor and specSettings.colors.bar.ebonMightEnd.enabled and ebonMightTimeLeft <= ebonMightTimeThreshold then
+					elseif useEndOfEbonMightColor and ebonMightTimeLeft <= ebonMightTimeThreshold then
 						-- Ebon Might is ending soon
 						barColor = specSettings.colors.bar.ebonMightEnd.color
 					elseif specSettings.colors.bar.ebonMight.enabled then
