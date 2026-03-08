@@ -600,6 +600,12 @@ local function RefreshLookupData_Devourer()
 
 		local _soulFragments = snapshotData.attributes.resource2
 		local _soulFragmentsMax = snapshotData.attributes.maxResource2
+		if type(_soulFragments) ~= "number" then
+			_soulFragments = 0
+		end
+		if type(_soulFragmentsMax) ~= "number" or _soulFragmentsMax <= 0 then
+			_soulFragmentsMax = TRB.Data.character.maxResource2Value or 50
+		end
 
 		-- If Metamorphosis is active and Collapsing Star talent is not selected, Soul Fragments (Collapsing Star values, really) are disabled
 		local metaActive = snapshotData.snapshots[spells.metamorphosis.id].buff.isActive
@@ -906,22 +912,52 @@ local function UpdateSnapshot_Devourer()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local _
-	
-	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
-		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.collapsingStar.id].buff.applications
+	local currentTime = GetTime()
+	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
+	local soulFragmentsBuff = snapshotData.snapshots[spells.soulFragments.id].buff
+
+	if collapsingStarBuff.isActive then
+		snapshotData.attributes.resource2 = collapsingStarBuff.applications
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
+		snapshotData.attributes.devourerSoulFragmentsLastKnown = snapshotData.attributes.resource2
+		snapshotData.attributes.devourerSoulFragmentsLastKnownAt = currentTime
 	else
-		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.soulFragments.id].buff.applications
-		snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
+		local maxResource2 = spells.soulFragments.attributes.maxResource
 		if talents:IsTalentActive(spells.soulGlutton) then
-			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
+			maxResource2 = maxResource2 + spells.soulGlutton.attributes.maxResourceMod
 		end
 
 		if talents:IsTalentActive(spells.surrenderToTheVoid) then
-			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
+			maxResource2 = maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
 		end
+
+		local resource2 = soulFragmentsBuff.applications
+		if type(resource2) ~= "number" then
+			resource2 = 0
+		end
+		if not soulFragmentsBuff.isActive then
+			local lastKnown = snapshotData.attributes.devourerSoulFragmentsLastKnown
+			local lastKnownAt = snapshotData.attributes.devourerSoulFragmentsLastKnownAt or 0
+			if type(lastKnown) == "number" and lastKnown > 0 and (currentTime - lastKnownAt) <= 0.20 then
+				resource2 = lastKnown
+			end
+		else
+			snapshotData.attributes.devourerSoulFragmentsLastKnown = resource2
+			snapshotData.attributes.devourerSoulFragmentsLastKnownAt = currentTime
+		end
+
+		local transitionAt = snapshotData.attributes.devourerTransitionAt or 0
+		if resource2 == 0 then
+			local lastKnown = snapshotData.attributes.devourerSoulFragmentsLastKnown
+			if type(lastKnown) == "number" and lastKnown > 0 and (currentTime - transitionAt) <= 0.60 then
+				resource2 = lastKnown
+			end
+		end
+
+		snapshotData.attributes.resource2 = resource2
+		snapshotData.attributes.maxResource2 = maxResource2
 	end
+
 end
 
 local function UpdateResourceBar()
@@ -1384,6 +1420,12 @@ local function UpdateResourceBar()
 				-- Soul Fragments bar (Devourer fixed max)
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
+				if type(current) ~= "number" then
+					current = 0
+				end
+				if type(max) ~= "number" or max <= 0 then
+					max = TRB.Data.character.maxResource2Value or 50
+				end
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
@@ -1405,15 +1447,12 @@ local function UpdateResourceBar()
 				if barGroups.secondary then
 					local sfNode = barGroups.secondary:GetNode(1)
 					if sfNode then
-						local desiredSecondaryMax = TRB.Data.character.maxResource2Value or 50
 						local secondaryMin, secondaryMax = sfNode:GetMinMax()
-						TRB.Data.cache.values.bar["secondary"] = TRB.Data.cache.values.bar["secondary"] or {}
-						if secondaryMin ~= 0 or secondaryMax ~= desiredSecondaryMax then
-							sfNode:SetMinMax(0, desiredSecondaryMax)
+						if secondaryMin ~= 0 or secondaryMax ~= max then
+							sfNode:SetMinMax(0, max)
 						end
-						TRB.Data.cache.values.bar["secondary"].value = nil
-						TRB.Data.cache.values.bar["secondary"].maxResource = nil
-						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
+						local expectedValue = math.min(current, max)
+						sfNode:SetValue(expectedValue, false)
 						sfNode:SetBorderColor(cpBorderColor)
 						sfNode:SetColor(cpColor)
 						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -1447,7 +1486,7 @@ local function UpdateResourceBar()
 								-- Set the threshold color using the proper method
 								TRB.Functions.Color:SetThresholdColor(thresholds[1], thresholdColor, true)
 								
-								TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, snapshotData.attributes.maxResource2)
+								TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
 							else
 								thresholds[1]:Hide()
 							end
@@ -2127,6 +2166,6 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
-	
+
 	UpdateResourceBar()
 end

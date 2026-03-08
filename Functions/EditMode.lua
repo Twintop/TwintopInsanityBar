@@ -1122,7 +1122,7 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 
 							-- Validate the frame exists and warn if not
 							if not _G[frameName] then
-								print("|cFFFF8800TwintopInsanityBar:|r " .. string.format(L["EditModeCustomFrameWarning"], frameName))
+								print("|cFFFF8800TRB:|r " .. string.format(L["EditModeCustomFrameWarning"], frameName))
 							end
 
 							-- Hook the custom frame for resize/show
