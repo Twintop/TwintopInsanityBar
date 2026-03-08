@@ -731,12 +731,11 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	formatted.masteryRating = shortNum(strLib, snapshotData.attributes.masteryRating, precision, "floor", true)
 	formatted.versRating = shortNum(strLib, snapshotData.attributes.versatilityRating, precision, "floor", true)
 
-	local fmtPattern = "%." .. precision .. "f"
-	formatted.haste = string.format(fmtPattern, roundTo(numLib, snapshotData.attributes.haste, precision))
-	formatted.crit = string.format(fmtPattern, roundTo(numLib, snapshotData.attributes.crit, precision))
-	formatted.mastery = string.format(fmtPattern, roundTo(numLib, snapshotData.attributes.mastery, precision))
-	formatted.versOff = string.format(fmtPattern, roundTo(numLib, snapshotData.attributes.versatilityOffensive, precision))
-	formatted.versDef = string.format(fmtPattern, roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision))
+	formatted.haste = roundTo(numLib, snapshotData.attributes.haste, precision)
+	formatted.crit = roundTo(numLib, snapshotData.attributes.crit, precision)
+	formatted.mastery = roundTo(numLib, snapshotData.attributes.mastery, precision)
+	formatted.versOff = roundTo(numLib, snapshotData.attributes.versatilityOffensive, precision)
+	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
 
 	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
 	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste / 100))
