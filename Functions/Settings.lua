@@ -3833,6 +3833,21 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Warrior Fury comboPoints migration: split base into base (1 stack) and secondary (2 stacks), add zeroStackBackground
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.fury ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.colors ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.colors.comboPoints ~= nil then
+		local cp = TwintopInsanityBarSettings.warrior.fury.colors.comboPoints
+		if cp.secondary == nil and cp.base ~= nil then
+			cp.secondary = { color = cp.base.color }
+		end
+		if cp.zeroStackBackground == nil then
+			cp.zeroStackBackground = { color = "66333333", enabled = false }
+		end
+	end
+
 	-- Warrior Protection colors.bar migration from flat string to table format
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.warrior ~= nil and

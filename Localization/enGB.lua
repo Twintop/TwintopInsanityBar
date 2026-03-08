@@ -290,4 +290,9 @@ if locale == "enGB" then
     L["HunterSurvivalCheckboxTipOfTheSpearSameColor"] = "Use highest stack colour for all filled Tip of the Spear nodes"
     L["HunterSurvivalCheckboxTipOfTheSpearSameColorTooltip"] = "When checked, all filled Tip of the Spear nodes will use the colour of the highest applicable colour (e.g., if at max stacks, all nodes use the 3 Charges colour)."
     L["BarTextVariable_incomingHeal"] = "Your current total incoming heal amount."
+    L["WhirlwindColorsHeader"] = "Whirlwind Charge Colours"
+    L["WhirlwindCheckboxUseHighestForAll"] = "Use highest Whirlwind Charge colour for all?"
+    L["WhirlwindCheckboxUseHighestForAllTooltip"] = "When checked, the highest Whirlwind Charge's colour will be used for all Whirlwind Charges. E.g., if you have 4 Whirlwind Charges and currently have 3, the Penultimate colour will be used for all Whirlwind Charges instead of just the second to last."
+    L["WhirlwindCheckboxZeroStackBackground"] = "Use different background colour at 0 charges?"
+    L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "When checked, all Whirlwind Charge nodes will use the specified background colour when you have 0 Whirlwind Charges."
 end

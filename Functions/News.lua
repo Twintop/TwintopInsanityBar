@@ -28,6 +28,12 @@ local content = [====[
 
 - [#683](#683) Restore the ability to change and disable the Overcap bar border color in options.
 
+## Warrior
+### Fury
+
+- [#679](#679) Separate the Whirlwind Charge color for 1 charge and 2 charges into distinct color options instead of sharing a single color. The default for 1 charge is now a slightly lighter yellow.
+- [#679](#679) Add an optional different background color for Whirlwind Charge nodes when at 0 charges. This can be disabled via a checkbox in the Whirlwind tab of the Fury options.
+
 ---
 
 # 12.0.1.26-release (2026-03-06)

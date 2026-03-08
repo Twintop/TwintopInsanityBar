@@ -1940,7 +1940,7 @@ L["WarriorFuryBarTextNameWWCharge3"] = "WW Charge 3"
 L["WarriorFuryBarTextNameWWCharge4"] = "WW Charge 4"
 L["WhirlwindColorsHeader"] = "Whirlwind Charge Colors"
 L["WhirlwindColorPickerBorder"] = "Whirlwind Charge's border"
-L["WhirlwindColorPickerBase"] = "Whirlwind Charge (1-2)"
+L["WhirlwindColorPickerBase"] = "Whirlwind Charge (1)"
 L["WhirlwindColorPickerPenultimate"] = "Whirlwind Charge (3)"
 L["WhirlwindColorPickerFinal"] = "Whirlwind Charge (4)"
 L["WhirlwindColorPickerBackground"] = "Unfilled Whirlwind Charge background"
@@ -2112,3 +2112,9 @@ L["DruidCheckboxShowComboPoints"] = "Show Combo Points in every shapeshift form"
 L["DruidCheckboxShowComboPointsTooltip"] = "When checked, the Combo Points bar will be displayed regardless of current shapeshift form. When unchecked, the Combo Points bar will only be shown in Cat Form. The Combo Points visibility dropdown above will still control when the Combo Points bar appears in general."
 
 L["DemonHunterDevourerBarTextVariable_rollingTormentFury"] = "Fury gained from Rolling Torment if Collapsing Star ended right now"
+
+-- Warrior Fury Whirlwind Charge Color Split
+L["WhirlwindColorPickerSecondary"] = "Whirlwind Charge (2)"
+L["WhirlwindColorPickerZeroStackBackground"] = "0-charges Whirlwind Charge background"
+L["WhirlwindCheckboxZeroStackBackground"] = "Use different background color at 0 charges?"
+L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "When checked, all Whirlwind Charge nodes will use the specified background color when you have 0 Whirlwind Charges."

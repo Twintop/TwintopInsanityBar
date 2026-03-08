@@ -875,13 +875,21 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	if stacks > 4 then stacks = 4 end
 
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local useZeroStackBg = specSettings.colors.comboPoints.zeroStackBackground.enabled and stacks == 0 and TRB.Data.character.inCombat
+	local zsBgR, zsBgG, zsBgB, zsBgA
+	if useZeroStackBg then
+		zsBgR, zsBgG, zsBgB, zsBgA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.zeroStackBackground.color, true)
+	end
+
 	for x = 1, 4 do
 		local cpBorderColor = specSettings.colors.comboPoints.border.color
 		local cpColor = specSettings.colors.comboPoints.base.color
 		local filled = stacks >= x
 
 		if filled then
-			if (specSettings.comboPoints.sameColor and stacks == 3) or (not specSettings.comboPoints.sameColor and x == 3) then
+			if (specSettings.comboPoints.sameColor and stacks == 2) or (not specSettings.comboPoints.sameColor and x == 2) then
+				cpColor = specSettings.colors.comboPoints.secondary.color
+			elseif (specSettings.comboPoints.sameColor and stacks == 3) or (not specSettings.comboPoints.sameColor and x == 3) then
 				cpColor = specSettings.colors.comboPoints.penultimate.color
 			elseif (specSettings.comboPoints.sameColor and stacks == 4) or x == 4 then
 				cpColor = specSettings.colors.comboPoints.final.color
@@ -893,7 +901,11 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
 			node:SetBorderColor(cpBorderColor)
 			node:SetColor(cpColor)
-			node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+			if useZeroStackBg then
+				node:SetBackgroundColor(zsBgR, zsBgG, zsBgB, zsBgA)
+			else
+				node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+			end
 		end
 	end
 end
