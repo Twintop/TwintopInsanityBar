@@ -1405,6 +1405,14 @@ local function UpdateResourceBar()
 				if barGroups.secondary then
 					local sfNode = barGroups.secondary:GetNode(1)
 					if sfNode then
+						local desiredSecondaryMax = TRB.Data.character.maxResource2Value or 50
+						local secondaryMin, secondaryMax = sfNode:GetMinMax()
+						if secondaryMin ~= 0 or secondaryMax ~= desiredSecondaryMax then
+							sfNode:SetMinMax(0, desiredSecondaryMax)
+							TRB.Data.cache.values.bar["secondary"] = TRB.Data.cache.values.bar["secondary"] or {}
+							TRB.Data.cache.values.bar["secondary"].value = nil
+							TRB.Data.cache.values.bar["secondary"].maxResource = nil
+						end
 						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
 						sfNode:SetBorderColor(cpBorderColor)
 						sfNode:SetColor(cpColor)
