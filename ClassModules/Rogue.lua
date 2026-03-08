@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -470,335 +471,261 @@ end
 local function RefreshLookupData_Assassination()
 	local specSettings = TRB.Data.settings.rogue.assassination
 	local sharedSettings = TRB.Data.specCache["rogue_assassination"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
-				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$energy
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy
-	local castingEnergy
-	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
-		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
-		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-		
-	--[[
-	--$blindsideTime
-	local _blindsideTime = snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
-	local blindsideTime = TRB.Functions.BarText:TimerPrecision(_blindsideTime)]]
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentEnergy
-	lookup["$casting"] = castingEnergy
-	lookup["$energyMax"] = TRB.Data.character.maxResource
-	lookup["$energy"] = currentEnergy
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$inStealth"] = ""
-	--[[
-	lookup["$blindsideTime"] = blindsideTime]]
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$inStealth"] = IsStealthed()
-	--[[
-	lookupLogic["$blindsideTime"] = _blindsideTime]]
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax, $inStealth)
+	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] or activeVars["$inStealth"] then
+
+		local currentEnergyColor = sharedSettings.colors.text.current.color
+		local castingEnergyColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+					castingEnergyColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
+		end
+
+		local _castingEnergy = snapshotData.casting.resourceFinal
+		if _castingEnergy < 0 then
+			castingEnergyColor = sharedSettings.colors.text.spending.color
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local isStealthed = IsStealthed()
+
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = _castingEnergy
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$inStealth"] = isStealthed
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
+		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
+		if resourceChanged or castingChanged or stealthChanged then
+			local currentEnergy
+			local castingEnergy
+			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
+			else
+				currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
+				castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentEnergy
+			lookup["$energy"] = currentEnergy
+			lookup["$casting"] = castingEnergy
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$energyMax"] = TRB.Data.character.maxResource
+		lookup["$inStealth"] = ""
+	end
+
+	-- Block B: Combo Points ($comboPoints, $comboPointsMax)
+	if not activeVars or activeVars["$comboPoints"] or activeVars["$comboPointsMax"] then
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Outlaw()
 	local specSettings = TRB.Data.settings.rogue.outlaw
 	local sharedSettings = TRB.Data.specCache["rogue_outlaw"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	--Spec specific implementation
-
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
-				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$energy
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy
-	local castingEnergy
-	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
-		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
-		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-	
-	--[[
-	local rollTheBones = snapshots[spells.rollTheBones.id]
-	local rollTheBonesCount = rollTheBones.attributes.count
-	local rollTheBonesTemporaryCount = rollTheBones.attributes.temporaryCount
-	local rollTheBonesAllCount = rollTheBones.attributes.count + rollTheBones.attributes.temporaryCount
-
-	--$rtbBuffTime
-	local _rtbBuffTime = snapshots[spells.rollTheBones.id].buff.remaining
-	local rtbBuffTime = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
-
-	--$rtbGoodBuff
-	local _rtbGoodBuff = snapshots[spells.rollTheBones.id].attributes.goodBuffs
-
-	--$broadsideTime
-	local _broadsideTime = snapshots[spells.broadside.id].buff:GetRemainingTime(currentTime)
-	local broadsideTime = TRB.Functions.BarText:TimerPrecision(_broadsideTime)
-
-	--$buriedTreasureTime
-	local _buriedTreasureTime = snapshots[spells.buriedTreasure.id].buff:GetRemainingTime(currentTime)
-	local buriedTreasureTime = TRB.Functions.BarText:TimerPrecision(_buriedTreasureTime)
-
-	--$grandMeleeTime
-	local _grandMeleeTime = snapshots[spells.grandMelee.id].buff:GetRemainingTime(currentTime)
-	local grandMeleeTime = TRB.Functions.BarText:TimerPrecision(_grandMeleeTime)
-
-	--$ruthlessPrecisionTime
-	local _ruthlessPrecisionTime = snapshots[spells.ruthlessPrecision.id].buff:GetRemainingTime(currentTime)
-	local ruthlessPrecisionTime = TRB.Functions.BarText:TimerPrecision(_ruthlessPrecisionTime)
-
-	--$skullAndCrossbonesTime
-	local _skullAndCrossbonesTime = snapshots[spells.skullAndCrossbones.id].buff:GetRemainingTime(currentTime)
-	local skullAndCrossbonesTime = TRB.Functions.BarText:TimerPrecision(_skullAndCrossbonesTime)
-
-	--$trueBearingTime
-	local _trueBearingTime = snapshots[spells.trueBearing.id].buff:GetRemainingTime(currentTime)
-	local trueBearingTime = TRB.Functions.BarText:TimerPrecision(_trueBearingTime)
-
-	
-	--$opportunityTime
-	local _opportunityTime = snapshots[spells.opportunity.id].buff:GetRemainingTime(currentTime)
-	local opportunityTime = TRB.Functions.BarText:TimerPrecision(_opportunityTime)]]
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentEnergy
-	lookup["$casting"] = castingEnergy
-	lookup["$energyMax"] = TRB.Data.character.maxResource
-	lookup["$energy"] = currentEnergy
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$inStealth"] = ""
-	--[[
-	lookup["$opportunityTime"] = opportunityTime
-	lookup["$rtbCount"] = rollTheBonesCount
-	lookup["$rollTheBonesCount"] = rollTheBonesCount
-	lookup["$rtbGoodBuff"] = ""
-	lookup["$rollTheBonesGoodBuff"] = ""
-	lookup["$rtbAllCount"] = rollTheBonesAllCount
-	lookup["$rollTheBonesAllCount"] = rollTheBonesAllCount
-	lookup["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
-	lookup["$rollTheBonesTemporaryCount"] = rollTheBonesTemporaryCount
-	lookup["$rtbBuffTime"] = rtbBuffTime
-	lookup["$rollTheBonesBuffTime"] = rtbBuffTime
-	lookup["$broadsideTime"] = broadsideTime
-	lookup["$buriedTreasureTime"] = buriedTreasureTime
-	lookup["$grandMeleeTime"] = grandMeleeTime
-	lookup["$ruthlessPrecisionTime"] = ruthlessPrecisionTime
-	lookup["$skullAndCrossbonesTime"] = skullAndCrossbonesTime
-	lookup["$trueBearingTime"] = trueBearingTime]]
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$inStealth"] = IsStealthed()
-	--[[
-	lookupLogic["$opportunityTime"] = _opportunityTime
-	lookupLogic["$rtbCount"] = rollTheBonesCount
-	lookupLogic["$rollTheBonesCount"] = rollTheBonesCount
-	lookupLogic["$rtbGoodBuff"] = _rtbGoodBuff
-	lookupLogic["$rollTheBonesGoodBuff"] = _rtbGoodBuff
-	lookupLogic["$rtbAllCount"] = rollTheBonesAllCount
-	lookupLogic["$rollTheBonesAllCount"] = rollTheBonesAllCount
-	lookupLogic["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
-	lookupLogic["$rollTheBonesTemporaryCount"] = rollTheBonesTemporaryCount
-	lookupLogic["$rtbBuffTime"] = _rtbBuffTime
-	lookupLogic["$rollTheBonesBuffTime"] = _rtbBuffTime
-	lookupLogic["$broadsideTime"] = _broadsideTime
-	lookupLogic["$buriedTreasureTime"] = _buriedTreasureTime
-	lookupLogic["$grandMeleeTime"] = _grandMeleeTime
-	lookupLogic["$ruthlessPrecisionTime"] = _ruthlessPrecisionTime
-	lookupLogic["$skullAndCrossbonesTime"] = _skullAndCrossbonesTime
-	lookupLogic["$trueBearingTime"] = _trueBearingTime]]
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax, $inStealth)
+	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] or activeVars["$inStealth"] then
+
+		local currentEnergyColor = sharedSettings.colors.text.current.color
+		local castingEnergyColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+					castingEnergyColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
+		end
+
+		local _castingEnergy = snapshotData.casting.resourceFinal
+		if _castingEnergy < 0 then
+			castingEnergyColor = sharedSettings.colors.text.spending.color
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local isStealthed = IsStealthed()
+
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = _castingEnergy
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$inStealth"] = isStealthed
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
+		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
+		if resourceChanged or castingChanged or stealthChanged then
+			local currentEnergy
+			local castingEnergy
+			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
+			else
+				currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
+				castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentEnergy
+			lookup["$energy"] = currentEnergy
+			lookup["$casting"] = castingEnergy
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$energyMax"] = TRB.Data.character.maxResource
+		lookup["$inStealth"] = ""
+	end
+
+	-- Block B: Combo Points ($comboPoints, $comboPointsMax)
+	if not activeVars or activeVars["$comboPoints"] or activeVars["$comboPointsMax"] then
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Subtlety()
 	local specSettings = TRB.Data.settings.rogue.subtlety
 	local sharedSettings = TRB.Data.specCache["rogue_subtlety"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
-	local normalizedEnergy = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-
-	local currentEnergyColor = sharedSettings.colors.text.current.color
-	local castingEnergyColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = sharedSettings.colors.text.overThreshold.color
-				castingEnergyColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	if snapshotData.casting.resourceFinal < 0 then
-		castingEnergyColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$energy
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _normalizedEnergy = normalizedEnergy
-	local currentEnergy
-	local castingEnergy
-	-- Apply overcap color if enabled (takes precedence over overThreshold, skipped when stealthed)
-	if not IsStealthed() and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", _normalizedEnergy))
-		castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentEnergy = string.format("|c%s%s|r", currentEnergyColor, _normalizedEnergy)
-		castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-	
-	--[[
-	--$flagellationTime
-	local _flagellationTime = snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
-	local flagellationTime = TRB.Functions.BarText:TimerPrecision(_flagellationTime)
-
-	--$sodTime
-	local _sodTime = snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
-	local sodTime = TRB.Functions.BarText:TimerPrecision(_sodTime)
-
-	--$shadowTechniquesCount
-	local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0]]
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentEnergy
-	lookup["$casting"] = castingEnergy
-	lookup["$energyMax"] = TRB.Data.character.maxResource
-	lookup["$energy"] = currentEnergy
-	lookup["$comboPoints"] = snapshotData.attributes.resource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookup["$inStealth"] = ""
-	--[[
-	lookup["$shadowTechniquesCount"] = shadowTechniquesCount
-	lookup["$flagellationTime"] = flagellationTime
-	lookup["$sodTime"] = sodTime
-	lookup["$symbolsOfDeathTime"] = sodTime]]
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$energy"] = snapshotData.attributes.resource
-	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$inStealth"] = IsStealthed()
-	--[[
-	lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount
-	lookupLogic["$flagellationTime"] = _flagellationTime
-	lookupLogic["$sodTime"] = _sodTime
-	lookupLogic["$symbolsOfDeathTime"] = _sodTime]]
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax, $inStealth)
+	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] or activeVars["$inStealth"] then
+
+		local currentEnergyColor = sharedSettings.colors.text.current.color
+		local castingEnergyColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.primaryResourceType ~= nil and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = sharedSettings.colors.text.overThreshold.color
+					castingEnergyColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
+		end
+
+		local _castingEnergy = snapshotData.casting.resourceFinal
+		if _castingEnergy < 0 then
+			castingEnergyColor = sharedSettings.colors.text.spending.color
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local isStealthed = IsStealthed()
+
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = _castingEnergy
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$inStealth"] = isStealthed
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
+		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
+		if resourceChanged or castingChanged or stealthChanged then
+			local currentEnergy
+			local castingEnergy
+			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentEnergyColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentEnergy = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingEnergy = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor")))
+			else
+				currentEnergy = string.format("|c%s%s|r", currentEnergyColor, resourceFormatted)
+				castingEnergy = string.format("|c%s%s|r", castingEnergyColor, TRB.Functions.Number:RoundTo(_castingEnergy, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentEnergy
+			lookup["$energy"] = currentEnergy
+			lookup["$casting"] = castingEnergy
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$energyMax"] = TRB.Data.character.maxResource
+		lookup["$inStealth"] = ""
+	end
+
+	-- Block B: Combo Points ($comboPoints, $comboPointsMax)
+	if not activeVars or activeVars["$comboPoints"] or activeVars["$comboPointsMax"] then
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1790,6 +1717,8 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -2206,130 +2135,35 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local shared = {
+		["$resource"] = false, ["$energy"] = false,
+		["$resourceMax"] = true, ["$energyMax"] = true,
+		["$casting"] = function()
+			local c = TRB.Data.snapshotData.casting
+			return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+		end,
+		["$comboPoints"] = true,
+		["$comboPointsMax"] = true,
+		["$inStealth"] = function() return IsStealthed() end,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		settings = TRB.Data.settings.rogue.assassination
-	elseif TRB.Data.character.specId == 2 then
-		settings = TRB.Data.settings.rogue.outlaw
-	elseif TRB.Data.character.specId == 3 then
-		settings = TRB.Data.settings.rogue.subtlety
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then --Assassination
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
-		--[[
-		-- Other abilities
-		if var == "$blindsideTime" then
-			if snapshots[spells.blindside.id].buff.isActive then
-				valid = true
-			end
-		end]]
-	elseif TRB.Data.character.specId == 2 then --Outlaw
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
-		-- Roll the Bones buff counts
-		--[[if var == "$rtbCount" or var == "$rollTheBonesCount" then
-			if snapshots[spells.rollTheBones.id].attributes.count > 0 then
-				valid = true
-			end
-		elseif var == "$rtbTemporaryCount" or var == "$rollTheBonesTemporaryCount" then
-			if snapshots[spells.rollTheBones.id].attributes.temporaryCount > 0 then
-				valid = true
-			end
-		elseif var == "$rtbAllCount" or var == "$rollTheBonesAllCount" then
-			if snapshots[spells.rollTheBones.id].attributes.count > 0 or snapshots[spells.rollTheBones.id].attributes.temporaryCount > 0 then
-				valid = true
-			end
-		elseif var == "$rtbBuffTime" or var == "$rollTheBonesBuffTime" then
-			if snapshots[spells.rollTheBones.id].buff.isActive then
-				valid = true
-			end
-		-- Roll the Bones Buffs
-		elseif var == "$broadsideTime" then
-			if snapshots[spells.broadside.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$buriedTreasureTime" then
-			if snapshots[spells.buriedTreasure.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$grandMeleeTime" then
-			if snapshots[spells.grandMelee.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ruthlessPrecisionTime" then
-			if snapshots[spells.ruthlessPrecision.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$skullAndCrossbonesTime" then
-			if snapshots[spells.skullAndCrossbones.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$trueBearingTime" then
-			if snapshots[spells.trueBearing.id].buff.isActive then
-				valid = true
-			end
-		-- Other abilities
-		elseif var == "$opportunityTime" then
-			if snapshots[spells.opportunity.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$rtbGoodBuff" or var == "$rollTheBonesGoodBuff" then
-			if snapshots[spells.rollTheBones.id].attributes.goodBuffs == true then
-				valid = true
-			end
-		end]]
-	elseif TRB.Data.character.specId == 3 then --Subtlety
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
-		--[[if var == "$shadowTechniquesCount" then
-			if snapshots[spells.shadowTechniques.id].buff.applications > 0 then
-				valid = true
-			end
-		elseif var == "$flagellationTime" then
-			if snapshots[spells.flagellation.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$sodTime" or var == "$symbolsOfDeathTime" then
-			if snapshots[spells.symbolsOfDeath.id].buff.isActive then
-				valid = true
-			end
-		end]]
-	end
-
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
-	if var == "$resource" or var == "$energy" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$energyMax" then
-		valid = true	
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	elseif var == "$comboPoints" then
-		valid = true
-	elseif var == "$comboPointsMax" then
-		valid = true
-	elseif var == "$inStealth" then
-		if IsStealthed() then
-			valid = true
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

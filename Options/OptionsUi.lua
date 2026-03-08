@@ -307,6 +307,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Functions.Bar:HideResourceBar()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else
@@ -941,6 +942,7 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 				TRB.Data.cache.colors.border = {}
 				TRB.Data.cache.colors.bar = {}
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
@@ -1583,10 +1585,15 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	tabs[firstKey].Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	tabs[firstKey].bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
+---@diagnostic disable-next-line: inject-field
 	parent.tabs = tabs
+---@diagnostic disable-next-line: inject-field
 	parent.tabsheets = tabsheets
+---@diagnostic disable-next-line: inject-field
 	parent.lastTab = tabsheets[firstKey]
+---@diagnostic disable-next-line: inject-field
 	parent.lastTabId = firstKey
+---@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
 
 	-- Call each tab's constructor to populate its content
@@ -2322,6 +2329,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2358,6 +2366,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2391,6 +2400,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2456,6 +2466,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -2703,6 +2714,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			TRB.Functions.Character:ResetCaches()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -3581,6 +3593,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	local function triggerChange()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -3771,6 +3784,7 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else
@@ -3800,6 +3814,7 @@ function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newV
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else
@@ -3850,6 +3865,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
 				else
@@ -3885,6 +3901,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		else
@@ -4454,6 +4471,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					TRB.Functions.BarVisibility:MarkDirty()
 					TRB.Functions.Bar:HideResourceBar()
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
 				else
@@ -4743,6 +4761,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 						if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+							TRB.Data.lookupDirty = true
 							TRB.Functions.Class:TriggerResourceBarUpdates()
 						end
 					else
@@ -5299,6 +5318,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.casting.enabled = self:GetChecked()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
@@ -5321,6 +5341,7 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
@@ -5401,6 +5422,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 				if TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				else
 					TRB.Functions.Bar:Construct()
@@ -5478,6 +5500,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5513,6 +5536,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		spec.colors.healthBar.absorb.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5546,6 +5570,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5580,6 +5605,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5623,6 +5649,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 		controls.dropDown.staggerColorCurveType:SetDefaultText(StaggerColorCurveTypeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5658,6 +5685,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5682,6 +5710,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -5825,6 +5854,7 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
@@ -6135,6 +6165,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
+			TRB.Data.lookupDirty = true
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("precision")
 		end)
 	else
@@ -6153,6 +6184,8 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		self.EditBox:SetText(value)
 		spec.precision.secondary = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Character:RecomputeFormattedValues()
 	end)
 
 	if (classId == nil and specId == nil) or -- Global
@@ -6174,6 +6207,8 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			self.EditBox:SetText(value)
 			spec.precision.mana = value
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Character:RecomputeFormattedValues()
 		end)
 	end
 
@@ -6188,6 +6223,8 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		self.EditBox:SetText(value)
 		spec.precision.health = value
 		TRB.Data.snapshotData.attributes.cacheRefresh = true
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Character:RecomputeFormattedValues()
 	end)
 
 
@@ -6266,8 +6303,14 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		d.btt:SetSelection()
 		table.remove(d.displayText.barText, d.row)
 		d.setTableValues(d.displayText, d.btt)
-		-- If editing global bar text, refresh the active spec's merged bar text list
+		-- Refresh the active spec's merged bar text list when global bar text is in use
 		if d.classId == nil then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
+		elseif d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
@@ -6276,8 +6319,11 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		end
 		if d.classId == nil or (d.classId == TRB.Data.character.classId and d.specId == TRB.Data.character.specId) then
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
+			TRB.Data.lookupDirty = true
 		end
 		TRB.Functions.BarText:CreateBarTextFrames(d.classId, d.specId)
 		d.barTextOptionsFrame:Hide()
@@ -6320,12 +6366,15 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			TRB.Data.settings.core.global[lowerClassName][specName].globalBarText = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
@@ -7255,17 +7304,27 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		table.insert(displayText.barText, newEntry)
 		SetTableValues(displayText, barTextTable)
 		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
-		-- If editing global bar text, refresh the active spec's merged bar text list
+		-- Refresh the active spec's merged bar text list when global bar text is in use
+		-- (the merged table is a copy, so the insert above won't be reflected without a rebuild)
 		if classId == nil then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
 				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
 			end
-			TRB.Data.cache.barText = {}
-			TRB.Data.cache.symbols = {}
-			TRB.Data.cache.barTextTree = {}
+		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
+				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
+			end
 		end
+		TRB.Data.cache.barText = {}
+		TRB.Functions.BarText:ClearBarTextCacheHash()
+		TRB.Data.cache.symbols = {}
+		TRB.Data.cache.barTextTree = {}
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
 	end)
@@ -7273,6 +7332,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextEntryEnabled:SetScript("OnClick", function(self, ...)
 		workingBarText.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
@@ -7287,8 +7348,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		SetTableValues(displayText, barTextTable)
 		TRB.Data.cache.barText = {}
+		TRB.Functions.BarText:ClearBarTextCacheHash()
 		TRB.Data.cache.symbols = {}
 		TRB.Data.cache.barTextTree = {}
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
 	end)
 
 	-- Attach undo/redo AFTER SetScript("OnTextChanged") so the HookScript
@@ -7346,25 +7410,31 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			if charClassName and charSpecName and TRB.Data.settings.core.global[charClassName] and TRB.Data.settings.core.global[charClassName][charSpecName] and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText then
 				TRB.Functions.Character:FillSpecializationCacheSettings(charClassName, charSpecName)
 				TRB.Data.cache.barText = {}
+				TRB.Functions.BarText:ClearBarTextCacheHash()
 				TRB.Data.cache.symbols = {}
 				TRB.Data.cache.barTextTree = {}
+				TRB.Data.activeVariables = nil
 				-- Use the active spec's merged settings (not core) so frame indices match the merged barText list
 				local activeCompositeKey = TRB.Functions.Character:GetCompositeKey(charClassName, charSpecName)
 				local activeSettings = TRB.Data.specCache[activeCompositeKey] and TRB.Data.specCache[activeCompositeKey].settings
 				TRB.Functions.BarText:Hide(activeSettings or spec)
 				TRB.Functions.BarText:CreateBarTextFrames()
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
 		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}
+			TRB.Functions.BarText:ClearBarTextCacheHash()
 			TRB.Data.cache.symbols = {}
 			TRB.Data.cache.barTextTree = {}
+			TRB.Data.activeVariables = nil
 			-- Hide all existing bar text frames before recreating to prevent stale text from persisting
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			-- Force an immediate bar text update so the new strings render right away
+			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 		TRB.Functions.OptionsUi:SwitchToBarTextTabByClassSpec(classId, specId)

@@ -430,9 +430,11 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "$casting", description = L["DemonHunterDevourerBarTextVariable_casting"], printInSettings = true, color = false },
 		{ variable = "$soulFragments", description = L["DemonHunterDevourerBarTextVariable_soulFragments"], printInSettings = true, color = false },
 		{ variable = "$collapsingStar", description = "", printInSettings = false, color = false },
+		{ variable = "$collapsingStars", description = "", printInSettings = false, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulFragmentsMax", description = L["DemonHunterDevourerBarTextVariable_soulFragmentsMax"], printInSettings = true, color = false },
 		{ variable = "$collapsingStarMax", description = "", printInSettings = false, color = false },
+		{ variable = "$collapsingStarsMax", description = "", printInSettings = false, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 		{ variable = "$metaTime", description = L["DemonHunterDevourerBarTextVariable_metaTime"], printInSettings = true, color = false },
 		{ variable = "$metamorphosisTime", description = "", printInSettings = false, color = false },
@@ -440,6 +442,7 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
 		{ variable = "$voidRayUsable", description = L["DemonHunterDevourerBarTextVariable_voidRayUsable"], printInSettings = true, color = false },
 		{ variable = "$collapsingStarUsable", description = L["DemonHunterDevourerBarTextVariable_collapsingStarUsable"], printInSettings = true, color = false },
+		{ variable = "$collapsingStarsUsable", description = "", printInSettings = false, color = false },
 	})
 end
 

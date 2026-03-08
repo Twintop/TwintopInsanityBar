@@ -26,14 +26,33 @@ function TRB.Functions.Number:IsInteger(number)
 	return not (number == "" or number:find("%D"))  -- str:match("%D") also works
 end
 
+local math_floor = math.floor
+
 ---Rounds the supplied number to a number of decimal places.
 ---@param num number # Number to round
 ---@param numDecimalPlaces number? # Number of decimal places to round to
----@param mode string? # Rounding mode. `floor`, `ceil`, or no rounding
+---@param mode string|function|nil # Rounding mode. `"floor"` / `math.floor`, `"ceil"` / `math.ceil`, or nil for default rounding
 ---@param returnAsNumber boolean? # Should the method return a number or a string
 ---@return number|string
 function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode, returnAsNumber)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+
+	-- Normalize function-reference modes to their string equivalents so all code paths behave consistently.
+	if mode == math_floor then
+		mode = "floor"
+	elseif mode == math.ceil then
+		mode = "ceil"
+	end
+
+	-- Fast path: floor with 0 decimal places returning a number (hot path for GetRGBAFromString).
+	-- Avoids the expensive tostring -> strsplit -> tonumber round-trip.
+	if returnAsNumber and numDecimalPlaces == 0 and mode == "floor" then
+		local n = tonumber(num) or 0
+		if n >= 0 then
+			return math_floor(n)
+		end
+	end
+
 	local newNum = tostring(tonumber(num) or 0)
 	if mode == "floor" then
 		local whole, decimal = strsplit(".", newNum, 2)

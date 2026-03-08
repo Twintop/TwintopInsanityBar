@@ -1091,6 +1091,7 @@ local function DisciplineConstructPowerWordsPanel(parent)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1684,6 +1685,7 @@ local function HolyConstructHolyWordsPanel(parent)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1710,6 +1712,7 @@ local function HolyConstructHolyWordsPanel(parent)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1736,6 +1739,7 @@ local function HolyConstructHolyWordsPanel(parent)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(spec, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(spec, TRB.Frames.barGroups)
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end

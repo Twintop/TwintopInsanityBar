@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -295,80 +296,95 @@ local function RefreshLookupData_BeastMastery()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
 
-	local currentFocusColor = sharedSettings.colors.text.current.color
-	local castingFocusColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core focus ($focus, $resource, $casting, $focusMax, $resourceMax)
+	if not activeVars or activeVars["$focus"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$focusMax"] or activeVars["$resourceMax"] then
+
+		local _currentFocus = snapshotData.attributes.resource
+		local _castingFocus = snapshotData.casting.resourceFinal
+		local currentFocusColor = sharedSettings.colors.text.current.color
+		local castingFocusColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFocusColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentFocusColor = sharedSettings.colors.text.overThreshold.color
+		if _castingFocus < 0 then
+			castingFocusColor = sharedSettings.colors.text.spending.color
+		end
+
+		lookupLogic["$resource"] = _currentFocus
+		lookupLogic["$focus"] = _currentFocus
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFocus
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$focus", resourceFormatted, currentFocusColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFocus, castingFocusColor)
+		if resourceChanged or castingChanged then
+			local currentFocus
+			local castingFocus
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFocus = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingFocus))
+			else
+				currentFocus = string.format("|c%s%s|r", currentFocusColor, resourceFormatted)
+				castingFocus = string.format("|c%s%.0f|r", castingFocusColor, _castingFocus)
 			end
+			lookup["$resource"] = currentFocus
+			lookup["$focus"] = currentFocus
+			lookup["$casting"] = castingFocus
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$focusMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Beast Cleave ($beastCleaveTime)
+	if not activeVars or activeVars["$beastCleaveTime"] then
+		local currentTime = GetTime()
+		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$beastCleaveTime"] = _beastCleaveTime
+
+		if lookupChanged(prevState, "$beastCleaveTime", _beastCleaveTime) then
+			lookup["$beastCleaveTime"] = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 		end
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = sharedSettings.colors.text.spending.color
+	-- Block C: Bestial Wrath ($bestialWrathTime)
+	if not activeVars or activeVars["$bestialWrathTime"] then
+		local currentTime = GetTime()
+		local _bestialWrathTime = snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$bestialWrathTime"] = _bestialWrathTime
+
+		if lookupChanged(prevState, "$bestialWrathTime", _bestialWrathTime) then
+			lookup["$bestialWrathTime"] = TRB.Functions.BarText:TimerPrecision(_bestialWrathTime)
+		end
 	end
 
-	--$focus
-	local _currentFocus = snapshotData.attributes.resource
-	local currentFocus
-	local castingFocus
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFocus))
-		castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
-	else
-		currentFocus = string.format("|c%s%.0f|r", currentFocusColor, _currentFocus)
-		castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
-	end
-		
-	--$beastCleaveTime
-	local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
-	local beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
-
-	beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
-
-		
-	--$bestialWrathTime
-	local _bestialWrathTime = snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime)
-	local bestialWrathTime = TRB.Functions.BarText:TimerPrecision(_bestialWrathTime)
-
-	bestialWrathTime = TRB.Functions.BarText:TimerPrecision(_bestialWrathTime)
-	----------------------------
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFocus
-	lookup["$focus"] = currentFocus	
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$focusMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFocus
-	lookup["$beastCleaveTime"] = beastCleaveTime
-	lookup["$bestialWrathTime"] = bestialWrathTime
 	TRB.Data.lookup = lookup
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$focus"] = snapshotData.attributes.resource
-	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$beastCleaveTime"] = _beastCleaveTime
-	lookupLogic["$bestialWrathTime"] = _bestialWrathTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -378,73 +394,84 @@ local function RefreshLookupData_Marksmanship()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
 
-	local currentFocusColor = sharedSettings.colors.text.current.color
-	local castingFocusColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core focus ($focus, $resource, $casting, $focusMax, $resourceMax)
+	if not activeVars or activeVars["$focus"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$focusMax"] or activeVars["$resourceMax"] then
+
+		local _currentFocus = snapshotData.attributes.resource
+		local _castingFocus = snapshotData.casting.resourceFinal
+		local currentFocusColor = sharedSettings.colors.text.current.color
+		local castingFocusColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFocusColor = sharedSettings.colors.text.overThreshold.color
+					castingFocusColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentFocusColor = sharedSettings.colors.text.overThreshold.color
-				castingFocusColor = sharedSettings.colors.text.overThreshold.color
+		if _castingFocus < 0 then
+			castingFocusColor = sharedSettings.colors.text.spending.color
+		end
+
+		lookupLogic["$resource"] = _currentFocus
+		lookupLogic["$focus"] = _currentFocus
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFocus
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$focus", resourceFormatted, currentFocusColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFocus, castingFocusColor)
+		if resourceChanged or castingChanged then
+			local currentFocus
+			local castingFocus
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFocus = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingFocus))
+			else
+				currentFocus = string.format("|c%s%s|r", currentFocusColor, resourceFormatted)
+				castingFocus = string.format("|c%s%.0f|r", castingFocusColor, _castingFocus)
 			end
+			lookup["$resource"] = currentFocus
+			lookup["$focus"] = currentFocus
+			lookup["$casting"] = castingFocus
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$focusMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Trueshot ($trueshotTime)
+	if not activeVars or activeVars["$trueshotTime"] then
+		local currentTime = GetTime()
+		local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$trueshotTime"] = _trueshotTime
+
+		if lookupChanged(prevState, "$trueshotTime", _trueshotTime) then
+			lookup["$trueshotTime"] = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
 		end
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$focus
-	local _currentFocus = snapshotData.attributes.resource
-	local currentFocus
-	local castingFocus
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFocus))
-		castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
-	else
-		currentFocus = string.format("|c%s%.0f|r", currentFocusColor, _currentFocus)
-		castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
-	end
-	
-	--$trueshotTime
-	local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
-	local trueshotTime = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
-
-	----------------------------
-
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFocus
-	lookup["$focus"] = currentFocus
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$focusMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFocus
-	lookup["$trueshotTime"] = trueshotTime
 	TRB.Data.lookup = lookup
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$focus"] = snapshotData.attributes.resource
-	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$trueshotTime"] = _trueshotTime
-	--lookupLogic["$steadyFocusTime"] = _steadyFocusTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -454,89 +481,109 @@ local function RefreshLookupData_Survival()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local currentTime = GetTime()
 
-	local currentFocusColor = sharedSettings.colors.text.current.color
-	local castingFocusColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core focus ($focus, $resource, $casting, $focusMax, $resourceMax)
+	if not activeVars or activeVars["$focus"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$focusMax"] or activeVars["$resourceMax"] then
+
+		local _currentFocus = snapshotData.attributes.resource
+		local _castingFocus = snapshotData.casting.resourceFinal
+		local currentFocusColor = sharedSettings.colors.text.current.color
+		local castingFocusColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFocusColor = sharedSettings.colors.text.overThreshold.color
+					castingFocusColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentFocusColor = sharedSettings.colors.text.overThreshold.color
-				castingFocusColor = sharedSettings.colors.text.overThreshold.color
+		if _castingFocus < 0 then
+			castingFocusColor = sharedSettings.colors.text.spending.color
+		end
+
+		lookupLogic["$resource"] = _currentFocus
+		lookupLogic["$focus"] = _currentFocus
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFocus
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$focus", resourceFormatted, currentFocusColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFocus, castingFocusColor)
+		if resourceChanged or castingChanged then
+			local currentFocus
+			local castingFocus
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFocus = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _castingFocus))
+			else
+				currentFocus = string.format("|c%s%s|r", currentFocusColor, resourceFormatted)
+				castingFocus = string.format("|c%s%.0f|r", castingFocusColor, _castingFocus)
 			end
+			lookup["$resource"] = currentFocus
+			lookup["$focus"] = currentFocus
+			lookup["$casting"] = castingFocus
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$focusMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Tip of the Spear ($tipOfTheSpear, $comboPoints, $tipOfTheSpearMax, $comboPointsMax, $totsTime)
+	if not activeVars or activeVars["$tipOfTheSpear"] or activeVars["$comboPoints"]
+		or activeVars["$tipOfTheSpearMax"] or activeVars["$comboPointsMax"]
+		or activeVars["$totsTime"] then
+		local currentTime = GetTime()
+		local _tipOfTheSpear = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
+		local _tipOfTheSpearMax = spells.tipOfTheSpear.maxStacks
+		local _totsTime = snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$totsTime"] = _totsTime
+		lookupLogic["$tipOfTheSpear"] = _tipOfTheSpear
+		lookupLogic["$comboPoints"] = _tipOfTheSpear
+		lookupLogic["$tipOfTheSpearMax"] = _tipOfTheSpearMax
+		lookupLogic["$comboPointsMax"] = _tipOfTheSpearMax
+
+		if lookupChanged(prevState, "$totsTime", _totsTime) then
+			lookup["$totsTime"] = TRB.Functions.BarText:TimerPrecision(_totsTime)
+		end
+
+		lookup["$tipOfTheSpear"] = _tipOfTheSpear
+		lookup["$comboPoints"] = _tipOfTheSpear
+		lookup["$tipOfTheSpearMax"] = _tipOfTheSpearMax
+		lookup["$comboPointsMax"] = _tipOfTheSpearMax
+	end
+
+	-- Block C: Takedown ($takedownTime)
+	if not activeVars or activeVars["$takedownTime"] then
+		local currentTime = GetTime()
+		local _takedownTime = snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$takedownTime"] = _takedownTime
+
+		if lookupChanged(prevState, "$takedownTime", _takedownTime) then
+			lookup["$takedownTime"] = TRB.Functions.BarText:TimerPrecision(_takedownTime)
 		end
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
-		castingFocusColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$focus
-	local _currentFocus = snapshotData.attributes.resource
-	local currentFocus
-	local castingFocus
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFocusColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFocus))
-		castingFocus = textColorResult:WrapTextInColorCode(string.format("%.0f", snapshotData.casting.resourceFinal))
-	else
-		currentFocus = string.format("|c%s%.0f|r", currentFocusColor, _currentFocus)
-		castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
-	end
-	
-	--$takedownTime
-	local _takedownTime = snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime)
-	local takedownTime = TRB.Functions.BarText:TimerPrecision(_takedownTime)
-
-	--$totsTime
-	local _totsTime = snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
-	local totsTime = TRB.Functions.BarText:TimerPrecision(_totsTime)
-
-	--$tipOfTheSpear / $comboPoints
-	local _tipOfTheSpear = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
-	local _tipOfTheSpearMax = spells.tipOfTheSpear.maxStacks
-
-	----------------------------
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFocus
-	lookup["$focus"] = currentFocus	
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$focusMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFocus
-	lookup["$takedownTime"] = takedownTime
-	lookup["$totsTime"] = totsTime
-	lookup["$tipOfTheSpear"] = _tipOfTheSpear
-	lookup["$comboPoints"] = _tipOfTheSpear
-	lookup["$tipOfTheSpearMax"] = _tipOfTheSpearMax
-	lookup["$comboPointsMax"] = _tipOfTheSpearMax
 	TRB.Data.lookup = lookup
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = snapshotData.attributes.resource
-	lookupLogic["$focus"] = snapshotData.attributes.resource
-	lookupLogic["$focusMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$takedownTime"] = _takedownTime
-	lookupLogic["$totsTime"] = _totsTime
-	lookupLogic["$tipOfTheSpear"] = _tipOfTheSpear
-	lookupLogic["$comboPoints"] = _tipOfTheSpear
-	lookupLogic["$tipOfTheSpearMax"] = _tipOfTheSpearMax
-	lookupLogic["$comboPointsMax"] = _tipOfTheSpearMax
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -1298,6 +1345,8 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1673,78 +1722,67 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local common = {
+		["$resource"] = false, ["$focus"] = false,
+		["$resourceMax"] = true, ["$focusMax"] = true,
+		["$casting"] = castingFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	-- Beast Mastery
+	local bm = {}
+	for k, v in pairs(common) do bm[k] = v end
+	bm["$beastCleaveTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.beastCleave.id].buff.isActive
+	end
+	bm["$bestialWrathTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.bestialWrath.id].buff.isActive
+	end
+	-- Marksmanship
+	local mm = {}
+	for k, v in pairs(common) do mm[k] = v end
+	mm["$trueshotTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.trueshot.id].buff.isActive
+	end
+	-- Survival
+	local sv = {}
+	for k, v in pairs(common) do sv[k] = v end
+	sv["$takedownTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.takedown.id].buff.isActive
+	end
+	sv["$totsTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.tipOfTheSpear.id].buff.isActive
+	end
+	sv["$tipOfTheSpear"] = true
+	sv["$comboPoints"] = true
+	sv["$tipOfTheSpearMax"] = true
+	sv["$comboPointsMax"] = true
+
+	specValidVars = { [1] = bm, [2] = mm, [3] = sv }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
-		settings = TRB.Data.settings.hunter.beastMastery
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
-		settings = TRB.Data.settings.hunter.marksmanship
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
-		settings = TRB.Data.settings.hunter.survival
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then --Beast Mastery		
-		if var == "$beastCleaveTime" then
-			if snapshots[spells.beastCleave.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$bestialWrathTime" then
-			if snapshots[spells.bestialWrath.id].buff.isActive then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 2 then --Marksmanship
-		if var == "$trueshotTime" then
-			if snapshots[spells.trueshot.id].buff.isActive then
-				valid = true
-			end
-		end
-	elseif TRB.Data.character.specId == 3 then --Survivial
-		if var == "$takedownTime" then
-			if snapshots[spells.takedown.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$totsTime" then
-			if snapshots[spells.tipOfTheSpear.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$tipOfTheSpear" or var == "$comboPoints" then
-			valid = true
-		elseif var == "$tipOfTheSpearMax" or var == "$comboPointsMax" then
-			valid = true
-		end
-	end
-
-	if var == "$resource" or var == "$focus" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$focusMax" then
-		valid = true
-
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.
@@ -1791,6 +1829,33 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+---Returns true when any spec-specific buff timer is actively counting down.
+---BM: Beast Cleave, Bestial Wrath; MM: Trueshot; SV: Takedown, Tip of the Spear.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then -- Beast Mastery
+		if (spells.beastCleave and snapshots[spells.beastCleave.id] and snapshots[spells.beastCleave.id].buff and snapshots[spells.beastCleave.id].buff.isActive)
+			or (spells.bestialWrath and snapshots[spells.bestialWrath.id] and snapshots[spells.bestialWrath.id].buff and snapshots[spells.bestialWrath.id].buff.isActive) then
+			return true
+		end
+	elseif specId == 2 then -- Marksmanship
+		if spells.trueshot and snapshots[spells.trueshot.id] and snapshots[spells.trueshot.id].buff and snapshots[spells.trueshot.id].buff.isActive then
+			return true
+		end
+	elseif specId == 3 then -- Survival
+		if (spells.takedown and snapshots[spells.takedown.id] and snapshots[spells.takedown.id].buff and snapshots[spells.takedown.id].buff.isActive)
+			or (spells.tipOfTheSpear and snapshots[spells.tipOfTheSpear.id] and snapshots[spells.tipOfTheSpear.id].buff and snapshots[spells.tipOfTheSpear.id].buff.isActive) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

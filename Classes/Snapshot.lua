@@ -10,6 +10,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public casting TRB.Classes.SnapshotCasting
 ---@field public audio table
 ---@field public attributes table
+---@field public formatted table<string, string|number|boolean> Pre-formatted display strings, populated at event time
 TRB.Classes.SnapshotData = {}
 TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
@@ -28,6 +29,11 @@ function TRB.Classes.SnapshotData:New(attributes)
 	self.audio = {}
 	self.attributes = attributes or {}
 	self.attributes.resource = self.attributes.resource or 0
+	---Pre-formatted display strings, populated at event time so the render tick
+	---can copy them into lookup[] without redoing expensive string.format / number
+	---abbreviation work.  Keys mirror the lookup variable names minus the "$" prefix.
+	---@type table<string, string|number|boolean>
+	self.formatted = {}
 
 	return self
 end

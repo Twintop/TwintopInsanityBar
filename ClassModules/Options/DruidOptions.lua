@@ -1353,6 +1353,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -2042,6 +2043,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -2657,6 +2659,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()
@@ -3159,6 +3162,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 			TRB.Functions.Character:ResetColorCaches()

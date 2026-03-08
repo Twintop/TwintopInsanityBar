@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -319,269 +320,344 @@ local function ConstructResourceBar(settings)
 end
 
 local function RefreshLookupData_Havoc()
-	local currentTime = GetTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.havoc
 	local sharedSettings = TRB.Data.specCache["demonhunter_havoc"].settings
-	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	--Spec specific implementation
 
-	local currentFuryColor = sharedSettings.colors.text.current.color
-	local castingFuryColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core fury ($fury, $resource, $casting, $furyMax, $resourceMax)
+	if not activeVars or activeVars["$fury"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$furyMax"] or activeVars["$resourceMax"] then
+
+		local normalizedResource = snapshotData.attributes.resourceModified
+		local _castingFury = snapshotData.casting.resourceFinal
+		local currentFuryColor = sharedSettings.colors.text.current.color
+		local castingFuryColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFuryColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentFuryColor = sharedSettings.colors.text.overThreshold.color
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+
+		lookupLogic["$resource"] = normalizedResource
+		lookupLogic["$fury"] = normalizedResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFury
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
+		if resourceChanged or castingChanged then
+			local currentFury
+			local castingFury
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFury = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
+			else
+				currentFury = string.format("|c%s%s|r", currentFuryColor, resourceFormatted)
+				castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 			end
+			lookup["$resource"] = currentFury
+			lookup["$fury"] = currentFury
+			lookup["$casting"] = castingFury
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$furyMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Metamorphosis ($metaTime, $metamorphosisTime, $voidMetaTime, $voidMetamorphosisTime)
+	if not activeVars or activeVars["$metaTime"] or activeVars["$metamorphosisTime"]
+		or activeVars["$voidMetaTime"] or activeVars["$voidMetamorphosisTime"] then
+		local currentTime = GetTime()
+		local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$metaTime"] = _metamorphosisTime
+		lookupLogic["$metamorphosisTime"] = _metamorphosisTime
+		lookupLogic["$voidMetaTime"] = _metamorphosisTime
+		lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
+
+		if lookupChanged(prevState, "$metaTime", _metamorphosisTime) then
+			local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
+			lookup["$metaTime"] = metamorphosisTime
+			lookup["$metamorphosisTime"] = metamorphosisTime
+			lookup["$voidMetaTime"] = metamorphosisTime
+			lookup["$voidMetamorphosisTime"] = metamorphosisTime
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentFury = normalizedResource
-	local currentFury
-	local _castingFury = snapshotData.casting.resourceFinal
-	local castingFury
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFury = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFury))
-		castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
-	else
-		currentFury = string.format("|c%s%s|r", currentFuryColor, _currentFury)
-		castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
-	end
-
-	--$metamorphosisTime
-	local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFury
-	lookup["$fury"] = currentFury
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$furyMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFury
-	lookup["$metaTime"] = metamorphosisTime
-	lookup["$metamorphosisTime"] = metamorphosisTime
-	lookup["$voidMetaTime"] = metamorphosisTime
-	lookup["$voidMetamorphosisTime"] = metamorphosisTime
 	TRB.Data.lookup = lookup
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = normalizedResource
-	lookupLogic["$fury"] = normalizedResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = _castingFury
-	lookupLogic["$metaTime"] = _metamorphosisTime
-	lookupLogic["$metamorphosisTime"] = _metamorphosisTime
-	lookupLogic["$voidMetaTime"] = _metamorphosisTime
-	lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Vengeance()
-	local currentTime = GetTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.vengeance
 	local sharedSettings = TRB.Data.specCache["demonhunter_vengeance"].settings
-	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	--Spec specific implementation
 
-	local currentFuryColor = sharedSettings.colors.text.current.color
-	local castingFuryColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core fury ($fury, $resource, $casting, $furyMax, $resourceMax)
+	if not activeVars or activeVars["$fury"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$furyMax"] or activeVars["$resourceMax"] then
+
+		local normalizedResource = snapshotData.attributes.resourceModified
+		local _castingFury = snapshotData.casting.resourceFinal
+		local currentFuryColor = sharedSettings.colors.text.current.color
+		local castingFuryColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFuryColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentFuryColor = sharedSettings.colors.text.overThreshold.color
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+
+		lookupLogic["$resource"] = normalizedResource
+		lookupLogic["$fury"] = normalizedResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFury
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
+		if resourceChanged or castingChanged then
+			local currentFury
+			local castingFury
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFury = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
+			else
+				currentFury = string.format("|c%s%s|r", currentFuryColor, resourceFormatted)
+				castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 			end
+			lookup["$resource"] = currentFury
+			lookup["$fury"] = currentFury
+			lookup["$casting"] = castingFury
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$furyMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Metamorphosis ($metaTime, $metamorphosisTime, $voidMetaTime, $voidMetamorphosisTime)
+	if not activeVars or activeVars["$metaTime"] or activeVars["$metamorphosisTime"]
+		or activeVars["$voidMetaTime"] or activeVars["$voidMetamorphosisTime"] then
+		local currentTime = GetTime()
+		local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$metaTime"] = _metamorphosisTime
+		lookupLogic["$metamorphosisTime"] = _metamorphosisTime
+		lookupLogic["$voidMetaTime"] = _metamorphosisTime
+		lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
+
+		if lookupChanged(prevState, "$metaTime", _metamorphosisTime) then
+			local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
+			lookup["$metaTime"] = metamorphosisTime
+			lookup["$metamorphosisTime"] = metamorphosisTime
+			lookup["$voidMetaTime"] = metamorphosisTime
+			lookup["$voidMetamorphosisTime"] = metamorphosisTime
 		end
 	end
 
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentFury = normalizedResource
-	local currentFury
-	local _castingFury = snapshotData.casting.resourceFinal
-	local castingFury
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFury = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFury))
-		castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
-	else
-		currentFury = string.format("|c%s%s|r", currentFuryColor, _currentFury)
-		castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
+	-- Block C: Soul Fragments ($soulFragments, $comboPoints, $soulFragmentsMax, $comboPointsMax)
+	if not activeVars or activeVars["$soulFragments"] or activeVars["$comboPoints"]
+		or activeVars["$soulFragmentsMax"] or activeVars["$comboPointsMax"] then
+		local _soulFragments = snapshotData.attributes.resource2
+
+		lookupLogic["$soulFragments"] = _soulFragments
+		lookupLogic["$comboPoints"] = _soulFragments
+		lookupLogic["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
+		lookupLogic["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
+
+		if lookupChanged(prevState, "$soulFragments", _soulFragments, nil, true) then
+			local soulFragments = string.format("%s", _soulFragments)
+			lookup["$soulFragments"] = soulFragments
+			lookup["$comboPoints"] = soulFragments
+		end
+
+		lookup["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
+		lookup["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
 	end
-	
-	--$metamorphosisTime
-	local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-	local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
 
-	--$soulFragments
-	local _soulFragments = snapshotData.attributes.resource2
-	local soulFragments = string.format("%s", _soulFragments)
-
-	----------------------------
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFury
-	lookup["$fury"] = currentFury
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$furyMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFury
-	lookup["$metaTime"] = metamorphosisTime
-	lookup["$metamorphosisTime"] = metamorphosisTime
-	lookup["$voidMetaTime"] = metamorphosisTime
-	lookup["$voidMetamorphosisTime"] = metamorphosisTime
-	lookup["$soulFragments"] = soulFragments
-	lookup["$comboPoints"] = soulFragments
-	lookup["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
-	lookup["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
 	TRB.Data.lookup = lookup
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = normalizedResource
-	lookupLogic["$fury"] = normalizedResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = _castingFury
-	lookupLogic["$metaTime"] = _metamorphosisTime
-	lookupLogic["$metamorphosisTime"] = _metamorphosisTime
-	lookupLogic["$voidMetaTime"] = _metamorphosisTime
-	lookupLogic["$voidMetamorphosisTime"] = _metamorphosisTime
-	lookupLogic["$soulFragments"] = _soulFragments
-	lookupLogic["$comboPoints"] = _soulFragments
-	lookupLogic["$soulFragmentsMax"] = spells.soulFragments.attributes.maxResource
-	lookupLogic["$comboPointsMax"] = spells.soulFragments.attributes.maxResource
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Devourer()
-	local currentTime = GetTime()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.devourer
 	local sharedSettings = TRB.Data.specCache["demonhunter_devourer"].settings
-	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	--Spec specific implementation
-
-	local currentFuryColor = sharedSettings.colors.text.current.color
-	local castingFuryColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentFuryColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentFury = normalizedResource
-	local currentFury
-	local _castingFury = snapshotData.casting.resourceFinal
-	local castingFury
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentFury = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentFury))
-		castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
-	else
-		currentFury = string.format("|c%s%s|r", currentFuryColor, _currentFury)
-		castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
-	end
-
-	--$soulFragments
-	local _soulFragments = snapshotData.attributes.resource2
-	local soulFragments = string.format("%s", _soulFragments)
-
-	--$soulFragmentsMax
-	local _soulFragmentsMax = snapshotData.attributes.maxResource2
-	local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
-
-	-- If Metamorphosis is active and Collapsing Star talent is not selected, Soul Fragments (Collapsing Star values, really) are disabled
-	local metaActive = snapshotData.snapshots[spells.metamorphosis.id].buff.isActive
-	if metaActive and not talents:IsTalentActive(spells.collapsingStar) then
-		_soulFragments = 0
-		soulFragments = ""
-		_soulFragmentsMax = 0
-		soulFragmentsMax = ""
-	end
-
-	-- $voidRayUsable (false while Metamorphosis is active), $collapsingStarUsable
-	local _voidRayUsable = (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
-	local _collapsingStarUsable = snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentFury
-	lookup["$fury"] = currentFury
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$furyMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingFury
-	lookup["$soulFragments"] = soulFragments
-	lookup["$comboPoints"] = soulFragments
-	lookup["$collapsingStars"] = soulFragments
-	lookup["$soulFragmentsMax"] = soulFragmentsMax
-	lookup["$comboPointsMax"] = soulFragmentsMax
-	lookup["$collapsingStarsMax"] = soulFragmentsMax
-	lookup["$metaTime"] = ""
-	lookup["$metamorphosisTime"] = ""
-	lookup["$voidMetaTime"] = ""
-	lookup["$voidMetamorphosisTime"] = ""
-	lookup["$voidRayUsable"] = ""
-	lookup["$collapsingStarUsable"] = ""
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = normalizedResource
-	lookupLogic["$fury"] = normalizedResource
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$furyMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = _castingFury
-	lookupLogic["$soulFragments"] = _soulFragments
-	lookupLogic["$comboPoints"] = _soulFragments
-	lookupLogic["$collapsingStars"] = _soulFragments
-	lookupLogic["$soulFragmentsMax"] = soulFragmentsMax
-	lookupLogic["$comboPointsMax"] = soulFragmentsMax
-	lookupLogic["$collapsingStarsMax"] = soulFragmentsMax
-	lookupLogic["$metaTime"] = 0
-	lookupLogic["$metamorphosisTime"] = 0
-	lookupLogic["$voidMetaTime"] = 0
-	lookupLogic["$voidMetamorphosisTime"] = 0
-	lookupLogic["$voidRayUsable"] = _voidRayUsable
-	lookupLogic["$collapsingStarUsable"] = _collapsingStarUsable
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core fury ($fury, $resource, $casting, $furyMax, $resourceMax)
+	if not activeVars or activeVars["$fury"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$furyMax"] or activeVars["$resourceMax"] then
+
+		local normalizedResource = snapshotData.attributes.resourceModified
+		local _castingFury = snapshotData.casting.resourceFinal
+		local currentFuryColor = sharedSettings.colors.text.current.color
+		local castingFuryColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentFuryColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+
+		lookupLogic["$resource"] = normalizedResource
+		lookupLogic["$fury"] = normalizedResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = _castingFury
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
+		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
+		if resourceChanged or castingChanged then
+			local currentFury
+			local castingFury
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentFuryColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentFury = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingFury = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor")))
+			else
+				currentFury = string.format("|c%s%s|r", currentFuryColor, resourceFormatted)
+				castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentFury
+			lookup["$fury"] = currentFury
+			lookup["$casting"] = castingFury
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$furyMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Soul Fragments / Collapsing Stars + Meta stubs
+	if not activeVars or activeVars["$soulFragments"] or activeVars["$comboPoints"]
+		or activeVars["$collapsingStar"] or activeVars["$collapsingStars"]
+		or activeVars["$soulFragmentsMax"] or activeVars["$comboPointsMax"]
+		or activeVars["$collapsingStarMax"] or activeVars["$collapsingStarsMax"]
+		or activeVars["$metaTime"] or activeVars["$metamorphosisTime"]
+		or activeVars["$voidMetaTime"] or activeVars["$voidMetamorphosisTime"]
+		or activeVars["$voidRayUsable"] or activeVars["$collapsingStarUsable"]
+		or activeVars["$collapsingStarsUsable"] then
+
+		local _soulFragments = snapshotData.attributes.resource2
+		local _soulFragmentsMax = snapshotData.attributes.maxResource2
+		if type(_soulFragments) ~= "number" then
+			_soulFragments = 0
+		end
+		if type(_soulFragmentsMax) ~= "number" or _soulFragmentsMax <= 0 then
+			_soulFragmentsMax = TRB.Data.character.maxResource2Value or 50
+		end
+
+		-- If Metamorphosis is active and Collapsing Star talent is not selected, Soul Fragments (Collapsing Star values, really) are disabled
+		local metaActive = snapshotData.snapshots[spells.metamorphosis.id].buff.isActive
+		if metaActive and not talents:IsTalentActive(spells.collapsingStar) then
+			_soulFragments = 0
+			_soulFragmentsMax = 0
+		end
+
+		local _voidRayUsable = (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
+		local _collapsingStarUsable = snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
+
+		lookupLogic["$soulFragments"] = _soulFragments
+		lookupLogic["$comboPoints"] = _soulFragments
+		lookupLogic["$collapsingStar"] = _soulFragments
+		lookupLogic["$collapsingStars"] = _soulFragments
+		lookupLogic["$soulFragmentsMax"] = _soulFragmentsMax
+		lookupLogic["$comboPointsMax"] = _soulFragmentsMax
+		lookupLogic["$collapsingStarMax"] = _soulFragmentsMax
+		lookupLogic["$collapsingStarsMax"] = _soulFragmentsMax
+		lookupLogic["$metaTime"] = 0
+		lookupLogic["$metamorphosisTime"] = 0
+		lookupLogic["$voidMetaTime"] = 0
+		lookupLogic["$voidMetamorphosisTime"] = 0
+		lookupLogic["$voidRayUsable"] = _voidRayUsable
+		lookupLogic["$collapsingStarUsable"] = _collapsingStarUsable
+		lookupLogic["$collapsingStarsUsable"] = _collapsingStarUsable
+
+		if lookupChanged(prevState, "$soulFragments", _soulFragments) then
+			local soulFragments = string.format("%s", _soulFragments)
+			lookup["$soulFragments"] = soulFragments
+			lookup["$comboPoints"] = soulFragments
+			lookup["$collapsingStar"] = soulFragments
+			lookup["$collapsingStars"] = soulFragments
+		end
+		if lookupChanged(prevState, "$soulFragmentsMax", _soulFragmentsMax) then
+			local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
+			lookup["$soulFragmentsMax"] = soulFragmentsMax
+			lookup["$comboPointsMax"] = soulFragmentsMax
+			lookup["$collapsingStarMax"] = soulFragmentsMax
+			lookup["$collapsingStarsMax"] = soulFragmentsMax
+		end
+
+		lookup["$metaTime"] = ""
+		lookup["$metamorphosisTime"] = ""
+		lookup["$voidMetaTime"] = ""
+		lookup["$voidMetamorphosisTime"] = ""
+		lookup["$voidRayUsable"] = ""
+		lookup["$collapsingStarUsable"] = ""
+		lookup["$collapsingStarsUsable"] = ""
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -836,22 +912,52 @@ local function UpdateSnapshot_Devourer()
 	
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local _
-	
-	if snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
-		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.collapsingStar.id].buff.applications
+	local currentTime = GetTime()
+	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
+	local soulFragmentsBuff = snapshotData.snapshots[spells.soulFragments.id].buff
+
+	if collapsingStarBuff.isActive then
+		snapshotData.attributes.resource2 = collapsingStarBuff.applications
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource
+		snapshotData.attributes.devourerSoulFragmentsLastKnown = snapshotData.attributes.resource2
+		snapshotData.attributes.devourerSoulFragmentsLastKnownAt = currentTime
 	else
-		snapshotData.attributes.resource2 = snapshotData.snapshots[spells.soulFragments.id].buff.applications
-		snapshotData.attributes.maxResource2 = spells.soulFragments.attributes.maxResource
+		local maxResource2 = spells.soulFragments.attributes.maxResource
 		if talents:IsTalentActive(spells.soulGlutton) then
-			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.soulGlutton.attributes.maxResourceMod
+			maxResource2 = maxResource2 + spells.soulGlutton.attributes.maxResourceMod
 		end
 
 		if talents:IsTalentActive(spells.surrenderToTheVoid) then
-			snapshotData.attributes.maxResource2 = snapshotData.attributes.maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
+			maxResource2 = maxResource2 + spells.surrenderToTheVoid.attributes.maxResourceMod
 		end
+
+		local resource2 = soulFragmentsBuff.applications
+		if type(resource2) ~= "number" then
+			resource2 = 0
+		end
+		if not soulFragmentsBuff.isActive then
+			local lastKnown = snapshotData.attributes.devourerSoulFragmentsLastKnown
+			local lastKnownAt = snapshotData.attributes.devourerSoulFragmentsLastKnownAt or 0
+			if type(lastKnown) == "number" and lastKnown > 0 and (currentTime - lastKnownAt) <= 0.20 then
+				resource2 = lastKnown
+			end
+		else
+			snapshotData.attributes.devourerSoulFragmentsLastKnown = resource2
+			snapshotData.attributes.devourerSoulFragmentsLastKnownAt = currentTime
+		end
+
+		local transitionAt = snapshotData.attributes.devourerTransitionAt or 0
+		if resource2 == 0 then
+			local lastKnown = snapshotData.attributes.devourerSoulFragmentsLastKnown
+			if type(lastKnown) == "number" and lastKnown > 0 and (currentTime - transitionAt) <= 0.60 then
+				resource2 = lastKnown
+			end
+		end
+
+		snapshotData.attributes.resource2 = resource2
+		snapshotData.attributes.maxResource2 = maxResource2
 	end
+
 end
 
 local function UpdateResourceBar()
@@ -1314,6 +1420,12 @@ local function UpdateResourceBar()
 				-- Soul Fragments bar (Devourer fixed max)
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
+				if type(current) ~= "number" then
+					current = 0
+				end
+				if type(max) ~= "number" or max <= 0 then
+					max = TRB.Data.character.maxResource2Value or 50
+				end
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
@@ -1335,7 +1447,12 @@ local function UpdateResourceBar()
 				if barGroups.secondary then
 					local sfNode = barGroups.secondary:GetNode(1)
 					if sfNode then
-						TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "secondary", sfNode, current, max)
+						local secondaryMin, secondaryMax = sfNode:GetMinMax()
+						if secondaryMin ~= 0 or secondaryMax ~= max then
+							sfNode:SetMinMax(0, max)
+						end
+						local expectedValue = math.min(current, max)
+						sfNode:SetValue(expectedValue, false)
 						sfNode:SetBorderColor(cpBorderColor)
 						sfNode:SetColor(cpColor)
 						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -1369,7 +1486,7 @@ local function UpdateResourceBar()
 								-- Set the threshold color using the proper method
 								TRB.Functions.Color:SetThresholdColor(thresholds[1], thresholdColor, true)
 								
-								TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, snapshotData.attributes.maxResource2)
+								TRB.Functions.Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
 							else
 								thresholds[1]:Hide()
 							end
@@ -1405,6 +1522,8 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1828,77 +1947,85 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local metaFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.metamorphosis.id].buff.isActive
+	end
+	-- Havoc
+	local havoc = {
+		["$metamorphosisTime"] = metaFn, ["$metaTime"] = metaFn,
+		["$voidMetaTime"] = metaFn, ["$voidMetamorphosisTime"] = metaFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$resource"] = false, ["$fury"] = false,
+		["$resourceMax"] = true, ["$furyMax"] = true,
+		["$casting"] = castingFn,
+	}
+	-- Vengeance
+	local vengeance = {
+		["$comboPoints"] = false, ["$soulFragments"] = false,
+		["$comboPointsMax"] = true, ["$soulFragmentsMax"] = true,
+		["$metamorphosisTime"] = metaFn, ["$metaTime"] = metaFn,
+		["$voidMetaTime"] = metaFn, ["$voidMetamorphosisTime"] = metaFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$resource"] = false, ["$fury"] = false,
+		["$resourceMax"] = true, ["$furyMax"] = true,
+		["$casting"] = castingFn,
+	}
+	-- Devourer
+	local collapsingStarFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
+	end
+	local collapsingStarMaxFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return talents:IsTalentActive(spells.collapsingStar) and TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.isActive
+	end
+	local collapsingStarUsableFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
+	end
+	local devourer = {
+		["$comboPoints"] = true, ["$comboPointsMax"] = true,
+		["$soulFragments"] = true, ["$soulFragmentsMax"] = true,
+		["$collapsingStar"] = collapsingStarFn, ["$collapsingStars"] = collapsingStarFn,
+		["$collapsingStarMax"] =collapsingStarMaxFn, ["$collapsingStarsMax"] = collapsingStarMaxFn,
+		["$voidRayUsable"] = function()
+			local spells = TRB.Data.spellsData.spells
+			local sd = TRB.Data.snapshotData
+			return (not sd.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
+		end,
+		["$collapsingStarUsable"] = collapsingStarUsableFn, ["$collapsingStarsUsable"] = collapsingStarUsableFn,
+		["$metamorphosisTime"] = metaFn, ["$metaTime"] = metaFn,
+		["$voidMetaTime"] = metaFn, ["$voidMetamorphosisTime"] = metaFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$resource"] = false, ["$fury"] = false,
+		["$resourceMax"] = true, ["$furyMax"] = true,
+		["$casting"] = castingFn,
+	}
+
+	specValidVars = { [1] = havoc, [2] = vengeance, [3] = devourer }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local settings = nil
-	local normalizedResource = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
-		settings = TRB.Data.settings.demonhunter.havoc
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-		settings = TRB.Data.settings.demonhunter.vengeance
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
-		settings = TRB.Data.settings.demonhunter.devourer
-	else
-		return false
-	end
-	
-	if TRB.Data.character.specId == 1 then --Havoc
-	elseif TRB.Data.character.specId == 2 then --Vengeance
-		if var == "$comboPoints" or var == "$soulFragments" then
-			valid = false
-		elseif var == "$comboPointsMax"or var == "$soulFragmentsMax" then
-			valid = true
-		end
-	elseif TRB.Data.character.specId == 3 then --Devourer
-		if var == "$comboPoints" then
-			valid = true
-		elseif var == "$comboPointsMax" then
-			valid = true
-		elseif var == "$soulFragments" or var == "$soulFragmentsMax" then
-			valid = true
-		elseif var == "$collapsingStar" or var == "$collapsingStarMax" then
-			if talents:IsTalentActive(spells.collapsingStar) and snapshotData.snapshots[spells.collapsingStar.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$voidRayUsable" then
-			if (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable()) then
-				valid = true
-			end
-		elseif var == "$collapsingStarUsable" then
-			if snapshotData.snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource then
-				valid = true
-			end
-		end
-	end
-	
-	if var == "$metamorphosisTime" or var == "$metaTime" or var == "$voidMetaTime" or var == "$voidMetamorphosisTime" then
-		if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
-			valid = true
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	elseif var == "$resource" or var == "$fury" then
-		-- Do not compare resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$furyMax" then
-		valid = true
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.
@@ -2008,6 +2135,24 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 	end
 end
 
+---Returns true when Metamorphosis buff is active (Havoc/Vengeance), producing $metaTime.
+---Devourer (specId 3) has no timers.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local specId = TRB.Data.character.specId
+	if specId == 1 or specId == 2 then -- Havoc / Vengeance
+		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if snapshotData and spells and spells.metamorphosis then
+			local snapshot = snapshotData.snapshots[spells.metamorphosis.id]
+			if snapshot and snapshot.buff and snapshot.buff.isActive then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
 		TRB.Functions.Bar:HideResourceBar(true)
@@ -2021,6 +2166,6 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
-	
+
 	UpdateResourceBar()
 end

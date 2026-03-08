@@ -991,6 +991,10 @@ end
 ---@param wrapperFrame Frame
 ---@param rootBarKey string
 function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
+	if not LibEditMode then
+		return
+	end
+	
 	-- Helper: returns true when the layout checkbox is unchecked (controls should be disabled)
 	local function isLayoutDisabled(layoutName)
 		return not self:IsLayoutEnabled(layoutName, rootBarKey)
@@ -1118,7 +1122,7 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 
 							-- Validate the frame exists and warn if not
 							if not _G[frameName] then
-								print("|cFFFF8800TwintopInsanityBar:|r " .. string.format(L["EditModeCustomFrameWarning"], frameName))
+								print("|cFFFF8800TRB:|r " .. string.format(L["EditModeCustomFrameWarning"], frameName))
 							end
 
 							-- Hook the custom frame for resize/show
@@ -1405,6 +1409,10 @@ function TRB.Functions.EditMode:OnEditModeEnter()
 
 	-- Rebuild bar text frames to maintain proper strata/level ordering during Edit Mode
 	TRB.Functions.BarText:CreateBarTextFrames()
+
+	-- CreateBarTextFrames clears all font text to ""; mark lookup dirty so
+	-- UpdateResourceBarText re-renders on the next tick instead of early-outing.
+	TRB.Functions.BarText:MarkLookupDirty()
 end
 
 ---Called when Edit Mode is exited
@@ -1428,6 +1436,10 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		-- Rebuild bar text frames to restore proper strata/level ordering
 		-- This ensures bar text appears above thresholds after Edit Mode's strata changes
 		TRB.Functions.BarText:CreateBarTextFrames()
+
+		-- CreateBarTextFrames clears all font text to ""; mark lookup dirty so
+		-- UpdateResourceBarText re-renders on the next tick instead of early-outing.
+		TRB.Functions.BarText:MarkLookupDirty()
 
 		-- Let HideResourceBar determine if the bar should be visible now
 		TRB.Functions.BarVisibility:MarkDirty()
@@ -1461,7 +1473,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 
 	local layoutData = TRB.Data.settings.core.editMode.layouts[layoutName]
 
-	-- Migration Phase 1: if old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
+	-- If old flat format exists (has 'enabled' at root level), migrate to 'bars.primary'
 	if layoutData.enabled ~= nil and not layoutData.bars then
 		layoutData.bars = {}
 		layoutData.bars["primary"] = {
@@ -1502,7 +1514,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		}
 	end
 
-	-- Migration Phase 2: migrate old flat CDM fields into nested anchor block
+	-- Migrate old flat CDM fields into nested anchor block
 	local barData = layoutData.bars[rootBarKey]
 	if barData.anchorToCooldownManager ~= nil then
 		local oldMode = barData.anchorToCooldownManager

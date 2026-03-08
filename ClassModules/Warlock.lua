@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -294,194 +295,230 @@ end
 
 
 local function RefreshLookupData_Affliction()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local specSettings = TRB.Data.settings.warlock.affliction
 	local sharedSettings = TRB.Data.specCache["warlock_affliction"].settings
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local targetData = snapshotData.targetData
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	local normalizedSoulShards = snapshotData.attributes.resource2-- / TRB.Data.resource2Factor
 
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))-- TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))-- TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))-- TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)--TRB.Functions.Number:RoundTo(manaPercentRaw, manaPrecision, "floor"))
-	
-	----------------------------
-
-	local lookup = TRB.Data.lookup or {}	
-	lookup["$resourceMax"] = manaMax
-	lookup["$manaMax"] = manaMax
-	lookup["$resource"] = currentMana
-	lookup["$mana"] = currentMana
-	lookup["$manaPercent"] = manaPercent
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$casting"] = castingMana
-	lookup["$soulShards"] = normalizedSoulShards
-	lookup["$comboPoints"] = normalizedSoulShards
-	lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
-	lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-	TRB.Data.lookup = lookup
-
+	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resourceMax"] = manaMax
-	lookupLogic["$manaMax"] = manaMax
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaPercent"] = _manaPercent
-	lookupLogic["$resourcePercent"] = _manaPercent
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$soulShards"] = normalizedSoulShards
-	lookupLogic["$comboPoints"] = normalizedSoulShards
-	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core mana ($mana, $resource, $casting, $manaMax, $resourceMax, $manaPercent, $resourcePercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
+
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$manaPercent"] = _manaPercent
+		lookupLogic["$resourcePercent"] = _manaPercent
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
+	end
+
+	-- Block B: Soul Shards ($soulShards, $comboPoints, $soulShardsMax, $comboPointsMax)
+	if not activeVars or activeVars["$soulShards"] or activeVars["$comboPoints"]
+		or activeVars["$soulShardsMax"] or activeVars["$comboPointsMax"] then
+		local normalizedSoulShards = snapshotData.attributes.resource2
+
+		lookupLogic["$soulShards"] = normalizedSoulShards
+		lookupLogic["$comboPoints"] = normalizedSoulShards
+		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		-- RAW (unmemoized)
+		lookup["$soulShards"] = normalizedSoulShards
+		lookup["$comboPoints"] = normalizedSoulShards
+		lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Demonology()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local specSettings = TRB.Data.settings.warlock.demonology
 	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local targetData = snapshotData.targetData
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified
-	local normalizedSoulShards = snapshotData.attributes.resource2
 
-	-- This probably needs to be pulled every refresh
+	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
-
-	--$soulShards
-	local soulShards = string.format("%.0f", normalizedSoulShards)
-	--$soulShardsMax
-	local soulShardsMax = string.format("%.0f", TRB.Data.character.maxResource2)
-
 	local lookup = TRB.Data.lookup or {}
-	lookup["$mana"] = currentMana
-	lookup["$manaMax"] = manaMax
-	lookup["$manaPercent"] = manaPercent
-	lookup["$casting"] = castingMana
-	lookup["$soulShards"] = soulShards
-	lookup["$soulShardsMax"] = soulShardsMax
-	lookup["$resource"] = currentMana
-	lookup["$resourceMax"] = manaMax
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$comboPoints"] = soulShards
-	lookup["$comboPointsMax"] = soulShardsMax
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaPercent"] = manaPercentRaw
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$soulShards"] = normalizedSoulShards
-	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourcePercent"] = manaPercentRaw
-	lookupLogic["$comboPoints"] = normalizedSoulShards
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core mana ($mana, $resource, $casting, $manaMax, $resourceMax, $manaPercent, $resourcePercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
+
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaPercent"] = manaPercentRaw
+		lookupLogic["$resourcePercent"] = manaPercentRaw
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
+	end
+
+	-- Block B: Soul Shards ($soulShards, $comboPoints, $soulShardsMax, $comboPointsMax)
+	if not activeVars or activeVars["$soulShards"] or activeVars["$comboPoints"]
+		or activeVars["$soulShardsMax"] or activeVars["$comboPointsMax"] then
+		local normalizedSoulShards = snapshotData.attributes.resource2
+
+		lookupLogic["$soulShards"] = normalizedSoulShards
+		lookupLogic["$comboPoints"] = normalizedSoulShards
+		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+			local f = string.format("%.0f", normalizedSoulShards)
+			lookup["$soulShards"] = f
+			lookup["$comboPoints"] = f
+		end
+
+		-- RAW (unmemoized)
+		lookup["$soulShardsMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Destruction()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local specSettings = TRB.Data.settings.warlock.destruction
 	local sharedSettings = TRB.Data.specCache["warlock_destruction"].settings
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local targetData = snapshotData.targetData
-	local currentTime = GetTime()
-	local normalizedMana = snapshotData.attributes.resourceModified
-	local normalizedSoulShards = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
 
-	-- This probably needs to be pulled every refresh
+	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
-	local currentManaColor = sharedSettings.colors.text.current.color
-	local castingManaColor = sharedSettings.colors.text.casting.color
-
-	--$mana
-	local manaPrecision = sharedSettings.precision.mana or 1
-	local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana))
-	--$casting
-	local _castingMana = snapshotData.casting.resourceFinal
-	local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
-
-	--$manaMax
-	local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
-
-	--$manaPercent
-	local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-	local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-	local manaPercent = string.format("|c%s%." .. manaPrecision .. "f|r", currentManaColor, manaPercentRaw)
-
-	--$soulShards
-	local soulShards = string.format("%.1f", normalizedSoulShards)
-	--$soulShardsMax
-	local soulShardsMax = string.format("%.0f", TRB.Data.character.maxResource2)
-
 	local lookup = TRB.Data.lookup or {}
-	lookup["$mana"] = currentMana
-	lookup["$manaMax"] = manaMax
-	lookup["$manaPercent"] = manaPercent
-	lookup["$casting"] = castingMana
-	lookup["$soulShards"] = soulShards
-	lookup["$soulShardsMax"] = soulShardsMax
-	lookup["$resource"] = currentMana
-	lookup["$resourceMax"] = manaMax
-	lookup["$resourcePercent"] = manaPercent
-	lookup["$comboPoints"] = soulShards
-	lookup["$comboPointsMax"] = soulShardsMax
-	TRB.Data.lookup = lookup
-
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$mana"] = normalizedMana
-	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-	lookupLogic["$manaPercent"] = manaPercentRaw
-	lookupLogic["$casting"] = _castingMana
-	lookupLogic["$soulShards"] = normalizedSoulShards
-	lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
-	lookupLogic["$resource"] = normalizedMana
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resourcePercent"] = manaPercentRaw
-	lookupLogic["$comboPoints"] = normalizedSoulShards
-	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core mana ($mana, $resource, $casting, $manaMax, $resourceMax, $manaPercent, $resourcePercent)
+	if not activeVars or activeVars["$mana"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$manaMax"] or activeVars["$resourceMax"]
+		or activeVars["$manaPercent"] or activeVars["$resourcePercent"] then
+
+		local normalizedMana = snapshotData.attributes.resourceModified
+		local currentManaColor = sharedSettings.colors.text.current.color
+		local castingManaColor = sharedSettings.colors.text.casting.color
+		local _castingMana = snapshotData.casting.resourceFinal
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$resource"] = normalizedMana
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$manaPercent"] = manaPercentRaw
+		lookupLogic["$resourcePercent"] = manaPercentRaw
+		lookupLogic["$casting"] = _castingMana
+
+		local manaFormatted = snapshotData.formatted.resourceAbbrev or ""
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+			lookup["$mana"] = f
+			lookup["$resource"] = f
+		end
+		if lookupChanged(prevState, "$casting", _castingMana, castingManaColor) then
+			lookup["$casting"] = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_castingMana))
+		end
+		if lookupChanged(prevState, "$manaMax", TRB.Data.character.maxResource, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			lookup["$manaMax"] = f
+			lookup["$resourceMax"] = f
+		end
+		local manaPercentFormatted = snapshotData.formatted.resourcePercent or ""
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local f = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+			lookup["$manaPercent"] = f
+			lookup["$resourcePercent"] = f
+		end
+	end
+
+	-- Block B: Soul Shards ($soulShards, $comboPoints, $soulShardsMax, $comboPointsMax)
+	if not activeVars or activeVars["$soulShards"] or activeVars["$comboPoints"]
+		or activeVars["$soulShardsMax"] or activeVars["$comboPointsMax"] then
+		local normalizedSoulShards = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
+
+		lookupLogic["$soulShards"] = normalizedSoulShards
+		lookupLogic["$comboPoints"] = normalizedSoulShards
+		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+			local f = string.format("%.1f", normalizedSoulShards)
+			lookup["$soulShards"] = f
+			lookup["$comboPoints"] = f
+		end
+		if lookupChanged(prevState, "$soulShardsMax", TRB.Data.character.maxResource2, nil, true) then
+			local f = string.format("%.0f", TRB.Data.character.maxResource2)
+			lookup["$soulShardsMax"] = f
+			lookup["$comboPointsMax"] = f
+		end
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -832,6 +869,8 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1177,58 +1216,35 @@ function TRB.Functions.Class:HideResourceBar(force)
 end
 
 
+local specValidVars
+do
+	local shared = {
+		["$casting"] = function()
+			local c = TRB.Data.snapshotData.casting
+			return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+		end,
+		["$resource"] = false, ["$mana"] = false,
+		["$resourcePercent"] = false, ["$manaPercent"] = false,
+		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$comboPoints"] = true, ["$soulShards"] = true,
+		["$comboPointsMax"] = true, ["$soulShardsMax"] = true,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local spells
-	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
-		settings = TRB.Data.settings.warlock.affliction
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
-		settings = TRB.Data.settings.warlock.demonology
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
-		settings = TRB.Data.settings.warlock.destruction
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then --Affliction
-	elseif TRB.Data.character.specId == 2 then --Demonology
-	elseif TRB.Data.character.specId == 3 then --Destruction
-	end
-
-	--Spec agnostic
-	if var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	elseif var == "$resource" or var == "$mana" then
-		-- Do not compare snapshotData.attributes.resource as it may be a secret value
-		valid = false
-	elseif var == "$resourcePercent" or var == "$manaPercent" then
-		-- Do not compare resource percent as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$manaMax" then
-		valid = true
-	elseif var == "$comboPoints" or var == "$soulShards" then
-		valid = true
-	elseif var == "$comboPointsMax"or var == "$soulShardsMax" then
-		valid = true
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.

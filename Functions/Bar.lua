@@ -711,6 +711,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local primaryRootKey = barKeyToRoot["primary"] or "primary"
 	local primaryRootMeta = rootMetadata[primaryRootKey]
 	local effectiveWidth = primaryRootMeta and primaryRootMeta.effectiveWidth or settings.bar.width
+---@diagnostic disable-next-line: inject-field, assign-type-mismatch
 	barGroups.effectiveWidth = effectiveWidth
 
 	-- Store per-root effective widths for ResolveBarWidth
@@ -1746,7 +1747,7 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 		return barSettings.anchor
 	end
 
-	-- Phase 1 fallback: synthesize from legacy fields
+	-- Fallback: synthesize from legacy fields
 	if barSettings.relativeTo then
 		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
 		if mapping then
@@ -1783,7 +1784,7 @@ function TRB.Functions.Bar:GetMatchWidth(barSettings)
 	if barSettings and barSettings.anchor then
 		return barSettings.anchor.matchWidth or false
 	end
-	-- Phase 1 fallback to legacy field
+	-- Fallback to legacy field
 	return barSettings and barSettings.fullWidth or false
 end
 
@@ -2356,10 +2357,10 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)
 
-	-- Resolve anchor: new system with Phase 1 legacy fallback
+	-- Resolve anchor: new system with legacy fallback
 	local anchor = groupSettings.anchor
 	if not anchor then
-		-- Phase 1 fallback: synthesize from legacy fields
+		-- Fallback: synthesize from legacy fields
 		if groupSettings.relativeTo then
 			local mapping = TRB.Data.constants.relativeToAnchorMap[groupSettings.relativeTo]
 			if mapping then
@@ -2492,7 +2493,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			for i = 1, nodes do
 				local multiNode = targetGroup:GetNode(i)
 				if multiNode then
-					multiNode:SetMinMax(0, 1)
+					if config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
+						multiNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+					else
+						multiNode:SetMinMax(0, 1)
+					end
 				end
 			end
 		end
@@ -2552,7 +2557,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 					-- Set min/max for multi-node layouts
 					if config.useApplyLayout then
-						node:SetMinMax(0, 1)
+						if config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
+							node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+						else
+							node:SetMinMax(0, 1)
+						end
 					end
 
 					node:SetFrameLevel(frameLevels.comboPoint)
@@ -2841,10 +2850,25 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
+	local frameIsSynced = false
+
+	if node ~= nil and not valueIsSecret and not maxResourceIsSecret then
+		local frame = node:GetFrame()
+		if frame ~= nil and frame.GetValue ~= nil then
+			local _, currentMax = node:GetMinMax()
+			local safeMaxResource = maxResource or 1
+			if safeMaxResource == 0 then
+				safeMaxResource = 1
+			end
+			local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
+			local actualValue = frame:GetValue() or 0
+			frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
+		end
+	end
 
 	if not valueIsSecret and not maxResourceIsSecret and
 	   not issecretvalue(TRB.Data.cache.values.bar[key].value) and TRB.Data.cache.values.bar[key].value == value and
-	   TRB.Data.cache.values.bar[key].maxResource == maxResource then
+	   TRB.Data.cache.values.bar[key].maxResource == maxResource and frameIsSynced then
 		return
 	end
 

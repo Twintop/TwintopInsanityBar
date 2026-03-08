@@ -4275,7 +4275,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Migrate bar anchor settings from legacy relativeTo/xPos/yPos/fullWidth to new anchor block system.
-	-- Phase 1: Populate anchor blocks alongside legacy fields. Legacy fields are kept for backward compatibility.
+	-- Populate anchor blocks alongside legacy fields. Legacy fields are kept for backward compatibility.
 	do
 		local anchorMap = TRB.Data.constants.relativeToAnchorMap
 

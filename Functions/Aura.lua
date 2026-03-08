@@ -28,6 +28,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 	if unit == "player" then
 		TRB.Data.cache.values.resource = {}
 		TRB.Data.cache.values.castTime = {}
+		TRB.Data.lookupDirty = true
 		--return
 	elseif unit ~= "player" then
 		return
@@ -35,8 +36,33 @@ local function AuraUpdateEvent(self, event, unit, info)
 	
 ---@diagnostic disable-next-line: param-type-mismatch
 	if not issecretvalue(info.isFullUpdate) and info.isFullUpdate then
-		--Only do a full refresh of buffs for now
-		snapshotData:RefreshAllBuffs()
+		if TRB.Data.character and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 and TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
+			TRB.Data.snapshotData.attributes.devourerTransitionAt = GetTime()
+		end
+		if TRB.Data.character ~= nil and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 then
+			TRB.Data.lookupDirty = true
+			TRB.Data.cache.values.resource = {}
+			TRB.Data.cache.values.castTime = {}
+			return
+		end
+		-- Defer the full buff refresh by one frame so that the aura API has time to
+		-- stabilise.  When isFullUpdate fires (e.g. on combat entry or after a channel
+		-- ends), C_UnitAuras.GetPlayerAuraBySpellID() can transiently return nil for
+		-- buffs that are still present.  RefreshAllBuffs() running in the same frame
+		-- would call ParseBuffData(nil) → buff:Reset() → applications = 0, causing a
+		-- one-frame visual flash on stack-based secondary bars like Soul Fragments.
+		-- Deferring by one frame keeps the current (correct) snapshot values intact for
+		-- the first onUpdate poll and lets RefreshAllBuffs() read clean API data.
+		local function RefreshAndUpdateBars()
+			if TRB.Data.snapshotData ~= nil then
+				TRB.Data.snapshotData:RefreshAllBuffs()
+			end
+			TRB.Data.lookupDirty = true
+		end
+
+		C_Timer.After(0.02, function()
+			RefreshAndUpdateBars()
+		end)
 		TRB.Data.cache.values.resource = {}
 		TRB.Data.cache.values.castTime = {}
 		return

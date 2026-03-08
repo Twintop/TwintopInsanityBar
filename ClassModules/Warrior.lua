@@ -5,6 +5,7 @@ end
 
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
+local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -327,72 +328,77 @@ end
 local function RefreshLookupData_Arms()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.arms
 	local sharedSettings = TRB.Data.specCache["warrior_arms"].settings
-	---@type TRB.Classes.TargetData
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local _
-	local normalizedRage = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	local currentTime = GetTime()
 
-	local currentRageColor = sharedSettings.colors.text.current.color
-	local castingRageColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core resource ($rage, $resource, $casting, $rageMax, $resourceMax)
+	if not activeVars or activeVars["$rage"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$rageMax"] or activeVars["$resourceMax"] then
+
+		local normalizedRage = snapshotData.attributes.resourceModified
+		local currentRageColor = sharedSettings.colors.text.current.color
+		local castingRageColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentRageColor = sharedSettings.colors.text.overThreshold.color
+					castingRageColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
-
-			if _overThreshold then
-				currentRageColor = sharedSettings.colors.text.overThreshold.color
-				castingRageColor = sharedSettings.colors.text.overThreshold.color
-			end
 		end
+
+		if snapshotData.casting.resourceFinal < 0 then
+			castingRageColor = sharedSettings.colors.text.spending.color
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+
+		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedRage
+		lookupLogic["$rage"] = normalizedRage
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
+		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
+
+		if rageChanged or castingChanged then
+			local currentRage
+			local castingRage
+			-- Apply overcap color if enabled (takes precedence over overThreshold)
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+			else
+				currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
+				castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentRage
+			lookup["$rage"] = currentRage
+			lookup["$casting"] = castingRage
+		end
+		lookup["$rageMax"] = TRB.Data.character.maxResource
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
-		castingRageColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$rage
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentRage = normalizedRage
-	local currentRage
-	local castingRage
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
-		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
-		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-	
-	--------------
-	---
-	local lookup = TRB.Data.lookup or {}
-	lookup["$rageMax"] = TRB.Data.character.maxResource
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentRage
-	lookup["$rage"] = currentRage
-	lookup["$casting"] = castingRage
 	TRB.Data.lookup = lookup
-	
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
-	lookupLogic["$rage"] = normalizedRage
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = normalizedRage
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -403,85 +409,105 @@ local function RefreshLookupData_Fury()
 	local specSettings = TRB.Data.settings.warrior.fury
 	local sharedSettings = TRB.Data.specCache["warrior_fury"].settings
 	local _
-	local normalizedRage = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
 	local currentTime = GetTime()
 
-	local currentRageColor = sharedSettings.colors.text.current.color
-	local castingRageColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core resource ($rage, $resource, $casting, $rageMax, $resourceMax)
+	if not activeVars or activeVars["$rage"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$rageMax"] or activeVars["$resourceMax"] then
+
+		local normalizedRage = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
+		local currentRageColor = sharedSettings.colors.text.current.color
+		local castingRageColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentRageColor = sharedSettings.colors.text.overThreshold.color
+					castingRageColor = sharedSettings.colors.text.overThreshold.color
 				end
 			end
+		end
 
-			if _overThreshold then
-				currentRageColor = sharedSettings.colors.text.overThreshold.color
-				castingRageColor = sharedSettings.colors.text.overThreshold.color
+		if snapshotData.casting.resourceFinal < 0 then
+			castingRageColor = sharedSettings.colors.text.spending.color
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+		local _currentRage = normalizedRage
+
+		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = normalizedRage
+		lookupLogic["$rage"] = normalizedRage
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
+		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
+		if rageChanged or castingChanged then
+			local currentRage
+			local castingRage
+			-- Apply overcap color if enabled (takes precedence over overThreshold)
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+			else
+				currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
+				castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 			end
+			lookup["$resource"] = currentRage
+			lookup["$rage"] = currentRage
+			lookup["$casting"] = castingRage
+		end
+		lookup["$rageMax"] = TRB.Data.character.maxResource
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Whirlwind ($wwCharges, $whirlwindCharges, $wwTime, $whirlwindTime)
+	if not activeVars or activeVars["$wwCharges"] or activeVars["$whirlwindCharges"]
+		or activeVars["$wwTime"] or activeVars["$whirlwindTime"] then
+
+		local wwSnapshot = snapshots[spells.improvedWhirlwind.id]
+		local wwCharges = 0
+		local wwTime = 0
+		if wwSnapshot and wwSnapshot.buff then
+			wwCharges = wwSnapshot.buff.applications or 0
+			wwTime = wwSnapshot.buff.remaining or 0
+		end
+
+		lookupLogic["$wwCharges"] = wwCharges
+		lookupLogic["$whirlwindCharges"] = wwCharges
+		lookupLogic["$wwTime"] = wwTime
+		lookupLogic["$whirlwindTime"] = wwTime
+
+		if lookupChanged(prevState, "$wwCharges", wwCharges) then
+			local formatted = string.format("%s", wwCharges)
+			lookup["$wwCharges"] = formatted
+			lookup["$whirlwindCharges"] = formatted
+		end
+		if lookupChanged(prevState, "$wwTime", wwTime) then
+			local formatted = string.format("%.1f", wwTime)
+			lookup["$wwTime"] = formatted
+			lookup["$whirlwindTime"] = formatted
 		end
 	end
 
-	if snapshotData.casting.resourceFinal < 0 then
-		castingRageColor = sharedSettings.colors.text.spending.color
-	end
-
-	--$rage
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentRage = normalizedRage
-	local currentRage
-	local castingRage
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
-		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
-		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-	
-	----------------------------
-
-	local lookup = TRB.Data.lookup or {}
-	lookup["$rageMax"] = TRB.Data.character.maxResource
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$resource"] = currentRage
-	lookup["$rage"] = currentRage
-	lookup["$casting"] = castingRage
-	
-	-- Whirlwind stacks & time
-	local wwSnapshot = snapshots[spells.improvedWhirlwind.id]
-	local wwCharges = 0
-	local wwTime = 0
-	if wwSnapshot and wwSnapshot.buff then
-		wwCharges = wwSnapshot.buff.applications or 0
-		wwTime = wwSnapshot.buff.remaining or 0
-	end
-
-	lookup["$wwCharges"] = string.format("%s", wwCharges)
-	lookup["$whirlwindCharges"] = lookup["$wwCharges"]
-	lookup["$wwTime"] = string.format("%.1f", wwTime)
-	lookup["$whirlwindTime"] = lookup["$wwTime"]
-
 	TRB.Data.lookup = lookup
-
-
-	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
-	lookupLogic["$rage"] = normalizedRage
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$resource"] = normalizedRage
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$wwCharges"] = wwCharges
-	lookupLogic["$whirlwindCharges"] = wwCharges
-	lookupLogic["$wwTime"] = wwTime
-	lookupLogic["$whirlwindTime"] = wwTime
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -491,93 +517,107 @@ local function RefreshLookupData_Protection()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.protection
 	local sharedSettings = TRB.Data.specCache["warrior_protection"].settings
-	---@type TRB.Classes.TargetData
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local _
-	local normalizedRage = snapshotData.attributes.resourceModified-- / TRB.Data.resourceFactor
-	local currentTime = GetTime()
-
-	local currentRageColor = sharedSettings.colors.text.current.color
-	local castingRageColor = sharedSettings.colors.text.casting.color
-	
-	if TRB.Data.character.inCombat then
-		if sharedSettings.colors.text.overThreshold.enabled then
-			local _overThreshold = false
-			for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
-				if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentRageColor = sharedSettings.colors.text.overThreshold.color
-				castingRageColor = sharedSettings.colors.text.overThreshold.color
-			end
-		end
-	end
-	
-	--$rage
-	local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-	local _currentRage = normalizedRage
-	local currentRage
-	local castingRage
-	-- Apply overcap color if enabled (takes precedence over overThreshold)
-	if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
-		local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
-		local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
-		currentRage = textColorResult:WrapTextInColorCode(string.format("%.0f", _currentRage))
-		castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
-	else
-		currentRage = string.format("|c%s%s|r", currentRageColor, _currentRage)
-		castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
-	end
-		
-	--$ignorePainAbsorb
-	local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
-	local ignorePainAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
-
-	--$ignorePainTime
-	local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
-	local ignorePainTime = TRB.Functions.BarText:TimerPrecision(_ignorePainTime)
-
-	--$shieldBlockTime
-	local _shieldBlockTime = snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
-	local shieldBlockTime = TRB.Functions.BarText:TimerPrecision(_shieldBlockTime)
-	
-	--$shieldBlockCharges
-	local shieldBlockCharges = snapshots[spells.shieldBlock.id].cooldown.charges or 0
-	
-	--$shieldBlockMaxCharges
-	local shieldBlockMaxCharges = snapshots[spells.shieldBlock.id].cooldown.maxCharges or 0
-
-	----------------------------
 
 	local lookup = TRB.Data.lookup or {}
-	lookup["$resource"] = currentRage
-	lookup["$rage"] = currentRage
-	lookup["$resourceMax"] = TRB.Data.character.maxResource
-	lookup["$rageMax"] = TRB.Data.character.maxResource
-	lookup["$casting"] = castingRage
-	lookup["$ignorePainTime"] = ignorePainTime
-	lookup["$ignorePainAbsorb"] = ignorePainAbsorb
-	lookup["$shieldBlockTime"] = shieldBlockTime
-	lookup["$shieldBlockCharges"] = shieldBlockCharges
-	lookup["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
-	TRB.Data.lookup = lookup
-	
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$resource"] = normalizedRage
-	lookupLogic["$rage"] = normalizedRage
-	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-	lookupLogic["$rageMax"] = TRB.Data.character.maxResource
-	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-	lookupLogic["$ignorePainTime"] = _ignorePainTime
-	lookupLogic["$ignorePainAbsorb"] = true
-	lookupLogic["$shieldBlockTime"] = _shieldBlockTime
-	lookupLogic["$shieldBlockCharges"] = shieldBlockCharges
-	lookupLogic["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
+	local prevState = TRB.Data.prevLookupState or {}
+	local activeVars = TRB.Data.activeVariables
+
+	-- Block A: Core resource ($rage, $resource, $casting, $rageMax, $resourceMax)
+	if not activeVars or activeVars["$rage"] or activeVars["$resource"] or activeVars["$casting"]
+		or activeVars["$rageMax"] or activeVars["$resourceMax"] then
+
+		local normalizedRage = snapshotData.attributes.resourceModified
+		local currentRageColor = sharedSettings.colors.text.current.color
+		local castingRageColor = sharedSettings.colors.text.casting.color
+
+		if TRB.Data.character.inCombat then
+			if sharedSettings.colors.text.overThreshold.enabled then
+				local _overThreshold = false
+				for _, spell --[[@as TRB.Classes.SpellThreshold]] in ipairs(TRB.Data.cache.thresholdSpells) do
+					if spell ~= nil and spell.resource and (spell.baseline or (talents.talents[spell.id] ~= nil and talents.talents[spell.id]:IsActive())) and spell:IsUsable() then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentRageColor = sharedSettings.colors.text.overThreshold.color
+					castingRageColor = sharedSettings.colors.text.overThreshold.color
+				end
+			end
+		end
+
+		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
+
+		lookupLogic["$resource"] = normalizedRage
+		lookupLogic["$rage"] = normalizedRage
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+
+		local resourceFormatted = snapshotData.formatted.resource or ""
+		local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
+		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
+
+		if rageChanged or castingChanged then
+			local currentRage
+			local castingRage
+			-- Apply overcap color if enabled (takes precedence over overThreshold)
+			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
+				local overcapTextCurve = TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, currentRageColor, sharedSettings.colors.text.overcap.color)
+				local textColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapTextCurve)
+				currentRage = textColorResult:WrapTextInColorCode(resourceFormatted)
+				castingRage = textColorResult:WrapTextInColorCode(string.format("%.0f", TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor")))
+			else
+				currentRage = string.format("|c%s%s|r", currentRageColor, resourceFormatted)
+				castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
+			end
+			lookup["$resource"] = currentRage
+			lookup["$rage"] = currentRage
+			lookup["$casting"] = castingRage
+		end
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$rageMax"] = TRB.Data.character.maxResource
+	end
+
+	-- Block B: Ignore Pain ($ignorePainAbsorb, $ignorePainTime)
+	if not activeVars or activeVars["$ignorePainAbsorb"] or activeVars["$ignorePainTime"] then
+		local currentTime = GetTime()
+		local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
+		local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$ignorePainTime"] = _ignorePainTime
+		lookupLogic["$ignorePainAbsorb"] = true
+
+		if lookupChanged(prevState, "$ignorePainAbsorb", _ignorePainAbsorb) then
+			lookup["$ignorePainAbsorb"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
+		end
+		if lookupChanged(prevState, "$ignorePainTime", _ignorePainTime) then
+			lookup["$ignorePainTime"] = TRB.Functions.BarText:TimerPrecision(_ignorePainTime)
+		end
+	end
+
+	-- Block C: Shield Block ($shieldBlockTime, $shieldBlockCharges, $shieldBlockMaxCharges)
+	if not activeVars or activeVars["$shieldBlockTime"] or activeVars["$shieldBlockCharges"]
+		or activeVars["$shieldBlockMaxCharges"] then
+		local currentTime = GetTime()
+		local _shieldBlockTime = snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
+		local shieldBlockCharges = snapshots[spells.shieldBlock.id].cooldown.charges or 0
+		local shieldBlockMaxCharges = snapshots[spells.shieldBlock.id].cooldown.maxCharges or 0
+
+		lookupLogic["$shieldBlockTime"] = _shieldBlockTime
+		lookupLogic["$shieldBlockCharges"] = shieldBlockCharges
+		lookupLogic["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
+
+		if lookupChanged(prevState, "$shieldBlockTime", _shieldBlockTime) then
+			lookup["$shieldBlockTime"] = TRB.Functions.BarText:TimerPrecision(_shieldBlockTime)
+		end
+		lookup["$shieldBlockCharges"] = shieldBlockCharges
+		lookup["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
+	end
+
+	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
@@ -924,6 +964,7 @@ local function UpdateResourceBar()
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local isUsable = spell:IsUsable()
 					local showThreshold = true
+							---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
@@ -1074,6 +1115,7 @@ local function UpdateResourceBar()
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local isUsable = spell:IsUsable()
 					local showThreshold = true
+					---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
@@ -1225,6 +1267,7 @@ local function UpdateResourceBar()
 					local resourceAmount = spell:GetPrimaryResourceCost()
 					local isUsable = spell:IsUsable()
 					local showThreshold = true
+					---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
@@ -1345,6 +1388,8 @@ function targetsTimerFrame:onUpdate(sinceLastUpdate)
 end
 
 local function SwitchSpec()
+	TRB.Data.prevLookupState = {}
+	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -1731,76 +1776,56 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+local specValidVars
+do
+	local castingFn = function()
+		local c = TRB.Data.snapshotData.casting
+		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	local common = {
+		["$resource"] = false, ["$rage"] = false,
+		["$resourceMax"] = true, ["$rageMax"] = true,
+		["$casting"] = castingFn,
+		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true,
+	}
+	-- Protection
+	local protection = {}
+	for k, v in pairs(common) do protection[k] = v end
+	protection["$ignorePainTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff.isActive
+	end
+	protection["$ignorePainAbsorb"] = false
+	protection["$shieldBlockTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].buff.isActive
+	end
+	protection["$shieldBlockCharges"] = function()
+		local spells = TRB.Data.spellsData.spells
+		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
+		return issecretvalue(charges) or charges > 0
+	end
+	protection["$shieldBlockMaxCharges"] = function()
+		local spells = TRB.Data.spellsData.spells
+		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
+		return issecretvalue(charges) or charges > 0
+	end
+
+	specValidVars = { [1] = common, [2] = common, [3] = protection }
+end
+
 function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-	if valid then
-		return valid
-	end
+	if valid then return valid end
 
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local targetData = snapshotData.targetData
-	local target = targetData.targets[targetData.currentTargetGuid]
-	local spells
-	local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-	local settings = nil
+	local specVars = specValidVars[TRB.Data.character.specId]
+	if not specVars then return false end
 
-	if TRB.Data.character.specId == 1 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
-		settings = TRB.Data.settings.warrior.arms
-	elseif TRB.Data.character.specId == 2 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
-		settings = TRB.Data.settings.warrior.fury
-	elseif TRB.Data.character.specId == 3 then
-		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
-		settings = TRB.Data.settings.warrior.protection
-	else
-		return false
-	end
-
-	if TRB.Data.character.specId == 1 then --Arms
-	elseif TRB.Data.character.specId == 2 then --Fury
-	elseif TRB.Data.character.specId == 3 then --Protection
-		if var == "$ignorePainTime" then
-			if snapshots[spells.ignorePain.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$ignorePainAbsorb" then
-			-- Always secret, return false
-			valid = false
-		elseif var == "$shieldBlockTime" then
-			if snapshots[spells.shieldBlock.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$shieldBlockCharges" then
-			if issecretvalue(snapshots[spells.shieldBlock.id].cooldown.charges) or snapshots[spells.shieldBlock.id].cooldown.charges > 0 then
-				valid = true
-			end
-		elseif var == "$shieldBlockMaxCharges" then
-			if issecretvalue(snapshots[spells.shieldBlock.id].cooldown.charges) or snapshots[spells.shieldBlock.id].cooldown.charges > 0  then
-				valid = true
-			end
-		end
-	end
-
-	if valid == true then
-		return valid
-	end
-
-	if var == "$resource" or var == "$rage" then
-		-- Do not compare resource as it may be a secret value
-		valid = false
-	elseif var == "$resourceMax" or var == "$rageMax" then
-		valid = true
-	elseif var == "$casting" then
-		if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
-			valid = true
-		end
-	elseif var == "$health" or var == "$healthMax" or var == "$healthPercent" or var == "$absorb" or var == "$incomingHeal" then
-		valid = true
-	end
-
-	return valid
+	local entry = specVars[var]
+	if entry == true then return true end
+	if not entry then return false end
+	return entry() or false
 end
 
 ---Gets the Frame for the requested bar text variable, if the frame is currently enabled, and if it is visible.
@@ -1886,6 +1911,31 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 	return nil, true, false
+end
+
+---Returns true when spec-specific buff timers are counting down.
+---Arms: no timers; Fury: Whirlwind buff; Protection: Ignore Pain, Shield Block.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not snapshotData or not spells then return false end
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 2 then -- Fury
+		if spells.improvedWhirlwind and snapshots[spells.improvedWhirlwind.id] then
+			local buff = snapshots[spells.improvedWhirlwind.id].buff
+			if buff and buff.isActive then
+				return true
+			end
+		end
+	elseif specId == 3 then -- Protection
+		if (spells.ignorePain and snapshots[spells.ignorePain.id] and snapshots[spells.ignorePain.id].buff and snapshots[spells.ignorePain.id].buff.isActive)
+			or (spells.shieldBlock and snapshots[spells.shieldBlock.id] and snapshots[spells.shieldBlock.id].buff and snapshots[spells.shieldBlock.id].buff.isActive) then
+			return true
+		end
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

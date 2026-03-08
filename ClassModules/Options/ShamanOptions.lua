@@ -1198,6 +1198,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 				local maxStacks = TRB.Data.character.maxResource2 or 10
 				local displayNodes = spec.colors.comboPoints.compressedView and math.ceil(maxStacks / 2) or maxStacks
 				barGroups.secondary:RebuildNodes(displayNodes, spec)
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end

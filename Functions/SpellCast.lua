@@ -13,6 +13,7 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 	if unit ~= "player" then
 		return
 	end
+	TRB.Data.lookupDirty = true
 	if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData

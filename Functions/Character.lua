@@ -68,11 +68,28 @@ function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFri
 	return false
 end
 
-local function UpdateResourceValues()
+function TRB.Functions.Character:UpdateResourceValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 	snapshotData.attributes.resourceModified = UnitPower("player", TRB.Data.resource, false)
 	snapshotData.attributes.resourcePercent = UnitPowerPercent("player", TRB.Data.resource, true, CurveConstants.ScaleTo100)
+
+	-- Pre-format resource display strings at event time, consuming secret values once.
+	-- Per-spec RefreshLookupData picks the appropriate format (resource vs resourceAbbrev).
+	local formatted = snapshotData.formatted
+	formatted.resource = string.format("%s", snapshotData.attributes.resourceModified)
+	formatted.resourceAbbrev = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.resourceModified)
+	-- resourcePercent: all consumers are mana-based specs whose RefreshLookupData expects
+	-- precision.mana formatting (e.g., "%.1f").  Mirror the healthPercent pattern.
+	local resourcePercentPrecision = 1
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
+		local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if entry and entry.settings and entry.settings.precision then
+			resourcePercentPrecision = entry.settings.precision.mana or 1
+		end
+	end
+	formatted.resourcePercent = string.format("%." .. resourcePercentPrecision .. "f", snapshotData.attributes.resourcePercent)
+
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" then
 			--Do nothing, this is handled by UNIT_AURA
@@ -81,6 +98,7 @@ local function UpdateResourceValues()
 		else
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, false)
 			snapshotData.attributes.resource2Modified = UnitPower("player", TRB.Data.resource2, true)
+			formatted.resource2 = string.format("%s", snapshotData.attributes.resource2Modified)
 		end
 	end
 end
@@ -92,6 +110,23 @@ function TRB.Functions.Character:UpdateHealthValues()
 	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 	snapshotData.attributes.absorb = UnitGetTotalAbsorbs("player")
 	snapshotData.attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
+
+	-- Pre-format health display strings at event time, consuming secret values once.
+	-- The render tick copies these normal strings into lookup[] without reformatting.
+	local formatted = snapshotData.formatted
+	formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.health)
+	formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healthMax)
+	formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.absorb)
+	formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.incomingHeal)
+	-- healthPercent requires precision from settings
+	local healthPrecision = 1
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
+		local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if entry and entry.settings and entry.settings.precision then
+			healthPrecision = entry.settings.precision.health or 1
+		end
+	end
+	formatted.healthPercent = string.format("%." .. healthPrecision .. "f", snapshotData.attributes.healthPercent)
 
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
@@ -107,6 +142,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	end
 
 	-- Use configurable settings or defaults
+	---@type integer?
 	local curveType = Enum.LuaCurveType.Step
 
 	if healthBarSettings then
@@ -264,22 +300,27 @@ local function CharacterChange(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
-			UpdateResourceValues()
+			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Functions.Character:UpdateOvercapColor()
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
 		local unitTarget = ...
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_STATS" then
+		local unitTarget = ...
 		if unitTarget == "player" then
 			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 			snapshotData.attributes.primaryRefresh = true
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "COMBAT_RATING_UPDATE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		snapshotData.attributes.secondaryRefresh = true
+		TRB.Data.lookupDirty = true
 	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
@@ -302,10 +343,12 @@ local function CharacterChange(self, event, ...)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.lookupDirty = true
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+		TRB.Data.lookupDirty = true
 	end
 end
 
@@ -633,6 +676,19 @@ function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 
+	-- Pre-format primary stat display strings at event time
+	local precision = 2
+	local entry = TRB.Functions.Character:GetActiveSpecCache()
+	if entry and entry.settings and entry.settings.precision then
+		precision = entry.settings.precision.secondary or 2
+	end
+	local formatted = snapshotData.formatted
+	local shortNum = TRB.Functions.String.ConvertToShortNumberNotation
+	formatted.int = shortNum(TRB.Functions.String, snapshotData.attributes.intellect, precision, "floor", true)
+	formatted.str = shortNum(TRB.Functions.String, snapshotData.attributes.strength, precision, "floor", true)
+	formatted.agi = shortNum(TRB.Functions.String, snapshotData.attributes.agility, precision, "floor", true)
+	formatted.stam = shortNum(TRB.Functions.String, snapshotData.attributes.stamina, precision, "floor", true)
+
 	snapshotData.attributes.cacheRefresh = true
 	snapshotData.attributes.primaryRefresh = false
 end
@@ -658,8 +714,50 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	snapshotData.attributes.masteryRating = GetCombatRating(26)
 	snapshotData.attributes.versatilityRating = GetCombatRating(29)
 
+	-- Pre-format secondary stat display strings at event time
+	local precision = 2
+	local entry = TRB.Functions.Character:GetActiveSpecCache()
+	if entry and entry.settings and entry.settings.precision then
+		precision = entry.settings.precision.secondary or 2
+	end
+	local formatted = snapshotData.formatted
+	local shortNum = TRB.Functions.String.ConvertToShortNumberNotation
+	local roundTo = TRB.Functions.Number.RoundTo
+	local numLib = TRB.Functions.Number
+	local strLib = TRB.Functions.String
+
+	formatted.hasteRating = shortNum(strLib, snapshotData.attributes.hasteRating, precision, "floor", true)
+	formatted.critRating = shortNum(strLib, snapshotData.attributes.critRating, precision, "floor", true)
+	formatted.masteryRating = shortNum(strLib, snapshotData.attributes.masteryRating, precision, "floor", true)
+	formatted.versRating = shortNum(strLib, snapshotData.attributes.versatilityRating, precision, "floor", true)
+
+	formatted.haste = roundTo(numLib, snapshotData.attributes.haste, precision)
+	formatted.crit = roundTo(numLib, snapshotData.attributes.crit, precision)
+	formatted.mastery = roundTo(numLib, snapshotData.attributes.mastery, precision)
+	formatted.versOff = roundTo(numLib, snapshotData.attributes.versatilityOffensive, precision)
+	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
+
+	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
+	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste / 100))
+	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
+	formatted.gcd = string.format("%.2f", _gcd)
+---@diagnostic disable-next-line: assign-type-mismatch
+	formatted.gcdRaw = _gcd
+
 	snapshotData.attributes.cacheRefresh = true
 	snapshotData.attributes.secondaryRefresh = false
+end
+
+---Re-reads live API values and re-formats all pre-formatted display strings.
+---Call this whenever precision settings change so the cached format strings update.
+function TRB.Functions.Character:RecomputeFormattedValues()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData == nil then return end
+	TRB.Functions.Character:UpdateResourceValues()
+	TRB.Functions.Character:UpdateHealthValues()
+	TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+	TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+	TRB.Functions.BarText:InvalidateLookupMemoization()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()
@@ -713,8 +811,10 @@ end
 
 function TRB.Functions.Character:ResetCaches()
 	TRB.Data.cache.barText = {}
+	TRB.Functions.BarText:ClearBarTextCacheHash()
 	TRB.Data.cache.symbols = {}
 	TRB.Data.cache.barTextTree = {}
+	TRB.Data.activeVariables = nil
 	TRB.Data.cache.values.bar = {}
 	TRB.Data.cache.values.resource = {}
 	TRB.Data.cache.values.threshold = {}
@@ -1186,7 +1286,10 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 		floor = false
 	end
 
-	local haste = UnitSpellHaste("player") / 100
+	-- Read haste from snapshotted value instead of calling live API each time
+	local snapshotData = TRB.Data.snapshotData
+	local hastePercent = (snapshotData and snapshotData.attributes and snapshotData.attributes.haste) or UnitSpellHaste("player")
+	local haste = hastePercent / 100
 
 	local gcd = 1.5 / (1 + haste)
 
@@ -1296,7 +1399,7 @@ function TRB.Functions.Character:EventRegistration()
 				end
 			end
 		end
-		UpdateResourceValues()
+		TRB.Functions.Character:UpdateResourceValues()
 		TRB.Functions.Character:UpdateHealthValues()
 		TRB.Functions.Class:CheckCharacter()
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")

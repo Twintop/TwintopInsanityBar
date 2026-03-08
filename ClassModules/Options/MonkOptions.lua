@@ -804,6 +804,7 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 		spec.bars.stagger.maxScale = value / 100
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1020,6 +1021,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 		spec.thresholds.stagger.medium.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1035,6 +1037,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
@@ -1051,6 +1054,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 		spec.thresholds.stagger.extreme.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end

@@ -57,8 +57,20 @@ TRB.Details.addonData = addonData
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Class = {}
 
+---Returns true when spec-specific timer variables (buff durations, rune cooldowns, etc.)
+---are actively counting down, meaning lookup data changes with elapsed time even when
+---no events fire. Each class module overrides this for specs that have such variables.
+---The base implementation returns false (no spec-specific timers).
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	return false
+end
+
 -- Working data
 TRB.Data = {}
+-- Dirty flag: set to true whenever data consumed by lookup refresh changes.
+-- When false and no timers are active, UpdateResourceBarText skips the refresh entirely.
+TRB.Data.lookupDirty = true
 
 TRB.Data.constants = {
 	borderWidthFactor = 4,
@@ -381,6 +393,9 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 		TRB.Data.character.inCombat = false
 		TRB.Data.character.combatStartTime = nil
 	end
+	-- Fully invalidate memoization so formatting branches that depend on inCombat
+	-- (e.g., overcap text coloring) rewrite all lookup strings on the next refresh.
+	TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:ShowResourceBar()
 end)
