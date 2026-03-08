@@ -321,12 +321,13 @@ end
 ---@field public consume TRB.Classes.SpellBase
 ---@field public predatorsThirst TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase -- Void Metamorphosis but keeping it simple naming to re-use existing code
----@field public voidRay TRB.Classes.SpellThreshold
 ---@field public soulFragments TRB.Classes.SpellBase
 ---@field public soulGlutton TRB.Classes.SpellBase
 ---@field public collapsingStar TRB.Classes.SpellBase
----@field public collapsingStarThreshold TRB.Classes.SpellThreshold
 ---@field public surrenderToTheVoid TRB.Classes.SpellBase
+---@field public rollingTorment TRB.Classes.SpellBase
+---@field public collapsingStarThreshold TRB.Classes.SpellThreshold
+---@field public voidRay TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.DevourerSpells.__index = TRB.Classes.DemonHunter.DevourerSpells
 
@@ -392,6 +393,11 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		rangeCheck = false,
 		resource = 30
 	})
+	self.rollingTorment = TRB.Classes.SpellBase:New({
+		id = 1244237,
+		isTalent = true,
+		resourceMod = 5
+	})
 
 	--PvP
 	self.surrenderToTheVoid = TRB.Classes.SpellBase:New({
@@ -421,6 +427,7 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "#voidMetamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidMeta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 		{ variable = "#voidRay", icon = spells.voidRay.icon, description = spells.voidRay.name, printInSettings = true },
+		{ variable = "#rollingTorment", icon = spells.rollingTorment.icon, description = spells.rollingTorment.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$fury", description = L["DemonHunterDevourerBarTextVariable_fury"], printInSettings = true, color = false },
@@ -443,6 +450,7 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "$voidRayUsable", description = L["DemonHunterDevourerBarTextVariable_voidRayUsable"], printInSettings = true, color = false },
 		{ variable = "$collapsingStarUsable", description = L["DemonHunterDevourerBarTextVariable_collapsingStarUsable"], printInSettings = true, color = false },
 		{ variable = "$collapsingStarsUsable", description = "", printInSettings = false, color = false },
+		{ variable = "$rollingTormentFury", description = L["DemonHunterDevourerBarTextVariable_rollingTormentFury"], printInSettings = true, color = false },
 	})
 end
 

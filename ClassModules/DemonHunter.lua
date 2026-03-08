@@ -158,6 +158,8 @@ local function FillSpecializationCache()
 	specCache.demonhunter_devourer.snapshotData.snapshots[spells.soulFragments.id] = TRB.Classes.Snapshot:New(spells.soulFragments, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_devourer.snapshotData.snapshots[spells.collapsingStar.id] = TRB.Classes.Snapshot:New(spells.collapsingStar, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.demonhunter_devourer.snapshotData.snapshots[spells.rollingTorment.id] = TRB.Classes.Snapshot:New(spells.rollingTorment)
 end
 
 local function Setup_Havoc()
@@ -596,7 +598,7 @@ local function RefreshLookupData_Devourer()
 		or activeVars["$metaTime"] or activeVars["$metamorphosisTime"]
 		or activeVars["$voidMetaTime"] or activeVars["$voidMetamorphosisTime"]
 		or activeVars["$voidRayUsable"] or activeVars["$collapsingStarUsable"]
-		or activeVars["$collapsingStarsUsable"] then
+		or activeVars["$collapsingStarsUsable"] or activeVars["$rollingTormentFury"] then
 
 		local _soulFragments = snapshotData.attributes.resource2
 		local _soulFragmentsMax = snapshotData.attributes.maxResource2
@@ -612,6 +614,11 @@ local function RefreshLookupData_Devourer()
 		if metaActive and not talents:IsTalentActive(spells.collapsingStar) then
 			_soulFragments = 0
 			_soulFragmentsMax = 0
+		end
+
+		local _rollingTormentFury = 0
+		if talents:IsTalentActive(spells.rollingTorment) and metaActive then
+			_rollingTormentFury = _soulFragments * spells.rollingTorment.attributes.resourceMod
 		end
 
 		local _voidRayUsable = (not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive) and (spells.voidRay:IsUsable())
@@ -632,6 +639,7 @@ local function RefreshLookupData_Devourer()
 		lookupLogic["$voidRayUsable"] = _voidRayUsable
 		lookupLogic["$collapsingStarUsable"] = _collapsingStarUsable
 		lookupLogic["$collapsingStarsUsable"] = _collapsingStarUsable
+		lookupLogic["$rollingTormentFury"] = _rollingTormentFury
 
 		if lookupChanged(prevState, "$soulFragments", _soulFragments) then
 			local soulFragments = string.format("%s", _soulFragments)
@@ -639,13 +647,18 @@ local function RefreshLookupData_Devourer()
 			lookup["$comboPoints"] = soulFragments
 			lookup["$collapsingStar"] = soulFragments
 			lookup["$collapsingStars"] = soulFragments
-		end
+		end		
 		if lookupChanged(prevState, "$soulFragmentsMax", _soulFragmentsMax) then
 			local soulFragmentsMax = string.format("%s", _soulFragmentsMax)
 			lookup["$soulFragmentsMax"] = soulFragmentsMax
 			lookup["$comboPointsMax"] = soulFragmentsMax
 			lookup["$collapsingStarMax"] = soulFragmentsMax
 			lookup["$collapsingStarsMax"] = soulFragmentsMax
+		end
+
+		if lookupChanged(prevState, "$rollingTormentFury", lookupLogic["$rollingTormentFury"]) then
+			local rollingTormentFury = string.format("%s", _rollingTormentFury)
+			lookup["$rollingTormentFury"] = rollingTormentFury
 		end
 
 		lookup["$metaTime"] = ""
@@ -1626,6 +1639,7 @@ local function SwitchSpec()
 		lookup["#voidMetamorphosis"] = spells.metamorphosis.icon
 		lookup["#voidMeta"] = spells.metamorphosis.icon
 		lookup["#voidRay"] = spells.voidRay.icon
+		lookup["#rollingTorment"] = spells.rollingTorment.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2010,6 +2024,10 @@ do
 		["$resource"] = false, ["$fury"] = false,
 		["$resourceMax"] = true, ["$furyMax"] = true,
 		["$casting"] = castingFn,
+		["$rollingTormentFury"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return talents:IsTalentActive(spells.rollingTorment) and metaFn()
+		end,
 	}
 
 	specValidVars = { [1] = havoc, [2] = vengeance, [3] = devourer }

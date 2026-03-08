@@ -2110,3 +2110,5 @@ L["ResourceAngelicFeather"] = "Angelic Feather"
 -- Druid Combo Points outside Cat Form
 L["DruidCheckboxShowComboPoints"] = "Show Combo Points in every shapeshift form"
 L["DruidCheckboxShowComboPointsTooltip"] = "When checked, the Combo Points bar will be displayed regardless of current shapeshift form. When unchecked, the Combo Points bar will only be shown in Cat Form. The Combo Points visibility dropdown above will still control when the Combo Points bar appears in general."
+
+L["DemonHunterDevourerBarTextVariable_rollingTormentFury"] = "Fury gained from Rolling Torment if Collapsing Star ended right now"
