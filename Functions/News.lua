@@ -14,8 +14,14 @@ local content = [====[
 
 # 12.0.1.27-release (2026-03-08)
 ## General
+### Behind the Scenes
 
 - [#684](#684) Make significant performance optimizations throughout the bar text update process, including caching of formatted attribute values and avoiding computing unused values. This should result in a significant reduction in CPU usage from bar text updates, especially for classes with a large number of variables in their bar text.
+
+## Druid
+### Guardian
+
+- [#683](#683) Restore the ability to change and disable the Overcap bar border color in options.
 
 ---
 
