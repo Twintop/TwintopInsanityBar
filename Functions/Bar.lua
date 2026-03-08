@@ -2842,31 +2842,10 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
-	local liveFrame = node ~= nil and node:GetFrame() or nil
-	local liveValue = liveFrame and liveFrame.GetValue and liveFrame:GetValue() or nil
-	local liveMax = nil
-	if node ~= nil then
-		_, liveMax = node:GetMinMax()
-	end
-
-	local liveMatchesExpected = false
-	if node ~= nil and liveValue ~= nil and not issecretvalue(liveValue) and not valueIsSecret and not maxResourceIsSecret then
-		local expectedValue = value or 0
-		if maxResource ~= nil then
-			local barMax = liveMax or 0
-			local divisor = maxResource
-			if divisor == 0 then
-				divisor = 1
-			end
-			expectedValue = math.min((value or 0) * (barMax / divisor), barMax)
-		end
-
-		liveMatchesExpected = math.abs((liveValue or 0) - expectedValue) < 0.0001
-	end
 
 	if not valueIsSecret and not maxResourceIsSecret and
 	   not issecretvalue(TRB.Data.cache.values.bar[key].value) and TRB.Data.cache.values.bar[key].value == value and
-	   TRB.Data.cache.values.bar[key].maxResource == maxResource and liveMatchesExpected then
+	   TRB.Data.cache.values.bar[key].maxResource == maxResource then
 		return
 	end
 
