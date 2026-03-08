@@ -2860,7 +2860,7 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 			if safeMaxResource == 0 then
 				safeMaxResource = 1
 			end
-			local expectedValue = (value or 0) * (currentMax / safeMaxResource)
+			local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
 			local actualValue = frame:GetValue() or 0
 			frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
 		end
