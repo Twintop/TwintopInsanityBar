@@ -18,6 +18,10 @@ local content = [====[
 
 - [#684](#684) Make significant performance optimizations throughout the bar text update process, including caching of formatted attribute values and avoiding computing unused values. This should result in a significant reduction in CPU usage from bar text updates, especially for classes with a large number of variables in their bar text.
 
+### Localization
+
+- [#682](#682) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Demon Hunter
 ### Devourer
 
