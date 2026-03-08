@@ -1409,6 +1409,10 @@ function TRB.Functions.EditMode:OnEditModeEnter()
 
 	-- Rebuild bar text frames to maintain proper strata/level ordering during Edit Mode
 	TRB.Functions.BarText:CreateBarTextFrames()
+
+	-- CreateBarTextFrames clears all font text to ""; mark lookup dirty so
+	-- UpdateResourceBarText re-renders on the next tick instead of early-outing.
+	TRB.Functions.BarText:MarkLookupDirty()
 end
 
 ---Called when Edit Mode is exited
@@ -1432,6 +1436,10 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		-- Rebuild bar text frames to restore proper strata/level ordering
 		-- This ensures bar text appears above thresholds after Edit Mode's strata changes
 		TRB.Functions.BarText:CreateBarTextFrames()
+
+		-- CreateBarTextFrames clears all font text to ""; mark lookup dirty so
+		-- UpdateResourceBarText re-renders on the next tick instead of early-outing.
+		TRB.Functions.BarText:MarkLookupDirty()
 
 		-- Let HideResourceBar determine if the bar should be visible now
 		TRB.Functions.BarVisibility:MarkDirty()
