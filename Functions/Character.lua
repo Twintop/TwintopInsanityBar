@@ -671,6 +671,7 @@ end
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
+	TRB.Data.character.isMounted = IsMounted()
 end
 
 function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
