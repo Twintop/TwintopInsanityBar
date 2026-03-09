@@ -219,7 +219,7 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.isPaused = false
 
 	if includeAttributes then
-		self.attributes = {}
+		wipe(self.attributes)
 	end
 
 	if self.customPropertyDefinitions ~= nil then
