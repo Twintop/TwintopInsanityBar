@@ -6,6 +6,10 @@ end
 local L = TRB.Localization
 TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
+local Threshold = TRB.Functions.Threshold
+local Bar = TRB.Functions.Bar
+local Color = TRB.Functions.Color
+local Character = TRB.Functions.Character
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -144,11 +148,11 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Devastation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "devastation")
+	Character:FillSpecializationCacheSettings("evoker", "devastation")
 
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_devastation" then
-		TRB.Functions.Bar:DestroyBarGroups()
+		Bar:DestroyBarGroups()
 		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(1)
 	end
 end
@@ -160,11 +164,11 @@ local function FillSpellData_Devastation()
 end
 
 local function Setup_Preservation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "preservation", true)
+	Character:FillSpecializationCacheSettings("evoker", "preservation", true)
 
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_preservation" then
-		TRB.Functions.Bar:DestroyBarGroups()
+		Bar:DestroyBarGroups()
 		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(2)
 	end
 end
@@ -176,11 +180,11 @@ local function FillSpellData_Preservation()
 end
 
 local function Setup_Augmentation()
-	TRB.Functions.Character:FillSpecializationCacheSettings("evoker", "augmentation")
+	Character:FillSpecializationCacheSettings("evoker", "augmentation")
 
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_augmentation" then
-		TRB.Functions.Bar:DestroyBarGroups()
+		Bar:DestroyBarGroups()
 		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(3)
 	end
 end
@@ -233,12 +237,12 @@ local function ConstructResourceBar(settings)
 			primaryNode:ClearThresholds()
 			for thresholdId = 1, #TRB.Data.cache.thresholdSpells do
 				local thresholdFrame = CreateFrame("Frame", nil, primaryNode:GetFrame())
-				TRB.Functions.Threshold:ResetThresholdLine(thresholdFrame, settings, true)
+				Threshold:ResetThresholdLine(thresholdFrame, settings, true)
 				primaryNode:RegisterThreshold(thresholdFrame)
 			end
 		end
 
-		TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
+		Bar:ConstructBarGroups(settings, barGroups)
 	end
 
 	-- Configure secondary bar for Essence (all specs)
@@ -249,7 +253,7 @@ local function ConstructResourceBar(settings)
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
-	-- TRB.Functions.Bar:HideResourceBar()
+	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
@@ -663,7 +667,7 @@ function TRB.Functions.Class:DisableEvents()
 end
 
 local function UpdateSnapshot()
-	TRB.Functions.Character:UpdateSnapshot()
+	Character:UpdateSnapshot()
 	local currentTime = GetTime()
 end
 
@@ -695,7 +699,7 @@ end
 ---@param specCacheSettings table # The spec cache settings
 local function UpdateEssence(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	for x = 1, TRB.Data.character.maxResource2 do
@@ -718,7 +722,7 @@ local function UpdateEssence(specSettings, specCacheSettings)
 		if barGroups and barGroups.secondary then
 			local essenceNode = barGroups.secondary:GetNode(x)
 			if essenceNode then
-				TRB.Functions.Bar:SetBarNodeValue(specCacheSettings, "essence" .. x, essenceNode, essenceValue, 1000)
+				Bar:SetBarNodeValue(specCacheSettings, "essence" .. x, essenceNode, essenceValue, 1000)
 				essenceNode:SetBorderColor(cpBorderColor)
 				essenceNode:SetColor(cpColor)
 				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
@@ -739,7 +743,7 @@ local function UpdateResourceBar()
 
 	-- Always call HideResourceBar first to ensure visibility is correctly determined
 	-- even if we return early due to missing data
-	TRB.Functions.Bar:HideResourceBar()
+	Bar:HideResourceBar()
 
 	if TRB.Data.character.maxResource == nil or TRB.Data.character.maxResource2 == nil then
 		return
@@ -783,7 +787,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base.color
 				local barBorderColor = specSettings.colors.bar.border.color
 
-				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				-- Dragonrage bar color changes
@@ -795,7 +799,7 @@ local function UpdateResourceBar()
 					if specSettings.endOf.dragonrage.enabled then
 						useEndOfDragonrageColor = true
 						if specSettings.endOf.dragonrage.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = Character:GetCurrentGCDTime()
 							dragonrageTimeThreshold = gcd * specSettings.endOf.dragonrage.gcdsMax
 						elseif specSettings.endOf.dragonrage.mode == "time" then
 							dragonrageTimeThreshold = specSettings.endOf.dragonrage.timeMax
@@ -820,7 +824,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -835,7 +839,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -858,11 +862,11 @@ local function UpdateResourceBar()
 					end
 				end
 
-				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -877,7 +881,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -896,7 +900,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base.color
 				local barBorderColor = specSettings.colors.bar.border.color
 
-				TRB.Functions.Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
 
 				-- Ebon Might bar color changes
@@ -908,7 +912,7 @@ local function UpdateResourceBar()
 					if specSettings.endOf.ebonMight.enabled then
 						useEndOfEbonMightColor = true
 						if specSettings.endOf.ebonMight.mode == "gcd" then
-							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							local gcd = Character:GetCurrentGCDTime()
 							ebonMightTimeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
 						elseif specSettings.endOf.ebonMight.mode == "time" then
 							ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
@@ -954,7 +958,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				TRB.Functions.Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -969,7 +973,7 @@ local function UpdateResourceBar()
 					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
-				TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -989,16 +993,16 @@ local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
 	TRB.Data.lookupDirty = true
 	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		TRB.Functions.Bar:QueueRenderTransition("switchSpec", 0.8)
+		Bar:QueueRenderTransition("switchSpec", 0.8)
 	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-		TRB.Functions.Bar:HideResourceBar(true)
+		Bar:HideResourceBar(true)
 	end
-	TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
 	if TRB.Data.character.specId == 1 then
 		specCache.evoker_devastation.talents:GetTalents()
 		FillSpellData_Devastation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_devastation)
+		Character:LoadFromSpecializationCache(specCache.evoker_devastation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
@@ -1007,7 +1011,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData		
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_devastation.settings)
+		Bar:UpdateSanityCheckValues(specCache.evoker_devastation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#dragonrage"] = spells.dragonrage.icon
@@ -1023,7 +1027,7 @@ local function SwitchSpec()
 	elseif TRB.Data.character.specId == 2 then
 		specCache.evoker_preservation.talents:GetTalents()
 		FillSpellData_Preservation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_preservation)
+		Character:LoadFromSpecializationCache(specCache.evoker_preservation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
@@ -1032,7 +1036,7 @@ local function SwitchSpec()
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_preservation.settings)
+		Bar:UpdateSanityCheckValues(specCache.evoker_preservation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		TRB.Data.lookup = lookup
@@ -1047,7 +1051,7 @@ local function SwitchSpec()
 	elseif TRB.Data.character.specId == 3 then
 		specCache.evoker_augmentation.talents:GetTalents()
 		FillSpellData_Augmentation()
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.evoker_augmentation)
+		Character:LoadFromSpecializationCache(specCache.evoker_augmentation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
@@ -1056,7 +1060,7 @@ local function SwitchSpec()
 		local targetData = TRB.Data.snapshotData.targetData
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
-		TRB.Functions.Bar:UpdateSanityCheckValues(specCache.evoker_augmentation.settings)
+		Bar:UpdateSanityCheckValues(specCache.evoker_augmentation.settings)
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ebonMight"] = spells.ebonMight.icon
@@ -1083,9 +1087,9 @@ local function SwitchSpec()
 		C_Timer.After(0.05, function()
 			TRB.Functions.Class:CheckCharacter()
 			if TRB.Data.barConstructedForSpec ~= nil then
-				TRB.Functions.Character:ResetCaches()
+				Character:ResetCaches()
 				-- Ensure health values are populated so the health bar displays immediately
-				TRB.Functions.Character:UpdateHealthValues()
+				Character:UpdateHealthValues()
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
@@ -1213,9 +1217,9 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 			if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
 				if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-					TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
+					Bar:QueueRenderTransition("eventPreSwitch", 0.8)
 				elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-					TRB.Functions.Bar:HideResourceBar(true)
+					Bar:HideResourceBar(true)
 				end
 				C_Timer.After(0, function()
 					C_Timer.After(0.1, function()
@@ -1232,7 +1236,7 @@ function TRB.Functions.Class:CheckCharacter()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end
-	TRB.Functions.Character:CheckCharacter()
+	Character:CheckCharacter()
 	TRB.Data.character.className = "evoker"
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource, true)
 	TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", TRB.Data.resource, false)
@@ -1259,7 +1263,7 @@ function TRB.Functions.Class:CheckCharacter()
 		--if maxComboPoints ~= TRB.Data.character.maxResource2 then
 			TRB.Data.character.maxResource2 = maxComboPoints
 			if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
-				TRB.Functions.Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
+				Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
 			end
 		--end
 	end
@@ -1290,7 +1294,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Functions.Class:DisableEvents()
 	end
 
-	TRB.Functions.Character:EventRegistration()
+	Character:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
@@ -1451,8 +1455,8 @@ function TRB.Functions.Class:HasActiveTimers()
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
-		TRB.Functions.Bar:HideResourceBar(true)
+	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and Bar:IsRenderTransitionActive() then
+		Bar:HideResourceBar(true)
 		return
 	end
 
@@ -1460,7 +1464,7 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		return
 	end
 	if (TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 and TRB.Data.character.specId ~= 3) then
-		TRB.Functions.Bar:HideResourceBar(true)
+		Bar:HideResourceBar(true)
 		return
 	end
 

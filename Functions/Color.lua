@@ -2,6 +2,12 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Color = {}
 
+-- Memoization cache for GetRGBAFromString in the common case (no color/alpha adjustment).
+-- Keyed by hexString .. (normalize and "T" or "F"), storing {r, g, b, a}.
+-- Never needs explicit invalidation — a given hex string always maps to the same RGBA.
+-- Optionally cleared in ResetColorCaches() to bound memory.
+local rgbaCache = {}
+
 ---Converts a hexdecimal AARRGGBB string to separate numerical RGBA values, either out of 0-255 or 0.0 - 1.0
 ---@param s string # Hexdecimal string
 ---@param normalize boolean? # Should this be normalized to 0.0 - 1.0?
@@ -9,6 +15,27 @@ TRB.Functions.Color = {}
 ---@param percentAlphaAdjust number? # How much we scale the alpha down
 ---@return number, number, number, number
 function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust, percentAlphaAdjust)
+	-- Fast path: when no color/alpha adjustment, use memoized result
+	local canCache = (percentColorAdjust == nil or percentColorAdjust == 1) and (percentAlphaAdjust == nil or percentAlphaAdjust == 1)
+	if canCache and s ~= nil and #s == 8 then
+		local cacheKey = normalize and (s .. "T") or (s .. "F")
+		local cached = rgbaCache[cacheKey]
+		if cached then
+			return cached[1], cached[2], cached[3], cached[4]
+		end
+		-- Compute and cache
+		local _a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)), 0, floor, true)
+		local _r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)), 0, floor, true)
+		local _g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)), 0, floor, true)
+		local _b = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 7, 8), 16)), 0, floor, true)
+		if normalize then
+			_r, _g, _b, _a = _r/255, _g/255, _b/255, _a/255
+		end
+		rgbaCache[cacheKey] = { _r, _g, _b, _a }
+		return _r, _g, _b, _a
+	end
+
+	-- Slow path: adjustment factors are non-default
 	if percentColorAdjust == nil or percentColorAdjust > 1 then
 		percentColorAdjust = 1
 	elseif percentColorAdjust < 0 then
@@ -40,6 +67,11 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 	else
 		return _r, _g, _b, _a
 	end
+end
+
+---Clears the RGBA parse memoization cache. Call from ResetColorCaches() to bound memory.
+function TRB.Functions.Color:ClearRGBACache()
+	wipe(rgbaCache)
 end
 
 function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)

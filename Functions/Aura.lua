@@ -26,8 +26,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 	
 	-- Short circuit this for now
 	if unit == "player" then
-		TRB.Data.cache.values.resource = {}
-		TRB.Data.cache.values.castTime = {}
+		wipe(TRB.Data.cache.values.resource)
+		wipe(TRB.Data.cache.values.castTime)
 		TRB.Data.lookupDirty = true
 		--return
 	elseif unit ~= "player" then
@@ -41,8 +41,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 		end
 		if TRB.Data.character ~= nil and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 then
 			TRB.Data.lookupDirty = true
-			TRB.Data.cache.values.resource = {}
-			TRB.Data.cache.values.castTime = {}
+			wipe(TRB.Data.cache.values.resource)
+			wipe(TRB.Data.cache.values.castTime)
 			return
 		end
 		-- Defer the full buff refresh by one frame so that the aura API has time to
@@ -63,8 +63,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 		C_Timer.After(0.02, function()
 			RefreshAndUpdateBars()
 		end)
-		TRB.Data.cache.values.resource = {}
-		TRB.Data.cache.values.castTime = {}
+		wipe(TRB.Data.cache.values.resource)
+		wipe(TRB.Data.cache.values.castTime)
 		return
 	end
 
@@ -107,8 +107,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 						end
 					end
 				end
-				TRB.Data.cache.values.resource = {}
-				TRB.Data.cache.values.castTime = {}
+				wipe(TRB.Data.cache.values.resource)
+				wipe(TRB.Data.cache.values.castTime)
 			end
 		else
 			-- This code works but has a fundamental flaw: UNIT_AURA only gives updates for the player, pet, and visible nameplates.
@@ -174,8 +174,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 					targetData:HandleCombatLogBuff(targetSpell.id, "SPELL_AURA_REFRESH", unitGuid)
 				end
 			end
-			TRB.Data.cache.values.resource = {}
-			TRB.Data.cache.values.castTime = {}
+			wipe(TRB.Data.cache.values.resource)
+			wipe(TRB.Data.cache.values.castTime)
 		else
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				local target = targetData.auraInstanceIds[v]
@@ -209,8 +209,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
 
-			TRB.Data.cache.values.resource = {}
-			TRB.Data.cache.values.castTime = {}
+			wipe(TRB.Data.cache.values.resource)
+			wipe(TRB.Data.cache.values.castTime)
 		else
 			for _, v in pairs(info.removedAuraInstanceIDs) do
 				local target = targetData.auraInstanceIds[v]

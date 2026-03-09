@@ -528,8 +528,8 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	end
 
 	-- Clear color caches to ensure fresh application on bar construction
-	TRB.Data.cache.colors.border = {}
-	TRB.Data.cache.colors.backdrop = {}
+	wipe(TRB.Data.cache.colors.border)
+	wipe(TRB.Data.cache.colors.backdrop)
 
 	-- Initialize Edit Mode if not yet done (safe to call multiple times)
 	if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
@@ -907,7 +907,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- This fixes a bug where moving the bar caused threshold colors to reset and stay wrong
 	-- Also clear colors cache in general
 	if TRB.Data.cache and TRB.Data.cache.values then
-		TRB.Data.cache.values.threshold = {}
+		wipe(TRB.Data.cache.values.threshold)
 		TRB.Functions.Character:ResetColorCaches()
 	end
 
@@ -1196,8 +1196,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	end
 
 	-- Clear color caches to ensure colors are re-applied after ApplyBackdrop resets frames
-	TRB.Data.cache.colors.border = {}
-	TRB.Data.cache.colors.backdrop = {}
+	wipe(TRB.Data.cache.colors.border)
+	wipe(TRB.Data.cache.colors.backdrop)
 
 	local frameLevels = TRB.Data.constants.frameLevels
 

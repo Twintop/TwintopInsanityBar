@@ -45,7 +45,7 @@ end
 ---Clears the lookup memoization state, forcing all variables to be recomputed on next tick.
 ---Also marks lookup data as dirty.
 function TRB.Functions.BarText:InvalidateLookupMemoization()
-	TRB.Data.prevLookupState = {}
+	wipe(TRB.Data.prevLookupState)
 	TRB.Data.lookupDirty = true
 end
 

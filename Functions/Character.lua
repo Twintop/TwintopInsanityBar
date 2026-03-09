@@ -3,6 +3,13 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Character = {}
 
+-- Cached format strings for resource/health percent formatting.
+-- Rebuilt only when the precision setting changes (spec switch / options edit).
+local cachedResourcePercentFmt = nil
+local cachedResourcePercentPrecision = nil
+local cachedHealthPercentFmt = nil
+local cachedHealthPercentPrecision = nil
+
 --TODO: Find a better home for this.
 local function OnAdvFlyEnabled()
 	TRB.Data.character.advancedFlight = true
@@ -88,7 +95,11 @@ function TRB.Functions.Character:UpdateResourceValues()
 			resourcePercentPrecision = entry.settings.precision.mana or 1
 		end
 	end
-	formatted.resourcePercent = string.format("%." .. resourcePercentPrecision .. "f", snapshotData.attributes.resourcePercent)
+	if resourcePercentPrecision ~= cachedResourcePercentPrecision then
+		cachedResourcePercentPrecision = resourcePercentPrecision
+		cachedResourcePercentFmt = "%." .. resourcePercentPrecision .. "f"
+	end
+	formatted.resourcePercent = string.format(cachedResourcePercentFmt, snapshotData.attributes.resourcePercent)
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" then
@@ -126,7 +137,11 @@ function TRB.Functions.Character:UpdateHealthValues()
 			healthPrecision = entry.settings.precision.health or 1
 		end
 	end
-	formatted.healthPercent = string.format("%." .. healthPrecision .. "f", snapshotData.attributes.healthPercent)
+	if healthPrecision ~= cachedHealthPercentPrecision then
+		cachedHealthPercentPrecision = healthPrecision
+		cachedHealthPercentFmt = "%." .. healthPrecision .. "f"
+	end
+	formatted.healthPercent = string.format(cachedHealthPercentFmt, snapshotData.attributes.healthPercent)
 
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
@@ -141,24 +156,29 @@ function TRB.Functions.Character:UpdateHealthValues()
 		return
 	end
 
-	-- Use configurable settings or defaults
-	---@type integer?
-	local curveType = Enum.LuaCurveType.Step
+	-- Build a composite cache key from the settings that feed into the curve.
+	-- The curve object itself is normal (non-secret); only the evaluation result is secret.
+	-- Caching the curve avoids ~4 C-side object allocations per health event.
+	local highColor = (healthBarSettings.high and healthBarSettings.high.color) or ""
+	local highThreshold = (healthBarSettings.high and healthBarSettings.high.threshold) or 0.7
+	local lowColor = (healthBarSettings.low and healthBarSettings.low.color) or ""
+	local lowThreshold = (healthBarSettings.low and healthBarSettings.low.threshold) or 0.0
+	local medColor = (healthBarSettings.medium and healthBarSettings.medium.color) or ""
+	local medThreshold = (healthBarSettings.medium and healthBarSettings.medium.threshold) or 0.3
+	local curveTypeStr = healthBarSettings.type or ""
+	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr
 
-	if healthBarSettings then
+	local cache = TRB.Data.cache
+	if cache.healthCurve == nil or cache.healthCurveKey ~= cacheKey then
+		-- Rebuild the curve — settings have changed
+		---@type integer?
+		local curveType = Enum.LuaCurveType.Step
+
 		local highR, highG, highB, highA = 0, 1, 0, 1
-		local highThreshold = 0.7
-		-- High health color and threshold
-		if healthBarSettings.high then
-			if healthBarSettings.high.color then
-				highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.high.color, true)
-			end
-			if healthBarSettings.high.threshold then
-				highThreshold = healthBarSettings.high.threshold
-			end
+		if healthBarSettings.high and healthBarSettings.high.color then
+			highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.high.color, true)
 		end
 
-		-- Curve type
 		if healthBarSettings.type == "linear" then
 			curveType = Enum.LuaCurveType.Linear
 		elseif healthBarSettings.type == "step" then
@@ -173,52 +193,44 @@ function TRB.Functions.Character:UpdateHealthValues()
 			curve:SetType(Enum.LuaCurveType.Step)
 			curve:AddPoint(0, CreateColor(highR, highG, highB, highA))
 		else
-			local lowThreshold = 0.0
 			local lowR, lowG, lowB, lowA = 1, 0, 0, 1
-			local mediumThreshold = 0.3
 			local mediumR, mediumG, mediumB, mediumA = 1, 1, 0, 1
 
-			-- Low health color and threshold
-			if healthBarSettings.low then
-				if healthBarSettings.low.color then
-					lowR, lowG, lowB, lowA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.low.color, true)
-				end
-				if healthBarSettings.low.threshold then
-					lowThreshold = healthBarSettings.low.threshold
-				end
+			if healthBarSettings.low and healthBarSettings.low.color then
+				lowR, lowG, lowB, lowA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.low.color, true)
+			end
+			if healthBarSettings.medium and healthBarSettings.medium.color then
+				mediumR, mediumG, mediumB, mediumA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.medium.color, true)
 			end
 
-			-- Medium health color and threshold
-			if healthBarSettings.medium then
-				if healthBarSettings.medium.color then
-					mediumR, mediumG, mediumB, mediumA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.medium.color, true)
-				end
-				if healthBarSettings.medium.threshold then
-					mediumThreshold = healthBarSettings.medium.threshold
-				end
+			local adjMedThreshold = medThreshold
+			if adjMedThreshold >= highThreshold then
+				adjMedThreshold = highThreshold - 0.000001
 			end
 
-			if mediumThreshold >= highThreshold then
-				mediumThreshold = highThreshold - 0.000001
-			end
-
-			if lowThreshold >= mediumThreshold then
-				lowThreshold = mediumThreshold - 0.000001
+			local adjLowThreshold = lowThreshold
+			if adjLowThreshold >= adjMedThreshold then
+				adjLowThreshold = adjMedThreshold - 0.000001
 			end
 
 			curve:SetType(curveType)
-			curve:AddPoint(lowThreshold, CreateColor(lowR, lowG, lowB, lowA))
-			curve:AddPoint(mediumThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
+			curve:AddPoint(adjLowThreshold, CreateColor(lowR, lowG, lowB, lowA))
+			curve:AddPoint(adjMedThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
 			curve:AddPoint(highThreshold, CreateColor(highR, highG, highB, highA))
 		end
-		local hpColor = UnitHealthPercent("player", true, curve)
 
-		snapshotData.attributes.healthColor = hpColor
+		cache.healthCurve = curve
+		cache.healthCurveKey = cacheKey
 	end
+
+	-- Evaluate the cached curve — the result is a secret ColorMixin
+	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, cache.healthCurve)
 end
 
 ---Updates the overcap color based on current resource percentage and overcap settings
 ---Stores the result in snapshotData.attributes.overcapColor (raw ColorMixin object)
+---NOTE: Currently unused — snapshotData.attributes.overcapColor has zero consumers.
+---Kept for potential future use. All call sites have been removed for performance.
 function TRB.Functions.Character:UpdateOvercapColor()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	
@@ -301,7 +313,6 @@ local function CharacterChange(self, event, ...)
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			TRB.Functions.Character:UpdateResourceValues()
-			TRB.Functions.Character:UpdateOvercapColor()
 			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
@@ -804,20 +815,25 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 end
 
 function TRB.Functions.Character:ResetColorCaches()
-	TRB.Data.cache.colors.border = {}
-	TRB.Data.cache.colors.bar = {}
-	TRB.Data.cache.colors.backdrop = {}
+	wipe(TRB.Data.cache.colors.border)
+	wipe(TRB.Data.cache.colors.bar)
+	wipe(TRB.Data.cache.colors.backdrop)
+	-- Invalidate cached health color curve so it rebuilds from fresh settings
+	TRB.Data.cache.healthCurve = nil
+	TRB.Data.cache.healthCurveKey = nil
+	-- Clear RGBA parse memoization to bound memory
+	TRB.Functions.Color:ClearRGBACache()
 end 
 
 function TRB.Functions.Character:ResetCaches()
-	TRB.Data.cache.barText = {}
+	wipe(TRB.Data.cache.barText)
 	TRB.Functions.BarText:ClearBarTextCacheHash()
-	TRB.Data.cache.symbols = {}
-	TRB.Data.cache.barTextTree = {}
+	wipe(TRB.Data.cache.symbols)
+	wipe(TRB.Data.cache.barTextTree)
 	TRB.Data.activeVariables = nil
-	TRB.Data.cache.values.bar = {}
-	TRB.Data.cache.values.resource = {}
-	TRB.Data.cache.values.threshold = {}
+	wipe(TRB.Data.cache.values.bar)
+	wipe(TRB.Data.cache.values.resource)
+	wipe(TRB.Data.cache.values.threshold)
 	TRB.Functions.Character:ResetColorCaches()
 	-- We don't do range check cache reset here since we need to track what we've enabled and clean it up when we change specs
 	--TRB.Data.cache.values.range = {}
