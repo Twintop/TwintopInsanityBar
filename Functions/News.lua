@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.30-release (2026-03-10)
+## Demon Hunter
+### Vengeance
+
+- [#689](#689) Fix an issue where Soul Fragments were being treated as not `secret` values.
+
+---
+
 # 12.0.1.29-release (2026-03-10)
 ## General
 

@@ -3010,13 +3010,20 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 		local frame = node:GetFrame()
 		if frame ~= nil and frame.GetValue ~= nil then
 			local _, currentMax = node:GetMinMax()
-			local safeMaxResource = maxResource or 1
-			if safeMaxResource == 0 then
-				safeMaxResource = 1
+			-- Guard: frame min/max or value can be tainted if a secret was previously
+			-- passed through SetValue(). Skip the sync check in that case; Phase 2
+			-- below already handles secrets correctly via its own issecretvalue() check.
+			if not issecretvalue(currentMax) then
+				local safeMaxResource = maxResource or 1
+				if safeMaxResource == 0 then
+					safeMaxResource = 1
+				end
+				local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
+				local actualValue = frame:GetValue() or 0
+				if not issecretvalue(actualValue) then
+					frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
+				end
 			end
-			local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
-			local actualValue = frame:GetValue() or 0
-			frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
 		end
 	end
 
