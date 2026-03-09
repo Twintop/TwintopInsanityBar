@@ -20,9 +20,9 @@ local eventFrame = CreateFrame("Frame")
 -- Only the mutable fields (color, enabled) are refreshed per-tick in UpdateResourceBar.
 -- This avoids creating 4 tables (1 array + 3 elements) every 50ms tick.
 local holyWordDefsCache = {
-	{ spell = nil --[[@as any]], key = "holyWordSerenity", color = "" --[[@as string]], enabled = false },
-	{ spell = nil --[[@as any]], key = "holyWordSanctify", color = "" --[[@as string]], enabled = false },
-	{ spell = nil --[[@as any]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
+	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordSerenity", color = "" --[[@as string]], enabled = false },
+	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordSanctify", color = "" --[[@as string]], enabled = false },
+	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
 }
 
 -- Frame for handling Sustained Potency pause events (PLAYER_CONTROL_LOST/GAINED, PLAYER_REGEN_ENABLED/DISABLED)
@@ -1811,6 +1811,7 @@ local function UpdateResourceBar()
 
 				for _, hwDef in ipairs(holyWordDefsCache) do
 					if talents:IsTalentActive(hwDef.spell) and hwDef.enabled then
+---@diagnostic disable-next-line: undefined-field
 						local cooldown = snapshots[hwDef.spell.id].cooldown
 						local charges = cooldown.manualCharges or 0
 						local maxCharges = cooldown.manualMaxCharges or 1
