@@ -237,7 +237,17 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		end
 	end
 
+	-- Detect hidden→visible transition: when the bar was not tracking but is now
+	-- showing, mark lookup data dirty so that UpdateResourceBarText doesn't
+	-- early-out on the next tick. Without this, text goes stale when the bar is
+	-- hidden (lookupDirty gets consumed while hidden) and never refreshes when
+	-- the bar reappears.
+	local wasTracking = snapshotData.attributes.isTracking
 	snapshotData.attributes.isTracking = anyShowing
+	if anyShowing and not wasTracking then
+		TRB.Data.lookupDirty = true
+	end
+
 	if anyShowing and settings ~= nil then
 		TRB.Functions.BarText:Show(settings)
 	else
