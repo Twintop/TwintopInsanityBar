@@ -1007,7 +1007,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Havoc()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
@@ -1146,7 +1146,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1166,7 +1166,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Vengeance()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
@@ -1275,7 +1275,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 				-- Soul Fragments bar (Vengeance, 0-6 fragments, 6 independent nodes)
@@ -1309,7 +1309,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1333,7 +1333,7 @@ local function UpdateResourceBar()
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 
@@ -1434,7 +1434,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				-- Soul Fragments bar (Devourer fixed max)
 				local current = snapshotData.attributes.resource2
 				local max = snapshotData.attributes.maxResource2
@@ -1513,7 +1513,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

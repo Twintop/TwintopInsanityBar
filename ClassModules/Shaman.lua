@@ -725,7 +725,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Elemental()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
@@ -881,7 +881,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -895,7 +895,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Mana bar update (Balance only)
-			if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana.visibility ~= "never" then
+			if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
@@ -917,7 +917,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Enhancement()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -962,7 +962,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 			
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if barGroups.secondary then
@@ -1081,7 +1081,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1140,7 +1140,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -1178,7 +1178,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

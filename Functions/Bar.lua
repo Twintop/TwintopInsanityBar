@@ -656,7 +656,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- ========================
 	-- Build the anchor forest and per-root metadata
 	-- ========================
-	local forest = self:BuildAnchorForest(layoutSettings, barGroups, true, false)
+	-- Include hidden bars in the tree (no collapsing) so they serve as invisible
+	-- positioning scaffolds. Children of hidden bars keep their relative anchors
+	-- intact and are not promoted to roots (which would stack them on top of each
+	-- other). HideResourceBar handles the actual show/hide of individual bars.
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, true)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
 	local effectiveParentOf = BuildEffectiveParentMap(forest)
 
@@ -984,6 +988,25 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	end
 
 	-- ========================
+	-- Collapse settings-based hidden bars' container frames to 0 height.
+	-- Hidden bars are still in the tree as positioning scaffolds (SetPoint anchors
+	-- remain valid), but with 0 height their TOP = BOTTOM, so children anchored
+	-- to them slide together instead of leaving a blank gap.
+	-- Uses IsBarVisible (settings-only) rather than IsBarVisibleForLayout (form-aware)
+	-- because at construction time the Druid's current shapeshift form may not be
+	-- known yet. Runtime form-based collapse is handled by ProcessBars after
+	-- HideResourceBar determines the correct visibility per form.
+	-- ========================
+	for barKey, _ in pairs(barKeyToRoot) do
+		if not self:IsBarVisible(layoutSettings, barKey, false) then
+			local barGroup = barGroups[barKey]
+			if barGroup and barGroup.containerFrame then
+				barGroup.containerFrame:SetHeight(0.001)
+			end
+		end
+	end
+
+	-- ========================
 	-- Per-root wrapper positioning (replaces single-wrapper positioning)
 	-- Each root bar tree gets its own wrapper with independent anchor settings
 	-- ========================
@@ -1030,6 +1053,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- be the final authority on wrapper dimensions.
 	if TRB.Functions.EditMode and TRB.Functions.EditMode.RegisterAllTreeRoots then
 		TRB.Functions.EditMode:RegisterAllTreeRoots()
+	end
+
+	-- Re-show wrappers for ALL current layout roots (including bars promoted to roots
+	-- because their parent was hidden). RegisterAllTreeRoots uses includeHidden=true
+	-- (for Edit Mode), so it doesn't see promoted roots and hides their wrappers.
+	for rootBarKey, meta in pairs(rootMetadata) do
+		if meta.wrapper then
+			meta.wrapper:Show()
+		end
 	end
 
 	-- Per-root anchor frame positioning / wrapper sizing (must be done after all bars are laid out)
@@ -1180,8 +1212,8 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 		end
 	end
 
-	-- Build forest to iterate per-root
-	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
+	-- Build forest to iterate per-root (include hidden bars as scaffolds)
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, true)
 
 	for rootBarKey, _ in pairs(forest) do
 		local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, rootBarKey)
@@ -1915,6 +1947,60 @@ function TRB.Functions.Bar:GetVisibilityKey(barKey)
 	end
 end
 
+---Checks if a bar is visible for layout purposes, considering both settings-based
+---visibility (neverShow, maxResource2) and runtime state (Druid form-based visibility).
+---This is used by the layout collapse code and bounding-box calculation so hidden bars
+---don't reserve space in the layout.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@param includeHidden boolean?
+---@return boolean
+function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden)
+	if not self:IsBarVisible(settings, barKey, includeHidden) then
+		return false
+	end
+
+	-- Druid form-based visibility: secondary (combo points) and mana bar
+	-- visibility depends on current shapeshift form and spec options.
+	-- This mirrors the logic in HideResourceBar and CalculateWrapperLayout.
+	if TRB.Data.character.classId == 11 then
+		local specId = TRB.Data.character.specId
+		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		local enableFormSwitching = true
+		if settings.displayBar and settings.displayBar.enableFormSwitching == false then
+			enableFormSwitching = false
+		end
+
+		local displaySpecId = specId
+		if enableFormSwitching then
+			if currentForm == "cat" then displaySpecId = 2
+			elseif currentForm == "bear" then displaySpecId = 3
+			elseif currentForm == "moonkin" then
+				displaySpecId = (specId == 1) and 1 or 4
+			else displaySpecId = 4 end
+		end
+
+		if barKey == "secondary" then
+			if displaySpecId == 2 then
+				return true -- Cat form: combo points are native, always eligible
+			elseif specId == 2 then
+				-- Feral non-cat: showComboPoints defaults ON (nil -> show)
+				return settings.displayBar and settings.displayBar.showComboPoints ~= false
+			else
+				-- Non-Feral non-cat: showComboPoints defaults OFF (nil -> hide)
+				return settings.displayBar and settings.displayBar.showComboPoints == true
+			end
+		end
+
+		if barKey == "mana" then
+			-- Mana bar: Balance only, when primary bar shows Astral Power (displaySpecId == 1)
+			return specId == 1 and displaySpecId == 1
+		end
+	end
+
+	return true
+end
+
 ---Checks if a bar is visible (not set to "never" visibility).
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barKey string
@@ -1928,7 +2014,12 @@ function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	end
 	local visKey = self:GetVisibilityKey(barKey)
 	local visibilitySetting = settings.displayBar and settings.displayBar[visKey]
-	return not visibilitySetting or visibilitySetting.visibility ~= "never"
+	if not visibilitySetting then return true end
+	-- Support both new (neverShow) and legacy (visibility) formats
+	if visibilitySetting.neverShow ~= nil then
+		return not visibilitySetting.neverShow
+	end
+	return visibilitySetting.visibility ~= "never"
 end
 
 ---Enumerates all bar keys present for the current bar groups.
@@ -2443,8 +2534,18 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Bar anchor: position relative to anchorGroup's visual extent (border)
 		anchorContainer = anchorGroup:GetAnchorFrame()
 	else
-		-- Fallback: anchor to UIParent
-		anchorContainer = UIParent
+		-- Fallback: anchorGroup is nil. This happens when a bar was promoted to a
+		-- forest root because its anchor target was hidden (e.g., primary has neverShow).
+		-- Check if the container is already parented to a TRB wrapper frame; if so,
+		-- treat it as a screen root so it positions inside its wrapper rather than
+		-- being placed off-screen via the original anchor points against UIParent.
+		local currentParent = targetGroup.containerFrame:GetParent()
+		if currentParent and currentParent ~= UIParent and currentParent.trbRootBarKey then
+			anchorContainer = currentParent
+			isScreenRoot = true
+		else
+			anchorContainer = UIParent
+		end
 	end
 
 	-- Calculate dimensions
@@ -2542,6 +2643,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Single-node direct sizing (health bar, etc.)
 		targetGroup.containerFrame:SetWidth(groupWidth)
 		targetGroup.containerFrame:SetHeight(groupHeight)
+		targetGroup.layoutHeight = groupHeight -- Store layout height for collapse/expand by ProcessBars
 
 		local singleNode = targetGroup:GetNode(1)
 		if singleNode then
@@ -2733,10 +2835,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 		
 		-- Apply layout if bar group exists
 		if barGroup then
-			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
-			if not self:IsBarVisible(settings, key, inEditMode) then
-				barGroup:Hide()
-			else
+			-- Always lay out the bar (even hidden ones) so SetPoint-based anchor frames
+			-- have valid dimensions. Other bars may be anchored to a hidden custom bar.
 			-- Get dimensions from settings or defaults from registry
 			local defaultSettings = nil
 			if not barSettings and barTypeDef.defaultDimensionsFunc then
@@ -2810,6 +2910,18 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 
 			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
 			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)
+
+			-- Hide the bar group and collapse its container after layout if not visible.
+			-- Layout is still needed so SetPoint-based anchors have valid frames, but
+			-- 0 height means children anchored to it slide together (no blank gap).
+			-- Uses IsBarVisible (settings-only) for construction-time collapse.
+			-- Runtime form-based collapse is handled by ProcessBars.
+			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
+			if not self:IsBarVisible(settings, key, inEditMode) then
+				barGroup:Hide()
+				if barGroup.containerFrame then
+					barGroup.containerFrame:SetHeight(0.001)
+				end
 			end
 		end
 	end

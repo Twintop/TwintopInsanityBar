@@ -80,22 +80,25 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			},
 			displayBar = {
 				primary = {
-					visibility = "always",
+					neverShow = false,
+					conditions = {},
 					smooth = true
 				},
 				secondary = {
-					visibility = "always",
+					neverShow = false,
+					conditions = {},
 					smooth = false
 				},
 				health = {
-					visibility = "always",
+					neverShow = false,
+					conditions = {},
 					smooth = true
 				},
 				utility = {
-					visibility = "never",
+					neverShow = true,
+					conditions = {},
 					smooth = true
 				},
-				dragonriding = true
 			},
 			overcap = {
 				mode = "relative",
@@ -4299,6 +4302,56 @@ function TRB.Functions.Settings:PortForwardSettings()
 		-- NOTE: Do NOT remove smoothBarValueUpdates here. It's still needed as a guard for an older
 		-- migration (line ~1365) that resets core.bar/core.comboPoints. Without the guard, that
 		-- migration would run on every reload and reset the user's bar dimension settings.
+	end
+
+	-- Migrate displayBar entries from legacy { visibility = "...", smooth = X } to
+	-- new conditions-based format { neverShow = bool, conditions = {}, smooth = X }.
+	-- Also strip the deprecated "dragonriding" key from displayBar.
+	do
+		local function MigrateVisibilityToConditions(displayBar)
+			if displayBar == nil then
+				return
+			end
+			-- Strip deprecated dragonriding key
+			displayBar.dragonriding = nil
+
+			for key, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.visibility ~= nil and entry.conditions == nil then
+					local vis = entry.visibility
+					if vis == "never" then
+						entry.neverShow = true
+						entry.conditions = {}
+					elseif vis == "combat" then
+						entry.neverShow = false
+						entry.conditions = {
+							inCombat = true,
+							inVehicle = true,
+						}
+					else
+						-- "always" or any unknown value
+						entry.neverShow = false
+						entry.conditions = {}
+					end
+					entry.visibility = nil
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateVisibilityToConditions(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		-- Migrate all class/spec displayBar settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateVisibilityToConditions(specSettings.displayBar)
+					end
+				end
+			end
+		end
 	end
 
 	-- Migrate bar anchor settings from legacy relativeTo/xPos/yPos/fullWidth to new anchor block system.

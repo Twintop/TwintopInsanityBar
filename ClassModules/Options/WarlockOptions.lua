@@ -36,10 +36,9 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -161,10 +160,9 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -286,10 +284,9 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),

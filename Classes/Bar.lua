@@ -780,6 +780,7 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 	local groupWidth = self.fullWidth and totalWidth or (self.nodeCount * actualNodeWidth + (self.nodeCount - 1) * nodeSpacing)
 	self.containerFrame:SetWidth(groupWidth)
 	self.containerFrame:SetHeight(nodeHeight)
+	self.layoutHeight = nodeHeight -- Store layout height for collapse/expand by ProcessBars
 
 	-- Position each node
 	for i = 1, self.maxNodes do

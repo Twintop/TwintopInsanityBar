@@ -287,11 +287,10 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			mana = { visibility = "never", smooth = true },
-			dragonriding = true,
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
+			mana = { neverShow = true, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -624,10 +623,9 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true,
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = true
 		},
@@ -807,10 +805,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true,
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -929,10 +926,9 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true,
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -1343,6 +1339,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 		spec.displayBar.showComboPoints = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 1) then
 			-- Clear all caches before rebuilding
+			TRB.Functions.Character:FillSpecializationCacheSettings("druid", "balance")
 			TRB.Functions.Character:ResetCaches()
 			TRB.Data.cache.colors.border = {}
 			TRB.Data.cache.colors.backdrop = {}
@@ -1352,6 +1349,9 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:RefreshWrapperPositioning()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -2033,6 +2033,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 		spec.displayBar.showComboPoints = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 2) then
 			-- Clear all caches before rebuilding
+			TRB.Functions.Character:FillSpecializationCacheSettings("druid", "feral")
 			TRB.Functions.Character:ResetCaches()
 			TRB.Data.cache.colors.border = {}
 			TRB.Data.cache.colors.backdrop = {}
@@ -2042,6 +2043,9 @@ local function FeralConstructBarVisibilityPanel(parent)
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:RefreshWrapperPositioning()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -2649,6 +2653,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 		spec.displayBar.showComboPoints = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 3) then
 			-- Clear all caches before rebuilding
+			TRB.Functions.Character:FillSpecializationCacheSettings("druid", "guardian")
 			TRB.Functions.Character:ResetCaches()
 			TRB.Data.cache.colors.border = {}
 			TRB.Data.cache.colors.backdrop = {}
@@ -2658,6 +2663,9 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:RefreshWrapperPositioning()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -3152,6 +3160,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 		spec.displayBar.showComboPoints = self:GetChecked()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(11, 4) then
 			-- Clear all caches before rebuilding
+			TRB.Functions.Character:FillSpecializationCacheSettings("druid", "restoration")
 			TRB.Functions.Character:ResetCaches()
 			TRB.Data.cache.colors.border = {}
 			TRB.Data.cache.colors.backdrop = {}
@@ -3161,6 +3170,9 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:RefreshWrapperPositioning()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()

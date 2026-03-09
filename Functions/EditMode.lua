@@ -306,7 +306,7 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	-- (defaults ON for Feral, OFF for non-Feral).
 	local shouldShowSecondary
 	local secondaryVis = settings and settings.displayBar and settings.displayBar.secondary
-	local secondaryNotNever = not secondaryVis or secondaryVis.visibility ~= "never"
+	local secondaryNotNever = not secondaryVis or not secondaryVis.neverShow
 	if displaySpecId == 2 then
 		-- Cat form (or Feral with form-switching off): CPs are native, always eligible
 		shouldShowSecondary = secondaryNotNever
@@ -402,136 +402,24 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		end
 	end
 
-	-- DRUID SPECIAL CASE: Druids have form-based bar visibility that's controlled at
-	-- runtime by HideResourceBar (not by settings.displayBar.*.visibility).
-	-- The bounding box must match this runtime behavior:
-	-- - Combo points (secondary): only visible in Cat form (displaySpecId 2)
-	-- - Mana bar (custom): only visible in Balance/Moonkin form (displaySpecId 1)
-	-- Without matching, the wrapper is the wrong size and creates gaps/offsets.
+	-- DRUID SPECIAL CASE: Non-Feral Druids use Feral's combo point settings
+	-- for layout purposes. This injection must happen BEFORE building the anchor
+	-- forest so secondary has proper dimensions for tree traversal. Without this,
+	-- secondary has nil barSettings (0 dimensions) and walkTree cannot reach any
+	-- bars anchored to it (e.g., mana bar).
 	--
-	-- PER-TREE LOGIC: Only inject/strip bars that belong to the tree rooted at rootBarKey.
-	-- In multi-root mode, secondary might be its own root (screen-anchored) or a child
-	-- of another tree. We must determine which tree it belongs to before modifying settings.
+	-- Visibility handling (which bars should vs. shouldn't show based on Druid form)
+	-- is delegated to IsBarVisibleForLayout in the walkTree function, rather than
+	-- stripping bars from treeSettings. This ensures the tree is fully traversable
+	-- while hidden bars still collapse to 0 height in the bounding box.
 	local treeSettings = settings
-	if TRB.Data.character.classId == 11 and not includeHidden then
-		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-		local specId = TRB.Data.character.specId
-
-		-- Compute displaySpecId (mirrors GetFormSpecForSettings / RefreshDruidWrapperVisibility)
-		local enableFormSwitching = true
-		if settings.displayBar and settings.displayBar.enableFormSwitching == false then
-			enableFormSwitching = false
-		end
-		local displaySpecId = specId
-		if enableFormSwitching then
-			if currentForm == "cat" then displaySpecId = 2
-			elseif currentForm == "bear" then displaySpecId = 3
-			elseif currentForm == "moonkin" then
-				displaySpecId = (specId == 1) and 1 or 4
-			else displaySpecId = 4 end
-		end
-
-		-- Secondary (Combo Points): In cat form (displaySpecId == 2), CPs are the native resource
-		-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
-		-- (defaults ON for Feral, OFF for non-Feral).
-		local shouldIncludeComboPoints
-		local secondaryVis = settings.displayBar and settings.displayBar.secondary
-		local secondaryNotNever = not secondaryVis or secondaryVis.visibility ~= "never"
-		if displaySpecId == 2 then
-			-- Cat form (or Feral with form-switching off): CPs are native, always eligible
-			shouldIncludeComboPoints = secondaryNotNever
-		elseif specId == 2 then
-			-- Feral in non-cat form: checkbox defaults ON (nil → show)
-			local showCP = settings.displayBar and settings.displayBar.showComboPoints
-			shouldIncludeComboPoints = (showCP ~= false) and secondaryNotNever
-		else
-			-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-			local showCP = settings.displayBar and settings.displayBar.showComboPoints
-			shouldIncludeComboPoints = (showCP == true) and secondaryNotNever
-		end
-
-		-- Mana bar: eligible when Balance (specId==1) and displaySpecId==1
-		local shouldIncludeMana = (specId == 1 and displaySpecId == 1)
-
-		local isNonFeralDruid = (specId ~= 2)
-		local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-
-		-- Determine which tree "secondary" belongs to, so we only inject/strip when
-		-- calculating the bounding box for that specific tree.
-		local secondaryRoot = nil
-		if shouldIncludeComboPoints and isNonFeralDruid then
-			-- Inject case: non-Feral in cat form. Since the current spec has no comboPoints
-			-- settings (and thus no anchor), use Feral's anchor to determine secondary's tree.
-			-- Walk from Feral's comboPoints anchor target up through the current spec's
-			-- anchor chain to find the root.
-			if feralSettings and feralSettings.comboPoints then
-				local feralAnchor = feralSettings.comboPoints.anchor
-				if feralAnchor and feralAnchor.barKey and feralAnchor.barKey ~= "screen" then
-					secondaryRoot = findBarKeyRoot(feralAnchor.barKey, settings, barGroups)
-				else
-					secondaryRoot = "secondary" -- screen-anchored → secondary is its own root
-				end
-			end
-		elseif not shouldIncludeComboPoints and settings.comboPoints then
-			-- Strip case: not in cat form, but settings has comboPoints (e.g., Feral spec)
-			secondaryRoot = findBarKeyRoot("secondary", settings, barGroups)
-		end
-
-		-- Determine which tree "mana" belongs to for mana stripping
-		local manaRoot = nil
-		if not shouldIncludeMana and settings.bars and settings.bars.mana then
-			manaRoot = findBarKeyRoot("mana", settings, barGroups)
-		end
-
-		-- Only apply inject/strip for bars that are in THIS tree (rootBarKey)
-		local needsComboPointsInject = shouldIncludeComboPoints and isNonFeralDruid and secondaryRoot == rootBarKey
-		local needsComboPointsStrip = not shouldIncludeComboPoints and settings.comboPoints and secondaryRoot == rootBarKey
-		local needsManaStrip = manaRoot ~= nil and manaRoot == rootBarKey
-
-		if needsComboPointsInject or needsComboPointsStrip or needsManaStrip then
-			-- Create a shallow copy of settings so we can modify it without affecting the original
-			treeSettings = {}
-			for k, v in pairs(settings) do
-				treeSettings[k] = v
-			end
-
-			-- Copy displayBar so we can override visibility for stripped bars
-			local newDisplayBar = {}
-			for k, v in pairs(settings.displayBar or {}) do
-				newDisplayBar[k] = v
-			end
-			treeSettings.displayBar = newDisplayBar
-
-			if needsComboPointsInject then
-				-- Cat form on non-Feral spec: always use Feral's comboPoints settings
-				if feralSettings and feralSettings.comboPoints then
-					treeSettings.comboPoints = feralSettings.comboPoints
-				end
-			elseif needsComboPointsStrip then
-				-- Non-Cat form, but settings has comboPoints: strip them
-				treeSettings.comboPoints = nil
-				newDisplayBar.secondary = { visibility = "never" }
-			end
-
-			if needsManaStrip then
-				-- Non-Balance form, but settings has mana bar: strip it so it doesn't
-				-- inflate the bounding box or shift baseOffsetX
-				local newBars = {}
-				for k, v in pairs(settings.bars) do
-					if k ~= "mana" then
-						newBars[k] = v
-					end
-				end
-				treeSettings.bars = newBars
-				newDisplayBar.mana = { visibility = "never" }
-			end
-		end
-	elseif TRB.Data.character.classId == 11 and includeHidden then
-		-- Edit Mode: always inject Feral's comboPoints for non-Feral specs (so Edit Mode
-		-- shows all bars with the correct Feral dimensions, not stale/global values)
-		if TRB.Data.character.specId ~= 2 then
+	if TRB.Data.character.classId == 11 then
+		local isNonFeralDruid = (TRB.Data.character.specId ~= 2)
+		if isNonFeralDruid and barGroups.secondary then
+			-- Inject Feral's comboPoints so secondary has proper dimensions in the tree.
+			-- IsBarVisibleForLayout will handle collapsing secondary when not needed.
 			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
-			if feralSettings and feralSettings.comboPoints then
+			if feralSettings and feralSettings.comboPoints and not settings.comboPoints then
 				treeSettings = {}
 				for k, v in pairs(settings) do
 					treeSettings[k] = v
@@ -541,8 +429,11 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		end
 	end
 
-	-- Build anchor forest and select the tree for our root (collapse hidden bars when NOT including them)
-	local forest = TRB.Functions.Bar:BuildAnchorForest(treeSettings, barGroups, not includeHidden, includeHidden)
+	-- Build anchor forest without collapsing hidden bars. Hidden bars serve as
+	-- invisible positioning scaffolds so that wrapper bounding-box calculations
+	-- are consistent with the actual SetPoint-based layout (which always uses
+	-- full dimensions for all bars, visible or not).
+	local forest = TRB.Functions.Bar:BuildAnchorForest(treeSettings, barGroups, false, true)
 	local rootNode = forest and forest[rootBarKey]
 	if not rootNode then
 		-- Fallback: if the requested root isn't in the forest, try the old single-tree approach
@@ -579,8 +470,11 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		baseHeight = effectiveHeight or (rootBarSettings and rootBarSettings.height) or 0
 	end
 
-	-- Check if root bar is visible
-	if not TRB.Functions.Bar:IsBarVisible(settings, rootBarKey, includeHidden) then
+	-- Hidden bars use 0 height in the bounding-box calculation so the wrapper
+	-- doesn't reserve space for them. The actual container frames are also
+	-- collapsed to 0 height in ApplyBarGroupsLayout, matching this calculation.
+	-- Uses IsBarVisibleForLayout for runtime visibility (e.g., Druid forms).
+	if not TRB.Functions.Bar:IsBarVisibleForLayout(settings, rootBarKey, includeHidden) then
 		baseHeight = 0
 	end
 
@@ -652,13 +546,22 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		return w, h
 	end
 
-	-- Recursive function to walk the tree and accumulate bounding box
+	-- Recursive function to walk the tree and accumulate bounding box.
+	-- Hidden bars use 0 height (collapsed) so they don't reserve space, but we
+	-- still recurse into their children so visible descendants are positioned
+	-- correctly (anchored to the hidden bar's collapsed point).
 	local function walkTree(parentNode, parentLeft, parentBottom, parentWidth, parentHeight)
 		for _, child in ipairs(parentNode.children) do
 			local anchor = child.anchor
 			if anchor then
 				local childWidth, childHeight = getEffectiveBarSize(child, parentWidth)
-				if childWidth > 0 and childHeight > 0 then
+				if childWidth > 0 then
+					-- Hidden children use 0 height so they collapse in the bounding box.
+					-- This matches ApplyBarGroupsLayout which sets their container to 0 height.
+					-- Uses IsBarVisibleForLayout for runtime visibility (e.g., Druid forms).
+					local childIsHidden = child.barKey and not TRB.Functions.Bar:IsBarVisibleForLayout(settings, child.barKey, includeHidden)
+					local layoutHeight = childIsHidden and 0 or childHeight
+
 					local anchorPt = anchor.anchorPoint or "TOP"
 					local attachPt = anchor.attachPoint or "BOTTOM"
 					local xOffset = anchor.xOffset or 0
@@ -679,21 +582,23 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 
 					-- Calculate anchor point position on parent (Y-up, origin=parent bottom-left)
 					local apX, apY = TRB.Functions.Bar:CalculateAnchorPointOffset(parentWidth, parentHeight, anchorPt)
-					-- Calculate attach point position on child
-					local atX, atY = TRB.Functions.Bar:CalculateAnchorPointOffset(childWidth, childHeight, attachPt)
+					-- Calculate attach point position on child (use layoutHeight for collapsed bars)
+					local atX, atY = TRB.Functions.Bar:CalculateAnchorPointOffset(childWidth, layoutHeight, attachPt)
 
 					-- Child's bottom-left in global coords
 					local childLeft = parentLeft + apX + xOffset - atX
 					local childBottom = parentBottom + apY + yOffset - atY
 
-					-- Update bounding box
-					minX = math.min(minX, childLeft)
-					maxX = math.max(maxX, childLeft + childWidth)
-					minY = math.min(minY, childBottom)
-					maxY = math.max(maxY, childBottom + childHeight)
+					-- Only include visible children in the bounding box
+					if not childIsHidden then
+						minX = math.min(minX, childLeft)
+						maxX = math.max(maxX, childLeft + childWidth)
+						minY = math.min(minY, childBottom)
+						maxY = math.max(maxY, childBottom + layoutHeight)
+					end
 
-					-- Recurse into this child's children
-					walkTree(child, childLeft, childBottom, childWidth, childHeight)
+					-- Always recurse into children (even hidden ones may have visible descendants)
+					walkTree(child, childLeft, childBottom, childWidth, layoutHeight)
 				end
 			end
 		end

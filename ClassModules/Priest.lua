@@ -1571,7 +1571,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_discipline.settings
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -1601,7 +1601,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update Power Words secondary bar
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
 				local currentCp = 1
 
@@ -1643,7 +1643,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update health bar
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1657,7 +1657,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update utility bar (Angelic Feather charges)
-			if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+			if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
 				if talents:IsTalentActive(spells.angelicFeather) then
 					refreshText = true
 					local cooldown = snapshots[spells.angelicFeather.id].cooldown
@@ -1735,7 +1735,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
@@ -1794,7 +1794,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				local cpBR, cpBG, cpBB, cpBA = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
 				local currentCp = 1
@@ -1853,7 +1853,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update health bar
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1867,7 +1867,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update utility bar (Angelic Feather charges)
-			if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+			if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
 				if talents:IsTalentActive(spells.angelicFeather) then
 					refreshText = true
 					local cooldown = snapshots[spells.angelicFeather.id].cooldown
@@ -1910,7 +1910,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Shadow()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
@@ -2122,7 +2122,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health.visibility ~= "never" then
+		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -2136,7 +2136,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update mana bar (Shadow only)
-		if specSettings.displayBar.mana ~= nil and specSettings.displayBar.mana.visibility ~= "never" then
+		if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
 			refreshText = true
 			local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 			if manaNode then
@@ -2151,7 +2151,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update utility bar (Angelic Feather charges)
-		if specSettings.displayBar.utility ~= nil and specSettings.displayBar.utility.visibility ~= "never" and barGroups and barGroups.utility then
+		if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
 			if talents:IsTalentActive(spells.angelicFeather) then
 				refreshText = true
 				local cooldown = snapshots[spells.angelicFeather.id].cooldown
