@@ -34,17 +34,6 @@ local content = [====[
 
 - Fix an issue where the Angelic Feather bar would not follow selected visibility options when using Global Options for bar visibility.
 
-## General
-
-- Fix an issue where setting the Primary bar visibility to "Never Show" would hide all bars instead of only the Primary bar.
-- Fix an issue where hiding a screen-anchored bar would cause other bars anchored to it to stack on top of each other instead of maintaining their relative positions.
-- Fix an issue where hiding a bar would leave a blank gap instead of collapsing remaining bars together.
-- Fix an issue where changing per-spec visibility options could affect the live bar when Global Options for bar visibility was enabled.
-
-## Druid
-
-- Fix an issue where Balance Druid's secondary (combo points) bar would leave a gap in the layout when hidden by Druid form-based visibility, causing the mana bar to be positioned incorrectly and the CDM anchor to be wrong.
-
 ---
 
 # 12.0.1.27-release (2026-03-08)
