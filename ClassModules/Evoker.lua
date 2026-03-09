@@ -10,6 +10,7 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+local frameLevels = TRB.Data.constants.frameLevels
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
