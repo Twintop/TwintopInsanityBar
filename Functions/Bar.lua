@@ -833,6 +833,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		-- Primary group container matches the node's outer dimensions
 		primary.containerFrame:SetWidth(primaryWidth)
 		primary.containerFrame:SetHeight(primaryHeight)
+		primary.layoutHeight = primaryHeight -- Store layout height for collapse/expand by ProcessBars
 
 		if primaryNode then
 			-- Set frame strata

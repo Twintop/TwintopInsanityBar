@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.1.30-release (2026-03-10)
+## General
+
+- [#529](#529) Fix primary bar rendering when the "Is Mounted" visibility condition is enabled and the player mounts.
+
 ## Demon Hunter
 ### Vengeance
 
