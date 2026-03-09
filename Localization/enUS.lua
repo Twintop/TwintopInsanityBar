@@ -2120,10 +2120,14 @@ L["WhirlwindCheckboxZeroStackBackground"] = "Use different background color at 0
 L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "When checked, all Whirlwind Charge nodes will use the specified background color when you have 0 Whirlwind Charges."
 
 -- Bar Visibility Conditions (Phase 1)
-L["ShowBarVisibilityNeverShow"] = "Never Show (Override)"
+L["ShowBarVisibilityNeverShow"] = "Never Show"
 L["ShowBarVisibilityConditionsHeader"] = "Show When:"
 L["ShowBarVisibilityConditionInCombat"] = "In Combat"
 L["ShowBarVisibilityConditionInVehicle"] = "In Vehicle"
 L["ShowBarVisibilityConditionFriendlyTarget"] = "Friendly Target"
 L["ShowBarVisibilityConditionUnfriendlyTarget"] = "Hostile Target"
 L["ShowBarVisibilityConditionIsMounted"] = "Is Mounted"
+
+-- Bar Visibility Conditions (Phase 1a)
+L["ShowBarVisibilityAlwaysShow"] = "Always Show"
+L["ShowBarVisibilitySelectedCount"] = "%d Selected"

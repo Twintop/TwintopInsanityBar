@@ -226,6 +226,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions
+---@field public alwaysShow boolean? # When true, the bar is unconditionally shown (overrides conditions). Mutually exclusive with neverShow.
 ---@field public conditions trbBarVisibilityConditions # OR-combined conditions; if all are false/nil, the bar is always shown
 ---@field public smooth boolean
 ---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions

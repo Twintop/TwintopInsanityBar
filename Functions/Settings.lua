@@ -4354,6 +4354,56 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate Phase 1 conditions-based entries (have conditions but no alwaysShow) to Phase 2.
+	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag
+	-- with all conditions populated.
+	do
+		local allConditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMounted" }
+
+		local function MigrateAlwaysShow(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil and entry.alwaysShow == nil then
+					-- Check if conditions table is empty (Phase 1 "always")
+					local hasAny = false
+					for _, v in pairs(entry.conditions) do
+						if v == true then
+							hasAny = true
+							break
+						end
+					end
+					if not hasAny and not entry.neverShow then
+						-- Empty conditions = was "always" → set alwaysShow + populate all conditions
+						entry.alwaysShow = true
+						for _, key in ipairs(allConditionKeys) do
+							entry.conditions[key] = true
+						end
+					else
+						entry.alwaysShow = false
+					end
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateAlwaysShow(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		-- Migrate all class/spec displayBar settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateAlwaysShow(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
 	-- Migrate bar anchor settings from legacy relativeTo/xPos/yPos/fullWidth to new anchor block system.
 	-- Populate anchor blocks alongside legacy fields. Legacy fields are kept for backward compatibility.
 	do

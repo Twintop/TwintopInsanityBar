@@ -4502,6 +4502,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		if entry.neverShow then
 			return L["ShowBarVisibilityNever"]
 		end
+		if entry.alwaysShow then
+			return L["ShowBarVisibilityAlways"]
+		end
 		local conditions = entry.conditions
 		if conditions == nil then
 			-- Legacy fallback for unmigrated data
@@ -4518,23 +4521,102 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		if #parts == 0 then
 			return L["ShowBarVisibilityAlways"]
 		end
-		return table.concat(parts, ", ")
+		if #parts == 1 then
+			return parts[1]
+		end
+		return string.format(L["ShowBarVisibilitySelectedCount"], #parts)
+	end
+
+	-- Helper: check if any condition is enabled
+	local function HasAnyCondition(entry)
+		if entry.conditions == nil then return false end
+		for _, key in ipairs(conditionKeys) do
+			if entry.conditions[key] then
+				return true
+			end
+		end
+		return false
+	end
+
+	-- Helper: check if the entry represents "always show" state.
+	-- True when: explicit alwaysShow flag, OR no conditions enabled and not neverShow
+	-- (the engine treats empty conditions as "always show").
+	local function IsEffectivelyAlways(entry)
+		if entry.neverShow then return false end
+		if entry.alwaysShow then return true end
+		return not HasAnyCondition(entry)
+	end
+
+	-- Helper: set all conditions to a given value
+	local function SetAllConditions(entry, value)
+		entry.conditions = entry.conditions or {}
+		for _, key in ipairs(conditionKeys) do
+			if value then
+				entry.conditions[key] = true
+			else
+				entry.conditions[key] = nil
+			end
+		end
+	end
+
+	-- Override a dropdown's SetText so the framework's auto-concatenated
+	-- checkbox labels are always replaced with our custom summary text.
+	-- getTextFunc returns the desired display string each time SetText is called.
+	local function OverrideDropdownDisplayText(dropdown, getTextFunc)
+		local originalSetText = dropdown.SetText
+		dropdown.SetText = function(self, text)
+			originalSetText(self, getTextFunc())
+		end
 	end
 
 	-- Build multi-select dropdown items for a visibility entry
+	-- Helper: check if ALL individual conditions are enabled
+	local function AreAllConditionsEnabled(entry)
+		if entry.conditions == nil then return false end
+		for _, key in ipairs(conditionKeys) do
+			if not entry.conditions[key] then
+				return false
+			end
+		end
+		return true
+	end
+
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
+		-- Always Show checkbox
+		rootDescription:CreateCheckbox(
+			L["ShowBarVisibilityAlwaysShow"],
+			function() return IsEffectivelyAlways(entry) end,
+			function()
+				if IsEffectivelyAlways(entry) then
+					-- Already "Always" — this is a no-op, don't clear anything
+					return
+				end
+				-- Checking Always: set alwaysShow, uncheck Never, check all conditions
+				entry.alwaysShow = true
+				entry.neverShow = false
+				SetAllConditions(entry, true)
+				onChange()
+			end
+		)
+
+		-- Never Show checkbox
 		rootDescription:CreateCheckbox(
 			L["ShowBarVisibilityNeverShow"],
 			function() return entry.neverShow or false end,
 			function()
 				entry.neverShow = not entry.neverShow
+				if entry.neverShow then
+					-- Mutually exclusive: uncheck Always
+					entry.alwaysShow = false
+				end
 				onChange()
 			end
 		)
+
 		rootDescription:CreateDivider()
 		rootDescription:CreateTitle(L["ShowBarVisibilityConditionsHeader"])
 		for _, key in ipairs(conditionKeys) do
-			rootDescription:CreateCheckbox(
+			local checkbox = rootDescription:CreateCheckbox(
 				conditionLabels[key],
 				function()
 					return entry.conditions and entry.conditions[key] or false
@@ -4546,9 +4628,16 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 					else
 						entry.conditions[key] = true
 					end
+					-- Clear alwaysShow first so IsEffectivelyAlways re-derives from conditions.
+					-- Then set alwaysShow only if all conditions are individually enabled.
+					entry.alwaysShow = AreAllConditionsEnabled(entry)
 					onChange()
 				end
 			)
+			-- Dynamically disable condition checkboxes when Never Show is active.
+			-- Using a function callback ensures the enabled state updates when Never
+			-- is toggled within the same dropdown session.
+			checkbox:SetEnabled(function() return not entry.neverShow end)
 		end
 	end
 
@@ -4561,7 +4650,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
 
 	local function PrimaryVisibilityOnChange()
-		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
+		local displayText = GetVisibilityDisplayName(spec.displayBar.primary)
+		controls.dropDown.primaryVisibility:SetDefaultText(displayText)
+		-- Force visual refresh: SetDefaultText alone may not update the displayed
+		-- text when the dropdown has internal selection state from prior interaction.
+		controls.dropDown.primaryVisibility:SetText(displayText)
 		if classId ~= nil and specId ~= nil then
 			-- Spec panel: rebuild cache so global/spec merge is applied correctly
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
@@ -4597,6 +4690,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	controls.dropDown.primaryVisibility:SetupMenu(PrimaryVisibilityGenerator)
+	OverrideDropdownDisplayText(controls.dropDown.primaryVisibility, function() return GetVisibilityDisplayName(spec.displayBar.primary) end)
 	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
 	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 
@@ -4609,7 +4703,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
 
 		local function HealthVisibilityOnChange()
-			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
+			local displayText = GetVisibilityDisplayName(spec.displayBar.health)
+			controls.dropDown.healthVisibility:SetDefaultText(displayText)
+			controls.dropDown.healthVisibility:SetText(displayText)
 			if classId ~= nil and specId ~= nil then
 				-- Spec panel: rebuild cache so global/spec merge is applied correctly
 				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
@@ -4645,6 +4741,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
+		OverrideDropdownDisplayText(controls.dropDown.healthVisibility, function() return GetVisibilityDisplayName(spec.displayBar.health) end)
 		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
 		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	end
@@ -4775,7 +4872,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown[controlDropdownKey].label.font:SetFontObject(GameFontNormal)
 
 		local function ItemVisibilityOnChange()
-			controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey]))
+			local displayText = GetVisibilityDisplayName(spec.displayBar[displayBarKey])
+			controls.dropDown[controlDropdownKey]:SetDefaultText(displayText)
+			controls.dropDown[controlDropdownKey]:SetText(displayText)
 
 			if isCustom then
 				if classId ~= nil and specId ~= nil then
@@ -4849,6 +4948,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		controls.dropDown[controlDropdownKey]:SetupMenu(ItemVisibilityGenerator)
+		OverrideDropdownDisplayText(controls.dropDown[controlDropdownKey], function() return GetVisibilityDisplayName(spec.displayBar[displayBarKey]) end)
 		controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey]))
 		controls.dropDown[controlDropdownKey]:SetPoint("TOPLEFT", xPos, yCoord - 30)
 

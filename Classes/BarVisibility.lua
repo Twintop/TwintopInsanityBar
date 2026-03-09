@@ -144,6 +144,11 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
+	-- "Always Show" override
+	if entry.visibilitySettings.alwaysShow then
+		return true
+	end
+
 	-- Evaluate conditions (OR logic)
 	local conditions = entry.visibilitySettings.conditions
 
