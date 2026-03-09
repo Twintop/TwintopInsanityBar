@@ -1156,7 +1156,6 @@ do
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local utilityDef = registry:Get("utility")
 	if utilityDef then
-		utilityDef.displayName = L["ResourceAngelicFeather"]
 		utilityDef.nodeColors = {
 			{ key = "angelicFeather1", displayName = L["AngelicFeatherCharge1"], hasEnabled = false },
 			{ key = "angelicFeather2", displayName = L["AngelicFeatherCharge2"], hasEnabled = false },

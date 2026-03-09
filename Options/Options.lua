@@ -93,7 +93,13 @@ local function ConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
+	local customBars = {}
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	if utilityBarDef then
+		table.insert(customBars, utilityBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
 local function ConstructThresholdPanel(parent)

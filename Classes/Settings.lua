@@ -190,7 +190,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---Defines how a bar is anchored to another bar in the anchor tree.
 ---@class TRB.Classes.Settings.BarAnchor
----@field public barKey string # Key of the target bar: "primary", "secondary", "health", or any BarTypeRegistry key
+---@field public barKey string # Key of the target bar: "primary", "secondary", "health", "utility", or any BarTypeRegistry key
 ---@field public anchorPoint string # Point on the TARGET bar (TOPLEFT|TOP|TOPRIGHT|LEFT|CENTER|RIGHT|BOTTOMLEFT|BOTTOM|BOTTOMRIGHT)
 ---@field public attachPoint string # Point on THIS bar that touches the anchor point
 ---@field public xOffset number # Horizontal pixel offset from the anchor point

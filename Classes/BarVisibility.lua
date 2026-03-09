@@ -263,10 +263,21 @@ function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar,
 		)
 	end
 
+	-- Utility: always show in Edit Mode
+	if barGroups.utility then
+		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
+			barGroups.utility,
+			alwaysVis,
+			true,
+			1,
+			nil
+		)
+	end
+
 	-- Iterate remaining bar groups (custom bar types: mana, stagger, defensives, utility, etc.)
 	-- All shown unconditionally in Edit Mode
 	for key, group in pairs(barGroups) do
-		if type(group) == "table" and group.Hide and key ~= "primary" and key ~= "secondary" and key ~= "health" then
+		if type(group) == "table" and group.Hide and key ~= "primary" and key ~= "secondary" and key ~= "health" and key ~= "utility" then
 			local nodeCount = group.maxNodes or 1
 			entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 				group,

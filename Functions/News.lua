@@ -12,6 +12,22 @@ local content = [====[
 
 ---
 
+# 12.0.1.28-release (2026-03-09)
+## General
+### Behind the Scenes
+
+- [#687](#687) Make additional significant performance optimizations throughout the bar's frame-to-frame code.
+
+### Localization
+
+- [#686](#686) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Priest
+
+- Fix an issue where the Angelic Feather bar would not follow selected visibility options when using Global Options for bar visibility.
+
+---
+
 # 12.0.1.27-release (2026-03-08)
 ## General
 ### Behind the Scenes

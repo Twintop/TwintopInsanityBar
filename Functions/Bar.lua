@@ -94,6 +94,28 @@ local function BuildBarKeyToRootMap(forest)
 	return map
 end
 
+---Builds a map from barKey to its effective parent barKey in the current forest.
+---Root nodes are omitted (no parent).
+---@param forest table<string, table>
+---@return table<string, string>
+local function BuildEffectiveParentMap(forest)
+	local parentMap = {}
+	local function traverse(node, parentKey)
+		if parentKey ~= nil then
+			parentMap[node.barKey] = parentKey
+		end
+		if node.children then
+			for _, child in ipairs(node.children) do
+				traverse(child, node.barKey)
+			end
+		end
+	end
+	for _, rootNode in pairs(forest) do
+		traverse(rootNode, nil)
+	end
+	return parentMap
+end
+
 ---Computes the width of each Combo Point node
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return number
@@ -634,8 +656,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- ========================
 	-- Build the anchor forest and per-root metadata
 	-- ========================
-	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, false)
+	local forest = self:BuildAnchorForest(layoutSettings, barGroups, true, false)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
+	local effectiveParentOf = BuildEffectiveParentMap(forest)
 
 	-- Per-root data: wrappers, anchor settings, effectiveWidth/effectiveHeight
 	local rootMetadata = {}
@@ -860,8 +883,13 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	if barGroups.secondary and hasComboPointSettings then
 		-- Resolve anchor group for secondary bar from settings
-		local secondaryAnchor = self:GetBarAnchor(layoutSettings, "secondary")
-		local secondaryAnchorKey = (secondaryAnchor and secondaryAnchor.barKey) or "primary"
+		local secondaryAnchorKey
+		if forest["secondary"] ~= nil then
+			secondaryAnchorKey = "screen"
+		else
+			local secondaryAnchor = self:GetBarAnchor(layoutSettings, "secondary")
+			secondaryAnchorKey = effectiveParentOf["secondary"] or ((secondaryAnchor and secondaryAnchor.barKey) or "primary")
+		end
 		local secondaryAnchorGroup
 		if secondaryAnchorKey ~= "screen" then
 			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
@@ -914,8 +942,13 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- Configure health bar group (apply appearance immediately to ensure textures are set)
 	if barGroups.health and settings.healthBar then
 		-- Resolve anchor group for health bar from settings
-		local healthAnchor = self:GetBarAnchor(layoutSettings, "health")
-		local healthAnchorKey = (healthAnchor and healthAnchor.barKey) or "primary"
+		local healthAnchorKey
+		if forest["health"] ~= nil then
+			healthAnchorKey = "screen"
+		else
+			local healthAnchor = self:GetBarAnchor(layoutSettings, "health")
+			healthAnchorKey = effectiveParentOf["health"] or ((healthAnchor and healthAnchor.barKey) or "primary")
+		end
 		local healthAnchorGroup
 		if healthAnchorKey ~= "screen" then
 			healthAnchorGroup = barGroups[healthAnchorKey] or barGroups.primary
@@ -2229,22 +2262,26 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 			local parentKey = parentOf[barKey]
 
 			if collapseHidden then
-				-- Walk up the parent chain to find the first visible parent
+				-- Walk up the parent chain to find the first visible parent.
+				-- If all ancestors are hidden, parentKey becomes nil and this bar is promoted to a root.
 				local effectiveParentKey = parentKey
 				local visited = {}
-				while effectiveParentKey and not roots[effectiveParentKey] and
-					  not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
+				while effectiveParentKey and not self:IsBarVisible(settings, effectiveParentKey, includeHidden) do
 					if visited[effectiveParentKey] then break end
 					visited[effectiveParentKey] = true
-					effectiveParentKey = parentOf[effectiveParentKey] or effectiveParentKey
+					effectiveParentKey = parentOf[effectiveParentKey]
 				end
 				parentKey = effectiveParentKey
 			end
 
 			-- Only add visible bars (or all bars if includeHidden)
 			if self:IsBarVisible(settings, barKey, includeHidden) then
-				if nodes[parentKey] then
+				if parentKey and nodes[parentKey] then
 					table.insert(nodes[parentKey].children, nodes[barKey])
+				else
+					-- Parent chain collapsed to nil (all ancestors hidden), so this node becomes a root.
+					roots[barKey] = nodes[barKey]
+					nodes[barKey].anchor = nil
 				end
 			end
 		end
@@ -2696,6 +2733,10 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 		
 		-- Apply layout if bar group exists
 		if barGroup then
+			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
+			if not self:IsBarVisible(settings, key, inEditMode) then
+				barGroup:Hide()
+			else
 			-- Get dimensions from settings or defaults from registry
 			local defaultSettings = nil
 			if not barSettings and barTypeDef.defaultDimensionsFunc then
@@ -2769,6 +2810,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 
 			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
 			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)
+			end
 		end
 	end
 end

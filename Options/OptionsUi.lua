@@ -4750,21 +4750,38 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(newValue))
 
 			if isCustom then
-				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-						TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(settings)
-						TRB.Functions.BarVisibility:MarkDirty()
-						TRB.Functions.Bar:HideResourceBar()
-						if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-							TRB.Data.lookupDirty = true
-							TRB.Functions.Class:TriggerResourceBarUpdates()
+				if classId ~= nil and specId ~= nil then
+					TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+					TRB.Functions.Character:ResetCaches()
+					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+						if TRB.Frames.barGroups ~= nil then
+							local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+							TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+							TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+							TRB.Functions.EditMode:UpdateWrapperSize(settings)
+							TRB.Functions.BarVisibility:MarkDirty()
+							TRB.Functions.Bar:HideResourceBar()
+							if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+								TRB.Data.lookupDirty = true
+								TRB.Functions.Class:TriggerResourceBarUpdates()
+							end
+						else
+							TRB.Functions.BarVisibility:MarkDirty()
+							TRB.Functions.Bar:HideResourceBar()
 						end
-					else
+					end
+				else
+					if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+						local lowerClassName = string.lower(TRB.Data.character.className)
+						local currentSpecName = TRB.Data.character.specName
+						TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+						TRB.Functions.Character:ResetCaches()
+						if TRB.Frames.barGroups ~= nil then
+							local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+							TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+							TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+							TRB.Functions.EditMode:UpdateWrapperSize(settings)
+						end
 						TRB.Functions.BarVisibility:MarkDirty()
 						TRB.Functions.Bar:HideResourceBar()
 					end

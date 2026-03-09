@@ -91,6 +91,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					visibility = "always",
 					smooth = true
 				},
+				utility = {
+					visibility = "never",
+					smooth = true
+				},
 				dragonriding = true
 			},
 			overcap = {
@@ -4227,7 +4231,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 
 		-- Keys within displayBar that should be converted from string to table
-		local displayBarVisibilityKeys = { "primary", "secondary", "health", "mana", "stagger", "defensives" }
+		local displayBarVisibilityKeys = { "primary", "secondary", "health", "mana", "stagger", "defensives", "utility" }
 
 		-- Determine if the secondary bar should default to smooth for a given class/spec
 		-- Only DH Vengeance (specId 2) and Devourer (specId 3) have continuous secondary bars (Soul Fragments)
@@ -4241,7 +4245,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		-- Determine the smooth default for a given displayBar key
 		local function GetSmoothDefault(key, className, specName, oldSmooth)
 			local baseSmooth = (oldSmooth ~= nil) and oldSmooth or true
-			if key == "primary" or key == "health" or key == "mana" or key == "stagger" or key == "defensives" then
+			if key == "primary" or key == "health" or key == "mana" or key == "stagger" or key == "defensives" or key == "utility" then
 				return baseSmooth
 			elseif key == "secondary" then
 				if IsSecondarySmoothByDefault(className, specName) then
@@ -4271,6 +4275,14 @@ function TRB.Functions.Settings:PortForwardSettings()
 		-- Migrate core.displayBar
 		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
 			MigrateDisplayBarToTable(TwintopInsanityBarSettings.core.displayBar, "core", "core")
+
+			-- Seed utility visibility if missing in existing profiles.
+			if TwintopInsanityBarSettings.core.displayBar.utility == nil then
+				TwintopInsanityBarSettings.core.displayBar.utility = {
+					visibility = "never",
+					smooth = true
+				}
+			end
 		end
 
 		-- Migrate all class/spec displayBar settings

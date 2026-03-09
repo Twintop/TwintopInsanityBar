@@ -1282,6 +1282,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- Utility bar (generic multi-node discrete bar; class modules override displayName, nodeColors, and defaultColorsFunc)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "utility",
+		displayName = L["ResourceUtility"],
 		isMultiNode = true,
 		maxNodes = 3,
 		minMaxMode = "discrete",
