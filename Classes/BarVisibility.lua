@@ -46,8 +46,8 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	local targetIsFriendly = false
 	local targetIsEnemy = false
 	if hasTarget then
-		targetIsFriendly = UnitIsFriend("target", "player") == true
-		targetIsEnemy = not targetIsFriendly
+		targetIsFriendly = UnitIsFriend("player", "target") == true
+		targetIsEnemy = UnitCanAttack("player", "target") == true
 	end
 
 	return TRB.Classes.BarVisibilityContext:New(
