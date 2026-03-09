@@ -207,11 +207,10 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true },
-			utility = { visibility = "never", smooth = false },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = true },
+			health = { neverShow = false, conditions = {}, smooth = true },
+			utility = { neverShow = true, conditions = {}, smooth = false },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -484,11 +483,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true },
-			utility = { visibility = "never", smooth = false },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = true },
+			health = { neverShow = false, conditions = {}, smooth = true },
+			utility = { neverShow = true, conditions = {}, smooth = false },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -705,12 +703,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			mana = { visibility = "never", smooth = true },
-			utility = { visibility = "never", smooth = false },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
+			mana = { neverShow = true, conditions = {}, smooth = true },
+			utility = { neverShow = true, conditions = {}, smooth = false },
 		},
 		overcap = {
 			mode = "relative",

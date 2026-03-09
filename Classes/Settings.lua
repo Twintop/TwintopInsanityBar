@@ -217,9 +217,18 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"combat"' # Only show the bar in combat
 ---| '"never"' # Never show the bar
 
+---@class trbBarVisibilityConditions
+---@field public inCombat boolean? # Show when the player is in combat
+---@field public inVehicle boolean? # Show when the player is in a vehicle
+---@field public hasFriendlyTarget boolean? # Show when the player has a friendly target
+---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
+---@field public isMounted boolean? # Show when the player is mounted
+
 ---@class trbBarVisibilitySetting
----@field public visibility trbBarVisibility
+---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions
+---@field public conditions trbBarVisibilityConditions # OR-combined conditions; if all are false/nil, the bar is always shown
 ---@field public smooth boolean
+---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions
 
 ---@alias trbOverlayMode
 ---| '"overlay"' # Fills from the left edge of the bar up to the overlay amount

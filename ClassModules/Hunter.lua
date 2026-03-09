@@ -783,7 +783,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_BeastMastery()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]				
@@ -939,7 +939,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health.visibility ~= "never" then
+		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -958,7 +958,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Marksmanship()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
@@ -1116,7 +1116,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health.visibility ~= "never" then
+		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then
@@ -1135,7 +1135,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Survival()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
@@ -1247,7 +1247,7 @@ local function UpdateResourceBar()
 
 			-- Secondary resource bar: Tip of the Spear stacks
 			local maxResource2 = TRB.Data.character.maxResource2 or 0
-			if specSettings.displayBar.secondary.visibility ~= "never" and maxResource2 > 0 then
+			if not specSettings.displayBar.secondary.neverShow and maxResource2 > 0 then
 				refreshText = true
 				if barGroups.secondary then
 					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
@@ -1324,7 +1324,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update health bar
-		if specSettings.displayBar.health.visibility ~= "never" then
+		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
 			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 			if healthNode then

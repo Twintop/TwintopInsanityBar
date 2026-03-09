@@ -708,7 +708,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -736,12 +736,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -767,7 +767,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.paladin_protection.settings
 		UpdateSnapshot_Protection()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -780,12 +780,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -811,7 +811,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.paladin_retribution.settings
 		UpdateSnapshot_Retribution()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				local barColor = specSettings.colors.bar.base.color
@@ -824,12 +824,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateHolyPower(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

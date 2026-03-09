@@ -83,10 +83,9 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			bestialWrath = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
@@ -271,10 +270,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			trueshot = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
@@ -444,10 +442,9 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			takedown = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),

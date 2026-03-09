@@ -112,10 +112,9 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = false },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = false },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -272,10 +271,9 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = true },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -467,10 +465,9 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { visibility = "always", smooth = true },
-			secondary = { visibility = "always", smooth = true },
-			health = { visibility = "always", smooth = true },
-			dragonriding = true
+			primary = { neverShow = false, conditions = {}, smooth = true },
+			secondary = { neverShow = false, conditions = {}, smooth = true },
+			health = { neverShow = false, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)

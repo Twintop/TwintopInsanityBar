@@ -701,7 +701,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_blood.settings
 		UpdateSnapshot_Blood()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
@@ -782,12 +782,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -806,7 +806,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
@@ -887,12 +887,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -911,7 +911,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_unholy.settings
 		UpdateSnapshot_Unholy()
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
@@ -992,12 +992,12 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				UpdateRunes(specSettings, specCacheSettings)
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

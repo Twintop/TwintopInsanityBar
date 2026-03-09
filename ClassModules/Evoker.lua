@@ -757,7 +757,7 @@ local function UpdateResourceBar()
 	local function UpdateEssenceOuter(specSettings, specCacheSettings)
 		local refreshTextEssence = false
 		
-		if specSettings.displayBar.secondary.visibility ~= "never" then
+		if not specSettings.displayBar.secondary.neverShow then
 			refreshTextEssence = true
 			UpdateEssence(specSettings, specCacheSettings)
 		end
@@ -778,7 +778,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
+			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				local snapshots = snapshotData.snapshots
@@ -830,7 +830,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -850,7 +850,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
+			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
@@ -872,7 +872,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -892,7 +892,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" and primaryNode then
+			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
@@ -964,7 +964,7 @@ local function UpdateResourceBar()
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

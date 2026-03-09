@@ -994,7 +994,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Brewmaster()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
@@ -1103,7 +1103,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.stagger.visibility ~= "never" then
+			if not specSettings.displayBar.stagger.neverShow then
 				refreshText = true
 				-- Update Stagger bar using BarNodes
 				if barGroups and barGroups.stagger then
@@ -1179,7 +1179,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1199,7 +1199,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Mistweaver()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
@@ -1223,7 +1223,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then
@@ -1246,7 +1246,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Windwalker()
 
 		if snapshotData.attributes.isTracking then
-			if specSettings.displayBar.primary.visibility ~= "never" then
+			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
@@ -1361,7 +1361,7 @@ local function UpdateResourceBar()
 				end
 			end
 			
-			if specSettings.displayBar.secondary.visibility ~= "never" then
+			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				-- Update Chi using BarNodes
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -1395,7 +1395,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if specSettings.displayBar.health.visibility ~= "never" then
+			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
 				if healthNode then

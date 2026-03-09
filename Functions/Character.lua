@@ -10,26 +10,6 @@ local cachedResourcePercentPrecision = nil
 local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
---TODO: Find a better home for this.
-local function OnAdvFlyEnabled()
-	TRB.Data.character.advancedFlight = true
-	TRB.Functions.BarVisibility:MarkDirty()
-	TRB.Functions.Bar:HideResourceBar()
-end
-
-local function OnAdvFlyDisabled()
-	TRB.Data.character.advancedFlight = false
-	TRB.Functions.BarVisibility:MarkDirty()
-	if TRB.Data.specSupported == true then
-		TRB.Functions.Bar:ShowResourceBar()
-	end
-end
-
---[[
-TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
-TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_DISABLED, OnAdvFlyDisabled);
-]]
-
 --TODO: Move this somewhere else.
 --This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
 function TRB.Functions.Class:HideResourceBar(force)
@@ -352,6 +332,15 @@ local function CharacterChange(self, event, ...)
 			TRB.Data.character.inVehicle = UnitInVehicle("player") or false
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
+	elseif event == "PLAYER_TARGET_CHANGED" then
+		TRB.Functions.BarVisibility:MarkDirty()
+	elseif event == "PLAYER_MOUNT_DISPLAY_CHANGED" then
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				TRB.Data.character.isMounted = IsMounted()
+				TRB.Functions.BarVisibility:MarkDirty()
+			end)
+		end)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.lookupDirty = true
@@ -382,6 +371,8 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PET_BATTLE_CLOSE")
 	characterChangeFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	characterChangeFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
+	characterChangeFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	characterChangeFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -403,6 +394,8 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PET_BATTLE_CLOSE")
 	characterChangeFrame:UnregisterEvent("UNIT_ENTERED_VEHICLE")
 	characterChangeFrame:UnregisterEvent("UNIT_EXITED_VEHICLE")
+	characterChangeFrame:UnregisterEvent("PLAYER_TARGET_CHANGED")
+	characterChangeFrame:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
@@ -1142,10 +1135,18 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.displayBar = {}
 		for k, v in pairs(core.displayBar) do
 			if type(v) == "table" then
-				-- Deep copy the table (visibility + smooth)
+				-- Deep copy the table (neverShow, conditions, smooth, etc.)
 				specCache.settings.displayBar[k] = {}
 				for k2, v2 in pairs(v) do
-					specCache.settings.displayBar[k][k2] = v2
+					if type(v2) == "table" then
+						-- Deep copy nested tables (e.g., conditions)
+						specCache.settings.displayBar[k][k2] = {}
+						for k3, v3 in pairs(v2) do
+							specCache.settings.displayBar[k][k2][k3] = v3
+						end
+					else
+						specCache.settings.displayBar[k][k2] = v2
+					end
 				end
 				-- When using global displayBar, both visibility AND smooth come from global
 			else

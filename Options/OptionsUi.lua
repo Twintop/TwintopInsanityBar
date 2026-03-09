@@ -4487,26 +4487,69 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	yCoord = yCoord - 30
 	
-	-- Bar visibility options mapping
-	local visibilityOptions = {
-		[L["ShowBarVisibilityAlways"]] = "always",
-		[L["ShowBarVisibilityCombat"]] = "combat",
-		[L["ShowBarVisibilityNever"]] = "never"
-	}
-	local visibilityOptionsList = {
-		L["ShowBarVisibilityAlways"],
-		L["ShowBarVisibilityCombat"],
-		L["ShowBarVisibilityNever"]
+	-- Condition definitions for multi-select bar visibility
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMounted" }
+	local conditionLabels = {
+		inCombat = L["ShowBarVisibilityConditionInCombat"],
+		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
+		hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
+		hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
+		isMounted = L["ShowBarVisibilityConditionIsMounted"],
 	}
 
-	-- Get display name for current value
-	local function GetVisibilityDisplayName(value)
-		for displayName, enumValue in pairs(visibilityOptions) do
-			if enumValue == value then
-				return displayName
+	-- Build summary display string from a visibility entry
+	local function GetVisibilityDisplayName(entry)
+		if entry.neverShow then
+			return L["ShowBarVisibilityNever"]
+		end
+		local conditions = entry.conditions
+		if conditions == nil then
+			-- Legacy fallback for unmigrated data
+			if entry.visibility == "never" then return L["ShowBarVisibilityNever"] end
+			if entry.visibility == "combat" then return L["ShowBarVisibilityCombat"] end
+			return L["ShowBarVisibilityAlways"]
+		end
+		local parts = {}
+		for _, key in ipairs(conditionKeys) do
+			if conditions[key] then
+				table.insert(parts, conditionLabels[key])
 			end
 		end
-		return L["ShowBarVisibilityCombat"] -- Default fallback
+		if #parts == 0 then
+			return L["ShowBarVisibilityAlways"]
+		end
+		return table.concat(parts, ", ")
+	end
+
+	-- Build multi-select dropdown items for a visibility entry
+	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
+		rootDescription:CreateCheckbox(
+			L["ShowBarVisibilityNeverShow"],
+			function() return entry.neverShow or false end,
+			function()
+				entry.neverShow = not entry.neverShow
+				onChange()
+			end
+		)
+		rootDescription:CreateDivider()
+		rootDescription:CreateTitle(L["ShowBarVisibilityConditionsHeader"])
+		for _, key in ipairs(conditionKeys) do
+			rootDescription:CreateCheckbox(
+				conditionLabels[key],
+				function()
+					return entry.conditions and entry.conditions[key] or false
+				end,
+				function()
+					entry.conditions = entry.conditions or {}
+					if entry.conditions[key] then
+						entry.conditions[key] = nil
+					else
+						entry.conditions[key] = true
+					end
+					onChange()
+				end
+			)
+		end
 	end
 
 	-- Primary bar visibility dropdown
@@ -4517,16 +4560,13 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.dropDown.primaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, primaryLabel, oUi.xCoord, yCoord)
 	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
 
-	local function PrimaryVisibilityIsSelected(value)
-		return value == spec.displayBar.primary.visibility
-	end
-
-	local function PrimaryVisibilitySetSelected(newValue)
-		spec.displayBar.primary.visibility = newValue
-		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+	local function PrimaryVisibilityOnChange()
+		controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
 		if classId ~= nil and specId ~= nil then
-			-- Spec panel
+			-- Spec panel: rebuild cache so global/spec merge is applied correctly
+			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Functions.Character:ResetCaches()
 				-- Reapply layout to adjust positioning for the visibility change
 				if TRB.Frames.barGroups ~= nil then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -4553,13 +4593,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	local function PrimaryVisibilityGenerator(dropdown, rootDescription)
-		for _, displayName in ipairs(visibilityOptionsList) do
-			rootDescription:CreateRadio(displayName, PrimaryVisibilityIsSelected, PrimaryVisibilitySetSelected, visibilityOptions[displayName])
-		end
+		BuildVisibilityDropdownItems(rootDescription, spec.displayBar.primary, PrimaryVisibilityOnChange)
 	end
 
 	controls.dropDown.primaryVisibility:SetupMenu(PrimaryVisibilityGenerator)
-	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary.visibility))
+	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
 	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 
 	-- Health bar visibility dropdown (only if includeHealthVisibility is true)
@@ -4570,16 +4608,13 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown.healthVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, healthLabel, oUi.xCoord2, yCoord)
 		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
 
-		local function HealthVisibilityIsSelected(value)
-			return value == spec.displayBar.health.visibility
-		end
-
-		local function HealthVisibilitySetSelected(newValue)
-			spec.displayBar.health.visibility = newValue
-			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(newValue))
+		local function HealthVisibilityOnChange()
+			controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
 			if classId ~= nil and specId ~= nil then
-				-- Spec panel
+				-- Spec panel: rebuild cache so global/spec merge is applied correctly
+				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+					TRB.Functions.Character:ResetCaches()
 					-- Reapply layout to adjust positioning for the visibility change
 					if TRB.Frames.barGroups ~= nil then
 						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -4606,13 +4641,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		local function HealthVisibilityGenerator(dropdown, rootDescription)
-			for _, displayName in ipairs(visibilityOptionsList) do
-				rootDescription:CreateRadio(displayName, HealthVisibilityIsSelected, HealthVisibilitySetSelected, visibilityOptions[displayName])
-			end
+			BuildVisibilityDropdownItems(rootDescription, spec.displayBar.health, HealthVisibilityOnChange)
 		end
 
 		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
-		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health.visibility))
+		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
 		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	end
 
@@ -4741,13 +4774,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.dropDown[controlDropdownKey].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, item.label, xPos, yCoord)
 		controls.dropDown[controlDropdownKey].label.font:SetFontObject(GameFontNormal)
 
-		local function ItemVisibilityIsSelected(value)
-			return value == spec.displayBar[displayBarKey].visibility
-		end
-
-		local function ItemVisibilitySetSelected(newValue)
-			spec.displayBar[displayBarKey].visibility = newValue
-			controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(newValue))
+		local function ItemVisibilityOnChange()
+			controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey]))
 
 			if isCustom then
 				if classId ~= nil and specId ~= nil then
@@ -4788,13 +4816,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 				end
 			else
 				if classId ~= nil and specId ~= nil then
+					-- Spec panel: rebuild cache so global/spec merge is applied correctly
+					TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-						-- Also update specCache directly: when global displayBar is active,
-						-- specCache.settings.displayBar is a deep copy of core.displayBar,
-						-- so the spec.displayBar update above doesn't flow through.
-						if TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar and TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar[displayBarKey] then
-							TRB.Data.specCache[TRB.Data.character.compositeKey].settings.displayBar[displayBarKey].visibility = newValue
-						end
+						TRB.Functions.Character:ResetCaches()
 						if TRB.Frames.barGroups ~= nil then
 							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
@@ -4820,13 +4845,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 
 		local function ItemVisibilityGenerator(dropdown, rootDescription)
-			for _, displayName in ipairs(visibilityOptionsList) do
-				rootDescription:CreateRadio(displayName, ItemVisibilityIsSelected, ItemVisibilitySetSelected, visibilityOptions[displayName])
-			end
+			BuildVisibilityDropdownItems(rootDescription, spec.displayBar[displayBarKey], ItemVisibilityOnChange)
 		end
 
 		controls.dropDown[controlDropdownKey]:SetupMenu(ItemVisibilityGenerator)
-		controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey].visibility))
+		controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey]))
 		controls.dropDown[controlDropdownKey]:SetPoint("TOPLEFT", xPos, yCoord - 30)
 
 		-- Smooth checkbox
