@@ -1175,7 +1175,7 @@ if locale == "zhCN" then
     L["DemonHunterDevourerColorPickerSoulFragmentCollapsingStarReady"] = "坍缩之星已就绪"
     L["DemonHunterDevourerThresholdCheckboxVoidRay"] = "虚空射线"
     L["DemonHunterDevourerThresholdCheckboxVoidRayTooltip"] = "狂怒进度条显示施放虚空射线所需恶魔之值的竖线。"
-    L["DemonHunterDevourerTextColorsHeader"] = "狂怒文本颜色"
+    L["DemonHunterDevourerTextColorsHeader"] = "恶魔之怒文本颜色"
     L["DemonHunterDevourerTextColorPickerCurrent"] = "当前恶魔之怒"
     L["DemonHunterDevourerColorPickerThresholdOver"] = "拥有足够恶魔之怒使用技能"
     L["DemonHunterDevourerCheckboxThresholdOverTooltip"] = "当你拥有足够恶魔之怒使用「进度条显示」下已启用阈值的技能时，恶魔之怒文本颜色会发生变化。"
@@ -1994,4 +1994,11 @@ if locale == "zhCN" then
 	L["DruidCheckboxShowComboPoints"] = "所有变形形态显示连击点"
 	L["DruidCheckboxShowComboPointsTooltip"] = "勾选后，无论当前处于何种变形形态，连击点条均会显示；取消勾选则仅在猎豹形态下显示连击点条。上方的「连击点显示时机」下拉选项仍会控制连击点条的整体显示规则。"
 	
+	L["DemonHunterDevourerBarTextVariable_rollingTormentFury"] = "坍缩之星结束后，通过翻滚折磨获得的恶魔之怒值"
+	
+	L["WhirlwindColorPickerSecondary"] = "旋风斩充能（2层）"
+	L["WhirlwindColorPickerZeroStackBackground"] = "0层旋风斩充能背景色"
+	L["WhirlwindCheckboxZeroStackBackground"] = "0层充能时使用不同背景色？"
+	L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "勾选后，当你拥有0层旋风斩充能时，所有旋风斩充能节点将使用指定的背景色。"
+
 end
