@@ -16,7 +16,9 @@ local content = [====[
 ## General
 
 - [#529](#529) Add more granular bar visibility options per bar. Instead of "Never", "In Combat", and "Always", you can now mix and match between any of several conditions including "In Vehicle", "Is Mounted", "Friendly Target", and "Hostile Target". More coming soon!
+- Fix an issue where if the Primary Resource Bar was set to "Never Show", it would hide all bars instead of just the Primary Resource Bar.
 
+---
 
 # 12.0.1.28-release (2026-03-09)
 ## General
