@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix an issue where sometimes color caching would fail due to stale max resource values being 0.
 
+### Localization
+
+- [#691](#691) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Monk
 ### Brewmaster
 
