@@ -1150,8 +1150,8 @@ local function UpdateResourceBar()
 						if staggerThresholds[1] then
 							local mediumThreshold = staggerColors.medium and staggerColors.medium.threshold or 0.30
 							local mediumColor = staggerColors.medium and staggerColors.medium.color
-							-- Hide threshold if it exceeds the bar's max scale
-							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold <= maxScale or false
+							-- Hide threshold if it meets or exceeds the bar's max scale
+							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
 							Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
@@ -1160,8 +1160,8 @@ local function UpdateResourceBar()
 						if staggerThresholds[2] then
 							local heavyThreshold = staggerColors.heavy and staggerColors.heavy.threshold or 0.60
 							local heavyColor = staggerColors.heavy and staggerColors.heavy.color
-							-- Hide threshold if it exceeds the bar's max scale
-							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold <= maxScale or false
+							-- Hide threshold if it meets or exceeds the bar's max scale
+							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
 							Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
@@ -1170,8 +1170,8 @@ local function UpdateResourceBar()
 						if staggerThresholds[3] then
 							local extremeThreshold = staggerColors.extreme and staggerColors.extreme.threshold or 1.0
 							local extremeColor = staggerColors.extreme and staggerColors.extreme.color
-							-- Hide threshold if it exceeds the bar's max scale
-							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold <= maxScale or false
+							-- Hide threshold if it meets or exceeds the bar's max scale
+							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[3], extremeColor, true)
 							Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
 						end
