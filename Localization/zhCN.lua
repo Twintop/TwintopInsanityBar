@@ -2001,4 +2001,15 @@ if locale == "zhCN" then
 	L["WhirlwindCheckboxZeroStackBackground"] = "0层充能时使用不同背景色？"
 	L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "勾选后，当你拥有0层旋风斩充能时，所有旋风斩充能节点将使用指定的背景色。"
 
+	L["ShowBarVisibilityNeverShow"] = "永不显示"
+	L["ShowBarVisibilityConditionsHeader"] = "显示条件："
+	L["ShowBarVisibilityConditionInCombat"] = "战斗中"
+	L["ShowBarVisibilityConditionInVehicle"] = "载具中"
+	L["ShowBarVisibilityConditionFriendlyTarget"] = "目标为友方"
+	L["ShowBarVisibilityConditionUnfriendlyTarget"] = "目标为敌对"
+	L["ShowBarVisibilityConditionIsMounted"] = "已骑乘"
+	
+	L["ShowBarVisibilityAlwaysShow"] = "始终显示"
+	L["ShowBarVisibilitySelectedCount"] = "已选 %d 项"
+	
 end
