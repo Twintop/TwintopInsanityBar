@@ -17,6 +17,7 @@ local content = [====[
 
 - [#529](#529) Fix primary bar rendering when the "Is Mounted" visibility condition is enabled and the player mounts.
 - [#529](#529) Fix bar text going stale when a bar goes from a hidden state to a visible state.
+- [#529](#529) Improve the visibility dropdown menus to be more user friendly and informative.
 
 ## Demon Hunter
 ### Vengeance
