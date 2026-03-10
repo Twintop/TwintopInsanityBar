@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.0.1.31-release (2026-03-11)
+## General
+
+- Fix an issue where sometimes color caching would fail due to stale max resource values being 0.
+
+## Monk
+### Brewmaster
+
+- Fix an issue where sometimes Stagger threshold lines would show up outside of the Stagger Bar instead of being hidden.
+
+---
+
 # 12.0.1.30-release (2026-03-10)
 ## General
 

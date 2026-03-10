@@ -398,8 +398,8 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 	local thresholdCost = baseCost * costMultiplier
 	local thresholdPercent = thresholdCost / maxResource
 	
-	-- Handle edge case: if threshold is 0 or negative, return nil to skip curve evaluation
-	if thresholdPercent <= 0 then
+	-- Handle edge case: if threshold is 0, negative, infinite, or NaN, or max is 0 or negative, return nil to skip curve evaluation
+	if thresholdPercent <= 0 or maxResource <= 0 or thresholdPercent ~= thresholdPercent or thresholdPercent == math.huge then
 		return nil
 	end
 	
