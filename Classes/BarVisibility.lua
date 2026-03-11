@@ -19,6 +19,7 @@ TRB.Functions = TRB.Functions or {}
 ---@field inInstance boolean # Whether the player is in an instance (dungeon/raid/scenario)
 ---@field inBattleground boolean # Whether the player is in a battleground
 ---@field inArena boolean # Whether the player is in an arena
+---@field inDelve boolean # Whether the player is in a delve (scenario with isDelve flag)
 ---@field isPvpFlagged boolean # Whether the player is PVP flagged
 ---@field isWarMode boolean # Whether War Mode is enabled
 TRB.Classes.BarVisibilityContext = {}
@@ -46,6 +47,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inInstance = params.inInstance or false
 	self.inBattleground = params.inBattleground or false
 	self.inArena = params.inArena or false
+	self.inDelve = params.inDelve or false
 	self.isPvpFlagged = params.isPvpFlagged or false
 	self.isWarMode = params.isWarMode or false
 	return self
@@ -64,16 +66,26 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		targetIsEnemy = UnitCanAttack("player", "target") == true
 	end
 
+	local isFlying = IsFlying()
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local isSkyriding = TRB.Data.character.isSkyriding or false
-	local isMountedGround = isMountedAny and not isSkyriding
-	local isSteadyFlight = isMountedAny and not isSkyriding and IsFlying()
+	local isMountedGround = isMountedAny and not isSkyriding and not isFlying
+	local isSteadyFlight = isMountedAny and not isSkyriding and isFlying
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
 	local inInstance = (instanceType == "party" or instanceType == "raid" or instanceType == "scenario")
 	local inBattleground = (instanceType == "pvp")
 	local inArena = (instanceType == "arena")
+
+	-- Delves are scenarios with the isDelve flag set in ScenarioInfo
+	local inDelve = false
+	if instanceType == "scenario" and C_ScenarioInfo and C_ScenarioInfo.GetScenarioInfo then
+		local scenarioInfo = C_ScenarioInfo.GetScenarioInfo()
+		if scenarioInfo and scenarioInfo.type == 8 then
+			inDelve = true
+		end
+	end
 
 	return TRB.Classes.BarVisibilityContext:New({
 		force = force or false,
@@ -92,6 +104,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		inInstance = inInstance,
 		inBattleground = inBattleground,
 		inArena = inArena,
+		inDelve = inDelve,
 		isPvpFlagged = UnitIsPVP("player") or false,
 		isWarMode = C_PvP.IsWarModeDesired() or false,
 	})
@@ -238,6 +251,9 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return true
 	end
 	if conditions.inArena and context.inArena then
+		return true
+	end
+	if conditions.inDelve and context.inDelve then
 		return true
 	end
 	if conditions.isPvpFlagged and context.isPvpFlagged then

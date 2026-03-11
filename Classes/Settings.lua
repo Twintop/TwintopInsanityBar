@@ -231,6 +231,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inInstance boolean? # Show when the player is in an instance (dungeon/raid/scenario)
 ---@field public inBattleground boolean? # Show when the player is in a battleground
 ---@field public inArena boolean? # Show when the player is in an arena
+---@field public inDelve boolean? # Show when the player is in a delve
 ---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
 ---@field public isWarMode boolean? # Show when War Mode is enabled
 

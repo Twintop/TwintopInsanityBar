@@ -4488,7 +4488,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	yCoord = yCoord - 30
 	
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "isPvpFlagged", "isWarMode" }
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
 		inCombat = L["ShowBarVisibilityConditionInCombat"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
@@ -4503,6 +4503,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		inInstance = L["ShowBarVisibilityConditionInInstance"],
 		inBattleground = L["ShowBarVisibilityConditionInBattleground"],
 		inArena = L["ShowBarVisibilityConditionInArena"],
+		inDelve = L["ShowBarVisibilityConditionInDelve"],
 		isPvpFlagged = L["ShowBarVisibilityConditionIsPvpFlagged"],
 		isWarMode = L["ShowBarVisibilityConditionIsWarMode"],
 	}
@@ -4523,7 +4524,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		},
 		{
 			title = L["ShowBarVisibilityGroupLocation"],
-			keys = { "inInstance", "inBattleground", "inArena" },
+			keys = { "inInstance", "inDelve", "inArena", "inBattleground" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupPvP"],

@@ -4407,7 +4407,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Existing users who had isMounted enabled should get isMountedAny instead.
 	-- New Phase 2 conditions default to false (unchecked).
 	do
-		local phase2NewKeys = { "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "isPvpFlagged", "isWarMode" }
+		local phase2NewKeys = { "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 
 		local function MigrateRenamedConditions(displayBar)
 			if displayBar == nil then
