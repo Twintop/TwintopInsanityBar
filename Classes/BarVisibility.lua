@@ -11,9 +11,9 @@ TRB.Functions = TRB.Functions or {}
 ---@field targetIsFriendly boolean # Whether the current target is friendly
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
----@field isMountedGround boolean # Whether the player is on a ground mount (mounted + not flying)
----@field isSkyriding boolean # Whether the player is skyriding
----@field isSteadyFlight boolean # Whether the player is on a steady flight mount (non-skyriding, flying)
+---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
+---@field isSkyriding boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
 ---@field inRaid boolean # Whether the player is in a raid group
 ---@field inInstance boolean # Whether the player is in an instance (dungeon/raid/scenario)
@@ -68,9 +68,10 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 
 	local isFlying = IsFlying()
 	local isMountedAny = TRB.Data.character.isMounted or false
-	local isSkyriding = TRB.Data.character.isSkyriding or false
-	local isMountedGround = isMountedAny and not isSkyriding and not isFlying
-	local isSteadyFlight = isMountedAny and not isSkyriding and isFlying
+	local canSkyriding = TRB.Data.character.isSkyriding or false
+	local isMountedGround = isMountedAny and not isFlying
+	local isSkyriding = isMountedAny and canSkyriding and isFlying
+	local isSteadyFlight = isMountedAny and not canSkyriding and isFlying
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"

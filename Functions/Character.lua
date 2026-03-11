@@ -335,15 +335,34 @@ local function CharacterChange(self, event, ...)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "PLAYER_MOUNT_DISPLAY_CHANGED" then
+		local frame = self
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
 				TRB.Data.character.isMounted = IsMounted()
+				local isMounted = TRB.Data.character.isMounted
+
+				if isMounted then
+					-- Poll IsFlying() to detect ground↔air transitions while mounted
+					TRB.Functions.Character:StartFlightPolling()
+				else
+					-- Dismounted: stop polling
+					TRB.Functions.Character:StopFlightPolling()
+				end
+
 				TRB.Functions.BarVisibility:MarkDirty()
 			end)
 		end)
 	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
 		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
 		TRB.Data.character.isSkyriding = canGlide or false
+
+		if TRB.Data.character.isMounted then
+			-- Keep flight polling running while mounted
+			TRB.Functions.Character:StartFlightPolling()
+		else
+			TRB.Functions.Character:StopFlightPolling()
+		end
+
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
 		local _, instanceType = GetInstanceInfo()
@@ -421,6 +440,39 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
+	TRB.Functions.Character:StopFlightPolling()
+end
+
+-- Flight state polling for non-skyriding mounts.
+-- IsFlying() changes without any event when transitioning between ground and air,
+-- so we poll at a short interval while mounted on a non-skyriding mount.
+local flightPollTicker = nil
+local lastKnownIsFlying = nil
+
+---Starts polling IsFlying() every 0.25s. Only marks dirty when the value changes.
+---Safe to call multiple times (idempotent).
+function TRB.Functions.Character:StartFlightPolling()
+	if flightPollTicker then
+		return -- already running
+	end
+	lastKnownIsFlying = IsFlying()
+	flightPollTicker = C_Timer.NewTicker(0.25, function()
+		local flying = IsFlying()
+		if flying ~= lastKnownIsFlying then
+			lastKnownIsFlying = flying
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
+	end)
+end
+
+---Stops the IsFlying() polling ticker.
+---Safe to call when not running (idempotent).
+function TRB.Functions.Character:StopFlightPolling()
+	if flightPollTicker then
+		flightPollTicker:Cancel()
+		flightPollTicker = nil
+	end
+	lastKnownIsFlying = nil
 end
 
 ---Handles SPELL_RANGE_CHECK_UPDATE events
@@ -701,6 +753,13 @@ function TRB.Functions.Character:CheckCharacter()
 
 	local _, instanceType = GetInstanceInfo()
 	TRB.Data.character.instanceType = instanceType or "none"
+
+	-- Start/stop flight polling based on current mount state
+	if TRB.Data.character.isMounted then
+		TRB.Functions.Character:StartFlightPolling()
+	else
+		TRB.Functions.Character:StopFlightPolling()
+	end
 end
 
 function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
