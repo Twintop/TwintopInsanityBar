@@ -4488,13 +4488,50 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	yCoord = yCoord - 30
 	
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMounted" }
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
 		inCombat = L["ShowBarVisibilityConditionInCombat"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
 		hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
 		hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
-		isMounted = L["ShowBarVisibilityConditionIsMounted"],
+		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
+		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
+		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+		isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
+		inGroup = L["ShowBarVisibilityConditionInGroup"],
+		inRaid = L["ShowBarVisibilityConditionInRaidGroup"],
+		inInstance = L["ShowBarVisibilityConditionInInstance"],
+		inDungeon = L["ShowBarVisibilityConditionInDungeon"],
+		inRaidInstance = L["ShowBarVisibilityConditionInRaidInstance"],
+		inBattleground = L["ShowBarVisibilityConditionInBattleground"],
+		inArena = L["ShowBarVisibilityConditionInArena"],
+		inDelve = L["ShowBarVisibilityConditionInDelve"],
+		isPvpFlagged = L["ShowBarVisibilityConditionIsPvpFlagged"],
+		isWarMode = L["ShowBarVisibilityConditionIsWarMode"],
+	}
+
+	-- Grouped condition sections for the dropdown
+	local conditionGroups = {
+		{
+			title = L["ShowBarVisibilityGroupGeneral"],
+			keys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupMounting"],
+			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupSocial"],
+			keys = { "inGroup", "inRaid" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupLocation"],
+			keys = { "inInstance", "inDungeon", "inRaidInstance", "inDelve", "inArena", "inBattleground" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupPvP"],
+			keys = { "isPvpFlagged", "isWarMode" },
+		},
 	}
 
 	-- Build summary display string from a visibility entry
@@ -4519,44 +4556,12 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			end
 		end
 		if #parts == 0 then
-			return L["ShowBarVisibilityAlways"]
+			return string.format(L["ShowBarVisibilitySelectedCount"], 0)
 		end
 		if #parts == 1 then
 			return parts[1]
 		end
 		return string.format(L["ShowBarVisibilitySelectedCount"], #parts)
-	end
-
-	-- Helper: check if any condition is enabled
-	local function HasAnyCondition(entry)
-		if entry.conditions == nil then return false end
-		for _, key in ipairs(conditionKeys) do
-			if entry.conditions[key] then
-				return true
-			end
-		end
-		return false
-	end
-
-	-- Helper: check if the entry represents "always show" state.
-	-- True when: explicit alwaysShow flag, OR no conditions enabled and not neverShow
-	-- (the engine treats empty conditions as "always show").
-	local function IsEffectivelyAlways(entry)
-		if entry.neverShow then return false end
-		if entry.alwaysShow then return true end
-		return not HasAnyCondition(entry)
-	end
-
-	-- Helper: set all conditions to a given value
-	local function SetAllConditions(entry, value)
-		entry.conditions = entry.conditions or {}
-		for _, key in ipairs(conditionKeys) do
-			if value then
-				entry.conditions[key] = true
-			else
-				entry.conditions[key] = nil
-			end
-		end
 	end
 
 	-- Override a dropdown's SetText so the framework's auto-concatenated
@@ -4569,32 +4574,22 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 	end
 
-	-- Build multi-select dropdown items for a visibility entry
-	-- Helper: check if ALL individual conditions are enabled
-	local function AreAllConditionsEnabled(entry)
-		if entry.conditions == nil then return false end
-		for _, key in ipairs(conditionKeys) do
-			if not entry.conditions[key] then
-				return false
-			end
-		end
-		return true
-	end
-
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
-		-- Always Show checkbox
+		rootDescription:SetScrollMode(400)
+
+		-- Always Show checkbox (standalone toggle, like Never Show)
 		rootDescription:CreateCheckbox(
 			L["ShowBarVisibilityAlwaysShow"],
-			function() return IsEffectivelyAlways(entry) end,
+			function() return entry.alwaysShow == true end,
 			function()
-				if IsEffectivelyAlways(entry) then
-					-- Already "Always" — this is a no-op, don't clear anything
-					return
+				if entry.alwaysShow then
+					-- Uncheck Always
+					entry.alwaysShow = false
+				else
+					-- Check Always; clear Never (mutually exclusive)
+					entry.alwaysShow = true
+					entry.neverShow = false
 				end
-				-- Checking Always: set alwaysShow, uncheck Never, check all conditions
-				entry.alwaysShow = true
-				entry.neverShow = false
-				SetAllConditions(entry, true)
 				onChange()
 			end
 		)
@@ -4613,31 +4608,29 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			end
 		)
 
-		rootDescription:CreateDivider()
-		rootDescription:CreateTitle(L["ShowBarVisibilityConditionsHeader"])
-		for _, key in ipairs(conditionKeys) do
-			local checkbox = rootDescription:CreateCheckbox(
-				conditionLabels[key],
-				function()
-					return entry.conditions and entry.conditions[key] or false
-				end,
-				function()
-					entry.conditions = entry.conditions or {}
-					if entry.conditions[key] then
-						entry.conditions[key] = nil
-					else
-						entry.conditions[key] = true
+		-- Grouped condition sections
+		for _, group in ipairs(conditionGroups) do
+			rootDescription:CreateDivider()
+			rootDescription:CreateTitle(group.title)
+			for _, key in ipairs(group.keys) do
+				local checkbox = rootDescription:CreateCheckbox(
+					conditionLabels[key],
+					function()
+						return entry.conditions and entry.conditions[key] or false
+					end,
+					function()
+						entry.conditions = entry.conditions or {}
+						if entry.conditions[key] then
+							entry.conditions[key] = nil
+						else
+							entry.conditions[key] = true
+						end
+						onChange()
 					end
-					-- Clear alwaysShow first so IsEffectivelyAlways re-derives from conditions.
-					-- Then set alwaysShow only if all conditions are individually enabled.
-					entry.alwaysShow = AreAllConditionsEnabled(entry)
-					onChange()
-				end
-			)
-			-- Dynamically disable condition checkboxes when Never Show is active.
-			-- Using a function callback ensures the enabled state updates when Never
-			-- is toggled within the same dropdown session.
-			checkbox:SetEnabled(function() return not entry.neverShow end)
+				)
+				-- Dynamically disable condition checkboxes when Always or Never is active.
+				checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
+			end
 		end
 	end
 

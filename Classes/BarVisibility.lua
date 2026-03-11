@@ -10,30 +10,50 @@ TRB.Functions = TRB.Functions or {}
 ---@field hasTarget boolean # Whether the player has a target selected
 ---@field targetIsFriendly boolean # Whether the current target is friendly
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
----@field isMounted boolean # Whether the player is currently mounted
+---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
+---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
+---@field isSkyriding boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
+---@field inGroup boolean # Whether the player is in a group (party or raid)
+---@field inRaid boolean # Whether the player is in a raid group
+---@field inInstance boolean # Whether the player is in any instance (dungeon, raid, scenario, arena, battleground)
+---@field inDungeon boolean # Whether the player is in a 5-man dungeon instance
+---@field inRaidInstance boolean # Whether the player is in a raid instance
+---@field inBattleground boolean # Whether the player is in a battleground
+---@field inArena boolean # Whether the player is in an arena
+---@field inDelve boolean # Whether the player is in a delve (scenario with isDelve flag)
+---@field isPvpFlagged boolean # Whether the player is PVP flagged
+---@field isWarMode boolean # Whether War Mode is enabled
 TRB.Classes.BarVisibilityContext = {}
 TRB.Classes.BarVisibilityContext.__index = TRB.Classes.BarVisibilityContext
 
 ---Creates a new BarVisibilityContext with explicit values.
----@param force boolean
----@param specSupported boolean
----@param inCombat boolean
----@param inVehicle boolean
----@param hasTarget boolean
----@param targetIsFriendly boolean
----@param targetIsEnemy boolean
----@param isMounted boolean
+---@param params table # Table of context fields
 ---@return TRB.Classes.BarVisibilityContext
-function TRB.Classes.BarVisibilityContext:New(force, specSupported, inCombat, inVehicle, hasTarget, targetIsFriendly, targetIsEnemy, isMounted)
+function TRB.Classes.BarVisibilityContext:New(params)
 	local self = setmetatable({}, TRB.Classes.BarVisibilityContext)
-	self.force = force or false
-	self.specSupported = specSupported
-	self.inCombat = inCombat or false
-	self.inVehicle = inVehicle or false
-	self.hasTarget = hasTarget or false
-	self.targetIsFriendly = targetIsFriendly or false
-	self.targetIsEnemy = targetIsEnemy or false
-	self.isMounted = isMounted or false
+	params = params or {}
+	self.force = params.force or false
+	self.specSupported = params.specSupported or false
+	self.inCombat = params.inCombat or false
+	self.inVehicle = params.inVehicle or false
+	self.hasTarget = params.hasTarget or false
+	self.targetIsFriendly = params.targetIsFriendly or false
+	self.targetIsEnemy = params.targetIsEnemy or false
+	self.isMountedAny = params.isMountedAny or false
+	self.isMountedGround = params.isMountedGround or false
+	self.isSkyriding = params.isSkyriding or false
+	self.isSteadyFlight = params.isSteadyFlight or false
+	self.inGroup = params.inGroup or false
+	self.inRaid = params.inRaid or false
+	self.inInstance = params.inInstance or false
+	self.inDungeon = params.inDungeon or false
+	self.inRaidInstance = params.inRaidInstance or false
+	self.inBattleground = params.inBattleground or false
+	self.inArena = params.inArena or false
+	self.inDelve = params.inDelve or false
+	self.isPvpFlagged = params.isPvpFlagged or false
+	self.isWarMode = params.isWarMode or false
 	return self
 end
 
@@ -50,16 +70,53 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		targetIsEnemy = UnitCanAttack("player", "target") == true
 	end
 
-	return TRB.Classes.BarVisibilityContext:New(
-		force or false,
-		TRB.Data.specSupported or false,
-		TRB.Data.character.inCombat or false,
-		TRB.Data.character.inVehicle or false,
-		hasTarget,
-		targetIsFriendly,
-		targetIsEnemy,
-		TRB.Data.character.isMounted or false
-	)
+	local isFlying = IsFlying()
+	local isMountedAny = TRB.Data.character.isMounted or false
+	local canSkyriding = TRB.Data.character.isSkyriding or false
+	local isMountedGround = isMountedAny and not isFlying
+	local isSkyriding = isMountedAny and canSkyriding and isFlying
+	local isSteadyFlight = isMountedAny and not canSkyriding and isFlying
+
+	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
+	local instanceType = TRB.Data.character.instanceType or "none"
+	local inDungeon = (instanceType == "party")
+	local inRaidInstance = (instanceType == "raid")
+	local inBattleground = (instanceType == "pvp")
+	local inArena = (instanceType == "arena")
+	local inInstance = (inDungeon or inRaidInstance or inBattleground or inArena or instanceType == "scenario")
+
+	-- Delves are scenarios with the isDelve flag set in ScenarioInfo
+	local inDelve = false
+	if instanceType == "scenario" and C_ScenarioInfo and C_ScenarioInfo.GetScenarioInfo then
+		local scenarioInfo = C_ScenarioInfo.GetScenarioInfo()
+		if scenarioInfo and scenarioInfo.type == 8 then
+			inDelve = true
+		end
+	end
+
+	return TRB.Classes.BarVisibilityContext:New({
+		force = force or false,
+		specSupported = TRB.Data.specSupported or false,
+		inCombat = TRB.Data.character.inCombat or false,
+		inVehicle = TRB.Data.character.inVehicle or false,
+		hasTarget = hasTarget,
+		targetIsFriendly = targetIsFriendly,
+		targetIsEnemy = targetIsEnemy,
+		isMountedAny = isMountedAny,
+		isMountedGround = isMountedGround,
+		isSkyriding = isSkyriding,
+		isSteadyFlight = isSteadyFlight,
+		inGroup = IsInGroup() or false,
+		inRaid = IsInRaid() or false,
+		inInstance = inInstance,
+		inDungeon = inDungeon,
+		inRaidInstance = inRaidInstance,
+		inBattleground = inBattleground,
+		inArena = inArena,
+		inDelve = inDelve,
+		isPvpFlagged = UnitIsPVP("player") or false,
+		isWarMode = C_PvP.IsWarModeDesired() or false,
+	})
 end
 
 ---@class TRB.Classes.BarVisibilityEntry
@@ -99,7 +156,9 @@ TRB.Functions.BarVisibility.lastAppliedToken = -1
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
----  isMounted, hasTarget, per-bar visibility settings, talent gates, maxResource2.
+---  isMountedAny, isMountedGround, isSkyriding, hasTarget, inGroup, inRaid,
+---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
+---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
 	self.dirtyToken = self.dirtyToken + 1
 end
@@ -163,19 +222,6 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
-	-- If no conditions are enabled (all false/nil), treat as "always show"
-	local hasAnyCondition = false
-	for _, v in pairs(conditions) do
-		if v == true then
-			hasAnyCondition = true
-			break
-		end
-	end
-
-	if not hasAnyCondition then
-		return true -- No conditions selected = always show
-	end
-
 	-- OR-evaluate: if ANY enabled condition matches the current context, show the bar
 	if conditions.inCombat and context.inCombat then
 		return true
@@ -189,7 +235,46 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 	if conditions.hasUnfriendlyTarget and context.hasTarget and context.targetIsEnemy then
 		return true
 	end
-	if conditions.isMounted and context.isMounted then
+	if conditions.isMountedAny and context.isMountedAny then
+		return true
+	end
+	if conditions.isMountedGround and context.isMountedGround then
+		return true
+	end
+	if conditions.isSkyriding and context.isSkyriding then
+		return true
+	end
+	if conditions.isSteadyFlight and context.isSteadyFlight then
+		return true
+	end
+	if conditions.inGroup and context.inGroup then
+		return true
+	end
+	if conditions.inRaid and context.inRaid then
+		return true
+	end
+	if conditions.inInstance and context.inInstance then
+		return true
+	end
+	if conditions.inDungeon and context.inDungeon then
+		return true
+	end
+	if conditions.inRaidInstance and context.inRaidInstance then
+		return true
+	end
+	if conditions.inBattleground and context.inBattleground then
+		return true
+	end
+	if conditions.inArena and context.inArena then
+		return true
+	end
+	if conditions.inDelve and context.inDelve then
+		return true
+	end
+	if conditions.isPvpFlagged and context.isPvpFlagged then
+		return true
+	end
+	if conditions.isWarMode and context.isWarMode then
 		return true
 	end
 
@@ -243,14 +328,23 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	end
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
-	-- showing, mark lookup data dirty so that UpdateResourceBarText doesn't
-	-- early-out on the next tick. Without this, text goes stale when the bar is
-	-- hidden (lookupDirty gets consumed while hidden) and never refreshes when
-	-- the bar reappears.
+	-- showing, fully invalidate the lookup memoization cache so that every
+	-- variable is recomputed on the next RefreshLookupData pass.  A simple
+	-- lookupDirty = true is not enough: the prevLookupState cache may still
+	-- consider values "unchanged" (same raw value + color as before the bar was
+	-- hidden) and skip rewriting lookup strings, leaving stale formatted text.
+	-- InvalidateLookupMemoization wipes prevLookupState AND sets lookupDirty.
+	--
+	-- Additionally, set barTextVisibilityRefreshNeeded so that the NEXT call to
+	-- UpdateResourceBarText unconditionally processes all bar text entries.
+	-- This covers edge cases where lookupDirty alone is insufficient (e.g.,
+	-- options panel toggling visibility without a subsequent TriggerResourceBarUpdates
+	-- on the same frame, or lookupDirty being consumed during the hidden period).
 	local wasTracking = snapshotData.attributes.isTracking
 	snapshotData.attributes.isTracking = anyShowing
 	if anyShowing and not wasTracking then
-		TRB.Data.lookupDirty = true
+		TRB.Functions.BarText:InvalidateLookupMemoization()
+		TRB.Data.barTextVisibilityRefreshNeeded = true
 	end
 
 	if anyShowing and settings ~= nil then
@@ -312,7 +406,7 @@ end
 ---@return TRB.Classes.BarVisibilityEntry[]
 function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar, maxResource2)
 	local entries = {}
-	local alwaysVis = { neverShow = false, conditions = {} }
+	local alwaysVis = { neverShow = false, alwaysShow = true, conditions = {} }
 
 	-- Primary always shows in Edit Mode
 	if barGroups.primary then

@@ -207,10 +207,10 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = true },
-			health = { neverShow = false, conditions = {}, smooth = true },
-			utility = { neverShow = true, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -483,10 +483,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = true },
-			health = { neverShow = false, conditions = {}, smooth = true },
-			utility = { neverShow = true, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -703,11 +703,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
-			mana = { neverShow = true, conditions = {}, smooth = true },
-			utility = { neverShow = true, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
 		},
 		overcap = {
 			mode = "relative",

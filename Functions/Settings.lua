@@ -81,21 +81,25 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			displayBar = {
 				primary = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = true
 				},
 				secondary = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = false
 				},
 				health = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = true
 				},
 				utility = {
 					neverShow = true,
+					alwaysShow = false,
 					conditions = {},
 					smooth = true
 				},
@@ -4355,11 +4359,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Migrate Phase 1 conditions-based entries (have conditions but no alwaysShow) to Phase 2.
-	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag
-	-- with all conditions populated.
+	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag.
+	-- Conditions are left untouched — alwaysShow is a standalone override independent of conditions.
 	do
-		local allConditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMounted" }
-
 		local function MigrateAlwaysShow(displayBar)
 			if displayBar == nil then
 				return
@@ -4375,11 +4377,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 					if not hasAny and not entry.neverShow then
-						-- Empty conditions = was "always" → set alwaysShow + populate all conditions
+						-- Empty conditions = was "always" → set alwaysShow
 						entry.alwaysShow = true
-						for _, key in ipairs(allConditionKeys) do
-							entry.conditions[key] = true
-						end
 					else
 						entry.alwaysShow = false
 					end
@@ -4398,6 +4397,51 @@ function TRB.Functions.Settings:PortForwardSettings()
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
 						MigrateAlwaysShow(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
+	-- Phase 2: Rename isMounted → isMountedAny and backfill new condition keys.
+	-- Existing users who had isMounted enabled should get isMountedAny instead.
+	-- New Phase 2 conditions default to false (unchecked).
+	do
+		local phase2NewKeys = { "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
+
+		local function MigrateRenamedConditions(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil then
+					-- Rename isMounted → isMountedAny
+					if entry.conditions.isMounted ~= nil then
+						entry.conditions.isMountedAny = entry.conditions.isMounted
+						entry.conditions.isMounted = nil
+					end
+
+					-- Backfill new Phase 2 keys: default to false (unchecked)
+					for _, key in ipairs(phase2NewKeys) do
+						if entry.conditions[key] == nil then
+							entry.conditions[key] = false
+						end
+					end
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateRenamedConditions(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		-- Migrate all class/spec displayBar settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateRenamedConditions(specSettings.displayBar)
 					end
 				end
 			end

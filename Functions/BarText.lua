@@ -1240,11 +1240,21 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param refreshText boolean
 function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
+	-- Consume the visibility-refresh flag set by ProcessBars on hidden→visible
+	-- transition. When true, we must bypass the early-out AND force all bar text
+	-- entries to be processed, ensuring text content is written to frames that
+	-- were just made visible (they may have empty/stale text from when the bar
+	-- was hidden).
+	local visibilityRefresh = TRB.Data.barTextVisibilityRefreshNeeded
+	if visibilityRefresh then
+		TRB.Data.barTextVisibilityRefreshNeeded = false
+	end
+
 	-- Early-out: if nothing changed since the last refresh and no timers are
 	-- ticking down, all lookup values are identical to last tick — skip the refresh and
 	-- bar text rendering entirely. During combat $inCombatTime keeps changing, so we
-	-- always refresh when in combat.
-	if not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not TRB.Functions.Class:HasActiveTimers() then
+	-- always refresh when in combat. A pending visibility refresh also bypasses this.
+	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false
@@ -1278,8 +1288,9 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				local e = displayText.barText[i]
 				local isScreenText = e.position.relativeToFrame == "UIParent"
 				
-				-- Screen-bound text is always processed; other text only when refreshText is true
-				if refreshText or isScreenText then
+				-- Screen-bound text is always processed; other text only when refreshText is true.
+				-- visibilityRefresh forces processing for all entries after a hidden→visible transition.
+				if refreshText or isScreenText or visibilityRefresh then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
 					local frameKey = e.position.relativeToFrame
@@ -1542,6 +1553,7 @@ function TRB.Functions.BarText:Show(settings)
 		local fCache = showFrameCache
 		for k in pairs(fCache) do fCache[k] = nil end
 
+		local anyBecameVisible = false
 		local isTransition = TRB.Functions.Bar:IsRenderTransitionActive()
 		for i = 1, entries do
 			local e = displayText.barText[i]
@@ -1565,6 +1577,16 @@ function TRB.Functions.BarText:Show(settings)
 					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Hide()
 				else
+					-- Detect bar text frame transitioning from hidden to shown.
+					-- This catches cases where the bar was already "tracking"
+					-- (isTracking=true) but individual nodes were not yet visible
+					-- — e.g., after a layout rebuild from the options panel.
+					-- When such a frame becomes visible for the first time, its
+					-- text content is empty because UpdateResourceBarText skipped
+					-- it while isVisible was false.
+					if not textFrames[i]:IsShown() then
+						anyBecameVisible = true
+					end
 					textFrames[i]:Show()
 					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Show()
@@ -1574,6 +1596,16 @@ function TRB.Functions.BarText:Show(settings)
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Hide()
 			end
+		end
+
+		-- If any text frame just became visible (was hidden, now shown), force a
+		-- full bar text refresh so that UpdateResourceBarText populates content
+		-- into the newly-visible frames. Without this, the text stays empty
+		-- because the early-out / per-entry skip wrote frameCache.text = "" when
+		-- the frame was hidden, and no flag was set to reprocess it.
+		if anyBecameVisible and not isTransition then
+			self:InvalidateLookupMemoization()
+			TRB.Data.barTextVisibilityRefreshNeeded = true
 		end
 	end
 end

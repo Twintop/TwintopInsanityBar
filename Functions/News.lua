@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.32-release (2026-03-11)
+## General
+
+- [#529](#529) Add additional visibility checks: Is Mounted (Any), Ground Mount, Skyriding, Steady Flight, In Group, In Raid Group, In Instance, In Dungeon, In Raid Instance, In Delve, In Battleground, In Arena, and PvP Flagged.
+
+---
+
 # 12.0.1.31-release (2026-03-11)
 ## General
 
