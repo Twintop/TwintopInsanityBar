@@ -299,19 +299,36 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 	
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()
-	TRB.Functions.Character:UpdateHealthValues()
+	-- RecomputeFormattedValues re-reads live API values and re-formats ALL pre-formatted
+	-- display strings (resource, health, primary stats, secondary stats) using the
+	-- current precision settings.  It also calls InvalidateLookupMemoization which
+	-- wipes prevLookupState and sets lookupDirty, forcing every lookup string to be
+	-- rebuilt from scratch on the next RefreshLookupData pass.
+	-- This is the same call the per-spec precision sliders use.
+	TRB.Functions.Character:RecomputeFormattedValues()
 	if TRB.Frames.barGroups ~= nil then
 		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		-- Recreate bar text frames to match potentially changed settings.
+		-- FillSpecializationCacheSettings always rebuilds displayText, which can shift
+		-- entry indices (e.g., globalBarText prepends global entries) or change font
+		-- defaults. Without this, text frames become desynced from their entries —
+		-- wrong parents, fonts, or positions — causing bar text to vanish.
+		-- This matches the sequence in ConstructBarGroups.
+		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Functions.Bar:HideResourceBar()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	else
-		TRB.Functions.Bar:Construct()
+		-- All classes use the BarGroups system; this path should not be reached.
+		-- ConstructBarGroups is called by each class module's ConstructResourceBar.
+		if TRB.Functions.Bar.ConstructBarGroups then
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
+		end
 	end
 end
 
@@ -3787,8 +3804,6 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
-	else
-		TRB.Functions.Bar:Construct()
 	end
 end
 
@@ -3817,8 +3832,6 @@ function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newV
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
-	else
-		TRB.Functions.Bar:Construct()
 	end
 end
 
@@ -3868,8 +3881,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
-				else
-					TRB.Functions.Bar:Construct()
 				end
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
@@ -3904,8 +3915,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
-		else
-			TRB.Functions.Bar:Construct()
 		end
 	end
 
@@ -4474,8 +4483,6 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
-				else
-					TRB.Functions.Bar:Construct()
 				end
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
@@ -5557,8 +5564,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 					TRB.Data.lookupDirty = true
 					TRB.Functions.Class:TriggerResourceBarUpdates()
-				else
-					TRB.Functions.Bar:Construct()
 				end
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("healthBarColors")

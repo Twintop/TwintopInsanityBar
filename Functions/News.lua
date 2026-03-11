@@ -16,6 +16,12 @@ local content = [====[
 ## General
 
 - [#529](#529) Add additional visibility checks: Is Mounted (Any), Ground Mount, Skyriding, Steady Flight, In Group, In Raid Group, In Instance, In Dungeon, In Raid Instance, In Delve, In Battleground, In Arena, and PvP Flagged.
+- Fix some options not applying immediately when changed in settings.
+
+## Priest
+### Holy
+
+- Ensure that Benediction casts also apply Lightweaver when talented.
 
 ---
 

@@ -1181,6 +1181,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					local cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
 					cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(spells.holyWordSerenity))
 				end
+
+				if talents:IsTalentActive(spells.lightweaver) then
+					snapshots[spells.lightweaver.id].buff:AddStackOrInitializeCustom(spells.lightweaver.duration, currentTime, true, 1)
+				end
 			elseif spellId == spells.prayerOfHealing.id then
 				cdrSpell = spells.prayerOfHealing
 
