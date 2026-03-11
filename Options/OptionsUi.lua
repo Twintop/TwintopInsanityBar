@@ -4488,13 +4488,47 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	yCoord = yCoord - 30
 	
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMounted" }
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
 		inCombat = L["ShowBarVisibilityConditionInCombat"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
 		hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
 		hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
-		isMounted = L["ShowBarVisibilityConditionIsMounted"],
+		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
+		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
+		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+		isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
+		inGroup = L["ShowBarVisibilityConditionInGroup"],
+		inRaid = L["ShowBarVisibilityConditionInRaid"],
+		inInstance = L["ShowBarVisibilityConditionInInstance"],
+		inBattleground = L["ShowBarVisibilityConditionInBattleground"],
+		inArena = L["ShowBarVisibilityConditionInArena"],
+		isPvpFlagged = L["ShowBarVisibilityConditionIsPvpFlagged"],
+		isWarMode = L["ShowBarVisibilityConditionIsWarMode"],
+	}
+
+	-- Grouped condition sections for the dropdown
+	local conditionGroups = {
+		{
+			title = L["ShowBarVisibilityGroupGeneral"],
+			keys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupMounting"],
+			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupSocial"],
+			keys = { "inGroup", "inRaid" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupLocation"],
+			keys = { "inInstance", "inBattleground", "inArena" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupPvP"],
+			keys = { "isPvpFlagged", "isWarMode" },
+		},
 	}
 
 	-- Build summary display string from a visibility entry
@@ -4613,31 +4647,32 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			end
 		)
 
-		rootDescription:CreateDivider()
-		rootDescription:CreateTitle(L["ShowBarVisibilityConditionsHeader"])
-		for _, key in ipairs(conditionKeys) do
-			local checkbox = rootDescription:CreateCheckbox(
-				conditionLabels[key],
-				function()
-					return entry.conditions and entry.conditions[key] or false
-				end,
-				function()
-					entry.conditions = entry.conditions or {}
-					if entry.conditions[key] then
-						entry.conditions[key] = nil
-					else
-						entry.conditions[key] = true
+		-- Grouped condition sections
+		for _, group in ipairs(conditionGroups) do
+			rootDescription:CreateDivider()
+			rootDescription:CreateTitle(group.title)
+			for _, key in ipairs(group.keys) do
+				local checkbox = rootDescription:CreateCheckbox(
+					conditionLabels[key],
+					function()
+						return entry.conditions and entry.conditions[key] or false
+					end,
+					function()
+						entry.conditions = entry.conditions or {}
+						if entry.conditions[key] then
+							entry.conditions[key] = nil
+						else
+							entry.conditions[key] = true
+						end
+						-- Clear alwaysShow first so IsEffectivelyAlways re-derives from conditions.
+						-- Then set alwaysShow only if all conditions are individually enabled.
+						entry.alwaysShow = AreAllConditionsEnabled(entry)
+						onChange()
 					end
-					-- Clear alwaysShow first so IsEffectivelyAlways re-derives from conditions.
-					-- Then set alwaysShow only if all conditions are individually enabled.
-					entry.alwaysShow = AreAllConditionsEnabled(entry)
-					onChange()
-				end
-			)
-			-- Dynamically disable condition checkboxes when Never Show is active.
-			-- Using a function callback ensures the enabled state updates when Never
-			-- is toggled within the same dropdown session.
-			checkbox:SetEnabled(function() return not entry.neverShow end)
+				)
+				-- Dynamically disable condition checkboxes when Never Show is active.
+				checkbox:SetEnabled(function() return not entry.neverShow end)
+			end
 		end
 	end
 

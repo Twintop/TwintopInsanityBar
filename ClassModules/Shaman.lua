@@ -1563,7 +1563,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local healthVisSettings = (sharedSettings and sharedSettings.displayBar.health) or nil
 
 		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, nil, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, healthVisSettings, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),

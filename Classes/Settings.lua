@@ -222,7 +222,17 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inVehicle boolean? # Show when the player is in a vehicle
 ---@field public hasFriendlyTarget boolean? # Show when the player has a friendly target
 ---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
----@field public isMounted boolean? # Show when the player is mounted
+---@field public isMountedAny boolean? # Show when the player is mounted (any mount)
+---@field public isMountedGround boolean? # Show when the player is on a ground mount (mounted + not flying)
+---@field public isSkyriding boolean? # Show when the player is skyriding
+---@field public isSteadyFlight boolean? # Show when the player is on a steady flight mount (non-skyriding, flying)
+---@field public inGroup boolean? # Show when the player is in a group (party or raid)
+---@field public inRaid boolean? # Show when the player is in a raid group
+---@field public inInstance boolean? # Show when the player is in an instance (dungeon/raid/scenario)
+---@field public inBattleground boolean? # Show when the player is in a battleground
+---@field public inArena boolean? # Show when the player is in an arena
+---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
+---@field public isWarMode boolean? # Show when War Mode is enabled
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions

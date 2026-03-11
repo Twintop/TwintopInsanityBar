@@ -223,7 +223,13 @@ function TRB.Functions.Bar:ShowResourceBar()
 		return
 	end
 
-	TRB.Data.snapshotData.attributes.isTracking = true
+	-- Do NOT pre-set isTracking here.  ProcessBars (called via HideResourceBar)
+	-- detects hidden→visible transitions by comparing the PREVIOUS isTracking
+	-- value (wasTracking) to the newly computed anyShowing.  Pre-setting
+	-- isTracking = true would make wasTracking = true, preventing the transition
+	-- from being detected and suppressing the lookupDirty / memoization
+	-- invalidation that forces bar text to refresh.  The combat handler's
+	-- MarkDirty() ensures ProcessBars re-evaluates conditions correctly.
 	TRB.Functions.Bar:HideResourceBar()
 end
 
@@ -338,9 +344,9 @@ function TRB.Functions.Bar:HideResourceBar(force)
 
 		if barGroups then
 			-- Build Edit Mode entries using the visibility engine
-			local editContext = TRB.Classes.BarVisibilityContext:New(
-				false, true, false, true, true, false
-			)
+			local editContext = TRB.Classes.BarVisibilityContext:New({
+				force = false, specSupported = true, inCombat = false, inVehicle = true, hasTarget = true, targetIsFriendly = false,
+			})
 			local entries = TRB.Functions.BarVisibility:BuildEditModeEntries(
 				barGroups, displayBar, TRB.Data.character.maxResource2
 			)

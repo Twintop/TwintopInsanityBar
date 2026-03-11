@@ -341,9 +341,23 @@ local function CharacterChange(self, event, ...)
 				TRB.Functions.BarVisibility:MarkDirty()
 			end)
 		end)
-	elseif event == "PLAYER_ENTERING_WORLD" then
+	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
+		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
+		TRB.Data.character.isSkyriding = canGlide or false
+		TRB.Functions.BarVisibility:MarkDirty()
+	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
+		local _, instanceType = GetInstanceInfo()
+		TRB.Data.character.instanceType = instanceType or "none"
 		TRB.Functions.Character:CheckCharacter()
+		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Data.lookupDirty = true
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		TRB.Functions.BarVisibility:MarkDirty()
+	elseif event == "UNIT_FLAGS" then
+		local unitTarget = ...
+		if unitTarget == "player" then
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
@@ -373,6 +387,10 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
 	characterChangeFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	characterChangeFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
+	characterChangeFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+	characterChangeFrame:RegisterEvent("UNIT_FLAGS")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -396,6 +414,10 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_EXITED_VEHICLE")
 	characterChangeFrame:UnregisterEvent("PLAYER_TARGET_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	characterChangeFrame:UnregisterEvent("PLAYER_CAN_GLIDE_CHANGED")
+	characterChangeFrame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
@@ -672,6 +694,13 @@ end
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.isMounted = IsMounted()
+
+	-- Phase 2 visibility state
+	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
+	TRB.Data.character.isSkyriding = canGlide or false
+
+	local _, instanceType = GetInstanceInfo()
+	TRB.Data.character.instanceType = instanceType or "none"
 end
 
 function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
