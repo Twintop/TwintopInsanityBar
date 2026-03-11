@@ -287,10 +287,10 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
-			mana = { neverShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -623,9 +623,9 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = true
 		},
@@ -805,9 +805,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -926,9 +926,9 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},

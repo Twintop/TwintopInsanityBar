@@ -81,21 +81,25 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			displayBar = {
 				primary = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = true
 				},
 				secondary = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = false
 				},
 				health = {
 					neverShow = false,
+					alwaysShow = true,
 					conditions = {},
 					smooth = true
 				},
 				utility = {
 					neverShow = true,
+					alwaysShow = false,
 					conditions = {},
 					smooth = true
 				},
@@ -4355,11 +4359,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 
 	-- Migrate Phase 1 conditions-based entries (have conditions but no alwaysShow) to Phase 2.
-	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag
-	-- with all conditions populated.
+	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag.
+	-- Conditions are left untouched — alwaysShow is a standalone override independent of conditions.
 	do
-		local allConditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "isPvpFlagged", "isWarMode" }
-
 		local function MigrateAlwaysShow(displayBar)
 			if displayBar == nil then
 				return
@@ -4375,11 +4377,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 					if not hasAny and not entry.neverShow then
-						-- Empty conditions = was "always" → set alwaysShow + populate all conditions
+						-- Empty conditions = was "always" → set alwaysShow
 						entry.alwaysShow = true
-						for _, key in ipairs(allConditionKeys) do
-							entry.conditions[key] = true
-						end
 					else
 						entry.alwaysShow = false
 					end
@@ -4406,7 +4405,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 	-- Phase 2: Rename isMounted → isMountedAny and backfill new condition keys.
 	-- Existing users who had isMounted enabled should get isMountedAny instead.
-	-- New Phase 2 conditions default to matching alwaysShow state.
+	-- New Phase 2 conditions default to false (unchecked).
 	do
 		local phase2NewKeys = { "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "isPvpFlagged", "isWarMode" }
 
@@ -4422,11 +4421,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 						entry.conditions.isMounted = nil
 					end
 
-					-- Backfill new Phase 2 keys: match alwaysShow state
-					local fillValue = (entry.alwaysShow == true)
+					-- Backfill new Phase 2 keys: default to false (unchecked)
 					for _, key in ipairs(phase2NewKeys) do
 						if entry.conditions[key] == nil then
-							entry.conditions[key] = fillValue
+							entry.conditions[key] = false
 						end
 					end
 				end

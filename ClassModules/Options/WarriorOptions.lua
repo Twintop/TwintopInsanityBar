@@ -95,9 +95,9 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		overcap = {
 			mode = "relative",
@@ -364,9 +364,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		overcap = {
 			mode = "relative",
@@ -627,10 +627,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
-			defensives = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			defensives = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		overcap = {
 			mode = "relative",

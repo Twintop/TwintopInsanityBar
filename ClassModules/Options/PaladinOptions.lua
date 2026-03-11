@@ -40,9 +40,9 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -188,9 +188,9 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -325,9 +325,9 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),

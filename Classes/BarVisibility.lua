@@ -200,19 +200,6 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
-	-- If no conditions are enabled (all false/nil), treat as "always show"
-	local hasAnyCondition = false
-	for _, v in pairs(conditions) do
-		if v == true then
-			hasAnyCondition = true
-			break
-		end
-	end
-
-	if not hasAnyCondition then
-		return true -- No conditions selected = always show
-	end
-
 	-- OR-evaluate: if ANY enabled condition matches the current context, show the bar
 	if conditions.inCombat and context.inCombat then
 		return true
@@ -388,7 +375,7 @@ end
 ---@return TRB.Classes.BarVisibilityEntry[]
 function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar, maxResource2)
 	local entries = {}
-	local alwaysVis = { neverShow = false, conditions = {} }
+	local alwaysVis = { neverShow = false, alwaysShow = true, conditions = {} }
 
 	-- Primary always shows in Edit Mode
 	if barGroups.primary then

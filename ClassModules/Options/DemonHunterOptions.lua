@@ -112,9 +112,9 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = false },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -271,9 +271,9 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = true },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -465,9 +465,9 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, conditions = {}, smooth = true },
-			secondary = { neverShow = false, conditions = {}, smooth = true },
-			health = { neverShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
 		},
 		endOf = {
 			metamorphosis = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
