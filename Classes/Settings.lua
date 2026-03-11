@@ -228,7 +228,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isSteadyFlight boolean? # Show when the player is on a steady flight mount (non-skyriding, flying)
 ---@field public inGroup boolean? # Show when the player is in a group (party or raid)
 ---@field public inRaid boolean? # Show when the player is in a raid group
----@field public inInstance boolean? # Show when the player is in an instance (dungeon/raid/scenario)
+---@field public inInstance boolean? # Show when the player is in any instance (catch-all)
+---@field public inDungeon boolean? # Show when the player is in a 5-man dungeon
+---@field public inRaidInstance boolean? # Show when the player is in a raid instance
 ---@field public inBattleground boolean? # Show when the player is in a battleground
 ---@field public inArena boolean? # Show when the player is in an arena
 ---@field public inDelve boolean? # Show when the player is in a delve

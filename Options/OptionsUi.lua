@@ -4488,7 +4488,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	yCoord = yCoord - 30
 	
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
 		inCombat = L["ShowBarVisibilityConditionInCombat"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
@@ -4499,8 +4499,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
 		isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
 		inGroup = L["ShowBarVisibilityConditionInGroup"],
-		inRaid = L["ShowBarVisibilityConditionInRaid"],
+		inRaid = L["ShowBarVisibilityConditionInRaidGroup"],
 		inInstance = L["ShowBarVisibilityConditionInInstance"],
+		inDungeon = L["ShowBarVisibilityConditionInDungeon"],
+		inRaidInstance = L["ShowBarVisibilityConditionInRaidInstance"],
 		inBattleground = L["ShowBarVisibilityConditionInBattleground"],
 		inArena = L["ShowBarVisibilityConditionInArena"],
 		inDelve = L["ShowBarVisibilityConditionInDelve"],
@@ -4524,7 +4526,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		},
 		{
 			title = L["ShowBarVisibilityGroupLocation"],
-			keys = { "inInstance", "inDelve", "inArena", "inBattleground" },
+			keys = { "inInstance", "inDungeon", "inRaidInstance", "inDelve", "inArena", "inBattleground" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupPvP"],
@@ -4573,6 +4575,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
+		rootDescription:SetScrollMode(400)
+
 		-- Always Show checkbox (standalone toggle, like Never Show)
 		rootDescription:CreateCheckbox(
 			L["ShowBarVisibilityAlwaysShow"],

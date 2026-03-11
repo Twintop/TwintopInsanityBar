@@ -16,7 +16,9 @@ TRB.Functions = TRB.Functions or {}
 ---@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
 ---@field inRaid boolean # Whether the player is in a raid group
----@field inInstance boolean # Whether the player is in an instance (dungeon/raid/scenario)
+---@field inInstance boolean # Whether the player is in any instance (dungeon, raid, scenario, arena, battleground)
+---@field inDungeon boolean # Whether the player is in a 5-man dungeon instance
+---@field inRaidInstance boolean # Whether the player is in a raid instance
 ---@field inBattleground boolean # Whether the player is in a battleground
 ---@field inArena boolean # Whether the player is in an arena
 ---@field inDelve boolean # Whether the player is in a delve (scenario with isDelve flag)
@@ -45,6 +47,8 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inGroup = params.inGroup or false
 	self.inRaid = params.inRaid or false
 	self.inInstance = params.inInstance or false
+	self.inDungeon = params.inDungeon or false
+	self.inRaidInstance = params.inRaidInstance or false
 	self.inBattleground = params.inBattleground or false
 	self.inArena = params.inArena or false
 	self.inDelve = params.inDelve or false
@@ -75,9 +79,11 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
-	local inInstance = (instanceType == "party" or instanceType == "raid" or instanceType == "scenario")
+	local inDungeon = (instanceType == "party")
+	local inRaidInstance = (instanceType == "raid")
 	local inBattleground = (instanceType == "pvp")
 	local inArena = (instanceType == "arena")
+	local inInstance = (inDungeon or inRaidInstance or inBattleground or inArena or instanceType == "scenario")
 
 	-- Delves are scenarios with the isDelve flag set in ScenarioInfo
 	local inDelve = false
@@ -103,6 +109,8 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		inGroup = IsInGroup() or false,
 		inRaid = IsInRaid() or false,
 		inInstance = inInstance,
+		inDungeon = inDungeon,
+		inRaidInstance = inRaidInstance,
 		inBattleground = inBattleground,
 		inArena = inArena,
 		inDelve = inDelve,
@@ -149,7 +157,7 @@ TRB.Functions.BarVisibility.lastAppliedToken = -1
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
 ---  isMountedAny, isMountedGround, isSkyriding, hasTarget, inGroup, inRaid,
----  inInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
+---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
 ---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
 	self.dirtyToken = self.dirtyToken + 1
@@ -246,6 +254,12 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return true
 	end
 	if conditions.inInstance and context.inInstance then
+		return true
+	end
+	if conditions.inDungeon and context.inDungeon then
+		return true
+	end
+	if conditions.inRaidInstance and context.inRaidInstance then
 		return true
 	end
 	if conditions.inBattleground and context.inBattleground then
