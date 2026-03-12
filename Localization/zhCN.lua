@@ -2011,5 +2011,26 @@ if locale == "zhCN" then
 	
 	L["ShowBarVisibilityAlwaysShow"] = "始终显示"
 	L["ShowBarVisibilitySelectedCount"] = "已选 %d 项"
-	
+
+	L["ShowBarVisibilityConditionIsMountedAny"] = "已骑乘 (任意坐骑)"
+	L["ShowBarVisibilityConditionIsMountedGround"] = "地面坐骑"
+	L["ShowBarVisibilityConditionIsSkyriding"] = "飞行/驭空"
+	L["ShowBarVisibilityConditionInGroup"] = "在小队中"
+	L["ShowBarVisibilityConditionInRaid"] = "在团队中"
+	L["ShowBarVisibilityConditionInInstance"] = "在副本中 (任意)"
+	L["ShowBarVisibilityConditionInBattleground"] = "在战场中"
+	L["ShowBarVisibilityConditionInArena"] = "在竞技场中"
+	L["ShowBarVisibilityConditionIsPvpFlagged"] = "PvP标记开启"
+	L["ShowBarVisibilityConditionIsWarMode"] = "战争模式"
+	L["ShowBarVisibilityGroupGeneral"] = "通用"
+	L["ShowBarVisibilityGroupMounting"] = "骑乘相关"
+	L["ShowBarVisibilityGroupSocial"] = "社交/组队"
+	L["ShowBarVisibilityGroupLocation"] = "场景/副本"
+	L["ShowBarVisibilityGroupPvP"] = "PvP相关"
+	L["ShowBarVisibilityConditionIsSteadyFlight"] = "平稳飞行"
+	L["ShowBarVisibilityConditionInDelve"] = "在地下堡中"
+	L["ShowBarVisibilityConditionInRaidGroup"] = "在团队队伍中"
+	L["ShowBarVisibilityConditionInDungeon"] = "在5人地下城中"
+	L["ShowBarVisibilityConditionInRaidInstance"] = "在团队副本中"
+
 end
