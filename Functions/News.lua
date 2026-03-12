@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.1.33-release (2026-03-12)
+## General
+### Localization
+
+- [#691](#691) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Evoker
+### Devastation
+
+- Fix an issue where completing an empowered cast with high latency during/after Dragonrage could cause a Lua error.
+
+---
+
 # 12.0.1.32-release (2026-03-11)
 ## General
 
