@@ -16,7 +16,7 @@ local content = [====[
 ## General
 ### Localization
 
-- [#691](#691) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#693](#693) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Evoker
 ### Devastation
