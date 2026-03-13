@@ -1301,6 +1301,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
+	yCoord = yCoord - 5
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1328,10 +1329,9 @@ local function BalanceConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 25
 	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showComboPoints
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
 	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
 	f:SetChecked(spec.displayBar.showComboPoints)
@@ -1361,7 +1361,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["ResourceComboPoints"], true, true)
 end
 
@@ -1997,6 +1997,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
+	yCoord = yCoord - 5
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2022,10 +2023,9 @@ local function FeralConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 25
 	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showComboPoints
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
 	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
 	f:SetChecked(spec.displayBar.showComboPoints)
@@ -2055,7 +2055,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
@@ -2615,6 +2615,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
+	yCoord = yCoord - 5
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2642,10 +2643,9 @@ local function GuardianConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 25
 	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showComboPoints
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
 	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
 	f:SetChecked(spec.displayBar.showComboPoints)
@@ -2675,7 +2675,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", true, L["ResourceComboPoints"], true)
 end
 
@@ -3122,6 +3122,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
+	yCoord = yCoord - 5
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3149,10 +3150,9 @@ local function RestorationConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 25
 	controls.checkBoxes.showComboPoints = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_ShowComboPoints", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showComboPoints
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidCheckboxShowComboPoints"])
 	f.tooltip = L["DruidCheckboxShowComboPointsTooltip"]
 	f:SetChecked(spec.displayBar.showComboPoints)
@@ -3182,7 +3182,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", true, L["ResourceComboPoints"], true)
 end
 

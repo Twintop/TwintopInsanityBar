@@ -15,6 +15,9 @@ local content = [====[
 # 12.0.1.34-release (2026-03-14)
 ## General
 
+- [#529](#529) Update Visibility tab layout to be more space efficient to allow for more options.
+- [#529](#529) Add new opacity and fade-out configuration options per-bar.
+- [#529](#529) Relocated the "Bar Flash" options out of the "Visibility" tab for Balance Druid, Beast Mastery Hunter, Shadow Priest, and Elemental Shaman. This is now found at the bottom of their respective primary bar tabs, e.g. "Insanity" for Shadow Priest.
 - Fix an issue where if all of the bar text areas for a specialization (or globally) were removed, the addon would restore defaults on the next login.
 
 ---
