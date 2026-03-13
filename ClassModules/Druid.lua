@@ -2901,12 +2901,11 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSettings()
 					end
 
-					-- Clear core barText defaults before merge to prevent per-index array duplication.
-					-- Only clear if saved vars have entries; otherwise let defaults seed the list.
+					-- Clear core barText defaults before merge so the user's saved list (even if empty)
+					-- takes precedence. Only skip when no saved core displayText exists (first-run seeding).
 					if TwintopInsanityBarSettings.core
 						and TwintopInsanityBarSettings.core.displayText
-						and TwintopInsanityBarSettings.core.displayText.barText
-						and #TwintopInsanityBarSettings.core.displayText.barText > 0 then
+						and TwintopInsanityBarSettings.core.displayText.barText then
 						settings.core.displayText.barText = {}
 					end
 					TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
