@@ -2033,4 +2033,22 @@ if locale == "zhCN" then
 	L["ShowBarVisibilityConditionInDungeon"] = "在5人地下城中"
 	L["ShowBarVisibilityConditionInRaidInstance"] = "在团队副本中"
 
+	L["ShowBarVisibilityActiveAlpha"] = "激活透明度"
+	L["ShowBarVisibilityActiveAlphaTooltip"] = "满足显示条件时资源条的透明度。100%% 为完全不透明。"
+	L["ShowBarVisibilityInactiveAlpha"] = "未激活透明度"
+	L["ShowBarVisibilityInactiveAlphaTooltip"] = "不满足显示条件时资源条的透明度。设置大于0%%可让资源条保持部分可见。"
+	L["ShowBarVisibilityFadeDuration"] = "渐变时长"
+	L["ShowBarVisibilityFadeDurationTooltip"] = "资源条渐变至未激活透明度的时间（秒）。设为0则立即切换。"
+	L["ShowBarVisibilityFadeDelay"] = "渐变延迟"
+	L["ShowBarVisibilityFadeDelayTooltip"] = "资源条开始渐变前的等待时间（秒）。设为0则立即开始渐变。"
+	
+	L["BarVisibilityTableHeaderBar"] = "资源条"
+	L["BarVisibilityTableHeaderVisibility"] = "显示"
+	L["BarVisibilityBarNamePrimary"] = "%s 资源条"
+	L["BarVisibilityBarNameHealth"] = "生命条"
+	L["BarVisibilityBarNameMana"] = "法力条"
+	L["BarVisibilityDetailHeader"] = "%s 设置"
+	L["BarVisibilityConditionsLabel"] = "显示条件"
+	L["FlashSectionHeader"] = "资源条闪烁"
+
 end
