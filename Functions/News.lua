@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.34-release (2026-03-14)
+## General
+
+- Fix an issue where if all of the bar text areas for a specialization (or globally) were removed, the addon would restore defaults on the next login.
+
+---
+
 # 12.0.1.33-release (2026-03-12)
 ## General
 ### Localization
