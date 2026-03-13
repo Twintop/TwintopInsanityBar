@@ -405,6 +405,7 @@ end
 ---@field public currentAlpha number # Current interpolated alpha (0.0–1.0)
 ---@field public lastAlphaTime number # GetTime() of last fade interpolation step
 ---@field public fadeDuration number # Seconds for fade transition (0 = instant)
+---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
@@ -433,6 +434,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	self.currentAlpha = 0
 	self.lastAlphaTime = GetTime()
 	self.fadeDuration = 0
+	self.fadeStartAlpha = 0
 	self.fadeDelayUntil = 0
 
 	-- Create container frame for the group
@@ -743,6 +745,7 @@ function TRB.Classes.BarGroup:SetTargetAlpha(target, duration, delay)
 	end
 	self.targetAlpha = target
 	self.fadeDuration = duration or 0
+	self.fadeStartAlpha = self.currentAlpha
 	local now = GetTime()
 	local fadeDelay = delay or 0
 	if fadeDelay > 0 then
@@ -785,18 +788,19 @@ function TRB.Classes.BarGroup:UpdateFade()
 	end
 
 	local elapsed = now - self.lastAlphaTime
-	self.lastAlphaTime = now
 
 	if elapsed <= 0 then
 		return self.currentAlpha, true
 	end
 
-	-- Linear interpolation: move toward target by (elapsed / duration) of the full range
-	local step = elapsed / duration
-	if self.currentAlpha < self.targetAlpha then
-		self.currentAlpha = math.min(self.currentAlpha + step, self.targetAlpha)
-	else
-		self.currentAlpha = math.max(self.currentAlpha - step, self.targetAlpha)
+	-- Normalized linear interpolation: progress is elapsed / duration over the
+	-- start→target range, so fadeDuration is always the total transition time
+	-- regardless of the alpha delta (e.g. 1.0→0.5 takes the same time as 1.0→0.0).
+	local progress = math.min(elapsed / duration, 1.0)
+	self.currentAlpha = self.fadeStartAlpha + (self.targetAlpha - self.fadeStartAlpha) * progress
+
+	if progress >= 1.0 then
+		self.currentAlpha = self.targetAlpha
 	end
 
 	return self.currentAlpha, (self.currentAlpha ~= self.targetAlpha)
