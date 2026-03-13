@@ -1088,7 +1088,7 @@ local function UpdateResourceBar()
 						end
 					end
 
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
@@ -1215,7 +1215,7 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.vivaciousVivification.color
 					end
 
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					primaryNode:SetBorderColor(barBorderColor)
 					primaryNode:SetColor(barColor)
 					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
@@ -1346,7 +1346,7 @@ local function UpdateResourceBar()
 						barBorderColor = specSettings.colors.bar.danceOfChiJi.color
 					end
 
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)

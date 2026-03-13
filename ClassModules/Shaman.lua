@@ -829,9 +829,9 @@ local function UpdateResourceBar()
 				if anyUsable and specSettings.colors.bar.earthShock.enabled then
 					barColor = specSettings.colors.bar.earthShock.color
 					if specSettings.colors.bar.flashEnabled then
-						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
 					else
-						barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
 
 					if specSettings.audio.esReady.enabled and snapshotData.audio.playedEsCue == false then
@@ -839,7 +839,7 @@ local function UpdateResourceBar()
 						PlaySoundFile(specSettings.audio.esReady.sound, coreSettings.audio.channel.channel)
 					end
 				else
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					snapshotData.audio.playedEsCue = false
 				end
 
@@ -932,7 +932,7 @@ local function UpdateResourceBar()
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				
 				if snapshots[spells.ascendance.id].buff.isActive then
 					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)

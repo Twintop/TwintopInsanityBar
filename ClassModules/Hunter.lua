@@ -916,12 +916,12 @@ local function UpdateResourceBar()
 
 				if spells.bestialWrath:IsUsable() then
 					if specSettings.colors.bar.flashEnabled and TRB.Data.character.inCombat then
-						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
 					else
-						barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
 				else
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				-- Apply overcap border color if enabled
@@ -1100,7 +1100,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
@@ -1231,7 +1231,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				-- Apply overcap border color if enabled
 				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)

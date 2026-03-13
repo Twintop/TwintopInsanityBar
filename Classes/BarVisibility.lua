@@ -152,6 +152,8 @@ TRB.Functions.BarVisibility = {}
 -- We skip re-evaluation unless an input has changed (MarkDirty was called).
 TRB.Functions.BarVisibility.dirtyToken = 0
 TRB.Functions.BarVisibility.lastAppliedToken = -1
+-- When true, at least one bar is mid-fade and needs per-tick interpolation.
+TRB.Functions.BarVisibility.fading = false
 
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
@@ -168,6 +170,9 @@ end
 ---@return boolean
 function TRB.Functions.BarVisibility:IsDirty(force)
 	if force then
+		return true
+	end
+	if self.fading then
 		return true
 	end
 	return self.dirtyToken ~= self.lastAppliedToken
@@ -283,6 +288,7 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 end
 
 ---Evaluates and applies visibility for all bar entries. Sets isTracking and controls BarText.
+---Uses alpha-based visibility with fade interpolation instead of binary Show/Hide.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entries TRB.Classes.BarVisibilityEntry[] # Array of bar entries to process
 ---@param snapshotData TRB.Classes.SnapshotData # The snapshot data to update isTracking on
@@ -290,34 +296,77 @@ end
 ---@return boolean # Whether any bar is showing (isTracking value)
 function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, settings)
 	local anyShowing = false
+	local anyFading = false
+	local conditionsChanged = (self.dirtyToken ~= self.lastAppliedToken) or context.force
+	local isRenderTransition = TRB.Functions.Bar:IsRenderTransitionActive()
 
 	for _, entry in ipairs(entries) do
 		if entry.barGroup ~= nil then
-			local show = self:ShouldShowBar(context, entry)
-			if show then
+			-- Phase 1: Evaluate conditions and compute target alpha (only when conditions changed)
+			if conditionsChanged then
+				local show = self:ShouldShowBar(context, entry)
+				local visSettings = entry.visibilitySettings
+				local targetAlpha, fadeDuration
+
+				local fadeDelay = 0
+
+				if show then
+					-- Becoming active: snap instantly (no fade-in)
+					targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
+					fadeDuration = 0
+				else
+					-- Becoming inactive: use configured fade duration and delay (fade-out only)
+					targetAlpha = (visSettings and visSettings.inactiveAlpha or 0) / 100
+					fadeDuration = visSettings and visSettings.fadeDuration or 0
+					fadeDelay = visSettings and visSettings.fadeDelay or 0
+				end
+
+				-- During render transitions, snap to 0 instantly (no fade)
+				if isRenderTransition then
+					targetAlpha = 0
+					fadeDuration = 0
+					fadeDelay = 0
+				end
+
+				entry.barGroup:SetTargetAlpha(targetAlpha, fadeDuration, fadeDelay)
+			end
+
+			-- Phase 2: Interpolate fade (runs every tick while fading)
+			local currentAlpha, stillFading = entry.barGroup:UpdateFade()
+			if stillFading then
+				anyFading = true
+			end
+
+			-- Phase 3: Apply alpha and show/hide based on current alpha
+			if currentAlpha > 0 then
 				anyShowing = true
-				if entry.setMaxNodes then
-					entry.barGroup:SetMaxNodes(entry.setMaxNodes)
+				if not entry.barGroup.isVisible then
+					if entry.setMaxNodes then
+						entry.barGroup:SetMaxNodes(entry.setMaxNodes)
+					end
+					entry.barGroup:Show()
+					if entry.showNodesCount then
+						entry.barGroup:ShowNodes(entry.showNodesCount)
+					end
 				end
-				entry.barGroup:Show()
-				if entry.showNodesCount then
-					entry.barGroup:ShowNodes(entry.showNodesCount)
-				end
+				entry.barGroup.containerFrame:SetAlpha(currentAlpha)
 			else
-				entry.barGroup:Hide()
+				if entry.barGroup.isVisible then
+					entry.barGroup:Hide()
+				end
 			end
 		end
 	end
 
+	self.fading = anyFading
+
 	-- Collapse/expand container frames based on resolved visibility.
 	-- Hidden bars' containers are shrunk to 0.001 so that bars anchored to them
-	-- slide together (no blank gap). Visible bars are expanded back to their
-	-- layout height (stored during ConstructAnchoredBarGroup / ApplyLayout).
-	-- This runs AFTER Show/Hide so it reflects the correct runtime state,
-	-- including Druid form-based visibility which isn't known at construction time.
+	-- slide together (no blank gap). Visible bars (including inactive-alpha bars
+	-- with alpha > 0) are expanded back to their layout height.
 	for _, entry in ipairs(entries) do
 		if entry.barGroup ~= nil and entry.barGroup.containerFrame then
-			if entry.barGroup.isVisible then
+			if entry.barGroup.currentAlpha > 0 then
 				if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
 					entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
 				end
@@ -329,17 +378,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every
-	-- variable is recomputed on the next RefreshLookupData pass.  A simple
-	-- lookupDirty = true is not enough: the prevLookupState cache may still
-	-- consider values "unchanged" (same raw value + color as before the bar was
-	-- hidden) and skip rewriting lookup strings, leaving stale formatted text.
-	-- InvalidateLookupMemoization wipes prevLookupState AND sets lookupDirty.
-	--
-	-- Additionally, set barTextVisibilityRefreshNeeded so that the NEXT call to
-	-- UpdateResourceBarText unconditionally processes all bar text entries.
-	-- This covers edge cases where lookupDirty alone is insufficient (e.g.,
-	-- options panel toggling visibility without a subsequent TriggerResourceBarUpdates
-	-- on the same frame, or lookupDirty being consumed during the hidden period).
+	-- variable is recomputed on the next RefreshLookupData pass.
 	local wasTracking = snapshotData.attributes.isTracking
 	snapshotData.attributes.isTracking = anyShowing
 	if anyShowing and not wasTracking then
@@ -353,7 +392,9 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		TRB.Functions.BarText:Hide(settings)
 	end
 
-	self:MarkClean()
+	if conditionsChanged then
+		self:MarkClean()
+	end
 	return anyShowing
 end
 
@@ -365,6 +406,8 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 	if entries then
 		for _, entry in ipairs(entries) do
 			if entry.barGroup ~= nil then
+				entry.barGroup.targetAlpha = 0
+				entry.barGroup.currentAlpha = 0
 				entry.barGroup:Hide()
 				-- Collapse container so anchored children slide together
 				if entry.barGroup.containerFrame then
@@ -374,6 +417,7 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 		end
 	end
 
+	self.fading = false
 	snapshotData.attributes.isTracking = false
 	if settings ~= nil then
 		TRB.Functions.BarText:Hide(settings)
@@ -389,10 +433,13 @@ function TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 	if barGroups then
 		for _, group in pairs(barGroups) do
 			if type(group) == "table" and group.Hide then
+				group.targetAlpha = 0
+				group.currentAlpha = 0
 				group:Hide()
 			end
 		end
 	end
+	self.fading = false
 	snapshotData.attributes.isTracking = false
 
 	self:MarkClean()

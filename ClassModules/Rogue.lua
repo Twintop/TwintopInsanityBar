@@ -1019,7 +1019,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				if barGroups and barGroups.primary then
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then
@@ -1319,7 +1319,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				if barGroups and barGroups.primary then
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then
@@ -1605,7 +1605,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 				
 				if barGroups and barGroups.primary then
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then

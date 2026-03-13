@@ -4581,6 +4581,37 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 	end
 
+	-- Helper: refresh spec/global cache and re-evaluate bar visibility after alpha/fade changes.
+	local function RefreshVisibilitySettings()
+		if classId ~= nil and specId ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(settings)
+				end
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.Bar:HideResourceBar()
+			end
+		else
+			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+				local lowerClassName = string.lower(TRB.Data.character.className)
+				local currentSpecName = TRB.Data.character.specName
+				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(settings)
+				end
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.Bar:HideResourceBar()
+			end
+		end
+	end
+
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
 		rootDescription:SetScrollMode(400)
 
@@ -4819,6 +4850,117 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end)
 	end
 
+	-- Active Opacity, Inactive Opacity, and Fade Duration sliders for primary (and health)
+	controls.sliders = controls.sliders or {}
+
+	yCoord = yCoord - 50
+	controls.sliders.primaryActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
+		0, 100, spec.displayBar.primary.activeAlpha or 100, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.sliders.primaryActiveAlpha.MinLabel:SetText("0%")
+	controls.sliders.primaryActiveAlpha.MaxLabel:SetText("100%")
+	controls.sliders.primaryActiveAlpha:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.displayBar.primary.activeAlpha = value
+		RefreshVisibilitySettings()
+	end)
+
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		controls.sliders.healthActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
+			0, 100, spec.displayBar.health.activeAlpha or 100, 1, 0,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.sliders.healthActiveAlpha.MinLabel:SetText("0%")
+		controls.sliders.healthActiveAlpha.MaxLabel:SetText("100%")
+		controls.sliders.healthActiveAlpha:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar.health.activeAlpha = value
+			RefreshVisibilitySettings()
+		end)
+	end
+
+	yCoord = yCoord - 60
+	controls.sliders.primaryInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
+		0, 100, spec.displayBar.primary.inactiveAlpha or 0, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.sliders.primaryInactiveAlpha.MinLabel:SetText("0%")
+	controls.sliders.primaryInactiveAlpha.MaxLabel:SetText("100%")
+	controls.sliders.primaryInactiveAlpha:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		spec.displayBar.primary.inactiveAlpha = value
+		RefreshVisibilitySettings()
+	end)
+
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		controls.sliders.healthInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
+			0, 100, spec.displayBar.health.inactiveAlpha or 0, 1, 0,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.sliders.healthInactiveAlpha.MinLabel:SetText("0%")
+		controls.sliders.healthInactiveAlpha.MaxLabel:SetText("100%")
+		controls.sliders.healthInactiveAlpha:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar.health.inactiveAlpha = value
+			RefreshVisibilitySettings()
+		end)
+	end
+
+	yCoord = yCoord - 60
+	controls.sliders.primaryFadeDuration = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
+		0, 10, spec.displayBar.primary.fadeDuration or 0, 0.25, 2,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.sliders.primaryFadeDuration:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.displayBar.primary.fadeDuration = value
+		RefreshVisibilitySettings()
+	end)
+
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		controls.sliders.healthFadeDuration = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
+			0, 10, spec.displayBar.health.fadeDuration or 0, 0.25, 2,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.sliders.healthFadeDuration:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar.health.fadeDuration = value
+			RefreshVisibilitySettings()
+		end)
+	end
+
+	yCoord = yCoord - 60
+	controls.sliders.primaryFadeDelay = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
+		0, 10, spec.displayBar.primary.fadeDelay or 0, 0.25, 2,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.sliders.primaryFadeDelay:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.displayBar.primary.fadeDelay = value
+		RefreshVisibilitySettings()
+	end)
+
+	if includeHealthVisibility and spec.displayBar.health ~= nil then
+		controls.sliders.healthFadeDelay = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
+			0, 10, spec.displayBar.health.fadeDelay or 0, 0.25, 2,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.sliders.healthFadeDelay:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar.health.fadeDelay = value
+			RefreshVisibilitySettings()
+		end)
+	end
+
 	-- Collect remaining visibility items, then place in two-column layout (left-to-right fill)
 	local visibilityItems = {}
 	if includeSecondaryVisibility then
@@ -4984,9 +5126,58 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			end
 		end)
 
+		-- Alpha and fade sliders for this visibility item
+		controls.sliders[item.key .. "ActiveAlpha"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
+			0, 100, spec.displayBar[displayBarKey].activeAlpha or 100, 1, 0,
+			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 115)
+		controls.sliders[item.key .. "ActiveAlpha"].MinLabel:SetText("0%")
+		controls.sliders[item.key .. "ActiveAlpha"].MaxLabel:SetText("100%")
+		controls.sliders[item.key .. "ActiveAlpha"]:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar[displayBarKey].activeAlpha = value
+			RefreshVisibilitySettings()
+		end)
+
+		controls.sliders[item.key .. "InactiveAlpha"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
+			0, 100, spec.displayBar[displayBarKey].inactiveAlpha or 0, 1, 0,
+			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 175)
+		controls.sliders[item.key .. "InactiveAlpha"].MinLabel:SetText("0%")
+		controls.sliders[item.key .. "InactiveAlpha"].MaxLabel:SetText("100%")
+		controls.sliders[item.key .. "InactiveAlpha"]:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar[displayBarKey].inactiveAlpha = value
+			RefreshVisibilitySettings()
+		end)
+
+		controls.sliders[item.key .. "FadeDuration"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
+			0, 10, spec.displayBar[displayBarKey].fadeDuration or 0, 0.25, 2,
+			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 235)
+		controls.sliders[item.key .. "FadeDuration"]:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar[displayBarKey].fadeDuration = value
+			RefreshVisibilitySettings()
+		end)
+
+		controls.sliders[item.key .. "FadeDelay"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
+			0, 10, spec.displayBar[displayBarKey].fadeDelay or 0, 0.25, 2,
+			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 295)
+		controls.sliders[item.key .. "FadeDelay"]:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.displayBar[displayBarKey].fadeDelay = value
+			RefreshVisibilitySettings()
+		end)
+
 		-- Advance yCoord after right column item or last item
 		if not isLeft or i == #visibilityItems then
-			yCoord = yCoord - 65
+			yCoord = yCoord - 315
 		end
 	end
 

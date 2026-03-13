@@ -83,25 +83,41 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
-					smooth = true
+					smooth = true,
+					activeAlpha = 100,
+					inactiveAlpha = 0,
+					fadeDuration = 0,
+					fadeDelay = 0
 				},
 				secondary = {
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
-					smooth = false
+					smooth = false,
+					activeAlpha = 100,
+					inactiveAlpha = 0,
+					fadeDuration = 0,
+					fadeDelay = 0
 				},
 				health = {
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
-					smooth = true
+					smooth = true,
+					activeAlpha = 100,
+					inactiveAlpha = 0,
+					fadeDuration = 0,
+					fadeDelay = 0
 				},
 				utility = {
 					neverShow = true,
 					alwaysShow = false,
 					conditions = {},
-					smooth = true
+					smooth = true,
+					activeAlpha = 100,
+					inactiveAlpha = 0,
+					fadeDuration = 0,
+					fadeDelay = 0
 				},
 			},
 			overcap = {
@@ -4442,6 +4458,48 @@ function TRB.Functions.Settings:PortForwardSettings()
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
 						MigrateRenamedConditions(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
+	-- Phase 3a: Backfill activeAlpha, inactiveAlpha, and fadeDuration for existing settings.
+	-- Existing users get matching-current-behavior defaults: active=100%, inactive=0%, fade=0s (instant).
+	do
+		local function MigrateAlphaSettings(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil then
+					if entry.activeAlpha == nil then
+						entry.activeAlpha = 100
+					end
+					if entry.inactiveAlpha == nil then
+						entry.inactiveAlpha = 0
+					end
+					if entry.fadeDuration == nil then
+						entry.fadeDuration = 0
+					end
+					if entry.fadeDelay == nil then
+						entry.fadeDelay = 0
+					end
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateAlphaSettings(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		-- Migrate all class/spec displayBar settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateAlphaSettings(specSettings.displayBar)
 					end
 				end
 			end

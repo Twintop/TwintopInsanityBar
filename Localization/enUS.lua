@@ -2153,3 +2153,13 @@ L["ShowBarVisibilityConditionInDelve"] = "In Delve"
 L["ShowBarVisibilityConditionInRaidGroup"] = "In Raid Group"
 L["ShowBarVisibilityConditionInDungeon"] = "In Dungeon"
 L["ShowBarVisibilityConditionInRaidInstance"] = "In Raid"
+
+-- Phase 3a: Alpha-based bar visibility
+L["ShowBarVisibilityActiveAlpha"] = "Active Opacity"
+L["ShowBarVisibilityActiveAlphaTooltip"] = "The opacity of the bar when visibility conditions are met. 100%% is fully opaque."
+L["ShowBarVisibilityInactiveAlpha"] = "Inactive Opacity"
+L["ShowBarVisibilityInactiveAlphaTooltip"] = "The opacity of the bar when visibility conditions are NOT met. Set above 0%% to keep the bar partially visible when inactive."
+L["ShowBarVisibilityFadeDuration"] = "Fade Duration"
+L["ShowBarVisibilityFadeDurationTooltip"] = "How long (in seconds) the bar takes to fade out to inactive opacity. Set to 0 for instant transitions."
+L["ShowBarVisibilityFadeDelay"] = "Fade Delay"
+L["ShowBarVisibilityFadeDelayTooltip"] = "How long (in seconds) to wait before the bar starts fading out to inactive opacity. Set to 0 to start fading immediately."
