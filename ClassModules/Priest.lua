@@ -1597,7 +1597,7 @@ local function UpdateResourceBar()
 				
 				local barColor = specSettings.colors.bar.base.color
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
@@ -1791,7 +1791,7 @@ local function UpdateResourceBar()
 					barColor = specSettings.colors.bar.base.color
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
@@ -2066,9 +2066,9 @@ local function UpdateResourceBar()
 
 				if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
 					if specSettings.colors.bar.flashEnabled then
-						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
 					else
-						barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
 
 					if spells.shadowWordMadness:IsFree() and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
@@ -2080,7 +2080,7 @@ local function UpdateResourceBar()
 						PlaySoundFile(specSettings.audio.dpReady.sound, coreSettings.audio.channel.channel)
 					end
 				else
-					barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					snapshotData.audio.playedDpCue = false
 					snapshotData.audio.playedMdCue = false
 				end

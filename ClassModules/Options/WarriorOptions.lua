@@ -95,9 +95,9 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -364,9 +364,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -627,10 +627,10 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			defensives = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			defensives = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -935,7 +935,7 @@ local function ArmsConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, true)
 end
 
 local function ArmsConstructThresholdPanel(parent)
@@ -1533,7 +1533,7 @@ local function FuryConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, true, L["ResourceWarriorWhirlwind"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", true, L["ResourceWarriorWhirlwind"], true)
 end
 
 local function FuryConstructThresholdPanel(parent)
@@ -2028,7 +2028,7 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 		table.insert(customBars, defensivesBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, nil, false, nil, true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, true, nil, customBars)
 end
 
 local function ProtectionConstructThresholdPanel(parent)

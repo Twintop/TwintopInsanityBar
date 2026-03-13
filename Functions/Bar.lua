@@ -19,6 +19,11 @@ local function SetBarGroupsAlpha(alpha)
 	for _, group in pairs(barGroups) do
 		if type(group) == "table" and group.SetAlpha then
 			group:SetAlpha(alpha)
+			-- Sync fade state so the visibility system doesn't conflict
+			if group.currentAlpha ~= nil then
+				group.currentAlpha = alpha
+				group.targetAlpha = alpha
+			end
 		elseif type(group) == "table" and group.GetContainerFrame then
 			local container = group:GetContainerFrame()
 			if container and container.SetAlpha then
@@ -362,7 +367,8 @@ function TRB.Functions.Bar:HideResourceBar(force)
 	TRB.Functions.Class:HideResourceBar(force)
 end
 
-function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
+function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
+	maxAlpha = maxAlpha or 1.0
 	if alphaOffset > 1.0 then
 		alphaOffset = 1.0
 	elseif alphaOffset < 0 then
@@ -373,7 +379,7 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
 		flashPeriod = 0.5
 	end
 	
-	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset)
+	frame:SetAlpha(maxAlpha * (((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset))
 end
 
 function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)

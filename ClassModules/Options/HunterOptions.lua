@@ -83,9 +83,9 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			bestialWrath = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
@@ -270,9 +270,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			trueshot = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
@@ -442,9 +442,9 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			takedown = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0),
@@ -755,6 +755,9 @@ local function BeastMasteryConstructFocusBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, 3, 1, yCoord, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"])
 end
 
 local function BeastMasteryConstructHealthBarPanel(parent)
@@ -800,7 +803,7 @@ local function BeastMasteryConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"], false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
 end
 
 local function BeastMasteryConstructThresholdPanel(parent)
@@ -1306,7 +1309,7 @@ local function MarksmanshipConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
 end
 
 local function MarksmanshipConstructThresholdPanel(parent)
@@ -1933,7 +1936,7 @@ local function SurvivalConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false, nil, nil, true, L["ResourceTipOfTheSpear"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", true, L["ResourceTipOfTheSpear"], true)
 end
 
 local function SurvivalConstructThresholdPanel(parent)

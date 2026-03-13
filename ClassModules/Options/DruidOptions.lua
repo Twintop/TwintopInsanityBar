@@ -287,10 +287,10 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -623,9 +623,9 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			enableFormSwitching = true,
 			showComboPoints = true
 		},
@@ -805,9 +805,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -926,9 +926,9 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -1236,6 +1236,9 @@ local function BalanceConstructAstralPowerBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 1, BALANCE_MAX_ASTRAL_POWER)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, 11, 1, yCoord, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"])
 end
 
 local function BalanceConstructManaBarPanel(parent)
@@ -1298,9 +1301,6 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"], true, L["ResourceComboPoints"], true, true)
-
-	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1360,6 +1360,9 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.values.frame = {}
 		end
 	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["ResourceComboPoints"], true, true)
 end
 
 local function BalanceConstructThresholdPanel(parent)
@@ -1994,9 +1997,6 @@ local function FeralConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2054,6 +2054,9 @@ local function FeralConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.values.frame = {}
 		end
 	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
 local function FeralConstructThresholdPanel(parent)
@@ -2612,9 +2615,6 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2674,6 +2674,9 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.values.frame = {}
 		end
 	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", true, L["ResourceComboPoints"], true)
 end
 
 local function GuardianConstructThresholdPanel(parent)
@@ -3119,9 +3122,6 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
-
-	yCoord = yCoord - 70
 	controls.checkBoxes.enableFormSwitching = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Checkbox_FormSwitching", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.enableFormSwitching
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -3181,6 +3181,9 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			TRB.Data.cache.values.frame = {}
 		end
 	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
 local function RestorationConstructThresholdPanel(parent)

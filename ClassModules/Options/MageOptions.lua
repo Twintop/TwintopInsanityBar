@@ -40,9 +40,9 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -165,9 +165,9 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -252,9 +252,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -583,7 +583,7 @@ local function ArcaneConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceArcaneCharges"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true)
 end
 
 local function ArcaneConstructFontAndTextPanel(parent)
@@ -902,7 +902,7 @@ local function FireConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function FireConstructFontAndTextPanel(parent)
@@ -1256,7 +1256,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceIcicles"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
 end
 
 local function FrostConstructFontAndTextPanel(parent)

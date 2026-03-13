@@ -99,7 +99,7 @@ local function ConstructBarVisibilityPanel(parent)
 		table.insert(customBars, utilityBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
 local function ConstructThresholdPanel(parent)

@@ -732,7 +732,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -776,7 +776,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -820,7 +820,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 

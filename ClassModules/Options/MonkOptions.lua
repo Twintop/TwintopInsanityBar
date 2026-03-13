@@ -146,9 +146,9 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			stagger = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			stagger = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			invokeNiuzao = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -296,9 +296,9 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -437,9 +437,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -860,7 +860,7 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 		table.insert(customBars, staggerBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
 end
 
 local function BrewmasterConstructThresholdPanel(parent)
@@ -1446,7 +1446,7 @@ local function MistweaverConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function MistweaverConstructThresholdPanel(parent)
@@ -1883,7 +1883,7 @@ local function WindwalkerConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceChi"], true)
 end
 
 local function WindwalkerConstructThresholdPanel(parent)

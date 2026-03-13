@@ -118,9 +118,9 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -371,9 +371,9 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -641,9 +641,9 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -1094,7 +1094,7 @@ local function AssassinationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.rogue_assassination
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
 local function AssassinationConstructThresholdPanel(parent)
@@ -1867,7 +1867,7 @@ local function OutlawConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.rogue_outlaw
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
 local function OutlawConstructThresholdPanel(parent)
@@ -2640,7 +2640,7 @@ local function SubtletyConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.rogue_subtlety
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceComboPoints"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
 local function SubtletyConstructThresholdPanel(parent)

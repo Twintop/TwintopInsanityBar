@@ -196,9 +196,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			dragonrage = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -333,9 +333,9 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -501,9 +501,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -902,7 +902,7 @@ local function DevastationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function DevastationConstructFontAndTextPanel(parent)
@@ -1290,7 +1290,7 @@ local function PreservationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function PreservationConstructThresholdPanel(parent)
@@ -1746,7 +1746,7 @@ local function AugmentationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)

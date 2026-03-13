@@ -207,10 +207,10 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -483,10 +483,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -703,11 +703,11 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			enabled = false
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true },
-			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			mana = { neverShow = true, alwaysShow = false, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -1177,7 +1177,7 @@ local function DisciplineConstructBarVisibilityPanel(parent)
 		table.insert(customBars, utilityBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestDisciplinePowerWords"], true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", true, L["PriestDisciplinePowerWords"], true, nil, customBars)
 end
 
 local function DisciplineConstructThresholdPanel(parent)
@@ -1660,7 +1660,7 @@ local function HolyConstructBarVisibilityPanel(parent)
 		table.insert(customBars, utilityBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["PriestHolyHolyWords"], true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", true, L["PriestHolyHolyWords"], true, nil, customBars)
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -2223,6 +2223,9 @@ local function ShadowConstructInsanityBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], 1, SHADOW_MAX_INSANITY)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, 5, 3, yCoord, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"])
 end
 
 local function ShadowConstructManaBarPanel(parent)
@@ -2290,7 +2293,7 @@ local function ShadowConstructBarVisibilityPanel(parent)
 		table.insert(customBars, utilityBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", true, L["PriestShadowShadowWordMadness"], L["PriestShadowShadowWordMadnessAbbreviation"], false, nil, true, true, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", false, nil, true, true, customBars)
 end
 
 local function ShadowConstructThresholdPanel(parent)

@@ -789,7 +789,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				-- Dragonrage bar color changes
 				if specSettings.colors.bar.dragonrage.enabled and snapshots[spells.dragonrage.id].buff.isActive then
@@ -902,7 +902,7 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				barGroups.primary:GetContainerFrame():SetAlpha(1.0)
+				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				-- Ebon Might bar color changes
 				if snapshots[spells.ebonMight.id].buff.isActive then

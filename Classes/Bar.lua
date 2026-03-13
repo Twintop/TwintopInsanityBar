@@ -310,14 +310,8 @@ function TRB.Classes.BarNode:SetAlpha(alpha)
 	self.frame:SetAlpha(alpha)
 end
 
----Shows the node
+---Shows the node. Alpha is managed by the parent BarGroup's visibility/fade system.
 function TRB.Classes.BarNode:Show()
-	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
-		self.frame:SetAlpha(0)
-	else
-		self.frame:SetAlpha(1)
-	end
-
 	self.frame:Show()
 	self.isVisible = true
 end
@@ -407,6 +401,12 @@ end
 ---@field public orientation string
 ---@field public isVisible boolean
 ---@field public isPrimary boolean
+---@field public targetAlpha number # Target alpha from visibility system (0.0–1.0)
+---@field public currentAlpha number # Current interpolated alpha (0.0–1.0)
+---@field public lastAlphaTime number # GetTime() of last fade interpolation step
+---@field public fadeDuration number # Seconds for fade transition (0 = instant)
+---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
+---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
 
@@ -430,6 +430,12 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	self.isVisible = false
 	self.isPrimary = isPrimary or false
 	self.smooth = nil
+	self.targetAlpha = 0
+	self.currentAlpha = 0
+	self.lastAlphaTime = GetTime()
+	self.fadeDuration = 0
+	self.fadeStartAlpha = 0
+	self.fadeDelayUntil = 0
 
 	-- Create container frame for the group
 	local containerName = self.name
@@ -717,22 +723,87 @@ function TRB.Classes.BarGroup:HideAllNodes()
 	end
 end
 
----Shows the group container
+---Shows the group container. Alpha is managed by the visibility/fade system, not here.
 function TRB.Classes.BarGroup:Show()
-	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and TRB.Functions.Bar:IsRenderTransitionActive() then
-		self.containerFrame:SetAlpha(0)
-	else
-		self.containerFrame:SetAlpha(1)
-	end
-
 	self.containerFrame:Show()
 	self.isVisible = true
 end
 
----Hides the group container
+---Hides the group container (fully hidden, alpha irrelevant)
 function TRB.Classes.BarGroup:Hide()
 	self.containerFrame:Hide()
 	self.isVisible = false
+end
+
+---Sets the target alpha and fade duration for the visibility fade system.
+---@param target number # Target alpha (0.0–1.0)
+---@param duration number # Seconds for the fade transition (0 = instant snap)
+---@param delay number? # Seconds to wait before starting the fade (default 0)
+function TRB.Classes.BarGroup:SetTargetAlpha(target, duration, delay)
+	if self.targetAlpha == target then
+		return
+	end
+	self.targetAlpha = target
+	self.fadeDuration = duration or 0
+	self.fadeStartAlpha = self.currentAlpha
+	local now = GetTime()
+	local fadeDelay = delay or 0
+	if fadeDelay > 0 then
+		self.fadeDelayUntil = now + fadeDelay
+	else
+		self.fadeDelayUntil = 0
+	end
+	self.lastAlphaTime = now
+end
+
+---Interpolates currentAlpha toward targetAlpha based on elapsed time.
+---Respects fadeDelayUntil: while the current time is before that timestamp,
+---the fade has not yet started but we report as still fading (in-progress).
+---@return number currentAlpha # The current interpolated alpha
+---@return boolean fading # true if the fade is still in progress
+function TRB.Classes.BarGroup:UpdateFade()
+	if self.currentAlpha == self.targetAlpha then
+		return self.currentAlpha, false
+	end
+
+	local now = GetTime()
+
+	-- Respect fade delay: don't start fading until delay expires
+	if self.fadeDelayUntil > 0 and now < self.fadeDelayUntil then
+		self.lastAlphaTime = now
+		return self.currentAlpha, true -- still "fading" (waiting)
+	end
+	-- Clear the delay once expired
+	if self.fadeDelayUntil > 0 then
+		self.fadeDelayUntil = 0
+	end
+
+	local duration = self.fadeDuration or 0
+
+	if duration <= 0 then
+		-- Instant snap
+		self.currentAlpha = self.targetAlpha
+		self.lastAlphaTime = now
+		return self.currentAlpha, false
+	end
+
+	local elapsed = now - self.lastAlphaTime
+
+	if elapsed <= 0 then
+		return self.currentAlpha, true
+	end
+
+	-- Normalized linear interpolation: progress is elapsed / duration over the
+	-- start→target range, so fadeDuration is always the total transition time
+	-- regardless of the alpha delta (e.g. 1.0→0.5 takes the same time as 1.0→0.0).
+	local progress = math.min(elapsed / duration, 1.0)
+	self.currentAlpha = self.fadeStartAlpha + (self.targetAlpha - self.fadeStartAlpha) * progress
+
+	if progress >= 1.0 then
+		self.currentAlpha = self.targetAlpha
+	end
+
+	return self.currentAlpha, (self.currentAlpha ~= self.targetAlpha)
 end
 
 ---Destroys the group and all its nodes

@@ -40,9 +40,9 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -188,9 +188,9 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -325,9 +325,9 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			mana = 1
 		},
 		displayBar = {
-			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
-			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false },
-			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true },
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
@@ -712,7 +712,7 @@ local function HolyConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceHolyPower"], true)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1144,7 +1144,7 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.paladin_protection
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], "notFull", true, L["ResourceHolyPower"], true)
 end
 
 local function ProtectionConstructThresholdPanel(parent)
@@ -1573,7 +1573,7 @@ local function RetributionConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.paladin_retribution
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceHolyPower"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceHolyPower"], true)
 end
 
 local function RetributionConstructThresholdPanel(parent)

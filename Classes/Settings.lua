@@ -242,6 +242,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public alwaysShow boolean # When true, the bar is unconditionally shown (overrides conditions but not neverShow). Independent of individual conditions.
 ---@field public conditions trbBarVisibilityConditions # OR-combined conditions evaluated when alwaysShow is false
 ---@field public smooth boolean
+---@field public activeAlpha number # Opacity (0–100) when visibility conditions are met. Default 100.
+---@field public inactiveAlpha number # Opacity (0–100) when visibility conditions are NOT met. 0 = fully hidden. Default 0.
+---@field public fadeDuration number # Seconds to fade out to inactive opacity. 0 = instant. Default 0.
+---@field public fadeDelay number # Seconds to wait before starting the fade out. 0 = immediate. Default 0.
 ---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions
 
 ---@alias trbOverlayMode
