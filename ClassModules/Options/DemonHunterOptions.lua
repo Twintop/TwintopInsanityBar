@@ -814,7 +814,7 @@ local function HavocConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false, nil, true)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
@@ -1321,7 +1321,7 @@ local function VengeanceConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", true, L["ResourceSoulFragments"], true)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
@@ -1862,7 +1862,7 @@ local function DevourerConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", false, nil, nil, true, L["ResourceSoulFragments"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", true, L["ResourceSoulFragments"], true)
 end
 
 local function DevourerConstructThresholdPanel(parent)

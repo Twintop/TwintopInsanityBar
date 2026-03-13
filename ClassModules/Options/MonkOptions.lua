@@ -860,7 +860,7 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 		table.insert(customBars, staggerBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, nil, false, nil, true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
 end
 
 local function BrewmasterConstructThresholdPanel(parent)
@@ -1446,7 +1446,7 @@ local function MistweaverConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function MistweaverConstructThresholdPanel(parent)
@@ -1883,7 +1883,7 @@ local function WindwalkerConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false, nil, nil, true, L["ResourceChi"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceChi"], true)
 end
 
 local function WindwalkerConstructThresholdPanel(parent)

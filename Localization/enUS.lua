@@ -102,7 +102,7 @@ L["BackgroundTextures"] = "Background Textures"
 L["TextureLock"] = "Use the same texture for all bars, borders, and backgrounds (respectively)"
 L["TextureLockTooltip"] = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
 
---- GenerateBarDisplayOptions
+--- GenerateFlashOptions / GenerateBarVisibilityOptions
 L["BarDisplayHeader"] = "Bar Display"
 L["FlashAlpha"] = "%s Flash Alpha"
 L["FlashPeriod"] = "%s Flash Period (sec)"
@@ -2163,3 +2163,13 @@ L["ShowBarVisibilityFadeDuration"] = "Fade Duration"
 L["ShowBarVisibilityFadeDurationTooltip"] = "How long (in seconds) the bar takes to fade out to inactive opacity. Set to 0 for instant transitions."
 L["ShowBarVisibilityFadeDelay"] = "Fade Delay"
 L["ShowBarVisibilityFadeDelayTooltip"] = "How long (in seconds) to wait before the bar starts fading out to inactive opacity. Set to 0 to start fading immediately."
+
+-- Bar Visibility Table UI
+L["BarVisibilityTableHeaderBar"] = "Bar"
+L["BarVisibilityTableHeaderVisibility"] = "Visibility"
+L["BarVisibilityBarNamePrimary"] = "%s Bar"
+L["BarVisibilityBarNameHealth"] = "Health Bar"
+L["BarVisibilityBarNameMana"] = "Mana Bar"
+L["BarVisibilityDetailHeader"] = "%s Settings"
+L["BarVisibilityConditionsLabel"] = "Visibility"
+L["FlashSectionHeader"] = "Bar Flash"

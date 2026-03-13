@@ -656,6 +656,9 @@ local function ElementalConstructMaelstromBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, 7, 1, yCoord, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"])
 end
 
 local function ElementalConstructManaBarPanel(parent)
@@ -713,7 +716,7 @@ local function ElementalConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", true, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"], false, nil, true, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true)
 end
 
 local function ElementalConstructThresholdPanel(parent)
@@ -1241,7 +1244,7 @@ local function EnhancementConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.shaman_enhancement
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceMaelstromWeapon"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", true, L["ResourceMaelstromWeapon"], true)
 end
 
 local function EnhancementConstructFontAndTextPanel(parent)
@@ -1591,7 +1594,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.shaman_restoration
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function RestorationConstructThresholdPanel(parent)

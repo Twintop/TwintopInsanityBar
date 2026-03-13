@@ -657,7 +657,7 @@ local function AfflictionConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceSoulShards"], true)
 end
 
 local function AfflictionConstructFontAndTextPanel(parent)
@@ -965,7 +965,7 @@ local function DemonologyConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], "notFull", true, L["ResourceSoulShards"], true)
 end
 
 local function DemonologyConstructFontAndTextPanel(parent)
@@ -1458,7 +1458,7 @@ local function DestructionConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceSoulShards"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceSoulShards"], true)
 end
 
 local function DestructionConstructFontAndTextPanel(parent)

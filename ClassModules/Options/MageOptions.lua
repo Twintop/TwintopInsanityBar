@@ -583,7 +583,7 @@ local function ArcaneConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceArcaneCharges"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true)
 end
 
 local function ArcaneConstructFontAndTextPanel(parent)
@@ -902,7 +902,7 @@ local function FireConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function FireConstructFontAndTextPanel(parent)
@@ -1256,7 +1256,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceIcicles"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
 end
 
 local function FrostConstructFontAndTextPanel(parent)

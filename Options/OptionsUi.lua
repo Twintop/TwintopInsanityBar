@@ -4447,11 +4447,55 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars)
+function TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, classId, specId, yCoord, flashAlphaName, flashAlphaNameShort)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 	local title = ""
+
+	controls.flashSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FlashSectionHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	title = string.format(L["FlashAlpha"], flashAlphaName)
+	controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.bar.flashAlpha = value
+	end)
+
+	title = string.format(L["FlashPeriod"], flashAlphaName)
+	controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		spec.colors.bar.flashPeriod = value
+	end)
+
+	yCoord = yCoord - 50
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.flashEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["FlashBarTooltip"], flashAlphaName)
+	f:SetChecked(spec.colors.bar.flashEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.flashEnabled = self:GetChecked()
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_barVisibility"
+	local f = nil
 	if customBars == nil then
 		customBars = {}
 	end
@@ -4461,6 +4505,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
+		controls.checkBoxes = controls.checkBoxes or {}
 		controls.checkBoxes.useGlobalDisplayBar = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_displayBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalDisplayBar
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
@@ -4493,7 +4538,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	end
 
 	yCoord = yCoord - 30
-	
+
 	-- Condition definitions for multi-select bar visibility
 	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
@@ -4573,15 +4618,33 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	-- Override a dropdown's SetText so the framework's auto-concatenated
 	-- checkbox labels are always replaced with our custom summary text.
-	-- getTextFunc returns the desired display string each time SetText is called.
-	local function OverrideDropdownDisplayText(dropdown, getTextFunc)
-		local originalSetText = dropdown.SetText
-		dropdown.SetText = function(self, text)
-			originalSetText(self, getTextFunc())
+	-- The hook is installed once; call UpdateDropdownDisplayText() to change
+	-- the function that provides the display string and force a refresh.
+	local dropdownOriginalSetText = nil
+	local dropdownGetTextFunc = nil
+
+	local function InstallDropdownDisplayTextHook(dropdown)
+		if dropdownOriginalSetText == nil then
+			dropdownOriginalSetText = dropdown.SetText
+			dropdown.SetText = function(self, text)
+				if dropdownGetTextFunc then
+					dropdownOriginalSetText(self, dropdownGetTextFunc())
+				else
+					dropdownOriginalSetText(self, text)
+				end
+			end
 		end
 	end
 
-	-- Helper: refresh spec/global cache and re-evaluate bar visibility after alpha/fade changes.
+	local function UpdateDropdownDisplayText(dropdown, getTextFunc)
+		dropdownGetTextFunc = getTextFunc
+		-- Force an immediate visual refresh via the original SetText
+		if dropdownOriginalSetText then
+			dropdownOriginalSetText(dropdown, getTextFunc())
+		end
+	end
+
+	-- Helper: refresh spec/global cache and re-evaluate bar visibility after changes.
 	local function RefreshVisibilitySettings()
 		if classId ~= nil and specId ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
@@ -4612,6 +4675,46 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		end
 	end
 
+	-- Helper: refresh for changes that also need appearance (custom bars)
+	local function RefreshVisibilityAndAppearance()
+		if classId ~= nil and specId ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+			TRB.Functions.Character:ResetCaches()
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(settings)
+					TRB.Functions.BarVisibility:MarkDirty()
+					TRB.Functions.Bar:HideResourceBar()
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				else
+					TRB.Functions.BarVisibility:MarkDirty()
+					TRB.Functions.Bar:HideResourceBar()
+				end
+			end
+		else
+			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+				local lowerClassName = string.lower(TRB.Data.character.className)
+				local currentSpecName = TRB.Data.character.specName
+				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Frames.barGroups ~= nil then
+					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+					TRB.Functions.EditMode:UpdateWrapperSize(settings)
+				end
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.Bar:HideResourceBar()
+			end
+		end
+	end
+
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
 		rootDescription:SetScrollMode(400)
 
@@ -4621,10 +4724,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			function() return entry.alwaysShow == true end,
 			function()
 				if entry.alwaysShow then
-					-- Uncheck Always
 					entry.alwaysShow = false
 				else
-					-- Check Always; clear Never (mutually exclusive)
 					entry.alwaysShow = true
 					entry.neverShow = false
 				end
@@ -4639,7 +4740,6 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			function()
 				entry.neverShow = not entry.neverShow
 				if entry.neverShow then
-					-- Mutually exclusive: uncheck Always
 					entry.alwaysShow = false
 				end
 				onChange()
@@ -4666,559 +4766,299 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 						onChange()
 					end
 				)
-				-- Dynamically disable condition checkboxes when Always or Never is active.
 				checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
 			end
 		end
 	end
 
-	-- Primary bar visibility dropdown
-	local primaryLabel = string.format(L["ShowBarVisibilityPrimary"], primaryResourceString or L["ResourceMana"])
-	controls.dropDown = controls.dropDown or {}
-	controls.dropDown.primaryVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_PrimaryVisibility", parent, "WowStyle1DropdownTemplate")
-	controls.dropDown.primaryVisibility:SetWidth(oUi.sliderWidth)
-	controls.dropDown.primaryVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, primaryLabel, oUi.xCoord, yCoord)
-	controls.dropDown.primaryVisibility.label.font:SetFontObject(GameFontNormal)
+	-- Build list of bar entries for the table
+	local barEntries = {}
 
-	local function PrimaryVisibilityOnChange()
-		local displayText = GetVisibilityDisplayName(spec.displayBar.primary)
-		controls.dropDown.primaryVisibility:SetDefaultText(displayText)
-		-- Force visual refresh: SetDefaultText alone may not update the displayed
-		-- text when the dropdown has internal selection state from prior interaction.
-		controls.dropDown.primaryVisibility:SetText(displayText)
-		if classId ~= nil and specId ~= nil then
-			-- Spec panel: rebuild cache so global/spec merge is applied correctly
-			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-				TRB.Functions.Character:ResetCaches()
-				-- Reapply layout to adjust positioning for the visibility change
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-				end
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		else
-			-- Global panel: refresh current character's cache if using global displayBar
-			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-				local lowerClassName = string.lower(TRB.Data.character.className)
-				local currentSpecName = TRB.Data.character.specName
-				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-				end
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		end
-	end
+	-- Primary bar (always present)
+	table.insert(barEntries, {
+		key = "primary",
+		displayBarKey = "primary",
+		label = string.format(L["BarVisibilityBarNamePrimary"], primaryResourceString or L["ResourceMana"]),
+		isCustomBar = false,
+	})
 
-	local function PrimaryVisibilityGenerator(dropdown, rootDescription)
-		BuildVisibilityDropdownItems(rootDescription, spec.displayBar.primary, PrimaryVisibilityOnChange)
-	end
-
-	controls.dropDown.primaryVisibility:SetupMenu(PrimaryVisibilityGenerator)
-	OverrideDropdownDisplayText(controls.dropDown.primaryVisibility, function() return GetVisibilityDisplayName(spec.displayBar.primary) end)
-	controls.dropDown.primaryVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.primary))
-	controls.dropDown.primaryVisibility:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-
-	-- Health bar visibility dropdown (only if includeHealthVisibility is true)
+	-- Health bar
 	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		local healthLabel = L["ShowBarVisibilityHealth"]
-		controls.dropDown.healthVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealthVisibility", parent, "WowStyle1DropdownTemplate")
-		controls.dropDown.healthVisibility:SetWidth(oUi.sliderWidth)
-		controls.dropDown.healthVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, healthLabel, oUi.xCoord2, yCoord)
-		controls.dropDown.healthVisibility.label.font:SetFontObject(GameFontNormal)
-
-		local function HealthVisibilityOnChange()
-			local displayText = GetVisibilityDisplayName(spec.displayBar.health)
-			controls.dropDown.healthVisibility:SetDefaultText(displayText)
-			controls.dropDown.healthVisibility:SetText(displayText)
-			if classId ~= nil and specId ~= nil then
-				-- Spec panel: rebuild cache so global/spec merge is applied correctly
-				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					TRB.Functions.Character:ResetCaches()
-					-- Reapply layout to adjust positioning for the visibility change
-					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-					end
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-				end
-			else
-				-- Global panel: refresh current character's cache if using global displayBar
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-						TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-					end
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-				end
-			end
-		end
-
-		local function HealthVisibilityGenerator(dropdown, rootDescription)
-			BuildVisibilityDropdownItems(rootDescription, spec.displayBar.health, HealthVisibilityOnChange)
-		end
-
-		controls.dropDown.healthVisibility:SetupMenu(HealthVisibilityGenerator)
-		OverrideDropdownDisplayText(controls.dropDown.healthVisibility, function() return GetVisibilityDisplayName(spec.displayBar.health) end)
-		controls.dropDown.healthVisibility:SetDefaultText(GetVisibilityDisplayName(spec.displayBar.health))
-		controls.dropDown.healthVisibility:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+		table.insert(barEntries, {
+			key = "health",
+			displayBarKey = "health",
+			label = L["BarVisibilityBarNameHealth"],
+			isCustomBar = false,
+		})
 	end
 
-	-- Smooth animation checkboxes (same row, below the visibility dropdowns)
-	yCoord = yCoord - 65
-	controls.checkBoxes = controls.checkBoxes or {}
-	controls.checkBoxes.primarySmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_PrimarySmooth", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.primarySmooth
-	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
-	f.tooltip = L["CheckboxSmoothBarTooltip"]
-	f:SetChecked(spec.displayBar.primary.smooth)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayBar.primary.smooth = self:GetChecked()
-		-- Refresh cache to pick up the new smooth setting
-		if classId ~= nil and specId ~= nil then
-			-- Spec panel: refresh that spec's cache
-			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				end
-			end
-		else
-			-- Global panel: refresh current character's cache if using global displayBar
-			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-				local lowerClassName = string.lower(TRB.Data.character.className)
-				local currentSpecName = TRB.Data.character.specName
-				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				end
-			end
-		end
-	end)
-
-	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		controls.checkBoxes.healthSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_HealthSmooth", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.healthSmooth
-		f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
-		f.tooltip = L["CheckboxSmoothBarTooltip"]
-		f:SetChecked(spec.displayBar.health.smooth)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayBar.health.smooth = self:GetChecked()
-			-- Refresh cache to pick up the new smooth setting
-			if classId ~= nil and specId ~= nil then
-				-- Spec panel: refresh that spec's cache
-				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
-				end
-			else
-				-- Global panel: refresh current character's cache if using global displayBar
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
-				end
-			end
-		end)
-	end
-
-	-- Active Opacity, Inactive Opacity, and Fade Duration sliders for primary (and health)
-	controls.sliders = controls.sliders or {}
-
-	yCoord = yCoord - 50
-	controls.sliders.primaryActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
-		0, 100, spec.displayBar.primary.activeAlpha or 100, 1, 0,
-		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.sliders.primaryActiveAlpha.MinLabel:SetText("0%")
-	controls.sliders.primaryActiveAlpha.MaxLabel:SetText("100%")
-	controls.sliders.primaryActiveAlpha:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.displayBar.primary.activeAlpha = value
-		RefreshVisibilitySettings()
-	end)
-
-	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		controls.sliders.healthActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
-			0, 100, spec.displayBar.health.activeAlpha or 100, 1, 0,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.sliders.healthActiveAlpha.MinLabel:SetText("0%")
-		controls.sliders.healthActiveAlpha.MaxLabel:SetText("100%")
-		controls.sliders.healthActiveAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar.health.activeAlpha = value
-			RefreshVisibilitySettings()
-		end)
-	end
-
-	yCoord = yCoord - 60
-	controls.sliders.primaryInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
-		0, 100, spec.displayBar.primary.inactiveAlpha or 0, 1, 0,
-		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.sliders.primaryInactiveAlpha.MinLabel:SetText("0%")
-	controls.sliders.primaryInactiveAlpha.MaxLabel:SetText("100%")
-	controls.sliders.primaryInactiveAlpha:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.displayBar.primary.inactiveAlpha = value
-		RefreshVisibilitySettings()
-	end)
-
-	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		controls.sliders.healthInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
-			0, 100, spec.displayBar.health.inactiveAlpha or 0, 1, 0,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.sliders.healthInactiveAlpha.MinLabel:SetText("0%")
-		controls.sliders.healthInactiveAlpha.MaxLabel:SetText("100%")
-		controls.sliders.healthInactiveAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar.health.inactiveAlpha = value
-			RefreshVisibilitySettings()
-		end)
-	end
-
-	yCoord = yCoord - 60
-	controls.sliders.primaryFadeDuration = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
-		0, 10, spec.displayBar.primary.fadeDuration or 0, 0.25, 2,
-		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.sliders.primaryFadeDuration:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.displayBar.primary.fadeDuration = value
-		RefreshVisibilitySettings()
-	end)
-
-	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		controls.sliders.healthFadeDuration = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
-			0, 10, spec.displayBar.health.fadeDuration or 0, 0.25, 2,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.sliders.healthFadeDuration:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar.health.fadeDuration = value
-			RefreshVisibilitySettings()
-		end)
-	end
-
-	yCoord = yCoord - 60
-	controls.sliders.primaryFadeDelay = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
-		0, 10, spec.displayBar.primary.fadeDelay or 0, 0.25, 2,
-		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.sliders.primaryFadeDelay:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.displayBar.primary.fadeDelay = value
-		RefreshVisibilitySettings()
-	end)
-
-	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		controls.sliders.healthFadeDelay = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
-			0, 10, spec.displayBar.health.fadeDelay or 0, 0.25, 2,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.sliders.healthFadeDelay:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar.health.fadeDelay = value
-			RefreshVisibilitySettings()
-		end)
-	end
-
-	-- Collect remaining visibility items, then place in two-column layout (left-to-right fill)
-	local visibilityItems = {}
+	-- Secondary resource
 	if includeSecondaryVisibility then
-		table.insert(visibilityItems, {
-			key = "Secondary",
+		table.insert(barEntries, {
+			key = "secondary",
 			displayBarKey = "secondary",
 			label = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"]),
-			controlDropdownKey = "secondaryVisibility",
-			controlCheckboxKey = "secondarySmooth",
+			isCustomBar = false,
 		})
 	end
+
+	-- Mana bar (secondary)
 	if includeManaBarVisibility and spec.displayBar.mana ~= nil then
-		table.insert(visibilityItems, {
-			key = "Mana",
+		table.insert(barEntries, {
+			key = "mana",
 			displayBarKey = "mana",
-			label = L["ShowBarVisibilityMana"],
-			controlDropdownKey = "manaVisibility",
-			controlCheckboxKey = "manaSmooth",
-			isMana = true,
+			label = L["BarVisibilityBarNameMana"],
+			isCustomBar = false,
 		})
 	end
+
+	-- Custom bars (stagger, defensives, utility, etc.)
 	for _, barTypeDef in ipairs(customBars) do
 		if spec.displayBar and spec.displayBar[barTypeDef.visibilityKey] ~= nil then
-			table.insert(visibilityItems, {
+			table.insert(barEntries, {
 				key = barTypeDef.key,
 				displayBarKey = barTypeDef.visibilityKey,
 				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
-				controlDropdownKey = barTypeDef.key .. "Visibility",
-				controlCheckboxKey = barTypeDef.key .. "Smooth",
 				isCustomBar = true,
 			})
 		end
 	end
 
-	for i, item in ipairs(visibilityItems) do
-		local isLeft = (i % 2 == 1)
-		if isLeft then
-			yCoord = yCoord - 30
+	-- Create the LibScrollingTable for bar selection
+	local columns = {
+		{
+			["name"] = "Key",
+			["width"] = 1,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = L["BarVisibilityTableHeaderBar"],
+			["width"] = 200,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["BarVisibilityTableHeaderVisibility"],
+			["width"] = 200,
+			["align"] = "LEFT",
+		},
+	}
+
+	controls.barVisibilityContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	local bvc = controls.barVisibilityContainer
+	bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	local tableRowCount = math.max(#barEntries, 2)
+	bvc:SetHeight(35 + (tableRowCount * 15))
+
+	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
+
+	-- Dynamically resize the Visibility column to fill available width
+	bvc:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = columns[1].width + columns[2].width
+		local newVisibilityWidth = math.max(100, w - fixedWidth - 30)
+		columns[3].width = newVisibilityWidth
+		barVisibilityTable:SetDisplayCols(columns)
+	end)
+
+	local function SetTableValues()
+		local dataTable = {}
+		for _, entry in ipairs(barEntries) do
+			local visSettings = spec.displayBar[entry.displayBarKey]
+			local statusText = ""
+			if visSettings then
+				statusText = GetVisibilityDisplayName(visSettings)
+			end
+			table.insert(dataTable, {
+				cols = {
+					{ value = entry.key },
+					{ value = entry.label },
+					{ value = statusText },
+				}
+			})
 		end
-		local xPos = isLeft and oUi.xCoord or oUi.xCoord2
-		local displayBarKey = item.displayBarKey
-		local controlDropdownKey = item.controlDropdownKey
-		local controlCheckboxKey = item.controlCheckboxKey
-		local isMana = item.isMana
-		local isCustom = item.isCustomBar
+		barVisibilityTable:SetData(dataTable)
+		barVisibilityTable:EnableSelection(true)
+	end
+
+	-- Detail panel below the table
+	local detailHeight = 300
+	controls.barVisibilityDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarVisibilityDetail", parent, "BackdropTemplate")
+	local detailFrame = controls.barVisibilityDetail
+	detailFrame:SetPoint("TOPLEFT", bvc, "BOTTOMLEFT", 0, 0)
+	detailFrame:SetPoint("TOPRIGHT", bvc, "BOTTOMRIGHT", 0, 0)
+	detailFrame:SetHeight(detailHeight)
+	detailFrame:Hide()
+
+	local detailYCoord = 0
+	local selectedBarKey = nil
+
+	-- Detail panel contents: header, dropdown, smooth checkbox, sliders
+	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
+
+	detailYCoord = detailYCoord - 30
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.selectedBarVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedBarVisibility", detailFrame, "WowStyle1DropdownTemplate")
+	controls.dropDown.selectedBarVisibility:SetWidth(oUi.sliderWidth)
+	controls.dropDown.selectedBarVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["BarVisibilityConditionsLabel"], oUi.xCoord, detailYCoord)
+	controls.dropDown.selectedBarVisibility.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.selectedBarVisibility:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 30)
+	InstallDropdownDisplayTextHook(controls.dropDown.selectedBarVisibility)
+
+	-- Smooth checkbox (to the right of the dropdown)
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.selectedSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedSmooth", detailFrame, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.selectedSmooth
+	f:SetPoint("TOPLEFT", oUi.xCoord2, detailYCoord - 30)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
+	f.tooltip = L["CheckboxSmoothBarTooltip"]
+
+	-- Alpha/fade sliders
+	controls.sliders = controls.sliders or {}
+
+	detailYCoord = detailYCoord - 70
+	controls.sliders.selectedActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityActiveAlpha"],
+		0, 100, 100, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.selectedActiveAlpha.MinLabel:SetText("0%")
+	controls.sliders.selectedActiveAlpha.MaxLabel:SetText("100%")
+
+	controls.sliders.selectedInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityInactiveAlpha"],
+		0, 100, 0, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.selectedInactiveAlpha.MinLabel:SetText("0%")
+	controls.sliders.selectedInactiveAlpha.MaxLabel:SetText("100%")
+
+	detailYCoord = detailYCoord - 60
+	controls.sliders.selectedFadeDuration = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDuration"],
+		0, 10, 0, 0.25, 2,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+
+	controls.sliders.selectedFadeDelay = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDelay"],
+		0, 10, 0, 0.25, 2,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+
+	-- Fill the detail panel with data for the selected bar
+	local function FillDetailPanel(barKey)
+		selectedBarKey = barKey
+		local barEntry = nil
+		for _, e in ipairs(barEntries) do
+			if e.key == barKey then
+				barEntry = e
+				break
+			end
+		end
+		if barEntry == nil then
+			detailFrame:Hide()
+			return
+		end
+
+		local visSettings = spec.displayBar[barEntry.displayBarKey]
+		if visSettings == nil then
+			detailFrame:Hide()
+			return
+		end
+
+		-- Update header
+		detailHeader.font:SetText(string.format(L["BarVisibilityDetailHeader"], barEntry.label))
+
+		-- Determine if this bar needs the appearance refresh (custom bars)
+		local refreshFunc = barEntry.isCustomBar and RefreshVisibilityAndAppearance or RefreshVisibilitySettings
 
 		-- Visibility dropdown
-		controls.dropDown[controlDropdownKey] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. item.key .. "Visibility", parent, "WowStyle1DropdownTemplate")
-		controls.dropDown[controlDropdownKey]:SetWidth(oUi.sliderWidth)
-		controls.dropDown[controlDropdownKey].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, item.label, xPos, yCoord)
-		controls.dropDown[controlDropdownKey].label.font:SetFontObject(GameFontNormal)
-
-		local function ItemVisibilityOnChange()
-			local displayText = GetVisibilityDisplayName(spec.displayBar[displayBarKey])
-			controls.dropDown[controlDropdownKey]:SetDefaultText(displayText)
-			controls.dropDown[controlDropdownKey]:SetText(displayText)
-
-			if isCustom then
-				if classId ~= nil and specId ~= nil then
-					TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-						if TRB.Frames.barGroups ~= nil then
-							local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-							TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-							TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-							TRB.Functions.EditMode:UpdateWrapperSize(settings)
-							TRB.Functions.BarVisibility:MarkDirty()
-							TRB.Functions.Bar:HideResourceBar()
-							if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-								TRB.Data.lookupDirty = true
-								TRB.Functions.Class:TriggerResourceBarUpdates()
-							end
-						else
-							TRB.Functions.BarVisibility:MarkDirty()
-							TRB.Functions.Bar:HideResourceBar()
-						end
-					end
-				else
-					if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-						local lowerClassName = string.lower(TRB.Data.character.className)
-						local currentSpecName = TRB.Data.character.specName
-						TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-						TRB.Functions.Character:ResetCaches()
-						if TRB.Frames.barGroups ~= nil then
-							local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-							TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-							TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-							TRB.Functions.EditMode:UpdateWrapperSize(settings)
-						end
-						TRB.Functions.BarVisibility:MarkDirty()
-						TRB.Functions.Bar:HideResourceBar()
-					end
-				end
-			else
-				if classId ~= nil and specId ~= nil then
-					-- Spec panel: rebuild cache so global/spec merge is applied correctly
-					TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-					if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-						TRB.Functions.Character:ResetCaches()
-						if TRB.Frames.barGroups ~= nil then
-							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-						end
-						TRB.Functions.BarVisibility:MarkDirty()
-						TRB.Functions.Bar:HideResourceBar()
-					end
-				else
-					if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-						local lowerClassName = string.lower(TRB.Data.character.className)
-						local currentSpecName = TRB.Data.character.specName
-						TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-						TRB.Functions.Character:ResetCaches()
-						if TRB.Frames.barGroups ~= nil then
-							TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-							TRB.Functions.EditMode:UpdateWrapperSize(TRB.Data.specCache[TRB.Data.character.compositeKey].settings)
-						end
-						TRB.Functions.BarVisibility:MarkDirty()
-						TRB.Functions.Bar:HideResourceBar()
-					end
+		local function OnVisibilityChange()
+			local displayText = GetVisibilityDisplayName(visSettings)
+			controls.dropDown.selectedBarVisibility:SetDefaultText(displayText)
+			controls.dropDown.selectedBarVisibility:SetText(displayText)
+			refreshFunc()
+			SetTableValues()
+			-- Re-select the current row
+			for i, e in ipairs(barEntries) do
+				if e.key == barKey then
+					barVisibilityTable:SetSelection(i)
+					break
 				end
 			end
 		end
 
-		local function ItemVisibilityGenerator(dropdown, rootDescription)
-			BuildVisibilityDropdownItems(rootDescription, spec.displayBar[displayBarKey], ItemVisibilityOnChange)
+		local function VisibilityGenerator(dropdown, rootDescription)
+			BuildVisibilityDropdownItems(rootDescription, visSettings, OnVisibilityChange)
 		end
 
-		controls.dropDown[controlDropdownKey]:SetupMenu(ItemVisibilityGenerator)
-		OverrideDropdownDisplayText(controls.dropDown[controlDropdownKey], function() return GetVisibilityDisplayName(spec.displayBar[displayBarKey]) end)
-		controls.dropDown[controlDropdownKey]:SetDefaultText(GetVisibilityDisplayName(spec.displayBar[displayBarKey]))
-		controls.dropDown[controlDropdownKey]:SetPoint("TOPLEFT", xPos, yCoord - 30)
+		controls.dropDown.selectedBarVisibility:SetupMenu(VisibilityGenerator)
+		UpdateDropdownDisplayText(controls.dropDown.selectedBarVisibility, function() return GetVisibilityDisplayName(visSettings) end)
 
 		-- Smooth checkbox
-		controls.checkBoxes[controlCheckboxKey] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. item.key .. "Smooth", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes[controlCheckboxKey]
-		f:SetPoint("TOPLEFT", xPos + oUi.xPadding, yCoord - 65)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
-		f.tooltip = L["CheckboxSmoothBarTooltip"]
-		f:SetChecked(spec.displayBar[displayBarKey].smooth)
-		f:SetScript("OnClick", function(self, ...)
-			spec.displayBar[displayBarKey].smooth = self:GetChecked()
-			if classId ~= nil and specId ~= nil then
-				TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-				if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
-				end
-			else
-				if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-					local lowerClassName = string.lower(TRB.Data.character.className)
-					local currentSpecName = TRB.Data.character.specName
-					TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-					TRB.Functions.Character:ResetCaches()
-					if TRB.Frames.barGroups ~= nil then
-						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					end
+		controls.checkBoxes.selectedSmooth:SetChecked(visSettings.smooth)
+		controls.checkBoxes.selectedSmooth:SetScript("OnClick", function(self, ...)
+			visSettings.smooth = self:GetChecked()
+			refreshFunc()
+		end)
+
+		-- Alpha sliders — set scripts BEFORE values so SetValue doesn't write to the old entry
+		controls.sliders.selectedActiveAlpha:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			visSettings.activeAlpha = value
+			refreshFunc()
+		end)
+		controls.sliders.selectedActiveAlpha:SetValue(visSettings.activeAlpha or 100)
+
+		controls.sliders.selectedInactiveAlpha:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			visSettings.inactiveAlpha = value
+			refreshFunc()
+		end)
+		controls.sliders.selectedInactiveAlpha:SetValue(visSettings.inactiveAlpha or 0)
+
+		controls.sliders.selectedFadeDuration:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			visSettings.fadeDuration = value
+			refreshFunc()
+		end)
+		controls.sliders.selectedFadeDuration:SetValue(visSettings.fadeDuration or 0)
+
+		controls.sliders.selectedFadeDelay:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			visSettings.fadeDelay = value
+			refreshFunc()
+		end)
+		controls.sliders.selectedFadeDelay:SetValue(visSettings.fadeDelay or 0)
+
+		detailFrame:Show()
+	end
+
+	-- Table click handler
+	barVisibilityTable:RegisterEvents({
+		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" then
+				if realrow ~= nil and realrow > 0 then
+					local barKey = data[realrow].cols[1].value
+					local currentSelection = scrollingTable:GetSelection()
+					FillDetailPanel(barKey)
+					C_Timer.After(0, function()
+						C_Timer.After(0.05, function()
+							local newSelection = scrollingTable:GetSelection()
+							if newSelection == nil then
+								barVisibilityTable:SetSelection(currentSelection)
+							end
+						end)
+					end)
 				end
 			end
-		end)
-
-		-- Alpha and fade sliders for this visibility item
-		controls.sliders[item.key .. "ActiveAlpha"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityActiveAlpha"],
-			0, 100, spec.displayBar[displayBarKey].activeAlpha or 100, 1, 0,
-			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 115)
-		controls.sliders[item.key .. "ActiveAlpha"].MinLabel:SetText("0%")
-		controls.sliders[item.key .. "ActiveAlpha"].MaxLabel:SetText("100%")
-		controls.sliders[item.key .. "ActiveAlpha"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar[displayBarKey].activeAlpha = value
-			RefreshVisibilitySettings()
-		end)
-
-		controls.sliders[item.key .. "InactiveAlpha"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityInactiveAlpha"],
-			0, 100, spec.displayBar[displayBarKey].inactiveAlpha or 0, 1, 0,
-			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 175)
-		controls.sliders[item.key .. "InactiveAlpha"].MinLabel:SetText("0%")
-		controls.sliders[item.key .. "InactiveAlpha"].MaxLabel:SetText("100%")
-		controls.sliders[item.key .. "InactiveAlpha"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar[displayBarKey].inactiveAlpha = value
-			RefreshVisibilitySettings()
-		end)
-
-		controls.sliders[item.key .. "FadeDuration"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDuration"],
-			0, 10, spec.displayBar[displayBarKey].fadeDuration or 0, 0.25, 2,
-			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 235)
-		controls.sliders[item.key .. "FadeDuration"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar[displayBarKey].fadeDuration = value
-			RefreshVisibilitySettings()
-		end)
-
-		controls.sliders[item.key .. "FadeDelay"] = TRB.Functions.OptionsUi:BuildSlider(parent, L["ShowBarVisibilityFadeDelay"],
-			0, 10, spec.displayBar[displayBarKey].fadeDelay or 0, 0.25, 2,
-			oUi.sliderWidth, oUi.sliderHeight, xPos, yCoord - 295)
-		controls.sliders[item.key .. "FadeDelay"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.displayBar[displayBarKey].fadeDelay = value
-			RefreshVisibilitySettings()
-		end)
-
-		-- Advance yCoord after right column item or last item
-		if not isLeft or i == #visibilityItems then
-			yCoord = yCoord - 315
 		end
-	end
+	})
 
-	if includeFlashAlpha then
-		yCoord = yCoord - 50
-		title = string.format(L["FlashAlpha"], flashAlphaName)
-		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashAlpha = value
-		end)
+	-- Initial table population
+	SetTableValues()
 
-		title = string.format(L["FlashPeriod"], flashAlphaName)
-		controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			self.EditBox:SetText(value)
-			spec.colors.bar.flashPeriod = value
-		end)
-		yCoord = yCoord - 10
-	end
-
-	local yCoord2 = yCoord - 40
-
-	if includeFlashAlpha then
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord2)
-		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["FlashBarTooltip"], flashAlphaName)
-		f:SetChecked(spec.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.flashEnabled = self:GetChecked()
-		end)
-	end
+	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10 - detailHeight
 
 	return yCoord
 end

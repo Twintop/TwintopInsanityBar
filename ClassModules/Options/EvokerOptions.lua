@@ -902,7 +902,7 @@ local function DevastationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function DevastationConstructFontAndTextPanel(parent)
@@ -1290,7 +1290,7 @@ local function PreservationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function PreservationConstructThresholdPanel(parent)
@@ -1746,7 +1746,7 @@ local function AugmentationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false, nil, nil, true, L["ResourceEssence"], true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)
