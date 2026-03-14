@@ -482,7 +482,11 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	local minX, maxX = 0, baseWidth
 	local minY, maxY = 0, baseHeight
 
-	-- Helper: get effective size for a bar node, accounting for matchWidth and multi-node layout
+	---Returns the effective width and height for a bar node, accounting for matchWidth, multi-node layout, and anchor frame width matching
+	---@param node table # An anchor tree node with barSettings, barKey, barGroup, width, height
+	---@param parentWidth number # The parent bar's effective width (used for matchWidth inheritance)
+	---@return number w # The effective width of the bar
+	---@return number h # The effective height of the bar
 	local function getEffectiveBarSize(node, parentWidth)
 		local barSettings = node.barSettings
 		if not barSettings then
@@ -546,10 +550,14 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		return w, h
 	end
 
-	-- Recursive function to walk the tree and accumulate bounding box.
-	-- Hidden bars use 0 height (collapsed) so they don't reserve space, but we
-	-- still recurse into their children so visible descendants are positioned
-	-- correctly (anchored to the hidden bar's collapsed point).
+	---Recursively walks the anchor tree and accumulates the 2D bounding box of all visible bars.
+	---Hidden bars use 0 height (collapsed) so they don't reserve space, but their children
+	---are still visited so visible descendants are positioned correctly.
+	---@param parentNode table # The current anchor tree node being traversed
+	---@param parentLeft number # The parent bar's left edge in global wrapper coords
+	---@param parentBottom number # The parent bar's bottom edge in global wrapper coords
+	---@param parentWidth number # The parent bar's effective width
+	---@param parentHeight number # The parent bar's effective height (0 if hidden)
 	local function walkTree(parentNode, parentLeft, parentBottom, parentWidth, parentHeight)
 		for _, child in ipairs(parentNode.children) do
 			local anchor = child.anchor
@@ -900,22 +908,28 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 		return
 	end
 	
-	-- Helper: returns true when the layout checkbox is unchecked (controls should be disabled)
+	---Returns true when the Edit Mode layout checkbox is unchecked for the current root, indicating controls should be disabled
+	---@param layoutName string # The Edit Mode layout name to check
+	---@return boolean # True if the layout is NOT enabled
 	local function isLayoutDisabled(layoutName)
 		return not self:IsLayoutEnabled(layoutName, rootBarKey)
 	end
 
-	-- Helper: returns true when the anchor frame key is "none" (free position)
+	---Returns true when the anchor frame key is "none" (free position mode) for the current root
+	---@param layoutName string # The Edit Mode layout name to check
+	---@return boolean # True if the anchor frame key is "none"
 	local function isAnchorNone(layoutName)
 		return self:GetAnchorFrameKeyRaw(layoutName, rootBarKey) == "none"
 	end
 
-	-- Helper: returns true when the layout is disabled OR anchor is free position
+	---Returns true when the layout is disabled OR the anchor frame key is "none", used to disable anchor-dependent controls
+	---@param layoutName string # The Edit Mode layout name to check
+	---@return boolean # True if the layout is disabled or anchor is free position
 	local function isLayoutDisabledOrAnchorNone(layoutName)
 		return isLayoutDisabled(layoutName) or isAnchorNone(layoutName)
 	end
 
-	-- Helper: reapply layout after any anchor settings change
+	---Reapplies bar group layout after any anchor settings change in the Edit Mode frame settings panel
 	local function reapplyLayout()
 		if TRB.Frames.barGroups and TRB.Data.specCache and TRB.Data.character.compositeKey then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(
@@ -2202,7 +2216,8 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 
 	local left, right, top, bottom = nil, nil, nil, nil
 
-	-- Helper to update bounds from a frame
+	---Updates the running bounding box (left, right, top, bottom) with the edges of a given frame
+	---@param frame Frame? # The WoW frame whose edges should be incorporated into the bounding box
 	local function updateBounds(frame)
 		if not frame then
 			return

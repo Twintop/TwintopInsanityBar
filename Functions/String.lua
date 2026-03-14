@@ -218,8 +218,11 @@ function TRB.Functions.String:Insert(original, pos, text)
     return string.sub(original, 1, pos - 1) .. text .. string.sub(original, pos)
 end
 
+---Generates a random UUID v4 string in the format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+---@return string guid A randomly generated UUID v4 string
 function TRB.Functions.String:Guid()
     local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+---@diagnostic disable-next-line: redundant-return-value
     return string.gsub(template, '[xy]', function (c)
         local v = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
         return string.format('%x', v)

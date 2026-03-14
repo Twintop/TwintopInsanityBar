@@ -82,6 +82,7 @@ local SPEC_INDICES = {
 ---@field public navOrder string[]
 ---@field public selectedKey string|nil
 ---@field public currentPanel Frame|nil
+---@field public navBottomOrder string[]
 local OptionsFrame = {}
 OptionsFrame.__index = OptionsFrame
 
@@ -93,6 +94,7 @@ OptionsFrame.__index = OptionsFrame
 ---@field public children string[]|nil
 ---@field public collapsed boolean
 ---@field public button Frame|nil
+---@field public builder function|nil
 
 -- ─────────────────────────────────────────────────────────────────────
 -- Internal helpers
@@ -139,12 +141,13 @@ local function GetNavIcon(classKey, specKey)
 	return { atlas = "classicon-" .. classKey }
 end
 
----@param parent Frame
----@param label string
----@param indent number
----@param isHeader boolean
----@param iconInfo table|nil {atlas=string} or {texture=number}
----@return Frame
+---Creates a navigation button with optional icon, highlight/selected textures, label text, and a collapse arrow for header entries
+---@param parent Frame The scroll child frame to parent the button to
+---@param label string Display text for the button
+---@param indent number Pixel indent from the left edge (used for child/spec entries)
+---@param isHeader boolean Whether this button represents a collapsible class header (adds an arrow indicator)
+---@param iconInfo table|nil {atlas=string} or {texture=number} for an optional icon displayed left of the label
+---@return Frame button The created navigation button frame
 local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 	local btn = CreateFrame("Button", nil, parent)
 	btn:SetHeight(NAV_BUTTON_HEIGHT)
@@ -669,6 +672,7 @@ function OptionsFrame:SelectCategory(key)
 	TRB.Frames.activeBarTextEditBox = nil
 	TRB.Frames.activeBarTextCursorPosition = nil
 	if self.selectedKey and self.navEntries[self.selectedKey] and self.navEntries[self.selectedKey].button then
+---@diagnostic disable-next-line: undefined-field
 		self.navEntries[self.selectedKey].button.selectedTexture:Hide()
 	end
 
@@ -685,8 +689,10 @@ function OptionsFrame:SelectCategory(key)
 	self.selectedKey = key
 
 	-- Show/hide the Bar Text Variables flyout based on the new panel's active tab
+---@diagnostic disable-next-line: undefined-field
 	if entry.panel and entry.panel.lastTabId == "barText" then
 		-- Swap to the new spec's variables panel
+---@diagnostic disable-next-line: undefined-field
 		local barTextSheet = entry.panel.tabsheets and entry.panel.tabsheets["barText"]
 		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
 		if scrollChild and scrollChild.barTextVariablesPanel then
@@ -710,6 +716,7 @@ function OptionsFrame:SelectCategory(key)
 
 	-- Highlight the button
 	if entry.button then
+---@diagnostic disable-next-line: undefined-field
 		entry.button.selectedTexture:Show()
 	end
 
@@ -750,13 +757,17 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 
 			-- Update selected highlight
 			if self.selectedKey == topKey then
+---@diagnostic disable-next-line: undefined-field
 				entry.button.selectedTexture:Show()
 			else
+---@diagnostic disable-next-line: undefined-field
 				entry.button.selectedTexture:Hide()
 			end
 
 			-- Update arrow rotation: 0 = right-pointing (collapsed), -π/2 = down-pointing (expanded)
+---@diagnostic disable-next-line: undefined-field
 			if entry.button.arrow then
+---@diagnostic disable-next-line: undefined-field
 				entry.button.arrow:SetRotation(entry.collapsed and 0 or (-math.pi / 2))
 			end
 
@@ -782,8 +793,10 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 						childEntry.button:Show()
 
 						if self.selectedKey == childKey then
+---@diagnostic disable-next-line: undefined-field
 							childEntry.button.selectedTexture:Show()
 						else
+---@diagnostic disable-next-line: undefined-field
 							childEntry.button.selectedTexture:Hide()
 						end
 

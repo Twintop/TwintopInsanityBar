@@ -3,6 +3,11 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Item = {}
 
+---Checks if an item link matches the given item ID and has a specific bonus ID
+---@param itemLink string The item link string to parse
+---@param id integer The item ID to match against
+---@param bonusId integer The bonus ID to search for in the item's bonus list
+---@return boolean found True if the item matches the ID and contains the bonus ID
 function TRB.Functions.Item:DoesItemLinkMatchMatchIdAndHaveBonus(itemLink, id, bonusId)
 	local parts = { strsplit(":", itemLink) }
 	-- Note for Future Twintop:
@@ -44,6 +49,9 @@ function TRB.Functions.Item:DoesItemLinkMatchId(itemLink, id)
 	return false
 end
 
+---Retrieves the item level of an item from its item link
+---@param itemLink string? The item link to get the item level for
+---@return integer|nil itemLevel The item level, or nil if itemLink is nil
 function TRB.Functions.Item:GetItemLevelOfItem(itemLink)
 	if itemLink == nil then
 		return nil

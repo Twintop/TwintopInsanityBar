@@ -3,6 +3,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Table = {}
 
+---Returns the number of entries in a table (works for both array and dictionary-style tables)
+---@param T table? The table to count entries in
+---@return integer count The number of key-value pairs in the table
 function TRB.Functions.Table:Length(T)
 	local count = 0
 	if T ~= nil then
@@ -14,6 +17,12 @@ function TRB.Functions.Table:Length(T)
 	return count
 end
 
+---Recursively serializes a table into a human-readable indented string representation for debugging
+---@param T table The table to serialize
+---@param indent integer? The current indentation level in spaces (default 0)
+---@param maxDepth integer? The maximum recursion depth for nested tables (default 2)
+---@param currentDepth integer? The current recursion depth (used internally, do not set)
+---@return string output The formatted string representation of the table
 function TRB.Functions.Table:Print(T, indent, maxDepth, currentDepth)
 	maxDepth = maxDepth or 2
 	currentDepth = currentDepth or 0
@@ -51,6 +60,10 @@ function TRB.Functions.Table:Print(T, indent, maxDepth, currentDepth)
 	return toprint
 end
 
+---Deep-merges the incoming table into the original table, recursively merging nested sub-tables
+---@param original table? The base table to merge into (modified in place)
+---@param incoming table? The table whose values will be merged into original
+---@return table merged The merged result table
 function TRB.Functions.Table:Merge(original, incoming)
 	if original == nil and incoming == nil then
 		return {}
@@ -70,6 +83,10 @@ function TRB.Functions.Table:Merge(original, incoming)
 	return original
 end
 
+---Appends an element to a list stored at the given key in a dictionary, creating the list if it does not exist
+---@param dictionary table<any, any[]> The dictionary of lists to add to
+---@param id any The key under which to store the element (skipped if nil)
+---@param element any The element to append to the list
 function TRB.Functions.Table:AddToDictionaryOfListsById(dictionary, id, element)
 	if id ~= nil then
 		dictionary[id] = dictionary[id] or {}

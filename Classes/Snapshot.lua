@@ -233,6 +233,7 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	end
 end
 
+---Configures tick-based resource generation data for a periodic buff
 ---@param hasTicks boolean # Does this spell have ticks?
 ---@param resourcePerTick number # Amount of a given resource generated per tick
 ---@param tickRate number # How frequently, in seconds, a tick occurs.
@@ -1193,6 +1194,7 @@ function TRB.Classes.SnapshotCasting:Reset()
 	self.gcdLockLastUpdate = nil
 end
 
+---Captures the currently casting or channeled spell's timing and icon into the casting snapshot
 function TRB.Classes.SnapshotCasting:SnapshotSpell()
 	local startTime, endTime, spellId
 	_, _, _, startTime, endTime, _, _, _, spellId = UnitCastingInfo("player")
@@ -1212,6 +1214,7 @@ function TRB.Classes.SnapshotCasting:SnapshotSpell()
 	end
 end
 
+---Captures the currently casting or channeled spell's mana cost, timing, and icon into the casting snapshot
 function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 	local startTime, endTime, spellId
 	_, _, _, startTime, endTime, _, _, _, spellId = UnitCastingInfo("player")
@@ -1232,6 +1235,8 @@ function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 	end
 end
 
+---Computes and caches the remaining global cooldown lock time using the GCD spell (61304)
+---@return number # Remaining GCD lock time in seconds
 function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 	local currentTime = GetTime()
 	if currentTime == self.gcdLockLastUpdate then

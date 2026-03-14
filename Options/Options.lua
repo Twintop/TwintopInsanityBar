@@ -29,6 +29,8 @@ TRB.Options.fonts.options.exportSpec = f4
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
+---Constructs the primary resource bar dimensions panel in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructResourceBarPanel(parent)
 	if parent == nil then
 		return
@@ -42,6 +44,8 @@ local function ConstructResourceBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
+---Constructs the combo points bar dimensions panel in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructComboPointsBarPanel(parent)
 	if parent == nil then
 		return
@@ -55,6 +59,8 @@ local function ConstructComboPointsBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
 end
 
+---Constructs the health bar dimensions and color options panel in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -70,6 +76,8 @@ local function ConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
+---Constructs the bar textures options panel for resource, combo point, and health bars in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -83,6 +91,8 @@ local function ConstructBarTexturesPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
 end
 
+---Constructs the bar visibility and display options panel including custom bar (utility) visibility in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructBarVisibilityPanel(parent)
 	if parent == nil then
 		return
@@ -102,6 +112,8 @@ local function ConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
+---Constructs the threshold line color and icon options panel in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructThresholdPanel(parent)
 	if parent == nil then
 		return
@@ -130,6 +142,8 @@ local function ConstructThresholdPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
+---Constructs the font, text color, and decimal precision options panel in the global options UI.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructFontAndTextPanel(parent)
 	if parent == nil then
 		return
@@ -214,6 +228,8 @@ local function ConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, nil, nil, yCoord)
 end
 
+---Constructs the miscellaneous options panel including minimap icon, number abbreviation, timer precision, data refresh rate, frame strata, and audio channel settings.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructMiscellaneousPanel(parent)
 	if parent == nil then
 		return
@@ -390,10 +406,15 @@ local function ConstructMiscellaneousPanel(parent)
 		L["StrataTooltip"]
 	}
 
+	---Checks whether the given frame strata value matches the current strata setting.
+	---@param value string The frame strata value to check
+	---@return boolean
 	local function StrataIsSelected(value)
 		return value == TRB.Data.settings.core.strata.level
 	end
 	
+	---Sets the selected frame strata level and applies it to all bar group containers and text frames.
+	---@param newValue string The new frame strata level (e.g., "MEDIUM", "HIGH")
 	local function StrataSetSelected(newValue)
 		TRB.Data.settings.core.strata.level = newValue
 		
@@ -425,6 +446,9 @@ local function ConstructMiscellaneousPanel(parent)
 		end
 	end
 
+	---Generates the frame strata dropdown menu with radio button entries for each strata level.
+	---@param dropdown DropdownButton The dropdown button frame being populated
+	---@param rootDescription table The root menu description to add entries to
 	local function StrataGenerator(dropdown, rootDescription)
 		for k, v in pairs(strataList) do
 			rootDescription:CreateRadio(v, StrataIsSelected, StrataSetSelected, strata[v])
@@ -452,15 +476,23 @@ local function ConstructMiscellaneousPanel(parent)
 	channel[L["AudioChannelAmbience"]] = L["AudioChannelAmbience"]
 	channel[L["AudioChannelDialog"]] = L["AudioChannelDialog"]
 
+	---Checks whether the given audio channel value matches the current audio channel setting.
+	---@param value string The audio channel value to check
+	---@return boolean
 	local function AudioChannelIsSelected(value)
 		return value == TRB.Data.settings.core.audio.channel.channel
 	end
 	
+	---Sets the selected audio channel for addon sound playback.
+	---@param newValue string The audio channel name (e.g., "Master", "SFX", "Music")
 	local function AudioChannelSetSelected(newValue)
 		TRB.Data.settings.core.audio.channel.channel = newValue
 		TRB.Data.settings.core.audio.channel.name = newValue
 	end
 
+	---Generates the audio channel dropdown menu with radio button entries for each channel.
+	---@param dropdown DropdownButton The dropdown button frame being populated
+	---@param rootDescription table The root menu description to add entries to
 	local function AudioChannelGenerator(dropdown, rootDescription)
 		for k, v in pairs(channel) do
 			rootDescription:CreateRadio(v, AudioChannelIsSelected, AudioChannelSetSelected, v)
@@ -475,6 +507,8 @@ local function ConstructMiscellaneousPanel(parent)
 
 end
 
+---Constructs the reset defaults panel with buttons to reset Edit Mode layout data and global bar text settings.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructResetDefaultsPanel(parent)
 	if parent == nil then
 		return
@@ -529,6 +563,8 @@ local function ConstructResetDefaultsPanel(parent)
 	end)
 end
 
+---Constructs the global bar text customization panel with the bar text editor, export button, and common bar text variables.
+---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructGlobalBarTextPanel(parent)
 	if parent == nil then
 		return
@@ -563,6 +599,7 @@ local function ConstructGlobalBarTextPanel(parent)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, globalCache)
 end
 
+---Constructs the global options panel with all tab groups (resource bar, combo points, health, textures, visibility, thresholds, font/text, bar text, miscellaneous, reset defaults) and registers it with the addon's options frame.
 local function ConstructGlobalOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
@@ -613,7 +650,7 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
----comment
+---Constructs a single import/export row with label and export buttons for a class, spec, or all-specs group.
 ---@param parent Frame
 ---@param yCoord integer
 ---@param controls table
@@ -702,6 +739,7 @@ local function ConstructImportExportRow(parent, yCoord, controls, classId, specI
 	return yCoord
 end
 
+---Constructs the import/export panel with import dialogs and per-class/spec export buttons for all supported specializations.
 local function ConstructImportExportPanel()
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames()
 	local namePrefix = className .. "_" .. specName
@@ -905,6 +943,7 @@ local function ConstructImportExportPanel()
 	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 3, L["WarriorProtection"], L["WarriorProtectionFull"], true, false)
 end
 
+---Constructs the top-level addon options panel, registers it with Blizzard's settings UI, and builds the global options, import/export, and class/spec navigation entries. Idempotent: only executes once.
 function TRB.Options:ConstructOptionsPanel()
 	-- Idempotency guard: this function is called by every class module's ConstructOptionsPanel.
 	-- Only execute once; subsequent calls are no-ops.
@@ -1190,6 +1229,10 @@ function TRB.Options:RegisterAllClassSpecNavEntries()
 	end
 end
 
+---Creates and displays the bar text customization instructions label in the given parent frame.
+---@param parent Frame The parent frame to anchor the instructions label to
+---@param xCoord number The x-coordinate offset for positioning the label
+---@param yCoord number The y-coordinate offset for positioning the label
 function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 	local maxOptionsWidth = 550
 	local barTextInstructionsHeight = 400
@@ -1197,6 +1240,11 @@ function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 end
 
 
+---Creates and displays help entries for all bar text variables (values, pipes, and icons) from the given spec cache.
+---@param cache table The spec cache containing barTextVariables with values, pipe, and icons arrays
+---@param parent Frame The parent frame to anchor the help entries to
+---@param xCoord number The x-coordinate offset for positioning the entries
+---@param yCoord number The y-coordinate offset for positioning the entries
 function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 	local height = 15
 	local width = 260

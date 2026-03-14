@@ -5,6 +5,10 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.LibSharedMedia = {}
 
 
+---Validates all LibSharedMedia references (fonts, textures, sounds) in a spec's settings, resetting any invalid entries to defaults
+---@param specName string The name of the specialization whose settings are being validated
+---@param settings table The spec settings table containing displayText, textures, and audio sub-tables
+---@return table settings The validated settings table with any invalid LSM references replaced by defaults
 function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	--[[
 		Other addons can add/remove/alter entries in the LibSharedMedia. As a result, sometimes a previously usable asset

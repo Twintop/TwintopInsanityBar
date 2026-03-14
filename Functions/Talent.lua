@@ -3,6 +3,8 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Talent = {}
 
+---Determines whether the player's PvP talents are currently active based on instance type or spell knowledge
+---@return boolean active True if PvP talents are active (in PvP instance or any selected PvP talent spell is known)
 -- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
 function TRB.Functions.Talent:ArePvpTalentsActive()
 	local inInstance, instanceType = IsInInstance()

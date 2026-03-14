@@ -7,16 +7,16 @@ TRB.Data = TRB.Data or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 local EXPORT_STRING_PREFIX2 = "!TRBv2!"
 
----comment
----@param classId integer
----@param specId integer
----@param settings unknown
----@param includeBarDisplay boolean
----@param includeThresholds boolean
----@param includeFontAndText boolean
----@param includeAudioAndTracking boolean
----@param includeBarText boolean
----@return table
+---Extracts selected configuration sections (bar display, thresholds, font/text, audio/tracking, bar text) from a single spec's settings table into an export-ready table, including class/spec-specific fields like combo points, mana bar, or stagger bar.
+---@param classId integer # WoW class ID (1=Warrior, 2=Paladin, ..., 13=Evoker)
+---@param specId integer # Specialization index within the class (1-based)
+---@param settings table # The spec's full settings table to extract sections from
+---@param includeBarDisplay boolean # Whether to include bar display, colors, textures, and overcap settings
+---@param includeThresholds boolean # Whether to include threshold configuration and threshold colors
+---@param includeFontAndText boolean # Whether to include font, text color, precision, and display text defaults
+---@param includeAudioAndTracking boolean # Whether to include audio cue settings
+---@param includeBarText boolean # Whether to include bar text templates and migrations
+---@return table # Partial configuration table containing only the requested sections
 local function ExportConfigurationSections(classId, specId, settings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
 	local configuration = {
 		colors = {},
@@ -740,6 +740,9 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 	return configuration
 end
 
+---Serializes a configuration table to JSON, compresses it with Deflate, Base64-encodes it, and prepends the v2 export string prefix.
+---@param configuration table # The configuration table to serialize and encode for export
+---@return string # The prefixed Base64-encoded compressed export string
 local function Export(configuration)
 	local encoded = C_EncodingUtil.SerializeJSON(configuration)
 	local compressed = C_EncodingUtil.CompressString(encoded, Enum.CompressionMethod.Deflate)
@@ -847,6 +850,10 @@ local function HandleImport(input)
 
 	local existingSettings = TRB.Data.settings
 
+	---Merges an imported configuration into the existing settings, treating barText arrays as full replacements rather than deep merges, and migrates bar anchors after merge.
+	---@param existing table # The current addon settings table to merge into
+	---@param config table # The imported configuration table to merge from
+	---@return table # The merged settings table with barText arrays replaced wholesale
 	local function TableMergeWrapper(existing, config)
 		local newBarText = {}
 		local newCoreBarText = nil
@@ -911,6 +918,9 @@ local function HandleImport(input)
 	return 1
 end
 
+---Public wrapper for HandleImport. Decodes, decompresses, deserializes, validates, and merges an import string into the addon's settings.
+---@param input string # The full import string (with or without the TRB prefix)
+---@return integer # Status code: 1 = success, -1 = Base64 error, -2 = decompression error, -3 = JSON error, -4 = invalid structure, -5 = merge error
 function TRB.Functions.IO:Import(input)
 	return HandleImport(input)
 end
@@ -931,6 +941,16 @@ local function HandleExport(classId, specId, includeBarDisplay, includeThreshold
 	return output
 end
 
+---Generates an export string for the specified class/spec configuration and displays it in a copy-paste popup dialog.
+---@param exportMessage string # Message to display at the top of the export popup
+---@param classId integer? # WoW class ID to export, or nil for all classes
+---@param specId integer? # Specialization index to export, or nil for all specs within the class
+---@param includeBarDisplay boolean? # Include bar display settings. Defaults to true.
+---@param includeThresholds boolean? # Include threshold settings. Defaults to true.
+---@param includeFontAndText boolean? # Include font and text settings. Defaults to true.
+---@param includeAudioAndTracking boolean? # Include audio and tracking settings. Defaults to true.
+---@param includeBarText boolean? # Include bar text settings. Defaults to true.
+---@param includeCore boolean? # Include core (non-spec) settings. Defaults to false.
 function TRB.Functions.IO:ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	local output = HandleExport(classId, specId, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
 	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})

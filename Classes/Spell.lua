@@ -225,6 +225,8 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 	return self
 end
 
+---Gets the effective tick rate of the spell, adjusted for haste if applicable.
+---@return number # Tick rate in seconds, haste-adjusted if the spell is hasted
 function TRB.Classes.SpellBase:GetTickRate()
 	if self.isHasted then
 		return self.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
@@ -455,6 +457,8 @@ function TRB.Classes.SpellBase:IsUsable()
 	return self._isUsable and not self._insufficientPower
 end
 
+---Checks whether the spell cannot be cast due to insufficient power (resource).
+---@return boolean # True if the player lacks the required resource to cast this spell
 function TRB.Classes.SpellBase:InsufficientPower()
 	self:UpdateIsSpellUsable()
 	return self._insufficientPower

@@ -153,7 +153,11 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 	return values
 end
 
+---Sets the text on a bar text frame's font string via a protected call wrapper
+---@param frame Frame The bar text frame containing a .font FontString
+---@param text string The text to display
 local function TryUpdateText(frame, text)
+---@diagnostic disable-next-line: undefined-field
 	frame.font:SetText(text)
 end
 
@@ -1227,6 +1231,9 @@ local barTextBuffer = { text = "", color = "" }
 
 -- Pre-computed "textFrames"..i key strings (populated on demand, avoids per-frame string concat)
 local textFrameKeys = {}
+---Returns the cached "textFrames"..i key string for a given bar text entry index, creating it on first access to avoid per-frame string concatenation
+---@param i integer The 1-based bar text entry index
+---@return string key The cached key string (e.g. "textFrames1")
 local function GetTextFrameKey(i)
 	local key = textFrameKeys[i]
 	if key == nil then

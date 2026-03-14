@@ -4,6 +4,9 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 
 
+---Configures a threshold icon's anchor point, position, and size based on the spec's threshold icon settings.
+---@param settings table # The spec settings containing thresholds.icons configuration
+---@param thresholdLine table # The threshold frame whose .icon child will be repositioned and resized
 local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	if thresholdLine.icon ~= nil then
 		local setPoint = "TOP"
@@ -26,6 +29,15 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	end
 end
 
+---Repositions a primary resource bar threshold line at the correct pixel offset for the given resource value, using cached values to avoid redundant updates.
+---@param settings table # The spec settings containing bar and threshold configuration
+---@param key string # Cache key identifying this threshold for deduplication
+---@param thresholdLine Frame # The threshold frame to reposition
+---@param showThreshold boolean # Whether the threshold should be visible; returns early if false
+---@param parentFrame Frame # The parent bar frame used for width calculation and anchoring
+---@param value number # The resource value at which to position the threshold
+---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
+---@param growRight boolean? # Whether the bar grows left-to-right (default true)
 function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		return
@@ -100,7 +112,12 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 	end
 end
 
+---Resets a primary bar threshold line to its default size, texture, frame level, and icon configuration, hiding it until repositioned.
+---@param threshold Frame # The threshold frame to reset
+---@param settings table # The spec settings containing bar dimensions, threshold properties, icon configuration, and color defaults
+---@param hasIcon boolean? # Whether this threshold should have an icon sub-frame created and configured
 function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon)
+	hasIcon = hasIcon or false
 	--[[
 		Threshold StrataFrameLevel info, decreasing:
 		- Starts at 1200 for unusable
@@ -123,13 +140,16 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 
 	threshold:SetWidth(settings.thresholds.properties.width)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
+---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
+---@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
+---@diagnostic disable-next-line: inject-field
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -174,10 +194,15 @@ end
 
 
 
+---Resets a combo point (secondary resource) bar threshold line to its default size, texture, frame level, and icon configuration.
+---@param threshold Frame # The threshold frame to reset
+---@param settings table # The spec settings containing comboPoints dimensions, threshold properties, icon configuration, and color defaults
+---@param hasIcon? boolean # Whether this threshold should have an icon sub-frame created and configured
 function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings, hasIcon)
 	if settings.comboPoints == nil then
 		return
 	end
+	hasIcon = hasIcon or false
 	--[[
 		Threshold StrataFrameLevel info, decreasing:
 		- Starts at 1200 for unusable
@@ -195,13 +220,16 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	
 	threshold:SetWidth(settings.thresholds.properties.width)
 	threshold:SetHeight(settings.comboPoints.height)
+---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
+---@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
+---@diagnostic disable-next-line: inject-field
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -264,6 +292,15 @@ function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, h
 	TRB.Functions.Color:SetThresholdColor(threshold, borderColor, true)
 end
 
+---Repositions a combo point (secondary resource) bar threshold line at the correct pixel offset, showing or hiding it based on the showThreshold flag.
+---@param settings table # The spec settings containing comboPoints configuration
+---@param key string # Cache key identifying this threshold for deduplication
+---@param thresholdLine Frame # The threshold frame to reposition
+---@param showThreshold boolean # Whether the threshold should be visible; hides and returns early if false
+---@param parentFrame Frame # The parent combo point frame used for anchoring
+---@param value number # The resource value at which to position the threshold
+---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
+---@param growRight boolean? # Whether the bar grows left-to-right (default true)
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.comboPoints == nil or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
@@ -369,6 +406,7 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	end
 end
 
+---Redraws all threshold lines across primary and secondary bar groups by resetting their appearance and clearing the threshold position cache.
 function TRB.Functions.Threshold:RedrawThresholdLines()
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
@@ -642,6 +680,9 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 	return true
 end
 
+---Hides a threshold frame if it is currently visible.
+---@param key string # Cache key for the threshold (reserved for future cache invalidation)
+---@param threshold Frame? # The threshold frame to hide; safely ignored if nil
 function TRB.Functions.Threshold:Hide(key, threshold)
 	--[[
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -657,6 +698,9 @@ function TRB.Functions.Threshold:Hide(key, threshold)
 	end
 end
 
+---Shows a threshold frame if it is not currently visible.
+---@param key string # Cache key for the threshold (reserved for future cache invalidation)
+---@param threshold Frame # The threshold frame to show
 function TRB.Functions.Threshold:Show(key, threshold)
 	--[[
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}

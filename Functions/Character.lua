@@ -11,7 +11,8 @@ local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
 --TODO: Move this somewhere else.
---This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+---Fallback implementation that hides all bar groups. Class modules override this with spec-specific visibility logic.
+---@param force boolean|nil If true, force-hide even if normally shown
 function TRB.Functions.Class:HideResourceBar(force)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if barGroups then
@@ -25,7 +26,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 end
 
 --TODO: Move this somewhere else.
---This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+---Fallback event registration that marks the spec as unsupported and hides the resource bar. Class modules override this.
 function TRB.Functions.Class:EventRegistration()
 	TRB.Data.specSupported = false
 	TRB.Details.addonData.registered = false
@@ -33,6 +34,11 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+---Initializes or refreshes a target entry in the snapshot target data by GUID.
+---@param guid string The target's GUID
+---@param selfInitializeAllowed boolean|nil If false or nil, skips initialization when guid matches the player's GUID
+---@param isFriend boolean|nil If true, marks the target as friendly
+---@return boolean initialized True if the target was successfully initialized or refreshed
 function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFriend)
 	if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 		return false
@@ -55,6 +61,7 @@ function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFri
 	return false
 end
 
+---Reads the player's current primary and secondary resource values from the WoW API, updates snapshotData.attributes, and pre-formats display strings into snapshotData.formatted.
 function TRB.Functions.Character:UpdateResourceValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
@@ -94,6 +101,7 @@ function TRB.Functions.Character:UpdateResourceValues()
 	end
 end
 
+---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
 function TRB.Functions.Character:UpdateHealthValues()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.health = UnitHealth("player", true)
@@ -388,6 +396,7 @@ end
 local characterChangeFrame = CreateFrame("Frame")
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
 
+---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_POWER_FREQUENT")
@@ -415,6 +424,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 end
 
+---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
 function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
@@ -544,6 +554,12 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 end
 
 
+---Returns the class file name and specialization name for the given classId and specId.
+---@param classId number|nil The numeric class ID (1-13). If nil, returns "Global".
+---@param specId number The numeric spec index (1-4) within the class
+---@param lowerCaseClass boolean|nil If true, returns the class name in lowercase
+---@return string className The class file name (e.g., "WARRIOR" or "warrior" if lowerCaseClass is true)
+---@return string specName The specialization name in camelCase (e.g., "beastMastery"), or "" if not found
 function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, lowerCaseClass)
 	local className
 	if classId ~= nil then
@@ -564,6 +580,10 @@ function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId,
 	end
 end
 
+---Converts a class name and numeric spec index into the addon's internal camelCase spec name.
+---@param className string The class file name (e.g., "WARRIOR", "DEATHKNIGHT")
+---@param specId number The numeric spec index (1-4) within the class
+---@return string|nil specName The camelCase specialization name (e.g., "beastMastery"), or nil if not recognized
 function TRB.Functions.Character:GetSpecializationName(className, specId)
     className = string.upper(className) -- Should be uppercase anyway from UnitClass() but let's be certain
 	if className == "DEATHKNIGHT" then
@@ -743,6 +763,7 @@ function TRB.Functions.Character:GetActiveSpecCache()
 	return nil
 end
 
+---Updates character state flags (PvP talents, mounted, skyriding, instance type) and starts or stops flight polling based on mount state.
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.isMounted = IsMounted()
@@ -762,6 +783,7 @@ function TRB.Functions.Character:CheckCharacter()
 	end
 end
 
+---Reads Strength, Agility, Stamina, and Intellect from the WoW API into snapshotData.attributes and pre-formats display strings.
 function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
@@ -786,6 +808,7 @@ function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 	snapshotData.attributes.primaryRefresh = false
 end
 
+---Reads haste, crit, mastery, and versatility (percentages and ratings) from the WoW API, recalculates hasted cooldowns if haste changed, pre-formats display strings, and computes the GCD value.
 function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
@@ -853,6 +876,7 @@ function TRB.Functions.Character:RecomputeFormattedValues()
 	TRB.Functions.BarText:InvalidateLookupMemoization()
 end
 
+---Updates target tracking in the snapshot by refreshing spell tracking data for the current target. Initializes the target if it does not exist and is not dead.
 function TRB.Functions.Character:UpdateSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
@@ -896,6 +920,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.BarVisibility:MarkDirty()
 end
 
+---Clears all cached color data (border, bar, backdrop, health curve) and resets the RGBA parse memoization.
 function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.bar)
@@ -907,6 +932,7 @@ function TRB.Functions.Character:ResetColorCaches()
 	TRB.Functions.Color:ClearRGBACache()
 end 
 
+---Clears all runtime caches (bar text, symbols, parse trees, resource/threshold values, colors) and rebuilds the threshold spell list.
 function TRB.Functions.Character:ResetCaches()
 	wipe(TRB.Data.cache.barText)
 	TRB.Functions.BarText:ClearBarTextCacheHash()
@@ -1386,6 +1412,9 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 	return entry
 end
 
+---Calculates the player's current GCD duration based on haste, clamped between 0.75s and 1.5s.
+---@param floor boolean|nil If true, skips the 0.75s minimum clamp (allows sub-0.75 values)
+---@return number gcd The GCD duration in seconds
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
 	if floor == nil then
 		floor = false
@@ -1405,12 +1434,15 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 	return gcd
 end
 
+---Resets the casting snapshot data to its default state by calling Reset() on snapshotData.casting.
 function TRB.Functions.Character:ResetCastingSnapshotData()
 	---@type TRB.Classes.SnapshotCasting
 	local casting = TRB.Data.snapshotData.casting
 	casting:Reset()
 end
 
+---Retrieves the player's current world latency in seconds (world lag from GetNetStats divided by 1000).
+---@return number latency World latency in seconds
 function TRB.Functions.Character:GetLatency()
 	--local down, up, lagHome, lagWorld = GetNetStats()
 	local _, _, _, lagWorld = GetNetStats()
@@ -1472,6 +1504,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 	-- - Other custom bar thresholds
 end
 
+---Registers or unregisters all addon event handlers based on whether the current spec is supported. When supported, initializes resources, enables combat/aura/spellcast tracking, sets up update timers, and reapplies bar layout. When unsupported, tears down all event handlers and hides all bar groups.
 function TRB.Functions.Character:EventRegistration()
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame

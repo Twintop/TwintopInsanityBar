@@ -58,6 +58,7 @@ spellCastFrame:SetScript("OnEvent", SpellCastEvent)
 
 -- NOTE: 2025-11-08 -- UNIT_SPELLCAST_CHANNEL_* still returns a secret. Comment out for now.
 
+---Registers all spell cast related events to begin tracking player spell casts, channels, and empowers
 function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
@@ -71,6 +72,7 @@ function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("SPELL_UPDATE_ICON")
 end
 
+---Unregisters all spell cast related events to stop tracking player spell casts, channels, and empowers
 function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")

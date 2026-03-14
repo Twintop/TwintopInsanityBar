@@ -414,6 +414,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	return settings
 end
 
+---Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs
 function TRB.Functions.Settings:PortForwardSettings()
 	
 	-- Forward port old Insanity Bar settings
@@ -1695,7 +1696,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 		"mage", "monk", "paladin", "priest", "rogue",
 		"shaman", "warlock", "warrior"
 	}
-	-- Migrate displayBar settings from old boolean format to new enum format
+	---Migrates a displayBar settings table from the old boolean format (alwaysShow/neverShow) to the new enum format ("always"/"never"/"combat")
+	---@param displayBar table? The displayBar settings table to migrate in-place; does nothing if nil or already migrated
 	local function MigrateDisplayBar(displayBar)
 		if displayBar == nil then
 			return
@@ -4256,8 +4258,11 @@ function TRB.Functions.Settings:PortForwardSettings()
 		-- Keys within displayBar that should be converted from string to table
 		local displayBarVisibilityKeys = { "primary", "secondary", "health", "mana", "stagger", "defensives", "utility" }
 
-		-- Determine if the secondary bar should default to smooth for a given class/spec
-		-- Only DH Vengeance (specId 2) and Devourer (specId 3) have continuous secondary bars (Soul Fragments)
+		--- Determines if the secondary bar should default to smooth animation for a given class/spec.
+		--- Only Demon Hunter Vengeance and Devourer have continuous secondary bars (Soul Fragments).
+		---@param className string # The lowercase class name (e.g., "demonhunter")
+		---@param specName string # The lowercase spec name (e.g., "vengeance")
+		---@return boolean # True if the secondary bar should use smooth animation by default
 		local function IsSecondarySmoothByDefault(className, specName)
 			if className == "demonhunter" and (specName == "vengeance" or specName == "devourer") then
 				return true
@@ -4265,7 +4270,14 @@ function TRB.Functions.Settings:PortForwardSettings()
 			return false
 		end
 
-		-- Determine the smooth default for a given displayBar key
+		--- Determines the smooth animation default for a given displayBar visibility key.
+		--- Primary, health, mana, stagger, defensives, and utility bars inherit the global smooth setting;
+		--- secondary bars default to false unless the spec uses a continuous secondary bar.
+		---@param key string # The displayBar key (e.g., "primary", "secondary", "health")
+		---@param className string # The lowercase class name
+		---@param specName string # The lowercase spec name
+		---@param oldSmooth boolean? # The legacy global smoothBarValueUpdates setting
+		---@return boolean # Whether smooth animation should be enabled for this bar key
 		local function GetSmoothDefault(key, className, specName, oldSmooth)
 			local baseSmooth = (oldSmooth ~= nil) and oldSmooth or true
 			if key == "primary" or key == "health" or key == "mana" or key == "stagger" or key == "defensives" or key == "utility" then
@@ -4279,6 +4291,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 			return false
 		end
 
+		--- Migrates displayBar entries from plain string visibility values to table format { visibility, smooth }.
+		---@param displayBar table? # The displayBar settings table to migrate in-place
+		---@param className string # The lowercase class name (used for smooth defaults)
+		---@param specName string # The lowercase spec name (used for smooth defaults)
 		local function MigrateDisplayBarToTable(displayBar, className, specName)
 			if displayBar == nil then
 				return
@@ -4328,6 +4344,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- new conditions-based format { neverShow = bool, conditions = {}, smooth = X }.
 	-- Also strip the deprecated "dragonriding" key from displayBar.
 	do
+		--- Migrates displayBar entries from { visibility, smooth } format to conditions-based format
+		--- ({ neverShow, conditions = {}, smooth }). Also strips the deprecated "dragonriding" key.
+		---@param displayBar table? # The displayBar settings table to migrate in-place
 		local function MigrateVisibilityToConditions(displayBar)
 			if displayBar == nil then
 				return
@@ -4378,6 +4397,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Phase 1 used empty conditions = {} for "always show". Phase 2 uses explicit alwaysShow flag.
 	-- Conditions are left untouched — alwaysShow is a standalone override independent of conditions.
 	do
+		--- Migrates Phase 1 conditions-based displayBar entries to Phase 2 by adding an explicit alwaysShow flag.
+		--- Entries with empty conditions and neverShow=false are treated as "always show".
+		---@param displayBar table? # The displayBar settings table to migrate in-place
 		local function MigrateAlwaysShow(displayBar)
 			if displayBar == nil then
 				return
@@ -4425,6 +4447,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 	do
 		local phase2NewKeys = { "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 
+		--- Renames isMounted to isMountedAny and backfills new Phase 2 condition keys with false defaults.
+		---@param displayBar table? # The displayBar settings table to migrate in-place
 		local function MigrateRenamedConditions(displayBar)
 			if displayBar == nil then
 				return
@@ -4467,6 +4491,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Phase 3a: Backfill activeAlpha, inactiveAlpha, and fadeDuration for existing settings.
 	-- Existing users get matching-current-behavior defaults: active=100%, inactive=0%, fade=0s (instant).
 	do
+		--- Backfills activeAlpha, inactiveAlpha, fadeDuration, and fadeDelay for existing displayBar entries.
+		--- Defaults preserve current behavior: active=100%, inactive=0%, fade=0s (instant), delay=0s.
+		---@param displayBar table? # The displayBar settings table to migrate in-place
 		local function MigrateAlphaSettings(displayBar)
 			if displayBar == nil then
 				return
@@ -4578,6 +4605,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Previously: displayBar.health.showAbsorb, .absorbMode, .showIncomingHeal, .incomingHealMode
 	-- Now:        colors.healthBar.absorb.enabled, .mode; colors.healthBar.incomingHeal.enabled, .mode
 	do
+		--- Migrates health bar overlay settings (absorb and incoming heal) from displayBar.health to colors.healthBar.
+		--- Moves showAbsorb/absorbMode to colors.healthBar.absorb and showIncomingHeal/incomingHealMode to colors.healthBar.incomingHeal.
+		---@param settings table? # A spec's settings table containing displayBar and colors sub-tables
 		local function MigrateHealthBarOverlays(settings)
 			if settings == nil then
 				return
@@ -4881,6 +4911,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 	end
 end
 
+--- Strips unrecognized top-level keys from the saved-variables table, keeping only class keys and core/manualUpdateChecks.
+---@param oldSettings table? # The raw saved-variables table to clean
+---@return table # A new table containing only recognized top-level keys
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	local newSettings = {}
 	if oldSettings ~= nil then
@@ -5023,6 +5056,8 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 	}
 end
 
+--- Gets the default health bar color configuration including border, background, absorb, incoming heal, and step-based thresholds.
+---@return table # Health bar color settings with low/medium/high color steps and overlay defaults
 function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },

@@ -47,6 +47,7 @@ TRB.Classes.Talents.__index = TRB.Classes.Talents
 
 ---Creates a new Talents object.
 ---@param fill boolean? # Should GetTalents() be called immediately
+---@return TRB.Classes.Talents
 function TRB.Classes.Talents:New(fill)
     local self = {}
     setmetatable(self, TRB.Classes.Talents)

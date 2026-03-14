@@ -10,6 +10,8 @@ local renderTransitionState = {
 	defaultDelay = 0.6
 }
 
+---Sets the alpha (opacity) of all bar groups and legacy bar container frames
+---@param alpha number The alpha value to apply (0 = fully transparent, 1 = fully opaque)
 local function SetBarGroupsAlpha(alpha)
 	local barGroups = TRB.Frames.barGroups
 	if not barGroups then
@@ -49,6 +51,7 @@ C_Timer.After(10, function()
 	end
 end)
 
+---Hides all bar groups, legacy frames, and bar text, and sets isTracking to false
 local function HideAllBarGroupsAndBarText()
 	local barGroups = TRB.Frames.barGroups
 
@@ -231,6 +234,7 @@ function TRB.Functions.Bar:UpdateSanityCheckValues(settings)
 	end
 end
 
+---Shows the resource bar by ensuring event registration and then delegating to HideResourceBar for visibility evaluation
 function TRB.Functions.Bar:ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
 		TRB.Functions.Class:EventRegistration()
@@ -250,10 +254,15 @@ function TRB.Functions.Bar:ShowResourceBar()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+---Returns whether a render transition is currently active (bars are hidden during spec switch or initialization)
+---@return boolean
 function TRB.Functions.Bar:IsRenderTransitionActive()
 	return renderTransitionState.active
 end
 
+---Queues a render transition that hides all bars and bar text for a duration, preventing visual flicker during spec switches or bar reconstruction
+---@param reason string A label describing why the transition was queued (e.g., "specSwitch", "construct")
+---@param delaySeconds number? Optional delay in seconds before the transition ends; defaults to renderTransitionState.defaultDelay
 function TRB.Functions.Bar:QueueRenderTransition(reason, delaySeconds)
 	local delay = delaySeconds or renderTransitionState.defaultDelay
 	if delay < 0 then
@@ -276,6 +285,8 @@ function TRB.Functions.Bar:QueueRenderTransition(reason, delaySeconds)
 	end)
 end
 
+---Extends an already-active render transition by resetting its timer and re-hiding bars to prevent flicker during ongoing construction
+---@param delaySeconds number? Optional delay in seconds before the transition ends; defaults to renderTransitionState.defaultDelay
 function TRB.Functions.Bar:TouchRenderTransition(delaySeconds)
 	if not renderTransitionState.active then
 		return
@@ -300,6 +311,8 @@ function TRB.Functions.Bar:TouchRenderTransition(delaySeconds)
 	end)
 end
 
+---Ends the active render transition, restores bar alpha, marks visibility as dirty, and triggers a full resource bar update
+---@param reason string A label describing why the transition ended (e.g., "timer", "activity", "init:timeout")
 function TRB.Functions.Bar:EndRenderTransition(reason)
 	if not renderTransitionState.active then
 		return
@@ -328,6 +341,8 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	SetBarGroupsAlpha(1)
 end
 
+---Evaluates bar visibility and shows or hides the resource bar based on combat state, pet battles, taxi, Edit Mode, and spec support
+---@param force boolean? When true, forces the bar to hide regardless of other conditions
 function TRB.Functions.Bar:HideResourceBar(force)
 	force = force or false
 	
@@ -379,6 +394,11 @@ function TRB.Functions.Bar:HideResourceBar(force)
 	TRB.Functions.Class:HideResourceBar(force)
 end
 
+---Applies a sinusoidal pulsing alpha animation to a frame, used for overcap or threshold warning effects
+---@param frame frame The UI frame to animate
+---@param alphaOffset number Minimum alpha floor (0-1); higher values reduce pulse intensity
+---@param flashPeriod number Duration in seconds of one full pulse cycle; clamped to minimum 0.5 if <= 0
+---@param maxAlpha number? Maximum alpha ceiling (defaults to 1.0)
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
 	maxAlpha = maxAlpha or 1.0
 	if alphaOffset > 1.0 then
@@ -394,6 +414,9 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
 	frame:SetAlpha(maxAlpha * (((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset))
 end
 
+---Sets the bar position by updating the horizontal and vertical offset sliders in the options UI, clamping values to screen bounds
+---@param xOfs number Horizontal offset from screen center in pixels
+---@param yOfs number Vertical offset from screen center in pixels
 function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 	if TRB.Functions.Number:IsNumeric(xOfs) and TRB.Functions.Number:IsNumeric(yOfs) then
 		if xOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth / 2) then
@@ -428,6 +451,8 @@ function TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 	end
 end
 
+---Reads the current on-screen position of the bar's wrapper or container frame and updates the options UI position sliders to reflect it
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.Bar:GetPosition(settings)
 	-- Use wrapper frame if available (for proper position in wrapper-based system)
 	-- Fall back to BarGroups primary container if no wrapper

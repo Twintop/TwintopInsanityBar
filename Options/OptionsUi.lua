@@ -122,6 +122,10 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 	return false
 end
 
+---Returns the RGB color values used for "Use Global Settings" checkbox label text.
+---@return number r # Red component (0-1)
+---@return number g # Green component (0-1)
+---@return number b # Blue component (0-1)
 local function GetUseGlobalSettingsColor()
 	return 100/255, 225/255, 200/225
 end
@@ -396,6 +400,7 @@ local sounds = {}
 local soundsList = {}
 local soundPairs = {}
 local soundPairsByName = {}
+---Populates the sound cache from LibSharedMedia if not already filled.
 local function FillSoundCache()
 	if TRB.Functions.Table:Length(sounds) == 0 then
 		sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
@@ -414,6 +419,7 @@ local fonts = {}
 local fontsList = {}
 local fontPairs = {}
 local fontPairsByName = {}
+---Populates the font cache from LibSharedMedia if not already filled.
 local function FillFontCache()
 	if TRB.Functions.Table:Length(fonts) == 0 then
 		fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
@@ -432,6 +438,7 @@ local backgrounds = {}
 local backgroundsList = {}
 local backgroundPairs = {}
 local backgroundPairsByName = {}
+---Populates the background texture cache from LibSharedMedia if not already filled.
 local function FillBackgroundCache()
 	if TRB.Functions.Table:Length(backgrounds) == 0 then
 		backgrounds = TRB.Details.addonData.libs.SharedMedia:HashTable("background")
@@ -450,6 +457,7 @@ local borders = {}
 local bordersList = {}
 local borderPairs = {}
 local borderPairsByName = {}
+---Populates the border texture cache from LibSharedMedia if not already filled.
 local function FillBorderCache()
 	if TRB.Functions.Table:Length(borders) == 0 then
 		borders = TRB.Details.addonData.libs.SharedMedia:HashTable("border")
@@ -468,6 +476,7 @@ local statusbars = {}
 local statusbarsList = {}
 local statusbarPairs = {}
 local statusbarPairsByName = {}
+---Populates the status bar texture cache from LibSharedMedia if not already filled.
 local function FillStatusbarCache()
 	if TRB.Functions.Table:Length(statusbars) == 0 then
 		statusbars = TRB.Details.addonData.libs.SharedMedia:HashTable("statusbar")
@@ -482,13 +491,15 @@ local function FillStatusbarCache()
 	end
 end
 
+---Refreshes a WowStyle1DropdownTemplate control by re-invoking its stored GeneratorFunction.
+---@param control DropdownButton # The dropdown control with a GeneratorFunction field
 local function DropdownSetupMenuWrapper(control)
 	control:SetupMenu(control.GeneratorFunction)
 end
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 
----comment
+---Creates a slider control with +/- buttons, an editable text box, a title label, and min/max labels.
 ---@param parent Frame
 ---@param title string
 ---@param minValue number
@@ -830,6 +841,15 @@ function TRB.Functions.OptionsUi:BuildPercentageSlider(parent, title, minPercent
 	return f
 end
 
+---Creates a single-line text input box with standard backdrop styling and keyboard behavior.
+---@param parent Frame # The parent frame to attach the text box to
+---@param text string # The initial text to display
+---@param maxLetters integer # Maximum number of characters allowed
+---@param width number # Width of the text box in pixels
+---@param height number # Height of the text box in pixels
+---@param xPos number # X offset from parent's TOPLEFT
+---@param yPos number # Y offset from parent's TOPLEFT
+---@return EditBox|BackdropTemplate
 function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
 	local f = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", xPos, yPos)
@@ -867,6 +887,10 @@ function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, h
 	return f
 end
 
+---Clamps a numeric value to a slider's min/max range and updates its EditBox text display.
+---@param box Slider # The slider frame (with an EditBox child) returned by BuildSlider
+---@param value number # The value to set
+---@return number # The clamped value
 function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(box, value)
 	local min, max = box:GetMinMaxValues()
 	if value > max then
@@ -878,6 +902,12 @@ function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(box, value)
 	return value
 end
 
+---Opens the WoW color picker dialog pre-filled with the given RGBA values.
+---@param r number # Red component (0-1)
+---@param g number # Green component (0-1)
+---@param b number # Blue component (0-1)
+---@param a number # Alpha component (0-1, where 1 is fully opaque)
+---@param callback function # Called when the color is changed or cancelled
 function TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame:SetupColorPickerAndShow({
 		swatchFunc = callback,
@@ -891,6 +921,12 @@ function TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, a, callback)
 	})
 end
 
+---Extracts RGBA color values from a color picker callback argument or directly from the ColorPickerFrame.
+---@param color table? # The color table passed to the callback (nil if reading directly from the frame)
+---@return number r # Red component (0-1)
+---@return number g # Green component (0-1)
+---@return number b # Blue component (0-1)
+---@return number a # Alpha component (0-1)
 function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	local r, g, b, a
 	if color then
@@ -905,6 +941,15 @@ function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	return r, g, b, a
 end
 
+---Handles mouse-down on a color picker swatch: opens the color picker and applies changes to the bar and settings.
+---@param button string # The mouse button pressed (e.g., "LeftButton")
+---@param colorTable table # The settings table containing the color entry
+---@param colorControlsTable table # The controls table containing the color picker frame
+---@param key string # The key into colorTable/colorControlsTable for the color entry
+---@param frameType string? # The type of frame to update ("backdrop", "border", "bar", "threshold", or "health")
+---@param frame Frame|table|nil # The frame(s) to update live, or nil for health-type updates
+---@param classId integer? # Class ID for the panel being edited
+---@param specId integer? # Spec ID for the panel being edited
 function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
 	if button == "LeftButton" then
 		-- Handle both table format { color = "FFRRGGBB" } and direct string format "FFRRGGBB"
@@ -1013,6 +1058,15 @@ function TRB.Functions.OptionsUi:GetHealthBackdropFrame()
 	return nil
 end
 
+---Creates a color picker button with a colored texture swatch and a descriptive text label.
+---@param parent Frame # The parent frame
+---@param description string # Text label displayed next to the color swatch
+---@param settingsEntry string # ARGB hex color string (e.g., "FF00FF00") used to set the initial swatch color
+---@param sizeTotal number # Total width reserved for the color picker and label combined
+---@param sizeFrame number # Width and height of the color swatch square
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@return Button|BackdropTemplate
 function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
@@ -1086,6 +1140,12 @@ function TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, cont
 	return yCoord, fColor, fCheckbox
 end
 
+---Creates a section header frame with a large font title string.
+---@param parent Frame # The parent frame
+---@param title string # Header text to display
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@return Frame
 function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
@@ -1104,6 +1164,19 @@ function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
+---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.
+---@param parent Frame # The parent frame
+---@param var string # The variable name or label (displayed right-aligned)
+---@param desc string # The description text (displayed below the variable)
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@param offset number # Width of the variable label column
+---@param width number # Total width of the help entry
+---@param height number? # Height of the variable label row (default 30)
+---@param height2 number? # Height of the description area (default height * 3)
+---@param justifyH string? # Horizontal justification for the description text (default "LEFT")
+---@param fontFile string? # Optional font file path for the description text
+---@return Frame
 function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2, justifyH, fontFile)
 	height = height or 30
 	height2 = height2 or (height * 3)
@@ -1152,6 +1225,14 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	return f
 end
 
+---Creates a standard button with normal, highlight, and pushed textures.
+---@param parent Frame # The parent frame
+---@param text string # Button label text
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@param width number # Button width in pixels
+---@param height number # Button height in pixels
+---@return Button
 function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, height)
 	local f = CreateFrame("Button", nil, parent)
 	f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
@@ -1291,6 +1372,13 @@ function TRB.Functions.OptionsUi:BuildLabel(parent, text, posX, posY, width, hei
 	return f
 end
 
+---Creates a scroll frame container with a child frame for scrollable options content.
+---@param name string # Global frame name for the scroll frame
+---@param parent Frame # The parent frame
+---@param width number? # Width of the scroll frame (default 560)
+---@param height number? # Height of the scroll frame (default 540)
+---@param scrollChild Frame? # Optional pre-existing child frame; a new one is created if nil
+---@return ScrollFrame
 function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width, height, scrollChild)
 	width = width or 560
 	height = height or 540
@@ -1310,6 +1398,13 @@ function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width,
 	return sf
 end
 
+---Creates a bordered tab content frame with an optional embedded scroll frame.
+---@param name string # Global frame name for the container
+---@param parent Frame # The parent frame
+---@param width number? # Width of the container (nil to fill parent width)
+---@param height number? # Height of the container (nil to fill parent height)
+---@param isManualScrollFrame boolean? # If true, skips creating the embedded scroll frame
+---@return Frame|BackdropTemplate
 function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
 	local fillParent = (width == nil and height == nil)
 	width = width or 652
@@ -1356,6 +1451,9 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	return cf
 end
 
+---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
+---@param self Button # The tab button that was clicked
+---@param tabId string # The key of the tab to switch to
 function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 	local parent = self:GetParent()
 	if parent.lastTab then
@@ -1401,6 +1499,13 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 	end
 end
 
+---Creates a clickable tab button with hover highlighting, backdrop styling, and a bottom cover for the tab effect.
+---@param name string # Global frame name for the tab button
+---@param displayText string # Label text shown on the tab
+---@param id string # Unique tab identifier key
+---@param parent Frame # The parent frame that owns the tab set
+---@param width number? # Tab width in pixels (default 100)
+---@return Button|BackdropTemplate
 function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width)
 	width = width or 100
 	local tabHeight = 20
@@ -1625,6 +1730,13 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 	return yCoord
 end
 
+---Creates the bar text variables side panel with a searchable scrolling table, description pane, and add-button behavior.
+---@param parent Frame # The spec's scrollChild or display panel parent
+---@param name string # Unique name prefix for frame naming (e.g., "Priest_Shadow")
+---@param cache table # The spec cache entry containing barTextVariables
+---@param classId integer # The WoW class ID
+---@param specId integer # The WoW specialization ID
+---@return Frame # The outer container frame for the side panel
 function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
 	local panelWidth = 350
@@ -1741,6 +1853,9 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 		icons = L["BarTextVariablesSectionIcons"],
 	}
 
+	---Builds a flat data array for LibScrollingTable from the spec's barTextVariables, organized by section.
+	---@param barTextVariables table # The barTextVariables table with values, pipe, and icons sections
+	---@return table[] # Flat array of row data for LibScrollingTable
 	local function BuildDataTable(barTextVariables)
 		local data = {}
 		for _, sectionKey in ipairs(sectionOrder) do
@@ -1794,6 +1909,7 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 	-- For non-active specs, FillBarTextVariables hasn't been called yet during SwitchSpec,
 	-- so we use the barTextVariablesRegistry to fill them on demand.
 	local registryKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	---Ensures the spec's barTextVariables are populated, filling them on demand from the registry if needed.
 	local function EnsureBarTextVariablesPopulated()
 		local vals = cache.barTextVariables.values
 		if vals == nil or #vals == 0 then
@@ -2046,25 +2162,38 @@ end
 local UNDO_MAX_HISTORY = 50
 local UNDO_DEBOUNCE_SEC = 0.4
 
+---Attaches undo/redo keyboard support (Ctrl+Z / Ctrl+Y) to an EditBox with debounced history snapshots.
+---@param editBox EditBox # The EditBox frame to attach undo/redo behavior to
 local function AttachUndoRedo(editBox)
 	-- Private state stored directly on the frame
+---@diagnostic disable-next-line: undefined-field, inject-field
 	editBox._undoHistory  = { editBox:GetText() or "" }
+---@diagnostic disable-next-line: undefined-field, inject-field
 	editBox._undoCursors  = { 0 }
+---@diagnostic disable-next-line: undefined-field, inject-field
 	editBox._undoIndex    = 1
+---@diagnostic disable-next-line: undefined-field, inject-field
 	editBox._undoSuppress = false  -- flag: true while we are programmatically setting text
+---@diagnostic disable-next-line: undefined-field, inject-field
 	editBox._undoTimer    = nil
 
 	--- Reset the undo stack (call when loading a different entry).
 	---@param initialText? string  If given, seeds the stack with this text.
+---@diagnostic disable-next-line: undefined-field, inject-field
 	function editBox:ResetUndoHistory(initialText)
+---@diagnostic disable-next-line: undefined-field, inject-field
 		if self._undoTimer then self._undoTimer:Cancel(); self._undoTimer = nil end
 		local t = initialText or self:GetText() or ""
+---@diagnostic disable-next-line: undefined-field, inject-field
 		self._undoHistory  = { t }
+---@diagnostic disable-next-line: undefined-field, inject-field
 		self._undoCursors  = { self:GetCursorPosition() or 0 }
+---@diagnostic disable-next-line: undefined-field, inject-field
 		self._undoIndex    = 1
 	end
 
-	-- Helper: push current text onto the stack (trimming any future entries).
+	---Pushes the current text and cursor position onto the undo stack, trimming any redo entries beyond the current index.
+	---@param self EditBox # The EditBox whose state is being recorded
 	local function PushState(self)
 		local text   = self:GetText()
 		local cursor = self:GetCursorPosition() or 0
@@ -2083,6 +2212,7 @@ local function AttachUndoRedo(editBox)
 			table.remove(self._undoHistory, 1)
 			table.remove(self._undoCursors, 1)
 		end
+---@diagnostic disable-next-line: undefined-field, inject-field
 		self._undoIndex = #self._undoHistory
 	end
 
@@ -2133,6 +2263,15 @@ local function AttachUndoRedo(editBox)
 	end)
 end
 
+---Creates a multi-line bar text input panel inside a scroll frame with undo/redo, cursor tracking, and focus management.
+---@param parent Frame # The parent frame
+---@param name string # Unique name prefix for frame naming
+---@param text string # The initial text content
+---@param width number # Width of the input panel in pixels
+---@param height number # Height of the input panel in pixels
+---@param xPos number # X offset from parent's TOPLEFT
+---@param yPos number # Y offset from parent's TOPLEFT
+---@return EditBox # The inner EditBox (scroll child)
 function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
 	local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
 	s:SetSize(width, height)
@@ -2202,6 +2341,19 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	return e
 end
 
+---Creates a LibSharedMedia dropdown for selecting a statusbar, background, or border texture.
+---@param parent Frame # The parent frame
+---@param dropDowns table # Table to store the created dropdown control
+---@param section table # The settings table containing the current texture selection (e.g., spec.textures)
+---@param classId integer # The WoW class ID
+---@param specId integer # The WoW specialization ID
+---@param xCoord number # X position for the dropdown
+---@param yCoord number # Y position for the dropdown label
+---@param lsmType string # The LibSharedMedia type ("statusbar", "background", or "border")
+---@param varName string # The key in the section table for this texture setting
+---@param sectionHeaderText string # Label text displayed above the dropdown
+---@param dropdownInfoText string # Informational text for the dropdown (unused in current implementation)
+---@param setSelectedFunc function # Callback invoked when a new texture is selected
 function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText, setSelectedFunc)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -2268,6 +2420,9 @@ function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, c
 	dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
 end
 
+---Enables or disables a ChatConfigCheckButton checkbox and grays out its label text when disabled.
+---@param checkbox CheckButton # The checkbox frame to toggle
+---@param enable boolean # Whether to enable (true) or disable (false) the checkbox
 function TRB.Functions.OptionsUi:ToggleCheckboxEnabled(checkbox, enable)
 	if enable then
 		checkbox:Enable()
@@ -2331,6 +2486,10 @@ function TRB.Functions.OptionsUi:ToggleSliderEnabled(slider, enable)
 	end
 end
 
+---Sets a checkbox label to green (enabled) or red (disabled) and optionally changes the label text.
+---@param checkbox CheckButton # The checkbox frame to style
+---@param enable boolean # Whether the checkbox represents an enabled state
+---@param changeText boolean? # If true, also changes the label text to "Enabled" or "Disabled"
 function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeText)
 	if enable then
 		getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
@@ -2347,6 +2506,7 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 	end
 end
 
+---Applies the current spec's bar layout and appearance settings to the active bar groups, refreshing border visuals.
 local function AdjustBarBorder()
 	local specCacheEntry = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	if TRB.Frames.barGroups ~= nil then
@@ -2355,6 +2515,13 @@ local function AdjustBarBorder()
 	end
 end
 
+---Generates the primary bar dimensions options section: width, height, position, border, anchor controls, and global settings toggle.
+---@param parent Frame # The parent scroll child frame
+---@param controls table # The controls table for storing created UI elements
+---@param spec table # The spec settings table (e.g., specCacheEntry.settings)
+---@param classId integer? # The WoW class ID (nil for the global options panel)
+---@param specId integer? # The WoW specialization ID (nil for the global options panel)
+---@param yCoord number # Starting Y coordinate for layout
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -2564,6 +2731,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	local primaryAnchorPointDropdown
 	local primaryAttachPointDropdown
 
+	---Applies the current primary bar anchor layout to the active bar groups if the spec matches.
 	local function ApplyPrimaryAnchorLayout()
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -2583,11 +2751,16 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	primaryAnchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], L["Resource"]), oUi.xCoord, yCoord)
 	primaryAnchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given barKey is the current anchor target for the primary bar.
+	---@param value string # The barKey to check (e.g., "screen", "secondary", "health")
+	---@return boolean
 	local function PrimaryAnchorToIsSelected(value)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		return value == a.barKey
 	end
 
+	---Sets the primary bar's anchor target to a new barKey after validating that it does not create a cycle.
+	---@param newValue string # The new barKey to anchor to (e.g., "screen", "secondary", "health")
 	local function PrimaryAnchorToSetSelected(newValue)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
 		local valid, err = TRB.Functions.Bar:ValidateAnchorTree(spec, nil, "primary", newValue, specBarKeys)
@@ -2623,6 +2796,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end)
 	end
 
+	---Populates the dropdown menu with available anchor targets for the primary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function PrimaryAnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", spec, nil, specBarKeys)
@@ -2658,11 +2834,16 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	primaryAnchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	primaryAnchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given anchor point matches the primary bar's current anchor point.
+	---@param value string The anchor point to check (e.g., "CENTER", "TOPLEFT")
+	---@return boolean
 	local function PrimaryAnchorPointIsSelected(value)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		return value == a.anchorPoint
 	end
 
+	---Sets the primary bar's anchor point to a new value and applies the layout change.
+	---@param newValue string The new anchor point (e.g., "CENTER", "TOPLEFT")
 	local function PrimaryAnchorPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.anchorPoint = newValue
@@ -2673,6 +2854,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end)
 	end
 
+	---Populates the dropdown menu with anchor point options for the primary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function PrimaryAnchorPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), PrimaryAnchorPointIsSelected, PrimaryAnchorPointSetSelected, pt)
@@ -2688,11 +2872,16 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	primaryAttachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	primaryAttachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given anchor point matches the primary bar's current attach point.
+	---@param value string The attach point to check (e.g., "CENTER", "BOTTOM")
+	---@return boolean
 	local function PrimaryAttachPointIsSelected(value)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		return value == a.attachPoint
 	end
 
+	---Sets the primary bar's attach point to a new value and applies the layout change.
+	---@param newValue string The new attach point (e.g., "CENTER", "TOP")
 	local function PrimaryAttachPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.attachPoint = newValue
@@ -2703,6 +2892,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end)
 	end
 
+	---Populates the dropdown menu with attach point options for the primary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function PrimaryAttachPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), PrimaryAttachPointIsSelected, PrimaryAttachPointSetSelected, pt)
@@ -2986,7 +3178,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	-- Forward-declare dropdown variables referenced in callbacks
 	local anchorPointDropdown, attachPointDropdown
 
-	-- Common function to apply layout changes (shared by all anchor controls)
+	---Applies the current ancillary bar anchor layout to the active bar groups if the spec matches.
 	local function ApplyAnchorLayout()
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -3005,11 +3197,16 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
 	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given barKey is the current anchor target for this ancillary bar.
+	---@param value string The barKey to check
+	---@return boolean
 	local function AnchorToIsSelected(value)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		return value == a.barKey
 	end
 
+	---Sets the ancillary bar's anchor target to a new barKey after validating it does not create an anchor cycle.
+	---@param newValue string The new barKey to anchor to
 	local function AnchorToSetSelected(newValue)
 		-- Validate no cycle
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
@@ -3047,6 +3244,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end)
 	end
 
+	---Populates the dropdown menu with available anchor targets for this ancillary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorToGenerator(dropdown, rootDescription)
 		-- Build list of valid targets
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
@@ -3101,11 +3301,16 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given value matches the ancillary bar's current anchor point.
+	---@param value string The anchor point to check
+	---@return boolean
 	local function AnchorPointIsSelected(value)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		return value == a.anchorPoint
 	end
 
+	---Sets the ancillary bar's anchor point to a new value and applies the layout change.
+	---@param newValue string The new anchor point
 	local function AnchorPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.anchorPoint = newValue
@@ -3116,6 +3321,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end)
 	end
 
+	---Populates the dropdown menu with anchor point options for this ancillary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AnchorPointIsSelected, AnchorPointSetSelected, pt)
@@ -3131,11 +3339,16 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given value matches the ancillary bar's current attach point.
+	---@param value string The attach point to check
+	---@return boolean
 	local function AttachPointIsSelected(value)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		return value == a.attachPoint
 	end
 
+	---Sets the ancillary bar's attach point to a new value and applies the layout change.
+	---@param newValue string The new attach point
 	local function AttachPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.attachPoint = newValue
@@ -3146,6 +3359,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		end)
 	end
 
+	---Populates the dropdown menu with attach point options for this ancillary bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AttachPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AttachPointIsSelected, AttachPointSetSelected, pt)
@@ -3158,7 +3374,17 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	return yCoord
 end
 
---- Legacy wrapper for combo point dimension options
+---Legacy wrapper for combo point dimension options. Delegates to GenerateAncillaryBarDimensionsOptions.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer? Class ID (nil for global panel)
+---@param specId integer? Spec ID (nil for global panel)
+---@param yCoord number Starting Y coordinate
+---@param primaryResourceString string? Localized primary resource name (defaults to "Energy")
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@param includeSpacing boolean? Whether to include a spacing slider (defaults to true)
+---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString, includeSpacing)
 	if primaryResourceString == nil then
 		primaryResourceString = L["ResourceEnergy"]
@@ -3184,7 +3410,15 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	})
 end
 
---- Legacy wrapper for health bar dimension options
+---Legacy wrapper for health bar dimension options. Delegates to GenerateAncillaryBarDimensionsOptions.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer? Class ID (nil for global panel)
+---@param specId integer? Spec ID (nil for global panel)
+---@param yCoord number Starting Y coordinate
+---@param primaryResourceString string? Localized primary resource name (defaults to "Mana")
+---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString)
 	if primaryResourceString == nil then
 		primaryResourceString = L["ResourceMana"]
@@ -3397,11 +3631,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
 	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given barKey is the current anchor target for this custom bar.
+	---@param value string The barKey to check
+	---@return boolean
 	local function AnchorToIsSelected(value)
 		local a = EnsureAnchorBlock(barSettings)
 		return value == a.barKey
 	end
 
+	---Sets the custom bar's anchor target to a new barKey after validating it does not create an anchor cycle.
+	---@param newValue string The new barKey to anchor to
 	local function AnchorToSetSelected(newValue)
 		-- Validate no cycle
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
@@ -3442,6 +3681,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		end)
 	end
 
+	---Populates the dropdown menu with available anchor targets for this custom bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys)
@@ -3490,11 +3732,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given value matches the custom bar's current anchor point.
+	---@param value string The anchor point to check
+	---@return boolean
 	local function AnchorPointIsSelected(value)
 		local a = EnsureAnchorBlock(barSettings)
 		return value == a.anchorPoint
 	end
 
+	---Sets the custom bar's anchor point to a new value and applies the layout change.
+	---@param newValue string The new anchor point
 	local function AnchorPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(barSettings)
 		a.anchorPoint = newValue
@@ -3508,6 +3755,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		end)
 	end
 
+	---Populates the dropdown menu with anchor point options for this custom bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AnchorPointIsSelected, AnchorPointSetSelected, pt)
@@ -3523,11 +3773,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given value matches the custom bar's current attach point.
+	---@param value string The attach point to check
+	---@return boolean
 	local function AttachPointIsSelected(value)
 		local a = EnsureAnchorBlock(barSettings)
 		return value == a.attachPoint
 	end
 
+	---Sets the custom bar's attach point to a new value and applies the layout change.
+	---@param newValue string The new attach point
 	local function AttachPointSetSelected(newValue)
 		local a = EnsureAnchorBlock(barSettings)
 		a.attachPoint = newValue
@@ -3541,6 +3796,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		end)
 	end
 
+	---Populates the dropdown menu with attach point options for this custom bar.
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function AttachPointGenerator(dropdown, rootDescription)
 		for _, pt in ipairs(anchorPoints) do
 			rootDescription:CreateRadio(GetAnchorPointDisplayName(pt), AttachPointIsSelected, AttachPointSetSelected, pt)
@@ -3699,7 +3957,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	-- Determine the callback to use (parameter overrides definition)
 	local changeCallback = onChangeCallback or barTypeDef.onChangeCallback
 	
-	-- Helper to call the change callback
+	---Triggers a resource bar update and optional change callback after a threshold color setting is modified.
 	local function triggerChange()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -3734,10 +3992,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, colorTypeLabel, oUi.xCoord, yCoord)
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label.font:SetFontObject(GameFontNormal)
 
+	---Returns whether the given value matches the current color curve type.
+	---@param value string The color curve type to check ("step", "linear", or "none")
+	---@return boolean
 	local function ColorCurveTypeIsSelected(value)
 		return value == colorSettings.type
 	end
 
+	---Returns the localized display name for a color curve type value.
+	---@param value string The color curve type ("step", "linear", or "none")
+	---@return string
 	local function ColorCurveTypeGetDisplayName(value)
 		if value == "step" then
 			return colorTypeStepLabel
@@ -3748,12 +4012,17 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		end
 	end
 
+	---Sets the color curve type to a new value, updates the dropdown text, and triggers a change callback.
+	---@param newValue string The new color curve type ("step", "linear", or "none")
 	local function ColorCurveTypeSetSelected(newValue)
 		colorSettings.type = newValue
 		controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
 		triggerChange()
 	end
 
+	---Populates the dropdown menu with color curve type options (step, linear, none).
+	---@param dropdown DropdownButton The dropdown button being initialized
+	---@param rootDescription table The root menu description to add radio items to
 	local function ColorCurveTypeGenerator(dropdown, rootDescription)
 		rootDescription:CreateRadio(colorTypeStepLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
 		rootDescription:CreateRadio(colorTypeLinearLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
@@ -3839,6 +4108,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	return math.min(yCoord, yCoord2)
 end
 
+---Synchronizes all statusbar texture dropdowns when a texture value changes, respecting texture lock.
+---@param controls table Dropdown control references
+---@param textures table Texture settings to update
+---@param newValue string The new texture value
+---@param variable string The texture variable being changed (e.g., "resource", "casting")
+---@param includeComboPoints boolean? Whether to sync combo point bar texture
+---@param includeManaBar boolean? Whether to sync mana bar texture
+---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to sync
 function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
@@ -3900,6 +4177,11 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 	end
 end
 
+---Synchronizes all overlay texture dropdowns when an overlay texture value changes, respecting texture lock.
+---@param controls table Dropdown control references
+---@param textures table Texture settings to update
+---@param newValue string The new texture value
+---@param variable string The overlay variable being changed (e.g., "absorb", "incomingHeal")
 function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newValue, variable)
 	local newName = statusbarPairsByName[newValue]
 
@@ -3928,6 +4210,18 @@ function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls, textures, newV
 	end
 end
 
+---Generates the bar textures options panel with statusbar, overlay, border, and background texture dropdowns.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer? Class ID (nil for global panel)
+---@param specId integer? Spec ID (nil for global panel)
+---@param yCoord number Starting Y coordinate
+---@param includeComboPoints boolean? Whether to include combo point bar textures
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@param includeManaBar boolean? Whether to include mana bar textures
+---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
+---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars)
 	if includeComboPoints == nil then
 		includeComboPoints = false
@@ -3987,14 +4281,21 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	yCoord = yCoord - 30
 
+	---Applies a new statusbar texture value and syncs all related dropdowns via UpdateStatusbarDropdowns.
+	---@param variable string The texture variable being changed (e.g., "resource", "casting")
+	---@param newValue string The new texture value
 	local function StatusbarSetValue(variable, newValue)
 		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
 	end
 
+	---Applies a new overlay texture value and syncs all related dropdowns via UpdateOverlayDropdowns.
+	---@param variable string The overlay variable being changed (e.g., "absorb", "incomingHeal")
+	---@param newValue string The new texture value
 	local function OverlaySetValue(variable, newValue)
 		TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
 	end
 
+	---Refreshes bar layout and appearance after a texture option change if editing the active spec.
 	local function RefreshBar()
 		if not TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			return
@@ -4012,6 +4313,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end
 
 	-- ===== BAR TEXTURES SUBSECTION =====
+---@diagnostic disable-next-line: param-type-mismatch
 	controls.barTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -4052,6 +4354,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	yCoord = yCoord - 70
 
 	-- ===== OVERLAY TEXTURES SUBSECTION =====
+---@diagnostic disable-next-line: param-type-mismatch
 	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -4070,6 +4373,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	yCoord = yCoord - 70
 
 	-- ===== BORDER TEXTURES SUBSECTION =====
+---@diagnostic disable-next-line: param-type-mismatch
 	controls.borderTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -4258,6 +4562,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	yCoord = yCoord - 70
 
 	-- ===== BACKGROUND TEXTURES SUBSECTION =====
+---@diagnostic disable-next-line: param-type-mismatch
 	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -4540,6 +4845,16 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
+---Generates the flash/pulse animation options section (alpha, period, enable checkbox).
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer? Class ID
+---@param specId integer? Spec ID
+---@param yCoord number Starting Y coordinate
+---@param flashAlphaName string Full localized name of the flash event (used in slider labels)
+---@param flashAlphaNameShort string Short localized name (used in checkbox text)
+---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, classId, specId, yCoord, flashAlphaName, flashAlphaNameShort)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -4585,6 +4900,21 @@ function TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, cl
 	return yCoord
 end
 
+---Generates the bar visibility options panel with per-bar condition dropdowns, alpha/fade sliders, and smooth checkbox.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer? Class ID (nil for global panel)
+---@param specId integer? Spec ID (nil for global panel)
+---@param yCoord number Starting Y coordinate
+---@param primaryResourceString string? Localized primary resource name
+---@param showWhenCategory string? Legacy parameter, no longer used
+---@param includeSecondaryVisibility boolean? Whether to include secondary resource bar visibility
+---@param secondaryResourceString string? Localized secondary resource name
+---@param includeHealthVisibility boolean? Whether to include health bar visibility
+---@param includeManaBarVisibility boolean? Whether to include mana bar visibility
+---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
+---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_barVisibility"
@@ -4679,7 +5009,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		},
 	}
 
-	-- Build summary display string from a visibility entry
+	---Builds a localized summary string describing a bar visibility entry's conditions.
+	---@param entry table The visibility settings entry (with neverShow, alwaysShow, conditions, etc.)
+	---@return string displayName The summary display text
 	local function GetVisibilityDisplayName(entry)
 		if entry.neverShow then
 			return L["ShowBarVisibilityNever"]
@@ -4716,6 +5048,8 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	local dropdownOriginalSetText = nil
 	local dropdownGetTextFunc = nil
 
+	---Installs a SetText hook on a dropdown so its display text is always replaced with a custom summary.
+	---@param dropdown DropdownButton The dropdown button to hook
 	local function InstallDropdownDisplayTextHook(dropdown)
 		if dropdownOriginalSetText == nil then
 			dropdownOriginalSetText = dropdown.SetText
@@ -4729,6 +5063,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 	end
 
+	---Updates the display text function for a hooked dropdown and forces an immediate visual refresh.
+	---@param dropdown DropdownButton The dropdown button to update
+	---@param getTextFunc fun(): string A function that returns the current display text
 	local function UpdateDropdownDisplayText(dropdown, getTextFunc)
 		dropdownGetTextFunc = getTextFunc
 		-- Force an immediate visual refresh via the original SetText
@@ -4737,7 +5074,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 	end
 
-	-- Helper: refresh spec/global cache and re-evaluate bar visibility after changes.
+	---Refreshes the spec/global cache and re-evaluates bar visibility after visibility settings change.
 	local function RefreshVisibilitySettings()
 		if classId ~= nil and specId ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
@@ -4768,7 +5105,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 	end
 
-	-- Helper: refresh for changes that also need appearance (custom bars)
+	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
 	local function RefreshVisibilityAndAppearance()
 		if classId ~= nil and specId ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
@@ -4808,6 +5145,10 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 	end
 
+	---Populates a dropdown menu with visibility condition checkboxes grouped by category.
+	---@param rootDescription table The root menu description to add items to
+	---@param entry table The visibility settings entry to read/write conditions on
+	---@param onChange function Callback invoked after any condition is toggled
 	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
 		rootDescription:SetScrollMode(400)
 
@@ -4953,6 +5294,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		barVisibilityTable:SetDisplayCols(columns)
 	end)
 
+	---Refreshes the scrolling table data from the current bar visibility settings.
 	local function SetTableValues()
 		local dataTable = {}
 		for _, entry in ipairs(barEntries) do
@@ -5030,7 +5372,8 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		0, 10, 0, 0.25, 2,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 
-	-- Fill the detail panel with data for the selected bar
+	---Populates the bar visibility detail panel with controls for the selected bar's visibility settings.
+	---@param barKey string The key identifying which bar to display details for
 	local function FillDetailPanel(barKey)
 		selectedBarKey = barKey
 		local barEntry = nil
@@ -5156,6 +5499,15 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	return yCoord
 end
 
+---Generates the threshold line icon position and dimension options panel, including icon size, border, position, threshold line width, and overlap settings.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing threshold icon configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param isHealer boolean? Whether the spec is a healer (affects global setting handling)
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord, isHealer)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -5539,6 +5891,17 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	return yCoord
 end
 
+---Generates the bar color and color-changing options panel, including base bar color, casting overlay color, and optional spending overlay color.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing bar color configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param primaryResourceString string The localized name of the primary resource (e.g., "Insanity", "Rage")
+---@param includeOvercap boolean Whether to include overcap-related color options
+---@param includeSpendingOverlay boolean Whether to include the spending overlay color option
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap, includeSpendingOverlay)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -5606,6 +5969,17 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	return yCoord
 end
 
+---Generates the bar border color options panel, including base border color and optional overcap border color toggle and picker.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing bar border color configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param primaryResourceString string The localized name of the primary resource (e.g., "Insanity", "Rage")
+---@param includeOvercap boolean Whether to include the overcap border color option
+---@param isHealer boolean? Whether the spec is a healer (reserved for future healer-specific options)
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap, isHealer)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -5651,6 +6025,14 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	return yCoord
 end
 
+---Generates the health bar color options panel, including threshold-based health colors, absorb overlay settings, and incoming heal overlay settings.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing health bar color configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, classId, specId, yCoord)
 	local L = TRB.Localization or {}
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -5868,6 +6250,14 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	return yCoord - 30
 end
 
+---Generates the Brewmaster Monk stagger bar color options panel, including light/medium/heavy threshold colors, color transition type, threshold sliders, border, and background colors.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing stagger bar color configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6017,6 +6407,16 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	return yCoord
 end
 
+---Generates the overcapping configuration panel with relative offset and fixed value modes for determining the overcap threshold.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing overcap configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param primaryResourceString string The localized name of the primary resource (e.g., "Insanity", "Rage")
+---@param primaryResourceMax number The maximum value of the primary resource
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMax)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6077,6 +6477,17 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	return yCoord
 end
 
+---Generates the maximum resource override configuration panel with an enable checkbox and a slider for setting a custom max resource value.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing max resource configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param primaryResourceString string The localized name of the primary resource (e.g., "Insanity", "Rage")
+---@param primaryResourceMin number The minimum allowed value for the max resource slider
+---@param primaryResourceMax number The maximum allowed value for the max resource slider
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMin, primaryResourceMax)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6268,6 +6679,14 @@ function TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, contr
 	return yCoord
 end
 
+---Generates the default bar text font settings panel, including font face dropdown, default font color picker, and font size slider with optional global toggle.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing display text font configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6364,6 +6783,14 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	return yCoord
 end
 
+---Generates the "Use Global" checkbox for text color settings, allowing a spec to inherit global text colors.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing text color configuration
+---@param classId integer The class ID
+---@param specId integer The spec ID
+---@param yCoord number The current Y coordinate for layout positioning
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6392,6 +6819,14 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 	return yCoord
 end
 
+---Generates the decimal precision configuration panel with sliders for secondary resource, mana, and health display precision, plus an optional global toggle.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing precision configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6485,6 +6920,19 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 	return yCoord
 end
 
+---Creates an audio cue option row with an enable checkbox and a sound selection dropdown for a named audio trigger.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param name string The key name of the audio option in spec.audio (e.g., "overcap")
+---@param spec table The spec settings table containing audio configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param localization string The localized label text for the checkbox
+---@param localizationTooltip string The localized tooltip text for the checkbox
+---@param defaultValue any Reserved for future use
+---@param maximumValue any Reserved for future use
+---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip, defaultValue, maximumValue)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
@@ -6508,6 +6956,14 @@ function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec,
 	return yCoord
 end
 
+---Creates a sound file selection dropdown for a named audio trigger, populated from LibSharedMedia sound entries.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param name string The key name of the audio option in spec.audio (e.g., "overcap")
+---@param spec table The spec settings table containing audio configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for vertical positioning of the dropdown
 function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
 	FillSoundCache()
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -6588,13 +7044,14 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 	preferredIndex = 3
 }
 
----
----@param parent frame
----@param controls table
----@param spec table
----@param classId integer
----@param specId integer
----@param yCoord number
+---Generates the bar text editor panel, including the scrolling table of bar text entries, add/delete controls, and per-entry editing fields for font, position, and text content.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing displayText configuration
+---@param classId integer? The class ID, or nil for global bar text settings
+---@param specId integer? The spec ID, or nil for global bar text settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param cache table The bar text variables cache used for the side panel
 function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord, cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	-- specCache keys use lowercase class names (e.g. "priest_discipline"), but
@@ -7444,8 +7901,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 	end)
 
-	---@param displayText TRB.Classes.Settings.DisplayText
-	---@param btt table # LibScrollingTable
+	---Populates the bar text scrolling table with rows from the displayText.barText entries.
+	---@param displayText TRB.Classes.Settings.DisplayText The display text settings containing the barText array
+	---@param btt table LibScrollingTable instance to populate with data rows
 	local function SetTableValues(displayText, btt)
 		local dataTable = {}
 		local entries = TRB.Functions.Table:Length(displayText.barText)
@@ -7477,7 +7935,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		btt:EnableSelection(true)
 	end
 
-	---@return TRB.Classes.Settings.DisplayTextEntry
+	---Creates and returns a new default bar text entry with default font, position, and empty text content.
+	---@return TRB.Classes.Settings.DisplayTextEntry entry A new display text entry with default values
 	local function GetNewDisplayTextEntry()
 		return {
 			enabled = true,
@@ -7504,8 +7963,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		}
 	end
 
-	---@param guid string
-	---@param dt TRB.Classes.Settings.DisplayText
+	---Finds the bar text entry matching the given GUID and populates the editor fields with its values.
+	---@param guid string The unique identifier of the bar text entry to load
+	---@param dt TRB.Classes.Settings.DisplayText The display text settings containing the barText array to search
 	local function FillBarTextEditorFields(guid, dt)
 		local found = false
 		local e = TRB.Functions.Table:Length(dt.barText)
@@ -7649,6 +8109,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 	})
 
+	---Replaces the spec's bar text entries, updates the specCache, refreshes the scrolling table, and triggers bar text frame recreation.
+	---@param barText TRB.Classes.Settings.DisplayTextEntry[] The new array of bar text entries to apply
 	local function ResetTableValues(barText)
 		spec.displayText.barText = barText
 		if TRB.Data.specCache[compositeKey] then

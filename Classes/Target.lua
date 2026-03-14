@@ -59,6 +59,7 @@ end
 
 ---Creates a new entry in the target table for this target if one does not exist already
 ---@param guid string # GUID of the target we're adding
+---@param isFriend boolean? # Is this a friendly unit?
 function TRB.Classes.TargetData:InitializeTarget(guid, isFriend)
     if guid ~= nil and guid ~= "" then
         if not self:CheckTargetExists(guid) then

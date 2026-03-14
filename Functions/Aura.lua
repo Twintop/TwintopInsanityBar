@@ -242,18 +242,22 @@ end
 local unitAuraFrame = CreateFrame("Frame")
 unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
 
+---Registers the UNIT_AURA event so the addon begins processing aura updates for the player
 function TRB.Functions.Aura:EnableUnitAura()
 	unitAuraFrame:RegisterEvent("UNIT_AURA")
 end
 
+---Unregisters the UNIT_AURA event so the addon stops processing aura updates
 function TRB.Functions.Aura:DisableUnitAura()
 	unitAuraFrame:UnregisterEvent("UNIT_AURA")
 end
 
+---Enables the aura instance ID cache used to match newly applied auras to pending snapshot requests
 function TRB.Functions.Aura:EnableUnitAuraCache()
 	auraCacheEnabled = true
 end
 
+---Disables the aura instance ID cache and clears all pending cache buffers and aura requests
 function TRB.Functions.Aura:DisableUnitAuraCache()
 	auraCacheEnabled = false
 	auraCacheBuffer = {}

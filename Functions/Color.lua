@@ -74,6 +74,12 @@ function TRB.Functions.Color:ClearRGBACache()
 	wipe(rgbaCache)
 end
 
+---Converts normalized decimal RGBA values (0.0-1.0) to an AARRGGBB hexadecimal string
+---@param r number? # Red channel value (0.0-1.0), nil treated as 0
+---@param g number? # Green channel value (0.0-1.0), nil treated as 0
+---@param b number? # Blue channel value (0.0-1.0), nil treated as 0
+---@param a number? # Alpha channel value (0.0-1.0), nil treated as 0
+---@return string # AARRGGBB hexadecimal color string
 function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	local _r, _g, _b, _a
 
@@ -116,6 +122,13 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	return _a .. _r .. _g .. _b
 end
 
+---Sets a frame's backdrop color, using a cache to skip redundant SetBackdropColor calls when the color hasn't changed
+---@param frame table # The frame whose backdrop color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param r number # Red channel value (0.0-1.0)
+---@param g number # Green channel value (0.0-1.0)
+---@param b number # Blue channel value (0.0-1.0)
+---@param a number # Alpha channel value (0.0-1.0)
 function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
 	local changed = false
 	
@@ -144,6 +157,13 @@ function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
 	end
 end
 
+---Sets a frame's backdrop border color, using a cache to skip redundant SetBackdropBorderColor calls when the color hasn't changed
+---@param frame table # The frame whose backdrop border color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param r number # Red channel value (0.0-1.0)
+---@param g number # Green channel value (0.0-1.0)
+---@param b number # Blue channel value (0.0-1.0)
+---@param a number # Alpha channel value (0.0-1.0)
 function TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 	local changed = false
 	
@@ -172,11 +192,23 @@ function TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 	end
 end
 
+---Sets a frame's backdrop border color from an AARRGGBB hex string, parsing and applying it through the cached color setter
+---@param frame table # The frame whose backdrop border color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param rgbaString string # AARRGGBB hexadecimal color string
+---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString, normalize)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 end
 
+---Sets a status bar frame's color, using a cache to skip redundant SetStatusBarColor calls when the color hasn't changed
+---@param frame table # The status bar frame whose color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param r number # Red channel value (0.0-1.0)
+---@param g number # Green channel value (0.0-1.0)
+---@param b number # Blue channel value (0.0-1.0)
+---@param a number # Alpha channel value (0.0-1.0)
 function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 	local changed = false
 
@@ -207,6 +239,13 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 	end
 end
 
+---Sets a status bar's texture vertex color, using a cache to skip redundant calls when the color hasn't changed
+---@param frame table # The status bar frame whose texture vertex color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param r number # Red channel value (0.0-1.0)
+---@param g number # Green channel value (0.0-1.0)
+---@param b number # Blue channel value (0.0-1.0)
+---@param a number # Alpha channel value (0.0-1.0)
 function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
 	local changed = false
 
@@ -235,11 +274,22 @@ function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
 	end
 end
 
+---Sets a status bar frame's color from an AARRGGBB hex string, parsing and applying it through the cached color setter
+---@param frame table # The status bar frame whose color to set
+---@param key string? # Cache key for deduplication; if nil, always applies the color
+---@param rgbaString string # AARRGGBB hexadecimal color string
+---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 end
 
+---Sets a threshold frame's texture and optional icon border color from an AARRGGBB hex string, filtered by class/spec
+---@param frame table # The threshold frame containing a .texture and optional .icon
+---@param rgbaString string # AARRGGBB hexadecimal color string
+---@param normalize boolean? # Whether to normalize values to 0.0-1.0
+---@param classId number? # Optional class ID filter; if both classId and specId are nil, always applies
+---@param specId number? # Optional spec ID filter; must match current character's spec if provided
 function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, classId, specId)
 	if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
 		-- Create texture if it doesn't exist yet (can happen with dynamically created thresholds)
