@@ -17,6 +17,11 @@ local content = [====[
 
 - [#664](#664) Adjust bar border width calculation to be more consistent and less restrictive.
 
+## Druid
+### Guardian
+
+- [#694](#694) Add new threshold lines for Maul/Raze when talented into Harnessed Rage and Killing Blow, respectively.
+
 ---
 
 # 12.0.1.35-release (2026-03-14)
