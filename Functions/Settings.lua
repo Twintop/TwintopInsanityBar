@@ -5290,7 +5290,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 14,
-			collapseBorderWidth = true,
+			collapseBorderWidth = false,
 			relativeTo = "BOTTOM",
 			relativeToName = L["PositionBelowMiddle"],
 			fullWidth = true,
