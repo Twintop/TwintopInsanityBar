@@ -138,6 +138,18 @@ local function GetComboPointNodeWidth(settings)
 	return 0
 end
 
+---Returns the effective spacing for a bar group, accounting for collapseBorderWidth.
+---When collapseBorderWidth is enabled, adjacent node borders overlap by using negative
+---spacing equal to the border width, producing pixel-perfect single-width borders.
+---@param barSettings table # The bar's settings (e.g., settings.comboPoints or settings.bars.<key>)
+---@return number # The effective spacing value to use for layout
+function TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
+	if barSettings and barSettings.collapseBorderWidth then
+		return -(barSettings.border or 0)
+	end
+	return (barSettings and barSettings.spacing) or 0
+end
+
 ---Calculates the total rendered width of a multi-node bar group (e.g., combo points).
 ---For multi-node bars, `barSettings.width` is per-node width, not total width.
 ---The total width is:  nodeCount * nodeWidth + (nodeCount - 1) * spacing
@@ -180,7 +192,7 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 		nodeCount = barGroup.nodeCount
 	end
 	local nodeWidth = barSettings.width or 10
-	local nodeSpacing = barSettings.spacing or 2
+	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
 	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
 end
 
@@ -2493,7 +2505,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	-- Set layout parameters (use anchor.matchWidth with fallback)
 	local matchWidth = self:GetMatchWidth(groupSettings)
-	targetGroup:SetLayout(groupSettings.spacing or 0, matchWidth, "HORIZONTAL")
+	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), matchWidth, "HORIZONTAL")
 
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)

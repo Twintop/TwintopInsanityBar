@@ -2278,6 +2278,59 @@ function TRB.Functions.OptionsUi:ToggleCheckboxEnabled(checkbox, enable)
 	end
 end
 
+---Enables or disables a slider built with BuildSlider, including its EditBox and labels.
+---@param slider Slider # The slider frame returned by BuildSlider
+---@param enable boolean # Whether to enable or disable the slider
+function TRB.Functions.OptionsUi:ToggleSliderEnabled(slider, enable)
+	if enable then
+		slider:Enable()
+		slider:SetAlpha(1.0)
+		slider:EnableMouseWheel(true)
+		if slider.EditBox then
+			slider.EditBox:Enable()
+			slider.EditBox:EnableMouseWheel(true)
+		end
+		if slider.Plus then
+			slider.Plus:Enable()
+		end
+		if slider.Minus then
+			slider.Minus:Enable()
+		end
+		if slider.Title then
+			slider.Title:SetFontObject(GameFontNormal)
+		end
+		if slider.MinLabel then
+			slider.MinLabel:SetFontObject(GameFontHighlightSmall)
+		end
+		if slider.MaxLabel then
+			slider.MaxLabel:SetFontObject(GameFontHighlightSmall)
+		end
+	else
+		slider:Disable()
+		slider:SetAlpha(0.5)
+		slider:EnableMouseWheel(false)
+		if slider.EditBox then
+			slider.EditBox:Disable()
+			slider.EditBox:EnableMouseWheel(false)
+		end
+		if slider.Plus then
+			slider.Plus:Disable()
+		end
+		if slider.Minus then
+			slider.Minus:Disable()
+		end
+		if slider.Title then
+			slider.Title:SetFontObject(GameFontDisable)
+		end
+		if slider.MinLabel then
+			slider.MinLabel:SetFontObject(GameFontDisableSMALL)
+		end
+		if slider.MaxLabel then
+			slider.MaxLabel:SetFontObject(GameFontDisableSMALL)
+		end
+	end
+end
+
 function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeText)
 	if enable then
 		getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
@@ -2898,6 +2951,28 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end
 		end)
+
+		-- Collapse border width checkbox (below spacing slider)
+		controls.checkBoxes.collapseBorderWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "CollapseBorderWidth", parent, "ChatConfigCheckButtonTemplate")
+		local cbCollapse = controls.checkBoxes.collapseBorderWidth
+		cbCollapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
+		getglobal(cbCollapse:GetName() .. 'Text'):SetText(L["CollapseBorderWidth"])
+		---@diagnostic disable-next-line: inject-field
+		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
+		cbCollapse:SetChecked(spec.comboPoints.collapseBorderWidth)
+		TRB.Functions.OptionsUi:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
+		cbCollapse:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.collapseBorderWidth = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
+
+			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				end
+			end
+		end)
 	end
 
 	-- Anchor To dropdown + Match Width checkbox
@@ -3283,6 +3358,24 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			barSettings.spacing = value
 			
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+			end
+		end)
+
+		-- Collapse border width checkbox (below spacing slider)
+		controls[barTypeDef.key .. "CollapseBorderWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. barTypeDef.key .. "CollapseBorderWidth", parent, "ChatConfigCheckButtonTemplate")
+		local cbCollapse = controls[barTypeDef.key .. "CollapseBorderWidth"]
+		cbCollapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
+		getglobal(cbCollapse:GetName() .. 'Text'):SetText(L["CollapseBorderWidth"])
+		---@diagnostic disable-next-line: inject-field
+		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
+		cbCollapse:SetChecked(barSettings.collapseBorderWidth)
+		TRB.Functions.OptionsUi:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
+		cbCollapse:SetScript("OnClick", function(self, ...)
+			barSettings.collapseBorderWidth = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
+
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end

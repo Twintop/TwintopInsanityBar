@@ -2173,3 +2173,7 @@ L["BarVisibilityBarNameMana"] = "Mana Bar"
 L["BarVisibilityDetailHeader"] = "%s Settings"
 L["BarVisibilityConditionsLabel"] = "Visibility"
 L["FlashSectionHeader"] = "Bar Flash"
+
+-- Collapse Border Width
+L["CollapseBorderWidth"] = "Collapse border width"
+L["CollapseBorderWidthTooltip"] = "When enabled, overlaps adjacent node borders so they appear as a single border width instead of doubling up. This disables the spacing slider and sets node spacing to the negative of the border width."

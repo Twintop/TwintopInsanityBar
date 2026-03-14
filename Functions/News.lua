@@ -15,6 +15,7 @@ local content = [====[
 # 12.0.1.35-release (2026-03-14)
 ## General
 
+- [#696](#696) Allow bar groups that are made up of many individual nodes (e.g. Combo Points) to be configured to have their node borders overlap each other.
 - Fix an issue where trying to reset bar text to defaults when you had no current bar text entries would cause Lua errors.
 
 ---
