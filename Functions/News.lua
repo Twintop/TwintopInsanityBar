@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.35-release (2026-03-14)
+## General
+
+- Fix an issue where trying to reset bar text to defaults when you had no current bar text entries would cause Lua errors.
+
+---
+
 # 12.0.1.34-release (2026-03-14)
 ## General
 

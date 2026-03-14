@@ -7567,6 +7567,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local function ResetTableValues(barText)
 		spec.displayText.barText = barText
 		if TRB.Data.specCache[compositeKey] then
+			if not TRB.Data.specCache[compositeKey].settings.displayText then
+				TRB.Data.specCache[compositeKey].settings.displayText = {}
+			end
 			TRB.Data.specCache[compositeKey].settings.displayText.barText = barText
 		end
 		SetTableValues(spec.displayText, barTextTable)
