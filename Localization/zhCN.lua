@@ -2051,4 +2051,7 @@ if locale == "zhCN" then
 	L["BarVisibilityConditionsLabel"] = "显示条件"
 	L["FlashSectionHeader"] = "资源条闪烁"
 
+	L["CollapseBorderWidth"] = "折叠边框宽度"
+	L["CollapseBorderWidthTooltip"] = "启用后，会重叠相邻节点的边框，使其显示为单一边框宽度，而非双倍边框。此功能会禁用间距滑块，并将节点间距设置为边框宽度的负值。"
+
 end
