@@ -71,7 +71,7 @@ TRB.Data = {}
 TRB.Data.lookupDirty = true
 
 TRB.Data.constants = {
-	borderWidthFactor = 4,
+	borderWidthFactor = 2,
 	defaultSettings = {
 		fonts = {}, -- This will get populated by Functions\Settings.lua
 		textures = {

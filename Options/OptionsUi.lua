@@ -2418,7 +2418,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.width = value
 
-		local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
+		local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec.bar.border)
 		controls.borderWidth:SetValue(borderSize)
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
@@ -2450,7 +2450,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.bar.height = value
 
-		local maxBorderSize = math.max(math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1, 0)
+		local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec.bar.border)
 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
@@ -2755,7 +2755,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	local f = nil
 	local title = ""
 
-	local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+	local initAnchor = EnsureAnchorBlock(spec[settingKey])
+	local initEffectiveWidth = initAnchor.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, initAnchor.barKey) or spec[settingKey].width
+	local maxBorderHeight = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(initEffectiveWidth / TRB.Data.constants.borderWidthFactor))
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
@@ -2809,7 +2811,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 
 		local a = EnsureAnchorBlock(spec[settingKey])
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
-		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
@@ -2836,7 +2838,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 
 		local a = EnsureAnchorBlock(spec[settingKey])
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
-		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
 		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
@@ -3074,7 +3076,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 
 		-- Update border max based on new effective width
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
-		local maxBorderSize = math.max(math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor)) - 1, 0)
+		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
@@ -3324,8 +3326,6 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	local effectiveWidthForBorder = anchor.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, anchor.barKey) or barSettings.width
 	local effectiveHeightForBorder = anchor.matchWidth and spec.bar.height or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
-	-- Ensure maxBorderHeight is at least as large as the current border value to prevent slider errors
-	maxBorderHeight = math.max(maxBorderHeight, barSettings.border)
 	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName), 
 		0, maxBorderHeight, barSettings.border, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -5283,11 +5283,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		spec.thresholds.icons.width = value
 
 		local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-		local borderSize = spec.thresholds.icons.border
-	
-		if maxBorderSize < borderSize then
-			maxBorderSize = borderSize
-		end
+		local borderSize = math.min(maxBorderSize, spec.thresholds.icons.border)
 
 		controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
@@ -5308,11 +5304,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		spec.thresholds.icons.height = value
 
 		local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
-		local borderSize = spec.thresholds.icons.border
-	
-		if maxBorderSize < borderSize then
-			maxBorderSize = borderSize
-		end
+		local borderSize = math.min(maxBorderSize, spec.thresholds.icons.border)
 
 		controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)

@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.36-release (2026-03-15)
+## General
+
+- [#664](#664) Adjust bar border width calculation to be more consistent and less restrictive.
+
+---
+
 # 12.0.1.35-release (2026-03-14)
 ## General
 
