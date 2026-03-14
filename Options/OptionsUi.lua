@@ -2323,10 +2323,10 @@ function TRB.Functions.OptionsUi:ToggleSliderEnabled(slider, enable)
 			slider.Title:SetFontObject(GameFontDisable)
 		end
 		if slider.MinLabel then
-			slider.MinLabel:SetFontObject(GameFontDisableSMALL)
+			slider.MinLabel:SetFontObject(GameFontDisableSmall)
 		end
 		if slider.MaxLabel then
-			slider.MaxLabel:SetFontObject(GameFontDisableSMALL)
+			slider.MaxLabel:SetFontObject(GameFontDisableSmall)
 		end
 	end
 end
