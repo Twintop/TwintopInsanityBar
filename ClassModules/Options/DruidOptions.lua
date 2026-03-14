@@ -792,7 +792,19 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				maul = {
 					enabled = true,
 				},
+				maulKillingBlow = {
+					enabled = true,
+				},
+				maulHarnessedRage = {
+					enabled = true,
+				},
 				raze = {
+					enabled = true,
+				},
+				razeKillingBlow = {
+					enabled = true,
+				},
+				razeHarnessedRage = {
 					enabled = true,
 				},
 				frenziedRegeneration = {
@@ -2734,6 +2746,30 @@ local function GuardianConstructThresholdPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.thresholdDictionary.maul.enabled = self:GetChecked()
 		spec.thresholds.thresholdDictionary.raze.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.maulKillingBlowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maulKillingBlow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.maulKillingBlowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"])
+	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.maulKillingBlow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.maulKillingBlow.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.razeKillingBlow.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.maulHarnessedRageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maulHarnessedRage", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.maulHarnessedRageThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"])
+	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"]
+	f:SetChecked(spec.thresholds.thresholdDictionary.maulHarnessedRage.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.thresholdDictionary.maulHarnessedRage.enabled = self:GetChecked()
+		spec.thresholds.thresholdDictionary.razeHarnessedRage.enabled = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]

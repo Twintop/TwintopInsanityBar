@@ -2173,3 +2173,9 @@ L["BarVisibilityBarNameMana"] = "Mana Bar"
 L["BarVisibilityDetailHeader"] = "%s Settings"
 L["BarVisibilityConditionsLabel"] = "Visibility"
 L["FlashSectionHeader"] = "Bar Flash"
+
+-- Druid Guardian Killing Blow / Harnessed Rage Thresholds
+L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"] = "Maul / Raze (Killing Blow)"
+L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze when Killing Blow is talented."
+L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"] = "Maul / Raze (Harnessed Rage)"
+L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze when Harnessed Rage is talented."

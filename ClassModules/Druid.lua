@@ -2431,56 +2431,129 @@ local function UpdateResourceBar()
 							end
 							pairOffset = (thresholdId - 1) * 3
 							local resourceAmount = spell:GetPrimaryResourceCost()
-						local isUsable = spell:IsUsable()
-						local showThreshold = true
-						local thresholdColor = specCacheSettings.colors.threshold.over.color
-						local frameLevel = frameLevels.thresholdOver
-						local snapshot = snapshots[spell.id]
+							local isUsable = spell:IsUsable()
+							local showThreshold = true
+							local thresholdColor = specCacheSettings.colors.threshold.over.color
+							local frameLevel = frameLevels.thresholdOver
+							local snapshot = snapshots[spell.id]
 
-						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.maul.id then
-								if talents:IsTalentActive(spells.raze) then
-									showThreshold = false
-								elseif talents:IsTalentActive(spell) then -- Talent not selected
-									showThreshold = false
+							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+								if spell.id == spells.maul.id then
+									if talents:IsTalentActive(spells.raze) then
+										showThreshold = false
+									elseif talents:IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									else
+										if spell.settingKey == spells.maul.settingKey then
+											if isUsable then
+												thresholdColor = specCacheSettings.colors.threshold.over.color
+											else
+												thresholdColor = specCacheSettings.colors.threshold.under.color
+												frameLevel = frameLevels.thresholdUnder
+											end
+										elseif spell.settingKey == spells.maulKillingBlow.settingKey then
+											if not talents:IsTalentActive(spells.killingBlow) then
+												showThreshold = false
+											else
+												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
+												--TODO: This needs to be a ColorCurve to get the correct coloring.
+												if isUsable then
+													thresholdColor = specCacheSettings.colors.threshold.over.color
+												else
+													thresholdColor = specCacheSettings.colors.threshold.under.color
+													frameLevel = frameLevels.thresholdUnder
+												end
+											end
+										elseif spell.settingKey == spells.maulHarnessedRage.settingKey then
+											if not talents:IsTalentActive(spells.harnessedRage) then
+												showThreshold = false
+											else
+												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
+												--TODO: This needs to be a ColorCurve to get the correct coloring.
+												if isUsable then
+													thresholdColor = specCacheSettings.colors.threshold.over.color
+												else
+													thresholdColor = specCacheSettings.colors.threshold.under.color
+													frameLevel = frameLevels.thresholdUnder
+												end
+											end
+										else
+											showThreshold = false
+										end
+									end
+								elseif spell.id == spells.raze.id then
+									if talents:IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									else
+										if spell.settingKey == spells.raze.settingKey then
+											if isUsable then
+												thresholdColor = specCacheSettings.colors.threshold.over.color
+											else
+												thresholdColor = specCacheSettings.colors.threshold.under.color
+												frameLevel = frameLevels.thresholdUnder
+											end
+										elseif spell.settingKey == spells.razeKillingBlow.settingKey then
+											if not talents:IsTalentActive(spells.killingBlow) then
+												showThreshold = false
+											else
+												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
+												--TODO: This needs to be a ColorCurve to get the correct coloring.
+												if isUsable then
+													thresholdColor = specCacheSettings.colors.threshold.over.color
+												else
+													thresholdColor = specCacheSettings.colors.threshold.under.color
+													frameLevel = frameLevels.thresholdUnder
+												end
+											end
+										elseif spell.settingKey == spells.razeHarnessedRage.settingKey then
+											if not talents:IsTalentActive(spells.harnessedRage) then
+												showThreshold = false
+											else
+												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
+												--TODO: This needs to be a ColorCurve to get the correct coloring.
+												if isUsable then
+													thresholdColor = specCacheSettings.colors.threshold.over.color
+												else
+													thresholdColor = specCacheSettings.colors.threshold.under.color
+													frameLevel = frameLevels.thresholdUnder
+												end
+											end
+										else
+											showThreshold = false
+										end
+									end
+								end
+							elseif resourceAmount == 0 then
+								showThreshold = false
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+								showThreshold = false
+							elseif spell.hasCooldown then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specCacheSettings.colors.threshold.unusable.color
+									frameLevel = frameLevels.thresholdUnusable
 								elseif isUsable then
 									thresholdColor = specCacheSettings.colors.threshold.over.color
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = frameLevels.thresholdUnder
 								end
+							else -- This is an active/available/normal spell threshold
+								if isUsable then
+									thresholdColor = specCacheSettings.colors.threshold.over.color
+								else
+									thresholdColor = specCacheSettings.colors.threshold.under.color
+									frameLevel = frameLevels.thresholdUnder
+								end
 							end
-						elseif resourceAmount == 0 then
-							showThreshold = false
-						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-							showThreshold = false
-						elseif spell.hasCooldown then
-							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
-								thresholdColor = specCacheSettings.colors.threshold.unusable.color
-								frameLevel = frameLevels.thresholdUnusable
-							elseif isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = frameLevels.thresholdUnder
-							end
-						else -- This is an active/available/normal spell threshold
-							if isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = frameLevels.thresholdUnder
-							end
-						end
 
-						if resourceAmount >= maxPrimaryBarResource then
-							showThreshold = false
-						end
+							if resourceAmount >= maxPrimaryBarResource then
+								showThreshold = false
+							end
 
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
-						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
 						end
 					end
 				
