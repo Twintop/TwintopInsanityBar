@@ -564,8 +564,14 @@ end
 ---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public berserk TRB.Classes.SpellBase
 ---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
+---@field public harnessedRage TRB.Classes.SpellBase
+---@field public killingBlow TRB.Classes.SpellBase
 ---@field public maul TRB.Classes.SpellThreshold
+---@field public maulKillingBlow TRB.Classes.SpellThreshold
+---@field public maulHarnessedRage TRB.Classes.SpellThreshold
 ---@field public raze TRB.Classes.SpellThreshold
+---@field public razeKillingBlow TRB.Classes.SpellThreshold
+---@field public razeHarnessedRage TRB.Classes.SpellThreshold
 TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.GuardianSpells.__index = TRB.Classes.Druid.GuardianSpells
 
@@ -581,11 +587,47 @@ function TRB.Classes.Druid.GuardianSpells:New()
         settingKey = "maul",
         isSnowflake = true
     })
+    self.maulKillingBlow = TRB.Classes.SpellThreshold:New({
+        id = 6807,
+        spellId = 1252994,
+        useSpellIcon = true,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "maulKillingBlow",
+        isSnowflake = true
+    })
+    self.maulHarnessedRage = TRB.Classes.SpellThreshold:New({
+        id = 6807,
+        spellId = 1253035,
+        useSpellIcon = true,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "maulHarnessedRage",
+        isSnowflake = true
+    })
     self.raze = TRB.Classes.SpellThreshold:New({
         id = 400254,
         isTalent = true,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "raze"
+    })
+    self.razeKillingBlow = TRB.Classes.SpellThreshold:New({
+        id = 400254,
+        spellId = 1252994,
+        useSpellIcon = true,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "razeKillingBlow",
+        isSnowflake = true
+    })
+    self.razeHarnessedRage = TRB.Classes.SpellThreshold:New({
+        id = 400254,
+        spellId = 1253035,
+        useSpellIcon = true,
+        isTalent = true,
+        primaryResourceType = Enum.PowerType.Rage,
+        settingKey = "razeHarnessedRage",
+        isSnowflake = true
     })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 50334,
@@ -598,6 +640,16 @@ function TRB.Classes.Druid.GuardianSpells:New()
         castId = 102558,
         isTalent = true,
         duration = 30
+    })
+    self.harnessedRage = TRB.Classes.SpellBase:New({
+        id = 1253035,
+        isTalent = true,
+        resourceMod = 2
+    })
+    self.killingBlow = TRB.Classes.SpellBase:New({
+        id = 1252994,
+        isTalent = true,
+        resourceMod = 20
     })
 
     return self
