@@ -2441,7 +2441,7 @@ local function UpdateResourceBar()
 								if spell.id == spells.maul.id then
 									if talents:IsTalentActive(spells.raze) then
 										showThreshold = false
-									elseif talents:IsTalentActive(spell) then -- Talent not selected
+									elseif not talents:IsTalentActive(spells.maul) then -- Talent not selected
 										showThreshold = false
 									else
 										if spell.settingKey == spells.maul.settingKey then
@@ -2456,12 +2456,21 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
-												--TODO: This needs to be a ColorCurve to get the correct coloring.
-												if isUsable then
-													thresholdColor = specCacheSettings.colors.threshold.over.color
+												local thresholdCurve = Color:BuildThresholdCurve(
+													1,
+													resourceAmount,
+													specCacheSettings.colors.threshold.under.color,
+													specCacheSettings.colors.threshold.over.color
+												)
+												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
+												frameLevel = frameLevels.thresholdOver
+												local curveApplied = Threshold:ApplyThresholdCurveColor(
+													spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+												)
+												if curveApplied then
+													thresholdColor = nil -- Skip normal color application
 												else
 													thresholdColor = specCacheSettings.colors.threshold.under.color
-													frameLevel = frameLevels.thresholdUnder
 												end
 											end
 										elseif spell.settingKey == spells.maulHarnessedRage.settingKey then
@@ -2469,12 +2478,21 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
-												--TODO: This needs to be a ColorCurve to get the correct coloring.
-												if isUsable then
-													thresholdColor = specCacheSettings.colors.threshold.over.color
+												local thresholdCurve = Color:BuildThresholdCurve(
+													1,
+													resourceAmount,
+													specCacheSettings.colors.threshold.under.color,
+													specCacheSettings.colors.threshold.over.color
+												)
+												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
+												frameLevel = frameLevels.thresholdOver
+												local curveApplied = Threshold:ApplyThresholdCurveColor(
+													spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+												)
+												if curveApplied then
+													thresholdColor = nil -- Skip normal color application
 												else
 													thresholdColor = specCacheSettings.colors.threshold.under.color
-													frameLevel = frameLevels.thresholdUnder
 												end
 											end
 										else
@@ -2482,7 +2500,7 @@ local function UpdateResourceBar()
 										end
 									end
 								elseif spell.id == spells.raze.id then
-									if talents:IsTalentActive(spell) then -- Talent not selected
+									if not talents:IsTalentActive(spells.raze) then -- Talent not selected
 										showThreshold = false
 									else
 										if spell.settingKey == spells.raze.settingKey then
@@ -2497,12 +2515,21 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
-												--TODO: This needs to be a ColorCurve to get the correct coloring.
-												if isUsable then
-													thresholdColor = specCacheSettings.colors.threshold.over.color
+												local thresholdCurve = Color:BuildThresholdCurve(
+													1,
+													resourceAmount,
+													specCacheSettings.colors.threshold.under.color,
+													specCacheSettings.colors.threshold.over.color
+												)
+												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
+												frameLevel = frameLevels.thresholdOver
+												local curveApplied = Threshold:ApplyThresholdCurveColor(
+													spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+												)
+												if curveApplied then
+													thresholdColor = nil -- Skip normal color application
 												else
 													thresholdColor = specCacheSettings.colors.threshold.under.color
-													frameLevel = frameLevels.thresholdUnder
 												end
 											end
 										elseif spell.settingKey == spells.razeHarnessedRage.settingKey then
@@ -2510,12 +2537,21 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
-												--TODO: This needs to be a ColorCurve to get the correct coloring.
-												if isUsable then
-													thresholdColor = specCacheSettings.colors.threshold.over.color
+												local thresholdCurve = Color:BuildThresholdCurve(
+													1,
+													resourceAmount,
+													specCacheSettings.colors.threshold.under.color,
+													specCacheSettings.colors.threshold.over.color
+												)
+												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
+												frameLevel = frameLevels.thresholdOver
+												local curveApplied = Threshold:ApplyThresholdCurveColor(
+													spell, thresholds[thresholdId], thresholdCurve, displayResourceType, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
+												)
+												if curveApplied then
+													thresholdColor = nil -- Skip normal color application
 												else
 													thresholdColor = specCacheSettings.colors.threshold.under.color
-													frameLevel = frameLevels.thresholdUnder
 												end
 											end
 										else

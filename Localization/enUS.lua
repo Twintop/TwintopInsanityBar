@@ -2179,7 +2179,7 @@ L["CollapseBorderWidth"] = "Collapse border width"
 L["CollapseBorderWidthTooltip"] = "When enabled, overlaps adjacent node borders so they appear as a single border width instead of doubling up. This disables the spacing slider and sets node spacing to the negative of the border width."
 
 -- Druid Guardian Killing Blow / Harnessed Rage Thresholds
-L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"] = "Maul / Raze (Killing Blow)"
-L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze when Killing Blow is talented."
-L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"] = "Maul / Raze (Harnessed Rage)"
-L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze when Harnessed Rage is talented."
+L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"] = "Harnessed Rage Talented"
+L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze to have 100% chance to activate Gore via the Harnessed Rage talent."
+L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"] = "Killing Blow Talented"
+L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze for extra damage via the Killing Blow talent."

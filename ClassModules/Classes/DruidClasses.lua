@@ -589,6 +589,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
     })
     self.maulKillingBlow = TRB.Classes.SpellThreshold:New({
         id = 6807,
+        spellId = 1252994,
+        useSpellIcon = true,
         isTalent = true,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "maulKillingBlow",
@@ -596,6 +598,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
     })
     self.maulHarnessedRage = TRB.Classes.SpellThreshold:New({
         id = 6807,
+        spellId = 1253035,
+        useSpellIcon = true,
         isTalent = true,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "maulHarnessedRage",
@@ -609,12 +613,17 @@ function TRB.Classes.Druid.GuardianSpells:New()
     })
     self.razeKillingBlow = TRB.Classes.SpellThreshold:New({
         id = 400254,
+        spellId = 1252994,
+        useSpellIcon = true,
         isTalent = true,
         primaryResourceType = Enum.PowerType.Rage,
-        settingKey = "razeKillingBlow"
+        settingKey = "razeKillingBlow",
+        isSnowflake = true
     })
     self.razeHarnessedRage = TRB.Classes.SpellThreshold:New({
         id = 400254,
+        spellId = 1253035,
+        useSpellIcon = true,
         isTalent = true,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "razeHarnessedRage",
@@ -638,7 +647,7 @@ function TRB.Classes.Druid.GuardianSpells:New()
         resourceMod = 2
     })
     self.killingBlow = TRB.Classes.SpellBase:New({
-        id = 391452,
+        id = 1252994,
         isTalent = true,
         resourceMod = 20
     })

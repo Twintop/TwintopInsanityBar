@@ -2751,7 +2751,7 @@ local function GuardianConstructThresholdPanel(parent)
 	yCoord = yCoord - 25
 	controls.checkBoxes.maulKillingBlowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maulKillingBlow", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.maulKillingBlowThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"])
 	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.maulKillingBlow.enabled)
@@ -2763,7 +2763,7 @@ local function GuardianConstructThresholdPanel(parent)
 	yCoord = yCoord - 25
 	controls.checkBoxes.maulHarnessedRageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maulHarnessedRage", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.maulHarnessedRageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+20., yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"])
 	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.maulHarnessedRage.enabled)
