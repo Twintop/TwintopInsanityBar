@@ -2433,7 +2433,7 @@ local function UpdateResourceBar()
 							local resourceAmount = spell:GetPrimaryResourceCost()
 							local isUsable = spell:IsUsable()
 							local showThreshold = true
-							local thresholdColor = specCacheSettings.colors.threshold.over.color
+							local thresholdColor = specCacheSettings.colors.threshold.over.color --[[@as string?]]
 							local frameLevel = frameLevels.thresholdOver
 							local snapshot = snapshots[spell.id]
 
