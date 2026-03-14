@@ -5228,7 +5228,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 14,
-			collapseBorderWidth = true,
+			collapseBorderWidth = false,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
