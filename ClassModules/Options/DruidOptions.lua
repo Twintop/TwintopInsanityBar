@@ -2763,7 +2763,7 @@ local function GuardianConstructThresholdPanel(parent)
 	yCoord = yCoord - 25
 	controls.checkBoxes.maulHarnessedRageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Guardian_Threshold_Option_maulHarnessedRage", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.maulHarnessedRageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+20., yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"])
 	f.tooltip = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"]
 	f:SetChecked(spec.thresholds.thresholdDictionary.maulHarnessedRage.enabled)
