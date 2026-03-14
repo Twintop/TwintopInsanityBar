@@ -4854,6 +4854,31 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 		TwintopInsanityBarSettings.core.displayText.migrations.healthBarText = true
 	end
+
+	-- Migrate collapseBorderWidth for all specs
+	-- If spacing was 0 (or nil), enable collapse by default (the new behavior).
+	-- If spacing was > 0, preserve the user's explicit spacing and disable collapse.
+	for _, className in ipairs(classes) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+				if type(specSettings) == "table" then
+					-- Migrate comboPoints (secondary bar)
+					if specSettings.comboPoints and specSettings.comboPoints.collapseBorderWidth == nil then
+						specSettings.comboPoints.collapseBorderWidth = (specSettings.comboPoints.spacing or 0) == 0
+					end
+
+					-- Migrate custom bars (bars.<key>)
+					if specSettings.bars then
+						for barKey, barSettings in pairs(specSettings.bars) do
+							if type(barSettings) == "table" and barSettings.collapseBorderWidth == nil and barSettings.spacing ~= nil then
+								barSettings.collapseBorderWidth = (barSettings.spacing or 0) == 0
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -4961,6 +4986,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 14,
+			collapseBorderWidth = false,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -4982,6 +5008,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		yPos = 0,
 		border = 2,
 		spacing = 0,
+		collapseBorderWidth = true,
 		relativeTo ="TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -5021,6 +5048,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 0,
+			collapseBorderWidth = true,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -5042,6 +5070,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 		yPos = 0,
 		border = 2,
 		spacing = 0,
+		collapseBorderWidth = true,
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -5084,6 +5113,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 0,
+			collapseBorderWidth = true,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -5105,6 +5135,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 		yPos = 0,
 		border = 2,
 		spacing = 0,
+		collapseBorderWidth = true,
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -5197,6 +5228,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 14,
+			collapseBorderWidth = false,
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -5218,6 +5250,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 		yPos = 0,
 		border = 2,
 		spacing = 0,
+		collapseBorderWidth = true,
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -5257,6 +5290,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			yPos = 4,
 			border = 1,
 			spacing = 14,
+			collapseBorderWidth = false,
 			relativeTo = "BOTTOM",
 			relativeToName = L["PositionBelowMiddle"],
 			fullWidth = true,
@@ -5278,6 +5312,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 		yPos = 0,
 		border = 2,
 		spacing = 0,
+		collapseBorderWidth = true,
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,

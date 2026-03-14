@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.1.35-release (2026-03-14)
+## General
+
+- [#696](#696) Allow bar groups that are made up of many individual nodes (e.g. Combo Points) to be configured to have their node borders overlap each other.
+- Ensure that Secondary Bars also use Global Options for bar visibility when enabled.
+- Fix an issue where trying to reset bar text to defaults when you had no current bar text entries would cause Lua errors.
+
+### Localization
+
+- [#697](#697), [#699](#699) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
 # 12.0.1.34-release (2026-03-14)
 ## General
 

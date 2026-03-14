@@ -1244,12 +1244,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 		
 		-- Override with spec-specific custom bar visibility settings
-		-- These are always spec-specific (mana, stagger, defensives, secondary/combo points, etc.)
+		-- These are always spec-specific (mana, stagger, defensives, etc.) because
+		-- they don't exist in core.displayBar and aren't exposed in the global panel.
+		-- Secondary and utility ARE in core.displayBar, so they follow global when enabled.
 		if spec.displayBar and spec.displayBar.mana ~= nil then
 			specCache.settings.displayBar.mana = spec.displayBar.mana
-		end
-		if spec.displayBar and spec.displayBar.secondary ~= nil then
-			specCache.settings.displayBar.secondary = spec.displayBar.secondary
 		end
 		if spec.displayBar and spec.displayBar.stagger ~= nil then
 			specCache.settings.displayBar.stagger = spec.displayBar.stagger
