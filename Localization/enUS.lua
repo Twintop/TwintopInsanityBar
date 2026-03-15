@@ -2189,3 +2189,8 @@ L["OverlayModeAppendedOverflow"] = "Appended (Overflow)"
 
 -- Display names used by barTypeDef objects in GenerateCustomBarThresholdColorOptions
 L["HealthBarThresholdDisplayName"] = "Health"
+
+-- Warlock Per-Soul Shard Color Pickers
+L["WarlockSoulShardsColorPickerBase"] = "1st Soul Shard"
+L["WarlockSoulShardsColorPickerSecond"] = "2nd Soul Shard"
+L["WarlockSoulShardsColorPickerThird"] = "3rd Soul Shard"

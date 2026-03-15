@@ -3723,6 +3723,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
 		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
+		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
+		end
 	end
 
 	-- Warlock Demonology colors.bar migration from flat string to table format
@@ -3765,6 +3771,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
 		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
+		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
+		end
 	end
 
 	-- Warlock Destruction colors.bar migration from flat string to table format
@@ -3806,6 +3818,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
+		end
+		if cp.second == nil then
+			cp.second = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
+		end
+		if cp.third == nil then
+			cp.third = { color = (type(cp.base) == "table" and cp.base.color) or "FF8788EE" }
 		end
 	end
 

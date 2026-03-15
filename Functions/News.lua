@@ -24,6 +24,10 @@ local content = [====[
 
 - [#694](#694) Add new threshold lines for Maul/Raze when talented into Harnessed Rage and Killing Blow, respectively.
 
+## Warlock
+
+- [#701](#701) Allow Soul Shards to each have their own color instead of just 1-3, 4, and 5.
+
 ---
 
 # 12.0.1.35-release (2026-03-14)
