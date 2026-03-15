@@ -6784,15 +6784,6 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.fontShadowColor
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		if spec.displayText.default.fontShadow == nil then
-			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
-		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.displayText.default.fontShadow, controls.colors.text, "fontShadowColor", nil, nil, classId, specId)
-		-- Sync the shadow color back from the table since ColorOnMouseDown updates "fontShadowColor" key on the fontShadow table
-		-- We need to use a wrapper to redirect the color update
-	end)
-	-- Override: ColorOnMouseDown expects colorTable[key] to be the color string, so we use a proxy approach
-	f:SetScript("OnMouseDown", function(self, button, ...)
 		if button == "LeftButton" then
 			if spec.displayText.default.fontShadow == nil then
 				spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
