@@ -6758,7 +6758,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
 			radio:AddInitializer(function(button, description, menu)
 				local font = CreateFont(v[2])
-				font:SetFont(v[2], 12, "OUTLINE")
+				font:SetFont(v[2], 12, spec.displayText.default.fontOutline or "OUTLINE")
 				button.fontString:SetFontObject(font)
 			end)
 		end
@@ -6767,7 +6767,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
-	yCoord = yCoord - 30
+	yCoord = yCoord - 10
 	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color.color,
 																		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.color
@@ -6776,13 +6776,109 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
-	yCoord = yCoord - 60
+	-- Font Shadow section
+	yCoord = yCoord - 30
+
+	controls.colors.text.fontShadowColor = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["FontSharedShadowColor"],
+		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.color) or "FF000000",
+		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.text.fontShadowColor
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if spec.displayText.default.fontShadow == nil then
+			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.displayText.default.fontShadow, controls.colors.text, "fontShadowColor", nil, nil, classId, specId)
+		-- Sync the shadow color back from the table since ColorOnMouseDown updates "fontShadowColor" key on the fontShadow table
+		-- We need to use a wrapper to redirect the color update
+	end)
+	-- Override: ColorOnMouseDown expects colorTable[key] to be the color string, so we use a proxy approach
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			if spec.displayText.default.fontShadow == nil then
+				spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+			end
+			local colorString = spec.displayText.default.fontShadow.color or "FF000000"
+			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+			TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+				local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+				controls.colors.text.fontShadowColor.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+				spec.displayText.default.fontShadow.color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+				TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			end)
+		end
+	end)
+
+	yCoord = yCoord - 50
 	title = L["DefaultFontSize"]
 	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.displayText.default.fontSize = value
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	-- Font Outline dropdown
+	local fontOutlineOptions = {
+		{ label = L["FontOutlineNone"], value = "" },
+		{ label = L["FontOutlineOutline"], value = "OUTLINE" },
+		{ label = L["FontOutlineThickOutline"], value = "THICKOUTLINE" },
+		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
+		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
+		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
+	}
+	local fontOutlineLookup = {}
+	for _, opt in ipairs(fontOutlineOptions) do
+		fontOutlineLookup[opt.value] = opt.label
+	end
+
+	local barTextFontOutline = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontOutlineDefault", parent, "WowStyle1DropdownTemplate")
+	barTextFontOutline:SetWidth(oUi.sliderWidth)
+	barTextFontOutline.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontOutline"], oUi.xCoord2, yCoord+25)
+	barTextFontOutline.label.font:SetFontObject(GameFontNormal)
+
+	local function FontOutlineIsSelected(value)
+		return value == (spec.displayText.default.fontOutline or "OUTLINE")
+	end
+
+	local function FontOutlineSetSelected(newValue)
+		spec.displayText.default.fontOutline = newValue
+		spec.displayText.default.fontOutlineName = fontOutlineLookup[newValue] or L["FontOutlineOutline"]
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end
+
+	local function FontOutlineGenerator(dropdown, rootDescription)
+		for _, opt in ipairs(fontOutlineOptions) do
+			rootDescription:CreateRadio(opt.label, FontOutlineIsSelected, FontOutlineSetSelected, opt.value)
+		end
+	end
+	barTextFontOutline:SetupMenu(FontOutlineGenerator)
+	barTextFontOutline:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-5)
+
+	yCoord = yCoord - 50
+	title = L["FontShadowXOffset"]
+	controls.fontShadowXOffsetDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, -10, 10,
+		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.xOffset) or 1, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.fontShadowXOffsetDefault:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		if spec.displayText.default.fontShadow == nil then
+			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		spec.displayText.default.fontShadow.xOffset = value
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	title = L["FontShadowYOffset"]
+	controls.fontShadowYOffsetDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, -10, 10,
+		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.yOffset) or -1, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.fontShadowYOffsetDefault:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		if spec.displayText.default.fontShadow == nil then
+			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		spec.displayText.default.fontShadow.yOffset = value
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
@@ -7169,7 +7265,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	btc:SetHeight(120)
 
 	yCoord = yCoord - 105
-	local btoHeight = 400
+	local btoHeight = 550
 	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 5, 15, nil, btc, false, false)
 
 	-- Dynamically resize "Bar Text" column (index 4) to fill available width
@@ -7207,7 +7303,36 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 ---@diagnostic disable-next-line: inject-field
 	barTextEntryEnabled.tooltip = L["BarTextEntryEnabledTooltip"]
 
-	yCoord = yCoord - 55
+	yCoord = yCoord - 30
+	controls.labels = controls.labels or {}
+	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, L["BarText"], oUi.xCoord, yCoord, 90, 20)
+
+	yCoord = yCoord - 20
+	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
+											590, 45, oUi.xCoord, yCoord)
+	local barTextScrollFrame = barText:GetParent() --[[@as Frame]]
+	barTextScrollFrame:ClearAllPoints()
+	barTextScrollFrame:SetPoint("TOPLEFT", barTextOptionsFrame, "TOPLEFT", oUi.xCoord, yCoord)
+	barTextScrollFrame:SetPoint("RIGHT", barTextOptionsFrame, "RIGHT", -30, 0)
+	barText:SetCursorPosition(0)
+
+	barTextOptionsFrame:HookScript("OnShow", function()
+		TRB.Frames.activeBarTextEditBox = barText
+		TRB.Frames.activeBarTextCursorPosition = barText:GetCursorPosition()
+		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end)
+
+	barTextOptionsFrame:HookScript("OnHide", function()
+		TRB.Frames.activeBarTextEditBox = nil
+		TRB.Frames.activeBarTextCursorPosition = nil
+		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end)
+
+	yCoord = yCoord - 75
 	title = L["HorizontalOffset"]
 	local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -7760,7 +7885,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
 			radio:AddInitializer(function(button, description, menu)
 				local font = CreateFont(v[2])
-				font:SetFont(v[2], 12, "OUTLINE")
+				local outlineFlag = (workingBarText and workingBarText.fontOutline) or "OUTLINE"
+				font:SetFont(v[2], 12, outlineFlag)
 				button.fontString:SetFontObject(font)
 			end)
 		end
@@ -7873,38 +7999,125 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
+	-- Font Outline dropdown
+	yCoord = yCoord - 60
+	local perEntryFontOutlineOptions = {
+		{ label = L["FontOutlineNone"], value = "" },
+		{ label = L["FontOutlineOutline"], value = "OUTLINE" },
+		{ label = L["FontOutlineThickOutline"], value = "THICKOUTLINE" },
+		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
+		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
+		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
+	}
+	local perEntryFontOutlineLookup = {}
+	for _, opt in ipairs(perEntryFontOutlineOptions) do
+		perEntryFontOutlineLookup[opt.value] = opt.label
+	end
 
-	yCoord = yCoord - 70
-	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, L["BarText"], oUi.xCoord, yCoord, 90, 20)
+	local barTextFontOutline = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontOutline", barTextOptionsFrame, "WowStyle1DropdownTemplate")
+	barTextFontOutline:SetWidth(oUi.sliderWidth)
+	barTextFontOutline.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontOutlineHeader"], oUi.xCoord, yCoord)
+	barTextFontOutline.label.font:SetFontObject(GameFontNormal)
 
-	yCoord = yCoord - 20
-	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
-													590, 45, oUi.xCoord, yCoord)
-	-- Make editbox scroll frame fill the parent width (accounting for scrollbar buttons)
-	local barTextScrollFrame = barText:GetParent() --[[@as Frame]]
-	barTextScrollFrame:ClearAllPoints()
-	barTextScrollFrame:SetPoint("TOPLEFT", barTextOptionsFrame, "TOPLEFT", oUi.xCoord, yCoord)
-	barTextScrollFrame:SetPoint("RIGHT", barTextOptionsFrame, "RIGHT", -30, 0)
-	barText:SetCursorPosition(0)
+	local function PerEntryFontOutlineIsSelected(value)
+		if workingBarText ~= nil then
+			return value == (workingBarText.fontOutline or "OUTLINE")
+		else
+			return false
+		end
+	end
 
-	-- When the bar text editor frame is shown (selecting/adding a bar text area),
-	-- mark the EditBox as active so the side panel "+" buttons turn green.
-	barTextOptionsFrame:HookScript("OnShow", function()
-		TRB.Frames.activeBarTextEditBox = barText
-		TRB.Frames.activeBarTextCursorPosition = barText:GetCursorPosition()
-		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
-			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+	local function PerEntryFontOutlineSetSelected(newValue)
+		if workingBarText ~= nil then
+			workingBarText.fontOutline = newValue
+			workingBarText.fontOutlineName = perEntryFontOutlineLookup[newValue] or L["FontOutlineOutline"]
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		end
+	end
+
+	local function PerEntryFontOutlineGenerator(dropdown, rootDescription)
+		for _, opt in ipairs(perEntryFontOutlineOptions) do
+			rootDescription:CreateRadio(opt.label, PerEntryFontOutlineIsSelected, PerEntryFontOutlineSetSelected, opt.value)
+		end
+	end
+	barTextFontOutline:SetupMenu(PerEntryFontOutlineGenerator)
+	barTextFontOutline:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+
+	local useDefaultFontOutline = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontOutline", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	useDefaultFontOutline:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
+	getglobal(useDefaultFontOutline:GetName() .. 'Text'):SetText(L["UseDefaultFontOutline"])
+	---@diagnostic disable-next-line: inject-field
+	useDefaultFontOutline.tooltip = L["UseDefaultFontOutlineTooltip"]
+	useDefaultFontOutline:SetScript("OnClick", function(self, ...)
+		workingBarText.useDefaultFontOutline = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	controls.colors.barText.fontShadowColor = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontShadowColor"],
+		"FF000000", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord-10)
+	local barTextShadowColor = controls.colors.barText.fontShadowColor
+	barTextShadowColor:SetScript("OnMouseDown", function(self, button, ...)
+		if button == "LeftButton" then
+			if workingBarText.fontShadow == nil then
+				workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+			end
+			local colorString = workingBarText.fontShadow.color or "FF000000"
+			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+			TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+				local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+				controls.colors.barText.fontShadowColor.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+				workingBarText.fontShadow.color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+				TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			end)
 		end
 	end)
 
-	-- When the bar text editor frame is hidden (deleting a bar text area or switching panels),
-	-- clear the active EditBox so the "+" buttons revert to gray/disabled.
-	barTextOptionsFrame:HookScript("OnHide", function()
-		TRB.Frames.activeBarTextEditBox = nil
-		TRB.Frames.activeBarTextCursorPosition = nil
-		if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel.variablesTable then
-			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+	local fontShadowEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_fontShadowEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	fontShadowEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
+	getglobal(fontShadowEnabled:GetName() .. 'Text'):SetText(L["FontShadowEnable"])
+	---@diagnostic disable-next-line: inject-field
+	fontShadowEnabled.tooltip = L["FontShadowEnableTooltip"]
+	fontShadowEnabled:SetScript("OnClick", function(self, ...)
+		if workingBarText.fontShadow == nil then
+			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
+		workingBarText.fontShadow.enabled = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	local useDefaultFontShadow = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontShadow", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	useDefaultFontShadow:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
+	getglobal(useDefaultFontShadow:GetName() .. 'Text'):SetText(L["UseDefaultFontShadow"])
+	---@diagnostic disable-next-line: inject-field
+	useDefaultFontShadow.tooltip = L["UseDefaultFontShadowTooltip"]
+	useDefaultFontShadow:SetScript("OnClick", function(self, ...)
+		workingBarText.useDefaultFontShadow = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	yCoord = yCoord - 100
+	title = L["FontShadowXOffset"]
+	local fontShadowXOffset = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, -10, 10, 1, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	fontShadowXOffset:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		if workingBarText.fontShadow == nil then
+			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		workingBarText.fontShadow.xOffset = value
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	end)
+
+	title = L["FontShadowYOffset"]
+	local fontShadowYOffset = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, -10, 10, -1, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	fontShadowYOffset:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		if workingBarText.fontShadow == nil then
+			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		workingBarText.fontShadow.yOffset = value
+		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	---Populates the bar text scrolling table with rows from the displayText.barText entries.
@@ -7949,6 +8162,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			name = L["NewBarTextEntry"],
 			text = "",
 			guid = TRB.Functions.String:Guid(),
@@ -7958,6 +8173,14 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
 			color = { color = "FFFFFFFF" },
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = {
+				enabled = false,
+				color = "FF000000",
+				xOffset = 1,
+				yOffset = -1,
+			},
 			position = {
 				xPos = 0,
 				yPos = 0,
@@ -8012,6 +8235,16 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
 		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
+		useDefaultFontOutline:SetChecked(workingBarText.useDefaultFontOutline or false)
+		useDefaultFontShadow:SetChecked(workingBarText.useDefaultFontShadow or false)
+		barTextFontOutline:SetupMenu(PerEntryFontOutlineGenerator)
+
+		-- Restore font shadow controls
+		local shadow = workingBarText.fontShadow or { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		fontShadowEnabled:SetChecked(shadow.enabled)
+		barTextShadowColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadow.color or "FF000000", true))
+		fontShadowXOffset:SetValue(shadow.xOffset or 1)
+		fontShadowYOffset:SetValue(shadow.yOffset or -1)
 		
 		barTextOptionsFrame:Show()
 	end

@@ -30,6 +30,11 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 	if classic then
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -53,6 +58,11 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 		})
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -78,6 +88,11 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 		table.insert(textSettings,
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -102,6 +117,11 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 		table.insert(textSettings,
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -146,6 +166,11 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 	if classic then
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -169,6 +194,11 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 		})
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -194,6 +224,11 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 		table.insert(textSettings,
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -217,6 +252,11 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 		})
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -377,6 +417,14 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -417,6 +465,11 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -440,6 +493,11 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -463,6 +521,11 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -486,6 +549,11 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -509,6 +577,11 @@ local function FeralLoadExtraBarTextSettings(classic)
 		{
 			enabled = true,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -707,6 +780,14 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -893,6 +974,14 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -992,6 +1081,14 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},

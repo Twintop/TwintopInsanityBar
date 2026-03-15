@@ -162,11 +162,22 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fontJustifyHorizontalName string
 ---@field public fontSize integer
 ---@field public color TRB.Classes.Settings.ColorEntry
+---@field public fontOutline string # SetFont flags: "", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "OUTLINE, MONOCHROME", "THICKOUTLINE, MONOCHROME"
+---@field public fontOutlineName string # Localized display name for the outline option
+---@field public fontShadow TRB.Classes.Settings.FontShadow
+
+---@class TRB.Classes.Settings.FontShadow
+---@field public enabled boolean
+---@field public color string # ARGB hex color, e.g. "FF000000"
+---@field public xOffset number
+---@field public yOffset number
 
 ---@class TRB.Classes.Settings.DisplayTextEntry : TRB.Classes.Settings.DisplayTextDefault
 ---@field public useDefaultFontFace boolean
 ---@field public useDefaultFontSize boolean
 ---@field public useDefaultFontColor boolean
+---@field public useDefaultFontOutline boolean
+---@field public useDefaultFontShadow boolean
 ---@field public enabled boolean
 ---@field public name string
 ---@field public text string

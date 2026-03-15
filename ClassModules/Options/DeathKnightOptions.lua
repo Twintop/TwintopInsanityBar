@@ -44,6 +44,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -67,6 +72,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -90,6 +100,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -113,6 +128,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -136,6 +156,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -159,6 +184,11 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		}
 	}
 
@@ -316,6 +346,14 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}
@@ -488,6 +526,14 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -654,6 +700,14 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}

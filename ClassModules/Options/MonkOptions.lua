@@ -26,6 +26,11 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -49,6 +54,11 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 		},
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -251,6 +261,14 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -352,6 +370,14 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}
@@ -545,6 +571,14 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}

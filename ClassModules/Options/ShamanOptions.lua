@@ -178,6 +178,14 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -320,6 +328,14 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -436,6 +452,14 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},

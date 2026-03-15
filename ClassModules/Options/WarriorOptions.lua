@@ -173,6 +173,14 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -206,6 +214,11 @@ local function FuryLoadWhirlwindBarTextSettings()
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -229,6 +242,11 @@ local function FuryLoadWhirlwindBarTextSettings()
 		},
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -252,6 +270,11 @@ local function FuryLoadWhirlwindBarTextSettings()
 		},
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -275,6 +298,11 @@ local function FuryLoadWhirlwindBarTextSettings()
 		},
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -471,6 +499,14 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -504,6 +540,11 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 	local textSettings = {
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -527,6 +568,11 @@ local function ProtectionLoadExtraBarTextSettings(classic)
 		},
 		{
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
@@ -711,6 +757,14 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}

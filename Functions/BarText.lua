@@ -1418,6 +1418,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				fontSize = displayText.default.fontSize
 			end
 
+			local fontOutline = e.fontOutline or "OUTLINE"
+			if e.useDefaultFontOutline then
+				fontOutline = displayText.default.fontOutline or "OUTLINE"
+			end
+
+			local fontShadow = e.fontShadow
+			if e.useDefaultFontShadow and displayText.default.fontShadow then
+				-- Inherit only appearance (color, offsets) from spec defaults; enabled stays per-entry
+				fontShadow = fontShadow or {}
+				fontShadow = {
+					enabled = fontShadow.enabled,
+					color = displayText.default.fontShadow.color,
+					xOffset = displayText.default.fontShadow.xOffset,
+					yOffset = displayText.default.fontShadow.yOffset,
+				}
+			end
+
 			local relativeTo = e.position.relativeTo
 			---@type Frame
 			local relativeToFrame
@@ -1453,7 +1470,18 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if relativeToFrame ~= nil and e.enabled and isEnabled then
 				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				font:SetJustifyH(fontJustifyHorizontal)
-				font:SetFont(fontFace, fontSize, "OUTLINE")
+				font:SetFont(fontFace, fontSize, fontOutline)
+
+				-- Apply font shadow settings
+				if fontShadow and fontShadow.enabled then
+					local sr, sg, sb, sa = TRB.Functions.Color:GetRGBAFromString(fontShadow.color or "FF000000", true)
+					font:SetShadowColor(sr, sg, sb, sa)
+					font:SetShadowOffset(fontShadow.xOffset or 1, fontShadow.yOffset or -1)
+				else
+					font:SetShadowColor(0, 0, 0, 0)
+					font:SetShadowOffset(0, 0)
+				end
+
 				-- Clear any stale text from a previous configuration so old bar text
 				-- doesn't linger after a reset or entry change.
 				font:SetText("")

@@ -112,6 +112,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -256,6 +264,14 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -393,6 +409,14 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
