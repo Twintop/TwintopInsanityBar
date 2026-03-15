@@ -2965,12 +2965,21 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			end
 
 			-- Build config for ConstructAnchoredBarGroup
+			-- For multi-node bars with per-node enable/disable, use enabled count instead of maxNodes
+			local effectiveNodeCount = barTypeDef.maxNodes or 1
+			if barTypeDef.nodeColors and colorSettings then
+				local enabledCount = barTypeDef:GetEnabledNodeCount(colorSettings)
+				if enabledCount > 0 then
+					effectiveNodeCount = enabledCount
+				end
+			end
+
 			---@type TRB.Classes.AnchoredBarGroupConfig
 			local config = {
 				settingsTable = effectiveSettings,
 				colorsTable = colorSettings,
-				nodeCount = barTypeDef.maxNodes or 1,
-				useApplyLayout = barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1,
+				nodeCount = effectiveNodeCount,
+				useApplyLayout = barTypeDef.isMultiNode and effectiveNodeCount > 1,
 				defaultAnchorAbove = true, -- Custom bars default to above primary bar
 				textures = {
 					bar = key .. "Bar",
@@ -3043,8 +3052,14 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			-- Get colors from nested structure
 			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
 			
-			-- Apply to all nodes
+			-- Apply to all nodes (use enabled count for multi-node bars with per-node enable)
 			local nodeCount = barTypeDef.maxNodes or 1
+			if barTypeDef.nodeColors and barColors then
+				local enabledCount = barTypeDef:GetEnabledNodeCount(barColors)
+				if enabledCount > 0 then
+					nodeCount = enabledCount
+				end
+			end
 			for i = 1, nodeCount do
 				local node = barGroup:GetNode(i)
 				if node then
