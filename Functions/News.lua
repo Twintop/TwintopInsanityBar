@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.37-release (2026-03-16)
+## General
+
+- [#544](#544) Add font outline and shadow options for bar text.
+
+---
+
 # 12.0.1.36-release (2026-03-15)
 ## General
 
