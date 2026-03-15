@@ -18,6 +18,23 @@ local eventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
+--- Spell lookup for defensive node keys → spell objects. Populated in FillSpellData_Protection.
+---@type table<string, table>
+local defensiveSpellsByKey = {}
+
+--- Computes the number of enabled defensive bar nodes from settings.
+---@param specSettings table? # Protection spec settings
+---@return integer
+local function GetEnabledDefensiveCount(specSettings)
+	if not specSettings then return 0 end
+	local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
+	if not defensivesBarDef then return 2 end
+	local colorSettings = defensivesBarDef:GetColors(specSettings)
+	if not colorSettings then return 2 end
+	local count = defensivesBarDef:GetEnabledNodeCount(colorSettings)
+	return count
+end
+
 Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
@@ -209,6 +226,10 @@ local function FillSpellData_Protection()
 	specCache.warrior_protection.spellsData:FillSpellData()
 	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 
+	-- Populate the defensive spell lookup so UpdateDefensiveBuffs can resolve nodeOrder keys
+	defensiveSpellsByKey["ignorePain"] = spells.ignorePain
+	defensiveSpellsByKey["shieldBlock"] = spells.shieldBlock
+
 	TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCache.warrior_protection)
 end
 
@@ -238,6 +259,26 @@ local function ConstructResourceBar(settings)
 	-- Don't construct bars for disabled specs
 	if not TRB.Data.specSupported then
 		return
+	end
+
+	-- Pre-populate defensiveNodeMapping so that CreateBarTextFrames (called inside
+	-- ConstructBarGroups) can resolve IgnorePain/ShieldBlock frame references.
+	-- UpdateDefensiveBuffs will overwrite this with live buff data later.
+	if TRB.Data.character.specId == 3 then
+		local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
+		local colorSettings = settings.colors.bars.defensives
+		local orderedKeys = defensivesBarDef and defensivesBarDef:GetOrderedNodeKeys(colorSettings) or { "ignorePain", "shieldBlock" }
+		TRB.Data.defensiveNodeMapping = TRB.Data.defensiveNodeMapping or {}
+		local mapping = TRB.Data.defensiveNodeMapping
+		for k in pairs(mapping) do mapping[k] = nil end
+		local nodeIdx = 1
+		for _, colorKey in ipairs(orderedKeys) do
+			local nc = colorSettings.nodeColors[colorKey]
+			if nc and nc.enabled then
+				mapping[colorKey] = nodeIdx
+				nodeIdx = nodeIdx + 1
+			end
+		end
 	end
 
 	-- Construct thresholds on the BarNode (new system)
@@ -311,14 +352,18 @@ local function ConstructResourceBar(settings)
 	elseif TRB.Data.character.specId == 3 then
 		-- Protection: Show secondary bar for defensive buffs (Shield Block + Ignore Pain)
 		if barGroups and barGroups.defensives then
-			local maxDefensiveBuffs = TRB.Data.character.maxResource2 or 2
-			barGroups.defensives:Show()
-			barGroups.defensives:ShowNodes(maxDefensiveBuffs)
-			for x = 1, maxDefensiveBuffs do
-				local defensiveNode = barGroups.defensives:GetNode(x)
-				if defensiveNode then
-					defensiveNode:SetMinMax(0, 1)
+			local enabledCount = GetEnabledDefensiveCount(settings)
+			if enabledCount > 0 then
+				barGroups.defensives:Show()
+				barGroups.defensives:ShowNodes(enabledCount)
+				for x = 1, enabledCount do
+					local defensiveNode = barGroups.defensives:GetNode(x)
+					if defensiveNode then
+						defensiveNode:SetMinMax(0, 1)
+					end
 				end
+			else
+				barGroups.defensives:Hide()
 			end
 		end
 		TRB.Functions.Aura:EnableUnitAuraCache()
@@ -812,50 +857,59 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 	
 	local currentDefensiveBar = 1
-	
-	-- Defensive buff config: { spell, colorKey }
-	local defensiveBuffs = {
-		{ spell = spells.ignorePain, colorKey = "ignorePain" },
-		{ spell = spells.shieldBlock, colorKey = "shieldBlock" }
-	}
-	
-	for _, buffConfig in ipairs(defensiveBuffs) do
-		local spell = buffConfig.spell
-		local colorKey = buffConfig.colorKey
-		local defensiveBarEnabled = specSettings.colors.bars.defensives.nodeColors[colorKey] and specSettings.colors.bars.defensives.nodeColors[colorKey].enabled
-		
-		if talents:IsTalentActive(spell) and defensiveBarEnabled then
-			local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
-			local buff = snapshots[spell.id].buff
+
+	-- Build ordered defensive buffs list from nodeOrder setting
+	local defensivesBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives")
+	local colorSettings = specSettings.colors.bars.defensives
+	local orderedKeys = defensivesBarDef and defensivesBarDef:GetOrderedNodeKeys(colorSettings) or { "ignorePain", "shieldBlock" }
+
+	-- Runtime node mapping: tracks which logical buff key ended up at which bar node index
+	TRB.Data.defensiveNodeMapping = TRB.Data.defensiveNodeMapping or {}
+	local mapping = TRB.Data.defensiveNodeMapping
+	-- Reset mapping
+	for k in pairs(mapping) do mapping[k] = nil end
+
+	for _, colorKey in ipairs(orderedKeys) do
+		local spell = defensiveSpellsByKey[colorKey]
+		if not spell then
+			-- Unknown key, skip
+		else
+			local defensiveBarEnabled = specSettings.colors.bars.defensives.nodeColors[colorKey] and specSettings.colors.bars.defensives.nodeColors[colorKey].enabled
 			
-			local cpTime = 0
-			local cpDuration = 1
-			
-			if buff.isActive then
-				cpTime = buff:GetRemainingTime(currentTime)
-				cpDuration = buff.duration
-			end
-			
-			if cpTime < 0 then
-				cpTime = 0
-			end
-			
-			if cpTime == math.huge or cpDuration == math.huge then
-				cpTime = 0
-				cpDuration = 1
-			end
-			
-			if barGroups and barGroups.defensives then
-				local defensiveNode = barGroups.defensives:GetNode(currentDefensiveBar)
-				if defensiveNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. currentDefensiveBar, defensiveNode, cpTime, cpDuration)
-					defensiveNode:SetBorderColor(cpBorderColor)
-					defensiveNode:SetColor(cpColor)
-					defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+			if talents:IsTalentActive(spell) and defensiveBarEnabled then
+				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
+				local buff = snapshots[spell.id].buff
+				
+				local cpTime = 0
+				local cpDuration = 1
+				
+				if buff.isActive then
+					cpTime = buff:GetRemainingTime(currentTime)
+					cpDuration = buff.duration
 				end
+				
+				if cpTime < 0 then
+					cpTime = 0
+				end
+				
+				if cpTime == math.huge or cpDuration == math.huge then
+					cpTime = 0
+					cpDuration = 1
+				end
+				
+				if barGroups and barGroups.defensives then
+					local defensiveNode = barGroups.defensives:GetNode(currentDefensiveBar)
+					if defensiveNode then
+						Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. currentDefensiveBar, defensiveNode, cpTime, cpDuration)
+						defensiveNode:SetBorderColor(cpBorderColor)
+						defensiveNode:SetColor(cpColor)
+						defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+					end
+				end
+				
+				mapping[colorKey] = currentDefensiveBar
+				currentDefensiveBar = currentDefensiveBar + 1
 			end
-			
-			currentDefensiveBar = currentDefensiveBar + 1
 		end
 	end
 end
@@ -1717,8 +1771,8 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "protection"
 		TRB.Data.character.compositeKey = "warrior_protection"
-		local maxComboPoints = 2 -- Shield Block and Ignore Pain
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local maxComboPoints = GetEnabledDefensiveCount(sharedSettings)
 		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 		if sharedSettings ~= nil then
@@ -1771,12 +1825,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		-- Protection (3) uses the defensives bar; Fury (2) uses the secondary/whirlwind bar (talent-gated)
 		local hasDefensives = TRB.Data.character.specId == 3
+		local enabledDefensiveCount = hasDefensives and GetEnabledDefensiveCount(sharedSettings) or 0
 		local hasWhirlwind = TRB.Data.character.specId == 2 and (TRB.Data.character.maxResource2 or 0) > 0
 		local secondaryVisSettings = (sharedSettings and sharedSettings.displayBar.secondary) or nil
 
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.defensives, sharedSettings and sharedSettings.displayBar.defensives, hasDefensives, TRB.Data.character.maxResource2, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.defensives, sharedSettings and sharedSettings.displayBar.defensives, hasDefensives and enabledDefensiveCount > 0, enabledDefensiveCount, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasWhirlwind, TRB.Data.character.maxResource2 or 0, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, nil, nil),
 		}
@@ -1879,11 +1934,13 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				return nil, true, false
 			end
 		end
-		-- Handle Protection's defensive buff nodes
+		-- Handle Protection's defensive buff nodes (dynamic mapping from UpdateDefensiveBuffs)
 		if TRB.Data.character.specId == 3 then
+			local mapping = TRB.Data.defensiveNodeMapping or {}
 			if TRB.Functions.String:StartsWith(relativeToFrame, "IgnorePain") then
-				if barGroups and barGroups.defensives then
-					local node = barGroups.defensives:GetNode(1)
+				local nodeIndex = mapping["ignorePain"]
+				if nodeIndex and barGroups and barGroups.defensives then
+					local node = barGroups.defensives:GetNode(nodeIndex)
 					if node then
 						local isVisible = barGroups.defensives.isVisible and node.isVisible
 						return node:GetFrame(), true, isVisible
@@ -1891,8 +1948,9 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				end
 				return nil, true, false
 			elseif TRB.Functions.String:StartsWith(relativeToFrame, "ShieldBlock") then
-				if barGroups and barGroups.defensives then
-					local node = barGroups.defensives:GetNode(2)
+				local nodeIndex = mapping["shieldBlock"]
+				if nodeIndex and barGroups and barGroups.defensives then
+					local node = barGroups.defensives:GetNode(nodeIndex)
 					if node then
 						local isVisible = barGroups.defensives.isVisible and node.isVisible
 						return node:GetFrame(), true, isVisible

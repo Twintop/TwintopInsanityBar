@@ -1954,6 +1954,10 @@ function TRB.Functions.Settings:PortForwardSettings()
 							if not specSettings.colors.bars.defensives then
 								specSettings.colors.bars.defensives = TRB.Functions.Settings:DefaultDefensivesBarColors()
 							end
+							-- Backfill nodeOrder for users who migrated before this field existed
+							if specSettings.colors.bars.defensives and not specSettings.colors.bars.defensives.nodeOrder then
+								specSettings.colors.bars.defensives.nodeOrder = { "ignorePain", "shieldBlock" }
+							end
 						end
 
 						-- Ensure textures exist (fallback if no migration source)
@@ -5406,6 +5410,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	return {
 		border = { color = "FFC21807" },
 		background = { color = "66000000" },
+		nodeOrder = { "ignorePain", "shieldBlock" },
 		nodeColors = {
 			ignorePain = { color = "FFFFD000", enabled = true },
 			shieldBlock = { color = "FF0099FF", enabled = true }

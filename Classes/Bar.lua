@@ -976,6 +976,9 @@ end
 ---@field public defaultTexturesFunc function? # Function returning default textures
 ---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
 ---@field public nodeColors table[]? # Array of {key, displayName, hasEnabled} for per-node color pickers (e.g., Warrior defensives)
+---@field public hasOrdering boolean # True if node display order can be customized by the user
+---@field public orderUpTooltip string? # Localized tooltip for the "move up" arrow button
+---@field public orderDownTooltip string? # Localized tooltip for the "move down" arrow button
 ---@field public onChangeCallback function? # Optional callback function to call after color/threshold changes
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
@@ -1020,6 +1023,9 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.defaultTexturesFunc = config.defaultTexturesFunc
 	self.visibilityKey = config.visibilityKey or config.key
 	self.nodeColors = config.nodeColors -- Array of {key, displayName, hasEnabled} for per-node colors
+	self.hasOrdering = config.hasOrdering or false -- Whether node display order can be customized
+	self.orderUpTooltip = config.orderUpTooltip -- Localized tooltip for the "move up" arrow button
+	self.orderDownTooltip = config.orderDownTooltip -- Localized tooltip for the "move down" arrow button
 
 	return self
 end
@@ -1064,6 +1070,45 @@ function TRB.Classes.BarTypeDefinition:GetTextures(specSettings)
 		end
 	end
 	return nil
+end
+
+---Returns the number of enabled nodes based on colorSettings.nodeColors.
+---Nodes without hasEnabled are always counted. Returns maxNodes if no nodeColors defined.
+---@param colorSettings table # The bar's color settings (e.g., spec.colors.bars.defensives)
+---@return integer
+function TRB.Classes.BarTypeDefinition:GetEnabledNodeCount(colorSettings)
+	if not self.nodeColors then
+		return self.maxNodes or 1
+	end
+	local count = 0
+	for _, nodeConfig in ipairs(self.nodeColors) do
+		if not nodeConfig.hasEnabled then
+			count = count + 1
+		elseif colorSettings and colorSettings.nodeColors and colorSettings.nodeColors[nodeConfig.key] then
+			if colorSettings.nodeColors[nodeConfig.key].enabled then
+				count = count + 1
+			end
+		end
+	end
+	return count
+end
+
+---Returns the ordered list of node keys, respecting colorSettings.nodeOrder if present.
+---Falls back to the definition order in self.nodeColors.
+---@param colorSettings table? # The bar's color settings (may contain nodeOrder)
+---@return string[] # Ordered array of node keys
+function TRB.Classes.BarTypeDefinition:GetOrderedNodeKeys(colorSettings)
+	if colorSettings and colorSettings.nodeOrder and #colorSettings.nodeOrder > 0 then
+		return colorSettings.nodeOrder
+	end
+	-- Fallback: definition order
+	local keys = {}
+	if self.nodeColors then
+		for _, nodeConfig in ipairs(self.nodeColors) do
+			keys[#keys + 1] = nodeConfig.key
+		end
+	end
+	return keys
 end
 
 ---Sets the settings table for this bar type in a spec's settings
@@ -1314,9 +1359,12 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil, -- Simple colors per buff type
 		visibilityKey = "defensives",
+		hasOrdering = true,
+		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
+		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "ignorePain", displayName = L["IgnorePain"] , hasEnabled = false },--true }, // TODO: Make these independently enableable.
-			{ key = "shieldBlock", displayName = L["ShieldBlock"] , hasEnabled = false },--true }
+			{ key = "ignorePain", displayName = L["IgnorePainBarEnable"], colorLabel = L["IgnorePain"], tooltip = L["IgnorePainBarEnableTooltip"], hasEnabled = true },
+			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true }
 		},
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)

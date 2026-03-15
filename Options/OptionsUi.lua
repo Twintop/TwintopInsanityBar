@@ -3864,45 +3864,184 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	-- Per-node colors (for multi-node bars like Warrior defensives)
 	if barTypeDef.nodeColors and colorSettings.nodeColors then
 		colorControls.nodeColors = colorControls.nodeColors or {}
-		
-		for _, nodeConfig in ipairs(barTypeDef.nodeColors) do
-			local nodeKey = nodeConfig.key
+
+		-- Build a key-to-config lookup from the definition
+		local nodeConfigByKey = {}
+		for _, nc in ipairs(barTypeDef.nodeColors) do
+			nodeConfigByKey[nc.key] = nc
+		end
+
+		-- Get ordered keys (respects user-defined nodeOrder when hasOrdering is true)
+		local orderedKeys = barTypeDef:GetOrderedNodeKeys(colorSettings)
+
+		-- Track row frames so arrow callbacks can swap visual contents in-place
+		local rowFrames = {} -- rowFrames[i] = { key, checkbox, colorPicker, upBtn, downBtn }
+
+		---Refreshes the contents of a single row to reflect the node at orderedKeys[rowIndex]
+		local function RefreshRow(rowIndex)
+			local row = rowFrames[rowIndex]
+			if not row then return end
+			local nk = orderedKeys[rowIndex]
+			local nc = nodeConfigByKey[nk]
+			local ncs = colorSettings.nodeColors[nk]
+			row.key = nk
+			if row.checkbox then
+				row.checkbox:SetChecked(ncs and ncs.enabled)
+				getglobal(row.checkbox:GetName() .. 'Text'):SetText(nc.displayName)
+				row.checkbox.tooltip = nc.tooltip or nc.displayName
+			end
+			if row.label then
+				row.label:SetText(nc.displayName)
+			end
+			if row.colorPicker and ncs then
+				row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(ncs.color, true))
+				if row.colorPicker.Font then
+					row.colorPicker.Font:SetText(nc.colorLabel or nc.displayName)
+				end
+			end
+			-- Arrow enabled state
+			if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
+			if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
+		end
+
+		---Triggers bar layout + appearance rebuild after enable/order change
+		local function RebuildBarAfterNodeChange()
+			if TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.Bar:HideResourceBar()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+				-- Re-parent bar text frames to reflect new node order
+				TRB.Functions.BarText:CreateBarTextFrames()
+			end
+		end
+
+		---Swaps two adjacent entries in orderedKeys and the nodeOrder setting, then refreshes both rows
+		local function SwapNodes(indexA, indexB)
+			-- Swap in the live ordered keys
+			orderedKeys[indexA], orderedKeys[indexB] = orderedKeys[indexB], orderedKeys[indexA]
+			-- Persist to settings
+			colorSettings.nodeOrder = colorSettings.nodeOrder or {}
+			for i, k in ipairs(orderedKeys) do
+				colorSettings.nodeOrder[i] = k
+			end
+			RefreshRow(indexA)
+			RefreshRow(indexB)
+			RebuildBarAfterNodeChange()
+		end
+
+		for rowIndex, nodeKey in ipairs(orderedKeys) do
+			local nodeConfig = nodeConfigByKey[nodeKey]
+			if not nodeConfig then break end -- safety
 			local nodeDisplayName = nodeConfig.displayName
+			local nodeColorLabel = nodeConfig.colorLabel or nodeDisplayName
 			local nodeColorSettings = colorSettings.nodeColors[nodeKey]
-			
+			local capturedRowIdx = rowIndex
+
 			if nodeColorSettings then
 				colorControls.nodeColors[nodeKey] = colorControls.nodeColors[nodeKey] or {}
 				local nodeControls = colorControls.nodeColors[nodeKey]
-				
+				local row = { key = nodeKey }
+
+				-- Reorder arrows (if ordering is enabled and there are 2+ nodes)
+				local arrowXOffset = oUi.xCoord
+				if barTypeDef.hasOrdering and #orderedKeys > 1 then
+					local upTooltipTitle = L["NodeOrderMoveUp"]
+					local upTooltipBody = barTypeDef.orderUpTooltip
+					local downTooltipTitle = L["NodeOrderMoveDown"]
+					local downTooltipBody = barTypeDef.orderDownTooltip
+
+					-- Up arrow (texture-based)
+					local upBtn = CreateFrame("Button", nil, parent)
+					upBtn:SetSize(20, 20)
+					upBtn:SetPoint("TOPLEFT", arrowXOffset, yCoord)
+					upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+					upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+					upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+					upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+					upBtn:SetEnabled(rowIndex > 1)
+					upBtn:SetScript("OnClick", function()
+						SwapNodes(capturedRowIdx - 1, capturedRowIdx)
+					end)
+					upBtn:SetScript("OnEnter", function(self)
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText(upTooltipTitle, 1, 1, 1)
+						if upTooltipBody then
+							GameTooltip:AddLine(upTooltipBody, nil, nil, nil, true)
+						end
+						GameTooltip:Show()
+					end)
+					upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+					row.upBtn = upBtn
+
+					-- Down arrow (texture-based)
+					local downBtn = CreateFrame("Button", nil, parent)
+					downBtn:SetSize(20, 20)
+					downBtn:SetPoint("TOPLEFT", arrowXOffset + 22, yCoord)
+					downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+					downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+					downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+					downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+					downBtn:SetEnabled(rowIndex < #orderedKeys)
+					downBtn:SetScript("OnClick", function()
+						SwapNodes(capturedRowIdx, capturedRowIdx + 1)
+					end)
+					downBtn:SetScript("OnEnter", function(self)
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText(downTooltipTitle, 1, 1, 1)
+						if downTooltipBody then
+							GameTooltip:AddLine(downTooltipBody, nil, nil, nil, true)
+						end
+						GameTooltip:Show()
+					end)
+					downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+					row.downBtn = downBtn
+
+					arrowXOffset = arrowXOffset + 46
+				end
+
 				if nodeConfig.hasEnabled then
-					-- Build checkbox and color picker manually for node with enable option					
+					-- Build checkbox and color picker manually for node with enable option
 					-- Create enable checkbox
 					local checkboxName = "TwintopResourceBar_" .. namePrefix .. "_" .. nodeKey .. "_Enabled"
 					nodeControls.enabled = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
 					local fCheckbox = nodeControls.enabled
-					fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+					fCheckbox:SetPoint("TOPLEFT", arrowXOffset, yCoord)
 					getglobal(fCheckbox:GetName() .. 'Text'):SetText(nodeDisplayName)
-					fCheckbox.tooltip = nodeDisplayName
+					fCheckbox.tooltip = nodeConfig.tooltip or nodeDisplayName
 					fCheckbox:SetChecked(nodeColorSettings.enabled)
+					-- Dereference via orderedKeys at click-time to survive arrow reordering
 					fCheckbox:SetScript("OnClick", function(self, ...)
-						nodeColorSettings.enabled = self:GetChecked()
+						local currentKey = orderedKeys[capturedRowIdx]
+						colorSettings.nodeColors[currentKey].enabled = self:GetChecked()
+						RebuildBarAfterNodeChange()
 					end)
+					row.checkbox = fCheckbox
 					
-					-- Create color picker
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+					-- Create color picker (dereference via orderedKeys at click-time)
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
+						local currentKey = orderedKeys[capturedRowIdx]
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], colorControls.nodeColors[currentKey], "color", barTypeDef.key .. "_node")
 					end)
+					row.colorPicker = nodeControls.color
 				else
-					-- Simple color picker without enable checkbox
+					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time)
 					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeDisplayName, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[nodeKey], nodeControls, "color", barTypeDef.key .. "_node")
+						local currentKey = orderedKeys[capturedRowIdx]
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], colorControls.nodeColors[currentKey], "color", barTypeDef.key .. "_node")
 					end)
+					row.colorPicker = nodeControls.color
 				end
+				rowFrames[rowIndex] = row
 				yCoord = yCoord - 30
 			end
 		end
