@@ -274,7 +274,7 @@ local function ConstructResourceBar(settings)
 			else
 				barGroups.secondary:SetMaxNodes(maxWhirlwindNodes)
 				barGroups.secondary:SetNodeCount(maxWhirlwindNodes)
-				barGroups.secondary:SetLayout(settings.comboPoints.spacing, Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 				barGroups.secondary:Show()
 
 				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")

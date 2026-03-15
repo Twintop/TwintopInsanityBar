@@ -256,7 +256,7 @@ local function ConstructResourceBar(settings)
 		
 		-- Ensure secondary group knows the correct node count
 		barGroups.secondary:SetNodeCount(maxShards)
-		barGroups.secondary:SetLayout(settings.comboPoints.spacing, Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+		barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 		barGroups.secondary:Show()
 		
 		-- Get effective width for secondary bar, accounting for CDM width matching

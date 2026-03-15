@@ -3152,7 +3152,7 @@ function TRB.Functions.Class:CheckCharacter()
 					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(feralSettings.comboPoints.spacing, Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
+					barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(feralSettings.comboPoints), Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
 					if cdmForced then
 						barGroups.secondary.fullWidth = true
 					end

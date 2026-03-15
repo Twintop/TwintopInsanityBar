@@ -374,7 +374,7 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.secondary:SetMaxNodes(maxPowerWordNodes)
 			barGroups.secondary:SetNodeCount(maxPowerWordNodes)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 
 			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
@@ -418,7 +418,7 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.secondary:SetMaxNodes(maxHolyWordNodes)
 			barGroups.secondary:SetNodeCount(maxHolyWordNodes)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 
 			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")

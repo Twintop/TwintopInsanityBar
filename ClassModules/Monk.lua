@@ -309,7 +309,7 @@ local function ConstructResourceBar(settings)
 			
 			-- Set the node count and layout for Chi
 			barGroups.secondary:SetNodeCount(maxChi)
-			barGroups.secondary:SetLayout(settings.comboPoints.spacing, Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 			barGroups.secondary:Show()
 			
 			-- Get effective width for secondary bar, accounting for CDM width matching
@@ -1808,7 +1808,7 @@ function TRB.Functions.Class:CheckCharacter()
 					
 					barGroups.secondary:SetMaxNodes(maxComboPoints)
 					barGroups.secondary:SetNodeCount(maxComboPoints)
-					barGroups.secondary:SetLayout(sharedSettings.comboPoints.spacing, Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
+					barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
 					
 					-- Get effective width for secondary bar, accounting for CDM width matching
 					local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
