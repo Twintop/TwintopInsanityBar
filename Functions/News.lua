@@ -17,6 +17,7 @@ local content = [====[
 
 - [#519](#519) Allow incoming healing and absorbs to overflow off the right side of the health bar.
 - [#664](#664) Adjust bar border width calculation to be more consistent and less restrictive.
+- Fix another issue where if all of the bar text areas for a specialization were removed, the addon would restore defaults on the next login.
 
 ## Druid
 ### Guardian

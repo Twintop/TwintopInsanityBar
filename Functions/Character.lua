@@ -1346,19 +1346,54 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 		return false
 	end
 
-	-- Load full defaults for this class (returns a complete settings table; we only use the class portion)
-	local classDefaults = TRB.Options[optionsKey].LoadDefaultSettings(true)
+	-- Load defaults WITHOUT bar text (includeBarText=false). Using true would populate default
+	-- barText arrays that Table:Merge cannot shrink — if the user cleared their bar text to {},
+	-- the merge iterates zero incoming keys and the defaults survive, repopulating phantom entries.
+	local classDefaults = TRB.Options[optionsKey].LoadDefaultSettings(false)
 	if not classDefaults or not classDefaults[className] then
 		return false
 	end
+
+	-- Also load defaults WITH bar text, but only to seed specs the user has never initialized.
+	local classDefaultsWithBarText = TRB.Options[optionsKey].LoadDefaultSettings(true)
+
+	-- Track whether ANY spec in this class needed fresh bar text seeding
+	local seededBarTextForClass = false
 
 	-- Merge class-specific defaults into current settings.
 	-- Table:Merge(original, incoming) gives incoming priority, so defaults are
 	-- the base and any existing saved settings overlay on top.
 	for specName, specDefaults in pairs(classDefaults[className]) do
 		if type(specDefaults) == "table" then
-			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, settings[className][specName] or {})
+			-- Check if this spec has never been initialized (no displayText key in saved settings).
+			-- A user who deleted all bar text still has displayText = { barText = {} } in saved vars.
+			-- A brand new spec stub is just {} with no displayText at all.
+			local savedSpec = settings[className][specName]
+			local isNewSpec = not savedSpec or type(savedSpec) ~= "table" or savedSpec.displayText == nil
+
+			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, savedSpec or {})
+
+			-- For never-initialized specs, seed bar text from the full defaults
+			if isNewSpec and classDefaultsWithBarText and classDefaultsWithBarText[className]
+				and classDefaultsWithBarText[className][specName]
+				and classDefaultsWithBarText[className][specName].displayText
+				and classDefaultsWithBarText[className][specName].displayText.barText then
+				settings[className][specName].displayText.barText = classDefaultsWithBarText[className][specName].displayText.barText
+				seededBarTextForClass = true
+			end
 		end
+	end
+
+	-- If we just seeded fresh default bar text for this class, mark the midnightBarTextReset
+	-- migration as done. The migration is meant for users upgrading from TWW with old-format
+	-- bar text — not for specs that just received brand-new defaults. Without this, logging
+	-- into the class later would trigger the migration and clobber any changes the user made
+	-- to bar text via the cross-class options panel.
+	if seededBarTextForClass
+		and settings.manualUpdateChecks
+		and settings.manualUpdateChecks.midnightBarTextReset
+		and settings.manualUpdateChecks.midnightBarTextReset[className] ~= nil then
+		settings.manualUpdateChecks.midnightBarTextReset[className] = true
 	end
 
 	classDefaultsMerged[className] = true
