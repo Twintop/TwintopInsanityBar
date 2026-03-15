@@ -104,6 +104,14 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -210,6 +218,14 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				color = {
 					color = "FFFFFFFF"
 				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -315,6 +331,14 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = {
 					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
 				},
 			},
 			barText = {}

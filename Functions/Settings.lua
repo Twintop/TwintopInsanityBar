@@ -194,6 +194,14 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					color = {
 						color = "FFFFFFFF"
 					},
+					fontOutline = "OUTLINE",
+					fontOutlineName = L["FontOutlineOutline"],
+					fontShadow = {
+						enabled = false,
+						color = "FF000000",
+						xOffset = 1,
+						yOffset = -1,
+					},
 				},
 				barText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic),
 				migrations = {
@@ -875,6 +883,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -898,6 +907,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontSize = 14,
 											color = { color = "FFFFFFFF" },
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -921,6 +931,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -944,6 +955,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -967,6 +979,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -1000,6 +1013,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
+---@diagnostic disable-next-line: missing-fields
 										{
 											useDefaultFontColor = false,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1023,6 +1037,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											color = { color = "FFFFFFFF" },
 											enabled = enabled,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1046,6 +1061,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1069,6 +1085,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1092,6 +1109,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1125,6 +1143,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1148,6 +1167,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1171,6 +1191,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1194,6 +1215,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1217,6 +1239,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -1240,6 +1263,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
+---@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -4927,9 +4951,67 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
-end
 
---- Strips unrecognized top-level keys from the saved-variables table, keeping only class keys and core/manualUpdateChecks.
+	-- Migrate fontOutline and fontShadow for displayText defaults and bar text entries
+	-- Core (global) displayText defaults
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayText then
+		local dt = TwintopInsanityBarSettings.core.displayText
+		if dt.default and dt.default.fontOutline == nil then
+			dt.default.fontOutline = "OUTLINE"
+			dt.default.fontOutlineName = L["FontOutlineOutline"]
+			dt.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+		end
+		if dt.barText then
+			for _, entry in ipairs(dt.barText) do
+				if entry.fontOutline == nil then
+					entry.fontOutline = "OUTLINE"
+					entry.fontOutlineName = L["FontOutlineOutline"]
+				end
+				if entry.fontShadow == nil then
+					entry.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+				end
+				if entry.useDefaultFontOutline == nil then
+					entry.useDefaultFontOutline = false
+				end
+				if entry.useDefaultFontShadow == nil then
+					entry.useDefaultFontShadow = false
+				end
+			end
+		end
+	end
+	-- Per-spec displayText defaults and bar text entries
+	for _, className in ipairs(classes) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+				if type(specSettings) == "table" and specSettings.displayText then
+					local dt = specSettings.displayText
+					if dt.default and dt.default.fontOutline == nil then
+						dt.default.fontOutline = "OUTLINE"
+						dt.default.fontOutlineName = L["FontOutlineOutline"]
+						dt.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+					end
+					if dt.barText then
+						for _, entry in ipairs(dt.barText) do
+							if entry.fontOutline == nil then
+								entry.fontOutline = "OUTLINE"
+								entry.fontOutlineName = L["FontOutlineOutline"]
+							end
+							if entry.fontShadow == nil then
+								entry.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
+							end
+							if entry.useDefaultFontOutline == nil then
+								entry.useDefaultFontOutline = false
+							end
+							if entry.useDefaultFontShadow == nil then
+								entry.useDefaultFontShadow = false
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -5573,6 +5655,8 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = name,
 			guid = TRB.Functions.String:Guid(),
@@ -5582,6 +5666,9 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			fontJustifyHorizontal = position,
 			fontJustifyHorizontalName = fontJustifyHorizontalName,
 			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = xPos,
@@ -5665,6 +5752,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
@@ -5674,6 +5763,9 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
@@ -5689,6 +5781,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
@@ -5698,6 +5792,9 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
@@ -5712,6 +5809,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
@@ -5721,6 +5820,9 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
@@ -5762,10 +5864,15 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 			},
 			fontJustifyHorizontal = "CENTER",
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			color = {
 				color = "fffe7878",
 			},
 			fontSize = 48,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 	}
 
@@ -5789,6 +5896,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
@@ -5798,6 +5907,9 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
@@ -5813,6 +5925,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
@@ -5822,6 +5936,9 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = 2,
@@ -5836,6 +5953,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
@@ -5845,6 +5964,9 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
 				xPos = -2,
@@ -5886,6 +6008,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
@@ -5895,6 +6019,9 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=20,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
@@ -5911,6 +6038,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
 				enabled = true,
 				name = L["PositionMiddle"],
 				guid = TRB.Functions.String:Guid(),
@@ -5920,6 +6049,9 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "CENTER",
 				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 0,
@@ -5937,6 +6069,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
@@ -5946,6 +6080,9 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,
@@ -5962,6 +6099,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
 				enabled = true,
 				name = L["PositionLeft"],
 				guid = TRB.Functions.String:Guid(),
@@ -5971,6 +6110,9 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = 2,
@@ -5985,6 +6127,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
@@ -5994,6 +6138,9 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontal = "RIGHT",
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
 					xPos = -2,

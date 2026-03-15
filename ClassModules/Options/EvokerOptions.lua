@@ -40,6 +40,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -63,6 +68,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -86,6 +96,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -109,6 +124,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -132,6 +152,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
 			enabled = true,
@@ -155,6 +180,11 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontSize = false,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		}
 	}
 
@@ -272,6 +302,14 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -384,6 +422,14 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
@@ -432,6 +478,11 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 	if classic then
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -456,6 +507,11 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 	else
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
@@ -581,6 +637,14 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
 			},
 			barText = {}
 		},
