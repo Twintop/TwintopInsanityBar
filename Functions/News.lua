@@ -15,6 +15,7 @@ local content = [====[
 # 12.0.1.36-release (2026-03-15)
 ## General
 
+- [#519](#519) Allow incoming healing and absorbs to overflow off the right side of the health bar.
 - [#664](#664) Adjust bar border width calculation to be more consistent and less restrictive.
 
 ## Druid

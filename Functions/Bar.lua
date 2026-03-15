@@ -1557,13 +1557,33 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 		absorbSlot.color = settings.colors.healthBar.absorb.color
 	end
 
-	if absorbMode == "appended" then
+	if absorbMode == "appended" or absorbMode == "appendedOverflow" then
 		-- Appended mode: absorb bar LEFT anchored to health fill's RIGHT, inside a clip frame
+		-- Overflow variant disables clipping and scales the overlay bar when absorb exceeds max health
 		absorbSlot:HideOverlay()
 		absorbSlot:HideInsetOverlay()
 		absorbSlot:CreateAppendedOverlay()
 
-		absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+		if absorbMode == "appendedOverflow" then
+			absorbSlot:SetAppendedOverlayClipping(false)
+			local healthMaxNum = (not issecretvalue(healthMax)) and healthMax or 1
+			local absorbNum = (not issecretvalue(absorbAmount)) and absorbAmount or 0
+			if absorbNum > healthMaxNum and healthMaxNum > 0 then
+				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+				local overflowWidth = innerWidth * (absorbNum / healthMaxNum)
+				absorbSlot:SetAppendedOverlayWidth(overflowWidth)
+				absorbSlot:SetAppendedOverlayMinMax(0, absorbAmount)
+			else
+				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+				absorbSlot:SetAppendedOverlayWidth(innerWidth)
+				absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+			end
+		else
+			absorbSlot:SetAppendedOverlayClipping(true)
+			local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+			absorbSlot:SetAppendedOverlayWidth(innerWidth)
+			absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+		end
 		absorbSlot:SetAppendedOverlayValue(absorbAmount)
 		absorbSlot:SetAppendedOverlayTexture(settings.textures.absorbBar)
 
@@ -1651,13 +1671,33 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 		incomingHealSlot.color = settings.colors.healthBar.incomingHeal.color
 	end
 
-	if incomingHealMode == "appended" then
+	if incomingHealMode == "appended" or incomingHealMode == "appendedOverflow" then
 		-- Appended mode: incoming heal bar LEFT anchored to health fill's RIGHT, inside a clip frame
+		-- Overflow variant disables clipping and scales the overlay bar when incoming heals exceed max health
 		incomingHealSlot:HideOverlay()
 		incomingHealSlot:HideInsetOverlay()
 		incomingHealSlot:CreateAppendedOverlay()
 
-		incomingHealSlot:SetAppendedOverlayMinMax(0, healthMax)
+		if incomingHealMode == "appendedOverflow" then
+			incomingHealSlot:SetAppendedOverlayClipping(false)
+			local healthMaxNum = (not issecretvalue(healthMax)) and healthMax or 1
+			local healNum = (not issecretvalue(incomingHealAmount)) and incomingHealAmount or 0
+			if healNum > healthMaxNum and healthMaxNum > 0 then
+				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+				local overflowWidth = innerWidth * (healNum / healthMaxNum)
+				incomingHealSlot:SetAppendedOverlayWidth(overflowWidth)
+				incomingHealSlot:SetAppendedOverlayMinMax(0, incomingHealAmount)
+			else
+				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+				incomingHealSlot:SetAppendedOverlayWidth(innerWidth)
+				incomingHealSlot:SetAppendedOverlayMinMax(0, healthMax)
+			end
+		else
+			incomingHealSlot:SetAppendedOverlayClipping(true)
+			local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
+			incomingHealSlot:SetAppendedOverlayWidth(innerWidth)
+			incomingHealSlot:SetAppendedOverlayMinMax(0, healthMax)
+		end
 		incomingHealSlot:SetAppendedOverlayValue(incomingHealAmount)
 		incomingHealSlot:SetAppendedOverlayTexture(settings.textures.incomingHealBar)
 

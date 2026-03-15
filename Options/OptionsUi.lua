@@ -6079,7 +6079,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	-- IMPORTANT: Pass resolved localized strings, NOT localization keys
 	local healthBarTypeDef = {
 		key = "health",
-		displayName = L["HealthBar"]:gsub(" Bar$", ""), -- "Health" instead of "Health Bar" for labels like "Health border"
+		displayName = L["HealthBarThresholdDisplayName"],
 		colorCurveType = "step",
 		thresholdLevels = {
 			{ key = "low", colorLabel = L["HealthBarColorLow"] },
@@ -6107,7 +6107,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		end
 	)
 
-	yCoord = yCoord + 20
+	yCoord = yCoord - 10
 	-- Absorb Display Mode dropdown
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.absorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AbsorbMode", parent, "WowStyle1DropdownTemplate")
@@ -6124,6 +6124,8 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	local function AbsorbModeGetDisplayName(value)
 		if value == "appended" then
 			return L["OverlayModeAppended"]
+		elseif value == "appendedOverflow" then
+			return L["OverlayModeAppendedOverflow"]
 		elseif value == "inset" then
 			return L["OverlayModeInset"]
 		else
@@ -6144,6 +6146,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 
 	local function AbsorbModeGenerator(dropdown, rootDescription)
 		rootDescription:CreateRadio(L["OverlayModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["OverlayModeAppendedOverflow"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appendedOverflow")
 		rootDescription:CreateRadio(L["OverlayModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
 		rootDescription:CreateRadio(L["OverlayModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
 	end
@@ -6194,6 +6197,8 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	local function IncomingHealModeGetDisplayName(value)
 		if value == "appended" then
 			return L["OverlayModeAppended"]
+		elseif value == "appendedOverflow" then
+			return L["OverlayModeAppendedOverflow"]
 		elseif value == "inset" then
 			return L["OverlayModeInset"]
 		else
@@ -6214,6 +6219,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 
 	local function IncomingHealModeGenerator(dropdown, rootDescription)
 		rootDescription:CreateRadio(L["OverlayModeAppended"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["OverlayModeAppendedOverflow"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "appendedOverflow")
 		rootDescription:CreateRadio(L["OverlayModeOverlay"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "overlay")
 		rootDescription:CreateRadio(L["OverlayModeInset"], IncomingHealModeIsSelected, IncomingHealModeSetSelected, "inset")
 	end

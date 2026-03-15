@@ -2183,3 +2183,9 @@ L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"] = "Harnessed Rage Talen
 L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze to have 100% chance to activate Gore via the Harnessed Rage talent."
 L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"] = "Killing Blow Talented"
 L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Maul or Raze for extra damage via the Killing Blow talent."
+
+-- Overlay Mode: Appended (Overflow)
+L["OverlayModeAppendedOverflow"] = "Appended (Overflow)"
+
+-- Display names used by barTypeDef objects in GenerateCustomBarThresholdColorOptions
+L["HealthBarThresholdDisplayName"] = "Health"

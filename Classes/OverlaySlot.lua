@@ -228,6 +228,23 @@ function TRB.Classes.OverlaySlot:SetAppendedOverlayMinMax(min, max)
 	self.appendedOverlayFrame:SetMinMaxValues(min, max)
 end
 
+---Enables or disables clipping on the appended overlay's clip frame.
+---When clipping is disabled, the overlay can visually extend past the bar's right boundary.
+---@param clip boolean # true to clip (default behavior), false to allow overflow
+function TRB.Classes.OverlaySlot:SetAppendedOverlayClipping(clip)
+	if not self.appendedClipFrame then return end
+	self.appendedClipFrame:SetClipsChildren(clip)
+end
+
+---Sets the width of the appended overlay StatusBar.
+---Used by overflow mode to dynamically scale the overlay bar wider than the inner bar
+---when the overlay value exceeds max health.
+---@param width number # The desired width in pixels
+function TRB.Classes.OverlaySlot:SetAppendedOverlayWidth(width)
+	if not self.appendedOverlayFrame then return end
+	self.appendedOverlayFrame:SetWidth(math.max(1, width))
+end
+
 ---Sets the appended overlay StatusBar fill texture. No-op if not created.
 ---@param texture string
 function TRB.Classes.OverlaySlot:SetAppendedOverlayTexture(texture)

@@ -920,7 +920,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.BarVisibility:MarkDirty()
 end
 
----Clears all cached color data (border, bar, backdrop, health curve) and resets the RGBA parse memoization.
+---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
 function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.bar)
