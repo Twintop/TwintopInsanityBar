@@ -954,6 +954,13 @@ end
 ---@field public sliderLabel string? # Localized string for the threshold slider label (nil for first level which has no slider)
 ---@field public sliderTooltip string? # Localized string for the threshold slider tooltip
 
+---@class TRB.Classes.BarTypeDefinition.NodeColorEntry
+---@field public key string # Unique identifier for this node (e.g., "ignorePain", "shieldBlock")
+---@field public displayName string # Localized label shown on the enable checkbox (e.g., "Enable Ignore Pain")
+---@field public colorLabel string? # Localized label shown on the color swatch (e.g., "Ignore Pain"). Falls back to displayName if nil.
+---@field public tooltip string? # Localized tooltip body text for the enable checkbox. Falls back to displayName if nil.
+---@field public hasEnabled boolean? # True if this node can be independently enabled/disabled by the user
+
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
 ---@field public displayName string # Localized display name for UI
@@ -975,7 +982,7 @@ end
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
 ---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
----@field public nodeColors table[]? # Array of {key, displayName, hasEnabled} for per-node color pickers (e.g., Warrior defensives)
+---@field public nodeColors TRB.Classes.BarTypeDefinition.NodeColorEntry[]? # Per-node color/enable definitions (e.g., Warrior defensives: Ignore Pain + Shield Block)
 ---@field public hasOrdering boolean # True if node display order can be customized by the user
 ---@field public orderUpTooltip string? # Localized tooltip for the "move up" arrow button
 ---@field public orderDownTooltip string? # Localized tooltip for the "move down" arrow button
@@ -1094,21 +1101,49 @@ function TRB.Classes.BarTypeDefinition:GetEnabledNodeCount(colorSettings)
 end
 
 ---Returns the ordered list of node keys, respecting colorSettings.nodeOrder if present.
----Falls back to the definition order in self.nodeColors.
+---Sanitizes the persisted order: removes unknown/duplicate keys and appends any
+---definition keys that are missing. Writes the sanitized list back to
+---colorSettings.nodeOrder so settings self-heal on first access.
+---Falls back to the definition order in self.nodeColors when no nodeOrder is stored.
 ---@param colorSettings table? # The bar's color settings (may contain nodeOrder)
----@return string[] # Ordered array of node keys
+---@return string[] # Ordered array of node keys (one entry per defined nodeColor, no duplicates)
 function TRB.Classes.BarTypeDefinition:GetOrderedNodeKeys(colorSettings)
-	if colorSettings and colorSettings.nodeOrder and #colorSettings.nodeOrder > 0 then
-		return colorSettings.nodeOrder
-	end
-	-- Fallback: definition order
-	local keys = {}
+	-- Build the canonical set of known keys from the definition
+	local knownKeys = {} ---@type table<string, boolean>
+	local definitionOrder = {} ---@type string[]
 	if self.nodeColors then
 		for _, nodeConfig in ipairs(self.nodeColors) do
-			keys[#keys + 1] = nodeConfig.key
+			knownKeys[nodeConfig.key] = true
+			definitionOrder[#definitionOrder + 1] = nodeConfig.key
 		end
 	end
-	return keys
+
+	if colorSettings and colorSettings.nodeOrder and #colorSettings.nodeOrder > 0 then
+		local seen = {} ---@type table<string, boolean>
+		local sanitized = {} ---@type string[]
+
+		-- Keep only known, non-duplicate keys in their persisted order
+		for _, key in ipairs(colorSettings.nodeOrder) do
+			if knownKeys[key] and not seen[key] then
+				seen[key] = true
+				sanitized[#sanitized + 1] = key
+			end
+		end
+
+		-- Append any definition keys that were missing from the persisted order
+		for _, key in ipairs(definitionOrder) do
+			if not seen[key] then
+				sanitized[#sanitized + 1] = key
+			end
+		end
+
+		-- Write the sanitized list back so settings self-heal
+		colorSettings.nodeOrder = sanitized
+		return sanitized
+	end
+
+	-- No persisted order — return definition order
+	return definitionOrder
 end
 
 ---Sets the settings table for this bar type in a spec's settings

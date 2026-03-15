@@ -3872,7 +3872,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 		end
 
 		-- Get ordered keys (respects user-defined nodeOrder when hasOrdering is true)
-		local orderedKeys = barTypeDef:GetOrderedNodeKeys(colorSettings)
+		-- Sanitize: drop any stale/unknown keys so a single bad entry can't hide valid nodes
+		local rawOrderedKeys = barTypeDef:GetOrderedNodeKeys(colorSettings)
+		local orderedKeys = {}
+		for _, k in ipairs(rawOrderedKeys) do
+			if nodeConfigByKey[k] and colorSettings.nodeColors[k] then
+				orderedKeys[#orderedKeys + 1] = k
+			end
+		end
 
 		-- Track row frames so arrow callbacks can swap visual contents in-place
 		local rowFrames = {} -- rowFrames[i] = { key, checkbox, colorPicker, upBtn, downBtn }
@@ -3936,7 +3943,6 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 
 		for rowIndex, nodeKey in ipairs(orderedKeys) do
 			local nodeConfig = nodeConfigByKey[nodeKey]
-			if not nodeConfig then break end -- safety
 			local nodeDisplayName = nodeConfig.displayName
 			local nodeColorLabel = nodeConfig.colorLabel or nodeDisplayName
 			local nodeColorSettings = colorSettings.nodeColors[nodeKey]
@@ -4022,22 +4028,24 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 					end)
 					row.checkbox = fCheckbox
 					
-					-- Create color picker (dereference via orderedKeys at click-time)
+					-- Create color picker (dereference via orderedKeys at click-time for settings, but use
+					-- nodeControls for the controls table so the callback updates THIS row's swatch frame)
 					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
 						local currentKey = orderedKeys[capturedRowIdx]
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], colorControls.nodeColors[currentKey], "color", barTypeDef.key .. "_node")
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
 					end)
 					row.colorPicker = nodeControls.color
 				else
-					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time)
+					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time for
+					-- settings, but use nodeControls for the controls table so the callback updates THIS row's swatch)
 					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
 					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 					f = nodeControls.color
 					f:SetScript("OnMouseDown", function(self, button, ...)
 						local currentKey = orderedKeys[capturedRowIdx]
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], colorControls.nodeColors[currentKey], "color", barTypeDef.key .. "_node")
+						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
 					end)
 					row.colorPicker = nodeControls.color
 				end
