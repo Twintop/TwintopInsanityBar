@@ -2111,4 +2111,26 @@ if locale == "zhCN" then
 	L["HolyWordSanctifyBarColor"] = "圣言术：灵"
 	L["HolyWordChastiseBarColor"] = "圣言术：罚"
 
+	L["BarVisibilityThresholdHeader"] = "资源 / 生命值阈值"
+	L["BarVisibilityThresholdResourcePercent"] = "主要资源百分比"
+	L["BarVisibilityThresholdResourceValue"] = "主要资源数值"
+	L["BarVisibilityThresholdHealthPercent"] = "生命值百分比"
+	L["BarVisibilityThresholdHealthValue"] = "生命值数值"
+	L["BarVisibilityThresholdComparison"] = "比较条件"
+	L["BarVisibilityThresholdValue"] = "数值"
+	L["ComparisonGTE"] = "≥ 大于或等于"
+	L["ComparisonLTE"] = "≤ 小于或等于"
+	L["BarVisibilityThresholdComparisonFormat"] = "%s 比较条件"
+	L["BarVisibilityThresholdValueFormat"] = "%s 数值"
+	L["BarVisibilityThresholdResourcePercentComparison"] = "主要资源百分比 比较条件"
+	L["BarVisibilityThresholdResourcePercentValue"] = "主要资源百分比 数值"
+	L["BarVisibilityThresholdResourceValueComparison"] = "主要资源数值 比较条件"
+	L["BarVisibilityThresholdResourceValueValue"] = "主要资源数值"
+	L["BarVisibilityThresholdHealthPercentComparison"] = "生命值百分比 比较条件"
+	L["BarVisibilityThresholdHealthPercentValue"] = "生命值百分比 数值"
+	L["BarVisibilityThresholdHealthValueComparison"] = "生命值数值 比较条件"
+	L["BarVisibilityThresholdHealthValueValue"] = "生命值数值"
+	
+	L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"] = "5层漩涡武器"
+
 end
