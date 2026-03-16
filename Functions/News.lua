@@ -20,7 +20,7 @@ local content = [====[
 ## Priest
 ### Holy
 
-- [#703](#703) Allow the Holy Words Bars to be reordered.
+- [#704](#704) Allow the Holy Words Bars to be reordered.
 
 ## Warrior
 ### Protection
