@@ -125,6 +125,8 @@ end
 ---@field enabled boolean # Class-level precondition (false = always hide regardless of settings)
 ---@field showNodesCount number|nil # If set, calls :ShowNodes(n) when showing the bar
 ---@field setMaxNodes number|nil # If set, calls :SetMaxNodes(n) before showing the bar
+---@field boolShowCached boolean|nil # Cached result of ShouldShowBar from last dirty evaluation; used by Phase 3 to skip curve when boolean conditions already satisfied
+---@field thresholdEligibleCached boolean|nil # Cached threshold eligibility from last dirty evaluation; false when force/neverShow/unsupported prevent curve evaluation
 TRB.Classes.BarVisibilityEntry = {}
 TRB.Classes.BarVisibilityEntry.__index = TRB.Classes.BarVisibilityEntry
 
@@ -154,6 +156,9 @@ TRB.Functions.BarVisibility.dirtyToken = 0
 TRB.Functions.BarVisibility.lastAppliedToken = -1
 -- When true, at least one bar is mid-fade and needs per-tick interpolation.
 TRB.Functions.BarVisibility.fading = false
+-- When true, at least one bar has a resource/health threshold curve active.
+-- Character.lua checks this to MarkDirty on resource/health changes.
+TRB.Functions.BarVisibility.hasResourceCurve = false
 
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
@@ -283,12 +288,158 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return true
 	end
 
-	-- Conditions exist but none matched
+	-- No boolean conditions matched — return false.
+	-- ProcessBars handles the OR with resource/health threshold independently.
 	return false
+end
+
+-- Visibility alpha curve cache: keyed by all inputs so curves are reused when settings
+-- haven't changed.  Uses the shared stepColorCurves cache in TRB.Data.cache.
+TRB.Data.cache = TRB.Data.cache or {}
+TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
+
+local VISIBILITY_HEALTH_MAX = 1000000
+local VISIBILITY_MANA_MAX = 262500
+
+---Gets the normalization max value for visibility threshold comparisons.
+---For primary resource value thresholds, use the spec's configured max value from the
+---associated options/default settings rather than the live character max.
+---@param conditionType string
+---@return number
+function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType)
+	if conditionType == "healthValue" then
+		return VISIBILITY_HEALTH_MAX
+	end
+
+	if conditionType == "resourceValue" then
+		if TRB.Data.resource == Enum.PowerType.Mana then
+			return VISIBILITY_MANA_MAX
+		end
+
+		local specCache = nil
+		if TRB.Data.specCache ~= nil and TRB.Data.character ~= nil then
+			if TRB.Data.character.compositeKey ~= nil then
+				specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+			end
+			if specCache == nil and TRB.Data.character.specName ~= nil then
+				specCache = TRB.Data.specCache[TRB.Data.character.specName]
+			end
+		end
+
+		if specCache ~= nil and specCache.settings ~= nil and specCache.settings.maxResource ~= nil then
+			local value = specCache.settings.maxResource.value
+			if type(value) == "number" and value > 0 then
+				return value
+			end
+		end
+
+		local maxRes = TRB.Data.character and TRB.Data.character.maxResourceUnmodified or 100
+		if maxRes <= 0 then
+			maxRes = 100
+		end
+		return maxRes
+	end
+
+	return 100
+end
+
+---Builds (or retrieves from cache) a Step ColorCurve whose alpha channel encodes
+---visibility: activeAlpha on one side of the threshold, inactiveAlpha on the other.
+---RGB is always (1,1,1) — only the alpha channel matters.
+---
+---For ">=" the curve is: [0, inactive) → [threshold, active) → [2.0, active)
+---For "<=" the curve is: [0, active) → [threshold+ε, inactive) → [2.0, inactive)
+---
+---@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue"
+---@param operator string # ">=" or "<="
+---@param thresholdValue number # The user-configured threshold (0–100 for percent, raw for value)
+---@param activeAlpha number # 0–100 alpha when condition is met
+---@param inactiveAlpha number # 0–100 alpha when condition is not met
+---@return any # A C_CurveUtil color curve
+function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, operator, thresholdValue, activeAlpha, inactiveAlpha)
+	local cache = TRB.Data.cache.stepColorCurves
+
+	-- Compute threshold as a fraction of 0.0–1.0 (the scale UnitPowerPercent/UnitHealthPercent use)
+	local thresholdFraction
+	if conditionType == "resourcePercent" then
+		thresholdFraction = (thresholdValue or 0) / 100
+	elseif conditionType == "resourceValue" then
+		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType)
+		if maxRes <= 0 then maxRes = 100 end
+		thresholdFraction = (thresholdValue or 0) / maxRes
+	elseif conditionType == "healthPercent" then
+		thresholdFraction = (thresholdValue or 0) / 100
+	elseif conditionType == "healthValue" then
+		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType)
+		if maxHP <= 0 then maxHP = 1 end
+		thresholdFraction = (thresholdValue or 0) / maxHP
+	else
+		thresholdFraction = 0
+	end
+
+	-- Clamp
+	if thresholdFraction < 0 then thresholdFraction = 0 end
+
+	-- Normalize alphas to 0.0–1.0
+	local activeA = (activeAlpha or 100) / 100
+	local inactiveA = (inactiveAlpha or 0) / 100
+
+	-- Build a cache key from all inputs
+	local fullKey = "vis_" .. conditionType .. "_" .. operator .. "_" .. tostring(thresholdFraction) .. "_" .. tostring(activeA) .. "_" .. tostring(inactiveA)
+
+	if cache[fullKey] == nil then
+		local curve = C_CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+
+		if operator == "<=" then
+			-- Active when BELOW threshold: [0, active) → [threshold+ε, inactive) → [2.0, inactive)
+			local activeColor = CreateColor(1, 1, 1, activeA)
+			local inactiveColor = CreateColor(1, 1, 1, inactiveA)
+			curve:AddPoint(0, activeColor)
+			curve:AddPoint(thresholdFraction + 0.001, inactiveColor)
+			curve:AddPoint(2.0, inactiveColor)
+		else
+			-- ">=" (default): Active when AT or ABOVE threshold: [0, inactive) → [threshold, active) → [2.0, active)
+			local activeColor = CreateColor(1, 1, 1, activeA)
+			local inactiveColor = CreateColor(1, 1, 1, inactiveA)
+			curve:AddPoint(0, inactiveColor)
+			curve:AddPoint(thresholdFraction, activeColor)
+			curve:AddPoint(2.0, activeColor)
+		end
+
+		cache[fullKey] = curve
+	end
+
+	return cache[fullKey]
+end
+
+---Evaluates the visibility alpha curve for an entry's resource/health condition.
+---Passes the curve to UnitPowerPercent or UnitHealthPercent, which returns a secret
+---ColorMixin.  The alpha channel of that color encodes the visibility decision.
+---@param visSettings trbBarVisibilitySetting # The bar's visibility settings
+---@return any|nil # A secret ColorMixin with alpha encoding visibility, or nil if not applicable
+function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings)
+	local conditionType = visSettings.resourceConditionType
+	local operator = visSettings.resourceConditionOperator or ">="
+	local threshold = visSettings.resourceConditionValue or 0
+	local activeAlpha = visSettings.activeAlpha or 100
+	local inactiveAlpha = visSettings.inactiveAlpha or 0
+
+	local curve = self:BuildVisibilityAlphaCurve(conditionType, operator, threshold, activeAlpha, inactiveAlpha)
+
+	if conditionType == "resourcePercent" or conditionType == "resourceValue" then
+		return UnitPowerPercent("player", TRB.Data.resource, true, curve)
+	elseif conditionType == "healthPercent" or conditionType == "healthValue" then
+		return UnitHealthPercent("player", true, curve)
+	end
+	return nil
 end
 
 ---Evaluates and applies visibility for all bar entries. Sets isTracking and controls BarText.
 ---Uses alpha-based visibility with fade interpolation instead of binary Show/Hide.
+---For entries with a resource/health threshold curve, the secret alpha from the curve
+---is applied directly to the container frame (secret-safe via SetAlpha), identical in
+---spirit to overcap color handling. Lua never compares the secret value.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entries TRB.Classes.BarVisibilityEntry[] # Array of bar entries to process
 ---@param snapshotData TRB.Classes.SnapshotData # The snapshot data to update isTracking on
@@ -297,25 +448,57 @@ end
 function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, settings)
 	local anyShowing = false
 	local anyFading = false
+	local anyEntryHasCurve = false
 	local conditionsChanged = (self.dirtyToken ~= self.lastAppliedToken) or context.force
 	local isRenderTransition = TRB.Functions.Bar:IsRenderTransitionActive()
 
 	for _, entry in ipairs(entries) do
 		if entry.barGroup ~= nil then
-			-- Phase 1: Evaluate conditions and compute target alpha (only when conditions changed)
-			if conditionsChanged then
-				local show = self:ShouldShowBar(context, entry)
-				local visSettings = entry.visibilitySettings
-				local targetAlpha, fadeDuration
+			local visSettings = entry.visibilitySettings
+			local hasCurve = visSettings ~= nil
+				and visSettings.resourceConditionType ~= nil
+				and visSettings.resourceConditionType ~= "none"
+			if hasCurve then
+				anyEntryHasCurve = true
+			end
 
+			-- Phase 1: Evaluate conditions and compute target alpha (only when dirty)
+			if conditionsChanged then
+				local boolShow = self:ShouldShowBar(context, entry)
+				-- Cache boolShow and thresholdEligible so Phase 3 can:
+				--  (a) skip the curve when boolean conditions already satisfy the OR,
+				--  (b) skip the curve when force/neverShow/unsupported make it ineligible.
+				entry.boolShowCached = boolShow
+				local thresholdEligible = entry.enabled
+					and visSettings ~= nil
+					and not context.force
+					and context.specSupported
+					and not visSettings.neverShow
+				entry.thresholdEligibleCached = thresholdEligible
+				local targetAlpha, fadeDuration
 				local fadeDelay = 0
 
-				if show then
-					-- Becoming active: snap instantly (no fade-in)
+				if hasCurve and boolShow then
+					-- Boolean conditions already satisfied (OR short-circuit).
+					-- Show at active alpha; the curve is not needed this tick.
+					targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
+					fadeDuration = 0
+				elseif hasCurve then
+					-- Boolean conditions did not match. The curve decides visibility.
+					-- Keep the bar renderable at active alpha so the curve can supply
+					-- the final opacity in Phase 3 (identical pattern to overcap colors).
+					if thresholdEligible then
+						targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
+						fadeDuration = 0
+					else
+						targetAlpha = (visSettings and visSettings.inactiveAlpha or 0) / 100
+						fadeDuration = visSettings and visSettings.fadeDuration or 0
+						fadeDelay = visSettings and visSettings.fadeDelay or 0
+					end
+				elseif boolShow then
 					targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
 					fadeDuration = 0
 				else
-					-- Becoming inactive: use configured fade duration and delay (fade-out only)
 					targetAlpha = (visSettings and visSettings.inactiveAlpha or 0) / 100
 					fadeDuration = visSettings and visSettings.fadeDuration or 0
 					fadeDelay = visSettings and visSettings.fadeDelay or 0
@@ -337,7 +520,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				anyFading = true
 			end
 
-			-- Phase 3: Apply alpha and show/hide based on current alpha
+			-- Phase 3: Apply alpha, show/hide, and apply secret curve alpha if applicable
 			if currentAlpha > 0 then
 				anyShowing = true
 				if not entry.barGroup.isVisible then
@@ -349,7 +532,22 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 						entry.barGroup:ShowNodes(entry.showNodesCount)
 					end
 				end
-				entry.barGroup.containerFrame:SetAlpha(currentAlpha)
+
+				-- If a curve is active, boolean conditions didn't already satisfy
+				-- the OR, AND the entry is eligible (not force-hidden/neverShow/
+				-- unsupported), evaluate the curve and apply the secret alpha.
+				-- Otherwise fall through to the normal fade alpha.
+				if hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached then
+					local curveResult = self:EvaluateVisibilityCurve(visSettings)
+					if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
+						local _, _, _, secretAlpha = curveResult:GetRGBA()
+						entry.barGroup.containerFrame:SetAlpha(secretAlpha)
+					else
+						entry.barGroup.containerFrame:SetAlpha(currentAlpha)
+					end
+				else
+					entry.barGroup.containerFrame:SetAlpha(currentAlpha)
+				end
 			else
 				if entry.barGroup.isVisible then
 					entry.barGroup:Hide()
@@ -359,6 +557,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	end
 
 	self.fading = anyFading
+	self.hasResourceCurve = anyEntryHasCurve
 
 	-- Collapse/expand container frames based on resolved visibility.
 	-- Hidden bars' containers are shrunk to 0.001 so that bars anchored to them

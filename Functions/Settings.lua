@@ -87,7 +87,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					activeAlpha = 100,
 					inactiveAlpha = 0,
 					fadeDuration = 0,
-					fadeDelay = 0
+					fadeDelay = 0,
+					resourceConditionType = "none",
+					resourceConditionOperator = ">=",
+					resourceConditionValue = 0
 				},
 				secondary = {
 					neverShow = false,
@@ -97,7 +100,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					activeAlpha = 100,
 					inactiveAlpha = 0,
 					fadeDuration = 0,
-					fadeDelay = 0
+					fadeDelay = 0,
+					resourceConditionType = "none",
+					resourceConditionOperator = ">=",
+					resourceConditionValue = 0
 				},
 				health = {
 					neverShow = false,
@@ -107,7 +113,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					activeAlpha = 100,
 					inactiveAlpha = 0,
 					fadeDuration = 0,
-					fadeDelay = 0
+					fadeDelay = 0,
+					resourceConditionType = "none",
+					resourceConditionOperator = ">=",
+					resourceConditionValue = 0
 				},
 				utility = {
 					neverShow = true,
@@ -117,7 +126,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					activeAlpha = 100,
 					inactiveAlpha = 0,
 					fadeDuration = 0,
-					fadeDelay = 0
+					fadeDelay = 0,
+					resourceConditionType = "none",
+					resourceConditionOperator = ">=",
+					resourceConditionValue = 0
 				},
 			},
 			overcap = {
@@ -4754,6 +4766,54 @@ function TRB.Functions.Settings:PortForwardSettings()
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
 						MigrateAlphaSettings(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
+	-- Phase 3b: Backfill resourceConditionType, resourceConditionOperator, and resourceConditionValue
+	-- for existing displayBar entries. Defaults preserve current behavior: no threshold active.
+	do
+		--- Backfills resource condition fields for existing displayBar entries.
+		---@param displayBar table? # The displayBar settings table to migrate in-place
+		local function MigrateResourceConditionSettings(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil then
+					if entry.resourceConditionType == nil then
+						entry.resourceConditionType = "none"
+					end
+					if entry.resourceConditionOperator == nil then
+						entry.resourceConditionOperator = ">="
+					end
+					-- Collapse unsupported operators to >= or <=
+					local op = entry.resourceConditionOperator
+					if op == ">" or op == "==" then
+						entry.resourceConditionOperator = ">="
+					elseif op == "<" or op == "!=" then
+						entry.resourceConditionOperator = "<="
+					end
+					if entry.resourceConditionValue == nil then
+						entry.resourceConditionValue = 0
+					end
+				end
+			end
+		end
+
+		-- Migrate core.displayBar
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateResourceConditionSettings(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		-- Migrate all class/spec displayBar settings
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateResourceConditionSettings(specSettings.displayBar)
 					end
 				end
 			end
