@@ -3878,6 +3878,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(cp.final) == "string" then
 			cp.final = { color = cp.final }
 		end
+		if cp.fiveStack == nil then
+			cp.fiveStack = { color = "FF00B400" }
+		end
 	end
 
 	-- Shaman Restoration colors.bar migration from flat string to table format

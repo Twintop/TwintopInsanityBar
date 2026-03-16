@@ -2261,3 +2261,6 @@ L["BarVisibilityThresholdHealthPercentComparison"] = "Health % Comparison"
 L["BarVisibilityThresholdHealthPercentValue"] = "Health % Value"
 L["BarVisibilityThresholdHealthValueComparison"] = "Health Value Comparison"
 L["BarVisibilityThresholdHealthValueValue"] = "Health Value"
+
+-- Shaman Enhancement: 5-stack Maelstrom Weapon color
+L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"] = "5 Stack Maelstrom Weapon"

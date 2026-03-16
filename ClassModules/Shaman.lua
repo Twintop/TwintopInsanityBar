@@ -1001,7 +1001,7 @@ local function UpdateResourceBar()
 									cpColor = specSettings.colors.comboPoints.base.color
 								end
 								
-								-- Apply penultimate/final colors
+								-- Apply special colors at specific stack counts
 								if isFilled and isOverflow then
 									-- Check for penultimate (9 stacks) or final (10 stacks)
 									if currentStacks == maxStacks then
@@ -1016,6 +1016,11 @@ local function UpdateResourceBar()
 										if specSettings.comboPoints.sameColor or nodeIndex == secondHalf then
 											cpColor = specSettings.colors.comboPoints.penultimate.color
 										end
+									end
+								elseif isFilled and not isOverflow then
+									-- Use fiveStack color for the 5th node, or all base nodes when overflow is present
+									if secondHalf > 0 or nodeIndex == displayNodes then
+										cpColor = specSettings.colors.comboPoints.fiveStack.color
 									end
 								end
 								
@@ -1053,6 +1058,8 @@ local function UpdateResourceBar()
 											cpColor = specSettings.colors.comboPoints.penultimate.color
 										elseif currentStacks > halfPoint then
 											cpColor = specSettings.colors.comboPoints.overflowBase.color
+										elseif currentStacks == halfPoint then
+											cpColor = specSettings.colors.comboPoints.fiveStack.color
 										else
 											cpColor = specSettings.colors.comboPoints.base.color
 										end
@@ -1064,6 +1071,8 @@ local function UpdateResourceBar()
 											cpColor = specSettings.colors.comboPoints.penultimate.color
 										elseif x > halfPoint then
 											cpColor = specSettings.colors.comboPoints.overflowBase.color
+										elseif x == halfPoint then
+											cpColor = specSettings.colors.comboPoints.fiveStack.color
 										else
 											cpColor = specSettings.colors.comboPoints.base.color
 										end
