@@ -32,6 +32,57 @@ local holyWordKeyToDef = {
 	holyWordChastise = holyWordDefsCache[3],
 }
 
+--- Builds (or refreshes) the Holy Word node mapping that maps e.g. "holyWordSerenity1" → physical node index.
+--- This is used by GetBarTextFrame to anchor bar text to the correct Holy Word node.
+--- Safe to call any time after SwitchSpec has populated talents/spells; the mapping is also
+--- refreshed every tick by UpdateResourceBar.
+local function BuildHolyWordNodeMapping()
+	local specCache = TRB.Data.specCache
+	local holyTalents = specCache and specCache.priest_holy and specCache.priest_holy.talents
+	if not holyTalents then return end
+
+	local holySpells = specCache.priest_holy.spellsData and specCache.priest_holy.spellsData.spells
+	if not holySpells then return end
+
+	local settings = TRB.Data.settings and TRB.Data.settings.priest and TRB.Data.settings.priest.holy
+	if not settings then return end
+
+	local hwColors = settings.colors and settings.colors.bars and settings.colors.bars.holyWords
+	if not hwColors then return end
+
+	local holyWordsBarTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords")
+	if not holyWordsBarTypeDef then return end
+
+	local orderedKeys = holyWordsBarTypeDef:GetOrderedNodeKeys(hwColors)
+
+	TRB.Data.holyWordNodeMapping = TRB.Data.holyWordNodeMapping or {}
+	local nodeMapping = TRB.Data.holyWordNodeMapping
+	-- Clear existing entries
+	for k in pairs(nodeMapping) do
+		nodeMapping[k] = nil
+	end
+
+	local currentNode = 1
+	for _, nodeKey in ipairs(orderedKeys) do
+		local nodeColorEntry = hwColors.nodeColors[nodeKey]
+		if nodeColorEntry and nodeColorEntry.enabled then
+			local hwDef = holyWordKeyToDef[nodeKey]
+			if hwDef and hwDef.spell and holyTalents:IsTalentActive(hwDef.spell) then
+				if nodeKey ~= "holyWordSanctify" or not holyTalents:IsTalentActive(holySpells.ultimateSerenity) then
+					local maxCharges = 1
+					if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and holyTalents:IsTalentActive(holySpells.miracleWorker) then
+						maxCharges = 2
+					end
+					for chargeIndex = 1, maxCharges do
+						nodeMapping[nodeKey .. chargeIndex] = currentNode
+						currentNode = currentNode + 1
+					end
+				end
+			end
+		end
+	end
+end
+
 -- Frame for handling Sustained Potency pause events (PLAYER_CONTROL_LOST/GAINED, PLAYER_REGEN_ENABLED/DISABLED)
 local sustainedPotencyFrame = CreateFrame("Frame")
 
@@ -444,6 +495,31 @@ local function ConstructResourceBar(settings)
 				settings.bars.holyWords.border
 			)
 
+			-- Build an ordered list of enabled node colors so each physical node gets its correct fill color
+			local hwColors = settings.colors.bars.holyWords
+			local holyWordsBarTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords")
+			local orderedNodeColors = {}
+			if holyWordsBarTypeDef and hwColors then
+				local orderedKeys = holyWordsBarTypeDef:GetOrderedNodeKeys(hwColors)
+				for _, nodeKey in ipairs(orderedKeys) do
+					local nodeColorEntry = hwColors.nodeColors[nodeKey]
+					if nodeColorEntry and nodeColorEntry.enabled then
+						local hwDef = holyWordKeyToDef[nodeKey]
+						if hwDef and hwDef.spell and talents and talents:IsTalentActive(hwDef.spell) then
+							if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(specCache.priest_holy.spellsData.spells.ultimateSerenity) then
+								local maxCharges = 1
+								if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and talents:IsTalentActive(specCache.priest_holy.spellsData.spells.miracleWorker) then
+									maxCharges = 2
+								end
+								for _ = 1, maxCharges do
+									orderedNodeColors[#orderedNodeColors + 1] = nodeColorEntry.color
+								end
+							end
+						end
+					end
+				end
+			end
+
 			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxHolyWordNodes do
 				local node = barGroups.holyWords:GetNode(i)
@@ -454,12 +530,15 @@ local function ConstructResourceBar(settings)
 						settings.textures.holyWordsBackground
 					)
 					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.bars.holyWords.border.color)
-					node:SetBackgroundColorFromString(settings.colors.bars.holyWords.background.color)
-					node:SetColor(settings.colors.bars.holyWords.border.color)
+					node:SetBorderColor(hwColors.border.color)
+					node:SetBackgroundColorFromString(hwColors.background.color)
+					node:SetColor(orderedNodeColors[i] or hwColors.border.color)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
+
+			-- Eagerly build the node mapping so bar text anchors resolve before the first UpdateResourceBar tick
+			BuildHolyWordNodeMapping()
 		end
 	end
 
@@ -1820,11 +1899,7 @@ local function UpdateResourceBar()
 				local orderedKeys = holyWordsBarTypeDef:GetOrderedNodeKeys(hwColors)
 
 				-- Rebuild runtime node mapping for GetBarTextFrame
-				TRB.Data.holyWordNodeMapping = TRB.Data.holyWordNodeMapping or {}
-				local nodeMapping = TRB.Data.holyWordNodeMapping
-				for k in pairs(nodeMapping) do
-					nodeMapping[k] = nil
-				end
+				BuildHolyWordNodeMapping()
 
 				for _, nodeKey in ipairs(orderedKeys) do
 					local hwDef = holyWordKeyToDef[nodeKey]
@@ -1840,9 +1915,6 @@ local function UpdateResourceBar()
 							local baseColor = nodeColorEntry.color or "FFFFFFFF"
 
 							for chargeIndex = 1, maxCharges do
-								-- Track mapping: "holyWordSerenity1" → physical node index
-								nodeMapping[nodeKey .. chargeIndex] = currentCp
-
 								if barGroups and barGroups.holyWords then
 									local cpNode = barGroups.holyWords:GetNode(currentCp)
 									if cpNode then
@@ -3074,8 +3146,11 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		-- Handle Holy Word frames (HolyWordSerenity1, HolyWordSanctify1, HolyWordChastise1, etc.)
 		if TRB.Data.character.specId == 2 then
 			if string.match(relativeToFrame, "^HolyWord") then
-				-- Use the runtime node mapping built by UpdateResourceBar
-				-- Maps e.g. "holyWordSerenity1" → physical node index
+				-- Use the runtime node mapping built by UpdateResourceBar / ConstructResourceBar.
+				-- Lazily rebuild if not yet populated (bar text frames are created before first tick).
+				if not TRB.Data.holyWordNodeMapping or not next(TRB.Data.holyWordNodeMapping) then
+					BuildHolyWordNodeMapping()
+				end
 				local nodeMapping = TRB.Data.holyWordNodeMapping
 				if nodeMapping then
 					-- Extract the key and charge index from the frame name
