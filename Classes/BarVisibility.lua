@@ -125,6 +125,8 @@ end
 ---@field enabled boolean # Class-level precondition (false = always hide regardless of settings)
 ---@field showNodesCount number|nil # If set, calls :ShowNodes(n) when showing the bar
 ---@field setMaxNodes number|nil # If set, calls :SetMaxNodes(n) before showing the bar
+---@field boolShowCached boolean|nil # Cached result of ShouldShowBar from last dirty evaluation; used by Phase 3 to skip curve when boolean conditions already satisfied
+---@field thresholdEligibleCached boolean|nil # Cached threshold eligibility from last dirty evaluation; false when force/neverShow/unsupported prevent curve evaluation
 TRB.Classes.BarVisibilityEntry = {}
 TRB.Classes.BarVisibilityEntry.__index = TRB.Classes.BarVisibilityEntry
 
@@ -463,22 +465,28 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 			-- Phase 1: Evaluate conditions and compute target alpha (only when dirty)
 			if conditionsChanged then
 				local boolShow = self:ShouldShowBar(context, entry)
+				-- Cache boolShow and thresholdEligible so Phase 3 can:
+				--  (a) skip the curve when boolean conditions already satisfy the OR,
+				--  (b) skip the curve when force/neverShow/unsupported make it ineligible.
+				entry.boolShowCached = boolShow
 				local thresholdEligible = entry.enabled
 					and visSettings ~= nil
 					and not context.force
 					and context.specSupported
 					and not visSettings.neverShow
+				entry.thresholdEligibleCached = thresholdEligible
 				local targetAlpha, fadeDuration
 				local fadeDelay = 0
 
-				if hasCurve then
-					-- Threshold visibility is fully curve-driven, identical in spirit to
-					-- overcap color handling. Keep the bar renderable whenever threshold
-					-- evaluation is eligible so the curve can supply the final opacity.
-					--
-					-- Boolean conditions no longer force the bar to target 0 before the curve
-					-- runs; otherwise the curve never gets a chance to show it. The curve
-					-- itself determines visible vs hidden opacity.
+				if hasCurve and boolShow then
+					-- Boolean conditions already satisfied (OR short-circuit).
+					-- Show at active alpha; the curve is not needed this tick.
+					targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
+					fadeDuration = 0
+				elseif hasCurve then
+					-- Boolean conditions did not match. The curve decides visibility.
+					-- Keep the bar renderable at active alpha so the curve can supply
+					-- the final opacity in Phase 3 (identical pattern to overcap colors).
 					if thresholdEligible then
 						targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
 						fadeDuration = 0
@@ -525,10 +533,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 					end
 				end
 
-				-- If a curve is active, evaluate it every tick and apply the secret alpha
-				-- directly to the container frame. This overrides the fade alpha with the
-				-- precise, secret-safe value from the curve.
-				if hasCurve then
+				-- If a curve is active, boolean conditions didn't already satisfy
+				-- the OR, AND the entry is eligible (not force-hidden/neverShow/
+				-- unsupported), evaluate the curve and apply the secret alpha.
+				-- Otherwise fall through to the normal fade alpha.
+				if hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached then
 					local curveResult = self:EvaluateVisibilityCurve(visSettings)
 					if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
 						local _, _, _, secretAlpha = curveResult:GetRGBA()
