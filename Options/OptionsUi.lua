@@ -5159,6 +5159,15 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		},
 	}
 
+	-- Labels for resource/health threshold condition types (used in dropdown and summary)
+	-- Ordered array so dropdown items render in a deterministic, logical order.
+	local thresholdTypes = {
+		{ key = "resourcePercent", label = L["BarVisibilityThresholdResourcePercent"] },
+		{ key = "resourceValue",   label = L["BarVisibilityThresholdResourceValue"] },
+		{ key = "healthPercent",   label = L["BarVisibilityThresholdHealthPercent"] },
+		{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"] },
+	}
+
 	---Builds a localized summary string describing a bar visibility entry's conditions.
 	---@param entry table The visibility settings entry (with neverShow, alwaysShow, conditions, etc.)
 	---@return string displayName The summary display text
@@ -5180,6 +5189,16 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		for _, key in ipairs(conditionKeys) do
 			if conditions[key] then
 				table.insert(parts, conditionLabels[key])
+			end
+		end
+		-- Include resource/health threshold as an additional condition in the summary
+		local ct = entry.resourceConditionType
+		if ct ~= nil and ct ~= "none" then
+			for _, tt in ipairs(thresholdTypes) do
+				if tt.key == ct then
+					table.insert(parts, tt.label)
+					break
+				end
 			end
 		end
 		if #parts == 0 then
@@ -5353,6 +5372,26 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 				checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
 			end
 		end
+
+		-- Resource / Health Threshold section (mutually exclusive checkboxes)
+		rootDescription:CreateDivider()
+		rootDescription:CreateTitle(L["BarVisibilityThresholdHeader"])
+		for _, tt in ipairs(thresholdTypes) do
+			local capturedKey = tt.key
+			local checkbox = rootDescription:CreateCheckbox(
+				tt.label,
+				function() return entry.resourceConditionType == capturedKey end,
+				function()
+					if entry.resourceConditionType == capturedKey then
+						entry.resourceConditionType = "none"
+					else
+						entry.resourceConditionType = capturedKey
+					end
+					onChange()
+				end
+			)
+			checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
+		end
 	end
 
 	-- Build list of bar entries for the table
@@ -5466,7 +5505,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	end
 
 	-- Detail panel below the table
-	local detailHeight = 300
+	local detailHeight = 320
 	controls.barVisibilityDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarVisibilityDetail", parent, "BackdropTemplate")
 	local detailFrame = controls.barVisibilityDetail
 	detailFrame:SetPoint("TOPLEFT", bvc, "BOTTOMLEFT", 0, 0)
@@ -5522,6 +5561,110 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		0, 10, 0, 0.25, 2,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 
+	-- Operator labels for the comparison dropdown
+	local comparisonOperators = {
+		{ operator = ">=", label = L["ComparisonGTE"] },
+		{ operator = "<=", label = L["ComparisonLTE"] },
+	}
+
+	-- Helper to get display label for an operator
+	local function GetComparisonLabel(op)
+		for _, entry in ipairs(comparisonOperators) do
+			if entry.operator == op then
+				return entry.label
+			end
+		end
+		return op
+	end
+
+	-- Dynamic controls: comparison dropdown + value slider (hidden when no threshold type selected)
+	detailYCoord = detailYCoord - 50
+	controls.dropDown.selectedThresholdComparison = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdComparison", detailFrame, "WowStyle1DropdownTemplate")
+	controls.dropDown.selectedThresholdComparison:SetWidth(oUi.sliderWidth)
+	controls.dropDown.selectedThresholdComparison.label = detailFrame:CreateFontString(nil, "OVERLAY")
+	controls.dropDown.selectedThresholdComparison.label:SetFontObject(GameFontNormal)
+	controls.dropDown.selectedThresholdComparison.label:SetSize(oUi.sliderWidth, 14)
+	controls.dropDown.selectedThresholdComparison.label:SetJustifyH("LEFT")
+	controls.dropDown.selectedThresholdComparison.label:SetPoint("BOTTOMLEFT", controls.dropDown.selectedThresholdComparison, "TOPLEFT", 0, 6)
+	controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdComparison"])
+	controls.dropDown.selectedThresholdComparison:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 20)
+	controls.dropDown.selectedThresholdComparison:Hide()
+	controls.dropDown.selectedThresholdComparison.label:Hide()
+	
+	detailYCoord = detailYCoord - 10
+	controls.sliders.selectedThresholdValue = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["BarVisibilityThresholdValue"],
+		0, 100, 0, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.selectedThresholdValue:Hide()
+
+	local function GetThresholdValueMax(conditionType)
+		if conditionType == "healthValue" then
+			return 1000000
+		end
+
+		if conditionType == "resourceValue" then
+			if primaryResourceString == L["ResourceMana"] then
+				return 262500
+			end
+			if spec.maxResource ~= nil and type(spec.maxResource.value) == "number" and spec.maxResource.value > 0 then
+				return spec.maxResource.value
+			end
+			return 100
+		end
+
+		return 100
+	end
+
+	local function UpdateThresholdControlLabels(conditionType)
+		if conditionType == "resourcePercent" then
+			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdResourcePercentComparison"])
+			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdResourcePercentValue"])
+		elseif conditionType == "resourceValue" then
+			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdResourceValueComparison"])
+			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdResourceValueValue"])
+		elseif conditionType == "healthPercent" then
+			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdHealthPercentComparison"])
+			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdHealthPercentValue"])
+		elseif conditionType == "healthValue" then
+			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdHealthValueComparison"])
+			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdHealthValueValue"])
+		else
+			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdComparison"])
+			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdValue"])
+		end
+	end
+
+	--- Shows or hides the threshold dynamic controls based on whether a threshold type is selected.
+	---@param conditionType string # The current resourceConditionType ("none" or a valid type)
+	---@param visSettings table|nil # The selected visibility settings entry
+	local function ShowThresholdControls(conditionType, visSettings)
+		local hideForOverrides = visSettings ~= nil and (visSettings.neverShow or visSettings.alwaysShow)
+
+		if conditionType ~= "none" and conditionType ~= nil and not hideForOverrides then
+			UpdateThresholdControlLabels(conditionType)
+			controls.dropDown.selectedThresholdComparison:Show()
+			controls.dropDown.selectedThresholdComparison.label:Show()
+			controls.sliders.selectedThresholdValue:Show()
+
+			-- Reconfigure slider range based on type
+			local isPercent = (conditionType == "resourcePercent" or conditionType == "healthPercent")
+			if isPercent then
+				controls.sliders.selectedThresholdValue:SetMinMaxValues(0, 100)
+				controls.sliders.selectedThresholdValue.MinLabel:SetText("0%")
+				controls.sliders.selectedThresholdValue.MaxLabel:SetText("100%")
+			else
+				local maxVal = GetThresholdValueMax(conditionType)
+				controls.sliders.selectedThresholdValue:SetMinMaxValues(0, maxVal)
+				controls.sliders.selectedThresholdValue.MinLabel:SetText("0")
+				controls.sliders.selectedThresholdValue.MaxLabel:SetText(tostring(maxVal))
+			end
+		else
+			controls.dropDown.selectedThresholdComparison:Hide()
+			controls.dropDown.selectedThresholdComparison.label:Hide()
+			controls.sliders.selectedThresholdValue:Hide()
+		end
+	end
+
 	---Populates the bar visibility detail panel with controls for the selected bar's visibility settings.
 	---@param barKey string The key identifying which bar to display details for
 	local function FillDetailPanel(barKey)
@@ -5555,6 +5698,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			local displayText = GetVisibilityDisplayName(visSettings)
 			controls.dropDown.selectedBarVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedBarVisibility:SetText(displayText)
+			ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
 			refreshFunc()
 			SetTableValues()
 			-- Re-select the current row
@@ -5616,6 +5760,44 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			refreshFunc()
 		end)
 		controls.sliders.selectedFadeDelay:SetValue(visSettings.fadeDelay or 0)
+
+		-- Show/hide threshold controls based on current condition type
+		ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
+
+		-- Comparison dropdown — set up menu and current selection using CreateRadio for proper text+indicator
+		local function ThresholdComparisonIsSelected(operator)
+			return (visSettings.resourceConditionOperator or ">=") == operator
+		end
+
+		local function ThresholdComparisonSetSelected(operator)
+			visSettings.resourceConditionOperator = operator
+			refreshFunc()
+		end
+
+		local function ThresholdComparisonGenerator(dropdown, rootDescription)
+			for _, entry in ipairs(comparisonOperators) do
+				rootDescription:CreateRadio(entry.label, ThresholdComparisonIsSelected, ThresholdComparisonSetSelected, entry.operator)
+			end
+		end
+
+		controls.dropDown.selectedThresholdComparison:SetupMenu(ThresholdComparisonGenerator)
+		local currentOp = visSettings.resourceConditionOperator or ">="
+		controls.dropDown.selectedThresholdComparison:SetDefaultText(GetComparisonLabel(currentOp))
+		controls.dropDown.selectedThresholdComparison:SetText(GetComparisonLabel(currentOp))
+
+		-- Threshold value slider — set script BEFORE value
+		controls.sliders.selectedThresholdValue:SetScript("OnValueChanged", function(self, value)
+			-- Compute precision dynamically based on current condition type (may change after FillDetailPanel)
+			local ct = visSettings.resourceConditionType or "none"
+			local precision = (ct == "resourcePercent" or ct == "healthPercent") and 1 or 0
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, precision, nil, true)
+			self.EditBox:SetText(value)
+			visSettings.resourceConditionValue = value
+			refreshFunc()
+		end)
+		controls.sliders.selectedThresholdValue:SetValue(visSettings.resourceConditionValue or 0)
+		UpdateThresholdControlLabels(visSettings.resourceConditionType or "none")
 
 		detailFrame:Show()
 	end

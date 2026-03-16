@@ -99,6 +99,12 @@ function TRB.Functions.Character:UpdateResourceValues()
 			formatted.resource2 = string.format("%s", snapshotData.attributes.resource2Modified)
 		end
 	end
+
+	-- If any bar has a resource/health threshold curve, mark visibility dirty so
+	-- ProcessBars re-evaluates on the next tick.
+	if TRB.Functions.BarVisibility.hasResourceCurve then
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
 end
 
 ---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
@@ -213,6 +219,12 @@ function TRB.Functions.Character:UpdateHealthValues()
 
 	-- Evaluate the cached curve — the result is a secret ColorMixin
 	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, cache.healthCurve)
+
+	-- If any bar has a resource/health threshold curve, mark visibility dirty so
+	-- ProcessBars re-evaluates on the next tick.
+	if TRB.Functions.BarVisibility.hasResourceCurve then
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
 end
 
 ---Updates the overcap color based on current resource percentage and overcap settings

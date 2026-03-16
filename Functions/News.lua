@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - [#544](#544) Add font outline and shadow options for bar text.
+- [#529](#529) Add new visibility conditions for bars based on resource and health thresholds (percentage or raw value).
 
 ## Priest
 ### Holy
