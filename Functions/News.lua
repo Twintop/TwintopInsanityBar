@@ -18,6 +18,10 @@ local content = [====[
 - [#544](#544) Add font outline and shadow options for bar text.
 - [#529](#529) Add new visibility conditions for bars based on resource and health thresholds (percentage or raw value).
 
+### Localization
+
+- [#705](#705) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Priest
 ### Holy
 
