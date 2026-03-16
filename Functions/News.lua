@@ -17,6 +17,16 @@ local content = [====[
 
 - [#544](#544) Add font outline and shadow options for bar text.
 
+## Priest
+### Holy
+
+- [#703](#703) Allow the Holy Words Bars to be reordered.
+
+## Warrior
+### Protection
+
+- [#656](#656) Allow each of the Defensive Bars to be enabled/disabled independently and reordered.
+
 ---
 
 # 12.0.1.36-release (2026-03-15)

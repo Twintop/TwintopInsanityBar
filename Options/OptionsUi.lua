@@ -3913,6 +3913,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 
 		---Triggers bar layout + appearance rebuild after enable/order change
 		local function RebuildBarAfterNodeChange()
+			if barTypeDef.onChangeCallback then
+				barTypeDef.onChangeCallback()
+			end
 			if TRB.Frames.barGroups ~= nil then
 				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)

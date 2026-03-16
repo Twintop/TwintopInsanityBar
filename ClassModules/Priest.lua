@@ -25,6 +25,13 @@ local holyWordDefsCache = {
 	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
 }
 
+-- Reverse lookup: nodeColor key → holyWordDefsCache entry (populated once, stable)
+local holyWordKeyToDef = {
+	holyWordSerenity = holyWordDefsCache[1],
+	holyWordSanctify = holyWordDefsCache[2],
+	holyWordChastise = holyWordDefsCache[3],
+}
+
 -- Frame for handling Sustained Potency pause events (PLAYER_CONTROL_LOST/GAINED, PLAYER_REGEN_ENABLED/DISABLED)
 local sustainedPotencyFrame = CreateFrame("Frame")
 
@@ -408,44 +415,44 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	-- Holy Words secondary bar (Holy only)
-	if TRB.Data.character.specId == 2 and barGroups and barGroups.secondary then
+	-- Holy Words bar (Holy only)
+	if TRB.Data.character.specId == 2 and barGroups and barGroups.holyWords then
 		local maxHolyWordNodes = TRB.Data.character.maxResource2 or 0
 
 		if maxHolyWordNodes == 0 then
 			-- All Holy Word enables are unchecked — treat as visibility="never"
-			barGroups.secondary:Hide()
+			barGroups.holyWords:Hide()
 		else
-			barGroups.secondary:SetMaxNodes(maxHolyWordNodes)
-			barGroups.secondary:SetNodeCount(maxHolyWordNodes)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
-			barGroups.secondary:Show()
+			barGroups.holyWords:SetMaxNodes(maxHolyWordNodes)
+			barGroups.holyWords:SetNodeCount(maxHolyWordNodes)
+			barGroups.holyWords:SetLayout(Bar:GetEffectiveSpacing(settings.bars.holyWords), Bar:GetMatchWidth(settings.bars.holyWords), "HORIZONTAL")
+			barGroups.holyWords:Show()
 
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
+			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "holyWords")
 			if cdmForced then
-				barGroups.secondary.fullWidth = true
+				barGroups.holyWords.fullWidth = true
 			end
 
-			barGroups.secondary:ApplyLayout(
+			barGroups.holyWords:ApplyLayout(
 				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
+				settings.bars.holyWords.width,
+				settings.bars.holyWords.height,
+				settings.bars.holyWords.border
 			)
 
 			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxHolyWordNodes do
-				local node = barGroups.secondary:GetNode(i)
+				local node = barGroups.holyWords:GetNode(i)
 				if node then
 					node:SetTextures(
-						settings.textures.comboPointsBar,
-						settings.textures.comboPointsBorder,
-						settings.textures.comboPointsBackground
+						settings.textures.holyWordsBar,
+						settings.textures.holyWordsBorder,
+						settings.textures.holyWordsBackground
 					)
 					node:SetMinMax(0, 1)
-					node:SetBorderColor(settings.colors.comboPoints.border.color)
-					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					node:SetBorderColor(settings.colors.bars.holyWords.border.color)
+					node:SetBackgroundColorFromString(settings.colors.bars.holyWords.background.color)
+					node:SetColor(settings.colors.bars.holyWords.border.color)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1798,59 +1805,71 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if not specSettings.displayBar.secondary.neverShow then
-				local cpBR, cpBG, cpBB, cpBA = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
-				local cpBorderColor = specSettings.colors.comboPoints.border.color
+			if not specSettings.displayBar.holyWords.neverShow then
+				local hwColors = specSettings.colors.bars.holyWords
+				local cpBR, cpBG, cpBB, cpBA = Color:GetRGBAFromString(hwColors.background.color, true)
+				local cpBorderColor = hwColors.border.color
 				local currentCp = 1
-				
-				-- Holy Words: Serenity, Sanctify, Chastise
-				-- Each may have 1 or 2 charges (Miracle Worker grants +1 to Serenity/Sanctify)
-				-- Refresh only the mutable color/enabled fields in the pre-allocated table
-				holyWordDefsCache[1].color = specSettings.colors.comboPoints.holyWordSerenity.color
-				holyWordDefsCache[1].enabled = specSettings.colors.comboPoints.holyWordSerenity.enabled
-				holyWordDefsCache[2].color = specSettings.colors.comboPoints.holyWordSanctify.color
-				holyWordDefsCache[2].enabled = specSettings.colors.comboPoints.holyWordSanctify.enabled and not talents:IsTalentActive(spells.ultimateSerenity)
-				holyWordDefsCache[3].color = specSettings.colors.comboPoints.holyWordChastise.color
-				holyWordDefsCache[3].enabled = specSettings.colors.comboPoints.holyWordChastise.enabled
 
-				for _, hwDef in ipairs(holyWordDefsCache) do
-					if talents:IsTalentActive(hwDef.spell) and hwDef.enabled then
+				-- Use BarTypeDefinition ordering to iterate Holy Words in user-configured order
+				local holyWordsBarTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords")
+				local orderedKeys = holyWordsBarTypeDef:GetOrderedNodeKeys(hwColors)
+
+				-- Rebuild runtime node mapping for GetBarTextFrame
+				TRB.Data.holyWordNodeMapping = TRB.Data.holyWordNodeMapping or {}
+				local nodeMapping = TRB.Data.holyWordNodeMapping
+				for k in pairs(nodeMapping) do
+					nodeMapping[k] = nil
+				end
+
+				for _, nodeKey in ipairs(orderedKeys) do
+					local hwDef = holyWordKeyToDef[nodeKey]
+					local nodeColorEntry = hwColors.nodeColors[nodeKey]
+					local nodeEnabled = nodeColorEntry and nodeColorEntry.enabled
+					if hwDef and hwDef.spell and nodeEnabled and talents:IsTalentActive(hwDef.spell) then
+						-- Sanctify is removed by Ultimate Serenity
+						if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(spells.ultimateSerenity) then
 ---@diagnostic disable-next-line: undefined-field
-						local cooldown = snapshots[hwDef.spell.id].cooldown
-						local charges = cooldown.manualCharges or 0
-						local maxCharges = cooldown.manualMaxCharges or 1
+							local cooldown = snapshots[hwDef.spell.id].cooldown
+							local charges = cooldown.manualCharges or 0
+							local maxCharges = cooldown.manualMaxCharges or 1
+							local baseColor = nodeColorEntry.color or "FFFFFFFF"
 
-						for chargeIndex = 1, maxCharges do
-							if barGroups and barGroups.secondary then
-								local cpNode = barGroups.secondary:GetNode(currentCp)
-								if cpNode then
-									local cpColor = hwDef.color
-									local cpKey = "comboPoint" .. currentCp
-									if chargeIndex <= charges then
-										-- Available charge: full bar
-										cpNode:ClearTimerDuration()
-										Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 1, 1)
-									elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
-										-- Currently recharging: manual timer-based progress
-										cpNode:ClearTimerDuration()
-										local progress = cooldown:GetManualCooldownProgress(currentTime)
-										-- Invalidate cache so continuously changing progress always renders
-										TRB.Data.cache.values.bar[cpKey] = nil
-										Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
-										if holyWordCooldownCompletesKey == hwDef.key and specSettings.colors.comboPoints.completeCooldown.enabled and specSettings.colors.comboPoints[holyWordCooldownCompletesKey] and specSettings.colors.comboPoints[holyWordCooldownCompletesKey].enabled then
-											cpColor = specSettings.colors.comboPoints.completeCooldown.color
+							for chargeIndex = 1, maxCharges do
+								-- Track mapping: "holyWordSerenity1" → physical node index
+								nodeMapping[nodeKey .. chargeIndex] = currentCp
+
+								if barGroups and barGroups.holyWords then
+									local cpNode = barGroups.holyWords:GetNode(currentCp)
+									if cpNode then
+										local cpColor = baseColor
+										local cpKey = "comboPoint" .. currentCp
+										if chargeIndex <= charges then
+											-- Available charge: full bar
+											cpNode:ClearTimerDuration()
+											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 1, 1)
+										elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+											-- Currently recharging: manual timer-based progress
+											cpNode:ClearTimerDuration()
+											local progress = cooldown:GetManualCooldownProgress(currentTime)
+											-- Invalidate cache so continuously changing progress always renders
+											TRB.Data.cache.values.bar[cpKey] = nil
+											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
+											if holyWordCooldownCompletesKey == hwDef.key and hwColors.completeCooldown.enabled and nodeColorEntry and nodeColorEntry.enabled then
+												cpColor = hwColors.completeCooldown.color
+											end
+										else
+											-- Empty charge (not yet recharging)
+											cpNode:ClearTimerDuration()
+											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 										end
-									else
-										-- Empty charge (not yet recharging)
-										cpNode:ClearTimerDuration()
-										Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
+										cpNode:SetColor(cpColor)
+										cpNode:SetBorderColor(cpBorderColor)
+										cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBA)
 									end
-									cpNode:SetColor(cpColor)
-									cpNode:SetBorderColor(cpBorderColor)
-									cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBA)
 								end
+								currentCp = currentCp + 1
 							end
-							currentCp = currentCp + 1
 						end
 					end
 				end
@@ -2323,6 +2342,32 @@ local function SwitchSpec()
 			afSnapshot.cooldown:InitializeManualCharges(spells.angelicFeather.attributes.maxCharges)
 		end
 
+		-- Set up the getNodeCountForKey callback on the Holy Words BarTypeDefinition
+		-- This closure captures talents and spells so GetEnabledNodeCount returns correct total
+		local holyWordsBarTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords")
+		if holyWordsBarTypeDef then
+			holyWordsBarTypeDef.getNodeCountForKey = function(key, _colorSettings)
+				local holyTalents = specCache.priest_holy and specCache.priest_holy.talents
+				if not holyTalents then return 0 end
+
+				local hwDef = holyWordKeyToDef[key]
+				if not hwDef or not hwDef.spell then return 0 end
+
+				-- Sanctify is removed by Ultimate Serenity talent
+				if key == "holyWordSanctify" and holyTalents:IsTalentActive(spells.ultimateSerenity) then
+					return 0
+				end
+
+				if not holyTalents:IsTalentActive(hwDef.spell) then return 0 end
+
+				-- Miracle Worker grants +1 charge to Serenity and Sanctify
+				if (key == "holyWordSerenity" or key == "holyWordSanctify") and holyTalents:IsTalentActive(spells.miracleWorker) then
+					return 2
+				end
+				return 1
+			end
+		end
+
 		talents = specCache.priest_holy.talents
 		TRB.Data.barConstructedForSpec = "priest_holy"
 		ConstructResourceBar(specCache.priest_holy.settings)
@@ -2660,29 +2705,12 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.holy
 
+		-- Use the BarTypeDefinition's GetEnabledNodeCount which delegates to getNodeCountForKey
+		-- to compute the total number of Holy Word nodes (talent-aware, respecting enabled flags)
+		local holyWordsBarTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords")
 		local totalHolyWordCharges = 0
-
-		-- Use specCache talents directly instead of the upvalue `talents`, which may not
-		-- be assigned yet when CheckCharacter is called from EventRegistration during SwitchSpec.
-		local holyTalents = TRB.Data.specCache.priest_holy and TRB.Data.specCache.priest_holy.talents
-		if holyTalents then
-			if holyTalents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
-				totalHolyWordCharges = totalHolyWordCharges + 1
-				if holyTalents:IsTalentActive(spells.miracleWorker) then
-					totalHolyWordCharges = totalHolyWordCharges + 1
-				end
-			end
-
-			if holyTalents:IsTalentActive(spells.holyWordSanctify) and not holyTalents:IsTalentActive(spells.ultimateSerenity) and settings.colors.comboPoints.holyWordSanctify.enabled then
-				totalHolyWordCharges = totalHolyWordCharges + 1
-				if holyTalents:IsTalentActive(spells.miracleWorker) then
-					totalHolyWordCharges = totalHolyWordCharges + 1
-				end
-			end
-
-			if holyTalents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
-				totalHolyWordCharges = totalHolyWordCharges + 1
-			end
+		if holyWordsBarTypeDef and settings.colors and settings.colors.bars and settings.colors.bars.holyWords then
+			totalHolyWordCharges = holyWordsBarTypeDef:GetEnabledNodeCount(settings.colors.bars.holyWords)
 		end
 
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -2749,10 +2777,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
-		-- Secondary (Power Words / Holy Words): Discipline (1) and Holy (2) only, gated on maxResource2 > 0
-		local hasSecondary = (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2)
+		-- Secondary (Power Words): Discipline (1) only, gated on maxResource2 > 0
+		local hasSecondary = TRB.Data.character.specId == 1
 			and (TRB.Data.character.maxResource2 or 0) > 0
 		local secondaryVisSettings = (sharedSettings and sharedSettings.displayBar.secondary) or nil
+
+		-- Holy Words: Holy (2) only, gated on maxResource2 > 0
+		local hasHolyWords = TRB.Data.character.specId == 2
+			and (TRB.Data.character.maxResource2 or 0) > 0
+		local holyWordsVisSettings = (sharedSettings and sharedSettings.displayBar.holyWords) or nil
 
 		-- Mana bar: Shadow (3) only
 		local hasMana = TRB.Data.character.specId == 3
@@ -2778,6 +2811,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2 or 0, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.holyWords, holyWordsVisSettings, hasHolyWords, TRB.Data.character.maxResource2 or 0, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil),
@@ -3035,65 +3069,25 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 
 		-- Handle Holy Word frames (HolyWordSerenity1, HolyWordSanctify1, HolyWordChastise1, etc.)
 		if TRB.Data.character.specId == 2 then
-			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-			local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
-			local settings = TRB.Data.settings.priest.holy
-			local holyTalents = TRB.Data.specCache.priest_holy and TRB.Data.specCache.priest_holy.talents
-
-			if holyTalents and string.match(relativeToFrame, "^HolyWord") then
-				-- Calculate the node index by walking the same order as the rendering loop:
-				-- Serenity charges, then Sanctify charges, then Chastise charge
-				local nodeIndex = nil
-				local currentCp = 1
-
-				-- Serenity block
-				if holyTalents:IsTalentActive(spells.holyWordSerenity) and settings.colors.comboPoints.holyWordSerenity.enabled then
-					local serenityMaxCharges = holyTalents:IsTalentActive(spells.miracleWorker) and 2 or 1
-					if string.match(relativeToFrame, "^HolyWordSerenity(%d+)$") then
-						local chargeIndex = tonumber(string.match(relativeToFrame, "^HolyWordSerenity(%d+)$"))
-						if chargeIndex and chargeIndex >= 1 and chargeIndex <= serenityMaxCharges then
-							nodeIndex = currentCp + chargeIndex - 1
+			if string.match(relativeToFrame, "^HolyWord") then
+				-- Use the runtime node mapping built by UpdateResourceBar
+				-- Maps e.g. "holyWordSerenity1" → physical node index
+				local nodeMapping = TRB.Data.holyWordNodeMapping
+				if nodeMapping then
+					-- Extract the key and charge index from the frame name
+					-- "HolyWordSerenity1" → key="holyWordSerenity", chargeIndex=1
+					local hwName, chargeStr = string.match(relativeToFrame, "^(HolyWord%a+)(%d+)$")
+					if hwName and chargeStr then
+						-- Convert PascalCase frame name to camelCase key: "HolyWordSerenity" → "holyWordSerenity"
+						local mappingKey = hwName:sub(1, 1):lower() .. hwName:sub(2) .. chargeStr
+						local nodeIndex = nodeMapping[mappingKey]
+						if nodeIndex and barGroups and barGroups.holyWords then
+							local holyWordsNode = barGroups.holyWords:GetNode(nodeIndex)
+							if holyWordsNode then
+								local isVisible = barGroups.holyWords.isVisible and holyWordsNode.isVisible
+								return holyWordsNode:GetFrame(), true, isVisible
+							end
 						end
-					end
-					currentCp = currentCp + serenityMaxCharges
-				else
-					if string.match(relativeToFrame, "^HolyWordSerenity") then
-						return nil, false, false
-					end
-				end
-
-				-- Sanctify block
-				if holyTalents:IsTalentActive(spells.holyWordSanctify) and not holyTalents:IsTalentActive(spells.ultimateSerenity) and settings.colors.comboPoints.holyWordSanctify.enabled then
-					local sanctifyMaxCharges = holyTalents:IsTalentActive(spells.miracleWorker) and 2 or 1
-					if string.match(relativeToFrame, "^HolyWordSanctify(%d+)$") then
-						local chargeIndex = tonumber(string.match(relativeToFrame, "^HolyWordSanctify(%d+)$"))
-						if chargeIndex and chargeIndex >= 1 and chargeIndex <= sanctifyMaxCharges then
-							nodeIndex = currentCp + chargeIndex - 1
-						end
-					end
-					currentCp = currentCp + sanctifyMaxCharges
-				else
-					if string.match(relativeToFrame, "^HolyWordSanctify") then
-						return nil, false, false
-					end
-				end
-
-				-- Chastise block (always 1 charge max)
-				if holyTalents:IsTalentActive(spells.holyWordChastise) and settings.colors.comboPoints.holyWordChastise.enabled then
-					if relativeToFrame == "HolyWordChastise1" then
-						nodeIndex = currentCp
-					end
-				else
-					if string.match(relativeToFrame, "^HolyWordChastise") then
-						return nil, false, false
-					end
-				end
-
-				if nodeIndex ~= nil and barGroups and barGroups.secondary then
-					local secondaryNode = barGroups.secondary:GetNode(nodeIndex)
-					if secondaryNode then
-						local isVisible = barGroups.secondary.isVisible and secondaryNode.isVisible
-						return secondaryNode:GetFrame(), true, isVisible
 					end
 				end
 				return nil, false, false

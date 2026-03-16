@@ -987,6 +987,7 @@ end
 ---@field public orderUpTooltip string? # Localized tooltip for the "move up" arrow button
 ---@field public orderDownTooltip string? # Localized tooltip for the "move down" arrow button
 ---@field public onChangeCallback function? # Optional callback function to call after color/threshold changes
+---@field public getNodeCountForKey (fun(key: string, colorSettings: table): integer)? # Optional callback returning node count per key (for multi-charge nodes like Holy Words). When nil, each enabled key counts as 1 node.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1033,6 +1034,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.hasOrdering = config.hasOrdering or false -- Whether node display order can be customized
 	self.orderUpTooltip = config.orderUpTooltip -- Localized tooltip for the "move up" arrow button
 	self.orderDownTooltip = config.orderDownTooltip -- Localized tooltip for the "move down" arrow button
+	self.getNodeCountForKey = config.getNodeCountForKey -- Optional callback: (key, colorSettings) -> integer node count
 
 	return self
 end
@@ -1081,6 +1083,8 @@ end
 
 ---Returns the number of enabled nodes based on colorSettings.nodeColors.
 ---Nodes without hasEnabled are always counted. Returns maxNodes if no nodeColors defined.
+---When getNodeCountForKey is set, each enabled key contributes the callback's return value
+---instead of a flat 1, allowing multi-charge nodes (e.g., Holy Words with Miracle Worker).
 ---@param colorSettings table # The bar's color settings (e.g., spec.colors.bars.defensives)
 ---@return integer
 function TRB.Classes.BarTypeDefinition:GetEnabledNodeCount(colorSettings)
@@ -1089,10 +1093,15 @@ function TRB.Classes.BarTypeDefinition:GetEnabledNodeCount(colorSettings)
 	end
 	local count = 0
 	for _, nodeConfig in ipairs(self.nodeColors) do
-		if not nodeConfig.hasEnabled then
-			count = count + 1
-		elseif colorSettings and colorSettings.nodeColors and colorSettings.nodeColors[nodeConfig.key] then
-			if colorSettings.nodeColors[nodeConfig.key].enabled then
+		local isEnabled = true
+		if nodeConfig.hasEnabled then
+			isEnabled = colorSettings and colorSettings.nodeColors and colorSettings.nodeColors[nodeConfig.key]
+				and colorSettings.nodeColors[nodeConfig.key].enabled
+		end
+		if isEnabled then
+			if self.getNodeCountForKey then
+				count = count + self.getNodeCountForKey(nodeConfig.key, colorSettings)
+			else
 				count = count + 1
 			end
 		end
@@ -1406,6 +1415,40 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultDefensivesBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Holy Words bar (Holy Priest)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "holyWords",
+		displayName = L["ResourcePriestHolyWords"],
+		isMultiNode = true,
+		maxNodes = 5, -- Serenity x2 + Sanctify x2 + Chastise x1
+		minMaxMode = "discrete", -- 0-1 per node (cooldown progress)
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil, -- Simple colors per Holy Word
+		visibilityKey = "holyWords",
+		hasOrdering = true,
+		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
+		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
+		nodeColors = {
+			{ key = "holyWordSerenity", displayName = L["HolyWordSerenityBarEnable"], colorLabel = L["HolyWordSerenityBarColor"], tooltip = L["HolyWordSerenityBarEnableTooltip"], hasEnabled = true },
+			{ key = "holyWordSanctify", displayName = L["HolyWordSanctifyBarEnable"], colorLabel = L["HolyWordSanctifyBarColor"], tooltip = L["HolyWordSanctifyBarEnableTooltip"], hasEnabled = true },
+			{ key = "holyWordChastise", displayName = L["HolyWordChastiseBarEnable"], colorLabel = L["HolyWordChastiseBarColor"], tooltip = L["HolyWordChastiseBarEnableTooltip"], hasEnabled = true }
+		},
+		onChangeCallback = function()
+			TRB.Functions.Character:ResetCaches()
+			TRB.Functions.Class:CheckCharacter()
+		end,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultHolyWordsBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
