@@ -41,7 +41,7 @@ local function BuildHolyWordNodeMapping()
 	local holyTalents = specCache and specCache.priest_holy and specCache.priest_holy.talents
 	if not holyTalents then return end
 
-	local holySpells = specCache.priest_holy.spellsData and specCache.priest_holy.spellsData.spells
+	local holySpells = specCache.priest_holy.spellsData and specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	if not holySpells then return end
 
 	local settings = TRB.Data.settings and TRB.Data.settings.priest and TRB.Data.settings.priest.holy
@@ -506,9 +506,9 @@ local function ConstructResourceBar(settings)
 					if nodeColorEntry and nodeColorEntry.enabled then
 						local hwDef = holyWordKeyToDef[nodeKey]
 						if hwDef and hwDef.spell and talents and talents:IsTalentActive(hwDef.spell) then
-							if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(specCache.priest_holy.spellsData.spells.ultimateSerenity) then
+							if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Priest.HolySpells]].ultimateSerenity) then
 								local maxCharges = 1
-								if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and talents:IsTalentActive(specCache.priest_holy.spellsData.spells.miracleWorker) then
+								if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Priest.HolySpells]].miracleWorker) then
 									maxCharges = 2
 								end
 								for _ = 1, maxCharges do
