@@ -1282,6 +1282,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if spec.displayBar and spec.displayBar.defensives ~= nil then
 			specCache.settings.displayBar.defensives = spec.displayBar.defensives
 		end
+		if spec.displayBar and spec.displayBar.holyWords ~= nil then
+			specCache.settings.displayBar.holyWords = spec.displayBar.holyWords
+		end
 		-- Also carry over non-global keys that don't exist in core
 		if spec.displayBar then
 			if spec.displayBar.enableFormSwitching ~= nil then
@@ -1644,6 +1647,9 @@ function TRB.Functions.Character:EventRegistration()
 			end
 			if barGroups.defensives then
 				barGroups.defensives:Hide()
+			end
+			if barGroups.holyWords then
+				barGroups.holyWords:Hide()
 			end
 		end
 	end

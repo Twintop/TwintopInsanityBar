@@ -1971,6 +1971,187 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 
+					-- Migrate Holy Priest Holy Words bar from old comboPoints structure to new bars.holyWords structure
+					if className == "priest" and specName == "holy" then
+						-- Determine global toggle state BEFORE any migration so we can use the correct source.
+						-- When globalHoly.comboPoints was true, runtime used core.comboPoints for dimensions.
+						-- When globalHoly.displayBar was true, runtime used core.displayBar.secondary for visibility.
+						-- Since bars.holyWords and displayBar.holyWords are always spec-specific (no global toggle),
+						-- we must bake the active global values into the spec settings during migration.
+						local globalHoly = nil
+						local coreSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings.core
+						if coreSettings and coreSettings.global and coreSettings.global.priest and coreSettings.global.priest.holy then
+							globalHoly = coreSettings.global.priest.holy
+						end
+						local useGlobalComboPoints = globalHoly and globalHoly.comboPoints == true
+						local useGlobalDisplayBar = globalHoly and globalHoly.displayBar == true
+
+						-- Select dimension source: global core.comboPoints if the toggle was on, else spec.comboPoints
+						local dimSource = nil
+						if useGlobalComboPoints and coreSettings and coreSettings.comboPoints then
+							dimSource = coreSettings.comboPoints
+						elseif specSettings.comboPoints then
+							dimSource = specSettings.comboPoints
+						end
+
+						-- Migrate dimensions: comboPoints -> bars.holyWords
+						if dimSource then
+							if not specSettings.bars then
+								specSettings.bars = {}
+							end
+							if not specSettings.bars.holyWords then
+								specSettings.bars.holyWords = {
+									width = dimSource.width or 30,
+									height = dimSource.height or 20,
+									xPos = dimSource.xPos or 0,
+									yPos = dimSource.yPos or 0,
+									border = dimSource.border or 2,
+									spacing = dimSource.spacing or 0,
+									relativeTo = dimSource.relativeTo or "TOP",
+									relativeToName = dimSource.relativeToName or L["PositionAboveMiddle"],
+									fullWidth = dimSource.fullWidth
+								}
+								-- Backfill anchor if missing
+								if not specSettings.bars.holyWords.anchor then
+									specSettings.bars.holyWords.anchor = {
+										barKey = "primary",
+										anchorPoint = "TOP",
+										attachPoint = "BOTTOM",
+										xOffset = 0,
+										yOffset = 0,
+										matchWidth = true,
+									}
+								end
+							end
+						end
+						-- Always clean up old spec-level comboPoints after migration
+						specSettings.comboPoints = nil
+
+						-- Migrate colors: colors.comboPoints.holyWord* -> colors.bars.holyWords.nodeColors
+						if specSettings.colors and specSettings.colors.comboPoints then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.holyWords then
+								local oldColors = specSettings.colors.comboPoints
+								specSettings.colors.bars.holyWords = {
+									border = { color = (oldColors.border and oldColors.border.color) or "FF000099" },
+									background = { color = (oldColors.background and oldColors.background.color) or "66000000" },
+									nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" },
+									nodeColors = {
+										holyWordSerenity = {
+											color = (oldColors.holyWordSerenity and oldColors.holyWordSerenity.color) or "FF00DDDD",
+											enabled = oldColors.holyWordSerenity and oldColors.holyWordSerenity.enabled ~= false
+										},
+										holyWordSanctify = {
+											color = (oldColors.holyWordSanctify and oldColors.holyWordSanctify.color) or "FFFFDD22",
+											enabled = oldColors.holyWordSanctify and oldColors.holyWordSanctify.enabled ~= false
+										},
+										holyWordChastise = {
+											color = (oldColors.holyWordChastise and oldColors.holyWordChastise.color) or "FFFF8080",
+											enabled = oldColors.holyWordChastise and oldColors.holyWordChastise.enabled ~= false
+										}
+									},
+									completeCooldown = {
+										color = (oldColors.completeCooldown and oldColors.completeCooldown.color) or "FF00B500",
+										enabled = oldColors.completeCooldown and oldColors.completeCooldown.enabled ~= false
+									}
+								}
+								specSettings.colors.comboPoints = nil -- Remove old colors after migration
+							end
+						end
+
+						-- Migrate textures: textures.comboPointsBar/etc -> flat holyWords texture keys
+						if specSettings.textures then
+							if not specSettings.textures.holyWordsBar then
+								specSettings.textures.holyWordsBar = specSettings.textures.comboPointsBar or specSettings.textures.resourceBar
+								specSettings.textures.holyWordsBarName = specSettings.textures.comboPointsBarName or specSettings.textures.resourceBarName
+								specSettings.textures.holyWordsBorder = specSettings.textures.comboPointsBorder or specSettings.textures.border
+								specSettings.textures.holyWordsBorderName = specSettings.textures.comboPointsBorderName or specSettings.textures.borderName
+								specSettings.textures.holyWordsBackground = specSettings.textures.comboPointsBackground or specSettings.textures.background
+								specSettings.textures.holyWordsBackgroundName = specSettings.textures.comboPointsBackgroundName or specSettings.textures.backgroundName
+
+								specSettings.textures.comboPointsBar = nil
+								specSettings.textures.comboPointsBarName = nil
+								specSettings.textures.comboPointsBorder = nil
+								specSettings.textures.comboPointsBorderName = nil
+								specSettings.textures.comboPointsBackground = nil
+								specSettings.textures.comboPointsBackgroundName = nil
+							end
+						end
+
+						-- Migrate displayBar: secondary -> holyWords (BarVisibility format)
+						-- When global displayBar was active, the effective secondary visibility came from
+						-- core.displayBar.secondary, not spec.displayBar.secondary. Bake the global value.
+						if specSettings.displayBar and not specSettings.displayBar.holyWords then
+							local visSource = nil
+							if useGlobalDisplayBar and coreSettings and coreSettings.displayBar and coreSettings.displayBar.secondary then
+								-- Deep copy from global so we don't alias the shared core table
+								local gs = coreSettings.displayBar.secondary
+								visSource = {
+									neverShow = gs.neverShow,
+									alwaysShow = gs.alwaysShow,
+									smooth = gs.smooth,
+									activeAlpha = gs.activeAlpha,
+									inactiveAlpha = gs.inactiveAlpha,
+									fadeDuration = gs.fadeDuration,
+									fadeDelay = gs.fadeDelay,
+								}
+								-- Deep copy conditions table if present
+								if gs.conditions then
+									visSource.conditions = {}
+									for ck, cv in pairs(gs.conditions) do
+										visSource.conditions[ck] = cv
+									end
+								else
+									visSource.conditions = {}
+								end
+							elseif specSettings.displayBar.secondary then
+								visSource = specSettings.displayBar.secondary
+							end
+
+							if visSource then
+								specSettings.displayBar.holyWords = visSource
+								specSettings.displayBar.secondary = nil
+							else
+								specSettings.displayBar.holyWords = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+							end
+						end
+
+						-- Ensure bars.holyWords exists (fallback if no migration source)
+						if not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if not specSettings.bars.holyWords then
+							specSettings.bars.holyWords = TRB.Functions.Settings:DefaultHolyWordsBarDimensions()
+						end
+
+						-- Ensure colors.bars.holyWords exists (fallback if no migration source)
+						if specSettings.colors then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.holyWords then
+								specSettings.colors.bars.holyWords = TRB.Functions.Settings:DefaultHolyWordsBarColors()
+							end
+							-- Backfill nodeOrder for users who migrated before this field existed
+							if specSettings.colors.bars.holyWords and not specSettings.colors.bars.holyWords.nodeOrder then
+								specSettings.colors.bars.holyWords.nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" }
+							end
+						end
+
+						-- Ensure textures exist (fallback if no migration source)
+						if specSettings.textures and not specSettings.textures.holyWordsBar then
+							specSettings.textures.holyWordsBar = specSettings.textures.resourceBar
+							specSettings.textures.holyWordsBarName = specSettings.textures.resourceBarName
+							specSettings.textures.holyWordsBorder = specSettings.textures.border
+							specSettings.textures.holyWordsBorderName = specSettings.textures.borderName
+							specSettings.textures.holyWordsBackground = specSettings.textures.background
+							specSettings.textures.holyWordsBackgroundName = specSettings.textures.backgroundName
+						end
+
+						-- Clean up the obsolete global comboPoints toggle (no longer applicable to custom bar types)
+						if globalHoly and globalHoly.comboPoints ~= nil then
+							globalHoly.comboPoints = nil
+						end
+					end
+
 					-- Migrate displayText.default.color from flat string to table format
 					if specSettings.displayText and specSettings.displayText.default and 
 					   specSettings.displayText.default.color and type(specSettings.displayText.default.color) == "string" then
@@ -5414,6 +5595,74 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 		nodeColors = {
 			ignorePain = { color = "FFFFD000", enabled = true },
 			shieldBlock = { color = "FF0099FF", enabled = true }
+		}
+	}
+end
+
+---Gets default Holy Words bar dimensions (anchored above primary bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			collapseBorderWidth = false,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "primary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		collapseBorderWidth = true,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "primary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
+	}
+end
+
+---Gets default Holy Words bar colors
+---@return table
+function TRB.Functions.Settings:DefaultHolyWordsBarColors()
+	return {
+		border = { color = "FF000099" },
+		background = { color = "66000000" },
+		nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" },
+		nodeColors = {
+			holyWordSerenity = { color = "FF00DDDD", enabled = true },
+			holyWordSanctify = { color = "FFFFDD22", enabled = true },
+			holyWordChastise = { color = "FFFF8080", enabled = true }
+		},
+		completeCooldown = {
+			color = "FF00B500",
+			enabled = true
 		}
 	}
 end

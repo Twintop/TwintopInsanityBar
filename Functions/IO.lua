@@ -97,12 +97,19 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
 				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
 			elseif specId == 2 then -- Holy
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-				-- Export utility bar settings
+				-- Export Holy Words bar settings
 				configuration.bars = configuration.bars or {}
-				configuration.bars.utility = settings.bars and settings.bars.utility
+				configuration.bars.holyWords = settings.bars and settings.bars.holyWords
 				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.holyWords = settings.colors and settings.colors.bars and settings.colors.bars.holyWords
+				configuration.textures.holyWordsBar = settings.textures and settings.textures.holyWordsBar
+				configuration.textures.holyWordsBarName = settings.textures and settings.textures.holyWordsBarName
+				configuration.textures.holyWordsBorder = settings.textures and settings.textures.holyWordsBorder
+				configuration.textures.holyWordsBorderName = settings.textures and settings.textures.holyWordsBorderName
+				configuration.textures.holyWordsBackground = settings.textures and settings.textures.holyWordsBackground
+				configuration.textures.holyWordsBackgroundName = settings.textures and settings.textures.holyWordsBackgroundName
+				-- Export utility bar settings
+				configuration.bars.utility = settings.bars and settings.bars.utility
 				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
 				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
 				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName

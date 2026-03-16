@@ -949,7 +949,7 @@ end
     Creates the appropriate BarGroup instances for each Priest specialization.
     
     Discipline: Primary bar (N=1) + Secondary Power Words (N=2) + Utility Angelic Feather (N=3)
-    Holy: Primary bar (N=1) + Secondary Holy Words (N=5) + Utility Angelic Feather (N=3)
+    Holy: Primary bar (N=1) + Holy Words (N=5) + Utility Angelic Feather (N=3)
     Shadow: Primary bar (N=1) + Mana bar (N=1) + Utility Angelic Feather (N=3)
 ]]
 
@@ -1006,10 +1006,10 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             true -- isPrimary
         )
 
-        -- Secondary Holy Words bar (up to 5 nodes: Serenity 2 + Sanctify 2 + Chastise 1)
-        barGroups.secondary = TRB.Classes.BarGroup:New(
+        -- Holy Words bar (up to 5 nodes: Serenity 2 + Sanctify 2 + Chastise 1)
+        barGroups.holyWords = TRB.Classes.BarGroup:New(
             parentFrame or UIParent,
-            "TwintopResourceBarFrame_Secondary",
+            "TwintopResourceBarFrame_HolyWords",
             5,
             false -- not primary
         )
@@ -1099,7 +1099,7 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true
             },
-            secondary = {
+            holyWords = {
                 maxNodes = 5,
                 isPrimary = false,
                 resourceType = "HolyWords"
