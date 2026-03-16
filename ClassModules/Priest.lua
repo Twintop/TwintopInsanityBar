@@ -425,6 +425,7 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.holyWords:SetMaxNodes(maxHolyWordNodes)
 			barGroups.holyWords:SetNodeCount(maxHolyWordNodes)
+---@diagnostic disable-next-line: undefined-field
 			barGroups.holyWords:SetLayout(Bar:GetEffectiveSpacing(settings.bars.holyWords), Bar:GetMatchWidth(settings.bars.holyWords), "HORIZONTAL")
 			barGroups.holyWords:Show()
 
@@ -435,8 +436,11 @@ local function ConstructResourceBar(settings)
 
 			barGroups.holyWords:ApplyLayout(
 				effectiveWidth,
+---@diagnostic disable-next-line: undefined-field
 				settings.bars.holyWords.width,
+---@diagnostic disable-next-line: undefined-field
 				settings.bars.holyWords.height,
+---@diagnostic disable-next-line: undefined-field
 				settings.bars.holyWords.border
 			)
 
