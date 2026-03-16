@@ -2054,4 +2054,61 @@ if locale == "zhCN" then
 	L["CollapseBorderWidth"] = "折叠边框宽度"
 	L["CollapseBorderWidthTooltip"] = "启用后，会重叠相邻节点的边框，使其显示为单一边框宽度，而非双倍边框。此功能会禁用间距滑块，并将节点间距设置为边框宽度的负值。"
 
+	L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"] = "已学习驾驭怒火天赋"
+	L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"] = "在资源条上显示竖线，标记使用痛击或撕裂时，需要多少怒气才能通过驾驭怒火天赋100%触发淤血。"
+	L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"] = "已学习致命一击天赋"
+	L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"] = "在资源条上显示竖线，标记使用痛击或撕裂时，需要多少怒气才能通过致命一击天赋造成额外伤害。"
+	
+	L["OverlayModeAppendedOverflow"] = "追加（溢出）"
+	
+	-- GenerateCustomBarThresholdColorOptions 中 barTypeDef 对象使用的显示名称
+	L["HealthBarThresholdDisplayName"] = "生命值"
+	
+	L["WarlockSoulShardsColorPickerBase"] = "第1个灵魂碎片"
+	L["WarlockSoulShardsColorPickerSecond"] = "第2个灵魂碎片"
+	L["WarlockSoulShardsColorPickerThird"] = "第3个灵魂碎片"
+	
+	L["FontOutlineHeader"] = "字体描边"
+	L["DefaultFontOutline"] = "共享字体描边"
+	L["FontOutlineNone"] = "无"
+	L["FontOutlineOutline"] = "描边"
+	L["FontOutlineThickOutline"] = "粗描边"
+	L["FontOutlineMonochrome"] = "单色"
+	L["FontOutlineOutlineMonochrome"] = "描边 + 单色"
+	L["FontOutlineThickOutlineMonochrome"] = "粗描边 + 单色"
+	L["UseDefaultFontOutline"] = "使用共享字体描边"
+	L["UseDefaultFontOutlineTooltip"] = "使此资源条文字区域使用共享字体描边设置，而非上方选择的描边样式。"
+	
+	L["FontShadowHeader"] = "字体阴影"
+	L["DefaultFontShadow"] = "共享字体阴影"
+	L["FontShadowEnable"] = "启用字体阴影"
+	L["FontShadowEnableTooltip"] = "在资源条文字后方添加阴影效果。"
+	L["FontShadowColor"] = "阴影颜色"
+	L["FontSharedShadowColor"] = "共享阴影颜色"
+	L["FontShadowXOffset"] = "阴影X轴偏移"
+	L["FontShadowYOffset"] = "阴影Y轴偏移"
+	L["UseDefaultFontShadow"] = "使用共享字体阴影"
+	L["UseDefaultFontShadowTooltip"] = "使此资源条文字区域使用共享字体阴影设置，而非上方选择的阴影样式。"
+	
+	L["NodeOrderMoveUp"] = "上移"
+	L["NodeOrderMoveDown"] = "下移"
+	L["NodeOrderMoveUpTooltip"] = "将此资源条在显示顺序中向左移动一格。"
+	L["NodeOrderMoveDownTooltip"] = "将此资源条在显示顺序中向右移动一格。"
+	
+	L["ShieldBlockBarEnable"] = "启用盾牌格挡"
+	L["ShieldBlockBarEnableTooltip"] = "显示盾牌格挡条。"
+	L["IgnorePainBarEnable"] = "启用无视痛苦"
+	L["IgnorePainBarEnableTooltip"] = "显示无视痛苦条。"
+	
+	L["ResourcePriestHolyWords"] = "圣言术"
+	L["HolyWordSerenityBarEnable"] = "启用圣言术：静"
+	L["HolyWordSerenityBarEnableTooltip"] = "显示圣言术：静的圣言术条。"
+	L["HolyWordSanctifyBarEnable"] = "启用圣言术：灵"
+	L["HolyWordSanctifyBarEnableTooltip"] = "显示圣言术：灵的圣言术条。"
+	L["HolyWordChastiseBarEnable"] = "启用圣言术：罚"
+	L["HolyWordChastiseBarEnableTooltip"] = "显示圣言术：罚的圣言术条。"
+	L["HolyWordSerenityBarColor"] = "圣言术：静"
+	L["HolyWordSanctifyBarColor"] = "圣言术：灵"
+	L["HolyWordChastiseBarColor"] = "圣言术：罚"
+
 end
