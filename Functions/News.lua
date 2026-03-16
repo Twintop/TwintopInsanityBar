@@ -27,6 +27,11 @@ local content = [====[
 
 - [#704](#704) Allow the Holy Words Bars to be reordered.
 
+## Shaman
+### Enhancement
+
+- Add a dedicated color for the 5th Maelstrom Weapon stack node.
+
 ## Warrior
 ### Protection
 
