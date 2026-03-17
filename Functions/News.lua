@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.1.38-release (2026-03-17)
+## General
+
+- Fix an issue where Lua errors may occur after zoning.
+
 ## Priest
 ### Holy
 

@@ -315,6 +315,11 @@ TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 ---@param thresholdPercent number # The percentage (0-1) at which the color should change to aboveColor
 ---@return any # The cached ColorCurve
 function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor, thresholdPercent)
+	-- Handle edge case: if threshold is not a finite positive number, return nil to skip curve evaluation
+	if thresholdPercent == nil or thresholdPercent ~= thresholdPercent or thresholdPercent == math.huge or thresholdPercent == -math.huge then
+		return nil
+	end
+
 	local cache = TRB.Data.cache.stepColorCurves
 	local fullKey = cacheKey .. "_" .. belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 	
@@ -368,6 +373,10 @@ function TRB.Functions.Color:EvaluateStepColor(spec, belowColor, aboveColor, cur
 	-- Get the cached curve
 	local curve = TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor, thresholdPercent)
 	
+	if curve == nil then
+		return belowColor
+	end
+	
 	-- Evaluate the curve at current resource percentage
 	local colorResult = curve:Evaluate(currentResourcePercent)
 	
@@ -404,6 +413,11 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 	end
 
 	local thresholdPercent = thresholdValue / maxResource
+
+	-- Handle edge case: if threshold is not a finite positive number, return nil to skip curve evaluation
+	if thresholdPercent ~= thresholdPercent or thresholdPercent == math.huge or thresholdPercent == -math.huge or maxResource <= 0 then
+		return nil
+	end
 
 	-- Check cache first
 	local cache = TRB.Data.cache.stepColorCurves
@@ -530,7 +544,8 @@ function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
 	local thresholdCost = baseCost * costMultiplier
 	local thresholdPercent = thresholdCost / maxResource
 	
-	if thresholdPercent <= 0 then
+	-- Handle edge case: if threshold is 0, negative, infinite, or NaN, or max is 0 or negative, return nil to skip curve evaluation
+	if thresholdPercent <= 0 or maxResource <= 0 or thresholdPercent ~= thresholdPercent or thresholdPercent == math.huge then
 		return nil
 	end
 	
