@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix an issue where Lua errors may occur after zoning.
 
+### Localization
+
+- [#715](#715) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Priest
 ### Holy
 
