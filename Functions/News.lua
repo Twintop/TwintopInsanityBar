@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.39-release (2026-03-18)
+## Warrior
+### Fury
+
+- Fix Lua errors for new bar users due to Whirlwind under the hood changes.
+
+---
+
 # 12.0.1.38-release (2026-03-17)
 ## General
 
