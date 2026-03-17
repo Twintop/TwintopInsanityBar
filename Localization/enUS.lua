@@ -545,7 +545,7 @@ L["MonkWindwalkerThresholdCheckboxVivify"] = "Vivify"
 L["MonkWindwalkerThresholdCheckboxVivifyTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Vivify."
 
 -- PriestOptions
-L["PriestHolyAudioLightweaver"] = "Lightweaver"
+-- REMOVED: L["PriestHolyAudioLightweaver"] - replaced by PriestHolyAudioLightweaverThreshold1
 L["PriestShadowAudioMindDevourer"] = "Mind Devourer Proc"
 L["PriestShadowAudioShadowWordMadness"] = "Shadow Word: Madness Ready"
 L["PriestDisciplinePowerWords"] = "Power Words"
@@ -592,8 +592,8 @@ L["PriestHolyCheckboxApotheosisGcds"] = "GCDs until Apotheosis ends"
 L["PriestHolyApotheosisGcds"] = "Apotheosis GCDs - 0.75sec Floor"
 L["PriestHolyCheckboxApotheosisTime"] = "Time until Apotheosis ends"
 L["PriestHolyApotheosisTime"] = "Apotheosis Time Remaining (sec)"
-L["PriestHolyAudioCheckboxLightweaver"] = "Play audio cue when you gain Lightweaver"
-L["PriestHolyAudioCheckboxLightweaverTooltip"] = "Play audio cue when you gain Lightweaver."
+-- REMOVED: L["PriestHolyAudioCheckboxLightweaver"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold1
+-- REMOVED: L["PriestHolyAudioCheckboxLightweaverTooltip"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold1Tooltip
 L["PriestShadowShadowWordMadness"] = "Shadow Word: Madness"
 L["PriestShadowShadowWordMadnessAbbreviation"] = "SWM"
 L["PriestShadowColorPickerVoidform"] = "Insanity while in Voidform"
@@ -2264,3 +2264,35 @@ L["BarVisibilityThresholdHealthValueValue"] = "Health Value"
 
 -- Shaman Enhancement: 5-stack Maelstrom Weapon color
 L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"] = "5 Stack Maelstrom Weapon"
+
+-- Holy Priest: Audio cues for Lightweaver max stacks, Holy Word charge-ready, Surge of Light Spiritwell restriction
+-- REMOVED: L["PriestHolyAudioLightweaverMaxStacks"] - replaced by PriestHolyAudioLightweaverThreshold2
+-- REMOVED: L["PriestHolyAudioCheckboxLightweaverMaxStacks"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold2
+-- REMOVED: L["PriestHolyAudioCheckboxLightweaverMaxStacksTooltip"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold2Tooltip
+L["PriestHolyAudioHolyWordChastiseReady"] = "Holy Word: Chastise Ready"
+L["PriestHolyAudioCheckboxHolyWordChastiseReady"] = "Play audio cue when Holy Word: Chastise comes off cooldown"
+L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"] = "Play audio cue when Holy Word: Chastise comes off cooldown. Only plays during combat."
+L["PriestHolyAudioHolyWordSerenityCharge1"] = "Holy Word: Serenity (1 Charge)"
+L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"] = "Play audio cue when Holy Word: Serenity gains its first charge"
+L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"] = "Play audio cue when Holy Word: Serenity gains its first charge. Only plays during combat."
+L["PriestHolyAudioHolyWordSerenityCharge2"] = "Holy Word: Serenity (2 Charges)"
+L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"] = "Play audio cue when Holy Word: Serenity gains its second charge"
+L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"] = "Play audio cue when Holy Word: Serenity gains its second charge. Requires Miracle Worker talent. Only plays during combat."
+L["PriestHolyAudioHolyWordSanctifyCharge1"] = "Holy Word: Sanctify (1 Charge)"
+L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"] = "Play audio cue when Holy Word: Sanctify gains its first charge"
+L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"] = "Play audio cue when Holy Word: Sanctify gains its first charge. Only plays during combat."
+L["PriestHolyAudioHolyWordSanctifyCharge2"] = "Holy Word: Sanctify (2 Charges)"
+L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"] = "Play audio cue when Holy Word: Sanctify gains its second charge"
+L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"] = "Play audio cue when Holy Word: Sanctify gains its second charge. Requires Miracle Worker talent. Only plays during combat."
+L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"] = "Only play when Spiritwell is talented"
+L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"] = "When enabled, the Surge of Light audio cue will only play if you have the Spiritwell talent active."
+L["PriestHolyAudioHolyWordsHeader"] = "Holy Word Audio Cues"
+
+-- Holy Priest: Configurable Lightweaver audio thresholds (replaces fixed gain/max-stacks cues)
+L["PriestHolyAudioLightweaverThreshold1"] = "Lightweaver Threshold 1"
+L["PriestHolyAudioCheckboxLightweaverThreshold1"] = "Play when at X stacks of Lightweaver (Threshold 1)"
+L["PriestHolyAudioCheckboxLightweaverThreshold1Tooltip"] = "Play an audio cue when you have exactly this many stacks of Lightweaver."
+L["PriestHolyAudioLightweaverThreshold2"] = "Lightweaver Threshold 2"
+L["PriestHolyAudioCheckboxLightweaverThreshold2"] = "Play when at X stacks of Lightweaver (Threshold 2)"
+L["PriestHolyAudioCheckboxLightweaverThreshold2Tooltip"] = "Play an audio cue when you have exactly this many stacks of Lightweaver."
+L["PriestHolyAudioLightweaverThresholdSliderTitle"] = "At X Stacks of Lightweaver"
