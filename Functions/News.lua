@@ -12,6 +12,16 @@ local content = [====[
 
 ---
 
+# 12.0.1.38-release (2026-03-17)
+## Priest
+### Holy
+
+- [#706](#706) Add an optional restriction for the Surge of Light audio cue to only play when the Spiritwell talent is active.
+- [#707](#707) Add audio cue options for when Holy Word: Chastise, Serenity, and Sanctify come off cooldown (per-charge). These only play during combat.
+- [#709](#709) Update Lightweaver audio cues to add a second cue and change it to be configurable for how many Lightweaver stacks are required to trigger it.
+
+---
+
 # 12.0.1.37-release (2026-03-17)
 ## General
 
