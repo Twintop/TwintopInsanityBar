@@ -1498,4 +1498,31 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
 	}))
+
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "lightweaver",
+		displayName = L["ResourcePriestLightweaver"],
+		isMultiNode = true,
+		maxNodes = 4,
+		minMaxMode = "discrete",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "lightweaver",
+		nodeColors = {
+			{ key = "charge1", displayName = L["LightweaverCharge1"], colorLabel = L["LightweaverCharge1"] },
+			{ key = "charge2", displayName = L["LightweaverCharge2"], colorLabel = L["LightweaverCharge2"] },
+			{ key = "charge3", displayName = L["LightweaverCharge3"], colorLabel = L["LightweaverCharge3"] },
+			{ key = "charge4", displayName = L["LightweaverCharge4"], colorLabel = L["LightweaverCharge4"] },
+		},
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultLightweaverBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
 end

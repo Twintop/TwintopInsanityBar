@@ -108,6 +108,15 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.textures.holyWordsBorderName = settings.textures and settings.textures.holyWordsBorderName
 				configuration.textures.holyWordsBackground = settings.textures and settings.textures.holyWordsBackground
 				configuration.textures.holyWordsBackgroundName = settings.textures and settings.textures.holyWordsBackgroundName
+				-- Export Lightweaver bar settings
+				configuration.bars.lightweaver = settings.bars and settings.bars.lightweaver
+				configuration.colors.bars.lightweaver = settings.colors and settings.colors.bars and settings.colors.bars.lightweaver
+				configuration.textures.lightweaverBar = settings.textures and settings.textures.lightweaverBar
+				configuration.textures.lightweaverBarName = settings.textures and settings.textures.lightweaverBarName
+				configuration.textures.lightweaverBorder = settings.textures and settings.textures.lightweaverBorder
+				configuration.textures.lightweaverBorderName = settings.textures and settings.textures.lightweaverBorderName
+				configuration.textures.lightweaverBackground = settings.textures and settings.textures.lightweaverBackground
+				configuration.textures.lightweaverBackgroundName = settings.textures and settings.textures.lightweaverBackgroundName
 				-- Export utility bar settings
 				configuration.bars.utility = settings.bars and settings.bars.utility
 				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility

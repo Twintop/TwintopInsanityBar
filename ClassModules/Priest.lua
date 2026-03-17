@@ -546,6 +546,25 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
+	-- Lightweaver bar (Holy only)
+	if TRB.Data.character.specId == 2 and barGroups and barGroups.lightweaver then
+		local lightweaverColors = settings.colors and settings.colors.bars and settings.colors.bars.lightweaver
+		local frameLevels = TRB.Data.constants.frameLevels
+		local maxLightweaverNodes = 4
+
+		for i = 1, maxLightweaverNodes do
+			local node = barGroups.lightweaver:GetNode(i)
+			if node then
+				node:SetMinMax(0, 1)
+				-- Per-node charge color
+				local chargeKey = "charge" .. i
+				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
+				node:SetColor(nodeColor)
+				node:SetFrameLevel(frameLevels.comboPoint)
+			end
+		end
+	end
+
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
@@ -1618,7 +1637,17 @@ local function UpdateSnapshot_Holy()
 
 	snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
+
+	-- Track Lightweaver active→inactive transition so that bar text gets one final
+	-- refresh when the buff expires out of combat.  Without this, the early-out in
+	-- UpdateResourceBarText (HasActiveTimers() == false) prevents RefreshLookupData
+	-- from clearing the stale $lightweaverStacks / $lightweaverTime values.
+	local wasLightweaverActive = snapshots[spells.lightweaver.id].buff.isActive
 	snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)
+	if wasLightweaverActive and not snapshots[spells.lightweaver.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+
 	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
@@ -2008,6 +2037,36 @@ local function UpdateResourceBar()
 							utilNode:SetColor(nodeColor)
 							utilNode:SetBorderColor(utilityColors.border.color)
 							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
+						end
+					end
+				end
+			end
+
+			-- Update Lightweaver bar (buff stacks)
+			if specSettings.displayBar.lightweaver ~= nil and not specSettings.displayBar.lightweaver.neverShow and barGroups and barGroups.lightweaver then
+				if talents:IsTalentActive(spells.lightweaver) then
+					refreshText = true
+					local lightweaverBuff = snapshots[spells.lightweaver.id].buff
+					local lwStacks = lightweaverBuff.applications or 0
+					local lightweaverColors = specSettings.colors.bars.lightweaver
+
+					for chargeIndex = 1, 4 do
+						local lwNode = barGroups.lightweaver:GetNode(chargeIndex)
+						if lwNode then
+							local nodeKey = "lightweaver" .. chargeIndex
+							local chargeKey = "charge" .. chargeIndex
+							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
+							if chargeIndex <= lwStacks then
+								lwNode:ClearTimerDuration()
+								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
+							else
+								lwNode:ClearTimerDuration()
+								TRB.Data.cache.values.bar[nodeKey] = nil
+								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 0, 1)
+							end
+							lwNode:SetColor(nodeColor)
+							lwNode:SetBorderColor(lightweaverColors.border.color)
+							lwNode:SetBackgroundColorFromString(lightweaverColors.background.color)
 						end
 					end
 				end
@@ -2708,6 +2767,8 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 						-- Mark Holy Word bar text as seeded since HolyLoadDefaultBarTextSettings includes them
 						TRB.Data.settings.priest.holy.displayText.migrations = TRB.Data.settings.priest.holy.displayText.migrations or {}
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+						-- Mark Lightweaver bar text as seeded since HolyLoadDefaultBarTextSettings includes them
+						TRB.Data.settings.priest.holy.displayText.migrations.lightweaverBarTextSeeded = true
 						-- Mark Power Word bar text as seeded since DisciplineLoadDefaultBarTextSettings includes them
 						TRB.Data.settings.priest.discipline.displayText.migrations = TRB.Data.settings.priest.discipline.displayText.migrations or {}
 						TRB.Data.settings.priest.discipline.displayText.migrations.powerWordBarTextSeeded = true
@@ -2726,6 +2787,15 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 							table.insert(TRB.Data.settings.priest.holy.displayText.barText, v)
 						end
 						TRB.Data.settings.priest.holy.displayText.migrations.holyWordBarTextSeeded = true
+					end
+
+					-- Seed Lightweaver bar text entries for existing users who don't have them yet
+					if TRB.Data.settings.priest.holy.displayText.migrations.lightweaverBarTextSeeded ~= true then
+						local lwEntries = TRB.Options.Priest.HolyLoadLightweaverBarTextSettings()
+						for _, v in ipairs(lwEntries) do
+							table.insert(TRB.Data.settings.priest.holy.displayText.barText, v)
+						end
+						TRB.Data.settings.priest.holy.displayText.migrations.lightweaverBarTextSeeded = true
 					end
 
 					-- Seed Power Word bar text entries for existing users who don't have them yet
@@ -2971,10 +3041,21 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		local utilityVisSettings = (sharedSettings and sharedSettings.displayBar.utility) or nil
 
+		-- Lightweaver bar: Holy (2) only, talent-gated
+		local hasLightweaver = false
+		if TRB.Data.character.specId == 2 and sharedSettings and sharedSettings.displayBar.lightweaver ~= nil and spells then
+			local specTalents = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].talents
+			if specTalents and specTalents:IsTalentActive(spells.lightweaver) then
+				hasLightweaver = true
+			end
+		end
+		local lightweaverVisSettings = (sharedSettings and sharedSettings.displayBar.lightweaver) or nil
+
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2 or 0, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.holyWords, holyWordsVisSettings, hasHolyWords, TRB.Data.character.maxResource2 or 0, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.lightweaver, lightweaverVisSettings, hasLightweaver, 4, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil),
@@ -3253,6 +3334,24 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 								local isVisible = barGroups.holyWords.isVisible and holyWordsNode.isVisible
 								return holyWordsNode:GetFrame(), true, isVisible
 							end
+						end
+					end
+				end
+				return nil, false, false
+			end
+		end
+
+		-- Handle Lightweaver Charge frames (LightweaverCharge1, LightweaverCharge2, LightweaverCharge3, LightweaverCharge4)
+		if TRB.Data.character.specId == 2 then
+			local lwMatch = string.match(relativeToFrame, "^LightweaverCharge(%d+)$")
+			if lwMatch ~= nil then
+				local chargeIndex = tonumber(lwMatch)
+				if chargeIndex ~= nil and chargeIndex >= 1 and chargeIndex <= 4 then
+					if barGroups and barGroups.lightweaver then
+						local lightweaverNode = barGroups.lightweaver:GetNode(chargeIndex)
+						if lightweaverNode then
+							local isVisible = barGroups.lightweaver.isVisible and lightweaverNode.isVisible
+							return lightweaverNode:GetFrame(), true, isVisible
 						end
 					end
 				end

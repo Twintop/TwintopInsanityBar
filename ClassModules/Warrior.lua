@@ -816,7 +816,13 @@ local function UpdateSnapshot_Fury()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	-- Track active→inactive transition so bar text gets one final refresh when the
+	-- buff expires out of combat (same pattern as Priest Lightweaver fix).
+	local wasWhirlwindActive = snapshots[spells.improvedWhirlwind.id].buff.isActive
 	snapshots[spells.improvedWhirlwind.id].buff:GetRemainingTime(currentTime)
+	if wasWhirlwindActive and not snapshots[spells.improvedWhirlwind.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 	--[[snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
 	snapshots[spells.execute.id].cooldown:Refresh()]]
 end
@@ -829,8 +835,19 @@ local function UpdateSnapshot_Protection()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	-- Track active→inactive transitions so bar text gets one final refresh when
+	-- buffs expire out of combat.
+	local wasIgnorePainActive = snapshots[spells.ignorePain.id].buff.isActive
 	snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
+	if wasIgnorePainActive and not snapshots[spells.ignorePain.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+
+	local wasShieldBlockActive = snapshots[spells.shieldBlock.id].buff.isActive
 	snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
+	if wasShieldBlockActive and not snapshots[spells.shieldBlock.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 	--[[
 	snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)

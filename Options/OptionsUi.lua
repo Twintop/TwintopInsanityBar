@@ -7838,6 +7838,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
 		relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
 		relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
+		relativeToFrame[L["LightweaverCharge1"]] = "Lightweaver_Charge_1"
+		relativeToFrame[L["LightweaverCharge2"]] = "Lightweaver_Charge_2"
+		relativeToFrame[L["LightweaverCharge3"]] = "Lightweaver_Charge_3"
+		relativeToFrame[L["LightweaverCharge4"]] = "Lightweaver_Charge_4"
 		relativeToFrame[L["AngelicFeatherCharge1"]] = "Angelic_Feather_Charge_1"
 		relativeToFrame[L["AngelicFeatherCharge2"]] = "Angelic_Feather_Charge_2"
 		relativeToFrame[L["AngelicFeatherCharge3"]] = "Angelic_Feather_Charge_3"
@@ -7848,6 +7852,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HolyWordSanctifyCharge1"],
 			L["HolyWordSanctifyCharge2"],
 			L["HolyWordChastiseCharge1"],
+			L["LightweaverCharge1"],
+			L["LightweaverCharge2"],
+			L["LightweaverCharge3"],
+			L["LightweaverCharge4"],
 			L["AngelicFeatherCharge1"],
 			L["AngelicFeatherCharge2"],
 			L["AngelicFeatherCharge3"],

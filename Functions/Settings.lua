@@ -5793,6 +5793,70 @@ function TRB.Functions.Settings:DefaultUtilityBarColors()
 	}
 end
 
+---Gets default Lightweaver bar dimensions (anchored above Holy Words bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			collapseBorderWidth = false,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "holyWords",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		collapseBorderWidth = true,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "holyWords",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
+	}
+end
+
+---Gets default Lightweaver bar colors (progressively darker blue per stack)
+---@return table
+function TRB.Functions.Settings:DefaultLightweaverBarColors()
+	return {
+		border = { color = "FF4466CC" },
+		background = { color = "66000000" },
+		nodeColors = {
+			charge1 = { color = "FF88CCFF" },
+			charge2 = { color = "FF55AAFF" },
+			charge3 = { color = "FF3388EE" },
+			charge4 = { color = "FF1166CC" },
+		}
+	}
+end
+
 
 ---Migrates anchor blocks for all bar settings in the provided settings table.
 ---Synthesizes anchor blocks from legacy relativeTo/xPos/yPos/fullWidth fields.

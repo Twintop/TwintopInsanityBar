@@ -497,11 +497,64 @@ local function HolyLoadHolyWordBarTextSettings()
 end
 TRB.Options.Priest.HolyLoadHolyWordBarTextSettings = HolyLoadHolyWordBarTextSettings
 
+---Loads the default Lightweaver bar text entries (one per charge node)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HolyLoadLightweaverBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {}
+	local names = {
+		L["PriestHolyBarTextNameLWCharge1"],
+		L["PriestHolyBarTextNameLWCharge2"],
+		L["PriestHolyBarTextNameLWCharge3"],
+		L["PriestHolyBarTextNameLWCharge4"],
+	}
+	local frameNames = {
+		L["LightweaverCharge1"],
+		L["LightweaverCharge2"],
+		L["LightweaverCharge3"],
+		L["LightweaverCharge4"],
+	}
+	for i = 1, 4 do
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = names[i],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$lightweaverStacks=" .. i .. "}[$lightweaverStacks - $lightweaverTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Lightweaver_Charge_" .. i,
+				relativeToFrameName = frameNames[i],
+			},
+		})
+	end
+	return textSettings
+end
+TRB.Options.Priest.HolyLoadLightweaverBarTextSettings = HolyLoadLightweaverBarTextSettings
+
 ---Loads extra default bar text settings for Holy (Holy Words + global mana text)
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function HolyLoadExtraBarTextSettings(classic)
 	local textSettings = HolyLoadHolyWordBarTextSettings()
+	local lwTextSettings = HolyLoadLightweaverBarTextSettings()
+	for _, v in ipairs(lwTextSettings) do table.insert(textSettings, v) end
 	local afTextSettings = LoadAngelicFeatherBarTextSettings()
 	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
@@ -545,12 +598,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			holyWords = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			lightweaver = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
 			holyWords = TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic),
+			lightweaver = TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic),
 			utility = TRB.Functions.Settings:DefaultUtilityBarDimensions(classic),
 		},
 		endOf = {
@@ -637,6 +692,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				holyWords = TRB.Functions.Settings:DefaultHolyWordsBarColors(),
+				lightweaver = TRB.Functions.Settings:DefaultLightweaverBarColors(),
 				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 		},
@@ -726,13 +782,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"),
 			GetPriestUtilityBarTypeDefinition(),
 		}),
 	}
 
 	if includeBarText then
 		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
-		settings.displayText.migrations = { holyWordBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
+		settings.displayText.migrations = { holyWordBarTextSeeded = true, lightweaverBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
 	end
 
 	return settings
@@ -1500,6 +1557,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1528,6 +1586,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1543,6 +1602,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings(true)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1746,7 +1806,7 @@ local function HolyConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), GetPriestUtilityBarTypeDefinition() })
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"), GetPriestUtilityBarTypeDefinition() })
 end
 
 local function HolyConstructBarVisibilityPanel(parent)
@@ -1765,12 +1825,38 @@ local function HolyConstructBarVisibilityPanel(parent)
 	if holyWordsBarDef then
 		table.insert(customBars, holyWordsBarDef)
 	end
+	local lightweaverBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver")
+	if lightweaverBarDef then
+		table.insert(customBars, lightweaverBarDef)
+	end
 	local utilityBarDef = GetPriestUtilityBarTypeDefinition()
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true, nil, customBars)
+end
+
+local function HolyConstructLightweaverBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_holy
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.holy
+	local lightweaverBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver")
+
+	if lightweaverBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef, L["ResourceMana"])
+	end
+
+	yCoord = yCoord - 90
+	if lightweaverBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef)
+	end
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -2007,6 +2093,7 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
 		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel },
+		{ key = "lightweaverBar", label = L["TabLightweaver"], width = oUi.tabWidth.medium, constructor = HolyConstructLightweaverBarPanel },
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
