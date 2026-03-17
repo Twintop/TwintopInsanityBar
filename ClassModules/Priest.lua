@@ -248,6 +248,7 @@ local function FillSpecializationCache()
 		innervateCue = false,
 		lightweaverCue = false,
 		lightweaverMaxStacksCue = false,
+		lightweaverExpiringCue = false,
 		surgeOfLightPlayed = false,
 		holyWordChastisePrevCharges = nil,
 		holyWordSerenityPrevCharges = nil,
@@ -2050,7 +2051,7 @@ local function UpdateResourceBar()
 					local lwStacks = lightweaverBuff.applications or 0
 					local lightweaverColors = specSettings.colors.bars.lightweaver
 
-					for chargeIndex = 1, 4 do
+					for chargeIndex = 1, barGroups.lightweaver.maxNodes or 4 do
 						local lwNode = barGroups.lightweaver:GetNode(chargeIndex)
 						if lwNode then
 							local nodeKey = "lightweaver" .. chargeIndex
@@ -2098,6 +2099,18 @@ local function UpdateResourceBar()
 				end
 			else
 				snapshotData.audio.lightweaverMaxStacksCue = false
+			end
+
+			-- Expiring cue: fires when buff is active and remaining time drops below configured threshold
+			local lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
+			local expiringThreshold = specSettings.audio.lightweaverExpiring.configuration.thresholdValue
+			if lightweaverStacks > 0 and lightweaverTime > 0 and lightweaverTime < expiringThreshold then
+				if specSettings.audio.lightweaverExpiring ~= nil and specSettings.audio.lightweaverExpiring.enabled and not snapshotData.audio.lightweaverExpiringCue then
+					PlaySoundFile(specSettings.audio.lightweaverExpiring.sound, audioChannel)
+					snapshotData.audio.lightweaverExpiringCue = true
+				end
+			else
+				snapshotData.audio.lightweaverExpiringCue = false
 			end
 		end
 

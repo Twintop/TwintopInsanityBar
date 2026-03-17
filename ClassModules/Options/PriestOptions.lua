@@ -514,7 +514,20 @@ local function HolyLoadLightweaverBarTextSettings()
 		L["LightweaverCharge3"],
 		L["LightweaverCharge4"],
 	}
-	for i = 1, 4 do
+	-- Derive the number of Lightweaver nodes from the bar type definition so we
+ 	-- stay in sync with the runtime bar configuration if the stack cap changes.
+ 	local maxNodes = 4
+ 	local barTypeRegistry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+ 	if barTypeRegistry ~= nil then
+ 		-- The Lightweaver bar type is expected to define maxNodes.
+ 		local lightweaverBarDef = barTypeRegistry:Get("lightweaver")
+ 		if lightweaverBarDef ~= nil and type(lightweaverBarDef.maxNodes) == "number" and lightweaverBarDef.maxNodes > 0 then
+ 			maxNodes = lightweaverBarDef.maxNodes
+ 		end
+ 	end
+ 	-- Do not iterate beyond the number of localized entries we have.
+ 	maxNodes = math.min(maxNodes, #names, #frameNames)
+ 	for i = 1, maxNodes do
 		table.insert(textSettings, {
 			useDefaultFontColor = false,
 			useDefaultFontOutline = false,
@@ -747,6 +760,15 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"],
 				configuration = {
 					thresholdValue = 4
+				}
+			},
+			lightweaverExpiring={
+				name = L["PriestHolyAudioLightweaverExpiring"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"],
+				configuration = {
+					thresholdValue = 5
 				}
 			},
 			holyWordChastiseReady={
@@ -2002,6 +2024,18 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	end)
 	yCoord = yCoord - 10
 
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordChastiseReady", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordChastiseReady"], L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"])
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioLightweaverHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
 	local yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaver", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverThreshold1"], L["PriestHolyAudioCheckboxLightweaverThreshold1Tooltip"])
 
@@ -2028,14 +2062,18 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		spec.audio["lightweaverMaxStacks"].configuration.thresholdValue = value
 	end)
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaverExpiring", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverExpiring"], L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordChastiseReady", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordChastiseReady"], L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"])
+	spec.audio.lightweaverExpiring.configuration = spec.audio.lightweaverExpiring.configuration or {}
+	controls.priest_lightweaverExpiringSlider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PriestHolyAudioLightweaverExpiringSliderTitle"], 0, 20, spec.audio["lightweaverExpiring"].configuration.thresholdValue, 0.5, 1,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.priest_lightweaverExpiringSlider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["lightweaverExpiring"].configuration.thresholdValue = value
+	end)
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)

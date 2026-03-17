@@ -2297,6 +2297,13 @@ L["PriestHolyAudioCheckboxLightweaverThreshold2"] = "Play when at X stacks of Li
 L["PriestHolyAudioCheckboxLightweaverThreshold2Tooltip"] = "Play an audio cue when you have exactly this many stacks of Lightweaver."
 L["PriestHolyAudioLightweaverThresholdSliderTitle"] = "At X Stacks of Lightweaver"
 
+-- Holy Priest: Lightweaver expiring audio cue
+L["PriestHolyAudioLightweaverExpiring"] = "Lightweaver Expiring"
+L["PriestHolyAudioCheckboxLightweaverExpiring"] = "Play when Lightweaver has less than X seconds remaining"
+L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"] = "Play an audio cue when your Lightweaver buff is active and has less than the configured number of seconds remaining."
+L["PriestHolyAudioLightweaverExpiringSliderTitle"] = "Less Than X Seconds Remaining"
+L["PriestHolyAudioLightweaverHeader"] = "Lightweaver Audio Cues"
+
 -- Holy Priest: Lightweaver Bar
 L["TabLightweaver"] = "Lightweaver"
 L["ResourcePriestLightweaver"] = "Lightweaver Stacks"
