@@ -1373,7 +1373,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- but they DO have a secondary bar group for combo points when in cat form.
 	-- Check Feral settings for Druids when the current spec doesn't have comboPoints.
 	-- Non-Feral Druids ALWAYS use Feral's combo point settings for appearance.
-	local hasComboPointSettings = settings.comboPoints ~= nil
+	local hasComboPointSettings = settings.comboPoints ~= nil and settings.colors ~= nil and settings.colors.comboPoints ~= nil
 	local feralSettingsForDruid = nil
 	if TRB.Data.character.classId == 11 and TRB.Data.character.specId ~= 2 then
 		-- Check if form switching is enabled for this Druid spec
