@@ -18,7 +18,17 @@ local content = [====[
 
 - [#706](#706) Add an optional restriction for the Surge of Light audio cue to only play when the Spiritwell talent is active.
 - [#707](#707) Add audio cue options for when Holy Word: Chastise, Serenity, and Sanctify come off cooldown (per-charge). These only play during combat.
+- [#708](#708) Add an optional Lightweaver buff stacks bar, disabled by default. This bar will show each available stack of Lightweaver as separate nodes with bar text showing how many stacks you currently have and the remaining duration on the buff.
 - [#709](#709) Update Lightweaver audio cues to add a second cue and change it to be configurable for how many Lightweaver stacks are required to trigger it.
+
+## Warrior
+### Fury
+
+- [#714](#714) Fix an issue where sometimes the Whirlwind bar text would go stale and not update while out of combat.
+
+### Protection
+
+- [#714](#714) Fix an issue where sometimes the Shield Block or Ignore Pain bar text would go stale and not update while out of combat.
 
 ---
 
