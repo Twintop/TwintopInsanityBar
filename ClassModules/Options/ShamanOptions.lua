@@ -133,6 +133,10 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					color = "FF00096A",
 					enabled = true
 				},
+				earthquake = {
+					color = "FF5C4033",
+					enabled = false
+				},
 				ascendance = {
 					color = "FFFA8128",
 					enabled = true
@@ -643,6 +647,23 @@ local function ElementalConstructMaelstromBarPanel(parent)
 	f = controls.colors.earthShock
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.earthquake = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_earthquakeColorChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.earthquake
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxEarthquakeBarColor"])
+	f.tooltip = L["ShamanElementalCheckboxEarthquakeBarColorTooltip"]
+	f:SetChecked(spec.colors.bar.earthquake.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.earthquake.enabled = self:GetChecked()
+	end)
+
+	controls.colors.earthquake = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthquake"], spec.colors.bar.earthquake.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.earthquake
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthquake")
 	end)
 
 	yCoord = yCoord - 30

@@ -746,7 +746,6 @@ local function UpdateResourceBar()
 				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 
-				local anyUsable = false
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					-- Create threshold on-demand if missing
@@ -764,7 +763,6 @@ local function UpdateResourceBar()
 					local frameLevel = frameLevels.thresholdOver
 					local snapshot = snapshots[spell.id]
 
-					anyUsable = anyUsable or isUsable
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.earthquake.id or spell.id == spells.earthquakeTargeted.id then
 							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -814,20 +812,21 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local maelstromThreshold = TRB.Data.character.maxResource
+				-- Determine usability for Earth Shock/Elemental Blast and Earthquake independently
+				local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
+					or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
+				local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
+					or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 
-				if talents:IsTalentActive(spells.earthquake) then
-					maelstromThreshold = math.min(maelstromThreshold, spells.earthquake:GetPrimaryResourceCost())
-				end
-				
-				if talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) then
-					maelstromThreshold = math.min(maelstromThreshold, spells.earthShock:GetPrimaryResourceCost())
-				elseif talents:IsTalentActive(spells.elementalBlast) then
-					maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
-				end
-
-				if anyUsable and specSettings.colors.bar.earthShock.enabled then
+				-- Bar color priority: Earth Shock/EB > Earthquake > base
+				if earthShockUsable and specSettings.colors.bar.earthShock.enabled then
 					barColor = specSettings.colors.bar.earthShock.color
+				elseif earthquakeUsable and specSettings.colors.bar.earthquake.enabled then
+					barColor = specSettings.colors.bar.earthquake.color
+				end
+
+				-- Flash and audio cue are tied to Earth Shock / Elemental Blast only
+				if earthShockUsable then
 					if specSettings.colors.bar.flashEnabled then
 						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
 					else
@@ -860,8 +859,10 @@ local function UpdateResourceBar()
 
 					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.ascendanceEnd.color
-					elseif anyUsable and specSettings.colors.bar.earthShock.enabled then
+					elseif earthShockUsable and specSettings.colors.bar.earthShock.enabled then
 						barColor = specSettings.colors.bar.earthShock.color
+					elseif earthquakeUsable and specSettings.colors.bar.earthquake.enabled then
+						barColor = specSettings.colors.bar.earthquake.color
 					elseif specSettings.colors.bar.ascendance.enabled then
 						barColor = specSettings.colors.bar.ascendance.color
 					end

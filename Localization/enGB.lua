@@ -295,4 +295,5 @@ if locale == "enGB" then
     L["WhirlwindCheckboxUseHighestForAllTooltip"] = "When checked, the highest Whirlwind Charge's colour will be used for all Whirlwind Charges. E.g., if you have 4 Whirlwind Charges and currently have 3, the Penultimate colour will be used for all Whirlwind Charges instead of just the second to last."
     L["WhirlwindCheckboxZeroStackBackground"] = "Use different background colour at 0 charges?"
     L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "When checked, all Whirlwind Charge nodes will use the specified background colour when you have 0 Whirlwind Charges."
+    L["ShamanElementalCheckboxEarthquakeBarColorTooltip"] = "This will change the bar colour when you have enough Maelstrom to use Earthquake."
 end

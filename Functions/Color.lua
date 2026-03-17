@@ -399,7 +399,7 @@ end
 ---@param specSettings table The spec-specific settings table (e.g., specSettings.overcap)
 ---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
 ---@param aboveColor string The color hex string for at/above threshold
----@return table colorCurve A ColorCurve object ready for UnitPowerPercent
+---@return table? colorCurve A ColorCurve object ready for UnitPowerPercent
 function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColor, aboveColor)
 	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
 	local thresholdValue = maxResource

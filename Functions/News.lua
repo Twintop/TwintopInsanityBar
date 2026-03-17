@@ -26,6 +26,12 @@ local content = [====[
 - [#709](#709) Update Lightweaver audio cues to add a second cue and change it to be configurable for how many Lightweaver stacks are required to trigger it.
 - [#714](#714) Add a new Lightweaver audio cue that will fire when your buff is about to drop off within the next X seconds (as configured).
 
+## Shaman
+### Elemental
+
+- Don't let Earthquake being usable trigger the Elemental Blast usable audio cue or bar flashing indication.
+- Add a new optional bar color change for when you have enough Maelstrom to use Earthquake. If both this and Earth Shock/Elemental Blast usable color are enabled, Earthquake's color change will only appear when Elemental Blast is talented.
+
 ## Warrior
 ### Fury
 
