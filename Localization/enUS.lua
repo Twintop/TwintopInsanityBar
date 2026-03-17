@@ -1938,14 +1938,14 @@ L["WarriorFuryBarTextNameWWCharge1"] = "WW Charge 1"
 L["WarriorFuryBarTextNameWWCharge2"] = "WW Charge 2"
 L["WarriorFuryBarTextNameWWCharge3"] = "WW Charge 3"
 L["WarriorFuryBarTextNameWWCharge4"] = "WW Charge 4"
-L["WhirlwindColorsHeader"] = "Whirlwind Charge Colors"
+-- REMOVED: L["WhirlwindColorsHeader"] - replaced by generic CustomBarColorHeader with displayName
 L["WhirlwindColorPickerBorder"] = "Whirlwind Charge's border"
 L["WhirlwindColorPickerBase"] = "Whirlwind Charge (1)"
 L["WhirlwindColorPickerPenultimate"] = "Whirlwind Charge (3)"
 L["WhirlwindColorPickerFinal"] = "Whirlwind Charge (4)"
 L["WhirlwindColorPickerBackground"] = "Unfilled Whirlwind Charge background"
-L["WhirlwindCheckboxUseHighestForAll"] = "Use highest Whirlwind Charge color for all?"
-L["WhirlwindCheckboxUseHighestForAllTooltip"] = "When checked, the highest Whirlwind Charge's color will be used for all Whirlwind Charges. E.g., if you have 4 Whirlwind Charges and currently have 3, the Penultimate color will be used for all Whirlwind Charges instead of just the second to last."
+-- REMOVED: L["WhirlwindCheckboxUseHighestForAll"] - replaced by generic CustomBarCheckboxSameColor
+-- REMOVED: L["WhirlwindCheckboxUseHighestForAllTooltip"] - replaced by generic CustomBarCheckboxSameColorTooltip
 
 -- Absorb Shield
 L["BarTextVariable_absorb"] = "Your current total absorb shield amount."
@@ -2315,3 +2315,7 @@ L["PriestHolyBarTextNameLWCharge1"] = "LW Charge 1"
 L["PriestHolyBarTextNameLWCharge2"] = "LW Charge 2"
 L["PriestHolyBarTextNameLWCharge3"] = "LW Charge 3"
 L["PriestHolyBarTextNameLWCharge4"] = "LW Charge 4"
+-- REMOVED: L["PriestHolyCheckboxLightweaverUseHighest"] - replaced by generic CustomBarCheckboxSameColor
+-- REMOVED: L["PriestHolyCheckboxLightweaverUseHighestTooltip"] - replaced by generic CustomBarCheckboxSameColorTooltip
+L["CustomBarCheckboxSameColor"] = "Use highest %s node color for all?"
+L["CustomBarCheckboxSameColorTooltip"] = "When checked, all filled %s nodes will use the color of the highest filled node."

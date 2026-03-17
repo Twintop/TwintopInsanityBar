@@ -36,8 +36,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.whirlwind = settings.colors and settings.colors.bars and settings.colors.bars.whirlwind
 			elseif specId == 3 then -- Protection
 				-- Export defensives bar settings
 				configuration.bars = configuration.bars or {}

@@ -448,29 +448,8 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
-			comboPoints = {
-				border = {
-					color = "FFFFD300"
-				},
-				background = {
-					color = "66000000"
-				},
-				base = {
-					color = "FFFFFFAA"
-				},
-				secondary = {
-					color = "FFFFFF00"
-				},
-				penultimate = {
-					color = "FFFF9900"
-				},
-				final = {
-					color = "FFFF0000"
-				},
-				zeroStackBackground = {
-					color = "B3FF5E5E",
-					enabled = true
-				},
+			bars = {
+				whirlwind = TRB.Functions.Settings:DefaultWhirlwindBarColors(),
 			},
 			threshold = {
 				under = {
@@ -1475,77 +1454,32 @@ local function FuryConstructWhirlwindBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], L["ResourceWarriorWhirlwind"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WhirlwindColorsHeader"], oUi.xCoord, yCoord)
-	controls.colors.comboPoints = {}
+	local whirlwindBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("whirlwind")
+	if whirlwindBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 1, 2, yCoord, whirlwindBarDef)
+	end
 
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
-	end)
+	-- Zero stack background (extra Whirlwind-specific option)
+	local whirlwindColors = spec.colors and spec.colors.bars and spec.colors.bars.whirlwind
+	if whirlwindColors and whirlwindColors.zeroStackBackground then
+		controls.checkBoxes.zeroStackBackgroundEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_comboPointsZeroStackBackground", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.zeroStackBackgroundEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["WhirlwindCheckboxZeroStackBackground"])
+		f.tooltip = L["WhirlwindCheckboxZeroStackBackgroundTooltip"]
+		f:SetChecked(whirlwindColors.zeroStackBackground.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			whirlwindColors.zeroStackBackground.enabled = self:GetChecked()
+		end)
 
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.secondary = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerSecondary"], spec.colors.comboPoints.secondary.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.secondary
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "secondary")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.sameColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WhirlwindCheckboxUseHighestForAll"])
-	f.tooltip = L["WhirlwindCheckboxUseHighestForAllTooltip"]
-	f:SetChecked(spec.comboPoints.sameColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.comboPoints.sameColor = self:GetChecked()
-	end)
-	
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.zeroStackBackgroundEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_comboPointsZeroStackBackground", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.zeroStackBackgroundEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WhirlwindCheckboxZeroStackBackground"])
-	f.tooltip = L["WhirlwindCheckboxZeroStackBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.zeroStackBackground.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.zeroStackBackground.enabled = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.zeroStackBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerZeroStackBackground"], spec.colors.comboPoints.zeroStackBackground.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.zeroStackBackground
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "zeroStackBackground")
-	end)
+		controls.colors.bars = controls.colors.bars or {}
+		controls.colors.bars.whirlwind = controls.colors.bars.whirlwind or {}
+		controls.colors.bars.whirlwind.zeroStackBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerZeroStackBackground"], whirlwindColors.zeroStackBackground.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		f = controls.colors.bars.whirlwind.zeroStackBackground
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, whirlwindColors, controls.colors.bars.whirlwind, "zeroStackBackground")
+		end)
+	end
 end
 
 local function FuryConstructHealthBarPanel(parent)

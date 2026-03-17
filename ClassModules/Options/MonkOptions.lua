@@ -825,7 +825,6 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 	end
 
 	-- Maximum Stagger Scale slider
-	yCoord = yCoord - 40
 	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerMaxScaleSlider.tooltip = L["StaggerBarMaxScaleTooltip"]
 	controls.staggerMaxScaleSlider:SetScript("OnValueChanged", function(self, value)

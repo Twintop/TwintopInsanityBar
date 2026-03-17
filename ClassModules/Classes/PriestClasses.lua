@@ -1156,6 +1156,7 @@ function TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
 	return {
 		border = { color = "FFD6AA00" },
 		background = { color = "66000000" },
+		sameColor = false,
 		nodeColors = {
 			angelicFeather1 = { color = "FFFFE77A", enabled = true },
 			angelicFeather2 = { color = "FFFFE34B", enabled = true },

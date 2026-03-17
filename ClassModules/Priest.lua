@@ -557,7 +557,7 @@ local function ConstructResourceBar(settings)
 			local node = barGroups.lightweaver:GetNode(i)
 			if node then
 				node:SetMinMax(0, 1)
-				-- Per-node charge color
+				-- Per-node charge color (sameColor uses highest filled charge's color)
 				local chargeKey = "charge" .. i
 				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
 				node:SetColor(nodeColor)
@@ -1807,6 +1807,11 @@ local function UpdateResourceBar()
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
 							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							-- sameColor: use highest filled charge's color for all filled nodes
+							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
+								local highestKey = "angelicFeather" .. charges
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)
@@ -2022,6 +2027,11 @@ local function UpdateResourceBar()
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
 							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							-- sameColor: use highest filled charge's color for all filled nodes
+							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
+								local highestKey = "angelicFeather" .. charges
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)
@@ -2056,7 +2066,12 @@ local function UpdateResourceBar()
 						if lwNode then
 							local nodeKey = "lightweaver" .. chargeIndex
 							local chargeKey = "charge" .. chargeIndex
-							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
+							-- When sameColor is enabled, all filled nodes use the highest filled charge's color
+							local colorKey = chargeKey
+							if lightweaverColors.sameColor and lwStacks > 0 and chargeIndex <= lwStacks then
+								colorKey = "charge" .. lwStacks
+							end
+							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey] and lightweaverColors.nodeColors[colorKey].color
 							if chargeIndex <= lwStacks then
 								lwNode:ClearTimerDuration()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
@@ -2423,6 +2438,11 @@ local function UpdateResourceBar()
 						local nodeKey = "utility" .. chargeIndex
 						local nodeColorKey = "angelicFeather" .. chargeIndex
 						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+						-- sameColor: use highest filled charge's color for all filled nodes
+						if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
+							local highestKey = "angelicFeather" .. charges
+							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+						end
 						if chargeIndex <= charges then
 							utilNode:ClearTimerDuration()
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 1, 1)

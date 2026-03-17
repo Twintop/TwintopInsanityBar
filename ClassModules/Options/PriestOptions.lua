@@ -1900,27 +1900,28 @@ local function HolyConstructHolyWordsPanel(parent)
 
 	yCoord = yCoord - 90
 	if holyWordsBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef)
+		local hwAfterNodesCallback = function(callbackParent, callbackYCoord)
+			local hwColors = spec.colors.bars.holyWords
+			controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+			local fCb = controls.checkBoxes.completeCooldownEnabled
+			fCb:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+			getglobal(fCb:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
+			fCb.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
+			fCb:SetChecked(hwColors.completeCooldown.enabled)
+			fCb:SetScript("OnClick", function(self, ...)
+				hwColors.completeCooldown.enabled = self:GetChecked()
+			end)
+
+			controls.colors.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(callbackParent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], hwColors.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+			local fCol = controls.colors.completeCooldown
+			fCol:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, hwColors, controls.colors, "completeCooldown")
+			end)
+
+			return callbackYCoord - 30
+		end
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef, hwAfterNodesCallback)
 	end
-
-	-- Complete Cooldown color (specific to Holy Words, not part of BarTypeDefinition)
-	local hwColors = spec.colors.bars.holyWords
-	yCoord = yCoord - 40
-	controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.completeCooldownEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
-	f.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
-	f:SetChecked(hwColors.completeCooldown.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		hwColors.completeCooldown.enabled = self:GetChecked()
-	end)
-
-	controls.colors.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], hwColors.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.completeCooldown
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, hwColors, controls.colors, "completeCooldown")
-	end)
 end
 
 local function HolyConstructThresholdPanel(parent)

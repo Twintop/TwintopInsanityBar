@@ -20,6 +20,7 @@ local content = [====[
 - [#707](#707) Add audio cue options for when Holy Word: Chastise, Serenity, and Sanctify come off cooldown (per-charge). These only play during combat.
 - [#708](#708) Add an optional Lightweaver buff stacks bar, disabled by default. This bar will show each available stack of Lightweaver as separate nodes with bar text showing how many stacks you currently have and the remaining duration on the buff.
 - [#709](#709) Update Lightweaver audio cues to add a second cue and change it to be configurable for how many Lightweaver stacks are required to trigger it.
+- [#714](#714) Add a new Lightweaver audio cue that will fire when your buff is about to drop off within the next X seconds (as configured).
 
 ## Warrior
 ### Fury
