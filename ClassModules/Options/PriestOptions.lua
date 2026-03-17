@@ -497,11 +497,77 @@ local function HolyLoadHolyWordBarTextSettings()
 end
 TRB.Options.Priest.HolyLoadHolyWordBarTextSettings = HolyLoadHolyWordBarTextSettings
 
+---Loads the default Lightweaver bar text entries (one per charge node)
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function HolyLoadLightweaverBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {}
+	local names = {
+		L["PriestHolyBarTextNameLWCharge1"],
+		L["PriestHolyBarTextNameLWCharge2"],
+		L["PriestHolyBarTextNameLWCharge3"],
+		L["PriestHolyBarTextNameLWCharge4"],
+	}
+	local frameNames = {
+		L["LightweaverCharge1"],
+		L["LightweaverCharge2"],
+		L["LightweaverCharge3"],
+		L["LightweaverCharge4"],
+	}
+	-- Derive the number of Lightweaver nodes from the bar type definition so we
+ 	-- stay in sync with the runtime bar configuration if the stack cap changes.
+ 	local maxNodes = 4
+ 	local barTypeRegistry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+ 	if barTypeRegistry ~= nil then
+ 		-- The Lightweaver bar type is expected to define maxNodes.
+ 		local lightweaverBarDef = barTypeRegistry:Get("lightweaver")
+ 		if lightweaverBarDef ~= nil and type(lightweaverBarDef.maxNodes) == "number" and lightweaverBarDef.maxNodes > 0 then
+ 			maxNodes = lightweaverBarDef.maxNodes
+ 		end
+ 	end
+ 	-- Do not iterate beyond the number of localized entries we have.
+ 	maxNodes = math.min(maxNodes, #names, #frameNames)
+ 	for i = 1, maxNodes do
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = names[i],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$lightweaverStacks=" .. i .. "}[$lightweaverStacks - $lightweaverTime]",
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Lightweaver_Charge_" .. i,
+				relativeToFrameName = frameNames[i],
+			},
+		})
+	end
+	return textSettings
+end
+TRB.Options.Priest.HolyLoadLightweaverBarTextSettings = HolyLoadLightweaverBarTextSettings
+
 ---Loads extra default bar text settings for Holy (Holy Words + global mana text)
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function HolyLoadExtraBarTextSettings(classic)
 	local textSettings = HolyLoadHolyWordBarTextSettings()
+	local lwTextSettings = HolyLoadLightweaverBarTextSettings()
+	for _, v in ipairs(lwTextSettings) do table.insert(textSettings, v) end
 	local afTextSettings = LoadAngelicFeatherBarTextSettings()
 	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
@@ -545,12 +611,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			holyWords = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			lightweaver = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			utility = { neverShow = true, alwaysShow = false, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
 			holyWords = TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic),
+			lightweaver = TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic),
 			utility = TRB.Functions.Settings:DefaultUtilityBarDimensions(classic),
 		},
 		endOf = {
@@ -637,6 +705,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				holyWords = TRB.Functions.Settings:DefaultHolyWordsBarColors(),
+				lightweaver = TRB.Functions.Settings:DefaultLightweaverBarColors(),
 				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 		},
@@ -693,6 +762,15 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					thresholdValue = 4
 				}
 			},
+			lightweaverExpiring={
+				name = L["PriestHolyAudioLightweaverExpiring"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"],
+				configuration = {
+					thresholdValue = 5
+				}
+			},
 			holyWordChastiseReady={
 				name = L["PriestHolyAudioHolyWordChastiseReady"],
 				enabled=false,
@@ -726,13 +804,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"),
 			GetPriestUtilityBarTypeDefinition(),
 		}),
 	}
 
 	if includeBarText then
 		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
-		settings.displayText.migrations = { holyWordBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
+		settings.displayText.migrations = { holyWordBarTextSeeded = true, lightweaverBarTextSeeded = true, angelicFeatherBarTextSeeded = true }
 	end
 
 	return settings
@@ -1500,6 +1579,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1528,6 +1608,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1543,6 +1624,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = HolyLoadDefaultBarTextSettings(true)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
+			spec.displayText.migrations.lightweaverBarTextSeeded = true
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1746,7 +1828,7 @@ local function HolyConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), GetPriestUtilityBarTypeDefinition() })
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"), GetPriestUtilityBarTypeDefinition() })
 end
 
 local function HolyConstructBarVisibilityPanel(parent)
@@ -1765,12 +1847,38 @@ local function HolyConstructBarVisibilityPanel(parent)
 	if holyWordsBarDef then
 		table.insert(customBars, holyWordsBarDef)
 	end
+	local lightweaverBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver")
+	if lightweaverBarDef then
+		table.insert(customBars, lightweaverBarDef)
+	end
 	local utilityBarDef = GetPriestUtilityBarTypeDefinition()
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true, nil, customBars)
+end
+
+local function HolyConstructLightweaverBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_holy
+	local yCoord = 5
+
+	local spec = TRB.Data.settings.priest.holy
+	local lightweaverBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver")
+
+	if lightweaverBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef, L["ResourceMana"])
+	end
+
+	yCoord = yCoord - 90
+	if lightweaverBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef)
+	end
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -1792,27 +1900,28 @@ local function HolyConstructHolyWordsPanel(parent)
 
 	yCoord = yCoord - 90
 	if holyWordsBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef)
+		local hwAfterNodesCallback = function(callbackParent, callbackYCoord)
+			local hwColors = spec.colors.bars.holyWords
+			controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+			local fCb = controls.checkBoxes.completeCooldownEnabled
+			fCb:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+			getglobal(fCb:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
+			fCb.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
+			fCb:SetChecked(hwColors.completeCooldown.enabled)
+			fCb:SetScript("OnClick", function(self, ...)
+				hwColors.completeCooldown.enabled = self:GetChecked()
+			end)
+
+			controls.colors.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(callbackParent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], hwColors.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+			local fCol = controls.colors.completeCooldown
+			fCol:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, hwColors, controls.colors, "completeCooldown")
+			end)
+
+			return callbackYCoord - 30
+		end
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef, hwAfterNodesCallback)
 	end
-
-	-- Complete Cooldown color (specific to Holy Words, not part of BarTypeDefinition)
-	local hwColors = spec.colors.bars.holyWords
-	yCoord = yCoord - 40
-	controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.completeCooldownEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
-	f.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
-	f:SetChecked(hwColors.completeCooldown.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		hwColors.completeCooldown.enabled = self:GetChecked()
-	end)
-
-	controls.colors.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], hwColors.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.completeCooldown
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, hwColors, controls.colors, "completeCooldown")
-	end)
 end
 
 local function HolyConstructThresholdPanel(parent)
@@ -1916,6 +2025,18 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	end)
 	yCoord = yCoord - 10
 
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordChastiseReady", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordChastiseReady"], L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"])
+
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioLightweaverHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
 	local yCoord2 = yCoord - 20
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaver", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverThreshold1"], L["PriestHolyAudioCheckboxLightweaverThreshold1Tooltip"])
 
@@ -1942,14 +2063,18 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		spec.audio["lightweaverMaxStacks"].configuration.thresholdValue = value
 	end)
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
+	yCoord2 = yCoord - 20
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "lightweaverExpiring", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverExpiring"], L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"])
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordChastiseReady", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordChastiseReady"], L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSerenityCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "holyWordSanctifyCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"])
+	spec.audio.lightweaverExpiring.configuration = spec.audio.lightweaverExpiring.configuration or {}
+	controls.priest_lightweaverExpiringSlider = TRB.Functions.OptionsUi:BuildSlider(parent, L["PriestHolyAudioLightweaverExpiringSliderTitle"], 0, 20, spec.audio["lightweaverExpiring"].configuration.thresholdValue, 0.5, 1,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
+	controls.priest_lightweaverExpiringSlider:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
+		self.EditBox:SetText(value)
+		spec.audio["lightweaverExpiring"].configuration.thresholdValue = value
+	end)
 end
 
 local function HolyConstructBarTextDisplayPanel(parent, cache)
@@ -2007,6 +2132,7 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
 		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel },
+		{ key = "lightweaverBar", label = L["TabLightweaver"], width = oUi.tabWidth.medium, constructor = HolyConstructLightweaverBarPanel },
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },

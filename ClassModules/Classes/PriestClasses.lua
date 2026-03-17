@@ -1030,6 +1030,14 @@ function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             false -- not primary
         )
 
+        -- Lightweaver buff stacks bar (4 nodes)
+        barGroups.lightweaver = TRB.Classes.BarGroup:New(
+            parentFrame or UIParent,
+            "TwintopResourceBarFrame_Lightweaver",
+            4,
+            false -- not primary
+        )
+
     elseif specId == 3 then -- Shadow
         -- Primary insanity bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -1113,6 +1121,11 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 3,
                 isPrimary = false,
                 resourceType = "AngelicFeather"
+            },
+            lightweaver = {
+                maxNodes = 4,
+                isPrimary = false,
+                resourceType = "Lightweaver"
             }
         }
     elseif specId == 3 then -- Shadow
@@ -1143,6 +1156,7 @@ function TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
 	return {
 		border = { color = "FFD6AA00" },
 		background = { color = "66000000" },
+		sameColor = false,
 		nodeColors = {
 			angelicFeather1 = { color = "FFFFE77A", enabled = true },
 			angelicFeather2 = { color = "FFFFE34B", enabled = true },

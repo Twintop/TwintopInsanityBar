@@ -3820,7 +3820,7 @@ end
 ---@param yCoord number # Starting Y coordinate
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
 ---@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, afterNodesCallback)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
@@ -3944,6 +3944,14 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 			RebuildBarAfterNodeChange()
 		end
 
+		-- Determine if sameColor checkbox should be placed inline with a specific node
+		local sameColorPlacedInline = false
+		local showSameColor = barTypeDef.hasSameColor and barTypeDef.nodeColors and #barTypeDef.nodeColors >= 2
+		local sameColorTargetKey = nil
+		if showSameColor then
+			sameColorTargetKey = barTypeDef.sameColorNodeKey or barTypeDef.nodeColors[#barTypeDef.nodeColors].key
+		end
+
 		for rowIndex, nodeKey in ipairs(orderedKeys) do
 			local nodeConfig = nodeConfigByKey[nodeKey]
 			local nodeDisplayName = nodeConfig.displayName
@@ -4041,6 +4049,21 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 					end)
 					row.colorPicker = nodeControls.color
 				else
+					-- Place sameColor checkbox inline on the left if this row matches the target node
+					if showSameColor and not sameColorPlacedInline and (nodeKey == sameColorTargetKey) then
+						local sameColorCheckboxName = "TwintopResourceBar_" .. namePrefix .. "_sameColor"
+						colorControls.sameColor = CreateFrame("CheckButton", sameColorCheckboxName, parent, "ChatConfigCheckButtonTemplate")
+						local fSameColor = colorControls.sameColor
+						fSameColor:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+						getglobal(fSameColor:GetName() .. 'Text'):SetText(string.format(L["CustomBarCheckboxSameColor"], displayName))
+						fSameColor.tooltip = string.format(L["CustomBarCheckboxSameColorTooltip"], displayName)
+						fSameColor:SetChecked(colorSettings.sameColor)
+						fSameColor:SetScript("OnClick", function(self, ...)
+							colorSettings.sameColor = self:GetChecked()
+						end)
+						sameColorPlacedInline = true
+					end
+
 					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time for
 					-- settings, but use nodeControls for the controls table so the callback updates THIS row's swatch)
 					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
@@ -4056,8 +4079,28 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				yCoord = yCoord - 30
 			end
 		end
-	end	
-	
+
+		-- Fallback: if sameColor checkbox wasn't placed inline (e.g., target node has hasEnabled), place on its own row
+		if showSameColor and not sameColorPlacedInline then
+			local sameColorCheckboxName = "TwintopResourceBar_" .. namePrefix .. "_sameColor"
+			colorControls.sameColor = CreateFrame("CheckButton", sameColorCheckboxName, parent, "ChatConfigCheckButtonTemplate")
+			local fSameColor = colorControls.sameColor
+			fSameColor:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+			getglobal(fSameColor:GetName() .. 'Text'):SetText(string.format(L["CustomBarCheckboxSameColor"], displayName))
+			fSameColor.tooltip = string.format(L["CustomBarCheckboxSameColorTooltip"], displayName)
+			fSameColor:SetChecked(colorSettings.sameColor)
+			fSameColor:SetScript("OnClick", function(self, ...)
+				colorSettings.sameColor = self:GetChecked()
+			end)
+			yCoord = yCoord - 30
+		end
+	end
+
+	-- Extra content between node colors and border (e.g., Holy Words complete cooldown)
+	if afterNodesCallback then
+		yCoord = afterNodesCallback(parent, yCoord)
+	end
+
 	-- Border Color
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
@@ -7838,6 +7881,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		relativeToFrame[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
 		relativeToFrame[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
 		relativeToFrame[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
+		relativeToFrame[L["LightweaverCharge1"]] = "Lightweaver_Charge_1"
+		relativeToFrame[L["LightweaverCharge2"]] = "Lightweaver_Charge_2"
+		relativeToFrame[L["LightweaverCharge3"]] = "Lightweaver_Charge_3"
+		relativeToFrame[L["LightweaverCharge4"]] = "Lightweaver_Charge_4"
 		relativeToFrame[L["AngelicFeatherCharge1"]] = "Angelic_Feather_Charge_1"
 		relativeToFrame[L["AngelicFeatherCharge2"]] = "Angelic_Feather_Charge_2"
 		relativeToFrame[L["AngelicFeatherCharge3"]] = "Angelic_Feather_Charge_3"
@@ -7848,6 +7895,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HolyWordSanctifyCharge1"],
 			L["HolyWordSanctifyCharge2"],
 			L["HolyWordChastiseCharge1"],
+			L["LightweaverCharge1"],
+			L["LightweaverCharge2"],
+			L["LightweaverCharge3"],
+			L["LightweaverCharge4"],
 			L["AngelicFeatherCharge1"],
 			L["AngelicFeatherCharge2"],
 			L["AngelicFeatherCharge3"],

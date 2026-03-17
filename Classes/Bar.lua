@@ -988,6 +988,8 @@ end
 ---@field public orderDownTooltip string? # Localized tooltip for the "move down" arrow button
 ---@field public onChangeCallback function? # Optional callback function to call after color/threshold changes
 ---@field public getNodeCountForKey (fun(key: string, colorSettings: table): integer)? # Optional callback returning node count per key (for multi-charge nodes like Holy Words). When nil, each enabled key counts as 1 node.
+---@field public hasSameColor boolean # True if the "use highest color" checkbox should be shown for this bar's node colors. Defaults to true; set false to hide.
+---@field public sameColorNodeKey string? # Key of the nodeColor entry that the sameColor checkbox should be placed next to. Defaults to the last nodeColor entry.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1035,6 +1037,8 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.orderUpTooltip = config.orderUpTooltip -- Localized tooltip for the "move up" arrow button
 	self.orderDownTooltip = config.orderDownTooltip -- Localized tooltip for the "move down" arrow button
 	self.getNodeCountForKey = config.getNodeCountForKey -- Optional callback: (key, colorSettings) -> integer node count
+	self.hasSameColor = config.hasSameColor ~= false -- Defaults to true; set false to hide "use highest" checkbox
+	self.sameColorNodeKey = config.sameColorNodeKey -- Key of node that sameColor checkbox sits next to (defaults to last)
 
 	return self
 end
@@ -1364,6 +1368,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		displayName = L["ResourceStagger"],
 		isMultiNode = false,
 		maxNodes = 1,
+		hasSameColor = false,
 		minMaxMode = "percentage", -- 0-100% of max health
 		hasSpacing = false,
 		hasThresholds = false,
@@ -1398,6 +1403,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		displayName = L["ResourceWarriorDefensives"],
 		isMultiNode = true,
 		maxNodes = 2, -- Ignore Pain + Shield Block
+		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
 		hasSpacing = true,
 		hasThresholds = false,
@@ -1427,6 +1433,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		displayName = L["ResourcePriestHolyWords"],
 		isMultiNode = true,
 		maxNodes = 5, -- Serenity x2 + Sanctify x2 + Chastise x1
+		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (cooldown progress)
 		hasSpacing = true,
 		hasThresholds = false,
@@ -1461,6 +1468,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		displayName = L["ResourceMana"],
 		isMultiNode = false,
 		maxNodes = 1,
+		hasSameColor = false,
 		minMaxMode = "mana",
 		hasSpacing = false,
 		hasThresholds = false,
@@ -1475,6 +1483,27 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
+	}))
+
+	-- Whirlwind stacks bar (Fury Warrior)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "whirlwind",
+		displayName = L["ResourceWarriorWhirlwind"],
+		isMultiNode = true,
+		maxNodes = 4,
+		minMaxMode = "discrete",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		nodeColors = {
+			{ key = "charge1", displayName = L["WhirlwindCharge1"], colorLabel = L["WhirlwindColorPickerBase"] },
+			{ key = "charge2", displayName = L["WhirlwindCharge2"], colorLabel = L["WhirlwindColorPickerSecondary"] },
+			{ key = "charge3", displayName = L["WhirlwindCharge3"], colorLabel = L["WhirlwindColorPickerPenultimate"] },
+			{ key = "charge4", displayName = L["WhirlwindCharge4"], colorLabel = L["WhirlwindColorPickerFinal"] },
+		},
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultWhirlwindBarColors()
+		end,
 	}))
 
 	-- Utility bar (generic multi-node discrete bar; class modules override displayName, nodeColors, and defaultColorsFunc)
@@ -1493,6 +1522,33 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultUtilityBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "lightweaver",
+		displayName = L["ResourcePriestLightweaver"],
+		isMultiNode = true,
+		maxNodes = 4,
+		minMaxMode = "discrete",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "lightweaver",
+		nodeColors = {
+			{ key = "charge1", displayName = L["LightweaverCharge1"], colorLabel = L["LightweaverCharge1"] },
+			{ key = "charge2", displayName = L["LightweaverCharge2"], colorLabel = L["LightweaverCharge2"] },
+			{ key = "charge3", displayName = L["LightweaverCharge3"], colorLabel = L["LightweaverCharge3"] },
+			{ key = "charge4", displayName = L["LightweaverCharge4"], colorLabel = L["LightweaverCharge4"] },
+		},
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultLightweaverBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

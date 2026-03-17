@@ -340,9 +340,12 @@ local function ConstructResourceBar(settings)
 							settings.textures.comboPointsBackground
 						)
 						wwNode:SetMinMax(0, 1)
-						wwNode:SetBorderColor(settings.colors.comboPoints.border.color)
-						wwNode:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-						wwNode:SetColor(settings.colors.comboPoints.base.color)
+						local whirlwindColors = settings.colors.bars and settings.colors.bars.whirlwind
+						if whirlwindColors then
+							wwNode:SetBorderColor(whirlwindColors.border.color)
+							wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
+							wwNode:SetColor(whirlwindColors.nodeColors.charge1.color)
+						end
 						wwNode:SetFrameLevel(frameLevels.comboPoint)
 					end
 				end
@@ -816,7 +819,13 @@ local function UpdateSnapshot_Fury()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	-- Track active→inactive transition so bar text gets one final refresh when the
+	-- buff expires out of combat (same pattern as Priest Lightweaver fix).
+	local wasWhirlwindActive = snapshots[spells.improvedWhirlwind.id].buff.isActive
 	snapshots[spells.improvedWhirlwind.id].buff:GetRemainingTime(currentTime)
+	if wasWhirlwindActive and not snapshots[spells.improvedWhirlwind.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 	--[[snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
 	snapshots[spells.execute.id].cooldown:Refresh()]]
 end
@@ -829,8 +838,19 @@ local function UpdateSnapshot_Protection()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	-- Track active→inactive transitions so bar text gets one final refresh when
+	-- buffs expire out of combat.
+	local wasIgnorePainActive = snapshots[spells.ignorePain.id].buff.isActive
 	snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
+	if wasIgnorePainActive and not snapshots[spells.ignorePain.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+
+	local wasShieldBlockActive = snapshots[spells.shieldBlock.id].buff.isActive
 	snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
+	if wasShieldBlockActive and not snapshots[spells.shieldBlock.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 	--[[
 	snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
@@ -933,25 +953,26 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	if stacks < 0 then stacks = 0 end
 	if stacks > 4 then stacks = 4 end
 
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
-	local useZeroStackBg = specSettings.colors.comboPoints.zeroStackBackground.enabled and stacks == 0 and TRB.Data.character.inCombat
+	local whirlwindColors = specSettings.colors.bars.whirlwind
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(whirlwindColors.background.color, true)
+	local useZeroStackBg = whirlwindColors.zeroStackBackground.enabled and stacks == 0 and TRB.Data.character.inCombat
 	local zsBgR, zsBgG, zsBgB, zsBgA
 	if useZeroStackBg then
-		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(specSettings.colors.comboPoints.zeroStackBackground.color, true)
+		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(whirlwindColors.zeroStackBackground.color, true)
 	end
 
 	for x = 1, 4 do
-		local cpBorderColor = specSettings.colors.comboPoints.border.color
-		local cpColor = specSettings.colors.comboPoints.base.color
+		local cpBorderColor = whirlwindColors.border.color
+		local cpColor = whirlwindColors.nodeColors.charge1.color
 		local filled = stacks >= x
 
 		if filled then
-			if (specSettings.comboPoints.sameColor and stacks == 2) or (not specSettings.comboPoints.sameColor and x == 2) then
-				cpColor = specSettings.colors.comboPoints.secondary.color
-			elseif (specSettings.comboPoints.sameColor and stacks == 3) or (not specSettings.comboPoints.sameColor and x == 3) then
-				cpColor = specSettings.colors.comboPoints.penultimate.color
-			elseif (specSettings.comboPoints.sameColor and stacks == 4) or x == 4 then
-				cpColor = specSettings.colors.comboPoints.final.color
+			if (whirlwindColors.sameColor and stacks == 2) or (not whirlwindColors.sameColor and x == 2) then
+				cpColor = whirlwindColors.nodeColors.charge2.color
+			elseif (whirlwindColors.sameColor and stacks == 3) or (not whirlwindColors.sameColor and x == 3) then
+				cpColor = whirlwindColors.nodeColors.charge3.color
+			elseif (whirlwindColors.sameColor and stacks == 4) or x == 4 then
+				cpColor = whirlwindColors.nodeColors.charge4.color
 			end
 		end
 

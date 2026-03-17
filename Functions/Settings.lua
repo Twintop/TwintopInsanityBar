@@ -4104,18 +4104,49 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
-	-- Warrior Fury comboPoints migration: split base into base (1 stack) and secondary (2 stacks), add zeroStackBackground
+	-- Warrior Fury comboPoints migration: normalize old format, then migrate to colors.bars.whirlwind
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.warrior ~= nil and
 		TwintopInsanityBarSettings.warrior.fury ~= nil and
 		TwintopInsanityBarSettings.warrior.fury.colors ~= nil and
 		TwintopInsanityBarSettings.warrior.fury.colors.comboPoints ~= nil then
 		local cp = TwintopInsanityBarSettings.warrior.fury.colors.comboPoints
+		-- Normalize: ensure secondary and zeroStackBackground exist (old->intermediate format)
 		if cp.secondary == nil and cp.base ~= nil then
 			cp.secondary = { color = cp.base.color }
 		end
 		if cp.zeroStackBackground == nil then
 			cp.zeroStackBackground = { color = "66333333", enabled = false }
+		end
+
+		-- Migrate colors.comboPoints -> colors.bars.whirlwind
+		local furySettings = TwintopInsanityBarSettings.warrior.fury
+		furySettings.colors.bars = furySettings.colors.bars or {}
+		if not furySettings.colors.bars.whirlwind then
+			-- Pull sameColor from the dimensions table (comboPoints.sameColor)
+			local sameColor = false
+			if furySettings.comboPoints and furySettings.comboPoints.sameColor ~= nil then
+				sameColor = furySettings.comboPoints.sameColor
+			end
+
+			furySettings.colors.bars.whirlwind = {
+				border = cp.border or { color = "FFFFD300" },
+				background = cp.background or { color = "66000000" },
+				sameColor = sameColor,
+				nodeColors = {
+					charge1 = { color = cp.base and cp.base.color or "FFFFFFAA" },
+					charge2 = { color = cp.secondary and cp.secondary.color or "FFFFFF00" },
+					charge3 = { color = cp.penultimate and cp.penultimate.color or "FFFF9900" },
+					charge4 = { color = cp.final and cp.final.color or "FFFF0000" },
+				},
+				zeroStackBackground = cp.zeroStackBackground or { color = "B3FF5E5E", enabled = true },
+			}
+			furySettings.colors.comboPoints = nil
+		end
+
+		-- Remove sameColor from comboPoints dimensions (now lives in colors.bars.whirlwind)
+		if furySettings.comboPoints then
+			furySettings.comboPoints.sameColor = nil
 		end
 	end
 
@@ -5779,6 +5810,26 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 	}
 end
 
+---Gets default Whirlwind stacks bar colors (Fury Warrior)
+---@return table
+function TRB.Functions.Settings:DefaultWhirlwindBarColors()
+	return {
+		border = { color = "FFFFD300" },
+		background = { color = "66000000" },
+		sameColor = false,
+		nodeColors = {
+			charge1 = { color = "FFFFFFAA" },
+			charge2 = { color = "FFFFFF00" },
+			charge3 = { color = "FFFF9900" },
+			charge4 = { color = "FFFF0000" },
+		},
+		zeroStackBackground = {
+			color = "B3FF5E5E",
+			enabled = true
+		}
+	}
+end
+
 ---Gets default Utility bar colors (generic; class modules should override via BarTypeRegistry)
 ---@return table
 function TRB.Functions.Settings:DefaultUtilityBarColors()
@@ -5789,6 +5840,71 @@ function TRB.Functions.Settings:DefaultUtilityBarColors()
 			charge1 = { color = "FFAAAAAA", enabled = true },
 			charge2 = { color = "FFAAAAAA", enabled = true },
 			charge3 = { color = "FFAAAAAA", enabled = true }
+		}
+	}
+end
+
+---Gets default Lightweaver bar dimensions (anchored above Holy Words bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			collapseBorderWidth = false,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "holyWords",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		collapseBorderWidth = true,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "holyWords",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
+	}
+end
+
+---Gets default Lightweaver bar colors (progressively darker blue per stack)
+---@return table
+function TRB.Functions.Settings:DefaultLightweaverBarColors()
+	return {
+		border = { color = "FF4466CC" },
+		background = { color = "66000000" },
+		sameColor = false,
+		nodeColors = {
+			charge1 = { color = "FF88CCFF" },
+			charge2 = { color = "FF55AAFF" },
+			charge3 = { color = "FF3388EE" },
+			charge4 = { color = "FF1166CC" },
 		}
 	}
 end
