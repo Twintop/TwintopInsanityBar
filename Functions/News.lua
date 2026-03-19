@@ -17,6 +17,10 @@ local content = [====[
 
 - Fix an issue where some manually tracked buffs with stacks wouldn't have their durations refresh correctly.
 
+### Localization
+
+- [#719](#719) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ---
 
 # 12.0.1.39-release (2026-03-18)
