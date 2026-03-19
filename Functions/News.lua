@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.40-release (2026-03-19)
+## General
+
+- Fix an issue where some manually tracked buffs with stacks wouldn't have their durations refresh correctly.
+
+---
+
 # 12.0.1.39-release (2026-03-18)
 ## Warrior
 ### Fury
