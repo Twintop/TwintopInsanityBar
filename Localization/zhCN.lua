@@ -2159,4 +2159,30 @@ if locale == "zhCN" then
 	L["PriestHolyAudioCheckboxLightweaverThreshold2"] = "织光者层数达到X时播放（阈值2）"
 	L["PriestHolyAudioCheckboxLightweaverThreshold2Tooltip"] = "织光者层数恰好达到该数值时播放语音提示。"
 	L["PriestHolyAudioLightweaverThresholdSliderTitle"] = "织光者层数达到X时"
+
+	L["PriestHolyAudioLightweaverExpiring"] = "织光者效果即将消失"
+	L["PriestHolyAudioCheckboxLightweaverExpiring"] = "织光者剩余时间小于X秒时播放"
+	L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"] = "当你的织光者增益激活且剩余时间低于设定值时，播放音效提示。"
+	L["PriestHolyAudioLightweaverExpiringSliderTitle"] = "剩余时间小于X秒"
+	L["PriestHolyAudioLightweaverHeader"] = "织光者音效提示"
+	
+	L["TabLightweaver"] = "织光者"
+	L["ResourcePriestLightweaver"] = "织光者层数"
+	L["LightweaverCharge1"] = "织光者层数 1"
+	L["LightweaverCharge2"] = "织光者层数 2"
+	L["LightweaverCharge3"] = "织光者层数 3"
+	L["LightweaverCharge4"] = "织光者层数 4"
+	L["PriestHolyBarTextNameLWCharge1"] = "织光层数 1"
+	L["PriestHolyBarTextNameLWCharge2"] = "织光层数 2"
+	L["PriestHolyBarTextNameLWCharge3"] = "织光层数 3"
+	L["PriestHolyBarTextNameLWCharge4"] = "织光层数 4"
+	
+	L["CustomBarCheckboxSameColor"] = "所有节点使用最高%s节点颜色？"
+	L["CustomBarCheckboxSameColorTooltip"] = "勾选后，所有已填充的%s节点将使用最高已填充节点的颜色。"
+	
+	L["ShamanElementalCheckboxEarthShock"] = "大地震击/元素冲击 可用"
+	L["ShamanElementalCheckboxEarthquakeBarColor"] = "地震术可用"
+	L["ShamanElementalCheckboxEarthquakeBarColorTooltip"] = "当你拥有足够的漩涡值可施放地震术时，改变进度条颜色。"
+	L["ShamanElementalColorPickerEarthquake"] = "可施放地震术时的漩涡值颜色"
+
 end
