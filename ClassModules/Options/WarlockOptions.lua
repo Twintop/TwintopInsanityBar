@@ -19,7 +19,7 @@ local function AfflictionLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Warlock.AfflictionLoadDefaultBarTextSettings = AfflictionLoadDefaultBarTextSettings
 
@@ -157,7 +157,7 @@ local function DemonologyLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Warlock.DemonologyLoadDefaultBarTextSettings = DemonologyLoadDefaultBarTextSettings
 
@@ -295,7 +295,7 @@ local function DestructionLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Warlock.DestructionLoadDefaultBarTextSettings = DestructionLoadDefaultBarTextSettings
 

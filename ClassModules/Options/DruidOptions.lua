@@ -147,7 +147,7 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("manaBar", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 --[[ 
@@ -282,7 +282,7 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(1, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Druid.BalanceLoadDefaultBarTextSettings = BalanceLoadDefaultBarTextSettings
 
@@ -604,7 +604,7 @@ local function FeralLoadExtraBarTextSettings(classic)
 		}
 	}
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 ---Loads default bar text settings for Feral
@@ -624,7 +624,7 @@ local function FeralLoadDefaultBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Druid.FeralLoadDefaultBarTextSettings = FeralLoadDefaultBarTextSettings
 
@@ -843,7 +843,7 @@ local function GuardianLoadDefaultBarTextSettings(classic)
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(3, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Druid.GuardianLoadDefaultBarTextSettings = GuardianLoadDefaultBarTextSettings
 
@@ -1010,7 +1010,7 @@ local function RestorationLoadDefaultBarTextSettings(classic)
 
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(4, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Druid.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaultBarTextSettings
 

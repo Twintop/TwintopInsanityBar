@@ -27,7 +27,7 @@ local function BeastMasteryLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSettings = BeastMasteryLoadDefaultBarTextSettings
 
@@ -222,7 +222,7 @@ local function MarksmanshipLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSettings = MarksmanshipLoadDefaultBarTextSettings
 
@@ -411,7 +411,7 @@ local function SurvivalLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Hunter.SurvivalLoadDefaultBarTextSettings = SurvivalLoadDefaultBarTextSettings
 

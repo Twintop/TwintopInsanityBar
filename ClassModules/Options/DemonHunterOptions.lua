@@ -51,7 +51,7 @@ local function SharedLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 ---Loads default bar text settings for Havoc
@@ -64,7 +64,7 @@ local function HavocLoadDefaultBarTextSettings(classic)
 
 	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.DemonHunter.HavocLoadDefaultBarTextSettings = HavocLoadDefaultBarTextSettings
 
@@ -242,7 +242,7 @@ local function VengeanceLoadDefaultBarTextSettings(classic)
 
 	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSettings = VengeanceLoadDefaultBarTextSettings
 
@@ -456,7 +456,7 @@ local function DevourerLoadDefaultBarTextSettings(classic)
 
 	local sharedSettings = SharedLoadDefaultBarTextSettings(classic)
 	for k,v in pairs(sharedSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.DemonHunter.DevourerLoadDefaultBarTextSettings = DevourerLoadDefaultBarTextSettings
 

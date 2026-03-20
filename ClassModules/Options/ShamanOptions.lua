@@ -32,7 +32,7 @@ local function ElementalLoadDefaultBarTextSettings(classic)
 	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings = ElementalLoadDefaultBarTextSettings
 
@@ -223,7 +223,7 @@ local function EnhancementLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Shaman.EnhancementLoadDefaultBarTextSettings = EnhancementLoadDefaultBarTextSettings
 
@@ -389,7 +389,7 @@ local function RestorationLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Shaman.RestorationLoadDefaultBarTextSettings = RestorationLoadDefaultBarTextSettings
 

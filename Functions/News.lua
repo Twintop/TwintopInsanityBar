@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.1.41-release (2026-03-21)
+## General
+
+- New bar text entries now default to using the shared font settings instead of creating per-entry overrides.
+- When a bar text entry is configured to use a shared font setting, the corresponding per-entry control is now disabled and grayed out for clarity.
+- Applied the new shared-first default behavior to all built-in default bar text layouts, including specialization-specific hard-coded defaults.
+
+---
+
 # 12.0.1.40-release (2026-03-19)
 ## General
 

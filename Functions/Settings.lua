@@ -6056,6 +6056,32 @@ function TRB.Functions.Settings:DefaultEndOfSettings(mode, gcdsMax, timeMax, ext
 	return settings
 end
 
+---Marks a bar text entry to inherit all shared font settings by default.
+---@param entry TRB.Classes.Settings.DisplayTextEntry
+---@return TRB.Classes.Settings.DisplayTextEntry
+function TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntry(entry)
+	if entry ~= nil then
+		entry.useDefaultFontColor = true
+		entry.useDefaultFontFace = true
+		entry.useDefaultFontSize = true
+		entry.useDefaultFontOutline = true
+		entry.useDefaultFontShadow = true
+	end
+	return entry
+end
+
+---Marks all bar text entries in a list to inherit shared font settings by default.
+---@param textSettings TRB.Classes.Settings.DisplayTextEntry[]
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+	if textSettings ~= nil then
+		for _, entry in ipairs(textSettings) do
+			TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntry(entry)
+		end
+	end
+	return textSettings
+end
+
 ---Creates a default bar text entry for buff time display with icon
 ---@param variable string # The bar text variable name without $ (e.g., "bestialWrathTime")
 ---@param icon string # The icon reference without # (e.g., "bestialWrath")
@@ -6084,7 +6110,7 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			fontJustifyHorizontalName = L["PositionRight"]
 		end
 
-		return {
+		return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntry({
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -6111,7 +6137,7 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 				relativeToFrame = "Resource",
 				relativeToFrameName = L["MainResourceBar"]
 			}
-		}
+		})
 	end
 
 	if classic then
@@ -6267,7 +6293,7 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			}
 		})
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 
@@ -6314,7 +6340,7 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 ---Returns default bar text for a secondary mana bar (used by DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
@@ -6411,7 +6437,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			}
 		})
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 
@@ -6587,7 +6613,7 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 		end
 	end
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 ---Shows a message in chat informing the user that their bar text has been reset due to Midnight changes.

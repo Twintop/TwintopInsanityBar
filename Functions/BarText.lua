@@ -1370,6 +1370,72 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	end
 end
 
+---Repositions an existing bar text frame without rebuilding all bar text frames.
+---@param entryIndex integer
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
+
+	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
+		return false
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local settings = TRB.Data.specCache[compositeKey] and TRB.Data.specCache[compositeKey].settings
+	local displayText = settings and settings.displayText
+	local textFrames = TRB.Frames.textFrames
+	local entry = displayText and displayText.barText and displayText.barText[entryIndex]
+
+	if entry == nil or textFrames == nil or textFrames[entryIndex] == nil then
+		return false
+	end
+
+	---@diagnostic disable-next-line: undefined-field
+	local font = textFrames[entryIndex].font
+	if font == nil then
+		return false
+	end
+
+	local relativeToFrame
+	local isEnabled = true
+	if entry.position.relativeToFrame == "UIParent" then
+		relativeToFrame = UIParent
+	elseif entry.position.relativeToFrame ~= "AllComboPoints" then
+		relativeToFrame, isEnabled, _ = TRB.Functions.Class:GetBarTextFrame(entry.position.relativeToFrame)
+		if relativeToFrame == nil and isEnabled then
+			relativeToFrame = _G["TwintopResourceBarFrame_" .. entry.position.relativeToFrame]
+		end
+	end
+
+	textFrames[entryIndex]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+	textFrames[entryIndex]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+	if relativeToFrame ~= nil and entry.enabled and isEnabled then
+		font:ClearAllPoints()
+		font:SetPoint(entry.position.relativeTo, relativeToFrame, entry.position.relativeTo, entry.position.xPos, entry.position.yPos)
+		textFrames[entryIndex]:SetParent(relativeToFrame)
+		textFrames[entryIndex]:ClearAllPoints()
+		textFrames[entryIndex]:SetAllPoints(font)
+
+		if TRB.Functions.Bar:IsRenderTransitionActive() then
+			font:Hide()
+			textFrames[entryIndex]:Hide()
+		else
+			font:Show()
+			textFrames[entryIndex]:Show()
+		end
+	else
+		textFrames[entryIndex]:Hide()
+		font:Hide()
+	end
+
+	return true
+end
+
 ---Builds the required bar text frames
 ---@param classId integer?
 ---@param specId integer?

@@ -2486,6 +2486,46 @@ function TRB.Functions.OptionsUi:ToggleSliderEnabled(slider, enable)
 	end
 end
 
+---Enables or disables a dropdown button and grays out its section label when disabled.
+---@param dropdown Button # The dropdown button frame to toggle
+---@param enable boolean # Whether to enable or disable the dropdown
+function TRB.Functions.OptionsUi:ToggleDropdownEnabled(dropdown, enable)
+	if enable then
+		dropdown:Enable()
+		dropdown:SetAlpha(1.0)
+		if dropdown.label and dropdown.label.font then
+			dropdown.label.font:SetFontObject(GameFontNormal)
+		end
+	else
+		dropdown:Disable()
+		dropdown:SetAlpha(0.5)
+		if dropdown.label and dropdown.label.font then
+			dropdown.label.font:SetFontObject(GameFontDisable)
+		end
+	end
+end
+
+---Enables or disables a color picker button and grays out its label when disabled.
+---@param colorPicker Button # The color picker button returned by BuildColorPicker
+---@param enable boolean # Whether to enable or disable the control
+function TRB.Functions.OptionsUi:ToggleColorPickerEnabled(colorPicker, enable)
+	if enable then
+		colorPicker:Enable()
+		colorPicker:SetAlpha(1.0)
+		colorPicker:EnableMouse(true)
+		if colorPicker.Font then
+			colorPicker.Font:SetFontObject(GameFontHighlight)
+		end
+	else
+		colorPicker:Disable()
+		colorPicker:SetAlpha(0.5)
+		colorPicker:EnableMouse(false)
+		if colorPicker.Font then
+			colorPicker.Font:SetFontObject(GameFontDisable)
+		end
+	end
+end
+
 ---Sets a checkbox label to green (enabled) or red (disabled) and optionally changes the label text.
 ---@param checkbox CheckButton # The checkbox frame to style
 ---@param enable boolean # Whether the checkbox represents an enabled state
@@ -7623,6 +7663,88 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	---@diagnostic disable-next-line: missing-fields
 	local workingBarText = {}
 
+	---@param barTextEntry TRB.Classes.Settings.DisplayTextEntry|table|nil
+	---@return string
+	local function NormalizeBarTextEntryColor(barTextEntry)
+		if barTextEntry == nil then
+			return "FFFFFFFF"
+		end
+
+		if type(barTextEntry.color) == "table" then
+			barTextEntry.color.color = barTextEntry.color.color or "FFFFFFFF"
+			return barTextEntry.color.color
+		end
+
+		if type(barTextEntry.color) == "string" and barTextEntry.color ~= "" then
+			local legacyColor = barTextEntry.color
+			local mutableBarTextEntry = barTextEntry --[[@as table<string, any>]]
+			mutableBarTextEntry.color = { color = legacyColor }
+			return mutableBarTextEntry.color.color
+		end
+
+		local mutableBarTextEntry = barTextEntry --[[@as table<string, any>]]
+		mutableBarTextEntry.color = { color = "FFFFFFFF" }
+		return mutableBarTextEntry.color.color
+	end
+
+	local function GetActiveBarTextPreviewIndex()
+		local activeClassId = TRB.Data.character.classId
+		local activeSpecId = TRB.Data.character.specId
+		local activeCompositeKey = TRB.Data.character.compositeKey
+		if activeClassId == nil or activeSpecId == nil or activeCompositeKey == nil then
+			return nil
+		end
+
+		local shouldPreviewActiveSpec = false
+		if classId == activeClassId and specId == activeSpecId then
+			shouldPreviewActiveSpec = true
+		elseif classId == nil and specId == nil then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			shouldPreviewActiveSpec = charClassName ~= nil and charSpecName ~= nil and
+				TRB.Data.settings.core.global[charClassName] ~= nil and
+				TRB.Data.settings.core.global[charClassName][charSpecName] ~= nil and
+				TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText == true
+		end
+
+		if not shouldPreviewActiveSpec or workingBarText == nil or workingBarText.guid == nil then
+			return nil
+		end
+
+		local activeSettings = TRB.Data.specCache[activeCompositeKey] and TRB.Data.specCache[activeCompositeKey].settings
+		local activeBarText = activeSettings and activeSettings.displayText and activeSettings.displayText.barText
+		if activeBarText == nil then
+			return nil
+		end
+
+		for i = 1, #activeBarText do
+			if activeBarText[i].guid == workingBarText.guid then
+				return i
+			end
+		end
+
+		return nil
+	end
+
+	local function RefreshBarTextEditorPreview(forceRebuild)
+		local previewIndex = GetActiveBarTextPreviewIndex()
+		if previewIndex == nil then
+			return
+		end
+
+		if not forceRebuild then
+			if TRB.Functions.BarText:RepositionBarTextEntry(previewIndex, TRB.Data.character.classId, TRB.Data.character.specId) then
+				return
+			end
+		end
+
+		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
+		TRB.Functions.BarText:InvalidateLookupMemoization()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
 	controls.barTextContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
 	local btc = controls.barTextContainer
 
@@ -7705,7 +7827,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextHorizontal:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.position.xPos = value
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(false)
 	end)
 
 	title = L["VerticalOffset"]
@@ -7714,7 +7836,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextVertical:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.position.yPos = value
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(false)
 	end)
 
 	yCoord = yCoord - 40
@@ -8155,7 +8277,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				end
 			end
 			barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
-			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			RefreshBarTextEditorPreview(false)
 		end
 	end
 
@@ -8213,7 +8335,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				end
 			end
 			barTextRelativeTo:SetDefaultText(workingBarText.position.relativeToName)
-			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			RefreshBarTextEditorPreview(false)
 		end
 	end
 
@@ -8231,6 +8353,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	controls.colors.text = controls.colors.text or {}
 	
 	FillFontCache()
+	local UpdateBarTextEditorInheritedControlState
 
 	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFace", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextFontFace:SetWidth(oUi.sliderWidth)
@@ -8250,7 +8373,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			workingBarText.fontFace = newValue
 			workingBarText.fontFaceName = fontPairsByName[newValue]
 			barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
-			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			RefreshBarTextEditorPreview(true)
 		end
 	end
 
@@ -8276,7 +8399,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontFace.tooltip = L["UseDefaultFontFaceTooltip"]
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
 	end)
 
 
@@ -8313,7 +8437,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				end
 			end
 			barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)
-			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			RefreshBarTextEditorPreview(true)
 		end
 	end
 
@@ -8333,7 +8457,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	fontSize:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		workingBarText.fontSize = value
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
@@ -8343,23 +8467,18 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontSize.tooltip = L["UseDefaultFontSizeTooltip"]
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
-	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], (workingBarText.color and workingBarText.color.color) or "FFFFFFFF",
+	local initialBarTextColor = NormalizeBarTextEntryColor(workingBarText)
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], initialBarTextColor,
 																			oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	local barTextColor = controls.colors.barText.color
 	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
-		-- Ensure color table is properly initialized before opening color picker
-		--[[if workingBarText.color == nil then
-			workingBarText.color = { color = "FFFFFFFF" }
-		elseif type(workingBarText.color) == "string" then
-			workingBarText.color = { color = workingBarText.color }
-		elseif workingBarText.color.color == nil then
-			workingBarText.color.color = "FFFFFFFF"
-		end]]
+		NormalizeBarTextEntryColor(workingBarText)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, workingBarText, controls.colors.barText, "color")
 	end)
 
@@ -8370,7 +8489,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontColor.tooltip = L["UseDefaultFontColorTooltip"]
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	-- Font Outline dropdown
@@ -8405,7 +8525,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		if workingBarText ~= nil then
 			workingBarText.fontOutline = newValue
 			workingBarText.fontOutlineName = perEntryFontOutlineLookup[newValue] or L["FontOutlineOutline"]
-			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+			RefreshBarTextEditorPreview(true)
 		end
 	end
 
@@ -8424,7 +8544,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontOutline.tooltip = L["UseDefaultFontOutlineTooltip"]
 	useDefaultFontOutline:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontOutline = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	controls.colors.barText.fontShadowColor = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontShadowColor"],
@@ -8441,7 +8562,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 				controls.colors.barText.fontShadowColor.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 				workingBarText.fontShadow.color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-				TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+				RefreshBarTextEditorPreview(true)
 			end)
 		end
 	end)
@@ -8456,7 +8577,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
 		workingBarText.fontShadow.enabled = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	local useDefaultFontShadow = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontShadow", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
@@ -8466,7 +8587,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	useDefaultFontShadow.tooltip = L["UseDefaultFontShadowTooltip"]
 	useDefaultFontShadow:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontShadow = self:GetChecked()
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	yCoord = yCoord - 100
@@ -8479,7 +8601,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
 		workingBarText.fontShadow.xOffset = value
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	title = L["FontShadowYOffset"]
@@ -8491,8 +8613,22 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			workingBarText.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
 		workingBarText.fontShadow.yOffset = value
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(true)
 	end)
+
+	UpdateBarTextEditorInheritedControlState = function()
+		local hasWorkingBarText = workingBarText ~= nil
+		TRB.Functions.OptionsUi:ToggleDropdownEnabled(barTextFontFace, hasWorkingBarText and not workingBarText.useDefaultFontFace)
+		TRB.Functions.OptionsUi:ToggleSliderEnabled(fontSize, hasWorkingBarText and not workingBarText.useDefaultFontSize)
+		TRB.Functions.OptionsUi:ToggleColorPickerEnabled(barTextColor, hasWorkingBarText and not workingBarText.useDefaultFontColor)
+		TRB.Functions.OptionsUi:ToggleDropdownEnabled(barTextFontOutline, hasWorkingBarText and not (workingBarText.useDefaultFontOutline or false))
+
+		local shadowControlsEnabled = hasWorkingBarText and not (workingBarText.useDefaultFontShadow or false)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(fontShadowEnabled, shadowControlsEnabled)
+		TRB.Functions.OptionsUi:ToggleColorPickerEnabled(barTextShadowColor, shadowControlsEnabled)
+		TRB.Functions.OptionsUi:ToggleSliderEnabled(fontShadowXOffset, shadowControlsEnabled)
+		TRB.Functions.OptionsUi:ToggleSliderEnabled(fontShadowYOffset, shadowControlsEnabled)
+	end
 
 	---Populates the bar text scrolling table with rows from the displayText.barText entries.
 	---@param displayText TRB.Classes.Settings.DisplayText The display text settings containing the barText array
@@ -8502,7 +8638,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = TRB.Functions.Table:Length(displayText.barText)
 		if entries > 0 then
 			for i = 1, entries do
-				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color.color, true)
+				NormalizeBarTextEntryColor(displayText.barText[i])
 				table.insert(dataTable, {
 					cols = {
 						{
@@ -8533,11 +8669,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local function GetNewDisplayTextEntry()
 		return {
 			enabled = true,
-			useDefaultFontFace = false,
-			useDefaultFontSize = false,
-			useDefaultFontColor = false,
-			useDefaultFontOutline = false,
-			useDefaultFontShadow = false,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
 			name = L["NewBarTextEntry"],
 			text = "",
 			guid = TRB.Functions.String:Guid(),
@@ -8594,17 +8730,22 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextRelativeTo:SetupMenu(RelativeToGenerator)
 		barTextFontFace:SetupMenu(FontFaceGenerator)
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
+		barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
+		barTextRelativeTo:SetDefaultText(workingBarText.position.relativeToName)
+		barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
+		barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)
 
 		fontSize:SetValue(workingBarText.fontSize)
-		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString((workingBarText.color and workingBarText.color.color) or "FFFFFFFF", true))
+		local currentBarTextColor = NormalizeBarTextEntryColor(workingBarText)
+		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(currentBarTextColor, true))
 		barText:SetText(workingBarText.text)
 		-- Reset undo history so the newly loaded text is the baseline
 		if barText.ResetUndoHistory then
 			barText:ResetUndoHistory(workingBarText.text)
 		end
 
-		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
-		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
+		barTextHorizontal:SetValue(workingBarText.position.xPos)
+		barTextVertical:SetValue(workingBarText.position.yPos)
 		
 		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
 		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
@@ -8612,6 +8753,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		useDefaultFontOutline:SetChecked(workingBarText.useDefaultFontOutline or false)
 		useDefaultFontShadow:SetChecked(workingBarText.useDefaultFontShadow or false)
 		barTextFontOutline:SetupMenu(PerEntryFontOutlineGenerator)
+		barTextFontOutline:SetDefaultText(workingBarText.fontOutlineName or L["FontOutlineOutline"])
 
 		-- Restore font shadow controls
 		local shadow = workingBarText.fontShadow or { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
@@ -8619,6 +8761,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextShadowColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadow.color or "FF000000", true))
 		fontShadowXOffset:SetValue(shadow.xOffset or 1)
 		fontShadowYOffset:SetValue(shadow.yOffset or -1)
+		UpdateBarTextEditorInheritedControlState()
 		
 		barTextOptionsFrame:Show()
 	end
@@ -8661,7 +8804,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
 		TRB.Data.activeVariables = nil
 		TRB.Data.lookupDirty = true
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		RefreshBarTextEditorPreview(true)
 	end)
 
 	barTextName:SetScript("OnTextChanged", function(self, input)
@@ -8725,6 +8868,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	---Replaces the spec's bar text entries, updates the specCache, refreshes the scrolling table, and triggers bar text frame recreation.
 	---@param barText TRB.Classes.Settings.DisplayTextEntry[] The new array of bar text entries to apply
 	local function ResetTableValues(barText)
+		barText = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(barText)
 		spec.displayText.barText = barText
 		if TRB.Data.specCache[compositeKey] then
 			if not TRB.Data.specCache[compositeKey].settings.displayText then

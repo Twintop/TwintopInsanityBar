@@ -118,7 +118,7 @@ local function LoadAngelicFeatherBarTextSettings()
 		},
 	}
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.LoadAngelicFeatherBarTextSettings = LoadAngelicFeatherBarTextSettings
 
@@ -185,7 +185,7 @@ local function DisciplineLoadPowerWordBarTextSettings()
 		},
 	}
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.DisciplineLoadPowerWordBarTextSettings = DisciplineLoadPowerWordBarTextSettings
 
@@ -199,7 +199,7 @@ local function DisciplineLoadExtraBarTextSettings(classic)
 	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 
 ---Loads default bar text settings for Discipline
@@ -215,7 +215,7 @@ local function DisciplineLoadDefaultBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.DisciplineLoadDefaultBarTextSettings = DisciplineLoadDefaultBarTextSettings
 
@@ -493,7 +493,7 @@ local function HolyLoadHolyWordBarTextSettings()
 		}
 	}
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.HolyLoadHolyWordBarTextSettings = HolyLoadHolyWordBarTextSettings
 
@@ -557,7 +557,7 @@ local function HolyLoadLightweaverBarTextSettings()
 			},
 		})
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.HolyLoadLightweaverBarTextSettings = HolyLoadLightweaverBarTextSettings
 
@@ -572,7 +572,7 @@ local function HolyLoadExtraBarTextSettings(classic)
 	for _, v in ipairs(afTextSettings) do table.insert(textSettings, v) end
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.HolyLoadExtraBarTextSettings = HolyLoadExtraBarTextSettings
 
@@ -590,7 +590,7 @@ local function HolyLoadDefaultBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.HolyLoadDefaultBarTextSettings = HolyLoadDefaultBarTextSettings
 
@@ -836,7 +836,7 @@ local function ShadowLoadDefaultBarTextSettings(classic)
 	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
 
-	return textSettings
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Priest.ShadowLoadDefaultBarTextSettings = ShadowLoadDefaultBarTextSettings
 
