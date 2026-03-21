@@ -5900,6 +5900,10 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 		border = { color = "FF4466CC" },
 		background = { color = "66000000" },
 		sameColor = false,
+		benediction = {
+			color = "FFFCE58E",
+			enabled = true
+		},
 		nodeColors = {
 			charge1 = { color = "FF88CCFF" },
 			charge2 = { color = "FF55AAFF" },

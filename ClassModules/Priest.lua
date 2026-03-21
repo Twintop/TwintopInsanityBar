@@ -250,6 +250,7 @@ local function FillSpecializationCache()
 		lightweaverMaxStacksCue = false,
 		lightweaverExpiringCue = false,
 		surgeOfLightPlayed = false,
+		benedictionCue = false,
 		holyWordChastisePrevCharges = nil,
 		holyWordSerenityPrevCharges = nil,
 		holyWordSanctifyPrevCharges = nil,
@@ -723,6 +724,12 @@ local function RefreshLookupData_Discipline()
 		end
 	end
 
+	-- Block D: Boolean state ($surgeOfLight)
+	if not activeVars or activeVars["$surgeOfLight"] then
+		lookupLogic["$surgeOfLight"] = snapshotData.attributes.surgeOfLightActive or false
+		lookup["$surgeOfLight"] = ""
+	end
+
 	--[[lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$entropicRiftTime"] = entropicRiftTime]]
@@ -900,6 +907,14 @@ local function RefreshLookupData_Holy()
 			lookup["$afMaxCharges"] = f
 			lookup["$angelicFeatherMaxCharges"] = f
 		end
+	end
+
+	-- Block F: Boolean state ($surgeOfLight, $benediction)
+	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$benediction"] then
+		lookupLogic["$surgeOfLight"] = snapshotData.attributes.surgeOfLightActive or false
+		lookup["$surgeOfLight"] = ""
+		lookupLogic["$benediction"] = snapshotData.attributes.benedictionOverride or false
+		lookup["$benediction"] = ""
 	end
 
 	TRB.Data.lookup = lookup
@@ -1560,8 +1575,14 @@ local function HandleSpellEvents(self, event, ...)
 			if spellId == spells.flashHeal.id then
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
 					snapshotData.attributes.benedictionOverride = false
+					snapshotData.audio.benedictionCue = false
 				else
 					snapshotData.attributes.benedictionOverride = true
+					local specSettings = TRB.Data.settings.priest.holy
+					if specSettings.audio.benediction ~= nil and specSettings.audio.benediction.enabled and not snapshotData.audio.benedictionCue then
+						PlaySoundFile(specSettings.audio.benediction.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.benedictionCue = true
+					end
 				end
 			end
 		end
@@ -1912,13 +1933,7 @@ local function UpdateResourceBar()
 
 				local barColor = nil
 
-				if holyWordCooldownCompletes then
-					if specSettings.colors.bar[holyWordCooldownCompletesKey] and specSettings.colors.bar[holyWordCooldownCompletesKey].enabled then
-						barColor = specSettings.colors.bar[holyWordCooldownCompletesKey].color
-					end
-				end
-
-				if snapshots[spells.apotheosis.id].buff.isActive and barColor == nil then
+				if snapshots[spells.apotheosis.id].buff.isActive then
 					local timeThreshold = 0
 					local useEndOfApotheosisColor = false
 
@@ -1927,7 +1942,7 @@ local function UpdateResourceBar()
 						if specSettings.endOf.apotheosis.mode == "gcd" then
 							local gcd = Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.endOf.apotheosis.gcdsMax
-						elseif specSettings.endOf.apotheosis.mode == "time" then
+							elseif specSettings.endOf.apotheosis.mode == "time" then
 							timeThreshold = specSettings.endOf.apotheosis.timeMax
 						end
 					end
@@ -1936,6 +1951,18 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.apotheosisEnd.color
 					elseif specSettings.colors.bar.apotheosis.enabled then
 						barColor = specSettings.colors.bar.apotheosis.color
+					end
+				end
+
+				if snapshotData.attributes.benedictionOverride and barColor == nil then
+					if specSettings.colors.bar.benediction and specSettings.colors.bar.benediction.enabled then
+						barColor = specSettings.colors.bar.benediction.color
+					end
+				end
+
+				if holyWordCooldownCompletes and barColor == nil then
+					if specSettings.colors.bar[holyWordCooldownCompletesKey] and specSettings.colors.bar[holyWordCooldownCompletesKey].enabled then
+						barColor = specSettings.colors.bar[holyWordCooldownCompletesKey].color
 					end
 				end
 				
@@ -2097,7 +2124,14 @@ local function UpdateResourceBar()
 							end
 							lwNode:SetColor(nodeColor)
 							lwNode:SetBorderColor(lightweaverColors.border.color)
-							lwNode:SetBackgroundColorFromString(lightweaverColors.background.color)
+							local bgColor = lightweaverColors.background.color
+							if chargeIndex == lwStacks + 1
+								and snapshotData.attributes.benedictionOverride
+								and lightweaverColors.benediction
+								and lightweaverColors.benediction.enabled then
+								bgColor = lightweaverColors.benediction.color
+							end
+							lwNode:SetBackgroundColorFromString(bgColor)
 						end
 					end
 				end
@@ -3165,6 +3199,7 @@ do
 		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
+		["$surgeOfLight"] = function() return TRB.Data.snapshotData.attributes.surgeOfLightActive or false end,
 	}
 	for k, v in pairs(healthVars) do discipline[k] = v end
 	-- Holy
@@ -3221,6 +3256,8 @@ do
 		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
+		["$surgeOfLight"] = function() return TRB.Data.snapshotData.attributes.surgeOfLightActive or false end,
+		["$benediction"] = function() return TRB.Data.snapshotData.attributes.benedictionOverride or false end,
 	}
 	for k, v in pairs(healthVars) do holy[k] = v end
 	-- Shadow

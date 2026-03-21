@@ -296,4 +296,7 @@ if locale == "enGB" then
     L["WhirlwindCheckboxZeroStackBackground"] = "Use different background colour at 0 charges?"
     L["WhirlwindCheckboxZeroStackBackgroundTooltip"] = "When checked, all Whirlwind Charge nodes will use the specified background colour when you have 0 Whirlwind Charges."
     L["ShamanElementalCheckboxEarthquakeBarColorTooltip"] = "This will change the bar colour when you have enough Maelstrom to use Earthquake."
+    L["PriestHolyCheckboxBenediction"] = "Enable Benediction bar colour"
+    L["PriestHolyCheckboxBenedictionTooltip"] = "This will change the mana bar colour while Benediction has replaced Flash Heal."
+    L["PriestHolyCheckboxBenedictionLightweaverTooltip"] = "This will change the background colour of the next unfilled Lightweaver node while Benediction has replaced Flash Heal, indicating that using it will grant a Lightweaver stack."
 end

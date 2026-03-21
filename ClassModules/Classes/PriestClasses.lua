@@ -191,6 +191,8 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
+
+		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = true, color = false },
 	})
 end
 
@@ -465,6 +467,9 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
+
+		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = true, color = false },
+		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
 end
 

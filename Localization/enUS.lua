@@ -2323,3 +2323,18 @@ L["ShamanElementalCheckboxEarthShock"] = "Earth Shock / Elemental Blast usable"
 L["ShamanElementalCheckboxEarthquakeBarColor"] = "Earthquake usable"
 L["ShamanElementalCheckboxEarthquakeBarColorTooltip"] = "This will change the bar color when you have enough Maelstrom to use Earthquake."
 L["ShamanElementalColorPickerEarthquake"] = "Maelstrom when you can cast Earthquake"
+
+-- Priest Holy Benediction
+L["PriestHolyAudioBenediction"] = "Benediction"
+L["PriestHolyAudioCheckboxBenediction"] = "Play audio cue when Benediction procs"
+L["PriestHolyAudioCheckboxBenedictionTooltip"] = "Play audio cue when Benediction procs, replacing your next Flash Heal cast."
+L["PriestHolyCheckboxBenediction"] = "Enable Benediction bar color"
+L["PriestHolyCheckboxBenedictionTooltip"] = "This will change the mana bar color while Benediction has replaced Flash Heal."
+L["PriestHolyColorPickerBenediction"] = "Mana while Benediction is active"
+L["PriestHolyCheckboxBenedictionLightweaver"] = "Enable Benediction indicator on Lightweaver bar"
+L["PriestHolyCheckboxBenedictionLightweaverTooltip"] = "This will change the background color of the next unfilled Lightweaver node while Benediction has replaced Flash Heal, indicating that using it will grant a Lightweaver stack."
+L["PriestHolyColorPickerBenedictionLightweaver"] = "Lightweaver node background while Benediction is active"
+
+-- Priest Bar Text Logic Variables
+L["PriestBarTextVariable_surgeOfLight"] = "Is Surge of Light currently active? LOGIC VARIABLE ONLY!"
+L["PriestHolyBarTextVariable_benediction"] = "Is Benediction currently active (replacing Flash Heal)? LOGIC VARIABLE ONLY!"

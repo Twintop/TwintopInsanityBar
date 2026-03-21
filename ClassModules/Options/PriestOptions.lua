@@ -653,6 +653,10 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				apotheosisEnd = {
 					color = "FFFF0000"
 				},
+				benediction = {
+					color = "FFC4933F",
+					enabled = true
+				},
 				holyWordChastise = {
 					color = "FFAAFFAA",
 					enabled = false
@@ -743,6 +747,12 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					requireSpiritwellTalent = false
 				}
+			},
+			benediction={
+				name = L["PriestHolyAudioBenediction"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 			lightweaver={
 				name = L["PriestHolyAudioLightweaverThreshold1"],
@@ -1682,6 +1692,23 @@ local function HolyConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
+	controls.checkBoxes.benedictionEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_benedictionEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.benedictionEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxBenediction"])
+	f.tooltip = L["PriestHolyCheckboxBenedictionTooltip"]
+	f:SetChecked(spec.colors.bar.benediction.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.benediction.enabled = self:GetChecked()
+	end)
+
+	controls.colors.benediction = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerBenediction"], spec.colors.bar.benediction.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.benediction
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "benediction")
+	end)
+
+	yCoord = yCoord - 30
 	controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.holyWordSerenityEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1879,6 +1906,23 @@ local function HolyConstructLightweaverBarPanel(parent)
 	if lightweaverBarDef then
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef)
 	end
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.benedictionLightweaverEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_benedictionLightweaverEnabled", parent, "ChatConfigCheckButtonTemplate")
+	local f = controls.checkBoxes.benedictionLightweaverEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxBenedictionLightweaver"])
+	f.tooltip = L["PriestHolyCheckboxBenedictionLightweaverTooltip"]
+	f:SetChecked(spec.colors.bars.lightweaver.benediction.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bars.lightweaver.benediction.enabled = self:GetChecked()
+	end)
+
+	controls.colors.benedictionLightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerBenedictionLightweaver"], spec.colors.bars.lightweaver.benediction.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.benedictionLightweaver
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.lightweaver, controls.colors, "benediction")
+	end)
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -2024,6 +2068,8 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 		spec.audio.surgeOfLight.configuration.requireSpiritwellTalent = self:GetChecked()
 	end)
 	yCoord = yCoord - 10
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "benediction", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxBenediction"], L["PriestHolyAudioCheckboxBenedictionTooltip"])
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30

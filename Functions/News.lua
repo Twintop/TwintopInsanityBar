@@ -12,12 +12,24 @@ local content = [====[
 
 ---
 
-# 12.0.1.41-release (2026-03-21)
+# 12.0.1.41-release (2026-03-22)
 ## General
 
 - New bar text entries now default to using the shared font settings instead of creating per-entry overrides.
 - When a bar text entry is configured to use a shared font setting, the corresponding per-entry control is now disabled and grayed out for clarity.
 - Applied the new shared-first default behavior to all built-in default bar text layouts, including specialization-specific hard-coded defaults.
+
+## Priest
+### Discipline
+
+- Add `$surgeOfLight` logic-only bar text variable for use in conditionals.
+
+### Holy
+
+- Add an optional audio cue when Benediction procs, replacing your next Flash Heal cast. Disabled by default.
+- Add an optional mana bar color change while Benediction is active. Enabled by default.
+- Add an optional Lightweaver bar background indicator on the next unfilled node while Benediction is active. Enabled by default.
+- Add `$benediction` and `$surgeOfLight` logic-only bar text variables for use in conditionals.
 
 ---
 
