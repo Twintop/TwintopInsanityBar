@@ -31,6 +31,11 @@ local content = [====[
 - Add an optional Lightweaver bar background indicator on the next unfilled node while Benediction is active. Enabled by default.
 - Add `$benediction` and `$surgeOfLight` logic-only bar text variables for use in conditionals.
 
+## Warrior
+### Fury
+
+- Fix an issue where the Whirlwind bar would not appear after changing specializations even though it would still take up space and show bar text.
+
 ---
 
 # 12.0.1.40-release (2026-03-19)

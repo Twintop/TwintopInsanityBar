@@ -1478,6 +1478,28 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
+	elseif barGroups.secondary and not hasComboPointSettings
+		and settings.colors and settings.colors.bars and settings.colors.bars.whirlwind
+		and settings.textures then
+		-- Fury Warrior uses colors.bars.whirlwind instead of colors.comboPoints for
+		-- its secondary (Whirlwind stacks) bar. Apply textures and default colors here
+		-- so that options UI changes propagate to the secondary bar nodes.
+		local whirlwindColors = settings.colors.bars.whirlwind
+		for i = 1, barGroups.secondary.maxNodes do
+			local node = barGroups.secondary:GetNode(i)
+			if node then
+				node:SetTextures(
+					settings.textures.comboPointsBar,
+					settings.textures.comboPointsBorder,
+					settings.textures.comboPointsBackground
+				)
+				node:SetMinMax(0, 1)
+				node:SetBorderColor(whirlwindColors.border.color)
+				node:SetBackgroundColorFromString(whirlwindColors.background.color)
+				node:SetColor(whirlwindColors.nodeColors.charge1.color)
+				node:SetFrameLevel(frameLevels.comboPoint)
+			end
+		end
 	end
 
 	-- Apply health bar appearance

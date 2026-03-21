@@ -308,6 +308,30 @@ local function ConstructResourceBar(settings)
 			barGroups.defensives:Hide()
 		end
 		if barGroups and barGroups.secondary then
+			-- Always apply textures and colors to ALL secondary nodes so they are
+			-- renderable even when maxResource2 is not yet known (it is set in
+			-- CheckCharacter which may run after ConstructResourceBar).
+			local frameLevels = TRB.Data.constants.frameLevels
+			local whirlwindColors = settings.colors.bars and settings.colors.bars.whirlwind
+			for x = 1, barGroups.secondary.maxNodes do
+				local wwNode = barGroups.secondary:GetNode(x)
+				if wwNode then
+					wwNode:SetTextures(
+						settings.textures.comboPointsBar,
+						settings.textures.comboPointsBorder,
+						settings.textures.comboPointsBackground
+					)
+					wwNode:SetMinMax(0, 1)
+					if whirlwindColors then
+						wwNode:SetBorderColor(whirlwindColors.border.color)
+						wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
+						wwNode:SetColor(whirlwindColors.nodeColors.charge1.color)
+					end
+					wwNode:SetFrameLevel(frameLevels.comboPoint)
+				end
+			end
+
+			-- Now handle visibility based on current maxResource2
 			local maxWhirlwindNodes = TRB.Data.character.maxResource2 or 0
 
 			if maxWhirlwindNodes == 0 then
@@ -329,26 +353,6 @@ local function ConstructResourceBar(settings)
 					settings.comboPoints.height,
 					settings.comboPoints.border
 				)
-
-				local frameLevels = TRB.Data.constants.frameLevels
-				for x = 1, maxWhirlwindNodes do
-					local wwNode = barGroups.secondary:GetNode(x)
-					if wwNode then
-						wwNode:SetTextures(
-							settings.textures.comboPointsBar,
-							settings.textures.comboPointsBorder,
-							settings.textures.comboPointsBackground
-						)
-						wwNode:SetMinMax(0, 1)
-						local whirlwindColors = settings.colors.bars and settings.colors.bars.whirlwind
-						if whirlwindColors then
-							wwNode:SetBorderColor(whirlwindColors.border.color)
-							wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
-							wwNode:SetColor(whirlwindColors.nodeColors.charge1.color)
-						end
-						wwNode:SetFrameLevel(frameLevels.comboPoint)
-					end
-				end
 			end
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
@@ -1780,13 +1784,43 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 		if sharedSettings ~= nil then
 			if whirlwindCharges ~= TRB.Data.character.maxResource2 then
+				local oldMaxResource2 = TRB.Data.character.maxResource2 or 0
 				TRB.Data.character.maxResource2 = whirlwindCharges
-				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
-					Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
+
+				if barGroups and barGroups.secondary then
+					if whirlwindCharges > 0 then
+						-- Talent became active: set up secondary bar layout and show it
+						barGroups.secondary:SetMaxNodes(whirlwindCharges)
+						barGroups.secondary:SetNodeCount(whirlwindCharges)
+						barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
+						barGroups.secondary:Show()
+						barGroups.secondary:ShowNodes(whirlwindCharges)
+
+						local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
+						if cdmForced then
+							barGroups.secondary.fullWidth = true
+						end
+
+						barGroups.secondary:ApplyLayout(
+							effectiveWidth,
+							sharedSettings.comboPoints.width,
+							sharedSettings.comboPoints.height,
+							sharedSettings.comboPoints.border
+						)
+					else
+						-- Talent removed: hide secondary bar
+						barGroups.secondary:Hide()
+					end
 				end
+
+				if barGroups and barGroups.primary then
+					Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
+				end
+				TRB.Functions.BarVisibility:MarkDirty()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
