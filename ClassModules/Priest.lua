@@ -1552,6 +1552,19 @@ local function HandleSpellEvents(self, event, ...)
 				end)
 			end
 		end
+	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		local spellId, rSpellId = ...
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+			if spellId == spells.flashHeal.id then
+				if rSpellId == nil or rSpellId ~= spells.benediction.id then
+					snapshotData.attributes.benedictionOverride = false
+				else
+					snapshotData.attributes.benedictionOverride = true
+				end
+			end
+		end
 	end
 end
 
@@ -1562,11 +1575,13 @@ spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+	spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 end
 
 local function UpdateSnapshot()
