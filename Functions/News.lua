@@ -17,6 +17,7 @@ local content = [====[
 
 - New bar text entries now default to using the shared font settings instead of creating per-entry overrides.
 - When a bar text entry is configured to use a shared font setting, the corresponding per-entry control is now disabled and grayed out for clarity.
+- When a bar text entry is disabled its name in the table will now be colored red to make it more clear at a glance.
 - Applied the new shared-first default behavior to all built-in default bar text layouts, including specialization-specific hard-coded defaults.
 - Add "Settings Source" to the Visibility tab's "Bar Display" selection table to clarify whether the visibility settings for each bar are being controlled by the specialization-specific settings or via global options. Gray out rows that are currently being controlled by global options to make it more clear at a glance.
 - Change the specialization name in the menu to be colored red when the bar is disabled for that specialization.

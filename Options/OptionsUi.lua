@@ -8799,6 +8799,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		if entries > 0 then
 			for i = 1, entries do
 				NormalizeBarTextEntryColor(displayText.barText[i])
+				local nameColor = nil
+				if displayText.barText[i].enabled == false then
+					nameColor = { r = 1, g = 0.3, b = 0.3, a = 1 }
+				end
 				table.insert(dataTable, {
 					cols = {
 						{
@@ -8806,6 +8810,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 						},
 						{
 							value = displayText.barText[i].name,
+							color = nameColor,
 						},
 						{
 							value = displayText.barText[i].position.relativeToFrameName,
@@ -8965,6 +8970,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Data.activeVariables = nil
 		TRB.Data.lookupDirty = true
 		RefreshBarTextEditorPreview(true)
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+		SetTableValues(displayText, barTextTable)
 	end)
 
 	barTextName:SetScript("OnTextChanged", function(self, input)
