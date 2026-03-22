@@ -2346,3 +2346,7 @@ L["BarVisibilityTableHeaderSettingsSource"] = "Settings Source"
 L["BarVisibilitySettingsSourceGlobal"] = "Global"
 L["BarVisibilitySettingsSourceGlobalNamed"] = "Global - %s"
 L["BarVisibilitySettingsSourceSpec"] = "Specialization"
+
+-- Open Global Settings shortcut link
+L["OpenGlobalSettings"] = "[Open Global Settings]"
+L["OpenGlobalSettingsTooltip"] = "Click to navigate to the Global Options panel for this setting."

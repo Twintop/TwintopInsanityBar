@@ -396,6 +396,71 @@ function TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(settingKey)
 	end
 end
 
+---Mapping from per-spec global setting keys to the corresponding Global Options tab key.
+---Used by BuildUseGlobalShortcutLink to navigate to the correct tab.
+local globalSettingKeyToTabKey = {
+	bar = "resourceBar",
+	comboPoints = "comboPointsBar",
+	healthBar = "healthBar",
+	healthBarColors = "healthBar",
+	textures = "barTextures",
+	displayBar = "barVisibility",
+	thresholdIcons = "thresholds",
+	thresholdColors = "thresholds",
+	displayText = "fontText",
+	textColors = "fontText",
+	precision = "fontText",
+	globalBarText = "barText",
+}
+
+---Creates a teal hyperlink-style text button anchored to the right of a "Use global settings" checkbox.
+---Clicking the link navigates to the Global Options panel and selects the corresponding tab.
+---@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
+---@param globalTabKey string The Global Options tab key to navigate to (e.g., "resourceBar", "barTextures")
+function TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(checkbox, globalTabKey)
+	local textRegion = _G[checkbox:GetName() .. "Text"]
+	if not textRegion then
+		return
+	end
+
+	local link = CreateFrame("Button", nil, checkbox)
+	link:SetNormalFontObject("GameFontNormalSmall")
+	link:SetHighlightFontObject("GameFontHighlightSmall")
+	link:SetText(L["OpenGlobalSettings"])
+	link:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+	link:SetWidth(link:GetFontString():GetStringWidth() + 4)
+	link:SetHeight(16)
+	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
+	link.tooltip = L["OpenGlobalSettingsTooltip"]
+
+	link:SetScript("OnEnter", function(self)
+		self:GetFontString():SetTextColor(1, 1, 1)
+		SetCursor("Interface\\CURSOR\\vehichleCursor.PNG")
+		if self.tooltip then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+---@diagnostic disable-next-line: param-type-mismatch
+			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
+			GameTooltip:Show()
+		end
+	end)
+
+	link:SetScript("OnLeave", function(self)
+		self:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+		SetCursor(nil)
+		GameTooltip:Hide()
+	end)
+
+	link:SetScript("OnClick", function()
+		if TRB.Options.OptionsFrame then
+			TRB.Options.OptionsFrame:SelectCategory("global")
+			C_Timer.After(0, function()
+---@diagnostic disable-next-line: param-type-mismatch
+				TRB.Functions.OptionsUi:SwitchToTabByClassSpec(nil, nil, globalTabKey)
+			end)
+		end
+	end)
+end
+
 local sounds = {}
 local soundsList = {}
 local soundPairs = {}
@@ -1326,6 +1391,9 @@ function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, 
 		enabledSettingRef[enabledKey] = self:GetChecked()
 		TRB.Functions.Class:EventRegistration()
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+		if TRB.Options.OptionsFrame then
+			TRB.Options.OptionsFrame:RefreshNav()
+		end
 	end)
 	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
 
@@ -2591,6 +2659,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "resourceBar")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDimensions"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].bar)
 		f:SetScript("OnClick", function(self, ...)
@@ -3005,6 +3074,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		if globalSettingKeyToTabKey[globalSettingKey] then
+			TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, globalSettingKeyToTabKey[globalSettingKey])
+		end
 		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
 		f:SetScript("OnClick", function(self, ...)
@@ -4484,6 +4556,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "barTextures")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Textures"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textures)
 		f:SetScript("OnClick", function(self, ...)
@@ -5179,6 +5252,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "barVisibility")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
 		f:SetScript("OnClick", function(self, ...)
@@ -6020,6 +6094,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdIcons"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons)
 		f:SetScript("OnClick", function(self, ...)
@@ -6283,6 +6358,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors)
 		f:SetScript("OnClick", function(self, ...)
@@ -6544,6 +6620,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "healthBar")
 		f.tooltip = L["CheckboxUseGlobalTooltip_HealthBarColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].healthBarColors)
 		f:SetScript("OnClick", function(self, ...)
@@ -7216,6 +7293,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
@@ -7394,6 +7472,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+	TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
 	f.tooltip = L["CheckboxUseGlobalTooltip_TextColors"]
 	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
 	f:SetScript("OnClick", function(self, ...)
@@ -7434,6 +7513,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Precision"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].precision)
 		f:SetScript("OnClick", function(self, ...)
@@ -7658,6 +7738,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalBarText"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "barText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_GlobalBarText"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].globalBarText)
 		f:SetScript("OnClick", function(self, ...)

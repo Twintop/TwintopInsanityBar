@@ -800,6 +800,24 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 							childEntry.button.selectedTexture:Hide()
 						end
 
+						-- Color spec text red when disabled, white when enabled
+---@diagnostic disable-next-line: undefined-field
+						if childEntry.button.label and childEntry.parentKey then
+							local specName = string.sub(childEntry.key, #childEntry.parentKey + 2)
+							local enabled = TRB.Data.settings
+								and TRB.Data.settings.core
+								and TRB.Data.settings.core.enabled
+								and TRB.Data.settings.core.enabled[childEntry.parentKey]
+								and TRB.Data.settings.core.enabled[childEntry.parentKey][specName]
+							if enabled == false then
+---@diagnostic disable-next-line: undefined-field
+								childEntry.button.label:SetTextColor(1, 0.3, 0.3)
+							else
+---@diagnostic disable-next-line: undefined-field
+								childEntry.button.label:SetTextColor(1, 1, 1)
+							end
+						end
+
 						yOffset = yOffset - NAV_BUTTON_HEIGHT - NAV_BUTTON_PAD
 					end
 				end
