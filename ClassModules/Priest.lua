@@ -1175,7 +1175,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local snapshots = snapshotData.snapshots
-		casting:SnapshotManaSpell()
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Discipline()

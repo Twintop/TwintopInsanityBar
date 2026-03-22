@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.1.41-release (2026-03-22)
+# 12.0.1.41-release (2026-03-23)
 ## General
 
 - New bar text entries now default to using the shared font settings instead of creating per-entry overrides.
