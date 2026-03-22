@@ -23,7 +23,7 @@ local content = [====[
 - Change the specialization name in the menu to be colored red when the bar is disabled for that specialization.
 - Fix an issue where the "Have enough Resource" bar text color change would not update correctly for Demon Hunters, Druids, Hunters, Monks, Rogues, and Warriors.
 - Fix an issue where "Fixed Resource Value" overcap bar border colors would not respect the value selected.
-1
+
 ## Priest
 
 - Fix some visibility inconsistencies with the utility bar when using Global Options for bar visibility.
