@@ -5156,6 +5156,18 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		customBars = {}
 	end
 
+	-- Forward-declare so the checkbox OnClick (defined before the table) can call it
+	local RefreshTableForGlobalToggle = nil
+
+	---Returns true when this is a spec options panel and the "Use global settings" checkbox is checked for displayBar.
+	local function IsUsingGlobalDisplayBar()
+		if classId == nil or specId == nil then
+			return false
+		end
+		local lc = string.lower(className)
+		return TRB.Data.settings.core.global[lc][specName].displayBar == true
+	end
+
 	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
@@ -5187,6 +5199,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 				end
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
+			if RefreshTableForGlobalToggle then
+				RefreshTableForGlobalToggle()
+			end
 		end)
 	else
 		-- Global options panel - add bulk toggle checkbox
@@ -5480,12 +5495,16 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	-- Build list of bar entries for the table
 	local barEntries = {}
 
+	local coreDisplayBar = TRB.Data.settings.core.displayBar
+
 	-- Primary bar (always present)
 	table.insert(barEntries, {
 		key = "primary",
 		displayBarKey = "primary",
 		label = string.format(L["BarVisibilityBarNamePrimary"], primaryResourceString or L["ResourceMana"]),
+		globalLabel = string.format(L["BarVisibilityBarNamePrimary"], L["Resource"]),
 		isCustomBar = false,
+		isGlobal = (classId ~= nil and coreDisplayBar["primary"] ~= nil),
 	})
 
 	-- Health bar
@@ -5494,7 +5513,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			key = "health",
 			displayBarKey = "health",
 			label = L["BarVisibilityBarNameHealth"],
+			globalLabel = L["BarVisibilityBarNameHealth"],
 			isCustomBar = false,
+			isGlobal = (classId ~= nil and coreDisplayBar["health"] ~= nil),
 		})
 	end
 
@@ -5504,7 +5525,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			key = "secondary",
 			displayBarKey = "secondary",
 			label = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"]),
+			globalLabel = string.format(L["ShowBarVisibilitySecondary"], L["ResourceComboPoints"]),
 			isCustomBar = false,
+			isGlobal = (classId ~= nil and coreDisplayBar["secondary"] ~= nil),
 		})
 	end
 
@@ -5515,17 +5538,25 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			displayBarKey = "mana",
 			label = L["BarVisibilityBarNameMana"],
 			isCustomBar = false,
+			isGlobal = (classId ~= nil and coreDisplayBar["mana"] ~= nil),
 		})
 	end
 
 	-- Custom bars (stagger, defensives, utility, etc.)
 	for _, barTypeDef in ipairs(customBars) do
 		if spec.displayBar and spec.displayBar[barTypeDef.visibilityKey] ~= nil then
+			local globalDisplayName = barTypeDef.displayName
+			local registryDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(barTypeDef.visibilityKey)
+			if registryDef then
+				globalDisplayName = registryDef.displayName
+			end
 			table.insert(barEntries, {
 				key = barTypeDef.key,
 				displayBarKey = barTypeDef.visibilityKey,
 				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
+				globalLabel = string.format(L["ShowBarVisibilityCustom"], globalDisplayName),
 				isCustomBar = true,
+				isGlobal = (classId ~= nil and coreDisplayBar[barTypeDef.visibilityKey] ~= nil),
 			})
 		end
 	end
@@ -5544,7 +5575,12 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		},
 		{
 			["name"] = L["BarVisibilityTableHeaderVisibility"],
-			["width"] = 200,
+			["width"] = 75,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["BarVisibilityTableHeaderSettingsSource"],
+			["width"] = 285,
 			["align"] = "LEFT",
 		},
 	}
@@ -5560,28 +5596,42 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 
 	-- Dynamically resize the Visibility column to fill available width
 	bvc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[2].width
-		local newVisibilityWidth = math.max(100, w - fixedWidth - 30)
+		local fixedWidth = columns[1].width + columns[2].width + columns[4].width
+		local newVisibilityWidth = math.max(60, w - fixedWidth - 30)
 		columns[3].width = newVisibilityWidth
 		barVisibilityTable:SetDisplayCols(columns)
 	end)
 
+	local globalDimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
+
 	---Refreshes the scrolling table data from the current bar visibility settings.
 	local function SetTableValues()
+		local useGlobal = IsUsingGlobalDisplayBar()
 		local dataTable = {}
 		for _, entry in ipairs(barEntries) do
-			local visSettings = spec.displayBar[entry.displayBarKey]
+			local isControlledByGlobal = useGlobal and entry.isGlobal
+			local visSettings
+			if isControlledByGlobal then
+				visSettings = coreDisplayBar[entry.displayBarKey]
+			else
+				visSettings = spec.displayBar[entry.displayBarKey]
+			end
 			local statusText = ""
 			if visSettings then
 				statusText = GetVisibilityDisplayName(visSettings)
 			end
-			table.insert(dataTable, {
+			local rowData = {
 				cols = {
 					{ value = entry.key },
 					{ value = entry.label },
 					{ value = statusText },
+					{ value = (classId == nil or isControlledByGlobal) and (classId ~= nil and entry.globalLabel and string.format(L["BarVisibilitySettingsSourceGlobalNamed"], entry.globalLabel) or L["BarVisibilitySettingsSourceGlobal"]) or L["BarVisibilitySettingsSourceSpec"] },
 				}
-			})
+			}
+			if isControlledByGlobal then
+				rowData.color = globalDimColor
+			end
+			table.insert(dataTable, rowData)
 		end
 		barVisibilityTable:SetData(dataTable)
 		barVisibilityTable:EnableSelection(true)
@@ -5891,6 +5941,18 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			if button == "LeftButton" then
 				if realrow ~= nil and realrow > 0 then
 					local barKey = data[realrow].cols[1].value
+
+					-- Reject selection if this bar is currently controlled by global settings
+					if IsUsingGlobalDisplayBar() then
+						for _, e in ipairs(barEntries) do
+							if e.key == barKey and e.isGlobal then
+								scrollingTable:ClearSelection()
+								detailFrame:Hide()
+								return
+							end
+						end
+					end
+
 					local currentSelection = scrollingTable:GetSelection()
 					FillDetailPanel(barKey)
 					C_Timer.After(0, function()
@@ -5908,6 +5970,23 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 
 	-- Initial table population
 	SetTableValues()
+
+	-- Define the refresh function that the "Use global settings" checkbox calls
+	-- to update the table state when the toggle changes.
+	RefreshTableForGlobalToggle = function()
+		SetTableValues()
+		-- If the currently selected bar is now controlled by global, deselect it
+		if IsUsingGlobalDisplayBar() and selectedBarKey ~= nil then
+			for _, e in ipairs(barEntries) do
+				if e.key == selectedBarKey and e.isGlobal then
+					barVisibilityTable:ClearSelection()
+					detailFrame:Hide()
+					selectedBarKey = nil
+					break
+				end
+			end
+		end
+	end
 
 	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10 - detailHeight
 

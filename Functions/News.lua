@@ -18,8 +18,12 @@ local content = [====[
 - New bar text entries now default to using the shared font settings instead of creating per-entry overrides.
 - When a bar text entry is configured to use a shared font setting, the corresponding per-entry control is now disabled and grayed out for clarity.
 - Applied the new shared-first default behavior to all built-in default bar text layouts, including specialization-specific hard-coded defaults.
+- Add "Settings Source" to the Visibility tab's "Bar Display" selection table to clarify whether the visibility settings for each bar are being controlled by the specialization-specific settings or via global options. Gray out rows that are currently being controlled by global options to make it more clear at a glance.
 
 ## Priest
+
+- Fix some visibility inconsistencies with the utility bar when using Global Options for bar visibility.
+
 ### Discipline
 
 - Add `$surgeOfLight` logic-only bar text variable for use in conditionals.

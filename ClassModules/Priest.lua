@@ -1767,6 +1767,7 @@ local function UpdateResourceBar()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
 		local specCacheSettings = TRB.Data.specCache.priest_discipline.settings
+		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1855,7 +1856,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update utility bar (Angelic Feather charges)
-			if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
+			if displaySettings.utility ~= nil and not displaySettings.utility.neverShow and barGroups and barGroups.utility then
 				if talents:IsTalentActive(spells.angelicFeather) then
 					refreshText = true
 					local cooldown = snapshots[spells.angelicFeather.id].cooldown
@@ -1900,6 +1901,7 @@ local function UpdateResourceBar()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.priest_holy.settings
+		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
 			local holyWordCooldownCompletes = false
@@ -2081,7 +2083,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Update utility bar (Angelic Feather charges)
-			if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
+			if displaySettings.utility ~= nil and not displaySettings.utility.neverShow and barGroups and barGroups.utility then
 				if talents:IsTalentActive(spells.angelicFeather) then
 					refreshText = true
 					local cooldown = snapshots[spells.angelicFeather.id].cooldown
@@ -2255,6 +2257,7 @@ local function UpdateResourceBar()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
 		local specCacheSettings = TRB.Data.specCache.priest_shadow.settings
+		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Shadow()
 
 		if snapshotData.attributes.isTracking then
@@ -2499,7 +2502,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Update utility bar (Angelic Feather charges)
-		if specSettings.displayBar.utility ~= nil and not specSettings.displayBar.utility.neverShow and barGroups and barGroups.utility then
+		if displaySettings.utility ~= nil and not displaySettings.utility.neverShow and barGroups and barGroups.utility then
 			if talents:IsTalentActive(spells.angelicFeather) then
 				refreshText = true
 				local cooldown = snapshots[spells.angelicFeather.id].cooldown

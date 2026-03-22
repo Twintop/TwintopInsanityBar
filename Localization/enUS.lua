@@ -1344,7 +1344,7 @@ L["MageArcaneChargesColorPickerPenultimate"] = "Penultimate Arcane Charge"
 
 -- Bar Visibility Dropdown Options
 L["ShowBarVisibilityPrimary"] = "%s Bar Visibility"
-L["ShowBarVisibilitySecondary"] = "%s Visibility"
+L["ShowBarVisibilitySecondary"] = "%s"
 L["ShowBarVisibilityAlways"] = "Always"
 L["ShowBarVisibilityCombat"] = "In Combat"
 L["ShowBarVisibilityNever"] = "Never"
@@ -1492,7 +1492,7 @@ L["CustomBarThreshold"] = "%s %s Threshold"
 L["CustomBarTextureBar"] = "%s Bar Texture"
 L["CustomBarTextureBorder"] = "%s Border Texture"
 L["CustomBarTextureBackground"] = "%s Background Texture"
-L["ShowBarVisibilityCustom"] = "%s Visibility"
+L["ShowBarVisibilityCustom"] = "%s"
 
 -- Evoker Augmentation Ebon Might
 L["EvokerAugmentationCheckboxEbonMight"] = "Change when Ebon Might is active"
@@ -2338,3 +2338,11 @@ L["PriestHolyColorPickerBenedictionLightweaver"] = "Lightweaver node background 
 -- Priest Bar Text Logic Variables
 L["PriestBarTextVariable_surgeOfLight"] = "Is Surge of Light currently active? LOGIC VARIABLE ONLY!"
 L["PriestHolyBarTextVariable_benediction"] = "Is Benediction currently active (replacing Flash Heal)? LOGIC VARIABLE ONLY!"
+
+-- Bar Visibility Global Column
+-- REMOVED: L["BarVisibilityTableHeaderGlobal"] - replaced by BarVisibilityTableHeaderSettingsSource
+-- REMOVED: L["BarVisibilityGlobalIndicator"] - replaced by BarVisibilitySettingsSourceGlobal
+L["BarVisibilityTableHeaderSettingsSource"] = "Settings Source"
+L["BarVisibilitySettingsSourceGlobal"] = "Global"
+L["BarVisibilitySettingsSourceGlobalNamed"] = "Global - %s"
+L["BarVisibilitySettingsSourceSpec"] = "Specialization"

@@ -2541,6 +2541,7 @@ end
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
+---@field public shouldInitiallyShow boolean? # If false, construction keeps the bar hidden and avoids calling Show() before runtime visibility logic runs
 
 ---Constructs an anchored bar group (combo points, health bar, etc.)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -2843,12 +2844,17 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Show the group and active nodes only if spec is supported (enabled)
 	-- This prevents health bars and other anchored bars from showing when the spec is disabled
 	if TRB.Data.specSupported then
-		targetGroup:Show()
-		targetGroup:ShowNodes(nodes)
+		if config.shouldInitiallyShow == false then
+			targetGroup:Hide()
+			targetGroup:HideAllNodes()
+		else
+			targetGroup:Show()
+			targetGroup:ShowNodes(nodes)
 
-		-- If render transition is active, keep it hidden (alpha 0) despite the Show() call
-		if self:IsRenderTransitionActive() then
-			SetBarGroupsAlpha(0)
+			-- If render transition is active, keep it hidden (alpha 0) despite the Show() call
+			if self:IsRenderTransitionActive() then
+				SetBarGroupsAlpha(0)
+			end
 		end
 	else
 		targetGroup:Hide()
@@ -3019,6 +3025,10 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 				cdmWidthMatched = widthMatched,
 				cdmHeightMatched = heightMatched,
 			}
+
+			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
+			local barIsVisible = self:IsBarVisible(settings, key, inEditMode)
+			config.shouldInitiallyShow = barIsVisible
 			
 			-- Resolve the correct anchor group from settings
 			local anchor = self:GetBarAnchor(settings, key)
@@ -3037,9 +3047,9 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			-- 0 height means children anchored to it slide together (no blank gap).
 			-- Uses IsBarVisible (settings-only) for construction-time collapse.
 			-- Runtime form-based collapse is handled by ProcessBars.
-			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
-			if not self:IsBarVisible(settings, key, inEditMode) then
+			if not barIsVisible then
 				barGroup:Hide()
+				barGroup:HideAllNodes()
 				if barGroup.containerFrame then
 					barGroup.containerFrame:SetHeight(0.001)
 				end

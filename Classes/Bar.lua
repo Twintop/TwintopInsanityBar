@@ -108,10 +108,13 @@ end
 ---Hides and re-shows the StatusBar to force WoW to drop the timer binding.
 function TRB.Classes.BarNode:ClearTimerDuration()
 	if self.hasTimerDuration then
+		local shouldRestoreVisibility = self.isVisible
 		self.frame:Hide()
 		self.frame:SetMinMaxValues(0, 1)
 		self.frame:SetValue(0)
-		self.frame:Show()
+		if shouldRestoreVisibility then
+			self.frame:Show()
+		end
 		self.hasTimerDuration = false
 	end
 end
