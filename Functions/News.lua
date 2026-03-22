@@ -22,6 +22,7 @@ local content = [====[
 - Add "Settings Source" to the Visibility tab's "Bar Display" selection table to clarify whether the visibility settings for each bar are being controlled by the specialization-specific settings or via global options. Gray out rows that are currently being controlled by global options to make it more clear at a glance.
 - Change the specialization name in the menu to be colored red when the bar is disabled for that specialization.
 - Fix an issue where the "Have enough Resource" bar text color change would not update correctly for Demon Hunters, Druids, Hunters, Monks, Rogues, and Warriors.
+- Fix an issue where "Fixed Resource Value" overcap bar border colors would not respect the value selected.
 
 ## Priest
 

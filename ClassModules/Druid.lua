@@ -2248,7 +2248,7 @@ local function UpdateResourceBar()
 						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
 					elseif specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
@@ -2622,7 +2622,7 @@ local function UpdateResourceBar()
 
 					-- Apply overcap border color if enabled
 					if specSettings.colors.bar.borderOvercap ~= nil and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specCacheSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 						local borderColorResult = UnitPowerPercent("player", displayResourceType, true, overcapBorderCurve)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
