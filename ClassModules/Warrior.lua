@@ -890,6 +890,9 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	-- Runtime node mapping: tracks which logical buff key ended up at which bar node index
 	TRB.Data.defensiveNodeMapping = TRB.Data.defensiveNodeMapping or {}
 	local mapping = TRB.Data.defensiveNodeMapping
+	-- Snapshot old mapping to detect changes (for re-anchoring bar text)
+	local oldIgnorePain = mapping["ignorePain"]
+	local oldShieldBlock = mapping["shieldBlock"]
 	-- Reset mapping
 	for k in pairs(mapping) do mapping[k] = nil end
 
@@ -935,6 +938,12 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				currentDefensiveBar = currentDefensiveBar + 1
 			end
 		end
+	end
+
+	-- If the mapping changed (node order swap, enable/disable toggle, talent change),
+	-- re-anchor bar text frames so they point to the correct physical nodes.
+	if mapping["ignorePain"] ~= oldIgnorePain or mapping["shieldBlock"] ~= oldShieldBlock then
+		TRB.Functions.BarText:CreateBarTextFrames()
 	end
 end
 

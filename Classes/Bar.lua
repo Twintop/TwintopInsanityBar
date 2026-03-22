@@ -2,6 +2,11 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
+-- Monotonic counter for globally unique BarNode frame names.
+-- Prevents WoW's CreateFrame from returning a stale frame when called with a
+-- global name that still exists in _G from a previous BarNode:Destroy() cycle.
+local barNodeCounter = 0
+
 --[[
 	BarNode: The atomic unit of the bar system.
 	Represents a single StatusBar with its container frame, border frame, resource frame, and thresholds.
@@ -40,6 +45,13 @@ function TRB.Classes.BarNode:New(parent, name, index)
 		self.name = self.name .. "_" .. index
 	end
 
+	-- Append a monotonic counter to guarantee a globally unique frame name.
+	-- Without this, CreateFrame can return a stale frame object from _G when
+	-- a previous BarNode with the same base name was destroyed but its global
+	-- name entry was not cleared (WoW does not remove _G entries on SetParent(nil)).
+	barNodeCounter = barNodeCounter + 1
+	local uniqueFrameName = self.name .. "_v" .. barNodeCounter
+
 	self.thresholds = {}
 	self.width = 100
 	self.height = 20
@@ -50,7 +62,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.overlaySlots = {}
 
 	-- Create a single consolidated StatusBar frame
-	self.frame = CreateFrame("StatusBar", self.name, parent, "BackdropTemplate")
+	self.frame = CreateFrame("StatusBar", uniqueFrameName, parent, "BackdropTemplate")
 	self.frame:SetFrameStrata("BACKGROUND")
 	-- Hide by default - nodes should only be shown explicitly
 	self.frame:Hide()
@@ -327,6 +339,11 @@ end
 function TRB.Classes.BarNode:Destroy()
 	self:Hide()
 	self:ClearThresholds()
+	-- Clear the global name reference so CreateFrame won't return this stale frame
+	local frameName = self.frame:GetName()
+	if frameName and _G[frameName] == self.frame then
+		_G[frameName] = nil
+	end
 	self.frame:SetParent(nil)
 	self.frame:ClearAllPoints()
 end
@@ -816,6 +833,11 @@ function TRB.Classes.BarGroup:Destroy()
 			self.nodes[i]:Destroy()
 			self.nodes[i] = nil
 		end
+	end
+	-- Clear the global name reference for the container frame
+	local containerName = self.containerFrame:GetName()
+	if containerName and _G[containerName] == self.containerFrame then
+		_G[containerName] = nil
 	end
 	self.containerFrame:SetParent(nil)
 	self.containerFrame:ClearAllPoints()

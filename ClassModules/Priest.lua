@@ -57,6 +57,11 @@ local function BuildHolyWordNodeMapping()
 
 	TRB.Data.holyWordNodeMapping = TRB.Data.holyWordNodeMapping or {}
 	local nodeMapping = TRB.Data.holyWordNodeMapping
+	-- Snapshot old mapping to detect changes (for re-anchoring bar text)
+	local oldSnapshot = {}
+	for k, v in pairs(nodeMapping) do
+		oldSnapshot[k] = v
+	end
 	-- Clear existing entries
 	for k in pairs(nodeMapping) do
 		nodeMapping[k] = nil
@@ -80,6 +85,27 @@ local function BuildHolyWordNodeMapping()
 				end
 			end
 		end
+	end
+
+	-- If the mapping changed (node order swap, enable/disable toggle, talent change),
+	-- re-anchor bar text frames so they point to the correct physical nodes.
+	local mappingChanged = false
+	for k, v in pairs(nodeMapping) do
+		if oldSnapshot[k] ~= v then
+			mappingChanged = true
+			break
+		end
+	end
+	if not mappingChanged then
+		for k in pairs(oldSnapshot) do
+			if nodeMapping[k] == nil then
+				mappingChanged = true
+				break
+			end
+		end
+	end
+	if mappingChanged then
+		TRB.Functions.BarText:CreateBarTextFrames()
 	end
 end
 

@@ -36,6 +36,10 @@ local content = [====[
 
 - Fix an issue where the Whirlwind bar would not appear after changing specializations even though it would still take up space and show bar text.
 
+### Protection
+
+- Fix an issue where the bar text for Shield Block and Ignore Pain would be shown on the incorrect bar after switching specializations.
+
 ---
 
 # 12.0.1.40-release (2026-03-19)
