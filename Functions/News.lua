@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.1.42-release (2026-03-25)
+## Warrior
+### Protection
+
+- [#548](#548) Fix an issue where sometimes Ignore Pain wouldn't track properly due to gaining Seeing Red (Violent Outburst) at the same time.
+- Swap the value of `$ignorePainAbsorb` to be the stack count instead of the (now `secret` and unreachable) absorb amount.
+
+---
+
 # 12.0.1.41-release (2026-03-23)
 ## General
 

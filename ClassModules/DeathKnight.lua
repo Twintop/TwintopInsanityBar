@@ -572,11 +572,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.breathOfSindragosa.castId then
 				snapshotData.snapshots[spells.breathOfSindragosa.id].cooldown:InitializeCustom(spells.breathOfSindragosa.cooldown, currentTime)
 			end
-		elseif event == "SPELL_UPDATE_ICON" then
-
 		end
 	elseif TRB.Data.character.specId == 3 then
-	end	
+	end
 end
 
 local function UpdateSnapshot()

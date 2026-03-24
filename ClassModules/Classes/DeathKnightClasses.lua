@@ -34,6 +34,9 @@ function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
 end
 
 ---@class TRB.Classes.DeathKnight.BloodSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@field boneShield TRB.Classes.SpellBase
+---@field improvedBoneShield TRB.Classes.SpellBase
+---@field marrowrend TRB.Classes.SpellBase
 ---@field raiseAlly TRB.Classes.SpellThreshold
 TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
@@ -51,11 +54,20 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
         baseline = true
     })
 
-    -- Blood Baseline Abilities
+    self.boneShield = TRB.Classes.SpellBase:New({
+        id = 195181,
+        duration = 30,
+        maxStacks = 10
+    })
+    self.improvedBoneShield = TRB.Classes.SpellBase:New({
+        id = 374715,
+        maxStacksMod = 2
+    })
 
-    -- Death Knight Class Talents
-    
-    -- Blood Spec Talents
+    self.marrowrend = TRB.Classes.SpellBase:New({
+        id = 195182,
+        isTalent = true
+    })
 
     self.deathStrike.baseline = true
     return self
