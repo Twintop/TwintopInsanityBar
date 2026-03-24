@@ -511,6 +511,32 @@ function TRB.Classes.SnapshotBuff:RemoveStack(resetAttributes)
 end
 
 
+---Parse the aura.points[] into customProperty[] values.
+---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
+---@param aura AuraData # Data about the buff
+local function GetCustomProperties(buff, aura)
+	if buff.customPropertyDefinitions ~= nil and not issecrettable(aura.points) then
+		for _, prop in ipairs(buff.customPropertyDefinitions) do
+			buff.customProperties[prop.name] = aura.points[prop.index]
+			if buff.customProperties[prop.name] ~= nil then
+				if issecretvalue(buff.customProperties[prop.name]) then
+					-- Do nothing, store it as-is
+				elseif prop.dataType == "number" then
+					buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name] * prop.modifier)
+				elseif prop.dataType == "integer" then
+					buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name] * prop.modifier))
+				end
+			else
+				if prop.dataType == "number" then
+					buff.customProperties[prop.name] = 0
+				elseif prop.dataType == "integer" then
+					buff.customProperties[prop.name] = 0
+				end
+			end
+		end
+	end
+end
+
 ---Parse the buff
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
 ---@param aura AuraData # Data about the buff
@@ -545,32 +571,6 @@ end
 function TRB.Classes.SnapshotBuff:SetAuraInstanceId(auraInstanceId)
 	self.auraInstanceId = auraInstanceId
 	TRB.Functions.Aura:StoreBuffAuraInstanceId(self)
-end
-
----Parse the aura.points[] into customProperty[] values.
----@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
----@param aura AuraData # Data about the buff
-local function GetCustomProperties(buff, aura)
-	if buff.customPropertyDefinitions ~= nil and not issecrettable(aura.points) then
-		for _, prop in ipairs(buff.customPropertyDefinitions) do
-			buff.customProperties[prop.name] = aura.points[prop.index]
-			if buff.customProperties[prop.name] ~= nil then
-				if issecretvalue(buff.customProperties[prop.name]) then
-					-- Do nothing, store it as-is
-				elseif prop.dataType == "number" then
-					buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name] * prop.modifier)
-				elseif prop.dataType == "integer" then
-					buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name] * prop.modifier))
-				end
-			else
-				if prop.dataType == "number" then
-					buff.customProperties[prop.name] = 0
-				elseif prop.dataType == "integer" then
-					buff.customProperties[prop.name] = 0
-				end
-			end
-		end
-	end
 end
 
 ---Requests a refresh of the buff after the embargo has passed, if specified

@@ -3083,6 +3083,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
+		TRB.Data.additionalPowerTokens = nil
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
 		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
@@ -3090,6 +3091,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = "CUSTOM"
 		TRB.Data.resource2Factor = nil
+		TRB.Data.additionalPowerTokens = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = true
@@ -3097,8 +3099,10 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 100
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
+		TRB.Data.additionalPowerTokens = { ["MANA"] = true }
 	else
 		TRB.Data.specSupported = false
+		TRB.Data.additionalPowerTokens = nil
 		TRB.Functions.Class:DisableEvents()
 	end
 

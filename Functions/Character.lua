@@ -314,6 +314,8 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
+		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
 		local unitTarget = ...

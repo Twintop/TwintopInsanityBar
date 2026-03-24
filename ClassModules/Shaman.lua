@@ -1520,6 +1520,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Id = nil
+		TRB.Data.additionalPowerTokens = { ["MANA"] = true }
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1527,14 +1528,17 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = "SPELL"
 		TRB.Data.resource2Id = TRB.Data.specCache["shaman_enhancement"].spellsData.spells.maelstromWeapon.id
 		TRB.Data.resource2Factor = 1
+		TRB.Data.additionalPowerTokens = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Id = nil
+		TRB.Data.additionalPowerTokens = nil
 	else
 		TRB.Data.specSupported = false
+		TRB.Data.additionalPowerTokens = nil
 	end
 
 	Character:EventRegistration()
