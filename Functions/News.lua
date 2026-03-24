@@ -16,9 +16,9 @@ local content = [====[
 ## General
 
 - [#719](#719) Fix bar strata not being applied to all elements.
-- Add "container" bar text anchor areas for multi-node bars (Combo Points, Runes, Soul Shards, etc.), allowing bar text to be anchored to the bar group as a whole instead of individual nodes.
-- Fix bar text variables flyout not always showing or hiding correctly when switching tabs or specializations.
-- Fix dynamically hidden bars (e.g. visibility conditions not met) causing other bars to shift position. Dynamically hidden bars now maintain their layout height as an invisible scaffold.
+- [#720](#720) Add "container" bar text anchor areas for multi-node bars (Combo Points, Runes, Soul Shards, etc.), allowing bar text to be anchored to the bar group as a whole instead of individual nodes.
+- [#720](#720) Fix bar text variables flyout not always showing or hiding correctly when switching tabs or specializations.
+- [#720](#720) Fix dynamically hidden bars (e.g. visibility conditions not met) causing other bars to shift position. Dynamically hidden bars now maintain their layout height as an invisible scaffold.
 
 ### Localization
 
