@@ -28,7 +28,7 @@ local content = [====[
 ### Blood
 
 - [#610](#610) Add a new Bone Shield bar showing current stacks (up to 12 nodes). Disabled by default. 
-- [#610](#610) Add `$boneShieldStacks`, `$boneShieldStacksMax`, and `$boneShield` bar text variables.
+- [#610](#610) Add `$boneShieldStacks`, `$boneShieldStacksMax`, and `#boneShield` bar text variables.
 
 ## Warrior
 ### Protection
