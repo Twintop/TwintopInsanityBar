@@ -6016,8 +6016,8 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultBoneShieldBarColors()
 	return {
-		bar = { color = "FF7ABF7A" },
-		border = { color = "FF4A7A4A" },
+		bar = { color = "FF8DD48D" },
+		border = { color = "FF205E20" },
 		background = { color = "66000000" }
 	}
 end
