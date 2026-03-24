@@ -560,9 +560,13 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	self.hasResourceCurve = anyEntryHasCurve
 
 	-- Collapse/expand container frames based on resolved visibility.
-	-- Hidden bars' containers are shrunk to 0.001 so that bars anchored to them
-	-- slide together (no blank gap). Visible bars (including inactive-alpha bars
-	-- with alpha > 0) are expanded back to their layout height.
+	-- Visible bars are expanded back to their layout height.
+	-- Hidden bars fall into two categories:
+	--   1. Permanently hidden (neverShow, disabled by class precondition, or no settings):
+	--      collapsed to 0.001 so children anchored through them slide together (no gap).
+	--   2. Dynamically hidden (conditions like "in combat" not met, but bar is eligible):
+	--      maintain layoutHeight as an invisible positioning scaffold so that bars
+	--      anchored through them stay in place and don't shift when visibility toggles.
 	for _, entry in ipairs(entries) do
 		if entry.barGroup ~= nil and entry.barGroup.containerFrame then
 			if entry.barGroup.currentAlpha > 0 then
@@ -570,7 +574,19 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 					entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
 				end
 			else
-				entry.barGroup.containerFrame:SetHeight(0.001)
+				-- Determine if this bar is permanently hidden (collapse) or
+				-- dynamically hidden (maintain height as invisible scaffold).
+				local isPermanentlyHidden = not entry.enabled
+					or entry.visibilitySettings == nil
+					or entry.visibilitySettings.neverShow == true
+				if isPermanentlyHidden then
+					entry.barGroup.containerFrame:SetHeight(0.001)
+				else
+					-- Dynamically hidden: keep layout height so anchored bars don't shift
+					if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
+						entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
+					end
+				end
 			end
 		end
 	end
