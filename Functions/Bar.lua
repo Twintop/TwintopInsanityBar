@@ -1888,15 +1888,31 @@ end
 -- bars position themselves relative to their anchor target using 9-point
 -- anchor/attach pairs.
 
----Gets the bar settings table for a given bar key from the spec settings.
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barKey string # "primary", "secondary", "health", or a BarTypeRegistry key
----@return table? # The bar's settings table, or nil if not found
 function TRB.Functions.Bar:GetBarSettings(settings, barKey)
 	if barKey == "primary" then
 		return settings.bar
 	elseif barKey == "secondary" then
-		return settings.comboPoints
+		if settings.comboPoints then
+			return settings.comboPoints
+		end
+
+		-- Non-Feral Druids can anchor bars to the combo point bar even when the
+		-- secondary bar is not created. Their active spec settings do not carry a
+		-- comboPoints block, so fall back to Feral's shared combo point settings to
+		-- preserve the configured anchor chain for Balance, Guardian, and Restoration.
+		if TRB.Data.character.classId == 11 then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if feralSettings and feralSettings.comboPoints then
+				return feralSettings.comboPoints
+			end
+
+			local druidFeralSettings = TRB.Data.settings and TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			if druidFeralSettings and druidFeralSettings.comboPoints then
+				return druidFeralSettings.comboPoints
+			end
+		end
+
+		return nil
 	elseif barKey == "health" then
 		return settings.healthBar
 	else
@@ -2427,9 +2443,41 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 		local anchor = self:GetBarAnchor(settings, barKey)
 		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
 
-		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
+		-- Orphan check: if the anchor target doesn't exist in barGroups, walk up
+		-- the settings-based anchor chain to find the nearest valid ancestor.
+		-- This handles cases where an intermediate bar wasn't created (e.g., Druid
+		-- secondary bar not created when form switching and showComboPoints are both
+		-- disabled, but the mana bar is anchored to "secondary" which normally
+		-- anchors to "primary"). Only promote to root if no valid ancestor is found.
 		if not isRoot and anchor and not barGroups[anchor.barKey] then
-			isRoot = true
+			local resolvedAnchorKey = nil
+			local visited = {}
+			local walkKey = anchor.barKey --[[@as string?]]
+			while walkKey and not barGroups[walkKey] do
+				if visited[walkKey] then break end
+				visited[walkKey] = true
+				local walkAnchor = self:GetBarAnchor(settings, walkKey)
+				if walkAnchor and walkAnchor.barKey and walkAnchor.barKey ~= "screen" then
+					walkKey = walkAnchor.barKey
+				else
+					walkKey = nil
+				end
+			end
+			if walkKey and barGroups[walkKey] then
+				-- Found a valid ancestor: re-anchor to it, preserving the
+				-- original anchor's attach/anchor points and offsets.
+				resolvedAnchorKey = walkKey
+				anchor = {
+					barKey = resolvedAnchorKey,
+					anchorPoint = anchor.anchorPoint,
+					attachPoint = anchor.attachPoint,
+					xOffset = anchor.xOffset,
+					yOffset = anchor.yOffset,
+					matchWidth = anchor.matchWidth,
+				}
+			else
+				isRoot = true
+			end
 		end
 
 		nodes[barKey] = {
