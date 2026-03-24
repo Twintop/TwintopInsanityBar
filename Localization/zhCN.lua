@@ -2185,4 +2185,25 @@ if locale == "zhCN" then
 	L["ShamanElementalCheckboxEarthquakeBarColorTooltip"] = "当你拥有足够的漩涡值可施放地震术时，改变进度条颜色。"
 	L["ShamanElementalColorPickerEarthquake"] = "可施放地震术时的漩涡值颜色"
 
+	L["PriestHolyAudioBenediction"] = "祈福"
+	L["PriestHolyAudioCheckboxBenediction"] = "祈福触发时播放音效"
+	L["PriestHolyAudioCheckboxBenedictionTooltip"] = "祈福触发时播放音效，该效果会使你的下一次快速治疗施法被替换。"
+	L["PriestHolyCheckboxBenediction"] = "启用祈福状态法力条变色"
+	L["PriestHolyCheckboxBenedictionTooltip"] = "当祈福效果替换快速治疗时，法力条颜色会发生变化。"
+	L["PriestHolyColorPickerBenediction"] = "祈福激活时的法力条颜色"
+	L["PriestHolyCheckboxBenedictionLightweaver"] = "在织光者条上启用祈福指示器"
+	L["PriestHolyCheckboxBenedictionLightweaverTooltip"] = "当祈福效果替换快速治疗时，织光者条下一个未填充节点的背景色会改变，提示使用该节点可获得一层织光者效果。"
+	L["PriestHolyColorPickerBenedictionLightweaver"] = "祈福激活时的织光者节点背景色"
+	
+	L["PriestBarTextVariable_surgeOfLight"] = "圣光涌动当前是否激活？【仅用于逻辑变量】"
+	L["PriestHolyBarTextVariable_benediction"] = "祈福当前是否激活（已替换快速治疗）？【仅用于逻辑变量】"
+	
+	L["BarVisibilityTableHeaderSettingsSource"] = "设置来源"
+	L["BarVisibilitySettingsSourceGlobal"] = "全局"
+	L["BarVisibilitySettingsSourceGlobalNamed"] = "全局 - %s"
+	L["BarVisibilitySettingsSourceSpec"] = "专精"
+	
+	L["OpenGlobalSettings"] = "[打开全局设置]"
+	L["OpenGlobalSettingsTooltip"] = "点击跳转至该设置的全局选项面板。"
+
 end
