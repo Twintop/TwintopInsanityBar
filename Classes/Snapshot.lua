@@ -510,6 +510,36 @@ function TRB.Classes.SnapshotBuff:RemoveStack(resetAttributes)
 	end
 end
 
+
+---Parse the buff
+---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
+---@param aura AuraData # Data about the buff
+---@return integer? # The SpellID of the buff, if found
+local function ParseBuffData(buff, aura)
+	if aura ~= nil then
+        if (buff.sometimesSimple or buff.alwaysSimple) and (aura.expirationTime <= 0 or aura.duration <= 0) then
+            -- Make sure we have the most up-to-date remaining time before we set the buff to simple mode
+            buff:GetRemainingTime()
+            buff.currentlySimple = true
+        else
+            buff.currentlySimple = false
+        end
+        buff.previousRemaining = buff.remaining
+
+        buff.auraInstanceId = aura.auraInstanceID
+		buff.applications = aura.applications
+		buff.duration = aura.duration
+		buff.endTime = aura.expirationTime
+
+		GetCustomProperties(buff, aura)
+
+		TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
+		return aura.spellId
+	else
+		buff:Reset()
+	end
+end
+
 ---Sets the auraInstanceId value for this buff.
 ---@param auraInstanceId integer
 function TRB.Classes.SnapshotBuff:SetAuraInstanceId(auraInstanceId)
@@ -540,36 +570,6 @@ local function GetCustomProperties(buff, aura)
 				end
 			end
 		end
-	end
-end
-
-
----Parse the buff
----@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
----@param aura AuraData # Data about the buff
----@return integer? # The SpellID of the buff, if found
-local function ParseBuffData(buff, aura)
-	if aura ~= nil then
-        if (buff.sometimesSimple or buff.alwaysSimple) and (aura.expirationTime <= 0 or aura.duration <= 0) then
-            -- Make sure we have the most up-to-date remaining time before we set the buff to simple mode
-            buff:GetRemainingTime()
-            buff.currentlySimple = true
-        else
-            buff.currentlySimple = false
-        end
-        buff.previousRemaining = buff.remaining
-
-        buff.auraInstanceId = aura.auraInstanceID
-		buff.applications = aura.applications
-		buff.duration = aura.duration
-		buff.endTime = aura.expirationTime
-
-		GetCustomProperties(buff, aura)
-
-		TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
-		return aura.spellId
-	else
-		buff:Reset()
 	end
 end
 
@@ -606,6 +606,7 @@ end
 ---@param auraData AuraData
 function TRB.Classes.SnapshotBuff:RefreshWithSecretAuraData(auraData)
 	GetCustomProperties(self, auraData)
+	self.applications = auraData.applications
 end
 
 ---Refreshes the buff information for the snapshot

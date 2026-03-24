@@ -3,9 +3,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
----@type table<number, integer>
+---@type table<number, AuraData[]>
 local auraCacheBuffer = {}
----@type table<number, TRB.Classes.SnapshotBuff>
+---@type table<number, {buff: TRB.Classes.SnapshotBuff, positionHint: string?}>
 local auraRequests = {}
 local auraCacheCleanupTime = 0
 local AURA_CACHE_MAX_DURATION = 1 -- seconds
@@ -13,6 +13,48 @@ local auraCacheEnabled = false
 
 local allBuffsCache = nil
 local allBuffsCacheTime = 0
+
+---Resolves the correct AuraData from a list of candidates using a position hint.
+---@param candidates AuraData[] # Array of AuraData from info.addedAuras or the cache buffer
+---@param positionHint string? # Resolution strategy: "first" picks the candidate appearing earliest in the buff list
+---@return AuraData?
+local function ResolveAuraFromCandidates(candidates, positionHint)
+	if candidates == nil or #candidates == 0 then
+		return nil
+	end
+
+	if positionHint == "first" then
+		-- Build a set of candidate auraInstanceIDs for fast lookup
+		local candidateIds = {}
+		for _, v in ipairs(candidates) do
+			if v.auraInstanceID ~= nil then
+				candidateIds[v.auraInstanceID] = v
+			end
+		end
+
+		-- Walk the buff list from index 1 upward; the first match is the
+		-- earliest-position candidate (e.g. Ignore Pain before Seeing Red)
+		for i = 1, 1000 do
+---@diagnostic disable-next-line: param-type-mismatch
+			local buffData = C_UnitAuras.GetBuffDataByIndex("player", i)
+			if not buffData then
+				break
+			end
+			if candidateIds[buffData.auraInstanceID] then
+				return candidateIds[buffData.auraInstanceID]
+			end
+		end
+
+		-- Buff list walk found nothing; fall through to single-candidate fallback
+	end
+
+	-- No hint (or hint miss) with exactly one candidate: return it directly
+	if #candidates == 1 then
+		return candidates[1]
+	end
+
+	return nil
+end
 
 ---Handles UNIT_AURA events
 ---@param self any
@@ -76,17 +118,21 @@ local function AuraUpdateEvent(self, event, unit, info)
 
 	if info.addedAuras then
 		if unit == "player" then
-			-- Aura cache handling: if enabled and exactly one aura was added, try to match it to a pending request
-			if auraCacheEnabled and #info.addedAuras == 1 then
-				for _, v in pairs(info.addedAuras) do
-					if auraRequests[currentTime] ~= nil then
-						local snapshot = auraRequests[currentTime]
-						snapshot:SetAuraInstanceId(v.auraInstanceID)
-						snapshot:RefreshWithSecretAuraData(v)
+			-- Aura cache handling: if enabled and auras were added, try to match to a pending request
+			if auraCacheEnabled and #info.addedAuras > 0 then
+				local request = auraRequests[currentTime]
+				if request ~= nil then
+					local resolved = ResolveAuraFromCandidates(info.addedAuras, request.positionHint)
+					if resolved ~= nil then
+						request.buff:SetAuraInstanceId(resolved.auraInstanceID)
+						request.buff:RefreshWithSecretAuraData(resolved)
 						auraRequests[currentTime] = nil
 					else
-						auraCacheBuffer[currentTime] = v.auraInstanceID
+						-- Could not resolve; buffer the full array for later pickup
+						auraCacheBuffer[currentTime] = info.addedAuras
 					end
+				else
+					auraCacheBuffer[currentTime] = info.addedAuras
 				end
 			end
 
@@ -264,18 +310,24 @@ function TRB.Functions.Aura:DisableUnitAuraCache()
 	auraRequests = {}
 end
 
----Gets an aura from the cache buffer by its timestamp
+---Gets an aura from the cache buffer by its timestamp, resolving the correct entry using the position hint
 ---@param time number
----@return integer
-function TRB.Functions.Aura:GetFromAuraCacheBuffer(time)
-	return auraCacheBuffer[time]
+---@param positionHint string? # Resolution strategy passed to ResolveAuraFromCandidates
+---@return AuraData?
+function TRB.Functions.Aura:GetFromAuraCacheBuffer(time, positionHint)
+	local candidates = auraCacheBuffer[time]
+	if candidates == nil then
+		return nil
+	end
+	return ResolveAuraFromCandidates(candidates, positionHint)
 end
 
 ---Inserts an aura request into the request cache
 ---@param time number
 ---@param buff TRB.Classes.SnapshotBuff
-function TRB.Functions.Aura:InsertAuraRequest(time, buff)
-	auraRequests[time] = buff
+---@param positionHint string? # Resolution strategy: "first" picks the candidate appearing earliest in the buff list
+function TRB.Functions.Aura:InsertAuraRequest(time, buff, positionHint)
+	auraRequests[time] = { buff = buff, positionHint = positionHint }
 end
 
 

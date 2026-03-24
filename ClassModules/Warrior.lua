@@ -641,7 +641,7 @@ local function RefreshLookupData_Protection()
 	-- Block B: Ignore Pain ($ignorePainAbsorb, $ignorePainTime)
 	if not activeVars or activeVars["$ignorePainAbsorb"] or activeVars["$ignorePainTime"] then
 		local currentTime = GetTime()
-		local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
+		local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.applications or 0 -- snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
 		local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$ignorePainTime"] = _ignorePainTime
@@ -733,11 +733,12 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false]]
 			elseif spellId == spells.ignorePain.castId then
 				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
+				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
 				if bufferEntry ~= nil then
-					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry)
+					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+					snapshotData.snapshots[spells.ignorePain.id].buff:RefreshWithSecretAuraData(bufferEntry)
 				else
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff)
+					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff, "first")
 				end
 			elseif spellId == spells.shieldSlam.id then
 				if talents:IsTalentActive(spells.heavyRepercussions) and snapshotData.snapshots[spells.shieldBlock.id].buff.isActive then
