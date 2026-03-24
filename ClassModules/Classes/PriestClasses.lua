@@ -1093,7 +1093,8 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             secondary = {
                 maxNodes = 2,
                 isPrimary = false,
-                resourceType = "PowerWords"
+				resourceType = "PowerWords",
+				allowContainerAnchor = false
             },
             health = {
                 maxNodes = 1,
@@ -1115,7 +1116,8 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
             holyWords = {
                 maxNodes = 5,
                 isPrimary = false,
-                resourceType = "HolyWords"
+				resourceType = "HolyWords",
+				allowContainerAnchor = false
             },
             health = {
                 maxNodes = 1,

@@ -7826,6 +7826,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	---@type TRB.Classes.Settings.DisplayTextEntry
 	---@diagnostic disable-next-line: missing-fields
 	local workingBarText = {}
+	local RefreshBarTextTable
 
 	---@param barTextEntry TRB.Classes.Settings.DisplayTextEntry|table|nil
 	---@return string
@@ -8467,6 +8468,28 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		}
 	end
 
+	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
+	if #containerAnchorOptions > 0 then
+		for _, containerAnchor in ipairs(containerAnchorOptions) do
+			local insertIndex = math.max(#relativeToFrameList, 1)
+			if #relativeToFrameList >= 2 then
+				insertIndex = #relativeToFrameList - 1
+			end
+
+			if containerAnchor.insertBeforeLabel ~= nil then
+				for i, label in ipairs(relativeToFrameList) do
+					if label == containerAnchor.insertBeforeLabel then
+						insertIndex = i
+						break
+					end
+				end
+			end
+
+			relativeToFrame[containerAnchor.label] = containerAnchor.id
+			table.insert(relativeToFrameList, insertIndex, containerAnchor.label)
+		end
+	end
+
 	local function RelativeToFrameIsSelected(value)
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			return value == workingBarText.position.relativeToFrame
@@ -8485,6 +8508,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				end
 			end
 			barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
+			if RefreshBarTextTable ~= nil then
+				RefreshBarTextTable()
+			end
 			RefreshBarTextEditorPreview(false)
 		end
 	end
@@ -8875,6 +8901,21 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 		btt:SetData(dataTable)
 		btt:EnableSelection(true)
+	end
+
+	RefreshBarTextTable = function()
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+		SetTableValues(displayText, barTextTable)
+
+		if workingBarText ~= nil and workingBarText.guid ~= nil then
+			local entries = TRB.Functions.Table:Length(displayText.barText)
+			for i = 1, entries do
+				if displayText.barText[i].guid == workingBarText.guid then
+					barTextTable:SetSelection(i)
+					break
+				end
+			end
+		end
 	end
 
 	---Creates and returns a new default bar text entry with default font, position, and empty text content.

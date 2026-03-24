@@ -612,7 +612,8 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
             defensives = {
                 maxNodes = 3,
                 isPrimary = false,
-                resourceType = "DefensiveBuffs"
+				resourceType = "DefensiveBuffs",
+				allowContainerAnchor = false
             },
             health = {
                 maxNodes = 1,

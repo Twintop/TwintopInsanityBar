@@ -3,6 +3,171 @@ local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
+local containerAnchorPrefix = "Container::"
+local containerAnchorLabelKeyByResourceType = {
+	AngelicFeather = "AngelicFeatherContainer",
+	ArcaneCharges = "ArcaneChargesContainer",
+	BoneShield = "BoneShieldContainer",
+	Chi = "ChiContainer",
+	ComboPoints = "ComboPointsContainer",
+	Essence = "EssenceContainer",
+	Icicles = "IciclesContainer",
+	Lightweaver = "LightweaverContainer",
+	HolyPower = "HolyPowerContainer",
+	MaelstromWeapon = "MaelstromWeaponContainer",
+	Runes = "RunesContainer",
+	SoulFragments = "SoulFragmentsContainer",
+	SoulShards = "SoulShardsContainer",
+	TipOfTheSpear = "TipOfTheSpearContainer",
+	WhirlwindCharges = "WhirlwindChargesContainer",
+}
+
+local containerAnchorFirstNodeLabelKeyByResourceType = {
+	AngelicFeather = "AngelicFeatherCharge1",
+	ArcaneCharges = "ArcaneCharge1",
+	BoneShield = "BoneShield1",
+	Chi = "Chi1",
+	ComboPoints = "ComboPoint1",
+	Essence = "Essence1",
+	HolyPower = "HolyPower1",
+	Icicles = "Icicle1",
+	Lightweaver = "LightweaverCharge1",
+	MaelstromWeapon = "Maelstrom1",
+	Runes = "Rune1",
+	SoulFragments = "SoulFragment1",
+	SoulShards = "SoulShard1",
+	TipOfTheSpear = "TipOfTheSpear1",
+	WhirlwindCharges = "WhirlwindCharge1",
+}
+
+local barTextClassNamesById = {
+	[1] = "Warrior",
+	[2] = "Paladin",
+	[3] = "Hunter",
+	[4] = "Rogue",
+	[5] = "Priest",
+	[6] = "DeathKnight",
+	[7] = "Shaman",
+	[8] = "Mage",
+	[9] = "Warlock",
+	[10] = "Monk",
+	[11] = "Druid",
+	[12] = "DemonHunter",
+	[13] = "Evoker"
+}
+
+local function GetSpecBarGroupConfig(classId, specId)
+	if classId == nil or specId == nil then
+		return nil
+	end
+
+	local className = barTextClassNamesById[classId]
+	if className == nil then
+		return nil
+	end
+
+	local classModule = TRB.Classes[className]
+	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
+		return nil
+	end
+
+	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+end
+
+local function GetContainerAnchorBarGroupKey(relativeToFrame)
+	if type(relativeToFrame) ~= "string" then
+		return nil
+	end
+
+	return string.match(relativeToFrame, "^Container::(.+)$")
+end
+
+local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
+	local specConfig = GetSpecBarGroupConfig(classId, specId)
+	if specConfig == nil then
+		return nil
+	end
+
+	local barGroupConfig = specConfig[barGroupKey]
+	if barGroupConfig == nil or (barGroupConfig.maxNodes or 1) <= 1 or barGroupConfig.allowContainerAnchor == false then
+		return nil
+	end
+
+	local labelKey = barGroupConfig.containerAnchorLabelKey or containerAnchorLabelKeyByResourceType[barGroupConfig.resourceType]
+	if labelKey == nil or L[labelKey] == nil then
+		return nil
+	end
+
+	return {
+		id = containerAnchorPrefix .. barGroupKey,
+		label = L[labelKey],
+		barGroupKey = barGroupKey,
+		insertBeforeLabel = (function()
+			local firstNodeLabelKey = containerAnchorFirstNodeLabelKeyByResourceType[barGroupConfig.resourceType]
+			if firstNodeLabelKey ~= nil then
+				return L[firstNodeLabelKey]
+			end
+			return nil
+		end)(),
+	}
+end
+
+---@param classId integer?
+---@param specId integer?
+---@return table[]
+function TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
+	local specConfig = GetSpecBarGroupConfig(classId, specId)
+	local options = {}
+
+	if specConfig == nil then
+		return options
+	end
+
+	for barGroupKey, _ in pairs(specConfig) do
+		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
+		if definition ~= nil then
+			table.insert(options, definition)
+		end
+	end
+
+	table.sort(options, function(a, b)
+		return a.label < b.label
+	end)
+
+	return options
+end
+
+---@param relativeToFrame string
+---@param classId integer?
+---@param specId integer?
+---@return Frame|nil, boolean, boolean
+function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
+
+	if relativeToFrame == "UIParent" then
+		return UIParent, true, true
+	end
+
+	local barGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+	if barGroupKey ~= nil then
+		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
+		if definition == nil then
+			return nil, false, false
+		end
+
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local barGroup = barGroups and barGroups[barGroupKey]
+		if barGroup ~= nil then
+			return barGroup:GetContainerFrame(), true, barGroup.isVisible
+		end
+
+		return nil, true, false
+	end
+
+	return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+end
+
 -- Hash table for O(1) bar text cache lookups (keyed by cleanedText).
 -- Declared at file scope so ClearBarTextCacheHash and GetFromBarTextCache share the same upvalue.
 local barTextCacheHash = {}
@@ -1309,7 +1474,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						isEnabled = cached[1]
 						isVisible = cached[2]
 					else
-						_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(frameKey)
+						_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(frameKey)
 						if isScreenText then
 							isVisible = true
 						end
@@ -1407,7 +1572,7 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	if entry.position.relativeToFrame == "UIParent" then
 		relativeToFrame = UIParent
 	elseif entry.position.relativeToFrame ~= "AllComboPoints" then
-		relativeToFrame, isEnabled, _ = TRB.Functions.Class:GetBarTextFrame(entry.position.relativeToFrame)
+		relativeToFrame, isEnabled, _ = TRB.Functions.BarText:GetAnchorFrame(entry.position.relativeToFrame, classId, specId)
 		if relativeToFrame == nil and isEnabled then
 			relativeToFrame = _G["TwintopResourceBarFrame_" .. entry.position.relativeToFrame]
 		end
@@ -1513,7 +1678,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			elseif e.position.relativeToFrame == "AllComboPoints" then
 			else
 				-- Capture isVisible but don't use it for frame creation - parenting needs the frame regardless
-				relativeToFrame, isEnabled, _ = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+				relativeToFrame, isEnabled, _ = TRB.Functions.BarText:GetAnchorFrame(e.position.relativeToFrame, classId, specId)
 
 				if relativeToFrame == nil and isEnabled then
 					relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
@@ -1682,7 +1847,7 @@ function TRB.Functions.BarText:Show(settings)
 				isEnabled = cached[1]
 				isVisible = cached[2]
 			else
-				_, isEnabled, isVisible = TRB.Functions.Class:GetBarTextFrame(key)
+				_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(key)
 				if key == "UIParent" then
 					isVisible = true
 				end
