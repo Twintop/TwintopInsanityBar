@@ -154,6 +154,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Blood
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				-- Bone Shield bar
+				configuration.bars = configuration.bars or {}
+				configuration.bars.boneShield = settings.bars and settings.bars.boneShield
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.boneShield = settings.colors and settings.colors.bars and settings.colors.bars.boneShield
+				configuration.textures.boneShieldBar = settings.textures and settings.textures.boneShieldBar
+				configuration.textures.boneShieldBarName = settings.textures and settings.textures.boneShieldBarName
+				configuration.textures.boneShieldBorder = settings.textures and settings.textures.boneShieldBorder
+				configuration.textures.boneShieldBorderName = settings.textures and settings.textures.boneShieldBorderName
+				configuration.textures.boneShieldBackground = settings.textures and settings.textures.boneShieldBackground
+				configuration.textures.boneShieldBackgroundName = settings.textures and settings.textures.boneShieldBackgroundName
 			elseif specId == 2 then -- Frost
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints

@@ -949,22 +949,18 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
 		end
 		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
-		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false)
+		-- Demon Hunter Vengeance: Soul Fragment nodes use stepped min/max (i-1, i) instead of discrete (0, 1)
+		local secondaryMinMaxMode
+		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
+			secondaryMinMaxMode = "stepped"
+		end
+		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false, secondaryMinMaxMode)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
 			local sfNode = barGroups.secondary:GetNode(1)
 			if sfNode then
 				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
-			end
-		-- Demon Hunter Vengeance: 6 Soul Fragment nodes use stepped min/max ranges.
-		-- ConstructAnchoredBarGroup resets all nodes to (0,1); restore (i-1, i) here.
-		elseif TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
-			for i = 1, barGroups.secondary.maxNodes do
-				local node = barGroups.secondary:GetNode(i)
-				if node then
-					node:SetMinMax(i - 1, i)
-				end
 			end
 		end
 
@@ -2539,7 +2535,7 @@ end
 ---@field public defaultAnchorAbove boolean # If true, default anchor is TOP; if false, default is BOTTOM
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
----@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
+---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i), "health" (0-maxHealth), or "custom"
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
 ---@field public shouldInitiallyShow boolean? # If false, construction keeps the bar hidden and avoids calling Show() before runtime visibility logic runs
 
@@ -2737,7 +2733,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			groupSettings.border
 		)
 
-		-- Set min/max for multi-node discrete bars (e.g., utility charge bars).
+		-- Set min/max for multi-node bars.
 		-- ApplyLayout does not set min/max, and StatusBar frames default to (0,0),
 		-- which causes all SetValue() calls to scale to 0 (empty).
 		if config.minMaxMode == "discrete" then
@@ -2749,6 +2745,13 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					else
 						multiNode:SetMinMax(0, 1)
 					end
+				end
+			end
+		elseif config.minMaxMode == "stepped" then
+			for i = 1, nodes do
+				local multiNode = targetGroup:GetNode(i)
+				if multiNode then
+					multiNode:SetMinMax(i - 1, i)
 				end
 			end
 		end
@@ -2809,7 +2812,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 					-- Set min/max for multi-node layouts
 					if config.useApplyLayout then
-						if config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
+						if config.minMaxMode == "stepped" then
+							node:SetMinMax(i - 1, i)
+						elseif config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
 							node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
 						else
 							node:SetMinMax(0, 1)
@@ -2866,7 +2871,7 @@ end
 ---@param primaryGroup TRB.Classes.BarGroup
 ---@param secondaryGroup TRB.Classes.BarGroup
 ---@param applyAppearance boolean?
-function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
+function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance, minMaxModeOverride)
 	local barGroups = TRB.Frames.barGroups
 	local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, "secondary")
 
@@ -2900,7 +2905,7 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 			background = "background",
 			bar = "base"
 		},
-		minMaxMode = "discrete"
+		minMaxMode = minMaxModeOverride or "discrete"
 	}
 
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, secondaryGroup, config, applyAppearance)

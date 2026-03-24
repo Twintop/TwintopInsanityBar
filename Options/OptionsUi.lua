@@ -8207,7 +8207,49 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
-	elseif(classId == 6) then -- Death Knight
+	elseif(classId == 6 and specId == 1) then -- Blood Death Knight
+		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
+		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
+		relativeToFrame[L["Rune3"]] = "ComboPoint_3"
+		relativeToFrame[L["Rune4"]] = "ComboPoint_4"
+		relativeToFrame[L["Rune5"]] = "ComboPoint_5"
+		relativeToFrame[L["Rune6"]] = "ComboPoint_6"
+		relativeToFrame[L["BoneShield1"]] = "BoneShield_1"
+		relativeToFrame[L["BoneShield2"]] = "BoneShield_2"
+		relativeToFrame[L["BoneShield3"]] = "BoneShield_3"
+		relativeToFrame[L["BoneShield4"]] = "BoneShield_4"
+		relativeToFrame[L["BoneShield5"]] = "BoneShield_5"
+		relativeToFrame[L["BoneShield6"]] = "BoneShield_6"
+		relativeToFrame[L["BoneShield7"]] = "BoneShield_7"
+		relativeToFrame[L["BoneShield8"]] = "BoneShield_8"
+		relativeToFrame[L["BoneShield9"]] = "BoneShield_9"
+		relativeToFrame[L["BoneShield10"]] = "BoneShield_10"
+		relativeToFrame[L["BoneShield11"]] = "BoneShield_11"
+		relativeToFrame[L["BoneShield12"]] = "BoneShield_12"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Rune1"],
+			L["Rune2"],
+			L["Rune3"],
+			L["Rune4"],
+			L["Rune5"],
+			L["Rune6"],
+			L["BoneShield1"],
+			L["BoneShield2"],
+			L["BoneShield3"],
+			L["BoneShield4"],
+			L["BoneShield5"],
+			L["BoneShield6"],
+			L["BoneShield7"],
+			L["BoneShield8"],
+			L["BoneShield9"],
+			L["BoneShield10"],
+			L["BoneShield11"],
+			L["BoneShield12"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif(classId == 6) then -- Frost / Unholy Death Knight
 		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
 		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
 		relativeToFrame[L["Rune3"]] = "ComboPoint_3"

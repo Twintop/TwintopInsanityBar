@@ -1000,7 +1000,7 @@ end
 ---@field public texturePrefix string # Prefix for texture keys (e.g., "stagger" -> "staggerBar", "staggerBorder", "staggerBackground")
 ---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
 ---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
----@field public minMaxMode string # "discrete" (0-1), "health", "mana", "percentage", or "custom"
+---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i per node), "health", "mana", "percentage", or "custom"
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
@@ -1581,6 +1581,29 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultLightweaverBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Bone Shield bar (Blood Death Knight)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "boneShield",
+		displayName = L["ResourceBoneShield"],
+		isMultiNode = true,
+		maxNodes = 12,
+		hasSameColor = false,
+		minMaxMode = "stepped",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "boneShield",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultBoneShieldBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

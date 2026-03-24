@@ -61,7 +61,7 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
     })
     self.improvedBoneShield = TRB.Classes.SpellBase:New({
         id = 374715,
-        maxStacksMod = 2
+            maxStacksMod = 2
     })
 
     self.marrowrend = TRB.Classes.SpellBase:New({
@@ -105,6 +105,9 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false },
 		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
 		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
+
+		{ variable = "$boneShieldStacks", description = L["DeathKnightBarTextVariable_boneShieldStacks"], printInSettings = true, color = false },
+		{ variable = "$boneShieldStacksMax", description = L["DeathKnightBarTextVariable_boneShieldStacksMax"], printInSettings = true, color = false },
 	})
 end
 
@@ -295,6 +298,16 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
         false -- not primary
     )
 
+    -- Bone Shield bar (Blood only, 12 max nodes)
+    if specId == 1 then
+        barGroups.boneShield = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_BoneShield",
+            12,
+            false -- not primary
+        )
+    end
+
     return barGroups
 end
 
@@ -302,8 +315,7 @@ end
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
 function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
-    -- All Death Knight specs have the same configuration
-    return {
+    local config = {
         primary = {
             maxNodes = 1,
             isPrimary = true
@@ -319,6 +331,17 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
             resourceType = "Health"
         }
     }
+
+    -- Blood gets a Bone Shield bar
+    if specId == 1 then
+        config.boneShield = {
+            maxNodes = 12,
+            isPrimary = false,
+            resourceType = "BoneShield"
+        }
+    end
+
+    return config
 end
 
 -- Register barTextVariables fillers for cross-class options panel support

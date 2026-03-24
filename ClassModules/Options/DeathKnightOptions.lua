@@ -252,6 +252,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			boneShield = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -261,6 +262,9 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			boneShield = TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic),
+		},
 		colors={
 			text = {
 				current = {
@@ -316,6 +320,9 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				sortRunes = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				boneShield = TRB.Functions.Settings:DefaultBoneShieldBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -362,6 +369,15 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
+
+	-- Add Bone Shield bar textures
+	local boneShieldTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.boneShieldBar = boneShieldTextures.bar
+	settings.textures.boneShieldBarName = boneShieldTextures.barName
+	settings.textures.boneShieldBorder = boneShieldTextures.border
+	settings.textures.boneShieldBorderName = boneShieldTextures.borderName
+	settings.textures.boneShieldBackground = boneShieldTextures.background
+	settings.textures.boneShieldBackgroundName = boneShieldTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = BloodLoadDefaultBarTextSettings(classic)
@@ -963,6 +979,25 @@ local function BloodConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
 end
 
+local function BloodConstructBoneShieldBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	if boneShieldBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef, L["ResourceRunicPower"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef)
+	end
+end
+
 local function BloodConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -974,7 +1009,12 @@ local function BloodConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"])
+	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	local customBars = {}
+	if boneShieldBarDef then
+		table.insert(customBars, boneShieldBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"], false, customBars)
 end
 
 local function BloodConstructBarVisibilityPanel(parent)
@@ -988,7 +1028,12 @@ local function BloodConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
+	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	local customBars = {}
+	if boneShieldBarDef then
+		table.insert(customBars, boneShieldBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
 end
 
 local function BloodConstructThresholdPanel(parent)
@@ -1183,6 +1228,7 @@ local function BloodConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel },
 		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel },
+		{ key = "boneShieldBar", label = L["TabBoneShield"], width = oUi.tabWidth.medium, constructor = BloodConstructBoneShieldBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BloodConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BloodConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },

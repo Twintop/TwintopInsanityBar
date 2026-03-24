@@ -1297,6 +1297,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if spec.displayBar and spec.displayBar.holyWords ~= nil then
 			specCache.settings.displayBar.holyWords = spec.displayBar.holyWords
 		end
+		if spec.displayBar and spec.displayBar.boneShield ~= nil then
+			specCache.settings.displayBar.boneShield = spec.displayBar.boneShield
+		end
 		-- Also carry over non-global keys that don't exist in core
 		if spec.displayBar then
 			if spec.displayBar.enableFormSwitching ~= nil then

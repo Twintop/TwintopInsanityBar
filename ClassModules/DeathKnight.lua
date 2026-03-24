@@ -15,6 +15,7 @@ local frameLevels = TRB.Data.constants.frameLevels
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
+local spellEventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -193,6 +194,19 @@ local function FillSpecializationCache()
 	}
 end
 
+spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
+	if event == "SPELL_UPDATE_USES" and TRB.Data.character.specId == 1 then
+		local spellsData = TRB.Data.spellsData
+		if spellsData and spellsData.spells then
+			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+			if spells.marrowrend and spellId == spells.marrowrend.id then
+				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+				snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
+			end
+		end
+	end
+end)
+
 local function Setup_Blood()
 	Character:FillSpecializationCacheSettings("deathknight", "blood", true)
 	
@@ -318,6 +332,12 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
+	-- Bone Shield bar (Blood only) - uses stepped min/max via BarTypeRegistry
+	if barGroups and barGroups.boneShield and TRB.Data.character.specId == 1 then
+		local maxBoneShield = TRB.Data.character.maxBoneShield or 10
+		barGroups.boneShield:SetNodeCount(maxBoneShield)
+	end
+
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -386,6 +406,20 @@ local function RefreshLookupData_Blood()
 		lookupLogic["$runesReadyCount"] = _runesReadyCount
 		if lookupChanged(prevState, "$runesReadyCount", _runesReadyCount) then
 			lookup["$runesReadyCount"] = tostring(_runesReadyCount)
+		end
+	end
+
+	-- Block C: Bone Shield ($boneShieldStacks, $boneShieldStacksMax)
+	if not activeVars or activeVars["$boneShieldStacks"] or activeVars["$boneShieldStacksMax"] then
+		local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
+		local maxBoneShield = TRB.Data.character.maxBoneShield or 10
+		lookupLogic["$boneShieldStacks"] = boneShieldStacks
+		lookupLogic["$boneShieldStacksMax"] = maxBoneShield
+		if lookupChanged(prevState, "$boneShieldStacks", boneShieldStacks) then
+			lookup["$boneShieldStacks"] = tostring(boneShieldStacks)
+		end
+		if lookupChanged(prevState, "$boneShieldStacksMax", maxBoneShield) then
+			lookup["$boneShieldStacksMax"] = tostring(maxBoneShield)
 		end
 	end
 
@@ -664,6 +698,35 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	end
 end
 
+---Updates the Bone Shield bar display (Blood only)
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateBoneShield(specSettings, specCacheSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
+	local maxBoneShield = TRB.Data.character.maxBoneShield or 10
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	if barGroups and barGroups.boneShield then
+		local boneShieldColors = specSettings.colors.bars.boneShield
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(boneShieldColors.background.color, true)
+		local cpBorderColor = boneShieldColors.border.color
+		local cpFillColor = boneShieldColors.bar.color
+
+		for x = 1, maxBoneShield do
+			local boneShieldNode = barGroups.boneShield:GetNode(x)
+			if boneShieldNode then
+				-- All nodes get the same raw value; each node's stepped
+				-- SetMinMax(x-1, x) handles fill via StatusBar clamping
+				Bar:SetBarNodeValue(specCacheSettings, "boneShield" .. x, boneShieldNode, boneShieldStacks)
+				boneShieldNode:SetBorderColor(cpBorderColor)
+				boneShieldNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+				boneShieldNode:SetColor(cpFillColor)
+			end
+		end
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.deathknight
@@ -796,6 +859,11 @@ local function UpdateResourceBar()
 					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
 				end
 				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			end
+
+			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
+				refreshText = true
+				UpdateBoneShield(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1031,6 +1099,9 @@ local function SwitchSpec()
 	end
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
+
+	-- Unregister spec-specific events before switching
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	
 	if TRB.Data.character.specId == 1 then
 		specCache.deathknight_blood.talents:GetTalents()
@@ -1054,6 +1125,11 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "deathknight_blood"
 			ConstructResourceBar(specCache.deathknight_blood.settings)
 		end
+
+		-- Register Bone Shield tracking via SPELL_UPDATE_USES
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+		-- Initialize current bone shield stacks
+		TRB.Data.snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
 	elseif TRB.Data.character.specId == 2 then
 		specCache.deathknight_frost.talents:GetTalents()
 		FillSpellData_Frost()
@@ -1270,6 +1346,19 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "blood"
 		TRB.Data.character.compositeKey = "deathknight_blood"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+
+		-- Determine max Bone Shield stacks based on Improved Bone Shield talent
+		local spellsData = TRB.Data.spellsData
+		if spellsData and spellsData.spells then
+			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+			if spells.boneShield and spells.improvedBoneShield then
+				local maxBoneShield = spells.boneShield.maxStacks or 10
+				if talents and talents:IsTalentActive(spells.improvedBoneShield) then
+					maxBoneShield = maxBoneShield + (spells.improvedBoneShield.attributes.maxStacksMod or 2)
+				end
+				TRB.Data.character.maxBoneShield = maxBoneShield
+			end
+		end
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "frost"
 		TRB.Data.character.compositeKey = "deathknight_frost"
@@ -1333,6 +1422,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.boneShield, sharedSettings and sharedSettings.displayBar.boneShield, TRB.Data.character.specId == 1, TRB.Data.character.maxBoneShield, nil),
 		}
 
 		if sharedSettings ~= nil then
@@ -1372,7 +1462,11 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
 	}
-	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+	local blood = {}
+	for k, v in pairs(shared) do blood[k] = v end
+	blood["$boneShieldStacks"] = function() return (TRB.Data.snapshotData.attributes.boneShieldStacks or 0) > 0 end
+	blood["$boneShieldStacksMax"] = true
+	specValidVars = { [1] = blood, [2] = shared, [3] = shared }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)
@@ -1425,6 +1519,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				if runeNode then
 					local isVisible = barGroups.secondary.isVisible and runeNode.isVisible
 					return runeNode:GetFrame(), true, isVisible
+				end
+			end
+		end
+		local boneShieldIndex = string.match(relativeToFrame, "^BoneShield(%d+)$")
+		if boneShieldIndex ~= nil then
+			local index = tonumber(boneShieldIndex)
+			if index ~= nil and barGroups and barGroups.boneShield then
+				local boneShieldNode = barGroups.boneShield:GetNode(index)
+				if boneShieldNode then
+					local isVisible = barGroups.boneShield.isVisible and boneShieldNode.isVisible
+					return boneShieldNode:GetFrame(), true, isVisible
 				end
 			end
 		end
