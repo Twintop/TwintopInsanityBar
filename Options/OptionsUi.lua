@@ -1519,6 +1519,38 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	return cf
 end
 
+---Hides every registered Bar Text Variables panel and clears the active panel reference.
+function TRB.Functions.OptionsUi:HideAllBarTextVariablesPanels()
+	local registry = TRB.Frames.barTextVariablesPanelRegistry
+	if registry ~= nil then
+		for _, panel in pairs(registry) do
+			if panel ~= nil then
+				panel:Hide()
+			end
+		end
+	end
+
+	if TRB.Frames.barTextVariablesPanel ~= nil then
+		TRB.Frames.barTextVariablesPanel:Hide()
+	end
+
+	TRB.Frames.barTextVariablesPanel = nil
+end
+
+---Shows the Bar Text Variables panel associated with the given scroll child.
+---@param scrollChild Frame|nil
+function TRB.Functions.OptionsUi:ActivateBarTextVariablesPanel(scrollChild)
+	self:HideAllBarTextVariablesPanels()
+
+	if scrollChild ~= nil and scrollChild.barTextVariablesPanel ~= nil then
+		TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
+		TRB.Frames.barTextVariablesPanel:Show()
+		if TRB.Frames.barTextVariablesPanel.variablesTable ~= nil then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end
+end
+
 ---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
 ---@param self Button # The tab button that was clicked
 ---@param tabId string # The key of the tab to switch to
@@ -1544,23 +1576,9 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 		-- Swap to the correct spec's variables panel via the tabsheet's scrollChild
 		local barTextSheet = parent.tabsheets and parent.tabsheets["barText"]
 		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
-		if scrollChild and scrollChild.barTextVariablesPanel then
-			-- Hide the previous panel if it's different
-			if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel ~= scrollChild.barTextVariablesPanel then
-				TRB.Frames.barTextVariablesPanel:Hide()
-			end
-			TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
-		end
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Show()
-			if TRB.Frames.barTextVariablesPanel.variablesTable then
-				TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
-			end
-		end
+		TRB.Functions.OptionsUi:ActivateBarTextVariablesPanel(scrollChild)
 	else
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Hide()
-		end
+		TRB.Functions.OptionsUi:HideAllBarTextVariablesPanels()
 		-- Clear active edit box tracking when leaving the Bar Text tab
 		TRB.Frames.activeBarTextEditBox = nil
 		TRB.Frames.activeBarTextCursorPosition = nil
@@ -1828,9 +1846,7 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 	-- Start hidden; SwitchTab will show it when the Bar Text tab is active
 	cf:Hide()
 
-	-- Store reference so SwitchTab and nav selection can show/hide it
-	TRB.Frames.barTextVariablesPanel = cf
-	-- Also register in the per-spec lookup table so we can swap panels on spec switch
+	-- Register in the per-spec lookup table so tab/nav switching can activate the correct panel.
 	TRB.Frames.barTextVariablesPanelRegistry = TRB.Frames.barTextVariablesPanelRegistry or {}
 	TRB.Frames.barTextVariablesPanelRegistry[name] = cf
 
