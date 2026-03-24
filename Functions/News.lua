@@ -20,6 +20,10 @@ local content = [====[
 - Fix bar text variables flyout not always showing or hiding correctly when switching tabs or specializations.
 - Fix dynamically hidden bars (e.g. visibility conditions not met) causing other bars to shift position. Dynamically hidden bars now maintain their layout height as an invisible scaffold.
 
+### Localization
+
+- [#718](#718) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Death Knight
 ### Blood
 
@@ -80,7 +84,7 @@ local content = [====[
 
 ### Localization
 
-- [#719](#719) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#716](#716) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 
