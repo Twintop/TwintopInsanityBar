@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.1.42-release (2026-03-25)
+## General
+
+- [#719](#719) Fix bar strata not being applied to all elements.
+
 ## Warrior
 ### Protection
 

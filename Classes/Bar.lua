@@ -464,6 +464,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	end
 	self.containerFrame = CreateFrame("Frame", containerName, parent, "BackdropTemplate")
 	self.containerFrame:SetFrameStrata("BACKGROUND")
+	self.strata = "BACKGROUND"
 	-- Hide the container by default - bars should only be shown explicitly
 	self.containerFrame:Hide()
 
@@ -505,6 +506,10 @@ function TRB.Classes.BarGroup:SetMaxNodes(newMaxNodes)
 			-- Propagate smooth setting to newly created nodes
 			if self.smooth ~= nil then
 				self.nodes[i].smooth = self.smooth
+			end
+			-- Propagate current strata to newly created nodes
+			if self.strata then
+				self.nodes[i]:SetFrameStrata(self.strata)
 			end
 		end
 	else
@@ -644,6 +649,7 @@ end
 ---Sets frame strata for all nodes
 ---@param strata string
 function TRB.Classes.BarGroup:SetFrameStrata(strata)
+	self.strata = strata
 	self.containerFrame:SetFrameStrata(strata)
 	for i = 1, self.maxNodes do
 		if self.nodes[i] then
