@@ -1519,6 +1519,38 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	return cf
 end
 
+---Hides every registered Bar Text Variables panel and clears the active panel reference.
+function TRB.Functions.OptionsUi:HideAllBarTextVariablesPanels()
+	local registry = TRB.Frames.barTextVariablesPanelRegistry
+	if registry ~= nil then
+		for _, panel in pairs(registry) do
+			if panel ~= nil then
+				panel:Hide()
+			end
+		end
+	end
+
+	if TRB.Frames.barTextVariablesPanel ~= nil then
+		TRB.Frames.barTextVariablesPanel:Hide()
+	end
+
+	TRB.Frames.barTextVariablesPanel = nil
+end
+
+---Shows the Bar Text Variables panel associated with the given scroll child.
+---@param scrollChild Frame|nil
+function TRB.Functions.OptionsUi:ActivateBarTextVariablesPanel(scrollChild)
+	self:HideAllBarTextVariablesPanels()
+
+	if scrollChild ~= nil and scrollChild.barTextVariablesPanel ~= nil then
+		TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
+		TRB.Frames.barTextVariablesPanel:Show()
+		if TRB.Frames.barTextVariablesPanel.variablesTable ~= nil then
+			TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
+		end
+	end
+end
+
 ---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
 ---@param self Button # The tab button that was clicked
 ---@param tabId string # The key of the tab to switch to
@@ -1544,23 +1576,9 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 		-- Swap to the correct spec's variables panel via the tabsheet's scrollChild
 		local barTextSheet = parent.tabsheets and parent.tabsheets["barText"]
 		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
-		if scrollChild and scrollChild.barTextVariablesPanel then
-			-- Hide the previous panel if it's different
-			if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel ~= scrollChild.barTextVariablesPanel then
-				TRB.Frames.barTextVariablesPanel:Hide()
-			end
-			TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
-		end
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Show()
-			if TRB.Frames.barTextVariablesPanel.variablesTable then
-				TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
-			end
-		end
+		TRB.Functions.OptionsUi:ActivateBarTextVariablesPanel(scrollChild)
 	else
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Hide()
-		end
+		TRB.Functions.OptionsUi:HideAllBarTextVariablesPanels()
 		-- Clear active edit box tracking when leaving the Bar Text tab
 		TRB.Frames.activeBarTextEditBox = nil
 		TRB.Frames.activeBarTextCursorPosition = nil
@@ -1828,9 +1846,7 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 	-- Start hidden; SwitchTab will show it when the Bar Text tab is active
 	cf:Hide()
 
-	-- Store reference so SwitchTab and nav selection can show/hide it
-	TRB.Frames.barTextVariablesPanel = cf
-	-- Also register in the per-spec lookup table so we can swap panels on spec switch
+	-- Register in the per-spec lookup table so tab/nav switching can activate the correct panel.
 	TRB.Frames.barTextVariablesPanelRegistry = TRB.Frames.barTextVariablesPanelRegistry or {}
 	TRB.Frames.barTextVariablesPanelRegistry[name] = cf
 
@@ -7826,6 +7842,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	---@type TRB.Classes.Settings.DisplayTextEntry
 	---@diagnostic disable-next-line: missing-fields
 	local workingBarText = {}
+	local RefreshBarTextTable
 
 	---@param barTextEntry TRB.Classes.Settings.DisplayTextEntry|table|nil
 	---@return string
@@ -8207,7 +8224,49 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
-	elseif(classId == 6) then -- Death Knight
+	elseif(classId == 6 and specId == 1) then -- Blood Death Knight
+		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
+		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
+		relativeToFrame[L["Rune3"]] = "ComboPoint_3"
+		relativeToFrame[L["Rune4"]] = "ComboPoint_4"
+		relativeToFrame[L["Rune5"]] = "ComboPoint_5"
+		relativeToFrame[L["Rune6"]] = "ComboPoint_6"
+		relativeToFrame[L["BoneShield1"]] = "BoneShield_1"
+		relativeToFrame[L["BoneShield2"]] = "BoneShield_2"
+		relativeToFrame[L["BoneShield3"]] = "BoneShield_3"
+		relativeToFrame[L["BoneShield4"]] = "BoneShield_4"
+		relativeToFrame[L["BoneShield5"]] = "BoneShield_5"
+		relativeToFrame[L["BoneShield6"]] = "BoneShield_6"
+		relativeToFrame[L["BoneShield7"]] = "BoneShield_7"
+		relativeToFrame[L["BoneShield8"]] = "BoneShield_8"
+		relativeToFrame[L["BoneShield9"]] = "BoneShield_9"
+		relativeToFrame[L["BoneShield10"]] = "BoneShield_10"
+		relativeToFrame[L["BoneShield11"]] = "BoneShield_11"
+		relativeToFrame[L["BoneShield12"]] = "BoneShield_12"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Rune1"],
+			L["Rune2"],
+			L["Rune3"],
+			L["Rune4"],
+			L["Rune5"],
+			L["Rune6"],
+			L["BoneShield1"],
+			L["BoneShield2"],
+			L["BoneShield3"],
+			L["BoneShield4"],
+			L["BoneShield5"],
+			L["BoneShield6"],
+			L["BoneShield7"],
+			L["BoneShield8"],
+			L["BoneShield9"],
+			L["BoneShield10"],
+			L["BoneShield11"],
+			L["BoneShield12"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif(classId == 6) then -- Frost / Unholy Death Knight
 		relativeToFrame[L["Rune1"]] = "ComboPoint_1"
 		relativeToFrame[L["Rune2"]] = "ComboPoint_2"
 		relativeToFrame[L["Rune3"]] = "ComboPoint_3"
@@ -8425,6 +8484,28 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		}
 	end
 
+	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
+	if #containerAnchorOptions > 0 then
+		for _, containerAnchor in ipairs(containerAnchorOptions) do
+			local insertIndex = math.max(#relativeToFrameList, 1)
+			if #relativeToFrameList >= 2 then
+				insertIndex = #relativeToFrameList - 1
+			end
+
+			if containerAnchor.insertBeforeLabel ~= nil then
+				for i, label in ipairs(relativeToFrameList) do
+					if label == containerAnchor.insertBeforeLabel then
+						insertIndex = i
+						break
+					end
+				end
+			end
+
+			relativeToFrame[containerAnchor.label] = containerAnchor.id
+			table.insert(relativeToFrameList, insertIndex, containerAnchor.label)
+		end
+	end
+
 	local function RelativeToFrameIsSelected(value)
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			return value == workingBarText.position.relativeToFrame
@@ -8443,6 +8524,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				end
 			end
 			barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
+			if RefreshBarTextTable ~= nil then
+				RefreshBarTextTable()
+			end
 			RefreshBarTextEditorPreview(false)
 		end
 	end
@@ -8833,6 +8917,21 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 		btt:SetData(dataTable)
 		btt:EnableSelection(true)
+	end
+
+	RefreshBarTextTable = function()
+		local displayText = spec.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+		SetTableValues(displayText, barTextTable)
+
+		if workingBarText ~= nil and workingBarText.guid ~= nil then
+			local entries = TRB.Functions.Table:Length(displayText.barText)
+			for i = 1, entries do
+				if displayText.barText[i].guid == workingBarText.guid then
+					barTextTable:SetSelection(i)
+					break
+				end
+			end
+		end
 	end
 
 	---Creates and returns a new default bar text entry with default font, position, and empty text content.

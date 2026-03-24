@@ -16,6 +16,19 @@ local content = [====[
 ## General
 
 - [#719](#719) Fix bar strata not being applied to all elements.
+- Add "container" bar text anchor areas for multi-node bars (Combo Points, Runes, Soul Shards, etc.), allowing bar text to be anchored to the bar group as a whole instead of individual nodes.
+- Fix bar text variables flyout not always showing or hiding correctly when switching tabs or specializations.
+- Fix dynamically hidden bars (e.g. visibility conditions not met) causing other bars to shift position. Dynamically hidden bars now maintain their layout height as an invisible scaffold.
+
+### Localization
+
+- [#718](#718) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Death Knight
+### Blood
+
+- [#610](#610) Add a new Bone Shield bar showing current stacks (up to 12 nodes). Enabled by default. 
+- [#610](#610) Add `$boneShieldStacks`, `$boneShieldStacksMax`, and `$boneShield` bar text variables.
 
 ## Warrior
 ### Protection
@@ -71,7 +84,7 @@ local content = [====[
 
 ### Localization
 
-- [#719](#719) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#716](#716) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 

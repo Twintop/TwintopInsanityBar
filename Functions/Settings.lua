@@ -2213,6 +2213,80 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 
+					-- Migrate Blood Death Knight: add Bone Shield bar settings and default bar text
+					if className == "deathknight" and specName == "blood" then
+						if not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if not specSettings.bars.boneShield then
+							specSettings.bars.boneShield = TRB.Functions.Settings:DefaultBoneShieldBarDimensions()
+						end
+
+						if specSettings.colors then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.boneShield then
+								specSettings.colors.bars.boneShield = TRB.Functions.Settings:DefaultBoneShieldBarColors()
+							end
+						end
+
+						if specSettings.textures and not specSettings.textures.boneShieldBar then
+							local boneShieldTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+							specSettings.textures.boneShieldBar = boneShieldTextures.bar
+							specSettings.textures.boneShieldBarName = boneShieldTextures.barName
+							specSettings.textures.boneShieldBorder = boneShieldTextures.border
+							specSettings.textures.boneShieldBorderName = boneShieldTextures.borderName
+							specSettings.textures.boneShieldBackground = boneShieldTextures.background
+							specSettings.textures.boneShieldBackgroundName = boneShieldTextures.backgroundName
+						end
+
+						if not specSettings.displayBar then
+							specSettings.displayBar = {}
+						end
+						if not specSettings.displayBar.boneShield then
+							specSettings.displayBar.boneShield = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+						end
+
+						if specSettings.displayText and specSettings.displayText.barText then
+							local hasBoneShieldText = false
+							for _, entry in ipairs(specSettings.displayText.barText) do
+								if entry.position and entry.position.relativeToFrame == "Container::boneShield" then
+									hasBoneShieldText = true
+									break
+								end
+							end
+							if not hasBoneShieldText then
+								table.insert(specSettings.displayText.barText, {
+									useDefaultFontColor = true,
+									useDefaultFontOutline = true,
+									useDefaultFontShadow = true,
+									fontOutline = "OUTLINE",
+									fontOutlineName = L["FontOutlineOutline"],
+									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+									useDefaultFontFace = true,
+									guid = TRB.Functions.String:Guid(),
+									fontJustifyHorizontalName = L["PositionCenter"],
+									text = "$boneShieldStacks",
+									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+									fontSize = 14,
+									name = L["ResourceBoneShield"],
+									position = {
+										relativeToName = L["PositionCenter"],
+										relativeTo = "CENTER",
+										xPos = 0,
+										relativeToFrameName = L["BoneShieldContainer"],
+										yPos = 0,
+										relativeToFrame = "Container::boneShield",
+									},
+									fontJustifyHorizontal = "CENTER",
+									useDefaultFontSize = true,
+									color = { color = "FFFFFFFF" },
+									enabled = true,
+								})
+							end
+						end
+					end
+
 					-- Migrate displayText.default.color from flat string to table format
 					if specSettings.displayText and specSettings.displayText.default and 
 					   specSettings.displayText.default.color and type(specSettings.displayText.default.color) == "string" then
@@ -5960,6 +6034,65 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 			charge3 = { color = "FF3388EE" },
 			charge4 = { color = "FF1166CC" },
 		}
+	}
+end
+
+---Gets default Bone Shield bar dimensions (Blood Death Knight, anchored above runes)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			collapseBorderWidth = false,
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "secondary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		collapseBorderWidth = true,
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "secondary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+		},
+	}
+end
+
+---Gets default Bone Shield bar colors (Blood Death Knight)
+---@return table
+function TRB.Functions.Settings:DefaultBoneShieldBarColors()
+	return {
+		bar = { color = "FF8DD48D" },
+		border = { color = "FF205E20" },
+		background = { color = "66000000" }
 	}
 end
 

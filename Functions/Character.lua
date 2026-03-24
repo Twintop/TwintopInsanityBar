@@ -1281,29 +1281,18 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			end
 		end
 		
-		-- Override with spec-specific custom bar visibility settings
-		-- These are always spec-specific (mana, stagger, defensives, etc.) because
-		-- they don't exist in core.displayBar and aren't exposed in the global panel.
-		-- Secondary and utility ARE in core.displayBar, so they follow global when enabled.
-		if spec.displayBar and spec.displayBar.mana ~= nil then
-			specCache.settings.displayBar.mana = spec.displayBar.mana
-		end
-		if spec.displayBar and spec.displayBar.stagger ~= nil then
-			specCache.settings.displayBar.stagger = spec.displayBar.stagger
-		end
-		if spec.displayBar and spec.displayBar.defensives ~= nil then
-			specCache.settings.displayBar.defensives = spec.displayBar.defensives
-		end
-		if spec.displayBar and spec.displayBar.holyWords ~= nil then
-			specCache.settings.displayBar.holyWords = spec.displayBar.holyWords
-		end
-		-- Also carry over non-global keys that don't exist in core
+		-- Override with spec-specific displayBar keys that don't exist in core.displayBar.
+		-- Custom bars (mana, stagger, defensives, holyWords, lightweaver, boneShield, etc.)
+		-- and non-visibility flags (enableFormSwitching, showComboPoints) are always
+		-- spec-specific because they aren't exposed in the global panel.
+		-- This loop automatically picks up any new custom bar types without needing
+		-- manual additions here — preventing the recurring bug where a new bar type
+		-- was invisible under "Use global settings" because it wasn't listed.
 		if spec.displayBar then
-			if spec.displayBar.enableFormSwitching ~= nil then
-				specCache.settings.displayBar.enableFormSwitching = spec.displayBar.enableFormSwitching
-			end
-			if spec.displayBar.showComboPoints ~= nil then
-				specCache.settings.displayBar.showComboPoints = spec.displayBar.showComboPoints
+			for k, v in pairs(spec.displayBar) do
+				if core.displayBar[k] == nil then
+					specCache.settings.displayBar[k] = v
+				end
 			end
 		end
 	else

@@ -292,9 +292,6 @@ local function ConstructResourceBar(settings)
 						settings.textures.comboPointsBorder,
 						settings.textures.comboPointsBackground
 					)
-					-- Stepped min/max: node 1 = 0,1; node 2 = 1,2; ... node 6 = 5,6
-					-- All nodes receive the same raw secret value; StatusBar clamping handles fill
-					node:SetMinMax(i - 1, i)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					node:SetColor(settings.colors.comboPoints.base.color)
@@ -2117,7 +2114,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 		end
 	end
 
-	-- Vengeance: Soul Fragments bar with 6 independent nodes (stepped min/max)
+	-- Vengeance: Soul Fragments bar with 6 independent nodes (stepped min/max handled by infrastructure)
 	if TRB.Data.character.specId == 2 and barGroups.secondary then
 		local maxSoulFragments = 6
 		barGroups.secondary:SetMaxNodes(maxSoulFragments)
@@ -2126,7 +2123,6 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 		for i = 1, maxSoulFragments do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
-				node:SetMinMax(i - 1, i)
 				node:SetTextures(
 					settings.textures.comboPointsBar,
 					settings.textures.comboPointsBorder,

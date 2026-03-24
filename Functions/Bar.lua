@@ -949,22 +949,18 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
 		end
 		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
-		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false)
+		-- Demon Hunter Vengeance: Soul Fragment nodes use stepped min/max (i-1, i) instead of discrete (0, 1)
+		local secondaryMinMaxMode
+		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
+			secondaryMinMaxMode = "stepped"
+		end
+		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false, secondaryMinMaxMode)
 		-- Demon Hunter Devourer: secondary is a true 0..50 bar, and values may be "secret".
 		-- Keep the node min/max in that range so SetValue() works without scaling/clamping.
 		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
 			local sfNode = barGroups.secondary:GetNode(1)
 			if sfNode then
 				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
-			end
-		-- Demon Hunter Vengeance: 6 Soul Fragment nodes use stepped min/max ranges.
-		-- ConstructAnchoredBarGroup resets all nodes to (0,1); restore (i-1, i) here.
-		elseif TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
-			for i = 1, barGroups.secondary.maxNodes do
-				local node = barGroups.secondary:GetNode(i)
-				if node then
-					node:SetMinMax(i - 1, i)
-				end
 			end
 		end
 
@@ -1892,15 +1888,31 @@ end
 -- bars position themselves relative to their anchor target using 9-point
 -- anchor/attach pairs.
 
----Gets the bar settings table for a given bar key from the spec settings.
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barKey string # "primary", "secondary", "health", or a BarTypeRegistry key
----@return table? # The bar's settings table, or nil if not found
 function TRB.Functions.Bar:GetBarSettings(settings, barKey)
 	if barKey == "primary" then
 		return settings.bar
 	elseif barKey == "secondary" then
-		return settings.comboPoints
+		if settings.comboPoints then
+			return settings.comboPoints
+		end
+
+		-- Non-Feral Druids can anchor bars to the combo point bar even when the
+		-- secondary bar is not created. Their active spec settings do not carry a
+		-- comboPoints block, so fall back to Feral's shared combo point settings to
+		-- preserve the configured anchor chain for Balance, Guardian, and Restoration.
+		if TRB.Data.character.classId == 11 then
+			local feralSettings = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.settings
+			if feralSettings and feralSettings.comboPoints then
+				return feralSettings.comboPoints
+			end
+
+			local druidFeralSettings = TRB.Data.settings and TRB.Data.settings.druid and TRB.Data.settings.druid.feral
+			if druidFeralSettings and druidFeralSettings.comboPoints then
+				return druidFeralSettings.comboPoints
+			end
+		end
+
+		return nil
 	elseif barKey == "health" then
 		return settings.healthBar
 	else
@@ -2431,9 +2443,41 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 		local anchor = self:GetBarAnchor(settings, barKey)
 		local isRoot = (not anchor) or (not anchor.barKey) or (anchor.barKey == "screen")
 
-		-- Orphan check: if the anchor target doesn't exist in barGroups, treat as root
+		-- Orphan check: if the anchor target doesn't exist in barGroups, walk up
+		-- the settings-based anchor chain to find the nearest valid ancestor.
+		-- This handles cases where an intermediate bar wasn't created (e.g., Druid
+		-- secondary bar not created when form switching and showComboPoints are both
+		-- disabled, but the mana bar is anchored to "secondary" which normally
+		-- anchors to "primary"). Only promote to root if no valid ancestor is found.
 		if not isRoot and anchor and not barGroups[anchor.barKey] then
-			isRoot = true
+			local resolvedAnchorKey = nil
+			local visited = {}
+			local walkKey = anchor.barKey --[[@as string?]]
+			while walkKey and not barGroups[walkKey] do
+				if visited[walkKey] then break end
+				visited[walkKey] = true
+				local walkAnchor = self:GetBarAnchor(settings, walkKey)
+				if walkAnchor and walkAnchor.barKey and walkAnchor.barKey ~= "screen" then
+					walkKey = walkAnchor.barKey
+				else
+					walkKey = nil
+				end
+			end
+			if walkKey and barGroups[walkKey] then
+				-- Found a valid ancestor: re-anchor to it, preserving the
+				-- original anchor's attach/anchor points and offsets.
+				resolvedAnchorKey = walkKey
+				anchor = {
+					barKey = resolvedAnchorKey,
+					anchorPoint = anchor.anchorPoint,
+					attachPoint = anchor.attachPoint,
+					xOffset = anchor.xOffset,
+					yOffset = anchor.yOffset,
+					matchWidth = anchor.matchWidth,
+				}
+			else
+				isRoot = true
+			end
 		end
 
 		nodes[barKey] = {
@@ -2539,7 +2583,7 @@ end
 ---@field public defaultAnchorAbove boolean # If true, default anchor is TOP; if false, default is BOTTOM
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
----@field public minMaxMode string # "discrete" (0-1), "health" (0-maxHealth), or "custom"
+---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i), "health" (0-maxHealth), or "custom"
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
 ---@field public shouldInitiallyShow boolean? # If false, construction keeps the bar hidden and avoids calling Show() before runtime visibility logic runs
 
@@ -2737,7 +2781,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			groupSettings.border
 		)
 
-		-- Set min/max for multi-node discrete bars (e.g., utility charge bars).
+		-- Set min/max for multi-node bars.
 		-- ApplyLayout does not set min/max, and StatusBar frames default to (0,0),
 		-- which causes all SetValue() calls to scale to 0 (empty).
 		if config.minMaxMode == "discrete" then
@@ -2749,6 +2793,13 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					else
 						multiNode:SetMinMax(0, 1)
 					end
+				end
+			end
+		elseif config.minMaxMode == "stepped" then
+			for i = 1, nodes do
+				local multiNode = targetGroup:GetNode(i)
+				if multiNode then
+					multiNode:SetMinMax(i - 1, i)
 				end
 			end
 		end
@@ -2809,7 +2860,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 					-- Set min/max for multi-node layouts
 					if config.useApplyLayout then
-						if config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
+						if config.minMaxMode == "stepped" then
+							node:SetMinMax(i - 1, i)
+						elseif config.settingsKey == "comboPoints" and TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 and i == 1 then
 							node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
 						else
 							node:SetMinMax(0, 1)
@@ -2866,7 +2919,7 @@ end
 ---@param primaryGroup TRB.Classes.BarGroup
 ---@param secondaryGroup TRB.Classes.BarGroup
 ---@param applyAppearance boolean?
-function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance)
+function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance, minMaxModeOverride)
 	local barGroups = TRB.Frames.barGroups
 	local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, "secondary")
 
@@ -2900,7 +2953,7 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 			background = "background",
 			bar = "base"
 		},
-		minMaxMode = "discrete"
+		minMaxMode = minMaxModeOverride or "discrete"
 	}
 
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, secondaryGroup, config, applyAppearance)

@@ -714,23 +714,9 @@ function OptionsFrame:SelectCategory(key)
 ---@diagnostic disable-next-line: undefined-field
 		local barTextSheet = entry.panel.tabsheets and entry.panel.tabsheets["barText"]
 		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
-		if scrollChild and scrollChild.barTextVariablesPanel then
-			-- Hide the previous panel if it's different
-			if TRB.Frames.barTextVariablesPanel and TRB.Frames.barTextVariablesPanel ~= scrollChild.barTextVariablesPanel then
-				TRB.Frames.barTextVariablesPanel:Hide()
-			end
-			TRB.Frames.barTextVariablesPanel = scrollChild.barTextVariablesPanel
-		end
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Show()
-			if TRB.Frames.barTextVariablesPanel.variablesTable then
-				TRB.Frames.barTextVariablesPanel.variablesTable:Refresh()
-			end
-		end
+		TRB.Functions.OptionsUi:ActivateBarTextVariablesPanel(scrollChild)
 	else
-		if TRB.Frames.barTextVariablesPanel then
-			TRB.Frames.barTextVariablesPanel:Hide()
-		end
+		TRB.Functions.OptionsUi:HideAllBarTextVariablesPanels()
 	end
 
 	-- Highlight the button
