@@ -340,15 +340,34 @@ function OptionsFrame:EnsureFrame()
 	footerDivider:SetPoint("BOTTOMRIGHT", footerFrame, "TOPRIGHT", 0, 0)
 	footerDivider:SetColorTexture(0.4, 0.4, 0.4, 0.8)
 
-	-- Footer: version text (left)
-	local versionText = footerFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	versionText:SetPoint("LEFT", 8, 0)
-	versionText:SetTextColor(0.6, 0.6, 0.6, 1)
+	-- Footer: version text (left) — click to copy
 	local versionStr = TRB.Details.addonVersion
 	if TRB.Details.addonReleaseDate and TRB.Details.addonReleaseDate ~= "" then
 		versionStr = versionStr .. " (" .. TRB.Details.addonReleaseDate .. ")"
 	end
+
+	local versionBtn = CreateFrame("Button", nil, footerFrame)
+	versionBtn:SetHeight(FOOTER_HEIGHT)
+	versionBtn:SetPoint("LEFT", 8, 0)
+
+	local versionText = versionBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	versionText:SetPoint("LEFT", 0, 0)
+	versionText:SetTextColor(0.6, 0.6, 0.6, 1)
 	versionText:SetText(versionStr)
+	versionBtn:SetWidth(versionText:GetStringWidth() + 4)
+
+	versionBtn:SetScript("OnEnter", function(self)
+		versionText:SetTextColor(1, 1, 1, 1)
+	end)
+	versionBtn:SetScript("OnLeave", function(self)
+		versionText:SetTextColor(0.6, 0.6, 0.6, 1)
+	end)
+	versionBtn:SetScript("OnClick", function()
+		StaticPopup_Show("TRB_OPTIONSFRAME_URL", nil, nil, {
+			title = "TwintopInsanityBar " .. L["Version"],
+			url = versionStr,
+		})
+	end)
 
 	local discordIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\discord64.png"
 	local githubIconPath = "Interface\\AddOns\\TwintopInsanityBar\\Images\\GitHub_Invertocat_White64.png"

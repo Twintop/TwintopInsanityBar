@@ -20,6 +20,8 @@ local barTextCacheHash = {}
 ---@return boolean changed True if the formatted lookup[key] needs rewriting
 function TRB.Functions.BarText.LookupChanged(prevState, key, rawValue, color, isSecret)
 	if isSecret or issecretvalue(rawValue) then
+		-- Invalidate prevState so the next non-secret value is guaranteed to trigger an update
+		prevState[key] = nil
 		return true
 	end
 	local prev = prevState[key]

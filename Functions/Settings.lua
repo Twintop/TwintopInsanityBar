@@ -1970,6 +1970,55 @@ function TRB.Functions.Settings:PortForwardSettings()
 							if specSettings.colors.bars.defensives and not specSettings.colors.bars.defensives.nodeOrder then
 								specSettings.colors.bars.defensives.nodeOrder = { "ignorePain", "shieldBlock" }
 							end
+
+							-- Add Ignore Pain (Absorb) node for existing users
+							if specSettings.colors.bars.defensives and specSettings.colors.bars.defensives.nodeColors and not specSettings.colors.bars.defensives.nodeColors.ignorePainAbsorb then
+								specSettings.colors.bars.defensives.nodeColors.ignorePainAbsorb = { color = "FFFF9800", enabled = true }
+								-- Insert after ignorePain in nodeOrder
+								local nodeOrder = specSettings.colors.bars.defensives.nodeOrder
+								local inserted = false
+								for i, key in ipairs(nodeOrder) do
+									if key == "ignorePain" then
+										table.insert(nodeOrder, i + 1, "ignorePainAbsorb")
+										inserted = true
+										break
+									end
+								end
+								if not inserted then
+									table.insert(nodeOrder, 1, "ignorePainAbsorb")
+								end
+								-- Add default bar text entry for the new node
+								if specSettings.displayText and specSettings.displayText.barText then
+									table.insert(specSettings.displayText.barText, {
+										useDefaultFontColor = true,
+										useDefaultFontOutline = true,
+										useDefaultFontShadow = true,
+										fontOutline = "OUTLINE",
+										fontOutlineName = L["FontOutlineOutline"],
+										fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+										fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+										useDefaultFontFace = true,
+										guid = TRB.Functions.String:Guid(),
+										fontJustifyHorizontalName = L["PositionCenter"],
+										text = "$ignorePainAbsorb%",
+										fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+										fontSize = 14,
+										name = L["IgnorePainAbsorb"],
+										position = {
+											relativeToName = L["PositionCenter"],
+											relativeTo = "CENTER",
+											xPos = 0,
+											relativeToFrameName = L["IgnorePainAbsorb"],
+											yPos = 0,
+											relativeToFrame = "IgnorePainAbsorb",
+										},
+										fontJustifyHorizontal = "CENTER",
+										useDefaultFontSize = true,
+										color = { color = "FFFFFFFF" },
+										enabled = true,
+									})
+								end
+							end
 						end
 
 						-- Ensure textures exist (fallback if no migration source)
@@ -5685,9 +5734,10 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	return {
 		border = { color = "FFC21807" },
 		background = { color = "66000000" },
-		nodeOrder = { "ignorePain", "shieldBlock" },
+		nodeOrder = { "ignorePain", "ignorePainAbsorb", "shieldBlock" },
 		nodeColors = {
 			ignorePain = { color = "FFFFD000", enabled = true },
+			ignorePainAbsorb = { color = "FFFF9800", enabled = true },
 			shieldBlock = { color = "FF0099FF", enabled = true }
 		}
 	}

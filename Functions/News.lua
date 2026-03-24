@@ -20,7 +20,8 @@ local content = [====[
 ## Warrior
 ### Protection
 
-- [#548](#548) Fix an issue where sometimes Ignore Pain wouldn't track properly due to gaining Seeing Red (Violent Outburst) at the same time.
+- [#548](#548) Fix an issue where sometimes Ignore Pain wouldn't track properly due to gaining Seeing Red (Violent Outburst) at the same time. Violent Outburst causing Ignore Pain to proc is still not directly supported.
+- [#656](#656)Add a new "Ignore Pain (Absorb)" bar to the Defensives bar group showing the absorb stack count (0-100). The existing Ignore Pain bar is now labeled "Ignore Pain (Time)".
 - Swap the value of `$ignorePainAbsorb` to be the stack count instead of the (now `secret` and unreachable) absorb amount.
 
 ---

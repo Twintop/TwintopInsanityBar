@@ -676,7 +676,11 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 			end
 
 			if self.currentlySimple then
-				self.isActive = foundId == id
+				if foundId == id then
+					self.isActive = true
+				else
+					self:Reset()
+				end
 			else
 				if self.endTime ~= nil and self.endTime > currentTime then
 					self.isActive = true

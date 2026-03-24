@@ -573,7 +573,7 @@ function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         barGroups.defensives = TRB.Classes.BarGroup:New(
             UIParent,
             "TwintopResourceBarFrame_Defensives",
-            2, -- Shield Block and Ignore Pain
+            3, -- Ignore Pain (Time), Ignore Pain (Absorb), Shield Block
             false -- not primary
         )
     end
@@ -610,7 +610,7 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
                 isPrimary = true
             },
             defensives = {
-                maxNodes = 2,
+                maxNodes = 3,
                 isPrimary = false,
                 resourceType = "DefensiveBuffs"
             },

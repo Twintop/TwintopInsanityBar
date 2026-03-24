@@ -228,6 +228,7 @@ local function FillSpellData_Protection()
 
 	-- Populate the defensive spell lookup so UpdateDefensiveBuffs can resolve nodeOrder keys
 	defensiveSpellsByKey["ignorePain"] = spells.ignorePain
+	defensiveSpellsByKey["ignorePainAbsorb"] = spells.ignorePain
 	defensiveSpellsByKey["shieldBlock"] = spells.shieldBlock
 
 	TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCache.warrior_protection)
@@ -641,8 +642,10 @@ local function RefreshLookupData_Protection()
 	-- Block B: Ignore Pain ($ignorePainAbsorb, $ignorePainTime)
 	if not activeVars or activeVars["$ignorePainAbsorb"] or activeVars["$ignorePainTime"] then
 		local currentTime = GetTime()
-		local _ignorePainAbsorb = snapshots[spells.ignorePain.id].buff.applications or 0 -- snapshots[spells.ignorePain.id].buff.customProperties["absorb"] or 0
-		local _ignorePainTime = snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
+		local ipBuff = snapshots[spells.ignorePain.id].buff
+		-- GetRemainingTime updates isActive, so call it first
+		local _ignorePainTime = ipBuff:GetRemainingTime(currentTime)
+		local _ignorePainAbsorb = ipBuff.isActive and (ipBuff.applications or 0) or 0
 
 		lookupLogic["$ignorePainTime"] = _ignorePainTime
 		lookupLogic["$ignorePainAbsorb"] = true
@@ -893,6 +896,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	local mapping = TRB.Data.defensiveNodeMapping
 	-- Snapshot old mapping to detect changes (for re-anchoring bar text)
 	local oldIgnorePain = mapping["ignorePain"]
+	local oldIgnorePainAbsorb = mapping["ignorePainAbsorb"]
 	local oldShieldBlock = mapping["shieldBlock"]
 	-- Reset mapping
 	for k in pairs(mapping) do mapping[k] = nil end
@@ -908,27 +912,39 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
 				local buff = snapshots[spell.id].buff
 				
+				-- Refresh isActive before reading it (GetRemainingTime updates isActive as a side-effect)
+				buff:GetRemainingTime(currentTime)
+				
 				local cpTime = 0
 				local cpDuration = 1
 				
-				if buff.isActive then
-					cpTime = buff:GetRemainingTime(currentTime)
-					cpDuration = buff.duration
-				end
+				if colorKey == "ignorePainAbsorb" then
+					-- Absorb bar: buff.applications is a secret value on a 0-100 scale
+					cpDuration = 100
+					if buff.isActive then
+						cpTime = buff.applications or 0
+					end
+				else
+					if buff.isActive then
+						cpTime = buff.remaining or 0
+						cpDuration = buff.duration
+					end
 				
-				if cpTime < 0 then
-					cpTime = 0
-				end
+					if cpTime < 0 then
+						cpTime = 0
+					end
 				
-				if cpTime == math.huge or cpDuration == math.huge then
-					cpTime = 0
-					cpDuration = 1
+					if cpTime == math.huge or cpDuration == math.huge then
+						cpTime = 0
+						cpDuration = 1
+					end
 				end
 				
 				if barGroups and barGroups.defensives then
 					local defensiveNode = barGroups.defensives:GetNode(currentDefensiveBar)
 					if defensiveNode then
-						Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. currentDefensiveBar, defensiveNode, cpTime, cpDuration)
+						defensiveNode:SetMinMax(0, cpDuration)
+						defensiveNode:SetValue(cpTime)
 						defensiveNode:SetBorderColor(cpBorderColor)
 						defensiveNode:SetColor(cpColor)
 						defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
@@ -943,7 +959,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 
 	-- If the mapping changed (node order swap, enable/disable toggle, talent change),
 	-- re-anchor bar text frames so they point to the correct physical nodes.
-	if mapping["ignorePain"] ~= oldIgnorePain or mapping["shieldBlock"] ~= oldShieldBlock then
+	if mapping["ignorePain"] ~= oldIgnorePain or mapping["ignorePainAbsorb"] ~= oldIgnorePainAbsorb or mapping["shieldBlock"] ~= oldShieldBlock then
 		TRB.Functions.BarText:CreateBarTextFrames()
 	end
 end
@@ -2002,7 +2018,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		-- Handle Protection's defensive buff nodes (dynamic mapping from UpdateDefensiveBuffs)
 		if TRB.Data.character.specId == 3 then
 			local mapping = TRB.Data.defensiveNodeMapping or {}
-			if TRB.Functions.String:StartsWith(relativeToFrame, "IgnorePain") then
+			if relativeToFrame == "IgnorePainAbsorb" then
+				local nodeIndex = mapping["ignorePainAbsorb"]
+				if nodeIndex and barGroups and barGroups.defensives then
+					local node = barGroups.defensives:GetNode(nodeIndex)
+					if node then
+						local isVisible = barGroups.defensives.isVisible and node.isVisible
+						return node:GetFrame(), true, isVisible
+					end
+				end
+				return nil, true, false
+			elseif TRB.Functions.String:StartsWith(relativeToFrame, "IgnorePain") then
 				local nodeIndex = mapping["ignorePain"]
 				if nodeIndex and barGroups and barGroups.defensives then
 					local node = barGroups.defensives:GetNode(nodeIndex)

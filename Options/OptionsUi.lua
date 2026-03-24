@@ -4039,6 +4039,10 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				end
 				-- Re-parent bar text frames to reflect new node order
 				TRB.Functions.BarText:CreateBarTextFrames()
+				-- CreateBarTextFrames clears font strings as part of rebuilding/re-parenting.
+				-- Force a repaint so enabled entries immediately repopulate on their new anchors.
+				TRB.Data.lookupDirty = true
+				TRB.Functions.BarText:UpdateResourceBarText(settings, true)
 			end
 		end
 
@@ -8046,11 +8050,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Screen"],
 		}
 	elseif (classId == 1 and specId == 3) then -- Protection Warrior
-		relativeToFrame[L["IgnorePain"]] = "IgnorePain"
+		relativeToFrame[L["IgnorePainTime"]] = "IgnorePain"
+		relativeToFrame[L["IgnorePainAbsorb"]] = "IgnorePainAbsorb"
 		relativeToFrame[L["ShieldBlock"]] = "ShieldBlock"
 		relativeToFrameList = {
 			L["MainResourceBar"],
-			L["IgnorePain"],
+			L["IgnorePainTime"],
+			L["IgnorePainAbsorb"],
 			L["ShieldBlock"],
 			L["HealthBar"],
 			L["Screen"],

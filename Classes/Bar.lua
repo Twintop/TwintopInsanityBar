@@ -1433,7 +1433,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		key = "defensives",
 		displayName = L["ResourceWarriorDefensives"],
 		isMultiNode = true,
-		maxNodes = 2, -- Ignore Pain + Shield Block
+		maxNodes = 3, -- Ignore Pain (Time) + Ignore Pain (Absorb) + Shield Block
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
 		hasSpacing = true,
@@ -1444,7 +1444,8 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "ignorePain", displayName = L["IgnorePainBarEnable"], colorLabel = L["IgnorePain"], tooltip = L["IgnorePainBarEnableTooltip"], hasEnabled = true },
+			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true },
+			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true },
 			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true }
 		},
 		defaultDimensionsFunc = function(classic)

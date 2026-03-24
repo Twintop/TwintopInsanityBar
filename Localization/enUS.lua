@@ -2225,8 +2225,6 @@ L["NodeOrderMoveUpTooltip"] = "Moves this bar one position to the left in the di
 L["NodeOrderMoveDownTooltip"] = "Moves this bar one position to the right in the display order."
 L["ShieldBlockBarEnable"] = "Enable Shield Block"
 L["ShieldBlockBarEnableTooltip"] = "Show the Shield Block bar."
-L["IgnorePainBarEnable"] = "Enable Ignore Pain"
-L["IgnorePainBarEnableTooltip"] = "Show the Ignore Pain bar."
 
 -- Holy Priest Holy Words Reordering
 L["ResourcePriestHolyWords"] = "Holy Words"
@@ -2350,3 +2348,11 @@ L["BarVisibilitySettingsSourceSpec"] = "Specialization"
 -- Open Global Settings shortcut link
 L["OpenGlobalSettings"] = "[Open Global Settings]"
 L["OpenGlobalSettingsTooltip"] = "Click to navigate to the Global Options panel for this setting."
+
+-- Ignore Pain (Absorb) bar for Protection Warrior
+L["IgnorePainTime"] = "Ignore Pain (Time)"
+L["IgnorePainAbsorb"] = "Ignore Pain (Absorb)"
+L["IgnorePainAbsorbBarEnable"] = "Enable Ignore Pain (Absorb)"
+L["IgnorePainAbsorbBarEnableTooltip"] = "Show the Ignore Pain (Absorb) bar."
+L["IgnorePainTimeBarEnable"] = "Enable Ignore Pain"
+L["IgnorePainTimeBarEnableTooltip"] = "Show the Ignore Pain (Time) bar."
