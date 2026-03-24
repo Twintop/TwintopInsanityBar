@@ -204,6 +204,34 @@ end
 local function BloodLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$boneShieldStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceBoneShield"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["BoneShieldContainer"],
+				yPos = 0,
+				relativeToFrame = "Container::boneShield",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
 	}
 
 	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)

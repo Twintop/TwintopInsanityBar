@@ -1117,6 +1117,7 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.deathknight_blood.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#boneShield"] = spells.boneShield.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1464,7 +1465,7 @@ do
 	}
 	local blood = {}
 	for k, v in pairs(shared) do blood[k] = v end
-	blood["$boneShieldStacks"] = function() return (TRB.Data.snapshotData.attributes.boneShieldStacks or 0) > 0 end
+	blood["$boneShieldStacks"] = false
 	blood["$boneShieldStacksMax"] = true
 	specValidVars = { [1] = blood, [2] = shared, [3] = shared }
 end
