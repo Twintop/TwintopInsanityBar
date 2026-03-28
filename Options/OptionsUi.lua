@@ -8464,6 +8464,26 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["HealthBar"],
 			L["Screen"],
 		}
+	elseif (classId == 13 and specId == 3) then -- Augmentation Evoker
+		relativeToFrame[L["Essence1"]] = "ComboPoint_1"
+		relativeToFrame[L["Essence2"]] = "ComboPoint_2"
+		relativeToFrame[L["Essence3"]] = "ComboPoint_3"
+		relativeToFrame[L["Essence4"]] = "ComboPoint_4"
+		relativeToFrame[L["Essence5"]] = "ComboPoint_5"
+		relativeToFrame[L["Essence6"]] = "ComboPoint_6"
+		relativeToFrame[L["EbonMightBar"]] = "EbonMightBar"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["Essence1"],
+			L["Essence2"],
+			L["Essence3"],
+			L["Essence4"],
+			L["Essence5"],
+			L["Essence6"],
+			L["EbonMightBar"],
+			L["HealthBar"],
+			L["Screen"],
+		}
 	elseif (classId == 13) then -- Evoker
 		relativeToFrame[L["Essence1"]] = "ComboPoint_1"
 		relativeToFrame[L["Essence2"]] = "ComboPoint_2"

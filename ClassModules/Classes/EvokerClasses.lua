@@ -253,6 +253,16 @@ function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
         false -- not primary
     )
 
+    -- Ebon Might bar (1 node, Augmentation only)
+    if specId == 3 then
+        barGroups.ebonMight = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_EbonMight",
+            1,
+            false -- not primary
+        )
+    end
+
     -- Health bar (1 node)
     barGroups.health = TRB.Classes.BarGroup:New(
         UIParent,

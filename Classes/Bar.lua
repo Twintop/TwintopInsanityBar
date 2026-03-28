@@ -1517,6 +1517,29 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end
 	}))
 
+	-- Ebon Might bar (Augmentation Evoker)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "ebonMight",
+		displayName = L["ResourceEvokerEbonMight"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil, -- Simple bar color
+		visibilityKey = "ebonMight",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultEbonMightBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultEbonMightBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
 	-- Whirlwind stacks bar (Fury Warrior)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "whirlwind",

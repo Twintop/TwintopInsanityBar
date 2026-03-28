@@ -2287,6 +2287,101 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 					end
 
+					-- Migrate Evoker Augmentation: add Ebon Might bar settings and default bar text
+					if className == "evoker" and specName == "augmentation" then
+						if not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if not specSettings.bars.ebonMight then
+							specSettings.bars.ebonMight = TRB.Functions.Settings:DefaultEbonMightBarDimensions()
+						end
+
+						if specSettings.colors then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.ebonMight then
+								specSettings.colors.bars.ebonMight = TRB.Functions.Settings:DefaultEbonMightBarColors()
+							end
+
+							local ebonMightBarColors = specSettings.colors.bars.ebonMight
+							local manaBarColors = specSettings.colors.bar
+
+							if manaBarColors then
+								if not ebonMightBarColors.endingSoon and manaBarColors.ebonMightEnd then
+									ebonMightBarColors.endingSoon = { color = manaBarColors.ebonMightEnd.color, enabled = manaBarColors.ebonMightEnd.enabled or true }
+								end
+								if not ebonMightBarColors.wontExtend and manaBarColors.ebonMightDropDuringCast then
+									ebonMightBarColors.wontExtend = { color = manaBarColors.ebonMightDropDuringCast.color, enabled = manaBarColors.ebonMightDropDuringCast.enabled }
+								end
+								if manaBarColors.ebonMight and ebonMightBarColors.bar then
+									if ebonMightBarColors.bar.color == "FFFF9900" and manaBarColors.ebonMight.color ~= "FFFF9900" then
+										ebonMightBarColors.bar.color = manaBarColors.ebonMight.color
+									end
+								end
+							end
+						end
+
+						if specSettings.textures and not specSettings.textures.ebonMightBar then
+							local ebonMightTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+							specSettings.textures.ebonMightBar = ebonMightTextures.bar
+							specSettings.textures.ebonMightBarName = ebonMightTextures.barName
+							specSettings.textures.ebonMightBorder = ebonMightTextures.border
+							specSettings.textures.ebonMightBorderName = ebonMightTextures.borderName
+							specSettings.textures.ebonMightBackground = ebonMightTextures.background
+							specSettings.textures.ebonMightBackgroundName = ebonMightTextures.backgroundName
+						end
+
+						if not specSettings.displayBar then
+							specSettings.displayBar = {}
+						end
+						if not specSettings.displayBar.ebonMight then
+							specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+						end
+
+						if specSettings.colors and specSettings.colors.bar and specSettings.colors.bar.ebonMightEnd and specSettings.colors.bar.ebonMightEnd.enabled == nil then
+							specSettings.colors.bar.ebonMightEnd.enabled = specSettings.endOf and specSettings.endOf.ebonMight and specSettings.endOf.ebonMight.enabled or true
+						end
+
+						if specSettings.displayText and specSettings.displayText.barText then
+							local hasEbonMightBarText = false
+							for _, entry in ipairs(specSettings.displayText.barText) do
+								if entry.position and entry.position.relativeToFrame == "EbonMightBar" then
+									hasEbonMightBarText = true
+									break
+								end
+							end
+							if not hasEbonMightBarText then
+								table.insert(specSettings.displayText.barText, {
+									useDefaultFontColor = false,
+									useDefaultFontOutline = false,
+									useDefaultFontShadow = false,
+									fontOutline = "OUTLINE",
+									fontOutlineName = L["FontOutlineOutline"],
+									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+									useDefaultFontFace = false,
+									useDefaultFontSize = false,
+									enabled = true,
+									name = L["PositionMiddle"],
+									guid = TRB.Functions.String:Guid(),
+									text = "{$ebonMightTime}[$ebonMightTime]",
+									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+									fontJustifyHorizontal = "CENTER",
+									fontJustifyHorizontalName = L["PositionCenter"],
+									fontSize = 14,
+									color = { color = "FFFFFFFF" },
+									position = {
+										xPos = 0,
+										yPos = 0,
+										relativeTo = "CENTER",
+										relativeToName = L["PositionCenter"],
+										relativeToFrame = "EbonMightBar",
+										relativeToFrameName = L["EbonMightBar"],
+									},
+								})
+							end
+						end
+					end
+
 					-- Migrate displayText.default.color from flat string to table format
 					if specSettings.displayText and specSettings.displayText.default and 
 					   specSettings.displayText.default.color and type(specSettings.displayText.default.color) == "string" then
@@ -5630,6 +5725,28 @@ function TRB.Functions.Settings:DefaultManaBarColors()
 		border = { color = "FF0000AA" },
 		background = { color = "66000000" }
 	}
+end
+
+---Gets default Ebon Might bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultEbonMightBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.relativeTo = "BOTTOM"
+	dims.relativeToName = L["PositionBelowMiddle"]
+	dims.anchor.barKey = "health"
+	dims.anchor.anchorPoint = "BOTTOM"
+	dims.anchor.attachPoint = "TOP"
+	return dims
+end
+
+---Gets default Ebon Might bar colors (orange bar, dark orange border)
+---@return table
+function TRB.Functions.Settings:DefaultEbonMightBarColors()
+	local colors = self:DefaultCustomBarColors("FFFF9900", "FFCC7700", "66000000")
+	colors.endingSoon = { color = "FFFF0000", enabled = true }
+	colors.wontExtend = { color = "FF550000", enabled = true }
+	return colors
 end
 
 --[[

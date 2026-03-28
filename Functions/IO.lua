@@ -269,6 +269,17 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Augmentation
 				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				-- Export Ebon Might bar settings
+				configuration.bars = configuration.bars or {}
+				configuration.bars.ebonMight = settings.bars and settings.bars.ebonMight
+				configuration.colors.bars = configuration.colors.bars or {}
+				configuration.colors.bars.ebonMight = settings.colors and settings.colors.bars and settings.colors.bars.ebonMight
+				configuration.textures.ebonMightBar = settings.textures and settings.textures.ebonMightBar
+				configuration.textures.ebonMightBarName = settings.textures and settings.textures.ebonMightBarName
+				configuration.textures.ebonMightBorder = settings.textures and settings.textures.ebonMightBorder
+				configuration.textures.ebonMightBorderName = settings.textures and settings.textures.ebonMightBorderName
+				configuration.textures.ebonMightBackground = settings.textures and settings.textures.ebonMightBackground
+				configuration.textures.ebonMightBackgroundName = settings.textures and settings.textures.ebonMightBackgroundName
 			end
 		end
 	end
