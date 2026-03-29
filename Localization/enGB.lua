@@ -299,4 +299,6 @@ if locale == "enGB" then
     L["PriestHolyCheckboxBenediction"] = "Enable Benediction bar colour"
     L["PriestHolyCheckboxBenedictionTooltip"] = "This will change the mana bar colour while Benediction has replaced Flash Heal."
     L["PriestHolyCheckboxBenedictionLightweaverTooltip"] = "This will change the background colour of the next unfilled Lightweaver node while Benediction has replaced Flash Heal, indicating that using it will grant a Lightweaver stack."
+    L["EvokerAugmentationCheckboxEbonMightBarEndingSoonTooltip"] = "Changes the Ebon Might bar colour when Ebon Might is about to expire."
+    L["EvokerAugmentationCheckboxEbonMightBarWontExtendTooltip"] = "Changes the Ebon Might bar colour when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
 end

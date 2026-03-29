@@ -486,22 +486,22 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			enabled = true,
-			name = L["PositionRight"],
+			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ebonMightTime}[#ebonMight $ebonMightTime]",
+			text="{$ebonMightTime}[$ebonMightTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
-			fontJustifyHorizontal = "RIGHT",
-			fontJustifyHorizontalName = L["PositionRight"],
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize=14,
 			color = { color = "FFFFFFFF" },
 			position = {
-				xPos = -2,
+				xPos = 0,
 				yPos = 0,
-				relativeTo = "RIGHT",
-				relativeToName = L["PositionRight"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "EbonMightBar",
+				relativeToFrameName = L["EbonMightBar"]
 			}
 		})
 	else
@@ -517,7 +517,7 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
-			text="{$ebonMightTime}[#ebonMight $ebonMightTime]",
+			text="{$ebonMightTime}[$ebonMightTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
@@ -529,8 +529,8 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 				yPos = 0,
 				relativeTo = "CENTER",
 				relativeToName = L["PositionCenter"],
-				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeToFrame = "EbonMightBar",
+				relativeToFrameName = L["EbonMightBar"]
 			}
 		})
 	end
@@ -560,10 +560,14 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			ebonMight = TRB.Functions.Settings:DefaultEbonMightBarDimensions(classic),
+		},
 		endOf = {
 			ebonMight = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
@@ -585,14 +589,15 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				base = { color = "FF0000FF" },
 				ebonMight = {
 					color = "FFFF9900",
-					enabled = true
+					enabled = false
 				},
 				ebonMightEnd = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					enabled = false
 				},
 				ebonMightDropDuringCast = {
 					color = "FF550000",
-					enabled = true
+					enabled = false
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
@@ -610,6 +615,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				penultimate = { color = "FFFF9900" },
 				final = { color = "FFFF0000" },
 				sameColor=false
+			},
+			bars = {
+				ebonMight = TRB.Functions.Settings:DefaultEbonMightBarColors(),
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
@@ -1642,17 +1650,38 @@ local function AugmentationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 	
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 13, 3, yCoord, {
-		endOfKey = "ebonMight",
-		activeColorKey = "ebonMight",
-		endColorKey = "ebonMightEnd",
-		checkboxLabel = L["EvokerAugmentationCheckboxEbonMight"],
-		checkboxTooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"],
-		activeColorLabel = L["EvokerAugmentationColorPickerEbonMight"],
-		endCheckboxLabel = L["EvokerAugmentationCheckboxEndOfEbonMight"],
-		endCheckboxTooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"],
-		endColorLabel = L["EvokerAugmentationColorPickerEbonMightEnd"],
-	})
+	controls.checkBoxes.ebonMightBarChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Bar_Option_ebonMightChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ebonMightBarChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
+	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
+	f:SetChecked(spec.colors.bar.ebonMight.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.ebonMight.enabled = self:GetChecked()
+	end)
+
+	controls.colors.ebonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.ebonMight.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.ebonMight
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMight")
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.ebonMightEndBarChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Bar_Option_ebonMightEndChange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.ebonMightEndBarChange
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEndOfEbonMight"])
+	f.tooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"]
+	f:SetChecked(spec.colors.bar.ebonMightEnd.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.ebonMightEnd.enabled = self:GetChecked()
+	end)
+
+	controls.colors.ebonMightEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightEnd"], spec.colors.bar.ebonMightEnd.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.ebonMightEnd
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMightEnd")
+	end)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
@@ -1698,15 +1727,6 @@ local function AugmentationConstructManaBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
 	end)
 
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
-		endOfKey = "ebonMight",
-		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
-		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
-		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
-		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
-		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
-	})
 end
 
 local function AugmentationConstructEssenceBarPanel(parent)
@@ -1787,6 +1807,76 @@ local function AugmentationConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 3, yCoord)
 end
 
+local function AugmentationConstructEbonMightBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.augmentation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
+	local yCoord = 5
+
+	local ebonMightBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ebonMight")
+	if ebonMightBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord, ebonMightBarDef, L["ResourceMana"])
+	end
+
+	yCoord = yCoord - 90
+	if ebonMightBarDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 13, 3, yCoord, ebonMightBarDef, function(cbParent, cbYCoord)
+			local f = nil
+			local cbControls = interfaceSettingsFrame.controls.evoker_augmentation
+
+			cbControls.checkBoxes.ebonMightBarEndingSoon = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightBarEndingSoon", cbParent, "ChatConfigCheckButtonTemplate")
+			f = cbControls.checkBoxes.ebonMightBarEndingSoon
+			f:SetPoint("TOPLEFT", oUi.xCoord, cbYCoord)
+			getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightBarEndingSoon"])
+			f.tooltip = L["EvokerAugmentationCheckboxEbonMightBarEndingSoonTooltip"]
+			f:SetChecked(spec.colors.bars.ebonMight.endingSoon.enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.colors.bars.ebonMight.endingSoon.enabled = self:GetChecked()
+			end)
+
+			cbControls.colors.endingSoon = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarEndingSoon"], spec.colors.bars.ebonMight.endingSoon.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
+			f = cbControls.colors.endingSoon
+			f:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "endingSoon")
+			end)
+
+			cbYCoord = cbYCoord - 30
+			cbControls.checkBoxes.ebonMightBarWontExtend = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightBarWontExtend", cbParent, "ChatConfigCheckButtonTemplate")
+			f = cbControls.checkBoxes.ebonMightBarWontExtend
+			f:SetPoint("TOPLEFT", oUi.xCoord, cbYCoord)
+			getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightBarWontExtend"])
+			f.tooltip = L["EvokerAugmentationCheckboxEbonMightBarWontExtendTooltip"]
+			f:SetChecked(spec.colors.bars.ebonMight.wontExtend.enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.colors.bars.ebonMight.wontExtend.enabled = self:GetChecked()
+			end)
+
+			cbControls.colors.wontExtend = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarWontExtend"], spec.colors.bars.ebonMight.wontExtend.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
+			f = cbControls.colors.wontExtend
+			f:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "wontExtend")
+			end)
+
+			cbYCoord = cbYCoord - 30
+			return cbYCoord
+		end)
+	end
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
+		endOfKey = "ebonMight",
+		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
+		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
+		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
+		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
+		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
+	})
+end
+
 local function AugmentationConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -1797,7 +1887,12 @@ local function AugmentationConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, L["ResourceEssence"])
+	local ebonMightBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ebonMight")
+	local customBars = {}
+	if ebonMightBarDef then
+		table.insert(customBars, ebonMightBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, L["ResourceEssence"], false, customBars)
 end
 
 local function AugmentationConstructBarVisibilityPanel(parent)
@@ -1810,7 +1905,13 @@ local function AugmentationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
+	local ebonMightBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ebonMight")
+	local customBars = {}
+	if ebonMightBarDef then
+		table.insert(customBars, ebonMightBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true, nil, customBars)
 end
 
 local function AugmentationConstructFontAndTextPanel(parent)
@@ -1944,6 +2045,7 @@ local function AugmentationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = AugmentationConstructManaBarPanel },
 		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = AugmentationConstructEssenceBarPanel },
+		{ key = "ebonMightBar", label = L["TabEbonMight"], width = oUi.tabWidth.medium, constructor = AugmentationConstructEbonMightBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = AugmentationConstructHealthBarPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarVisibilityPanel },

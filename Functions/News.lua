@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.44-release (2026-03-29)
+## Evoker
+### Augmentation
+
+-[#522](#522) Add a separate Ebon Might bar that tracks the duration remaining of Ebon Might; includes existing bar color changes. Update default behavior with the mana bar to disable these changes there by default.
+
+---
+
 # 12.0.1.43-release (2026-03-25)
 ## General
 

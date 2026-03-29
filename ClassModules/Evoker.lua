@@ -910,7 +910,7 @@ local function UpdateResourceBar()
 					local ebonMightTimeThreshold = 0
 					local useEndOfEbonMightColor = false
 
-					if specSettings.endOf.ebonMight.enabled then
+					if specSettings.colors.bar.ebonMightEnd.enabled then
 						useEndOfEbonMightColor = true
 						if specSettings.endOf.ebonMight.mode == "gcd" then
 							local gcd = Character:GetCurrentGCDTime()
@@ -960,6 +960,59 @@ local function UpdateResourceBar()
 				primaryNode:SetColor(barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+			end
+
+			-- Update Ebon Might bar
+			if specSettings.displayBar.ebonMight ~= nil and not specSettings.displayBar.ebonMight.neverShow then
+				refreshText = true
+				local ebonMightNode = barGroups and barGroups.ebonMight and barGroups.ebonMight:GetNode(1)
+				if ebonMightNode then
+					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+					local ebonMightSnapshot = snapshots[spells.ebonMight.id]
+					local ebonMightDuration = ebonMightSnapshot.buff.duration or 1
+					local ebonMightRemaining = 0
+
+					if ebonMightSnapshot.buff.isActive then
+						ebonMightRemaining = ebonMightSnapshot.buff:GetRemainingTime(currentTime)
+					end
+
+					ebonMightNode:SetMinMax(0, ebonMightDuration)
+					ebonMightNode:SetValue(ebonMightRemaining)
+
+					local ebonMightBarColors = specSettings.colors.bars and specSettings.colors.bars.ebonMight
+					if ebonMightBarColors then
+						ebonMightNode:SetBorderColor(ebonMightBarColors.border.color)
+						ebonMightNode:SetBackgroundColorFromString(ebonMightBarColors.background.color)
+
+						local ebonMightBarColor = ebonMightBarColors.bar.color
+						if ebonMightSnapshot.buff.isActive then
+							local ebonMightTimeLeft = ebonMightSnapshot.buff:GetRemainingTime(currentTime)
+
+							local castTimeRemaining = 0
+							if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
+								castTimeRemaining = snapshotData.casting.endTime - currentTime
+								if castTimeRemaining < 0 then
+									castTimeRemaining = 0
+								end
+							end
+
+							if ebonMightBarColors.wontExtend and ebonMightBarColors.wontExtend.enabled and snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft then
+								ebonMightBarColor = ebonMightBarColors.wontExtend.color
+							elseif ebonMightBarColors.endingSoon and ebonMightBarColors.endingSoon.enabled and specSettings.endOf.ebonMight.enabled then
+								local ebonMightTimeThreshold = 0
+								if specSettings.endOf.ebonMight.mode == "gcd" then
+									ebonMightTimeThreshold = Character:GetCurrentGCDTime() * specSettings.endOf.ebonMight.gcdsMax
+								elseif specSettings.endOf.ebonMight.mode == "time" then
+									ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
+								end
+								if ebonMightTimeLeft <= ebonMightTimeThreshold then
+									ebonMightBarColor = ebonMightBarColors.endingSoon.color
+								end
+							end
+						end
+						ebonMightNode:SetColor(ebonMightBarColor)
+					end
+				end
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
@@ -1312,9 +1365,12 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
+		local hasEbonMight = TRB.Data.character.specId == 3
+
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.ebonMight, sharedSettings and sharedSettings.displayBar.ebonMight, hasEbonMight, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 		}
 
@@ -1405,6 +1461,15 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	elseif relativeToFrame == "EbonMightBar" then
+		if barGroups and barGroups.ebonMight then
+			local ebonMightNode = barGroups.ebonMight:GetNode(1)
+			if ebonMightNode then
+				local isVisible = barGroups.ebonMight.isVisible and ebonMightNode.isVisible
+				return ebonMightNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false
