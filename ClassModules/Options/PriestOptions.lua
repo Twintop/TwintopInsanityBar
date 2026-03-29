@@ -2323,6 +2323,23 @@ local function ShadowConstructInsanityBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
+	controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerInstantMindBlast"], spec.colors.bar.instantMindBlast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.instantMindBlast
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
+	end)
+
+	controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.instantMindBlast
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxInstantMindBlast"])
+	f.tooltip = L["PriestShadowCheckboxInstantMindBlastTooltip"]
+	f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 3, yCoord, {
 		endOfKey = "voidform",
 		activeColorKey = "voidform",
@@ -2352,23 +2369,6 @@ local function ShadowConstructInsanityBarPanel(parent)
 		spec.colors.bar.shadowWordMadnessUsable.enabled = self:GetChecked()
 	end)
 
-	--[[
-	yCoord = yCoord - 30
-	controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerInstantMindBlast"], spec.colors.bar.instantMindBlast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.instantMindBlast
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
-	end)
-
-	controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.instantMindBlast
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxInstantMindBlast"])
-	f.tooltip = L["PriestShadowCheckboxInstantMindBlastTooltip"]
-	f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
-	end)]]
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background

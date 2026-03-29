@@ -346,8 +346,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.shatteredPsyche.id] = TRB.Classes.Snapshot:New(spells.shatteredPsyche)
 	---@type TRB.Classes.Snapshot
-	specCache.priest_shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
-	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.mindBlast.id] = TRB.Classes.Snapshot:New(spells.mindBlast)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(spells.idolOfYoggSaron)
@@ -1573,6 +1571,11 @@ local function HandleSpellEvents(self, event, ...)
 				end
 				snapshotData.attributes.surgeOfLightActive = true
 			end
+		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			if spellId == spells.shadowyInsight.id then
+				snapshotData.attributes.shadowyInsightActive = true
+			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -1590,6 +1593,11 @@ local function HandleSpellEvents(self, event, ...)
 						snapshotData.attributes.surgeOfLightActiveGrace = false
 					end)
 				end)
+			end
+		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			if spellId == spells.shadowyInsight.id then
+				snapshotData.attributes.shadowyInsightActive = false
 			end
 		end
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
@@ -2432,7 +2440,10 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				if snapshots[spells.voidform.id].buff.isActive then
+
+				if specSettings.colors.bar.instantMindBlast.enabled and snapshotData.attributes.shadowyInsightActive then
+					barColor = specSettings.colors.bar.instantMindBlast.color
+				elseif snapshots[spells.voidform.id].buff.isActive then
 					local timeLeft = snapshots[spells.voidform.id].buff.remaining
 					local timeThreshold = 0
 					local useEndOfVoidformColor = false
@@ -2740,9 +2751,9 @@ local function SwitchSpec()
 		lookup["#halo"] = spells.halo.icon
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
-		--[[
 		lookup["#si"] = spells.shadowyInsight.icon
 		lookup["#shadowyInsight"] = spells.shadowyInsight.icon
+		--[[
 		lookup["#mm"] = spells.shatteredPsyche.icon
 		lookup["#mindMelt"] = spells.shatteredPsyche.icon
 		lookup["#sp"] = spells.shatteredPsyche.icon
@@ -3093,7 +3104,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = nil
 		TRB.Data.additionalPowerTokens = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
-		TRB.Functions.Class:DisableEvents()
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Insanity
 		TRB.Data.resourceFactor = 100

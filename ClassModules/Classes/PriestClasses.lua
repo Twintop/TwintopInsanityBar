@@ -500,10 +500,10 @@ end
 ---@field public tentacleSlam TRB.Classes.SpellBase
 ---@field public maddeningTentacles TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
+---@field public shadowyInsight TRB.Classes.SpellBase
 --[[
 ---@field public powerSurge TRB.Classes.SpellBase
 ---@field public misery TRB.Classes.SpellBase
----@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public shatteredPsyche TRB.Classes.SpellBase
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
@@ -661,6 +661,10 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 1279353,
 		isTalent = true
 	})
+	self.shadowyInsight = TRB.Classes.SpellBase:New({
+		id = 375981,
+		isTalent = true
+	})
 	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
 		id = 341491,
 		isTalent = true
@@ -686,10 +690,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.hallucinations = TRB.Classes.SpellBase:New({
 		id = 280752,
 		resource = 4,
-		isTalent = true
-	})
-	self.shadowyInsight = TRB.Classes.SpellBase:New({
-		id = 375981,
 		isTalent = true
 	})
 	self.shatteredPsyche = TRB.Classes.SpellBase:New({
@@ -866,10 +866,10 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "#sotv", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = true },
 		{ variable = "#screamsOfTheVoid", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = false },
-																											
-		--[[																												
+
 		{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
 		{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
+		--[[																												
 		
 		{ variable = "#sp", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = true },
 		{ variable = "#shatteredPsyche", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },

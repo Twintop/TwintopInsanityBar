@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.45-release (2026-03-31)
+## Priest
+### Shadow
+
+- Restore "Instant Mind Blast Cast" bar color change when you have a Shadowy Insight proc.
+
+---
+
 # 12.0.1.44-release (2026-03-30)
 ## Evoker
 
