@@ -2347,7 +2347,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.displayBar = {}
 						end
 						if not specSettings.displayBar.ebonMight then
-							specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+							if specSettings.displayBar.secondary then
+								specSettings.displayBar.ebonMight = TRB.Functions.Table:Merge({}, specSettings.displayBar.secondary)
+								specSettings.displayBar.ebonMight.smooth = true
+							else
+								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+							end
 						end
 
 						if specSettings.colors and specSettings.colors.bar and specSettings.colors.bar.ebonMightEnd and specSettings.colors.bar.ebonMightEnd.enabled == nil then
