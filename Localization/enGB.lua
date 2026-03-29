@@ -261,7 +261,8 @@ if locale == "enGB" then
     L["PaladinHolyCheckboxInfusionOfLightTooltip"] = "This will change the bar border colour when you have Infusion of Light."
     L["BarTextInstructions1"] = "For more detailed information about Bar Text customisation, see the TRB Wiki on GitHub.\n\n"
     L["StaggerBarColorType"] = "Colour Transition Type"
-    L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border colour when you have Essence Burst."
+    -- REMOVED: L["EvokerCheckboxEssenceBurstTooltip"] - replaced by EvokerDropdownEssenceBurstTooltip
+    L["EvokerDropdownEssenceBurstTooltip"] = "Select which bars should have their border colour changed when you have Essence Burst."
     L["PriestHolyCheckboxApotheosisTooltip"] = "This will change the bar colour when you have Apotheosis active."
     L["PriestShadowCheckboxVoidformTooltip"] = "This will change the bar colour when you have Voidform active."
     L["ShamanElementalCheckboxEarthShockTooltip"] = "This will change the bar colour when you have enough Maelstrom to use Earth Shock or Elemental Blast."

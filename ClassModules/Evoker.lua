@@ -698,13 +698,14 @@ end
 ---Updates Essence bar nodes with current values and colors
 ---@param specSettings table # The spec-specific settings
 ---@param specCacheSettings table # The spec cache settings
-local function UpdateEssence(specSettings, specCacheSettings)
+---@param borderOverrideColor string? # Optional border color override (e.g., from Essence Burst)
+local function UpdateEssence(specSettings, specCacheSettings, borderOverrideColor)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	for x = 1, TRB.Data.character.maxResource2 do
-		local cpBorderColor = specSettings.colors.comboPoints.border.color
+		local cpBorderColor = borderOverrideColor or specSettings.colors.comboPoints.border.color
 		local cpColor = specSettings.colors.comboPoints.base.color
 
 		local essenceValue = 0
@@ -754,12 +755,12 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateEssenceOuter(specSettings, specCacheSettings)
+	local function UpdateEssenceOuter(specSettings, specCacheSettings, borderOverrideColor)
 		local refreshTextEssence = false
 		
 		if not specSettings.displayBar.secondary.neverShow then
 			refreshTextEssence = true
-			UpdateEssence(specSettings, specCacheSettings)
+			UpdateEssence(specSettings, specCacheSettings, borderOverrideColor)
 		end
 
 		if specSettings.audio.secondaryThreshold.enabled and not snapshotData.audio.secondaryThresholdPlayed and snapshotData.attributes.resource2 <= specSettings.audio.secondaryThreshold.configuration.thresholdValue then
@@ -778,6 +779,8 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
+			local essenceBorderOverride = nil
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
@@ -816,9 +819,14 @@ local function UpdateResourceBar()
 					end
 				end
 
+				local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
+
 				if snapshotData.attributes.essenceBurstActive then
-					if specSettings.colors.bar.essenceBurst.enabled then
+					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
 						barBorderColor = specSettings.colors.bar.essenceBurst.color
+					end
+					if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
+						essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
 					end
 				end
 
@@ -828,7 +836,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
@@ -850,6 +858,8 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
+			local essenceBorderOverride = nil
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
@@ -857,9 +867,14 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base.color
 
+				local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
+
 				if snapshotData.attributes.essenceBurstActive then
-					if specSettings.colors.bar.essenceBurst.enabled then
+					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
 						barBorderColor = specSettings.colors.bar.essenceBurst.color
+					end
+					if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
+						essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
 					end
 				end
 
@@ -870,7 +885,7 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
@@ -892,6 +907,19 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
+			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
+			local essenceBorderOverride = nil
+			local ebonMightBorderOverride = nil
+
+			if snapshotData.attributes.essenceBurstActive then
+				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
+					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+				end
+				if essenceBurstTargets and essenceBurstTargets.ebonMight and essenceBurstTargets.ebonMight.border then
+					ebonMightBorderOverride = specSettings.colors.bar.essenceBurst.color
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
@@ -951,7 +979,7 @@ local function UpdateResourceBar()
 				end
 
 				if snapshotData.attributes.essenceBurstActive then
-					if specSettings.colors.bar.essenceBurst.enabled then
+					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
 						barBorderColor = specSettings.colors.bar.essenceBurst.color
 					end
 				end
@@ -981,7 +1009,7 @@ local function UpdateResourceBar()
 
 					local ebonMightBarColors = specSettings.colors.bars and specSettings.colors.bars.ebonMight
 					if ebonMightBarColors then
-						ebonMightNode:SetBorderColor(ebonMightBarColors.border.color)
+						ebonMightNode:SetBorderColor(ebonMightBorderOverride or ebonMightBarColors.border.color)
 						ebonMightNode:SetBackgroundColorFromString(ebonMightBarColors.background.color)
 
 						local ebonMightBarColor = ebonMightBarColors.bar.color
@@ -1015,7 +1043,7 @@ local function UpdateResourceBar()
 				end
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true

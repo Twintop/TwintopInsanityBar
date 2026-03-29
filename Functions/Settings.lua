@@ -3384,6 +3384,58 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Evoker Devastation essenceBurst.targets migration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors.bar ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors.bar.essenceBurst ~= nil and
+		TwintopInsanityBarSettings.evoker.devastation.colors.bar.essenceBurst.targets == nil then
+		local eb = TwintopInsanityBarSettings.evoker.devastation.colors.bar.essenceBurst
+		local enabled = eb.enabled
+		if enabled == nil then enabled = true end
+		eb.targets = {
+			manaBar = { border = enabled },
+			essences = { border = false },
+		}
+	end
+
+	-- Evoker Preservation essenceBurst.targets migration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors.bar ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors.bar.essenceBurst ~= nil and
+		TwintopInsanityBarSettings.evoker.preservation.colors.bar.essenceBurst.targets == nil then
+		local eb = TwintopInsanityBarSettings.evoker.preservation.colors.bar.essenceBurst
+		local enabled = eb.enabled
+		if enabled == nil then enabled = true end
+		eb.targets = {
+			manaBar = { border = enabled },
+			essences = { border = false },
+		}
+	end
+
+	-- Evoker Augmentation essenceBurst.targets migration
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.evoker ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors.bar ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors.bar.essenceBurst ~= nil and
+		TwintopInsanityBarSettings.evoker.augmentation.colors.bar.essenceBurst.targets == nil then
+		local eb = TwintopInsanityBarSettings.evoker.augmentation.colors.bar.essenceBurst
+		local enabled = eb.enabled
+		if enabled == nil then enabled = true end
+		eb.targets = {
+			manaBar = { border = enabled },
+			essences = { border = false },
+			ebonMight = { border = false },
+		}
+	end
+
 	-- Hunter Beast Mastery colors.bar migration from flat string to table format
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.hunter ~= nil and

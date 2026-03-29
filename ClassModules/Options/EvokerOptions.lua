@@ -261,7 +261,11 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
-					enabled = true
+					enabled = true,
+					targets = {
+						manaBar = { border = true },
+						essences = { border = false },
+					}
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -397,7 +401,11 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				innervate = { color = "FF00FF00", enabled = true },
 				essenceBurst = {
 					color = "FFFCE58E",
-					enabled = true
+					enabled = true,
+					targets = {
+						manaBar = { border = true },
+						essences = { border = false },
+					}
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -601,7 +609,12 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
-					enabled = true
+					enabled = true,
+					targets = {
+						manaBar = { border = true },
+						essences = { border = false },
+						ebonMight = { border = false },
+					}
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -804,6 +817,96 @@ local function DevastationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+---Builds a multi-select dropdown for Essence Burst border targets and the associated color picker.
+---@param parent Frame
+---@param controls table
+---@param spec table
+---@param targetDefs table[] # Array of { key=string, label=string } for each available target
+---@param frameName string # Unique frame name for the dropdown
+---@param yCoord number
+---@return number yCoord # Updated yCoord after placing the dropdown
+local function BuildEssenceBurstTargetDropdown(parent, controls, spec, targetDefs, frameName, yCoord)
+	local essenceBurst = spec.colors.bar.essenceBurst
+
+	local function GetSummaryText()
+		local parts = {}
+		for _, def in ipairs(targetDefs) do
+			if essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border then
+				table.insert(parts, def.label)
+			end
+		end
+		if #parts == 0 then
+			return L["BarNameDisabled"]
+		elseif #parts == 1 then
+			return parts[1]
+		end
+		return table.concat(parts, ", ")
+	end
+
+	local function SyncEnabled()
+		local anyEnabled = false
+		for _, def in ipairs(targetDefs) do
+			if essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border then
+				anyEnabled = true
+				break
+			end
+		end
+		essenceBurst.enabled = anyEnabled
+		if controls.colors.essenceBurst then
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(controls.colors.essenceBurst, anyEnabled)
+		end
+	end
+
+	-- Label
+	controls.dropdowns = controls.dropdowns or {}
+	controls.dropdowns.essenceBurstTarget = CreateFrame("DropdownButton", frameName, parent, "WowStyle1DropdownTemplate")
+	local dd = controls.dropdowns.essenceBurstTarget
+	dd:SetWidth(350)
+	dd.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceBurstTargetLabel"], oUi.xCoord, yCoord)
+	dd.label.font:SetFontObject(GameFontNormal)
+
+	-- Hook SetText so the framework's auto-text is replaced with our summary
+	local originalSetText = dd.SetText
+	dd.SetText = function(self, text)
+		originalSetText(self, GetSummaryText())
+	end
+
+	dd:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	dd:SetupMenu(function(dropdown, rootDescription)
+		for _, def in ipairs(targetDefs) do
+			rootDescription:CreateCheckbox(
+				def.label,
+				function()
+					return essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border or false
+				end,
+				function()
+					essenceBurst.targets = essenceBurst.targets or {}
+					essenceBurst.targets[def.key] = essenceBurst.targets[def.key] or {}
+					essenceBurst.targets[def.key].border = not essenceBurst.targets[def.key].border
+					SyncEnabled()
+				end
+			)
+		end
+	end)
+
+	dd:SetText(GetSummaryText())
+
+	yCoord = yCoord - 30
+
+	-- Color picker (same line as dropdown)
+	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	local f = controls.colors.essenceBurst
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+	end)
+
+	-- Set initial color picker enabled state
+	SyncEnabled()
+
+	return yCoord
+end
+
 local function DevastationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
@@ -845,21 +948,10 @@ local function DevastationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], false, false)
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurstBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
-	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
-	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
-	end)
-
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.essenceBurst
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
-	end)
+	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
+		{ key = "manaBar", label = L["BarNameManaBar"] },
+		{ key = "essences", label = L["BarNameEssences"] },
+	}, "TwintopResourceBar_Evoker_Devastation_Dropdown_essenceBurstTarget", yCoord)
 
 	-- Dragonrage configuration options
 	yCoord = yCoord - 40
@@ -1244,21 +1336,10 @@ local function PreservationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], false, true)
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurstBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
-	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
-	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
-	end)
-
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.essenceBurst
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
-	end)
+	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
+		{ key = "manaBar", label = L["BarNameManaBar"] },
+		{ key = "essences", label = L["BarNameEssences"] },
+	}, "TwintopResourceBar_Evoker_Preservation_Dropdown_essenceBurstTarget", yCoord)
 end
 
 local function PreservationConstructEssenceBarPanel(parent)
@@ -1711,21 +1792,11 @@ local function AugmentationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], false, false)
 	
 	yCoord = yCoord - 30
-	controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.essenceBurstBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerEssenceBurst"])
-	f.tooltip = L["EvokerCheckboxEssenceBurstTooltip"]
-	f:SetChecked(spec.colors.bar.essenceBurst.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.essenceBurst.enabled = self:GetChecked()
-	end)
-
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], spec.colors.bar.essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.essenceBurst
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
-	end)
+	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
+		{ key = "manaBar", label = L["BarNameManaBar"] },
+		{ key = "essences", label = L["BarNameEssences"] },
+		{ key = "ebonMight", label = L["BarNameEbonMight"] },
+	}, "TwintopResourceBar_Evoker_Augmentation_Dropdown_essenceBurstTarget", yCoord)
 
 end
 

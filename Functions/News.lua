@@ -14,9 +14,12 @@ local content = [====[
 
 # 12.0.1.44-release (2026-03-29)
 ## Evoker
+
+- [#573](#573) Allow Essence Burst's border color change to apply to any combination of Essence, Mana, and Ebon Might (for Augmentation) bar borders instead of only Mana.
+
 ### Augmentation
 
--[#522](#522) Add a separate Ebon Might bar that tracks the duration remaining of Ebon Might; includes existing bar color changes. Update default behavior with the mana bar to disable these changes there by default.
+- [#522](#522) Add a separate Ebon Might bar that tracks the duration remaining of Ebon Might; includes existing bar color changes. Update default behavior with the mana bar to disable these changes there by default.
 
 ---
 

@@ -1660,7 +1660,7 @@ L["EvokerDevastationCheckboxDragonrageTime"] = "Time until Dragonrage ends"
 L["EvokerDevastationDragonrageTime"] = "Dragonrage Time Remaining (sec)"
 L["EvokerAudioCheckboxEssenceBurst"] = "Play audio cue when an Essence Burst proc occurs"
 L["EvokerAudioCheckboxEssenceBurstTooltip"] = "Play an audio cue when an Essence Burst Proc occurs. This will only play when you do not already have Essence Burst."
-L["EvokerCheckboxEssenceBurstTooltip"] = "This will change the bar border color when you have Essence Burst."
+-- REMOVED: L["EvokerCheckboxEssenceBurstTooltip"] - replaced by EvokerDropdownEssenceBurstTooltip
 L["EvokerColorPickerEssenceBurst"] = "Border when you have Essence Burst"
 L["EvokerEssenceBurst"] = "Essence Burst"
 
@@ -2398,3 +2398,11 @@ L["EvokerAugmentationColorPickerEbonMightBarEndingSoon"] = "Ebon Might bar endin
 L["EvokerAugmentationCheckboxEbonMightBarWontExtend"] = "Change when cast won't extend"
 L["EvokerAugmentationCheckboxEbonMightBarWontExtendTooltip"] = "Changes the Ebon Might bar color when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
 L["EvokerAugmentationColorPickerEbonMightBarWontExtend"] = "Ebon Might will expire during empowered cast"
+
+-- Evoker Essence Burst Border Target Dropdown
+L["BarNameDisabled"] = "Disabled"
+L["BarNameManaBar"] = "Mana Bar"
+L["BarNameEssences"] = "Essences"
+L["BarNameEbonMight"] = "Ebon Might"
+L["EvokerEssenceBurstTargetLabel"] = "Essence Burst Border"
+L["EvokerDropdownEssenceBurstTooltip"] = "Select which bars should have their border color changed when you have Essence Burst."
