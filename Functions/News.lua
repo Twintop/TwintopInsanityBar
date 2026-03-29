@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.1.44-release (2026-03-29)
+# 12.0.1.44-release (2026-03-30)
 ## Evoker
 
 - [#573](#573) Allow Essence Burst's border color change to apply to any combination of Essence, Mana, and Ebon Might (for Augmentation) bar borders instead of only Mana.
