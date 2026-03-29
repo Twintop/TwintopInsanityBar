@@ -2298,24 +2298,37 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 						if specSettings.colors then
 							specSettings.colors.bars = specSettings.colors.bars or {}
-							if not specSettings.colors.bars.ebonMight then
-								specSettings.colors.bars.ebonMight = TRB.Functions.Settings:DefaultEbonMightBarColors()
-							end
 
-							local ebonMightBarColors = specSettings.colors.bars.ebonMight
+							-- Migrate mana-bar Ebon Might colors into the new ebonMight bar colors BEFORE
+							-- applying defaults, so user customizations are preserved and defaults only
+							-- fill in what the migration didn't provide.
 							local manaBarColors = specSettings.colors.bar
+							if not specSettings.colors.bars.ebonMight then
+								specSettings.colors.bars.ebonMight = {}
+							end
+							local ebonMightBarColors = specSettings.colors.bars.ebonMight
 
 							if manaBarColors then
 								if not ebonMightBarColors.endingSoon and manaBarColors.ebonMightEnd then
-									ebonMightBarColors.endingSoon = { color = manaBarColors.ebonMightEnd.color, enabled = manaBarColors.ebonMightEnd.enabled or true }
+									local endingSoonEnabled = manaBarColors.ebonMightEnd.enabled
+									if endingSoonEnabled == nil then endingSoonEnabled = true end
+									ebonMightBarColors.endingSoon = { color = manaBarColors.ebonMightEnd.color, enabled = endingSoonEnabled }
 								end
 								if not ebonMightBarColors.wontExtend and manaBarColors.ebonMightDropDuringCast then
-									ebonMightBarColors.wontExtend = { color = manaBarColors.ebonMightDropDuringCast.color, enabled = manaBarColors.ebonMightDropDuringCast.enabled }
+									local wontExtendEnabled = manaBarColors.ebonMightDropDuringCast.enabled
+									if wontExtendEnabled == nil then wontExtendEnabled = true end
+									ebonMightBarColors.wontExtend = { color = manaBarColors.ebonMightDropDuringCast.color, enabled = wontExtendEnabled }
 								end
-								if manaBarColors.ebonMight and ebonMightBarColors.bar then
-									if ebonMightBarColors.bar.color == "FFFF9900" and manaBarColors.ebonMight.color ~= "FFFF9900" then
-										ebonMightBarColors.bar.color = manaBarColors.ebonMight.color
-									end
+								if not ebonMightBarColors.bar and manaBarColors.ebonMight then
+									ebonMightBarColors.bar = { color = manaBarColors.ebonMight.color }
+								end
+							end
+
+							-- Backfill any keys the migration didn't cover with defaults
+							local defaults = TRB.Functions.Settings:DefaultEbonMightBarColors()
+							for k, v in pairs(defaults) do
+								if ebonMightBarColors[k] == nil then
+									ebonMightBarColors[k] = v
 								end
 							end
 						end
@@ -2338,7 +2351,9 @@ function TRB.Functions.Settings:PortForwardSettings()
 						end
 
 						if specSettings.colors and specSettings.colors.bar and specSettings.colors.bar.ebonMightEnd and specSettings.colors.bar.ebonMightEnd.enabled == nil then
-							specSettings.colors.bar.ebonMightEnd.enabled = specSettings.endOf and specSettings.endOf.ebonMight and specSettings.endOf.ebonMight.enabled or true
+							local endOfEnabled = specSettings.endOf and specSettings.endOf.ebonMight and specSettings.endOf.ebonMight.enabled
+							if endOfEnabled == nil then endOfEnabled = true end
+							specSettings.colors.bar.ebonMightEnd.enabled = endOfEnabled
 						end
 
 						if specSettings.displayText and specSettings.displayText.barText then

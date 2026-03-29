@@ -1838,10 +1838,10 @@ local function AugmentationConstructEbonMightBarPanel(parent)
 				spec.colors.bars.ebonMight.endingSoon.enabled = self:GetChecked()
 			end)
 
-			cbControls.colors.ebonMightBarEndingSoon = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarEndingSoon"], spec.colors.bars.ebonMight.endingSoon.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
-			f = cbControls.colors.ebonMightBarEndingSoon
+			cbControls.colors.endingSoon = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarEndingSoon"], spec.colors.bars.ebonMight.endingSoon.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
+			f = cbControls.colors.endingSoon
 			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "endingSoon", "ebonMightBarEndingSoon")
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "endingSoon")
 			end)
 
 			cbYCoord = cbYCoord - 30
@@ -1855,10 +1855,10 @@ local function AugmentationConstructEbonMightBarPanel(parent)
 				spec.colors.bars.ebonMight.wontExtend.enabled = self:GetChecked()
 			end)
 
-			cbControls.colors.ebonMightBarWontExtend = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarWontExtend"], spec.colors.bars.ebonMight.wontExtend.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
-			f = cbControls.colors.ebonMightBarWontExtend
+			cbControls.colors.wontExtend = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarWontExtend"], spec.colors.bars.ebonMight.wontExtend.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
+			f = cbControls.colors.wontExtend
 			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "wontExtend", "ebonMightBarWontExtend")
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "wontExtend")
 			end)
 
 			cbYCoord = cbYCoord - 30
