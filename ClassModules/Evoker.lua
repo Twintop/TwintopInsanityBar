@@ -779,7 +779,14 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
+			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
 			local essenceBorderOverride = nil
+
+			if snapshotData.attributes.essenceBurstActive then
+				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
+					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+				end
+			end
 
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
@@ -819,14 +826,9 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
-
 				if snapshotData.attributes.essenceBurstActive then
 					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
 						barBorderColor = specSettings.colors.bar.essenceBurst.color
-					end
-					if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
-						essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
 					end
 				end
 
@@ -858,7 +860,14 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
+			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
 			local essenceBorderOverride = nil
+
+			if snapshotData.attributes.essenceBurstActive then
+				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
+					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+				end
+			end
 
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
@@ -867,14 +876,9 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base.color
 
-				local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
-
 				if snapshotData.attributes.essenceBurstActive then
 					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
 						barBorderColor = specSettings.colors.bar.essenceBurst.color
-					end
-					if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
-						essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
 					end
 				end
 

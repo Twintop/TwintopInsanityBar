@@ -12,7 +12,11 @@ local content = [====[
 
 ---
 
-# 12.0.1.45-release (2026-03-31)
+# 12.0.1.45-release (2026-03-30)
+## Evoker
+
+- Allow the Essence Burst color change on Essence border to change even when the Mana bar's visibility is set to "Never Show" for Devastation and Preservation.
+
 ## Priest
 ### Shadow
 
