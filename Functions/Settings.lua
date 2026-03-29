@@ -2347,9 +2347,33 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.displayBar = {}
 						end
 						if not specSettings.displayBar.ebonMight then
-							if specSettings.displayBar.secondary then
-								specSettings.displayBar.ebonMight = TRB.Functions.Table:Merge({}, specSettings.displayBar.secondary)
-								specSettings.displayBar.ebonMight.smooth = true
+							local visSource = nil
+							local coreSettings = TwintopInsanityBarSettings.core
+							local globalAug = coreSettings and coreSettings.global and coreSettings.global.evoker and coreSettings.global.evoker.augmentation
+							if globalAug and globalAug.displayBar == true and coreSettings.displayBar and coreSettings.displayBar.secondary then
+								local gs = coreSettings.displayBar.secondary
+								visSource = {
+									neverShow = gs.neverShow,
+									alwaysShow = gs.alwaysShow,
+									smooth = true,
+									activeAlpha = gs.activeAlpha,
+									inactiveAlpha = gs.inactiveAlpha,
+									fadeDuration = gs.fadeDuration,
+									fadeDelay = gs.fadeDelay,
+									conditions = {},
+								}
+								if gs.conditions then
+									for ck, cv in pairs(gs.conditions) do
+										visSource.conditions[ck] = cv
+									end
+								end
+							elseif specSettings.displayBar.secondary then
+								visSource = TRB.Functions.Table:Merge({}, specSettings.displayBar.secondary)
+								visSource.smooth = true
+							end
+
+							if visSource then
+								specSettings.displayBar.ebonMight = visSource
 							else
 								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 							end
