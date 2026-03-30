@@ -325,4 +325,6 @@ if locale == "enGB" then
     L["PriestHolyIndicatorLightweaverTooltip"] = "Changes to this colour when you have any stacks of Lightweaver."
     -- Discipline Priest Indicator Colors (bar-agnostic)
     L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this colour when you have Surge of Light."
+    -- Discipline Priest Void Shield indicator
+    L["PriestDisciplineIndicatorVoidShieldTooltip"] = "Changes to this colour when the Void Shield proc is active."
 end

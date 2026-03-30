@@ -230,6 +230,8 @@ local function FillSpecializationCache()
 	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.masterTheDarkness.id] = TRB.Classes.Snapshot:New(spells.masterTheDarkness)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -752,6 +754,20 @@ local function RefreshLookupData_Discipline()
 	if not activeVars or activeVars["$surgeOfLight"] then
 		lookupLogic["$surgeOfLight"] = snapshotData.attributes.surgeOfLightActive or false
 		lookup["$surgeOfLight"] = ""
+	end
+
+	-- Block E: Void Shield duration ($voidShieldTime)
+	if not activeVars or activeVars["$voidShieldTime"] or activeVars["$masterTheDarknessTime"] then
+		local _voidShieldTime = snapshots[spells.masterTheDarkness.id].buff.remaining
+
+		lookupLogic["$voidShieldTime"] = _voidShieldTime
+		lookupLogic["$masterTheDarknessTime"] = _voidShieldTime
+
+		if lookupChanged(prevState, "$voidShieldTime", _voidShieldTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_voidShieldTime)
+			lookup["$voidShieldTime"] = f
+			lookup["$masterTheDarknessTime"] = f
+		end
 	end
 
 	--[[lookup["$scTime"] = scTime
@@ -1603,7 +1619,19 @@ local function HandleSpellEvents(self, event, ...)
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		if TRB.Data.character.specId == 2 then
+		if TRB.Data.character.specId == 1 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+			if spellId == spells.powerWordShield.id then
+				if rSpellId == nil or rSpellId ~= spells.masterTheDarkness.id then
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff:Reset()
+					-- Keep isCustom so RefreshAllBuffs() won't re-detect the game aura
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff.isCustom = true
+					TRB.Data.lookupDirty = true
+				elseif rSpellId == spells.masterTheDarkness.id then
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff:AddTimeOrInitializeCustom(spells.masterTheDarkness.duration, GetTime())
+				end
+			end
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 			if spellId == spells.flashHeal.id then
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
@@ -1693,6 +1721,7 @@ local function UpdateSnapshot_Discipline()
 	--[[snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)]]
 
+	snapshots[spells.masterTheDarkness.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 end
 
@@ -1784,6 +1813,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = {
 				surgeOfLight = snapshotData.attributes.surgeOfLightActive,
+				voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive,
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
@@ -2748,6 +2778,8 @@ local function SwitchSpec()
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
+		lookup["#voidShield"] = spells.masterTheDarkness.icon
+		lookup["#masterTheDarkness"] = spells.masterTheDarkness.icon
 		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
@@ -3397,6 +3429,14 @@ do
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
 		["$surgeOfLight"] = function() return TRB.Data.snapshotData.attributes.surgeOfLightActive or false end,
+		["$voidShieldTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
+		end,
+		["$masterTheDarknessTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
+		end,
 	}
 	for k, v in pairs(healthVars) do discipline[k] = v end
 	-- Holy

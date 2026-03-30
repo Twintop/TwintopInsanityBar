@@ -2486,3 +2486,9 @@ L["PriestDisciplineCheckboxSurgeOfLight"] = "Surge of Light"
 L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this color when you have Surge of Light."
 L["PriestDisciplineIndicatorSurgeOfLightColor"] = "Surge of Light is active"
 L["BarNamePowerWordsBar"] = "Power Words"
+
+-- Discipline Priest Void Shield indicator and bar text
+L["PriestDisciplineCheckboxVoidShield"] = "Void Shield"
+L["PriestDisciplineIndicatorVoidShieldTooltip"] = "Changes to this color when the Void Shield proc is active."
+L["PriestDisciplineIndicatorVoidShieldColor"] = "Void Shield proc is active"
+L["PriestDisciplineBarTextVariable_voidShieldTime"] = "Time remaining on the Void Shield proc"

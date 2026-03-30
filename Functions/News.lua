@@ -17,6 +17,11 @@ local content = [====[
 
 - Bar color changes have leveled up! You can now choose which bar(s), which part(s) of bars, and priority order of color change notifications.
 
+## Priest
+### Discipline
+
+- Add Void Shield (Master the Darkness buff) proc tracking via bar border color change and new bar text variable `$voidShieldTime`.
+
 ---
 
 # 12.0.1.45-release (2026-03-30)

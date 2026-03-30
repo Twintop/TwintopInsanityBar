@@ -299,6 +299,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			},
 			shared = {
 				nodeOrder = {
+					"voidShield",
 					"surgeOfLight",
 				},
 				gradientOrder = {
@@ -306,6 +307,14 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					surgeOfLight = {
 						color = "FFFCE58E",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							powerWordsBar = { bar = false, border = false, background = false },
+						},
+					},
+					voidShield = {
+						color = "FFC2A3E0",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -1382,6 +1391,7 @@ local function DisciplineConstructIndicatorColorsPanel(parent)
 	-- Flat indicators (reorderable priority list)
 	local indicatorDefs = {
 		{ key = "surgeOfLight",  label = L["PriestDisciplineCheckboxSurgeOfLight"],  tooltip = L["PriestDisciplineIndicatorSurgeOfLightTooltip"],  colorLabel = L["PriestDisciplineIndicatorSurgeOfLightColor"] },
+		{ key = "voidShield",   label = L["PriestDisciplineCheckboxVoidShield"],   tooltip = L["PriestDisciplineIndicatorVoidShieldTooltip"],   colorLabel = L["PriestDisciplineIndicatorVoidShieldColor"] },
 	}
 	-- Gradient indicators (always override flat indicators when active)
 	local gradientDefs = {
