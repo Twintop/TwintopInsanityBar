@@ -2480,3 +2480,9 @@ L["PriestHolyIndicatorApotheosisColor"] = "Apotheosis is active"
 L["PriestHolyIndicatorApotheosisEndColor"] = "Apotheosis is ending (as configured)"
 L["PriestHolyIndicatorSurgeOfLightColor"] = "Surge of Light is active"
 L["PriestHolyIndicatorLightweaverColor"] = "Lightweaver has any stacks"
+
+-- Discipline Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PriestDisciplineCheckboxSurgeOfLight"] = "Surge of Light"
+L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this color when you have Surge of Light."
+L["PriestDisciplineIndicatorSurgeOfLightColor"] = "Surge of Light is active"
+L["BarNamePowerWordsBar"] = "Power Words"

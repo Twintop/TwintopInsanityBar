@@ -323,4 +323,6 @@ if locale == "enGB" then
     L["PriestHolyIndicatorApotheosisEndTooltip"] = "Changes to this colour when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["PriestHolyIndicatorSurgeOfLightTooltip"] = "Changes to this colour when you have Surge of Light."
     L["PriestHolyIndicatorLightweaverTooltip"] = "Changes to this colour when you have any stacks of Lightweaver."
+    -- Discipline Priest Indicator Colors (bar-agnostic)
+    L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this colour when you have Surge of Light."
 end

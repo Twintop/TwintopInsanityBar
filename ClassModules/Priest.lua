@@ -1777,32 +1777,52 @@ local function UpdateResourceBar()
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
+			-- Build indicator condition map (shared across primary and secondary bar blocks)
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				surgeOfLight = snapshotData.attributes.surgeOfLightActive,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = specSettings.colors.bar.base.color, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border.color
-
-				-- Detect Surge of Light via Flash Heal mana cost reduction
-				if snapshotData.attributes.surgeOfLightActive then
-					if specSettings.colors.bar.surgeOfLight.enabled then
-						barBorderColor = specSettings.colors.bar.surgeOfLight.color
-					end
-				end
-
-				--[[if snapshots[spells.shadowCovenant.id].buff.isActive then
-					if specSettings.colors.bar.shadowCovenant.enabled then
-						barBorderColor = specSettings.colors.bar.shadowCovenant.color
-					end
-				end]]
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				
-				local barColor = specSettings.colors.bar.base.color
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				primaryNode:SetColor(manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1838,9 +1858,9 @@ local function UpdateResourceBar()
 									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 								end
-								cpNode:SetColor(cpColor)
-								cpNode:SetBorderColor(cpBorderColor)
-								cpNode:SetBackgroundColorFromString(specSettings.colors.comboPoints.background.color)
+								cpNode:SetColor(powerWordsBarColors.bar)
+								cpNode:SetBorderColor(powerWordsBarColors.border)
+								cpNode:SetBackgroundColorFromString(powerWordsBarColors.background)
 								currentCp = currentCp + 1
 							end
 						end
