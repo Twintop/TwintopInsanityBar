@@ -29,6 +29,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.displayBar = settings.displayBar
 		configuration.textures = settings.textures or {}
 		configuration.colors.bar = settings.colors and settings.colors.bar
+		configuration.colors.shared = settings.colors and settings.colors.shared
 		configuration.colors.healthBar = settings.colors and settings.colors.healthBar
 		configuration.overcap = settings.overcap
 		configuration.endOf = settings.endOf

@@ -299,7 +299,7 @@ TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
 local VISIBILITY_HEALTH_MAX = 1000000
-local VISIBILITY_MANA_MAX = 262500
+local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
 
 ---Gets the normalization max value for visibility threshold comparisons.
 ---For primary resource value thresholds, use the spec's configured max value from the

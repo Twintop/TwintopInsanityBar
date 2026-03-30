@@ -2267,6 +2267,12 @@ local function UpdateResourceBar()
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Shadow()
 
+		-- Mana bar colors and overcap curves hoisted above isTracking for mana bar block access
+		local manaBarColor = specSettings.colors.bars.mana.bar.color
+		local manaBorderColor = specSettings.colors.bars.mana.border.color
+		local manaBackgroundColor = specSettings.colors.bars.mana.background.color
+		local overcapCurvesMana = {}
+
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
@@ -2280,19 +2286,123 @@ local function UpdateResourceBar()
 
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
 
-				if specSettings.colors.bar.mindDevourer.enabled and spells.shadowWordMadness:IsFree() then --snapshots[spells.mindDevourer.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.mindDevourer.color
-				elseif specSettings.colors.bar.entropicRift.enabled and snapshots[spells.entropicRift.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.entropicRift.color
-				elseif specSettings.colors.bar.borderMindFlayInsanity.enabled and snapshots[spells.mindFlayInsanity.id].buff.isActive then
-					barBorderColor = specSettings.colors.bar.borderMindFlayInsanity.color
+				-- Build indicator condition map
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+				-- Precompute voidformEnd timing threshold
+				local voidformActive = snapshots[spells.voidform.id].buff.isActive
+				local voidformEndMet = false
+				if voidformActive then
+					local timeLeft = snapshots[spells.voidform.id].buff.remaining
+					local timeThreshold = 0
+					if specSettings.endOf.voidform.mode == "gcd" then
+						local gcd = Character:GetCurrentGCDTime()
+						timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
+					elseif specSettings.endOf.voidform.mode == "time" then
+						timeThreshold = specSettings.endOf.voidform.timeMax
+					end
+					voidformEndMet = timeLeft <= timeThreshold
 				end
 
-				-- Build overcap border curve if enabled
-				local overcapBorderCurve = nil
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
+				local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
+				local isCasting = snapshotData.casting.resourceFinal ~= 0
+
+				local conditionMap = {
+					instantMindBlast = snapshotData.attributes.shadowyInsightActive,
+					voidformEnd = voidformActive and voidformEndMet,
+					mindDevourer = spells.shadowWordMadness:IsFree(),
+					entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
+					borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
+					shadowWordMadnessUsableCasting = swmUsable and isCasting,
+					shadowWordMadnessUsable = swmUsable,
+					voidform = voidformActive,
+					borderOvercap = affectingCombat,
+				}
+
+				-- Color targets: barKey -> elementKey -> current color
+				-- insanityBar targets
+				local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				-- manaBar targets
+				local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
+				local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
+
+				-- Apply flat indicator colors (priority order, last writer wins)
+				if nodeOrder and indicatorColors then
+					for i = #nodeOrder, 1, -1 do
+						local key = nodeOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] then
+							if indicator.targets then
+								for barKey, elements in pairs(indicator.targets) do
+									local targetColors = barColorMap[barKey]
+									if targetColors and elements then
+										for elemKey, isTargeted in pairs(elements) do
+											if isTargeted then
+												targetColors[elemKey] = indicator.color
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				-- Find active gradient indicators (separate priority group, always override flat colors when active)
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local overcapIndicator = nil
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+							overcapIndicator = indicator
+							break
+						end
+					end
+				end
+
+				-- Resolve final insanity bar colors from the map
+				barColor = insanityBarColors.bar
+				barBorderColor = insanityBarColors.border
+				barBackgroundColor = insanityBarColors.background
+
+				-- Resolve final mana bar colors from the map
+				manaBarColor = manaBarColors.bar
+				manaBorderColor = manaBarColors.border
+				manaBackgroundColor = manaBarColors.background
+
+				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
+				local overcapCurvesInsanity = {}
+				if overcapIndicator and overcapIndicator.targets then
+					local insanityTargets = overcapIndicator.targets.insanityBar
+					if insanityTargets then
+						if insanityTargets.border then
+							overcapCurvesInsanity.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+						end
+						if insanityTargets.bar then
+							overcapCurvesInsanity.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+						end
+						if insanityTargets.background then
+							overcapCurvesInsanity.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+						end
+					end
+					local manaTargets = overcapIndicator.targets.manaBar
+					if manaTargets then
+						if manaTargets.border then
+							overcapCurvesMana.border = Color:BuildResourceThresholdCurve(specSettings, manaBorderColor, overcapIndicator.color)
+						end
+						if manaTargets.bar then
+							overcapCurvesMana.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColor, overcapIndicator.color)
+						end
+						if manaTargets.background then
+							overcapCurvesMana.background = Color:BuildResourceThresholdCurve(specSettings, manaBackgroundColor, overcapIndicator.color)
+						end
+					end
 				end
 
 				-- Get resourceFrame and thresholds from the BarNode
@@ -2441,43 +2551,24 @@ local function UpdateResourceBar()
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				if specSettings.colors.bar.instantMindBlast.enabled and snapshotData.attributes.shadowyInsightActive then
-					barColor = specSettings.colors.bar.instantMindBlast.color
-				elseif snapshots[spells.voidform.id].buff.isActive then
-					local timeLeft = snapshots[spells.voidform.id].buff.remaining
-					local timeThreshold = 0
-					local useEndOfVoidformColor = false
-
-					if specSettings.endOf.voidform.enabled then
-						useEndOfVoidformColor = true
-						if specSettings.endOf.voidform.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
-						elseif specSettings.endOf.voidform.mode == "time" then
-							timeThreshold = specSettings.endOf.voidform.timeMax
-						end
-					end
-
-					if useEndOfVoidformColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.voidformEnd.color
-					elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
-						barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-					elseif specSettings.colors.bar.voidform.enabled then
-						barColor = specSettings.colors.bar.voidform.color
-					end
-				elseif specSettings.colors.bar.shadowWordMadnessUsable.enabled and (spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()) then
-					barColor = specSettings.colors.bar.shadowWordMadnessUsable.color
-				end
-				
-				if overcapBorderCurve then
-					-- Evaluate the curve with current power level to get the right color
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+				if overcapCurvesInsanity.border then
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.border)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapCurvesInsanity.bar then
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.bar)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					primaryNode:SetColor(barColor)
+				end
+				if overcapCurvesInsanity.background then
+					local bgColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.background)
+					primaryNode:SetBackgroundColorCurve(bgColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 		end
@@ -2505,9 +2596,24 @@ local function UpdateResourceBar()
 				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 				manaNode:SetMinMax(0, maxMana)
 				manaNode:SetValue(currentMana)
-				manaNode:SetColor(specSettings.colors.bars.mana.bar.color)
-				manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
-				manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
+				if overcapCurvesMana.bar then
+					local manaBarResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.bar)
+					manaNode:SetColorCurve(manaBarResult)
+				else
+					manaNode:SetColor(manaBarColor)
+				end
+				if overcapCurvesMana.border then
+					local manaBorderResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.border)
+					manaNode:SetBorderColorCurve(manaBorderResult)
+				else
+					manaNode:SetBorderColor(manaBorderColor)
+				end
+				if overcapCurvesMana.background then
+					local manaBgResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.background)
+					manaNode:SetBackgroundColorCurve(manaBgResult)
+				else
+					manaNode:SetBackgroundColorFromString(manaBackgroundColor)
+				end
 			end
 		end
 

@@ -15,7 +15,7 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 	end
 	TRB.Data.lookupDirty = true
 	if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP"
-		or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		or event == "UNIT_SPELLCAST_INTERRUPTED" then
 		if event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 			TRB.Functions.Class:SpellCast(event)
 		elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
@@ -61,7 +61,6 @@ function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_FAILED")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	spellCastFrame:RegisterEvent("UNIT_MODEL_CHANGED")
 	spellCastFrame:RegisterEvent("SPELL_UPDATE_ICON")
@@ -77,7 +76,6 @@ function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	spellCastFrame:UnregisterEvent("UNIT_MODEL_CHANGED")
 end
@@ -91,6 +89,5 @@ end
 ---| '"UNIT_SPELLCAST_CHANNEL_STOP"' # UNIT_SPELLCAST_CHANNEL_STOP
 ---| '"UNIT_SPELLCAST_EMPOWER_START"' # UNIT_SPELLCAST_EMPOWER_START
 ---| '"UNIT_SPELLCAST_EMPOWER_STOP"' # UNIT_SPELLCAST_EMPOWER_STOP
----| '"UNIT_SPELLCAST_FAILED"' # UNIT_SPELLCAST_FAILED
 ---| '"UNIT_SPELLCAST_INTERRUPTED"' # UNIT_SPELLCAST_INTERRUPTED
 ---| '"UNIT_MODEL_CHANGED"' # UNIT_MODEL_CHANGED

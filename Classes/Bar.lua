@@ -178,6 +178,17 @@ function TRB.Classes.BarNode:SetBackgroundColor(r, g, b, a)
 	TRB.Functions.Color:SetBackdropColor(self.frame, self.name .. "_background", r, g, b, a)
 end
 
+---Sets the background color from a curve result (bypasses cache comparison for tainted secret values)
+---@diagnostic disable-next-line: undefined-doc-name
+---@param colorResult LuaCurveEvaluatedResult
+function TRB.Classes.BarNode:SetBackgroundColorCurve(colorResult)
+	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
+		return
+	end
+	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
+	self.frame:SetBackdropColor(colorResult:GetRGBA())
+end
+
 ---Sets the background color from a color string
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBackgroundColorFromString(colorString)

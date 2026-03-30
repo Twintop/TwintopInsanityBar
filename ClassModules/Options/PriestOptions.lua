@@ -940,50 +940,15 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FF431863"
 				},
-				borderOvercap = {
-					color = "FFFF0000",
-					enabled = true
-				},
-				borderMindFlayInsanity = {
-					color = "FF00FF00",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
 					color = "FF763BAF"
 				},
-				shadowWordMadnessUsable = {
-					color = "FF5C2F89",
-					enabled = true
-				},
-				shadowWordMadnessUsableCasting = {
-					color = "FFFFFFFF",
-					enabled = true
-				},
 				critMindBlast = {
 					color = "FFC2A3E0",
 					enabled = true
-				},
-				instantMindBlast = {
-					color = "FFC2A3E0",
-					enabled = true
-				},
-				mindDevourer = {
-					color = "FF00C3FF",
-					enabled = true,
-				},
-				entropicRift = {
-					color = "FF8A004C",
-					enabled = true
-				},
-				voidform = {
-					color = "FF431863",
-					enabled = true
-				},
-				voidformEnd = {
-					color = "FFFF0000"
 				},
 				flashAlpha = 0.70,
 				flashPeriod = 0.5,
@@ -991,6 +956,96 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				casting = {
 					color = "FFFFFFFF",
 					enabled = true
+				},
+			},
+			shared = {
+				nodeOrder = {
+					"instantMindBlast",
+					"voidformEnd",
+					"shadowWordMadnessUsableCasting",
+					"shadowWordMadnessUsable",
+					"voidform",
+					"mindDevourer",
+					"entropicRift",
+					"borderMindFlayInsanity",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					instantMindBlast = {
+						color = "FFC2A3E0",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = true, border = false, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					voidformEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = true, border = false, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					mindDevourer = {
+						color = "FF00C3FF",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = false, border = true, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					entropicRift = {
+						color = "FF8A004C",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = false, border = true, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					borderMindFlayInsanity = {
+						color = "FF00FF00",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = false, border = true, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					shadowWordMadnessUsableCasting = {
+						color = "FFFFFFFF",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = true, border = false, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					shadowWordMadnessUsable = {
+						color = "FF5C2F89",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = true, border = false, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					voidform = {
+						color = "FF431863",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = true, border = false, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							insanityBar = { bar = false, border = true, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
 				},
 			},
 			threshold = {
@@ -2305,6 +2360,508 @@ local function ShadowConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+local function ShadowConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_shadow
+	local yCoord = 5
+	local f = nil
+
+	-- Indicator definitions: key must match colors.shared.indicatorColors keys
+	-- Flat indicators (reorderable priority list)
+	local indicatorDefs = {
+		{ key = "instantMindBlast",                label = L["PriestShadowCheckboxInstantMindBlast"],                tooltip = L["PriestShadowIndicatorInstantMindBlastTooltip"],                colorLabel = L["PriestShadowIndicatorInstantMindBlastColor"] },
+		{ key = "voidformEnd",                     label = L["PriestShadowCheckboxVoidformEnd"],                     tooltip = L["PriestShadowIndicatorVoidformEndTooltip"],                     colorLabel = L["PriestShadowIndicatorVoidformEndColor"] },
+		{ key = "shadowWordMadnessUsableCasting",  label = L["PriestShadowCheckboxShadowWordMadnessUsableCasting"],  tooltip = L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"],  colorLabel = L["PriestShadowIndicatorShadowWordMadnessUsableCastingColor"] },
+		{ key = "shadowWordMadnessUsable",         label = L["PriestShadowCheckboxShadowWordMadnessUsable"],         tooltip = L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"],         colorLabel = L["PriestShadowIndicatorShadowWordMadnessUsableColor"] },
+		{ key = "voidform",                        label = L["PriestShadowCheckboxVoidform"],                        tooltip = L["PriestShadowIndicatorVoidformTooltip"],                        colorLabel = L["PriestShadowIndicatorVoidformColor"] },
+		{ key = "mindDevourer",                    label = L["PriestShadowCheckboxMindDevourer"],                    tooltip = L["PriestShadowIndicatorMindDevourerTooltip"],                    colorLabel = L["PriestShadowIndicatorMindDevourerColor"] },
+		{ key = "entropicRift",                    label = L["PriestShadowCheckboxEntropicRift"],                    tooltip = L["PriestShadowIndicatorEntropicRiftTooltip"],                    colorLabel = L["PriestShadowIndicatorEntropicRiftColor"] },
+		{ key = "borderMindFlayInsanity",          label = L["PriestShadowCheckboxMindFlayInsanity"],                tooltip = L["PriestShadowIndicatorMindFlayInsanityTooltip"],                colorLabel = L["PriestShadowIndicatorMindFlayInsanityColor"] },
+	}
+	-- Gradient indicators (always override flat indicators when active)
+	local gradientDefs = {
+		{ key = "borderOvercap",                   label = L["PriestShadowCheckboxBorderOvercap"],                   tooltip = L["PriestShadowIndicatorOvercapTooltip"],                        colorLabel = L["PriestShadowIndicatorOvercapColor"] },
+	}
+
+	-- Build a quick lookup from key -> indicatorDef
+	local indicatorDefByKey = {}
+	for _, def in ipairs(indicatorDefs) do
+		indicatorDefByKey[def.key] = def
+	end
+	for _, def in ipairs(gradientDefs) do
+		indicatorDefByKey[def.key] = def
+	end
+
+	-- Available bar targets and their elements
+	local barTargetDefs = {
+		{ key = "insanityBar", label = L["BarNameInsanityBar"] },
+		{ key = "manaBar", label = L["BarNameManaBar"] },
+	}
+
+	local elementDefs = {
+		{ key = "bar", label = L["BarElementBar"] },
+		{ key = "border", label = L["BarElementBorder"] },
+		{ key = "background", label = L["BarElementBackground"] },
+	}
+
+	local sharedSettings = spec.colors.shared
+	local indicatorColors = sharedSettings.indicatorColors
+
+	-- Working copy of the ordered keys (survives reordering within this panel's lifetime)
+	local orderedKeys = {}
+	for i, k in ipairs(sharedSettings.nodeOrder) do
+		orderedKeys[i] = k
+	end
+
+	-- Per-row UI element references (indexed by row position, NOT by key)
+	local rows = {}
+
+	controls.indicatorColors = controls.indicatorColors or {}
+	controls.indicatorColors.rows = controls.indicatorColors.rows or {}
+
+	-- Section header
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["IndicatorColorPriorityHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+
+	---Gets a summary string of enabled targets for a given indicator
+	---@param indicatorKey string
+	---@return string
+	local function GetSummaryText(indicatorKey)
+		local indicator = indicatorColors[indicatorKey]
+		if not indicator or not indicator.targets then
+			return L["BarNameDisabled"]
+		end
+		local parts = {}
+		for _, barDef in ipairs(barTargetDefs) do
+			local barTargets = indicator.targets[barDef.key]
+			if barTargets then
+				local elements = {}
+				for _, elemDef in ipairs(elementDefs) do
+					if barTargets[elemDef.key] then
+						table.insert(elements, elemDef.label)
+					end
+				end
+				if #elements > 0 then
+					table.insert(parts, barDef.label .. ": " .. table.concat(elements, ", "))
+				end
+			end
+		end
+		if #parts == 0 then
+			return L["BarNameDisabled"]
+		end
+		return table.concat(parts, "; ")
+	end
+
+	---Syncs the enabled state for an indicator based on whether any targets are selected
+	---@param indicatorKey string
+	---@param rowIndex number
+	local function SyncEnabled(indicatorKey, rowIndex)
+		local indicator = indicatorColors[indicatorKey]
+		if not indicator then return end
+		local anyEnabled = false
+		if indicator.targets then
+			for _, barDef in ipairs(barTargetDefs) do
+				local barTargets = indicator.targets[barDef.key]
+				if barTargets then
+					for _, elemDef in ipairs(elementDefs) do
+						if barTargets[elemDef.key] then
+							anyEnabled = true
+							break
+						end
+					end
+				end
+				if anyEnabled then break end
+			end
+		end
+		indicator.enabled = anyEnabled
+		local row = rows[rowIndex]
+		if row then
+			if row.colorPicker then
+				TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, anyEnabled)
+			end
+		end
+	end
+
+	---Refreshes a single row's visual state from the current orderedKeys
+	---@param rowIndex number
+	local function RefreshRow(rowIndex)
+		local row = rows[rowIndex]
+		if not row then return end
+		local key = orderedKeys[rowIndex]
+		local def = indicatorDefByKey[key]
+		local indicator = indicatorColors[key]
+		if not def or not indicator then return end
+
+		-- Update color picker
+		if row.colorPicker then
+			row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
+			if row.colorPicker.Font then
+				row.colorPicker.Font:SetText(def.colorLabel)
+			end
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+		end
+		-- Update dropdown text
+		if row.dropdown then
+			row.dropdown:SetText(GetSummaryText(key))
+		end
+		-- Arrow enabled state
+		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
+		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
+	end
+
+	---Swaps two adjacent entries and persists to settings
+	---@param indexA number
+	---@param indexB number
+	local function SwapNodes(indexA, indexB)
+		orderedKeys[indexA], orderedKeys[indexB] = orderedKeys[indexB], orderedKeys[indexA]
+		for i, k in ipairs(orderedKeys) do
+			sharedSettings.nodeOrder[i] = k
+		end
+		RefreshRow(indexA)
+		RefreshRow(indexB)
+	end
+
+	-- Build rows
+	for rowIndex, nodeKey in ipairs(orderedKeys) do
+		local def = indicatorDefByKey[nodeKey]
+		local indicator = indicatorColors[nodeKey]
+		if def and indicator then
+			local capturedRowIdx = rowIndex
+			local row = {}
+			rows[rowIndex] = row
+
+			local xOffset = oUi.xCoord
+
+			-- Up arrow
+			local upBtn = CreateFrame("Button", nil, parent)
+			upBtn:SetSize(20, 20)
+			upBtn:SetPoint("TOPLEFT", xOffset, yCoord)
+			upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+			upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+			upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+			upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			upBtn:SetEnabled(rowIndex > 1)
+			upBtn:SetScript("OnClick", function()
+				SwapNodes(capturedRowIdx - 1, capturedRowIdx)
+			end)
+			upBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			row.upBtn = upBtn
+
+			-- Down arrow
+			local downBtn = CreateFrame("Button", nil, parent)
+			downBtn:SetSize(20, 20)
+			downBtn:SetPoint("TOPLEFT", xOffset + 22, yCoord)
+			downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+			downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+			downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+			downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			downBtn:SetEnabled(rowIndex < #orderedKeys)
+			downBtn:SetScript("OnClick", function()
+				SwapNodes(capturedRowIdx, capturedRowIdx + 1)
+			end)
+			downBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			row.downBtn = downBtn
+
+			xOffset = xOffset + 46
+
+			-- Targets dropdown
+			local ddName = "TwintopResourceBar_Priest_Shadow_Indicator_" .. nodeKey .. "_Targets"
+			local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
+			dd:SetWidth(280)
+			dd:SetPoint("TOPLEFT", xOffset, yCoord)
+			dd:SetScript("OnEnter", function(self)
+				local currentKey = orderedKeys[capturedRowIdx]
+				local currentDef = indicatorDefByKey[currentKey]
+				if currentDef and currentDef.tooltip then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+					GameTooltip:SetText(currentDef.tooltip, 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end)
+			dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+			-- Hook SetText to always show our summary
+			local originalSetText = dd.SetText
+			dd.SetText = function(self, text)
+				local currentKey = orderedKeys[capturedRowIdx]
+				originalSetText(self, GetSummaryText(currentKey))
+			end
+
+			dd:SetupMenu(function(dropdown, rootDescription)
+				local currentKey = orderedKeys[capturedRowIdx]
+				local currentIndicator = indicatorColors[currentKey]
+				if not currentIndicator then return end
+				currentIndicator.targets = currentIndicator.targets or {}
+
+				for barIdx, barDef in ipairs(barTargetDefs) do
+					if barIdx > 1 then
+						rootDescription:CreateDivider()
+					end
+					rootDescription:CreateTitle(barDef.label)
+					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+
+					for _, elemDef in ipairs(elementDefs) do
+						rootDescription:CreateCheckbox(
+							elemDef.label,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+							end,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								if not ci then return end
+								ci.targets = ci.targets or {}
+								ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+								ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+								SyncEnabled(ck, capturedRowIdx)
+							end
+						)
+					end
+				end
+			end)
+
+			dd:SetText(GetSummaryText(nodeKey))
+			row.dropdown = dd
+
+			-- Color picker
+			local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, def.colorLabel, indicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+			cp:SetScript("OnMouseDown", function(self, button)
+				local currentKey = orderedKeys[capturedRowIdx]
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
+			end)
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, indicator.enabled)
+			row.colorPicker = cp
+
+			-- Store row controls for the color picker callback
+			controls.indicatorColors.rows[rowIndex] = row
+
+			yCoord = yCoord - 30
+		end
+	end
+
+	-- Gradient Color Overrides section
+	yCoord = yCoord - 10
+	controls.textSectionGradient = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GradientColorOverridesHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	-- Note explaining gradient behavior
+	controls.gradientNote = TRB.Functions.OptionsUi:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
+	yCoord = yCoord - 30
+
+	-- Working copy of gradient ordered keys
+	local orderedGradientKeys = {}
+	for i, k in ipairs(sharedSettings.gradientOrder) do
+		orderedGradientKeys[i] = k
+	end
+
+	local gradientRows = {}
+	controls.indicatorColors.gradientRows = controls.indicatorColors.gradientRows or {}
+
+	local function RefreshGradientRow(rowIndex)
+		local row = gradientRows[rowIndex]
+		if not row then return end
+		local key = orderedGradientKeys[rowIndex]
+		local def = indicatorDefByKey[key]
+		local indicator = indicatorColors[key]
+		if not def or not indicator then return end
+
+		if row.colorPicker then
+			row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
+			if row.colorPicker.Font then
+				row.colorPicker.Font:SetText(def.colorLabel)
+			end
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+		end
+		if row.dropdown then
+			row.dropdown:SetText(GetSummaryText(key))
+		end
+		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
+		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedGradientKeys) end
+	end
+
+	local function SwapGradientNodes(indexA, indexB)
+		orderedGradientKeys[indexA], orderedGradientKeys[indexB] = orderedGradientKeys[indexB], orderedGradientKeys[indexA]
+		for i, k in ipairs(orderedGradientKeys) do
+			sharedSettings.gradientOrder[i] = k
+		end
+		RefreshGradientRow(indexA)
+		RefreshGradientRow(indexB)
+	end
+
+	for gradIdx, gradKey in ipairs(orderedGradientKeys) do
+		local gradDef = indicatorDefByKey[gradKey]
+		local gradIndicator = indicatorColors[gradKey]
+		if gradDef and gradIndicator then
+			local capturedGradIdx = gradIdx
+			local gradRow = {}
+			gradientRows[gradIdx] = gradRow
+
+			local xOffset = oUi.xCoord
+
+			-- Up arrow
+			local upBtn = CreateFrame("Button", nil, parent)
+			upBtn:SetSize(20, 20)
+			upBtn:SetPoint("TOPLEFT", xOffset, yCoord)
+			upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+			upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+			upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+			upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			upBtn:SetEnabled(gradIdx > 1)
+			upBtn:SetScript("OnClick", function()
+				SwapGradientNodes(capturedGradIdx - 1, capturedGradIdx)
+			end)
+			upBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			gradRow.upBtn = upBtn
+
+			-- Down arrow
+			local downBtn = CreateFrame("Button", nil, parent)
+			downBtn:SetSize(20, 20)
+			downBtn:SetPoint("TOPLEFT", xOffset + 22, yCoord)
+			downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+			downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+			downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+			downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			downBtn:SetEnabled(gradIdx < #orderedGradientKeys)
+			downBtn:SetScript("OnClick", function()
+				SwapGradientNodes(capturedGradIdx, capturedGradIdx + 1)
+			end)
+			downBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			gradRow.downBtn = downBtn
+
+			xOffset = xOffset + 46
+
+			-- Targets dropdown
+			local ddName = "TwintopResourceBar_Priest_Shadow_Gradient_" .. gradKey .. "_Targets"
+			local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
+			dd:SetWidth(280)
+			dd:SetPoint("TOPLEFT", xOffset, yCoord)
+			dd:SetScript("OnEnter", function(self)
+				if gradDef.tooltip then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+					GameTooltip:SetText(gradDef.tooltip, 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end)
+			dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+			local originalSetText = dd.SetText
+			dd.SetText = function(self, text)
+				originalSetText(self, GetSummaryText(orderedGradientKeys[capturedGradIdx]))
+			end
+
+			local capturedGradKey = gradKey
+			dd:SetupMenu(function(dropdown, rootDescription)
+				local ck = orderedGradientKeys[capturedGradIdx]
+				local ci = indicatorColors[ck]
+				if not ci then return end
+				ci.targets = ci.targets or {}
+
+				for barIdx, barDef in ipairs(barTargetDefs) do
+					if barIdx > 1 then
+						rootDescription:CreateDivider()
+					end
+					rootDescription:CreateTitle(barDef.label)
+					ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+
+					for _, elemDef in ipairs(elementDefs) do
+						rootDescription:CreateCheckbox(
+							elemDef.label,
+							function()
+								local gk = orderedGradientKeys[capturedGradIdx]
+								local indicator = indicatorColors[gk]
+								return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
+							end,
+							function()
+								local gk = orderedGradientKeys[capturedGradIdx]
+								local indicator = indicatorColors[gk]
+								if not indicator then return end
+								indicator.targets = indicator.targets or {}
+								indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
+								indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
+								-- Sync enabled state
+								local anyEnabled = false
+								if indicator.targets then
+									for _, bd in ipairs(barTargetDefs) do
+										local bt = indicator.targets[bd.key]
+										if bt then
+											for _, ed in ipairs(elementDefs) do
+												if bt[ed.key] then anyEnabled = true; break end
+											end
+										end
+										if anyEnabled then break end
+									end
+								end
+								indicator.enabled = anyEnabled
+								if gradRow.colorPicker then
+									TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
+								end
+							end
+						)
+					end
+				end
+			end)
+
+			dd:SetText(GetSummaryText(gradKey))
+			gradRow.dropdown = dd
+
+			-- Color picker
+			local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+			cp:SetScript("OnMouseDown", function(self, button)
+				local gk = orderedGradientKeys[capturedGradIdx]
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk, "indicatorColor_" .. gk)
+			end)
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, gradIndicator.enabled)
+			gradRow.colorPicker = cp
+
+			controls.indicatorColors.gradientRows[gradIdx] = gradRow
+
+			yCoord = yCoord - 30
+		end
+	end
+
+	-- End of Voidform Configuration section
+	yCoord = yCoord - 10
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 3, yCoord, {
+		endOfKey = "voidform",
+		sectionHeader = L["PriestShadowHeaderEndOfVoidformConfiguration"],
+		gcdRadioLabel = L["PriestShadowCheckboxVoidformGcds"],
+		gcdSliderLabel = L["PriestShadowVoidformGcds"],
+		timeRadioLabel = L["PriestShadowCheckboxVoidformTime"],
+		timeSliderLabel = L["PriestShadowVoidformTime"],
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function ShadowConstructInsanityBarPanel(parent)
 	if parent == nil then
 		return
@@ -2323,53 +2880,6 @@ local function ShadowConstructInsanityBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"])
 
 	yCoord = yCoord - 30
-	controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerInstantMindBlast"], spec.colors.bar.instantMindBlast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.instantMindBlast
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
-	end)
-
-	controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.instantMindBlast
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxInstantMindBlast"])
-	f.tooltip = L["PriestShadowCheckboxInstantMindBlastTooltip"]
-	f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 3, yCoord, {
-		endOfKey = "voidform",
-		activeColorKey = "voidform",
-		endColorKey = "voidformEnd",
-		checkboxLabel = L["PriestShadowCheckboxVoidform"],
-		checkboxTooltip = L["PriestShadowCheckboxVoidformTooltip"],
-		activeColorLabel = L["PriestShadowColorPickerVoidform"],
-		endCheckboxLabel = L["PriestShadowCheckboxVoidformEnd"],
-		endCheckboxTooltip = L["PriestShadowCheckboxVoidformEndTooltip"],
-		endColorLabel = L["PriestShadowColorPickerVoidformEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.shadowWordMadnessUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerShadowWordMadness"], spec.colors.bar.shadowWordMadnessUsable.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.shadowWordMadnessUsable
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "shadowWordMadnessUsable")
-	end)
-
-	controls.checkBoxes.shadowWordMadnessUsable = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_ShadowWordMadnessUsable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shadowWordMadnessUsable
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxShadowWordMadnessUsable"])
-	f.tooltip = L["PriestShadowCheckboxShadowWordMadnessUsableTooltip"]
-	f:SetChecked(spec.colors.bar.shadowWordMadnessUsable.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.shadowWordMadnessUsable.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2377,85 +2887,7 @@ local function ShadowConstructInsanityBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, false)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindFlayInsanityBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxMindFlayInsanity"])
-	f.tooltip = L["PriestShadowCheckboxMindFlayInsanityTooltip"]
-	f:SetChecked(spec.colors.bar.borderMindFlayInsanity.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.borderMindFlayInsanity.enabled = self:GetChecked()
-	end)
-
-	controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindFlayInsanity"], spec.colors.bar.borderMindFlayInsanity.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderMindFlayInsanity
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
-	end)
-	yCoord = yCoord - 30
-	controls.checkBoxes.entropicRiftBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_entropicRiftBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.entropicRiftBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxEntropicRift"])
-	f.tooltip = L["PriestShadowCheckboxEntropicRiftTooltip"]
-	f:SetChecked(spec.colors.bar.entropicRift.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.entropicRift.enabled = self:GetChecked()
-	end)
-
-	controls.colors.entropicRift = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerEntropicRift"], spec.colors.bar.entropicRift.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.entropicRift
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "entropicRift")
-	end)
-
-	
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.critMindBlastBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_critMindBlastBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.critMindBlastBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxCritMindBlast"])
-	f.tooltip = L["PriestShadowCheckboxCritMindBlastTooltip"]
-	f:SetChecked(spec.colors.bar.critMindBlast.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.critMindBlast.enabled = self:GetChecked()
-	end)
-
-	controls.colors.critMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerCritMindBlast"], spec.colors.bar.critMindBlast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.critMindBlast
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "critMindBlast")
-	end)
-	]]
-	yCoord = yCoord - 30
-	controls.checkBoxes.mindDevourer = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindDevourerProc", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mindDevourer
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxMindDevourer"])
-	f.tooltip = L["PriestShadowCheckboxMindDevourerTooltip"]
-	f:SetChecked(spec.colors.bar.mindDevourer.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.mindDevourer.enabled = self:GetChecked()
-	end)
-
-	controls.colors.mindDevourer = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerMindDevourer"], spec.colors.bar.mindDevourer.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.mindDevourer
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 3, yCoord, {
-		endOfKey = "voidform",
-		sectionHeader = L["PriestShadowHeaderEndOfVoidformConfiguration"],
-		gcdRadioLabel = L["PriestShadowCheckboxVoidformGcds"],
-		gcdSliderLabel = L["PriestShadowVoidformGcds"],
-		timeRadioLabel = L["PriestShadowCheckboxVoidformTime"],
-		timeSliderLabel = L["PriestShadowVoidformTime"],
-	})
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], false, false)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], SHADOW_MAX_INSANITY)
@@ -2781,6 +3213,7 @@ local function ShadowConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ShadowConstructManaBarPanel },
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.shadow, controls, 5, 3) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ShadowConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ShadowConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdPanel },

@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.46-release (2026-03-31)
+## General
+
+- Bar color changes have leveled up! You can now choose which bar(s), which part(s) of bars, and priority order of color change notifications.
+
+---
+
 # 12.0.1.45-release (2026-03-30)
 ## Evoker
 

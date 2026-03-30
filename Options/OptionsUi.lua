@@ -5831,7 +5831,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 
 		if conditionType == "resourceValue" then
 			if primaryResourceString == L["ResourceMana"] then
-				return 262500
+				return 275625
 			end
 			if spec.maxResource ~= nil and type(spec.maxResource.value) == "number" and spec.maxResource.value > 0 then
 				return spec.maxResource.value

@@ -617,7 +617,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			else
 				snapshotData.attributes.extendsEbonMight = false
 			end
-		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			snapshotData.attributes.extendsEbonMight = false
 			casting:Reset()
 		else

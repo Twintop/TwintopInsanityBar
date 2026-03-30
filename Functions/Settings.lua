@@ -5604,6 +5604,130 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Shadow Priest indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest and TwintopInsanityBarSettings.priest.shadow then
+		local shadow = TwintopInsanityBarSettings.priest.shadow
+		if shadow.colors and shadow.colors.bar and shadow.colors.bar.instantMindBlast ~= nil
+			and type(shadow.colors.bar.instantMindBlast) == "table"
+			and (shadow.colors.shared == nil or shadow.colors.shared.indicatorColors == nil) then
+
+			shadow.colors.shared = shadow.colors.shared or {}
+			shadow.colors.shared.nodeOrder = {
+				"instantMindBlast",
+				"voidformEnd",
+				"shadowWordMadnessUsableCasting",
+				"shadowWordMadnessUsable",
+				"voidform",
+				"mindDevourer",
+				"entropicRift",
+				"borderMindFlayInsanity",
+			}
+			shadow.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			shadow.colors.shared.indicatorColors = {}
+			local ic = shadow.colors.shared.indicatorColors
+			local bar = shadow.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					insanityBar = { bar = false, border = false, background = false },
+					manaBar = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- Bar indicators
+			ic.instantMindBlast = {
+				color = bar.instantMindBlast and bar.instantMindBlast.color or "FFC2A3E0",
+				enabled = bar.instantMindBlast and bar.instantMindBlast.enabled ~= false,
+				targets = MakeTargets("insanityBar", "bar"),
+			}
+			ic.voidformEnd = {
+				color = bar.voidformEnd and bar.voidformEnd.color or "FFFF0000",
+				enabled = shadow.endOf and shadow.endOf.voidform and shadow.endOf.voidform.enabled ~= false,
+				targets = MakeTargets("insanityBar", "bar"),
+			}
+			ic.shadowWordMadnessUsableCasting = {
+				color = bar.shadowWordMadnessUsableCasting and bar.shadowWordMadnessUsableCasting.color or "FFFFFFFF",
+				enabled = bar.shadowWordMadnessUsableCasting and bar.shadowWordMadnessUsableCasting.enabled ~= false,
+				targets = MakeTargets("insanityBar", "bar"),
+			}
+			ic.shadowWordMadnessUsable = {
+				color = bar.shadowWordMadnessUsable and bar.shadowWordMadnessUsable.color or "FF5C2F89",
+				enabled = bar.shadowWordMadnessUsable and bar.shadowWordMadnessUsable.enabled ~= false,
+				targets = MakeTargets("insanityBar", "bar"),
+			}
+			ic.voidform = {
+				color = bar.voidform and bar.voidform.color or "FF431863",
+				enabled = bar.voidform and bar.voidform.enabled ~= false,
+				targets = MakeTargets("insanityBar", "bar"),
+			}
+
+			-- Border indicators
+			ic.mindDevourer = {
+				color = bar.mindDevourer and bar.mindDevourer.color or "FF00C3FF",
+				enabled = bar.mindDevourer and bar.mindDevourer.enabled ~= false,
+				targets = MakeTargets("insanityBar", "border"),
+			}
+			ic.entropicRift = {
+				color = bar.entropicRift and bar.entropicRift.color or "FF8A004C",
+				enabled = bar.entropicRift and bar.entropicRift.enabled ~= false,
+				targets = MakeTargets("insanityBar", "border"),
+			}
+			ic.borderMindFlayInsanity = {
+				color = bar.borderMindFlayInsanity and bar.borderMindFlayInsanity.color or "FF00FF00",
+				enabled = bar.borderMindFlayInsanity and bar.borderMindFlayInsanity.enabled ~= false,
+				targets = MakeTargets("insanityBar", "border"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("insanityBar", "border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.instantMindBlast = nil
+			bar.voidform = nil
+			bar.voidformEnd = nil
+			bar.shadowWordMadnessUsable = nil
+			bar.shadowWordMadnessUsableCasting = nil
+			bar.borderMindFlayInsanity = nil
+			bar.entropicRift = nil
+			bar.mindDevourer = nil
+			bar.borderOvercap = nil
+
+			-- Move endOf.voidform.enabled to the indicator; leave timing fields in place
+			if shadow.endOf and shadow.endOf.voidform then
+				shadow.endOf.voidform.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate gradient indicators out of nodeOrder into gradientOrder
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest and TwintopInsanityBarSettings.priest.shadow then
+		local shadow = TwintopInsanityBarSettings.priest.shadow
+		if shadow.colors and shadow.colors.shared and shadow.colors.shared.nodeOrder and not shadow.colors.shared.gradientOrder then
+			local newNodeOrder = {}
+			local newGradientOrder = {}
+			local ic = shadow.colors.shared.indicatorColors or {}
+			for _, key in ipairs(shadow.colors.shared.nodeOrder) do
+				if ic[key] and ic[key].isGradient then
+					table.insert(newGradientOrder, key)
+				else
+					table.insert(newNodeOrder, key)
+				end
+			end
+			shadow.colors.shared.nodeOrder = newNodeOrder
+			shadow.colors.shared.gradientOrder = newGradientOrder
+		end
+	end
 end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys

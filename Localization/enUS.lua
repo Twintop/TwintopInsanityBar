@@ -2401,8 +2401,47 @@ L["EvokerAugmentationColorPickerEbonMightBarWontExtend"] = "Ebon Might will expi
 
 -- Evoker Essence Burst Border Target Dropdown
 L["BarNameDisabled"] = "Disabled"
-L["BarNameManaBar"] = "Mana Bar"
+L["BarNameManaBar"] = "Mana"
 L["BarNameEssences"] = "Essences"
 L["BarNameEbonMight"] = "Ebon Might"
 L["EvokerEssenceBurstTargetLabel"] = "Essence Burst Border"
 L["EvokerDropdownEssenceBurstTooltip"] = "Select which bars should have their border color changed when you have Essence Burst."
+
+-- Indicator Colors System
+L["TabIndicatorColors"] = "Color Indicators"
+L["IndicatorColorPriorityHeader"] = "Color Indicator Priority"
+L["IndicatorColorTargetLabel"] = "Target Bars & Elements"
+L["BarNameInsanityBar"] = "Insanity"
+L["BarElementBar"] = "Bar"
+L["BarElementBorder"] = "Border"
+L["BarElementBackground"] = "Background"
+L["PriestShadowCheckboxShadowWordMadnessUsableCasting"] = "Shadow Word: Madness usable (casting)"
+L["PriestShadowCheckboxShadowWordMadnessUsableCastingTooltip"] = "Changes the bar color when Shadow Word: Madness is usable and you are casting."
+L["PriestShadowColorPickerShadowWordMadnessUsableCasting"] = "Shadow Word: Madness usable (casting)"
+L["PriestShadowCheckboxBorderOvercap"] = "Overcap (gradient)"
+L["PriestShadowCheckboxBorderOvercapTooltip"] = "Changes the border color as your Insanity approaches the overcap threshold."
+L["PriestShadowColorPickerBorderOvercap"] = "Overcap border color"
+
+-- Gradient Color Overrides section
+L["GradientColorOverridesHeader"] = "Gradient Colors (Secrets)"
+L["GradientColorOverridesNote"] = "Gradient indicators use secret values and will always override Color Indicator Priority colors when active."
+
+-- Shadow Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this color when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
+L["PriestShadowIndicatorInstantMindBlastColor"] = "Mind Blast is instant cast"
+L["PriestShadowIndicatorVoidformEndTooltip"] = "Changes to this color when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["PriestShadowIndicatorVoidformEndColor"] = "Voidform is ending (as configured)"
+L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"] = "Changes to this color when Shadow Word: Madness is usable and you are casting."
+L["PriestShadowIndicatorShadowWordMadnessUsableCastingColor"] = "Shadow Word: Madness usable (casting)"
+L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"] = "Changes to this color when you have enough Insanity to cast Shadow Word: Madness."
+L["PriestShadowIndicatorShadowWordMadnessUsableColor"] = "Shadow Word: Madness is usable"
+L["PriestShadowIndicatorVoidformTooltip"] = "Changes to this color when Voidform is active."
+L["PriestShadowIndicatorVoidformColor"] = "Voidform is active"
+L["PriestShadowIndicatorMindDevourerTooltip"] = "Changes to this color when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."
+L["PriestShadowIndicatorMindDevourerColor"] = "Mind Devourer proc is active"
+L["PriestShadowIndicatorEntropicRiftTooltip"] = "Changes to this color while Entropic Rift is active."
+L["PriestShadowIndicatorEntropicRiftColor"] = "Entropic Rift is active"
+L["PriestShadowIndicatorMindFlayInsanityTooltip"] = "Changes to this color when you are able to cast Mind Flay: Insanity."
+L["PriestShadowIndicatorMindFlayInsanityColor"] = "Mind Flay: Insanity is available"
+L["PriestShadowIndicatorOvercapTooltip"] = "Gradually changes to this color as your Insanity approaches the overcap threshold."
+L["PriestShadowIndicatorOvercapColor"] = "Overcapping Insanity"
