@@ -6481,6 +6481,106 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	return yCoord
 end
 
+---Generates the consolidated "Base Colors" panel: Resource color, Casting Overlay (optional), Border, and Unfilled bar background.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing bar color configuration
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param primaryResourceString string The localized name of the primary resource (e.g., "Insanity", "Rage")
+---@param includeCastingOverlay boolean? Whether to include the casting overlay color option (default true)
+---@param includeSpendingOverlay boolean? Whether to include the spending overlay color option
+---@return number yCoord The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeCastingOverlay, includeSpendingOverlay)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local f = nil
+
+	controls.baseColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BaseColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.base
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		local barFrame = nil
+		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local node = TRB.Frames.barGroups.primary:GetNode(1)
+			barFrame = node and node.GetFrame and node:GetFrame() or nil
+		end
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
+	end)
+
+	if includeCastingOverlay ~= false then
+		yCoord = yCoord - 30
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		f = controls.colors.casting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+		end)
+
+		controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.castingOverlayEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorCastingOverlayCheckbox"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
+		f:SetChecked(spec.colors.bar.casting.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.casting.enabled = self:GetChecked()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end)
+	end
+
+	if includeSpendingOverlay then
+		yCoord = yCoord - 30
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+		end)
+
+		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.spendingOverlayEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorSpendingOverlayCheckbox"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
+		f:SetChecked(spec.colors.bar.spending.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.spending.enabled = self:GetChecked()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end)
+	end
+
+	yCoord = yCoord - 30
+	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerBorder"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		local borderFrame = nil
+		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
+			local node = TRB.Frames.barGroups.primary:GetNode(1)
+			borderFrame = node and node.GetFrame and node:GetFrame()
+		end
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+	end)
+
+	return yCoord
+end
+
 ---Generates the bar color and color-changing options panel, including base bar color, casting overlay color, and optional spending overlay color.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements

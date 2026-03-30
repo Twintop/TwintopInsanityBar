@@ -1105,40 +1105,122 @@ local function UpdateResourceBar()
 					end
 					
 					local barColor = specSettings.colors.bar.base.color
-					if snapshots[spells.metamorphosis.id].buff.isActive then
+					local barBorderColor = specSettings.colors.bar.border.color
+					local barBackgroundColor = specSettings.colors.bar.background.color
+
+					-- Indicator color system
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+					-- Precompute metamorphosis end timing threshold
+					local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
+					local metamorphosisEndMet = false
+					if metamorphosisActive then
 						local timeThreshold = 0
-						local useEndOfMetamorphosisColor = false
-
-						if specSettings.endOf.metamorphosis.enabled then
-							useEndOfMetamorphosisColor = true
-							if specSettings.endOf.metamorphosis.mode == "gcd" then
-								local gcd = Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
-							elseif specSettings.endOf.metamorphosis.mode == "time" then
-								timeThreshold = specSettings.endOf.metamorphosis.timeMax
-							end
+						if specSettings.endOf.metamorphosis.mode == "gcd" then
+							local gcd = Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
+						elseif specSettings.endOf.metamorphosis.mode == "time" then
+							timeThreshold = specSettings.endOf.metamorphosis.timeMax
 						end
+						metamorphosisEndMet = metaTime <= timeThreshold
+					end
 
-						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = specSettings.colors.bar.metamorphosisEnd.color
-						elseif specSettings.colors.bar.metamorphosis.enabled then
-							barColor = specSettings.colors.bar.metamorphosis.color
+					local conditionMap = {
+						metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
+						metamorphosis = metamorphosisActive,
+						borderOvercap = affectingCombat,
+					}
+
+					-- Color targets: barKey -> elementKey -> current color
+					local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+					local barColorMap = { furyBar = furyBarColors }
+
+					-- Apply flat indicator colors (priority order, last writer wins)
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] then
+								if indicator.targets then
+									for barKey, elements in pairs(indicator.targets) do
+										local targetColors = barColorMap[barKey]
+										if targetColors and elements then
+											for elemKey, isTargeted in pairs(elements) do
+												if isTargeted then
+													targetColors[elemKey] = indicator.color
+												end
+											end
+										end
+									end
+								end
+							end
 						end
 					end
 
-					local barBorderColor = specSettings.colors.bar.border.color
+					-- Find active gradient indicators (separate priority group, always override flat colors when active)
+					local gradientOrder = sharedColors and sharedColors.gradientOrder
+					local overcapIndicator = nil
+					if gradientOrder and indicatorColors then
+						for i = #gradientOrder, 1, -1 do
+							local key = gradientOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+								overcapIndicator = indicator
+								break
+							end
+						end
+					end
+
+					-- Read final colors from the color map (after flat indicator overrides)
+					barColor = furyBarColors.bar
+					barBorderColor = furyBarColors.border
+					barBackgroundColor = furyBarColors.background
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+
+					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
+					local overcapCurves = {}
+					if overcapIndicator and overcapIndicator.targets then
+						local furyTargets = overcapIndicator.targets.furyBar
+						if furyTargets then
+							if furyTargets.border then
+								overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+							end
+							if furyTargets.bar then
+								overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+							end
+							if furyTargets.background then
+								overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+							end
+						end
+					end
+
+					-- Apply border
+					if overcapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+
+					-- Apply bar color
+					if overcapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+						primaryNode:SetColorCurve(barColorResult)
+					else
+						primaryNode:SetColor(barColor)
+					end
+
+					-- Apply background
+					if overcapCurves.background then
+						local bgColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+						primaryNode:SetBackgroundColorCurve(bgColorResult)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
+
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end

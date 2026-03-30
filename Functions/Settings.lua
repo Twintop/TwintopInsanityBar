@@ -5889,6 +5889,66 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Havoc Demon Hunter indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.havoc then
+		local havoc = TwintopInsanityBarSettings.demonhunter.havoc
+		if havoc.colors and havoc.colors.bar and havoc.colors.bar.metamorphosis ~= nil
+			and type(havoc.colors.bar.metamorphosis) == "table"
+			and (havoc.colors.shared == nil or havoc.colors.shared.indicatorColors == nil) then
+
+			havoc.colors.shared = havoc.colors.shared or {}
+			havoc.colors.shared.nodeOrder = {
+				"metamorphosisEnd",
+				"metamorphosis",
+			}
+			havoc.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			havoc.colors.shared.indicatorColors = {}
+			local ic = havoc.colors.shared.indicatorColors
+			local bar = havoc.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+				}
+				t.furyBar[elemKey] = true
+				return t
+			end
+
+			-- Bar indicators
+			ic.metamorphosisEnd = {
+				color = bar.metamorphosisEnd and bar.metamorphosisEnd.color or "FFFF0000",
+				enabled = havoc.endOf and havoc.endOf.metamorphosis and havoc.endOf.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.metamorphosis = {
+				color = bar.metamorphosis and bar.metamorphosis.color or "FF67F100",
+				enabled = bar.metamorphosis and bar.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.metamorphosis = nil
+			bar.metamorphosisEnd = nil
+			bar.borderOvercap = nil
+
+			-- Move endOf.metamorphosis.enabled to the indicator; leave timing fields in place
+			if havoc.endOf and havoc.endOf.metamorphosis then
+				havoc.endOf.metamorphosis.enabled = nil
+			end
+		end
+	end
 end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys

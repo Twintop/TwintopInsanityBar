@@ -2492,3 +2492,17 @@ L["PriestDisciplineCheckboxVoidShield"] = "Void Shield"
 L["PriestDisciplineIndicatorVoidShieldTooltip"] = "Changes to this color when the Void Shield proc is active."
 L["PriestDisciplineIndicatorVoidShieldColor"] = "Void Shield proc is active"
 L["PriestDisciplineBarTextVariable_voidShieldTime"] = "Time remaining on the Void Shield proc"
+
+-- Demon Hunter Havoc Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["BarNameFuryBar"] = "Fury"
+L["DemonHunterHavocCheckboxOvercap"] = "Overcap (gradient)"
+L["DemonHunterHavocIndicatorMetamorphosisTooltip"] = "Changes to this color when Metamorphosis is active."
+L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"] = "Changes to this color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DemonHunterHavocIndicatorOvercapTooltip"] = "Gradually changes to this color as your Fury approaches the overcap threshold."
+L["DemonHunterHavocIndicatorMetamorphosisColor"] = "Metamorphosis is active"
+L["DemonHunterHavocIndicatorMetamorphosisEndColor"] = "Metamorphosis is ending (as configured)"
+L["DemonHunterHavocIndicatorOvercapColor"] = "Overcapping Fury"
+
+-- Base Colors section header
+L["BaseColorsHeader"] = "Base Colors"
+L["ColorPickerBorder"] = "Border"
