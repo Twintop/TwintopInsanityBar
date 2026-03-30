@@ -313,4 +313,14 @@ if locale == "enGB" then
     L["PriestShadowIndicatorMindFlayInsanityTooltip"] = "Changes to this colour when you are able to cast Mind Flay: Insanity."
     L["PriestShadowIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Insanity approaches the overcap threshold."
     L["PriestShadowIndicatorOvercapColor"] = "Overcap colour"
+    -- Holy Priest Indicator Colors (bar-agnostic)
+    L["PriestHolyIndicatorCompleteCooldownTooltip"] = "Changes to this colour when your current cast will complete the cooldown of its related Holy Word."
+    L["PriestHolyIndicatorBenedictionTooltip"] = "Changes to this colour while Benediction has replaced Flash Heal."
+    L["PriestHolyIndicatorHolyWordSerenityTooltip"] = "Changes to this colour when your current cast will complete the cooldown of Holy Word: Serenity."
+    L["PriestHolyIndicatorHolyWordSanctifyTooltip"] = "Changes to this colour when your current cast will complete the cooldown of Holy Word: Sanctify."
+    L["PriestHolyIndicatorHolyWordChastiseTooltip"] = "Changes to this colour when your current cast will complete the cooldown of Holy Word: Chastise."
+    L["PriestHolyIndicatorApotheosisTooltip"] = "Changes to this colour when Apotheosis is active."
+    L["PriestHolyIndicatorApotheosisEndTooltip"] = "Changes to this colour when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["PriestHolyIndicatorSurgeOfLightTooltip"] = "Changes to this colour when you have Surge of Light."
+    L["PriestHolyIndicatorLightweaverTooltip"] = "Changes to this colour when you have any stacks of Lightweaver."
 end

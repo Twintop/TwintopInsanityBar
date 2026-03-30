@@ -712,6 +712,52 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				lightweaver = TRB.Functions.Settings:DefaultLightweaverBarColors(),
 				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
+			shared = {
+				nodeOrder = { "benediction", "holyWordSerenity", "holyWordSanctify", "holyWordChastise", "apotheosisEnd", "apotheosis", "surgeOfLight", "lightweaver" },
+				gradientOrder = {},
+				indicatorColors = {
+					benediction = {
+						color = "FFC4933F",
+						enabled = true,
+						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = true } },
+					},
+					holyWordSerenity = {
+						color = "FF00FF00",
+						enabled = true,
+						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = true, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					holyWordSanctify = {
+						color = "FF55FF55",
+						enabled = true,
+						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = true, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					holyWordChastise = {
+						color = "FFAAFFAA",
+						enabled = false,
+						targets = { manaBar = { bar = false, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					apotheosisEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					apotheosis = {
+						color = "FFFADA5E",
+						enabled = true,
+						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					surgeOfLight = {
+						color = "FFFCE58E",
+						enabled = true,
+						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+					lightweaver = {
+						color = "FF00FFFF",
+						enabled = true,
+						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -1745,87 +1791,6 @@ local function HolyConstructManaBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"])
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.benedictionEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_benedictionEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.benedictionEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxBenediction"])
-	f.tooltip = L["PriestHolyCheckboxBenedictionTooltip"]
-	f:SetChecked(spec.colors.bar.benediction.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.benediction.enabled = self:GetChecked()
-	end)
-
-	controls.colors.benediction = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerBenediction"], spec.colors.bar.benediction.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.benediction
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "benediction")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSerenityEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSerenity"])
-	f.tooltip = L["PriestHolyCheckboxHolyWordSerenityTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordSerenity.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordSerenity.enabled = self:GetChecked()
-	end)
-
-	controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSerenity"], spec.colors.bar.holyWordSerenity.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.holyWordSerenity
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSerenity")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordSanctifyEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordSanctify"])
-	f.tooltip = L["PriestHolyCheckboxHolyWordSanctifyTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordSanctify.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordSanctify.enabled = self:GetChecked()
-	end)
-
-	controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordSanctify"], spec.colors.bar.holyWordSanctify.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.holyWordSanctify
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSanctify")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.holyWordChastiseEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxHolyWordChastise"])
-	f.tooltip = L["PriestHolyCheckboxHolyWordChastiseTooltip"]
-	f:SetChecked(spec.colors.bar.holyWordChastise.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.holyWordChastise.enabled = self:GetChecked()
-	end)
-
-	controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerHolyWordChastise"], spec.colors.bar.holyWordChastise.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.holyWordChastise
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordChastise")
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 5, 2, yCoord, {
-		endOfKey = "apotheosis",
-		activeColorKey = "apotheosis",
-		endColorKey = "apotheosisEnd",
-		checkboxLabel = L["PriestHolyCheckboxApotheosis"],
-		checkboxTooltip = L["PriestHolyCheckboxApotheosisTooltip"],
-		activeColorLabel = L["PriestHolyColorPickerApotheosis"],
-		endCheckboxLabel = L["PriestHolyCheckboxApotheosisEnd"],
-		endCheckboxTooltip = L["PriestHolyCheckboxApotheosisEndTooltip"],
-		endColorLabel = L["PriestHolyColorPickerApotheosisEnd"],
-	})
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1836,50 +1801,6 @@ local function HolyConstructManaBarPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], false, true)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.surgeOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLightBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight"])
-	f.tooltip = L["PriestCheckboxSurgeOfLightTooltip"]
-	f:SetChecked(spec.colors.bar.surgeOfLight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.surgeOfLight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.surgeOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight"], spec.colors.bar.surgeOfLight.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.surgeOfLight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.lightweaverBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_lightweaverBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lightweaverBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxLightweaver"])
-	f.tooltip = L["PriestHolyCheckboxLightweaverTooltip"]
-	f:SetChecked(spec.colors.bar.lightweaver.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.lightweaver.enabled = self:GetChecked()
-	end)
-	
-	controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerLightweaver"], spec.colors.bar.lightweaver.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.lightweaver
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lightweaver")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 2, yCoord, {
-		endOfKey = "apotheosis",
-		sectionHeader = L["PriestHolyHeaderEndOfApotheosisConfiguration"],
-		gcdRadioLabel = L["PriestHolyCheckboxApotheosisGcds"],
-		gcdSliderLabel = L["PriestHolyApotheosisGcds"],
-		timeRadioLabel = L["PriestHolyCheckboxApotheosisTime"],
-		timeSliderLabel = L["PriestHolyApotheosisTime"],
-	})
 end
 
 local function HolyConstructHealthBarPanel(parent)
@@ -1962,22 +1883,6 @@ local function HolyConstructLightweaverBarPanel(parent)
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, lightweaverBarDef)
 	end
 
-	yCoord = yCoord - 40
-	controls.checkBoxes.benedictionLightweaverEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_benedictionLightweaverEnabled", parent, "ChatConfigCheckButtonTemplate")
-	local f = controls.checkBoxes.benedictionLightweaverEnabled
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxBenedictionLightweaver"])
-	f.tooltip = L["PriestHolyCheckboxBenedictionLightweaverTooltip"]
-	f:SetChecked(spec.colors.bars.lightweaver.benediction.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bars.lightweaver.benediction.enabled = self:GetChecked()
-	end)
-
-	controls.colors.benedictionLightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestHolyColorPickerBenedictionLightweaver"], spec.colors.bars.lightweaver.benediction.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.benedictionLightweaver
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.lightweaver, controls.colors, "benediction")
-	end)
 end
 
 local function HolyConstructHolyWordsPanel(parent)
@@ -1999,27 +1904,7 @@ local function HolyConstructHolyWordsPanel(parent)
 
 	yCoord = yCoord - 90
 	if holyWordsBarDef then
-		local hwAfterNodesCallback = function(callbackParent, callbackYCoord)
-			local hwColors = spec.colors.bars.holyWords
-			controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
-			local fCb = controls.checkBoxes.completeCooldownEnabled
-			fCb:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
-			getglobal(fCb:GetName() .. 'Text'):SetText(L["PriestHolyCheckboxCompleteHolyWordCooldown"])
-			fCb.tooltip = L["PriestHolyCheckboxCompleteHolyWordCooldownTooltip"]
-			fCb:SetChecked(hwColors.completeCooldown.enabled)
-			fCb:SetScript("OnClick", function(self, ...)
-				hwColors.completeCooldown.enabled = self:GetChecked()
-			end)
-
-			controls.colors.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(callbackParent, L["PriestHolyColorPickerCompleteHolyWordCooldown"], hwColors.completeCooldown.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, callbackYCoord)
-			local fCol = controls.colors.completeCooldown
-			fCol:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, hwColors, controls.colors, "completeCooldown")
-			end)
-
-			return callbackYCoord - 30
-		end
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef, hwAfterNodesCallback)
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 5, 2, yCoord, holyWordsBarDef)
 	end
 end
 
@@ -2198,6 +2083,314 @@ local function HolyConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 5, 2, yCoord, cache)
 end
 
+local function HolyConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.holy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_holy
+	local yCoord = 5
+	local f = nil
+
+	-- Indicator definitions: key must match colors.shared.indicatorColors keys
+	-- Flat indicators (reorderable priority list)
+	local indicatorDefs = {
+		{ key = "benediction",        label = L["PriestHolyCheckboxBenedictionIndicator"],      tooltip = L["PriestHolyIndicatorBenedictionTooltip"],        colorLabel = L["PriestHolyIndicatorBenedictionColor"] },
+		{ key = "holyWordSerenity",   label = L["PriestHolyCheckboxHolyWordSerenityCooldown"],  tooltip = L["PriestHolyIndicatorHolyWordSerenityTooltip"],   colorLabel = L["PriestHolyIndicatorHolyWordSerenityColor"] },
+		{ key = "holyWordSanctify",   label = L["PriestHolyCheckboxHolyWordSanctifyCooldown"],  tooltip = L["PriestHolyIndicatorHolyWordSanctifyTooltip"],   colorLabel = L["PriestHolyIndicatorHolyWordSanctifyColor"] },
+		{ key = "holyWordChastise",   label = L["PriestHolyCheckboxHolyWordChastiseCooldown"],  tooltip = L["PriestHolyIndicatorHolyWordChastiseTooltip"],   colorLabel = L["PriestHolyIndicatorHolyWordChastiseColor"] },
+		{ key = "apotheosisEnd",      label = L["PriestHolyCheckboxApotheosisEndIndicator"],    tooltip = L["PriestHolyIndicatorApotheosisEndTooltip"],      colorLabel = L["PriestHolyIndicatorApotheosisEndColor"] },
+		{ key = "apotheosis",         label = L["PriestHolyCheckboxApotheosis"],                tooltip = L["PriestHolyIndicatorApotheosisTooltip"],         colorLabel = L["PriestHolyIndicatorApotheosisColor"] },
+		{ key = "surgeOfLight",       label = L["PriestCheckboxSurgeOfLight"],                  tooltip = L["PriestHolyIndicatorSurgeOfLightTooltip"],       colorLabel = L["PriestHolyIndicatorSurgeOfLightColor"] },
+		{ key = "lightweaver",        label = L["PriestHolyCheckboxLightweaver"],               tooltip = L["PriestHolyIndicatorLightweaverTooltip"],        colorLabel = L["PriestHolyIndicatorLightweaverColor"] },
+	}
+	-- Gradient indicators (none for Holy)
+	local gradientDefs = {}
+
+	-- Build a quick lookup from key -> indicatorDef
+	local indicatorDefByKey = {}
+	for _, def in ipairs(indicatorDefs) do
+		indicatorDefByKey[def.key] = def
+	end
+
+	-- Available bar targets and their elements
+	local barTargetDefs = {
+		{ key = "manaBar", label = L["BarNameManaBar"] },
+		{ key = "holyWordsBar", label = L["BarNameHolyWordsBar"] },
+		{ key = "lightweaverBar", label = L["BarNameLightweaverBar"] },
+	}
+
+	local elementDefs = {
+		{ key = "bar", label = L["BarElementBar"] },
+		{ key = "border", label = L["BarElementBorder"] },
+		{ key = "background", label = L["BarElementBackground"] },
+	}
+
+	local sharedSettings = spec.colors.shared
+	local indicatorColors = sharedSettings.indicatorColors
+
+	-- Working copy of the ordered keys (survives reordering within this panel's lifetime)
+	local orderedKeys = {}
+	for i, k in ipairs(sharedSettings.nodeOrder) do
+		orderedKeys[i] = k
+	end
+
+	-- Per-row UI element references (indexed by row position, NOT by key)
+	local rows = {}
+
+	controls.indicatorColors = controls.indicatorColors or {}
+	controls.indicatorColors.rows = controls.indicatorColors.rows or {}
+
+	-- Section header
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["IndicatorColorPriorityHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+
+	---Gets a summary string of enabled targets for a given indicator
+	---@param indicatorKey string
+	---@return string
+	local function GetSummaryText(indicatorKey)
+		local indicator = indicatorColors[indicatorKey]
+		if not indicator or not indicator.targets then
+			return L["BarNameDisabled"]
+		end
+		local parts = {}
+		for _, barDef in ipairs(barTargetDefs) do
+			local barTargets = indicator.targets[barDef.key]
+			if barTargets then
+				local elements = {}
+				for _, elemDef in ipairs(elementDefs) do
+					if barTargets[elemDef.key] then
+						table.insert(elements, elemDef.label)
+					end
+				end
+				if #elements > 0 then
+					table.insert(parts, barDef.label .. ": " .. table.concat(elements, ", "))
+				end
+			end
+		end
+		if #parts == 0 then
+			return L["BarNameDisabled"]
+		end
+		return table.concat(parts, "; ")
+	end
+
+	---Syncs the enabled state for an indicator based on whether any targets are selected
+	---@param indicatorKey string
+	---@param rowIndex number
+	local function SyncEnabled(indicatorKey, rowIndex)
+		local indicator = indicatorColors[indicatorKey]
+		if not indicator then return end
+		local anyEnabled = false
+		if indicator.targets then
+			for _, barDef in ipairs(barTargetDefs) do
+				local barTargets = indicator.targets[barDef.key]
+				if barTargets then
+					for _, elemDef in ipairs(elementDefs) do
+						if barTargets[elemDef.key] then
+							anyEnabled = true
+							break
+						end
+					end
+				end
+				if anyEnabled then break end
+			end
+		end
+		indicator.enabled = anyEnabled
+		local row = rows[rowIndex]
+		if row then
+			if row.colorPicker then
+				TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, anyEnabled)
+			end
+		end
+	end
+
+	---Refreshes a single row's visual state from the current orderedKeys
+	---@param rowIndex number
+	local function RefreshRow(rowIndex)
+		local row = rows[rowIndex]
+		if not row then return end
+		local key = orderedKeys[rowIndex]
+		local def = indicatorDefByKey[key]
+		local indicator = indicatorColors[key]
+		if not def or not indicator then return end
+
+		-- Update color picker
+		if row.colorPicker then
+			row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
+			if row.colorPicker.Font then
+				row.colorPicker.Font:SetText(def.colorLabel)
+			end
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+		end
+		-- Update dropdown text
+		if row.dropdown then
+			row.dropdown:SetText(GetSummaryText(key))
+		end
+		-- Arrow enabled state
+		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
+		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
+	end
+
+	---Swaps two adjacent entries and persists to settings
+	---@param indexA number
+	---@param indexB number
+	local function SwapNodes(indexA, indexB)
+		orderedKeys[indexA], orderedKeys[indexB] = orderedKeys[indexB], orderedKeys[indexA]
+		for i, k in ipairs(orderedKeys) do
+			sharedSettings.nodeOrder[i] = k
+		end
+		RefreshRow(indexA)
+		RefreshRow(indexB)
+	end
+
+	-- Build rows
+	for rowIndex, nodeKey in ipairs(orderedKeys) do
+		local def = indicatorDefByKey[nodeKey]
+		local indicator = indicatorColors[nodeKey]
+		if def and indicator then
+			local capturedRowIdx = rowIndex
+			local row = {}
+			rows[rowIndex] = row
+
+			local xOffset = oUi.xCoord
+
+			-- Up arrow
+			local upBtn = CreateFrame("Button", nil, parent)
+			upBtn:SetSize(20, 20)
+			upBtn:SetPoint("TOPLEFT", xOffset, yCoord)
+			upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+			upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+			upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+			upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			upBtn:SetEnabled(rowIndex > 1)
+			upBtn:SetScript("OnClick", function()
+				SwapNodes(capturedRowIdx - 1, capturedRowIdx)
+			end)
+			upBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			row.upBtn = upBtn
+
+			-- Down arrow
+			local downBtn = CreateFrame("Button", nil, parent)
+			downBtn:SetSize(20, 20)
+			downBtn:SetPoint("TOPLEFT", xOffset + 22, yCoord)
+			downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+			downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+			downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+			downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			downBtn:SetEnabled(rowIndex < #orderedKeys)
+			downBtn:SetScript("OnClick", function()
+				SwapNodes(capturedRowIdx, capturedRowIdx + 1)
+			end)
+			downBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			row.downBtn = downBtn
+
+			xOffset = xOffset + 46
+
+			-- Targets dropdown
+			local ddName = "TwintopResourceBar_Priest_Holy_Indicator_" .. nodeKey .. "_Targets"
+			local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
+			dd:SetWidth(280)
+			dd:SetPoint("TOPLEFT", xOffset, yCoord)
+			dd:SetScript("OnEnter", function(self)
+				local currentKey = orderedKeys[capturedRowIdx]
+				local currentDef = indicatorDefByKey[currentKey]
+				if currentDef and currentDef.tooltip then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+					GameTooltip:SetText(currentDef.tooltip, 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end)
+			dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+			-- Hook SetText to always show our summary
+			local originalSetText = dd.SetText
+			dd.SetText = function(self, text)
+				local currentKey = orderedKeys[capturedRowIdx]
+				originalSetText(self, GetSummaryText(currentKey))
+			end
+
+			dd:SetupMenu(function(dropdown, rootDescription)
+				local currentKey = orderedKeys[capturedRowIdx]
+				local currentIndicator = indicatorColors[currentKey]
+				if not currentIndicator then return end
+				currentIndicator.targets = currentIndicator.targets or {}
+
+				for barIdx, barDef in ipairs(barTargetDefs) do
+					if barIdx > 1 then
+						rootDescription:CreateDivider()
+					end
+					rootDescription:CreateTitle(barDef.label)
+					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+
+					for _, elemDef in ipairs(elementDefs) do
+						rootDescription:CreateCheckbox(
+							elemDef.label,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+							end,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								if not ci then return end
+								ci.targets = ci.targets or {}
+								ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+								ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+								SyncEnabled(ck, capturedRowIdx)
+							end
+						)
+					end
+				end
+			end)
+
+			dd:SetText(GetSummaryText(nodeKey))
+			row.dropdown = dd
+
+			-- Color picker
+			local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, def.colorLabel, indicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+			cp:SetScript("OnMouseDown", function(self, button)
+				local currentKey = orderedKeys[capturedRowIdx]
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
+			end)
+			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, indicator.enabled)
+			row.colorPicker = cp
+
+			-- Store row controls for the color picker callback
+			controls.indicatorColors.rows[rowIndex] = row
+
+			yCoord = yCoord - 30
+		end
+	end
+
+	-- End of Apotheosis Configuration section
+	yCoord = yCoord - 10
+	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 5, 2, yCoord, {
+		endOfKey = "apotheosis",
+		sectionHeader = L["PriestHolyHeaderEndOfApotheosisConfiguration"],
+		gcdRadioLabel = L["PriestHolyCheckboxApotheosisGcds"],
+		gcdSliderLabel = L["PriestHolyApotheosisGcds"],
+		timeRadioLabel = L["PriestHolyCheckboxApotheosisTime"],
+		timeSliderLabel = L["PriestHolyApotheosisTime"],
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function HolyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 2)
 	local namePrefix = className .. "_" .. specName
@@ -2236,6 +2429,7 @@ local function HolyConstructOptionsPanel(cache)
 		{ key = "lightweaverBar", label = L["TabLightweaver"], width = oUi.tabWidth.medium, constructor = HolyConstructLightweaverBarPanel },
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HolyConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HolyConstructFontAndTextPanel },

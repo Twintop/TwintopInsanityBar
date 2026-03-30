@@ -5728,6 +5728,167 @@ function TRB.Functions.Settings:PortForwardSettings()
 			shadow.colors.shared.gradientOrder = newGradientOrder
 		end
 	end
+
+	-- Migrate Holy Priest indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest and TwintopInsanityBarSettings.priest.holy then
+		local holy = TwintopInsanityBarSettings.priest.holy
+		if holy.colors and holy.colors.bar and holy.colors.bar.benediction ~= nil
+			and type(holy.colors.bar.benediction) == "table"
+			and (holy.colors.shared == nil or holy.colors.shared.indicatorColors == nil) then
+
+			holy.colors.shared = holy.colors.shared or {}
+			holy.colors.shared.nodeOrder = {
+				"benediction",
+				"holyWordSerenity",
+				"holyWordSanctify",
+				"holyWordChastise",
+				"apotheosisEnd",
+				"apotheosis",
+				"surgeOfLight",
+				"lightweaver",
+			}
+			holy.colors.shared.gradientOrder = {}
+			holy.colors.shared.indicatorColors = {}
+			local ic = holy.colors.shared.indicatorColors
+			local bar = holy.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					holyWordsBar = { bar = false, border = false, background = false },
+					lightweaverBar = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- Determine if old completeCooldown was enabled (for HW bar targeting)
+			local hwColors = holy.colors.bars and holy.colors.bars.holyWords
+			local hwCCEnabled = hwColors and hwColors.completeCooldown and hwColors.completeCooldown.enabled ~= false
+
+			-- Bar indicators
+			local benedictionTargets = MakeTargets("manaBar", "bar")
+			-- Also migrate the legacy Lightweaver background benediction indicator
+			local lwColors = holy.colors.bars and holy.colors.bars.lightweaver
+			if lwColors and lwColors.benediction and lwColors.benediction.enabled then
+				benedictionTargets.lightweaverBar.background = true
+			end
+			ic.benediction = {
+				color = bar.benediction and bar.benediction.color or "FFC4933F",
+				enabled = bar.benediction and bar.benediction.enabled ~= false,
+				targets = benedictionTargets,
+			}
+			local serenityTargets = MakeTargets("manaBar", "bar")
+			if hwCCEnabled then serenityTargets.holyWordsBar.bar = true end
+			ic.holyWordSerenity = {
+				color = bar.holyWordSerenity and bar.holyWordSerenity.color or "FF00FF00",
+				enabled = bar.holyWordSerenity and bar.holyWordSerenity.enabled ~= false,
+				targets = serenityTargets,
+			}
+			local sanctifyTargets = MakeTargets("manaBar", "bar")
+			if hwCCEnabled then sanctifyTargets.holyWordsBar.bar = true end
+			ic.holyWordSanctify = {
+				color = bar.holyWordSanctify and bar.holyWordSanctify.color or "FF55FF55",
+				enabled = bar.holyWordSanctify and bar.holyWordSanctify.enabled ~= false,
+				targets = sanctifyTargets,
+			}
+			local chastiseEnabled = bar.holyWordChastise and bar.holyWordChastise.enabled ~= false
+			local chastiseTargets = chastiseEnabled and MakeTargets("manaBar", "bar") or MakeTargets()
+			if hwCCEnabled and chastiseEnabled then chastiseTargets.holyWordsBar.bar = true end
+			ic.holyWordChastise = {
+				color = bar.holyWordChastise and bar.holyWordChastise.color or "FFAAFFAA",
+				enabled = chastiseEnabled,
+				targets = chastiseTargets,
+			}
+			ic.apotheosisEnd = {
+				color = bar.apotheosisEnd and bar.apotheosisEnd.color or "FFFF0000",
+				enabled = holy.endOf and holy.endOf.apotheosis and holy.endOf.apotheosis.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.apotheosis = {
+				color = bar.apotheosis and bar.apotheosis.color or "FFFADA5E",
+				enabled = bar.apotheosis and bar.apotheosis.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+
+			-- Border indicators
+			ic.surgeOfLight = {
+				color = bar.surgeOfLight and bar.surgeOfLight.color or "FFFCE58E",
+				enabled = bar.surgeOfLight and bar.surgeOfLight.enabled ~= false,
+				targets = MakeTargets("manaBar", "border"),
+			}
+			ic.lightweaver = {
+				color = bar.lightweaver and bar.lightweaver.color or "FF00FFFF",
+				enabled = bar.lightweaver and bar.lightweaver.enabled ~= false,
+				targets = MakeTargets("manaBar", "border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.benediction = nil
+			bar.holyWordSerenity = nil
+			bar.holyWordSanctify = nil
+			bar.holyWordChastise = nil
+			bar.apotheosis = nil
+			bar.apotheosisEnd = nil
+			bar.surgeOfLight = nil
+			bar.lightweaver = nil
+
+			-- Move endOf.apotheosis.enabled to the indicator; leave timing fields in place
+			if holy.endOf and holy.endOf.apotheosis then
+				holy.endOf.apotheosis.enabled = nil
+			end
+
+			-- Clean up completeCooldown from holyWords bar colors
+			if hwColors then
+				hwColors.completeCooldown = nil
+			end
+
+			-- Clean up benediction from lightweaver bar colors
+			if lwColors then
+				lwColors.benediction = nil
+			end
+		end
+
+		-- Migrate completeCooldown indicator into per-HW indicators (for users who already have indicatorColors)
+		if holy.colors and holy.colors.shared and holy.colors.shared.indicatorColors
+			and holy.colors.shared.indicatorColors.completeCooldown then
+			local ic = holy.colors.shared.indicatorColors
+			local cc = ic.completeCooldown
+			local ccTargetsHW = cc.targets and cc.targets.holyWordsBar
+
+			-- Transfer holyWordsBar targets to per-HW indicators
+			if ccTargetsHW then
+				for _, key in ipairs({ "holyWordSerenity", "holyWordSanctify", "holyWordChastise" }) do
+					if ic[key] then
+						ic[key].targets = ic[key].targets or {}
+						ic[key].targets.holyWordsBar = ic[key].targets.holyWordsBar or { bar = false, border = false, background = false }
+						for elem, val in pairs(ccTargetsHW) do
+							if val then
+								ic[key].targets.holyWordsBar[elem] = true
+							end
+						end
+					end
+				end
+			end
+
+			-- Remove completeCooldown
+			ic.completeCooldown = nil
+
+			-- Remove from nodeOrder
+			if holy.colors.shared.nodeOrder then
+				local newOrder = {}
+				for _, k in ipairs(holy.colors.shared.nodeOrder) do
+					if k ~= "completeCooldown" then
+						newOrder[#newOrder + 1] = k
+					end
+				end
+				holy.colors.shared.nodeOrder = newOrder
+			end
+		end
+	end
 end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys
@@ -6215,10 +6376,6 @@ function TRB.Functions.Settings:DefaultHolyWordsBarColors()
 			holyWordSanctify = { color = "FFFFDD22", enabled = true },
 			holyWordChastise = { color = "FFFF8080", enabled = true }
 		},
-		completeCooldown = {
-			color = "FF00B500",
-			enabled = true
-		}
 	}
 end
 
@@ -6361,10 +6518,6 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 		border = { color = "FF4466CC" },
 		background = { color = "66000000" },
 		sameColor = false,
-		benediction = {
-			color = "FFFCE58E",
-			enabled = true
-		},
 		nodeColors = {
 			charge1 = { color = "FF88CCFF" },
 			charge2 = { color = "FF55AAFF" },

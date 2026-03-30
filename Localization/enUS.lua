@@ -2445,3 +2445,38 @@ L["PriestShadowIndicatorMindFlayInsanityTooltip"] = "Changes to this color when 
 L["PriestShadowIndicatorMindFlayInsanityColor"] = "Mind Flay: Insanity is available"
 L["PriestShadowIndicatorOvercapTooltip"] = "Gradually changes to this color as your Insanity approaches the overcap threshold."
 L["PriestShadowIndicatorOvercapColor"] = "Overcapping Insanity"
+
+-- Priest Holy Indicator Colors
+-- Bar target names
+L["BarNameHolyWordsBar"] = "Holy Words"
+L["BarNameLightweaverBar"] = "Lightweaver"
+
+-- Indicator labels (new, bar-agnostic)
+L["PriestHolyCheckboxCompleteCooldown"] = "Completes Holy Word cooldown"
+L["PriestHolyCheckboxBenedictionIndicator"] = "Benediction"
+L["PriestHolyCheckboxHolyWordSerenityCooldown"] = "Holy Word: Serenity cooldown"
+L["PriestHolyCheckboxHolyWordSanctifyCooldown"] = "Holy Word: Sanctify cooldown"
+L["PriestHolyCheckboxHolyWordChastiseCooldown"] = "Holy Word: Chastise cooldown"
+L["PriestHolyCheckboxApotheosisEndIndicator"] = "Apotheosis ending"
+
+-- Indicator tooltips (all bar-agnostic)
+L["PriestHolyIndicatorCompleteCooldownTooltip"] = "Changes to this color when your current cast will complete the cooldown of its related Holy Word."
+L["PriestHolyIndicatorBenedictionTooltip"] = "Changes to this color while Benediction has replaced Flash Heal. If Lightweaver's Background is selected, the next unfilled Lightweaver node will change to this color."
+L["PriestHolyIndicatorHolyWordSerenityTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Serenity."
+L["PriestHolyIndicatorHolyWordSanctifyTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Sanctify."
+L["PriestHolyIndicatorHolyWordChastiseTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Chastise."
+L["PriestHolyIndicatorApotheosisTooltip"] = "Changes to this color when Apotheosis is active."
+L["PriestHolyIndicatorApotheosisEndTooltip"] = "Changes to this color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["PriestHolyIndicatorSurgeOfLightTooltip"] = "Changes to this color when you have Surge of Light."
+L["PriestHolyIndicatorLightweaverTooltip"] = "Changes to this color when you have any stacks of Lightweaver."
+
+-- Indicator color labels (condition descriptions, no bar references)
+L["PriestHolyIndicatorCompleteCooldownColor"] = "Cast completes a Holy Word cooldown"
+L["PriestHolyIndicatorBenedictionColor"] = "Benediction is active"
+L["PriestHolyIndicatorHolyWordSerenityColor"] = "Cast completes Holy Word: Serenity cooldown"
+L["PriestHolyIndicatorHolyWordSanctifyColor"] = "Cast completes Holy Word: Sanctify cooldown"
+L["PriestHolyIndicatorHolyWordChastiseColor"] = "Cast completes Holy Word: Chastise cooldown"
+L["PriestHolyIndicatorApotheosisColor"] = "Apotheosis is active"
+L["PriestHolyIndicatorApotheosisEndColor"] = "Apotheosis is ending (as configured)"
+L["PriestHolyIndicatorSurgeOfLightColor"] = "Surge of Light is active"
+L["PriestHolyIndicatorLightweaverColor"] = "Lightweaver has any stacks"
