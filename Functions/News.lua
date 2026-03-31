@@ -25,6 +25,14 @@ local content = [====[
 
 - Added a new color change option for when Void Ray is ready to be used while not in Metamorphosis.
 
+## Druid
+
+- [#152](#152) Migrated Balance, Feral, Guardian, and Restoration to the new bar color change system.
+
+## Evoker
+
+- [#152](#152) Migrated Devastation, Preservation, and Augmentation to the new bar color change system.
+
 ## Priest
 
 - [#152](#152) Migrated Discipline, Holy, and Shadow to the new bar color change system.

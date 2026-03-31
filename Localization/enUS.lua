@@ -2559,3 +2559,50 @@ L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to thi
 L["EvokerAugmentationIndicatorEbonMightDropDuringCastColor"] = "Cast won't extend Ebon Might"
 L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
 L["EvokerAugmentationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Druid Indicator Colors: BarName keys
+L["BarNameAstralPowerBar"] = "Astral Power"
+L["BarNameEnergyBar"] = "Energy"
+L["BarNameRageBar"] = "Rage"
+L["BarNameComboPoints"] = "Combo Points"
+
+-- Druid Indicator Colors: New label keys
+L["DruidBalanceCheckboxEclipseEnding"] = "Eclipse Ending"
+L["DruidGuardianCheckboxBerserkActive"] = "Berserk / Incarnation"
+L["DruidGuardianCheckboxBerserkEnding"] = "Berserk Ending"
+L["DruidRestorationCheckboxIncarnationEnding"] = "Incarnation Ending"
+
+-- Druid Balance Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidBalanceIndicatorSolarTooltip"] = "Changes to this color when you are in Solar Eclipse."
+L["DruidBalanceIndicatorLunarTooltip"] = "Changes to this color when you are in Lunar Eclipse."
+L["DruidBalanceIndicatorCelestialTooltip"] = "Changes to this color when you have Celestial Alignment or Incarnation: Chosen of Elune active."
+L["DruidBalanceIndicatorEclipseEndTooltip"] = "Changes to this color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidBalanceIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Astral Power approaches the overcap threshold."
+L["DruidBalanceIndicatorEclipseEndColor"] = "Eclipse is ending (as configured)"
+L["DruidBalanceIndicatorBorderOvercapColor"] = "Overcapping Astral Power"
+
+-- Druid Feral Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidFeralIndicatorMaxBiteTooltip"] = "Gradually changes to this color as your Energy approaches the amount needed for a maximum damage Ferocious Bite."
+L["DruidFeralIndicatorApexPredatorTooltip"] = "Changes to this color when you have an Apex Predator's Craving proc."
+L["DruidFeralIndicatorBorderStealthTooltip"] = "Changes to this color when you are stealthed."
+L["DruidFeralIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["DruidFeralIndicatorMaxBiteColor"] = "Ferocious Bite will do max damage"
+L["DruidFeralIndicatorApexPredatorColor"] = "Apex Predator's Craving proc is active"
+L["DruidFeralIndicatorBorderStealthColor"] = "Stealthed"
+L["DruidFeralIndicatorBorderOvercapColor"] = "Overcapping Energy"
+
+-- Druid Guardian Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidGuardianIndicatorBerserkTooltip"] = "Changes to this color when Berserk or Incarnation: Guardian of Ursoc is active."
+L["DruidGuardianIndicatorBerserkEndTooltip"] = "Changes to this color when Berserk is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidGuardianIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Rage approaches the overcap threshold."
+L["DruidGuardianIndicatorBerserkColor"] = "Berserk is active"
+L["DruidGuardianIndicatorBerserkEndColor"] = "Berserk is ending (as configured)"
+L["DruidGuardianIndicatorBorderOvercapColor"] = "Overcapping Rage"
+
+-- Druid Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidRestorationIndicatorNoEfflorescenceTooltip"] = "Changes to this color when Efflorescence is not active on the ground."
+L["DruidRestorationIndicatorIncarnationTooltip"] = "Changes to this color when you have Incarnation: Tree of Life active."
+L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this color when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidRestorationIndicatorNoEfflorescenceColor"] = "Efflorescence is not active"
+L["DruidRestorationIndicatorIncarnationColor"] = "Incarnation: Tree of Life is active"
+L["DruidRestorationIndicatorIncarnationEndColor"] = "Incarnation is ending (as configured)"

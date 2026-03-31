@@ -6298,6 +6298,238 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Balance Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.balance then
+		local balance = TwintopInsanityBarSettings.druid.balance
+		if balance.colors and balance.colors.bar and balance.colors.bar.lunar ~= nil
+			and type(balance.colors.bar.lunar) == "table"
+			and (balance.colors.shared == nil or balance.colors.shared.indicatorColors == nil) then
+
+			balance.colors.shared = balance.colors.shared or {}
+			balance.colors.shared.nodeOrder = {
+				"eclipseEnd",
+				"celestial",
+				"solar",
+				"lunar",
+			}
+			balance.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			balance.colors.shared.indicatorColors = {}
+			local ic = balance.colors.shared.indicatorColors
+			local bar = balance.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					astralPowerBar = { bar = false, border = false, background = false },
+				}
+				t.astralPowerBar[elemKey] = true
+				return t
+			end
+
+			ic.eclipseEnd = {
+				color = bar.eclipseEnd and bar.eclipseEnd.color or "FFFF0000",
+				enabled = balance.endOf and balance.endOf.eclipse and balance.endOf.eclipse.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.celestial = {
+				color = bar.celestial and bar.celestial.color or "FF4A95CE",
+				enabled = bar.celestial and bar.celestial.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.solar = {
+				color = bar.solar and bar.solar.color or "FFFFEE00",
+				enabled = bar.solar and bar.solar.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.lunar = {
+				color = bar.lunar and bar.lunar.color or "FF144D72",
+				enabled = bar.lunar and bar.lunar.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.lunar = nil
+			bar.solar = nil
+			bar.celestial = nil
+			bar.eclipseEnd = nil
+			bar.borderOvercap = nil
+
+			if balance.endOf and balance.endOf.eclipse then
+				balance.endOf.eclipse.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Feral Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
+		local feral = TwintopInsanityBarSettings.druid.feral
+		if feral.colors and feral.colors.bar and feral.colors.bar.maxBite ~= nil
+			and type(feral.colors.bar.maxBite) == "table"
+			and (feral.colors.shared == nil or feral.colors.shared.indicatorColors == nil) then
+
+			feral.colors.shared = feral.colors.shared or {}
+			feral.colors.shared.nodeOrder = {
+				"apexPredator",
+				"borderStealth",
+			}
+			feral.colors.shared.gradientOrder = {
+				"maxBite",
+				"borderOvercap",
+			}
+			feral.colors.shared.indicatorColors = {}
+			local ic = feral.colors.shared.indicatorColors
+			local bar = feral.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					energyBar = { bar = false, border = false, background = false },
+				}
+				t.energyBar[elemKey] = true
+				return t
+			end
+
+			ic.apexPredator = {
+				color = bar.apexPredator and bar.apexPredator.color or "FFE75480",
+				enabled = bar.apexPredator and bar.apexPredator.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderStealth = {
+				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
+				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
+				targets = MakeTargets("border"),
+			}
+			ic.maxBite = {
+				color = bar.maxBite and bar.maxBite.color or "FF009900",
+				enabled = bar.maxBite and bar.maxBite.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.apexPredator = nil
+			bar.maxBite = nil
+			bar.borderStealth = nil
+			bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Guardian Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.guardian then
+		local guardian = TwintopInsanityBarSettings.druid.guardian
+		if guardian.colors and guardian.colors.bar and guardian.colors.bar.berserk ~= nil
+			and type(guardian.colors.bar.berserk) == "table"
+			and (guardian.colors.shared == nil or guardian.colors.shared.indicatorColors == nil) then
+
+			guardian.colors.shared = guardian.colors.shared or {}
+			guardian.colors.shared.nodeOrder = {
+				"berserkEnd",
+				"berserk",
+			}
+			guardian.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			guardian.colors.shared.indicatorColors = {}
+			local ic = guardian.colors.shared.indicatorColors
+			local bar = guardian.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					rageBar = { bar = false, border = false, background = false },
+				}
+				t.rageBar[elemKey] = true
+				return t
+			end
+
+			ic.berserkEnd = {
+				color = bar.berserkEnd and bar.berserkEnd.color or "FFFF5555",
+				enabled = guardian.endOf and guardian.endOf.berserk and guardian.endOf.berserk.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.berserk = {
+				color = bar.berserk and bar.berserk.color or "FFFFCC55",
+				enabled = bar.berserk and bar.berserk.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FF800000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.berserk = nil
+			bar.berserkEnd = nil
+			bar.borderOvercap = nil
+
+			if guardian.endOf and guardian.endOf.berserk then
+				guardian.endOf.berserk.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Restoration Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.bar and restoration.colors.bar.noEfflorescence ~= nil
+			and type(restoration.colors.bar.noEfflorescence) == "table"
+			and (restoration.colors.shared == nil or restoration.colors.shared.indicatorColors == nil) then
+
+			restoration.colors.shared = restoration.colors.shared or {}
+			restoration.colors.shared.nodeOrder = {
+				"incarnationEnd",
+				"incarnation",
+				"noEfflorescence",
+			}
+			restoration.colors.shared.gradientOrder = {}
+			restoration.colors.shared.indicatorColors = {}
+			local ic = restoration.colors.shared.indicatorColors
+			local bar = restoration.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+				}
+				t.manaBar[elemKey] = true
+				return t
+			end
+
+			ic.incarnationEnd = {
+				color = bar.incarnationEnd and bar.incarnationEnd.color or "FFDD5500",
+				enabled = restoration.endOf and restoration.endOf.incarnation and restoration.endOf.incarnation.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.incarnation = {
+				color = bar.incarnation and bar.incarnation.color or "FF005500",
+				enabled = bar.incarnation and bar.incarnation.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.noEfflorescence = {
+				color = bar.noEfflorescence and bar.noEfflorescence.color or "FFFF0000",
+				enabled = bar.noEfflorescence and bar.noEfflorescence.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			bar.noEfflorescence = nil
+			bar.incarnation = nil
+			bar.incarnationEnd = nil
+
+			if restoration.endOf and restoration.endOf.incarnation then
+				restoration.endOf.incarnation.enabled = nil
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

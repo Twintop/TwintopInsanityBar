@@ -354,4 +354,23 @@ if locale == "enGB" then
     L["EvokerAugmentationIndicatorEbonMightEndTooltip"] = "Changes to this colour when Ebon Might is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to this colour when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
     L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
+    -- Druid Balance Indicator Colors (bar-agnostic)
+    L["DruidBalanceIndicatorSolarTooltip"] = "Changes to this colour when you are in Solar Eclipse."
+    L["DruidBalanceIndicatorLunarTooltip"] = "Changes to this colour when you are in Lunar Eclipse."
+    L["DruidBalanceIndicatorCelestialTooltip"] = "Changes to this colour when you have Celestial Alignment or Incarnation: Chosen of Elune active."
+    L["DruidBalanceIndicatorEclipseEndTooltip"] = "Changes to this colour when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["DruidBalanceIndicatorBorderOvercapTooltip"] = "Gradually changes to this colour as your Astral Power approaches the overcap threshold."
+    -- Druid Feral Indicator Colors (bar-agnostic)
+    L["DruidFeralIndicatorMaxBiteTooltip"] = "Gradually changes to this colour as your Energy approaches the amount needed for a maximum damage Ferocious Bite."
+    L["DruidFeralIndicatorApexPredatorTooltip"] = "Changes to this colour when you have an Apex Predator's Craving proc."
+    L["DruidFeralIndicatorBorderStealthTooltip"] = "Changes to this colour when you are stealthed."
+    L["DruidFeralIndicatorBorderOvercapTooltip"] = "Gradually changes to this colour as your Energy approaches the overcap threshold."
+    -- Druid Guardian Indicator Colors (bar-agnostic)
+    L["DruidGuardianIndicatorBerserkTooltip"] = "Changes to this colour when Berserk or Incarnation: Guardian of Ursoc is active."
+    L["DruidGuardianIndicatorBerserkEndTooltip"] = "Changes to this colour when Berserk is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["DruidGuardianIndicatorBorderOvercapTooltip"] = "Gradually changes to this colour as your Rage approaches the overcap threshold."
+    -- Druid Restoration Indicator Colors (bar-agnostic)
+    L["DruidRestorationIndicatorNoEfflorescenceTooltip"] = "Changes to this colour when Efflorescence is not active on the ground."
+    L["DruidRestorationIndicatorIncarnationTooltip"] = "Changes to this colour when you have Incarnation: Tree of Life active."
+    L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this colour when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 end

@@ -407,7 +407,56 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				starfallPandemic = {
 					color = "FF8B0000"
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"eclipseEnd",
+					"celestial",
+					"solar",
+					"lunar",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					eclipseEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							astralPowerBar = { bar = true, border = false, background = false },
+						},
+					},
+					celestial = {
+						color = "FF4A95CE",
+						enabled = true,
+						targets = {
+							astralPowerBar = { bar = true, border = false, background = false },
+						},
+					},
+					solar = {
+						color = "FFFFEE00",
+						enabled = true,
+						targets = {
+							astralPowerBar = { bar = true, border = false, background = false },
+						},
+					},
+					lunar = {
+						color = "FF144D72",
+						enabled = true,
+						targets = {
+							astralPowerBar = { bar = true, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							astralPowerBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -770,7 +819,49 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"apexPredator",
+					"borderStealth",
+				},
+				gradientOrder = {
+					"maxBite",
+					"borderOvercap",
+				},
+				indicatorColors = {
+					apexPredator = {
+						color = "FFE75480",
+						enabled = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false },
+						},
+					},
+					borderStealth = {
+						color = "FF000000",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+						},
+					},
+					maxBite = {
+						color = "FF009900",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -964,7 +1055,40 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"berserkEnd",
+					"berserk",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					berserkEnd = {
+						color = "FFFF5555",
+						enabled = true,
+						targets = {
+							rageBar = { bar = true, border = false, background = false },
+						},
+					},
+					berserk = {
+						color = "FFFFCC55",
+						enabled = true,
+						targets = {
+							rageBar = { bar = true, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FF800000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							rageBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -1071,7 +1195,38 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				unusable = {
 					color = "FFFF0000"
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"incarnationEnd",
+					"incarnation",
+					"noEfflorescence",
+				},
+				gradientOrder = {},
+				indicatorColors = {
+					incarnationEnd = {
+						color = "FFDD5500",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+					incarnation = {
+						color = "FF005500",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+					noEfflorescence = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -1240,108 +1395,7 @@ local function BalanceConstructAstralPowerBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.solar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Solar_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.solar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxSolar"])
-	f.tooltip = L["DruidBalanceCheckboxSolarTooltip"]
-	f:SetChecked(spec.colors.bar.solar.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.solar.enabled = self:GetChecked()
-	end)
-
-	controls.colors.solar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEclipseSolar"], spec.colors.bar.solar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.solar
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "solar")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.lunar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Lunar_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.lunar
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxLunar"])
-	f.tooltip = L["DruidBalanceCheckboxLunarTooltip"]
-	f:SetChecked(spec.colors.bar.lunar.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.lunar.enabled = self:GetChecked()
-	end)
-
-	controls.colors.lunar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEclipseLunar"], spec.colors.bar.lunar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.lunar
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lunar")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.celestial = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Celestial_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.celestial
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxCelestial"])
-	f.tooltip = L["DruidBalanceCheckboxCelestialTooltip"]
-	f:SetChecked(spec.colors.bar.celestial.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.celestial.enabled = self:GetChecked()
-	end)
-
-	controls.colors.celestial = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerCelestialAlignment"], spec.colors.bar.celestial.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.celestial
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "celestial")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.endOfEclipse = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_EOE", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfEclipse
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEndOfEclipse"])
-	f.tooltip = L["DruidBalanceCheckboxEndOfEclipseTooltip"]
-	f:SetChecked(spec.endOf.eclipse.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOf.eclipse.enabled = self:GetChecked()
-	end)
-	
-	controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_EOE_CAO", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfEclipseOnly
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEndOfEclipseOnlyCelestial"])
-	f.tooltip = L["DruidBalanceCheckboxEndOfEclipseOnlyCelestialTooltip"]
-	f:SetChecked(spec.endOf.eclipse.celestialAlignmentOnly)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOf.eclipse.celestialAlignmentOnly = self:GetChecked()
-	end)
-
-	controls.colors.eclipseEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidBalanceColorPickerEndOfEclipse"], spec.colors.bar.eclipseEnd.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.eclipseEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "eclipseEnd")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 1, yCoord, {
-		endOfKey = "eclipse",
-		sectionHeader = L["DruidBalanceHeaderEndOfEclipseConfiguration"],
-		gcdRadioLabel = L["DruidBalanceCheckboxEclipseGcds"],
-		gcdSliderLabel = L["DruidBalanceEclipseGcds"],
-		timeRadioLabel = L["DruidBalanceCheckboxEclipseTime"],
-		timeSliderLabel = L["DruidBalanceEclipseTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], BALANCE_MAX_ASTRAL_POWER)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], 1, BALANCE_MAX_ASTRAL_POWER)
@@ -1382,6 +1436,67 @@ local function BalanceConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
+end
+
+local function BalanceConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.balance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_balance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 11, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "eclipseEnd",  label = L["DruidBalanceCheckboxEclipseEnding"],  tooltip = L["DruidBalanceIndicatorEclipseEndTooltip"],  colorLabel = L["DruidBalanceIndicatorEclipseEndColor"] },
+			{ key = "celestial",   label = L["DruidBalanceCheckboxCelestial"],       tooltip = L["DruidBalanceIndicatorCelestialTooltip"],   colorLabel = L["DruidBalanceColorPickerCelestialAlignment"] },
+			{ key = "solar",       label = L["DruidBalanceCheckboxSolar"],           tooltip = L["DruidBalanceIndicatorSolarTooltip"],       colorLabel = L["DruidBalanceColorPickerEclipseSolar"] },
+			{ key = "lunar",       label = L["DruidBalanceCheckboxLunar"],           tooltip = L["DruidBalanceIndicatorLunarTooltip"],       colorLabel = L["DruidBalanceColorPickerEclipseLunar"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["CheckboxOvercap"], tooltip = L["DruidBalanceIndicatorBorderOvercapTooltip"], colorLabel = L["DruidBalanceIndicatorBorderOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "astralPowerBar", label = L["BarNameAstralPowerBar"] },
+			{ key = "comboPoints",    label = L["BarNameComboPoints"] },
+			{ key = "manaBar",        label = L["BarNameManaBar"] },
+			{ key = "energyBar",      label = L["BarNameEnergyBar"] },
+			{ key = "rageBar",        label = L["BarNameRageBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Druid_Balance",
+		endOfConfigs = {
+			{
+				endOfKey = "eclipse",
+				sectionHeader = L["DruidBalanceHeaderEndOfEclipseConfiguration"],
+				gcdRadioLabel = L["DruidBalanceCheckboxEclipseGcds"],
+				gcdSliderLabel = L["DruidBalanceEclipseGcds"],
+				timeRadioLabel = L["DruidBalanceCheckboxEclipseTime"],
+				timeSliderLabel = L["DruidBalanceEclipseTime"],
+			},
+		},
+		overcapConfig = { primaryResourceString = L["ResourceAstralPower"], primaryResourceMax = BALANCE_MAX_ASTRAL_POWER },
+	}))
+
+	yCoord = yCoord - 40
+
+	-- Celestial Alignment Only checkbox (Balance-specific: only show eclipse ending color during CA/IoCoE)
+	local f = nil
+	controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Checkbox_EOE_CAO", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.endOfEclipseOnly
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceCheckboxEndOfEclipseOnlyCelestial"])
+	f.tooltip = L["DruidBalanceCheckboxEndOfEclipseOnlyCelestialTooltip"]
+	f:SetChecked(spec.endOf.eclipse.celestialAlignmentOnly)
+	f:SetScript("OnClick", function(self, ...)
+		spec.endOf.eclipse.celestialAlignmentOnly = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = controls
 end
 
 local function BalanceConstructBarTexturesPanel(parent)
@@ -1762,6 +1877,7 @@ local function BalanceConstructOptionsPanel(cache)
 		{ key = "astralPowerBar", label = L["TabAstralPower"], width = oUi.tabWidth.small, constructor = BalanceConstructAstralPowerBarPanel },
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = BalanceConstructManaBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BalanceConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = BalanceConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BalanceConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BalanceConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BalanceConstructThresholdPanel },
@@ -1888,89 +2004,7 @@ local function FeralConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
-
-	--[[
-	yCoord = yCoord - 30
-	controls.checkBoxes.clearcasting = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_Clearcasting_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.clearcasting
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxClearcasting"])
-	f.tooltip = L["DruidFeralCheckboxClearcastingTooltip"]
-	f:SetChecked(spec.colors.bar.clearcasting.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.clearcasting.enabled = self:GetChecked()
-	end)
-
-	controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerClearcasting"], spec.colors.bar.clearcasting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.clearcasting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "clearcasting")
-	end)]]
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.maxBite = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_MaxBite_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.maxBite
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxMaxBite"])
-	f.tooltip = L["DruidFeralCheckboxMaxBiteTooltip"]
-	f:SetChecked(spec.colors.bar.maxBite.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.maxBite.enabled = self:GetChecked()
-	end)
-
-	controls.colors.maxBite = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerMaxBite"], spec.colors.bar.maxBite.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.maxBite
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "maxBite")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.apexPredator = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_ApexPredator_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.apexPredator
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidFeralCheckboxApexPredator"])
-	f.tooltip = L["DruidFeralCheckboxApexPredatorTooltip"]
-	f:SetChecked(spec.colors.bar.apexPredator.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.apexPredator.enabled = self:GetChecked()
-	end)
-
-	controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidFeralColorPickerApexPredatorsCraving"], spec.colors.bar.apexPredator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.apexPredator
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apexPredator")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-	
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], true, false)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_BorderStealth_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.borderStealth
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxBorderStealth"])
-	f.tooltip = L["CheckboxBorderStealthTooltip"]
-	f:SetChecked(spec.colors.bar.borderStealth.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.borderStealth.enabled = self:GetChecked()
-	end)
-
-	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderStealth
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], FERAL_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], 1, FERAL_MAX_ENERGY)
@@ -2078,6 +2112,41 @@ local function FeralConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 2, yCoord)
+end
+
+local function FeralConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.feral
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_feral
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 11, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "apexPredator",   label = L["DruidFeralCheckboxApexPredator"],  tooltip = L["DruidFeralIndicatorApexPredatorTooltip"],    colorLabel = L["DruidFeralIndicatorApexPredatorColor"] },
+			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
+		},
+		gradientDefs = {
+			{ key = "maxBite",       label = L["DruidFeralCheckboxMaxBite"],        tooltip = L["DruidFeralIndicatorMaxBiteTooltip"],         colorLabel = L["DruidFeralIndicatorMaxBiteColor"] },
+			{ key = "borderOvercap", label = L["CheckboxOvercap"],                  tooltip = L["DruidFeralIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidFeralIndicatorBorderOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
+			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
+			{ key = "manaBar",      label = L["BarNameManaBar"] },
+			{ key = "rageBar",      label = L["BarNameRageBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Druid_Feral",
+		overcapConfig = { primaryResourceString = L["ResourceEnergy"], primaryResourceMax = FERAL_MAX_ENERGY },
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
 end
 
 local function FeralConstructBarTexturesPanel(parent)
@@ -2512,6 +2581,7 @@ local function FeralConstructOptionsPanel(cache)
 		{ key = "energyBar", label = L["TabEnergy"], width = oUi.tabWidth.small, constructor = FeralConstructEnergyBarPanel },
 		{ key = "comboPointsBar", label = L["TabComboPoints"], width = oUi.tabWidth.small, constructor = FeralConstructComboPointsBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FeralConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FeralConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FeralConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FeralConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FeralConstructThresholdPanel },
@@ -2637,43 +2707,7 @@ local function GuardianConstructRageBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 11, 3, yCoord, {
-		endOfKey = "berserk",
-		activeColorKey = "berserk",
-		endColorKey = "berserkEnd",
-		checkboxLabel = L["DruidGuardianCheckboxBerserk"],
-		checkboxTooltip = L["DruidGuardianCheckboxBerserkTooltip"],
-		activeColorLabel = L["DruidGuardianColorPickerIncarnation"],
-		endCheckboxLabel = L["DruidGuardianCheckboxBerserkEnd"],
-		endCheckboxTooltip = L["DruidGuardianCheckboxBerserkEndTooltip"],
-		endColorLabel = L["DruidGuardianColorPickerBerserkEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 3, yCoord, {
-		endOfKey = "berserk",
-		sectionHeader = L["DruidGuardianEndOfBerserkConfigurationHeader"],
-		gcdRadioLabel = L["DruidGuardianCheckboxBerserkGcds"],
-		gcdSliderLabel = L["DruidGuardianBerserkGcds"],
-		timeRadioLabel = L["DruidGuardianCheckboxBerserkTime"],
-		timeSliderLabel = L["DruidGuardianBerserkTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], GUARDIAN_MAX_RAGE)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], 1, GUARDIAN_MAX_RAGE)
@@ -2696,6 +2730,50 @@ local function GuardianConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
+end
+
+local function GuardianConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_guardian
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 11, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "berserkEnd",    label = L["DruidGuardianCheckboxBerserkEnding"],  tooltip = L["DruidGuardianIndicatorBerserkEndTooltip"],      colorLabel = L["DruidGuardianIndicatorBerserkEndColor"] },
+			{ key = "berserk",       label = L["DruidGuardianCheckboxBerserkActive"],  tooltip = L["DruidGuardianIndicatorBerserkTooltip"],         colorLabel = L["DruidGuardianIndicatorBerserkColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["CheckboxOvercap"],                     tooltip = L["DruidGuardianIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidGuardianIndicatorBorderOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "rageBar",      label = L["BarNameRageBar"] },
+			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
+			{ key = "manaBar",      label = L["BarNameManaBar"] },
+			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Druid_Guardian",
+		endOfConfigs = {
+			{
+				endOfKey = "berserk",
+				sectionHeader = L["DruidGuardianEndOfBerserkConfigurationHeader"],
+				gcdRadioLabel = L["DruidGuardianCheckboxBerserkGcds"],
+				gcdSliderLabel = L["DruidGuardianBerserkGcds"],
+				timeRadioLabel = L["DruidGuardianCheckboxBerserkTime"],
+				timeSliderLabel = L["DruidGuardianBerserkTime"],
+			},
+		},
+		overcapConfig = { primaryResourceString = L["ResourceRage"], primaryResourceMax = GUARDIAN_MAX_RAGE },
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 end
 
 local function GuardianConstructBarTexturesPanel(parent)
@@ -3028,6 +3106,7 @@ local function GuardianConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = GuardianConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = GuardianConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = GuardianConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = GuardianConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = GuardianConstructThresholdPanel },
@@ -3152,64 +3231,7 @@ local function RestorationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.noEfflorescence = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_NoEfflorescence_CB", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.noEfflorescence
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DruidRestorationCheckboxNoEfflorescence"])
-	f.tooltip = L["DruidRestorationCheckboxNoEfflorescenceTooltip"]
-	f:SetChecked(spec.colors.bar.noEfflorescence.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.noEfflorescence.enabled = self:GetChecked()
-	end)
-
-	controls.colors.noEfflorescence = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidRestorationColorPickerNoEfflorescence"], spec.colors.bar.noEfflorescence.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.noEfflorescence
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "noEfflorescence")
-	end)
-
-	--[[yCoord = yCoord - 30
-	controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DruidRestorationColorPickerClearcasting"], spec.colors.bar.clearcasting, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.clearcasting
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "clearcasting")
-	end)]]
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 11, 4, yCoord, {
-		endOfKey = "incarnation",
-		activeColorKey = "incarnation",
-		endColorKey = "incarnationEnd",
-		checkboxLabel = L["DruidRestorationCheckboxIncarnation"],
-		checkboxTooltip = L["DruidRestorationCheckboxIncarnationTooltip"],
-		activeColorLabel = L["DruidRestorationColorPickerIncarnation"],
-		endCheckboxLabel = L["DruidRestorationCheckboxIncarnationEnd"],
-		endCheckboxTooltip = L["DruidRestorationCheckboxIncarnationEndTooltip"],
-		endColorLabel = L["DruidRestorationColorPickerIncarnationEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], false, true)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 11, 4, yCoord, {
-		endOfKey = "incarnation",
-		sectionHeader = L["DruidRestorationEndOfIncarnationConfigurationHeader"],
-		gcdRadioLabel = L["DruidRestorationCheckboxIncarnationGcds"],
-		gcdSliderLabel = L["DruidRestorationIncarnationGcds"],
-		timeRadioLabel = L["DruidRestorationCheckboxIncarnationTime"],
-		timeSliderLabel = L["DruidRestorationIncarnationTime"],
-	})
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
 end
 
 local function RestorationConstructHealthBarPanel(parent)
@@ -3227,6 +3249,47 @@ local function RestorationConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 11, 4, yCoord)
+end
+
+local function RestorationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.restoration
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_restoration
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 11, 4, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "incarnationEnd",    label = L["DruidRestorationCheckboxIncarnationEnding"],  tooltip = L["DruidRestorationIndicatorIncarnationEndTooltip"],      colorLabel = L["DruidRestorationIndicatorIncarnationEndColor"] },
+			{ key = "incarnation",       label = L["DruidRestorationCheckboxIncarnation"],        tooltip = L["DruidRestorationIndicatorIncarnationTooltip"],         colorLabel = L["DruidRestorationIndicatorIncarnationColor"] },
+			{ key = "noEfflorescence",   label = L["DruidRestorationCheckboxNoEfflorescence"],    tooltip = L["DruidRestorationIndicatorNoEfflorescenceTooltip"],     colorLabel = L["DruidRestorationIndicatorNoEfflorescenceColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar",      label = L["BarNameManaBar"] },
+			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
+			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
+			{ key = "rageBar",      label = L["BarNameRageBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Druid_Restoration",
+		endOfConfigs = {
+			{
+				endOfKey = "incarnation",
+				sectionHeader = L["DruidRestorationEndOfIncarnationConfigurationHeader"],
+				gcdRadioLabel = L["DruidRestorationCheckboxIncarnationGcds"],
+				gcdSliderLabel = L["DruidRestorationIncarnationGcds"],
+				timeRadioLabel = L["DruidRestorationCheckboxIncarnationTime"],
+				timeSliderLabel = L["DruidRestorationIncarnationTime"],
+			},
+		},
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = controls
 end
 
 local function RestorationConstructBarTexturesPanel(parent)
@@ -3452,6 +3515,7 @@ local function RestorationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = RestorationConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = RestorationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = RestorationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = RestorationConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = RestorationConstructFontAndTextPanel },
