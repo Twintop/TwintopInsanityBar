@@ -2424,7 +2424,7 @@ L["PriestShadowColorPickerBorderOvercap"] = "Overcap border color"
 
 -- Gradient Color Overrides section
 L["GradientColorOverridesHeader"] = "Gradient Colors (Secrets)"
-L["GradientColorOverridesNote"] = "Gradient indicators use secret values and will always override Color Indicator Priority colors when active."
+L["GradientColorOverridesNote"] = "Gradient indicators use secret values and may override Color Indicator Priority colors when conditions activate them."
 
 -- Shadow Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
 L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this color when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
@@ -2443,7 +2443,7 @@ L["PriestShadowIndicatorEntropicRiftTooltip"] = "Changes to this color while Ent
 L["PriestShadowIndicatorEntropicRiftColor"] = "Entropic Rift is active"
 L["PriestShadowIndicatorMindFlayInsanityTooltip"] = "Changes to this color when you are able to cast Mind Flay: Insanity."
 L["PriestShadowIndicatorMindFlayInsanityColor"] = "Mind Flay: Insanity is available"
-L["PriestShadowIndicatorOvercapTooltip"] = "Gradually changes to this color as your Insanity approaches the overcap threshold."
+L["PriestShadowIndicatorOvercapTooltip"] = "Changes to this color when your Insanity approaches the overcap threshold."
 L["PriestShadowIndicatorOvercapColor"] = "Overcapping Insanity"
 
 -- Priest Holy Indicator Colors
@@ -2498,7 +2498,7 @@ L["BarNameFuryBar"] = "Fury"
 L["DemonHunterHavocCheckboxOvercap"] = "Overcap (gradient)"
 L["DemonHunterHavocIndicatorMetamorphosisTooltip"] = "Changes to this color when Metamorphosis is active."
 L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"] = "Changes to this color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-L["DemonHunterHavocIndicatorOvercapTooltip"] = "Gradually changes to this color as your Fury approaches the overcap threshold."
+L["DemonHunterHavocIndicatorOvercapTooltip"] = "Changes to this color when your Fury approaches the overcap threshold."
 L["DemonHunterHavocIndicatorMetamorphosisColor"] = "Metamorphosis is active"
 L["DemonHunterHavocIndicatorMetamorphosisEndColor"] = "Metamorphosis is ending (as configured)"
 L["DemonHunterHavocIndicatorOvercapColor"] = "Overcapping Fury"
@@ -2506,3 +2506,15 @@ L["DemonHunterHavocIndicatorOvercapColor"] = "Overcapping Fury"
 -- Base Colors section header
 L["BaseColorsHeader"] = "Base Colors"
 L["ColorPickerBorder"] = "Border"
+
+-- Demon Hunter Vengeance Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"] = "Changes to this color when Metamorphosis is active."
+L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"] = "Changes to this color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DemonHunterVengeanceIndicatorOvercapTooltip"] = "Changes to this color when your Fury approaches the overcap threshold."
+L["DemonHunterVengeanceIndicatorMetamorphosisColor"] = "Metamorphosis is active"
+L["DemonHunterVengeanceIndicatorMetamorphosisEndColor"] = "Metamorphosis is ending (as configured)"
+L["DemonHunterVengeanceIndicatorOvercapColor"] = "Overcapping Fury"
+L["DemonHunterVengeanceCheckboxOvercap"] = "Overcap (gradient)"
+
+-- Demon Hunter Vengeance Soul Fragments bar name for indicator color targets
+L["BarNameSoulFragmentsBar"] = "Soul Fragments"

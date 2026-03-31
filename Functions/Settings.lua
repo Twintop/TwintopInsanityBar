@@ -5949,6 +5949,67 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Vengeance Demon Hunter indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.vengeance then
+		local vengeance = TwintopInsanityBarSettings.demonhunter.vengeance
+		if vengeance.colors and vengeance.colors.bar and vengeance.colors.bar.metamorphosis ~= nil
+			and type(vengeance.colors.bar.metamorphosis) == "table"
+			and (vengeance.colors.shared == nil or vengeance.colors.shared.indicatorColors == nil) then
+
+			vengeance.colors.shared = vengeance.colors.shared or {}
+			vengeance.colors.shared.nodeOrder = {
+				"metamorphosisEnd",
+				"metamorphosis",
+			}
+			vengeance.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			vengeance.colors.shared.indicatorColors = {}
+			local ic = vengeance.colors.shared.indicatorColors
+			local bar = vengeance.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				}
+				t.furyBar[elemKey] = true
+				return t
+			end
+
+			-- Bar indicators
+			ic.metamorphosisEnd = {
+				color = bar.metamorphosisEnd and bar.metamorphosisEnd.color or "FFFF0000",
+				enabled = vengeance.endOf and vengeance.endOf.metamorphosis and vengeance.endOf.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.metamorphosis = {
+				color = bar.metamorphosis and bar.metamorphosis.color or "FF67F100",
+				enabled = bar.metamorphosis and bar.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.metamorphosis = nil
+			bar.metamorphosisEnd = nil
+			bar.borderOvercap = nil
+
+			-- Move endOf.metamorphosis.enabled to the indicator; leave timing fields in place
+			if vengeance.endOf and vengeance.endOf.metamorphosis then
+				vengeance.endOf.metamorphosis.enabled = nil
+			end
+		end
+	end
 end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys

@@ -332,4 +332,8 @@ if locale == "enGB" then
     L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"] = "Changes to this colour when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["DemonHunterHavocIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Fury approaches the overcap threshold."
     L["DemonHunterHavocIndicatorOvercapColor"] = "Overcapping Fury"
+    -- Demon Hunter Vengeance Indicator Colors (bar-agnostic)
+    L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"] = "Changes to this colour when Metamorphosis is active."
+    L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"] = "Changes to this colour when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["DemonHunterVengeanceIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Fury approaches the overcap threshold."
 end
