@@ -692,6 +692,14 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 							soulFragmentsBar = { bar = false, border = false, background = false },
 						},
 					},
+					voidRayReady = {
+						color = "FF008B8B",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
