@@ -41,6 +41,7 @@ end
 ---@field public flashHeal TRB.Classes.SpellBase
 ---@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public angelicFeather TRB.Classes.SpellBase
+---@field public powerWordShield TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -72,6 +73,12 @@ function TRB.Classes.Priest.HealerSpells:New()
 		duration = 20
 	})
 
+	self.powerWordShield = TRB.Classes.SpellBase:New({
+		id = 17,
+		isTalent = false,
+		baseline = true
+	})
+
 	return self
 end
 
@@ -81,6 +88,7 @@ end
 ---@field public lightsPromise TRB.Classes.SpellBase
 ---@field public brightPupil TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
+---@field public masterTheDarkness TRB.Classes.SpellBase
 --[[---@field public atonement TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public entropicRift TRB.Classes.SpellBase
@@ -145,6 +153,13 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		isTalent = true
 	})]]
 	
+	self.masterTheDarkness = TRB.Classes.SpellBase:New({
+		id = 1253593,
+		buffId = 1253591,
+		isBuff = true,
+		duration = 60
+	})
+
 	return self
 end
 
@@ -167,6 +182,8 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },]]
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
+		{ variable = "#voidShield", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = true },
+		{ variable = "#masterTheDarkness", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = false },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestDisciplineBarTextVariable_mana"], printInSettings = true, color = false },
@@ -193,6 +210,9 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = true, color = false },
+
+		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
+		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
 	})
 end
 

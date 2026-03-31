@@ -5728,7 +5728,810 @@ function TRB.Functions.Settings:PortForwardSettings()
 			shadow.colors.shared.gradientOrder = newGradientOrder
 		end
 	end
+
+	-- Migrate Holy Priest indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest and TwintopInsanityBarSettings.priest.holy then
+		local holy = TwintopInsanityBarSettings.priest.holy
+		if holy.colors and holy.colors.bar and holy.colors.bar.benediction ~= nil
+			and type(holy.colors.bar.benediction) == "table"
+			and (holy.colors.shared == nil or holy.colors.shared.indicatorColors == nil) then
+
+			holy.colors.shared = holy.colors.shared or {}
+			holy.colors.shared.nodeOrder = {
+				"benediction",
+				"holyWordSerenity",
+				"holyWordSanctify",
+				"holyWordChastise",
+				"apotheosisEnd",
+				"apotheosis",
+				"surgeOfLight",
+				"lightweaver",
+			}
+			holy.colors.shared.gradientOrder = {}
+			holy.colors.shared.indicatorColors = {}
+			local ic = holy.colors.shared.indicatorColors
+			local bar = holy.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					holyWordsBar = { bar = false, border = false, background = false },
+					lightweaverBar = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- Determine if old completeCooldown was enabled (for HW bar targeting)
+			local hwColors = holy.colors.bars and holy.colors.bars.holyWords
+			local hwCCEnabled = hwColors and hwColors.completeCooldown and hwColors.completeCooldown.enabled ~= false
+
+			-- Bar indicators
+			local benedictionTargets = MakeTargets("manaBar", "bar")
+			-- Also migrate the legacy Lightweaver background benediction indicator
+			local lwColors = holy.colors.bars and holy.colors.bars.lightweaver
+			if lwColors and lwColors.benediction and lwColors.benediction.enabled then
+				benedictionTargets.lightweaverBar.background = true
+			end
+			ic.benediction = {
+				color = bar.benediction and bar.benediction.color or "FFC4933F",
+				enabled = bar.benediction and bar.benediction.enabled ~= false,
+				targets = benedictionTargets,
+			}
+			local serenityTargets = MakeTargets("manaBar", "bar")
+			if hwCCEnabled then serenityTargets.holyWordsBar.bar = true end
+			ic.holyWordSerenity = {
+				color = bar.holyWordSerenity and bar.holyWordSerenity.color or "FF00FF00",
+				enabled = bar.holyWordSerenity and bar.holyWordSerenity.enabled ~= false,
+				targets = serenityTargets,
+			}
+			local sanctifyTargets = MakeTargets("manaBar", "bar")
+			if hwCCEnabled then sanctifyTargets.holyWordsBar.bar = true end
+			ic.holyWordSanctify = {
+				color = bar.holyWordSanctify and bar.holyWordSanctify.color or "FF55FF55",
+				enabled = bar.holyWordSanctify and bar.holyWordSanctify.enabled ~= false,
+				targets = sanctifyTargets,
+			}
+			local chastiseEnabled = bar.holyWordChastise and bar.holyWordChastise.enabled ~= false
+			local chastiseTargets = chastiseEnabled and MakeTargets("manaBar", "bar") or MakeTargets()
+			if hwCCEnabled and chastiseEnabled then chastiseTargets.holyWordsBar.bar = true end
+			ic.holyWordChastise = {
+				color = bar.holyWordChastise and bar.holyWordChastise.color or "FFAAFFAA",
+				enabled = chastiseEnabled,
+				targets = chastiseTargets,
+			}
+			ic.apotheosisEnd = {
+				color = bar.apotheosisEnd and bar.apotheosisEnd.color or "FFFF0000",
+				enabled = holy.endOf and holy.endOf.apotheosis and holy.endOf.apotheosis.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.apotheosis = {
+				color = bar.apotheosis and bar.apotheosis.color or "FFFADA5E",
+				enabled = bar.apotheosis and bar.apotheosis.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+
+			-- Border indicators
+			ic.surgeOfLight = {
+				color = bar.surgeOfLight and bar.surgeOfLight.color or "FFFCE58E",
+				enabled = bar.surgeOfLight and bar.surgeOfLight.enabled ~= false,
+				targets = MakeTargets("manaBar", "border"),
+			}
+			ic.lightweaver = {
+				color = bar.lightweaver and bar.lightweaver.color or "FF00FFFF",
+				enabled = bar.lightweaver and bar.lightweaver.enabled ~= false,
+				targets = MakeTargets("manaBar", "border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.benediction = nil
+			bar.holyWordSerenity = nil
+			bar.holyWordSanctify = nil
+			bar.holyWordChastise = nil
+			bar.apotheosis = nil
+			bar.apotheosisEnd = nil
+			bar.surgeOfLight = nil
+			bar.lightweaver = nil
+
+			-- Move endOf.apotheosis.enabled to the indicator; leave timing fields in place
+			if holy.endOf and holy.endOf.apotheosis then
+				holy.endOf.apotheosis.enabled = nil
+			end
+
+			-- Clean up completeCooldown from holyWords bar colors
+			if hwColors then
+				hwColors.completeCooldown = nil
+			end
+
+			-- Clean up benediction from lightweaver bar colors
+			if lwColors then
+				lwColors.benediction = nil
+			end
+		end
+
+		-- Migrate completeCooldown indicator into per-HW indicators (for users who already have indicatorColors)
+		if holy.colors and holy.colors.shared and holy.colors.shared.indicatorColors
+			and holy.colors.shared.indicatorColors.completeCooldown then
+			local ic = holy.colors.shared.indicatorColors
+			local cc = ic.completeCooldown
+			local ccTargetsHW = cc.targets and cc.targets.holyWordsBar
+
+			-- Transfer holyWordsBar targets to per-HW indicators
+			if ccTargetsHW then
+				for _, key in ipairs({ "holyWordSerenity", "holyWordSanctify", "holyWordChastise" }) do
+					if ic[key] then
+						ic[key].targets = ic[key].targets or {}
+						ic[key].targets.holyWordsBar = ic[key].targets.holyWordsBar or { bar = false, border = false, background = false }
+						for elem, val in pairs(ccTargetsHW) do
+							if val then
+								ic[key].targets.holyWordsBar[elem] = true
+							end
+						end
+					end
+				end
+			end
+
+			-- Remove completeCooldown
+			ic.completeCooldown = nil
+
+			-- Remove from nodeOrder
+			if holy.colors.shared.nodeOrder then
+				local newOrder = {}
+				for _, k in ipairs(holy.colors.shared.nodeOrder) do
+					if k ~= "completeCooldown" then
+						newOrder[#newOrder + 1] = k
+					end
+				end
+				holy.colors.shared.nodeOrder = newOrder
+			end
+		end
+	end
+
+	-- Migrate Havoc Demon Hunter indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.havoc then
+		local havoc = TwintopInsanityBarSettings.demonhunter.havoc
+		if havoc.colors and havoc.colors.bar and havoc.colors.bar.metamorphosis ~= nil
+			and type(havoc.colors.bar.metamorphosis) == "table"
+			and (havoc.colors.shared == nil or havoc.colors.shared.indicatorColors == nil) then
+
+			havoc.colors.shared = havoc.colors.shared or {}
+			havoc.colors.shared.nodeOrder = {
+				"metamorphosisEnd",
+				"metamorphosis",
+			}
+			havoc.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			havoc.colors.shared.indicatorColors = {}
+			local ic = havoc.colors.shared.indicatorColors
+			local bar = havoc.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+				}
+				t.furyBar[elemKey] = true
+				return t
+			end
+
+			-- Bar indicators
+			ic.metamorphosisEnd = {
+				color = bar.metamorphosisEnd and bar.metamorphosisEnd.color or "FFFF0000",
+				enabled = havoc.endOf and havoc.endOf.metamorphosis and havoc.endOf.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.metamorphosis = {
+				color = bar.metamorphosis and bar.metamorphosis.color or "FF67F100",
+				enabled = bar.metamorphosis and bar.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.metamorphosis = nil
+			bar.metamorphosisEnd = nil
+			bar.borderOvercap = nil
+
+			-- Move endOf.metamorphosis.enabled to the indicator; leave timing fields in place
+			if havoc.endOf and havoc.endOf.metamorphosis then
+				havoc.endOf.metamorphosis.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Vengeance Demon Hunter indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.vengeance then
+		local vengeance = TwintopInsanityBarSettings.demonhunter.vengeance
+		if vengeance.colors and vengeance.colors.bar and vengeance.colors.bar.metamorphosis ~= nil
+			and type(vengeance.colors.bar.metamorphosis) == "table"
+			and (vengeance.colors.shared == nil or vengeance.colors.shared.indicatorColors == nil) then
+
+			vengeance.colors.shared = vengeance.colors.shared or {}
+			vengeance.colors.shared.nodeOrder = {
+				"metamorphosisEnd",
+				"metamorphosis",
+			}
+			vengeance.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			vengeance.colors.shared.indicatorColors = {}
+			local ic = vengeance.colors.shared.indicatorColors
+			local bar = vengeance.colors.bar
+
+			-- Helper to build targets with a single default element
+			local function MakeTargets(elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				}
+				t.furyBar[elemKey] = true
+				return t
+			end
+
+			-- Bar indicators
+			ic.metamorphosisEnd = {
+				color = bar.metamorphosisEnd and bar.metamorphosisEnd.color or "FFFF0000",
+				enabled = vengeance.endOf and vengeance.endOf.metamorphosis and vengeance.endOf.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.metamorphosis = {
+				color = bar.metamorphosis and bar.metamorphosis.color or "FF67F100",
+				enabled = bar.metamorphosis and bar.metamorphosis.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.metamorphosis = nil
+			bar.metamorphosisEnd = nil
+			bar.borderOvercap = nil
+
+			-- Move endOf.metamorphosis.enabled to the indicator; leave timing fields in place
+			if vengeance.endOf and vengeance.endOf.metamorphosis then
+				vengeance.endOf.metamorphosis.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Devourer Demon Hunter indicator colors from colors.bar.* and colors.comboPoints.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.devourer then
+		local devourer = TwintopInsanityBarSettings.demonhunter.devourer
+		if devourer.colors and devourer.colors.bar and devourer.colors.bar.voidMetamorphosis ~= nil
+			and type(devourer.colors.bar.voidMetamorphosis) == "table"
+			and (devourer.colors.shared == nil or devourer.colors.shared.indicatorColors == nil) then
+
+			devourer.colors.shared = devourer.colors.shared or {}
+			devourer.colors.shared.nodeOrder = {
+				"voidMetamorphosisReady",
+				"collapsingStarReady",
+				"voidMetamorphosis",
+				"voidRayReady",
+			}
+			devourer.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			devourer.colors.shared.indicatorColors = {}
+			local ic = devourer.colors.shared.indicatorColors
+			local bar = devourer.colors.bar
+			local cp = devourer.colors.comboPoints
+
+			-- Helper to build targets with a single default element on a specific bar
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- Fury bar indicators
+			ic.voidMetamorphosis = {
+				color = bar.voidMetamorphosis and bar.voidMetamorphosis.color or "FF431863",
+				enabled = bar.voidMetamorphosis and bar.voidMetamorphosis.enabled ~= false,
+				targets = MakeTargets("furyBar", "bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("furyBar", "border"),
+			}
+
+			-- Soul Fragments bar indicators
+			ic.voidMetamorphosisReady = {
+				color = cp and cp.voidMetamorphosisReady and cp.voidMetamorphosisReady.color or "FF431863",
+				enabled = cp and cp.voidMetamorphosisReady and cp.voidMetamorphosisReady.enabled ~= false,
+				targets = MakeTargets("soulFragmentsBar", "bar"),
+			}
+			ic.collapsingStarReady = {
+				color = cp and cp.collapsingStarReady and cp.collapsingStarReady.color or "FF431863",
+				enabled = cp and cp.collapsingStarReady and cp.collapsingStarReady.enabled ~= false,
+				targets = MakeTargets("soulFragmentsBar", "bar"),
+			}
+
+			-- New indicator (no legacy key to migrate from)
+			ic.voidRayReady = {
+				color = "FF008B8B",
+				enabled = true,
+				targets = MakeTargets("furyBar", "bar"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.voidMetamorphosis = nil
+			bar.borderOvercap = nil
+
+			-- Clean up old keys from colors.comboPoints
+			if cp then
+				cp.voidMetamorphosisReady = nil
+				cp.collapsingStarReady = nil
+			end
+		end
+
+		-- Add voidRayReady indicator for users who already migrated to shared indicators but don't have this new entry
+		if devourer.colors and devourer.colors.shared and devourer.colors.shared.indicatorColors
+			and devourer.colors.shared.indicatorColors.voidRayReady == nil then
+			devourer.colors.shared.indicatorColors.voidRayReady = {
+				color = "FF008B8B",
+				enabled = true,
+				targets = {
+					furyBar = { bar = true, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				},
+			}
+			-- Append to nodeOrder at the end (lowest priority)
+			table.insert(devourer.colors.shared.nodeOrder, "voidRayReady")
+		end
+	end
+
+	-- Migrate Evoker Devastation indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.devastation then
+		local devastation = TwintopInsanityBarSettings.evoker.devastation
+		if devastation.colors and devastation.colors.bar and devastation.colors.bar.dragonrage ~= nil
+			and type(devastation.colors.bar.dragonrage) == "table"
+			and (devastation.colors.shared == nil or devastation.colors.shared.indicatorColors == nil) then
+
+			devastation.colors.shared = devastation.colors.shared or {}
+			devastation.colors.shared.nodeOrder = { "dragonrageEnd", "dragonrage", "essenceBurst" }
+			devastation.colors.shared.gradientOrder = {}
+			devastation.colors.shared.indicatorColors = {}
+			local ic = devastation.colors.shared.indicatorColors
+			local bar = devastation.colors.bar
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			ic.dragonrageEnd = {
+				color = bar.dragonrageEnd and bar.dragonrageEnd.color or "FFFF0000",
+				enabled = devastation.endOf and devastation.endOf.dragonrage and devastation.endOf.dragonrage.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.dragonrage = {
+				color = bar.dragonrage and bar.dragonrage.color or "FFFF6B00",
+				enabled = bar.dragonrage and bar.dragonrage.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.dragonrage = nil
+			bar.dragonrageEnd = nil
+			bar.essenceBurst = nil
+
+			-- Move endOf.dragonrage.enabled to the indicator; leave timing fields in place
+			if devastation.endOf and devastation.endOf.dragonrage then
+				devastation.endOf.dragonrage.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Evoker Preservation indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.preservation then
+		local preservation = TwintopInsanityBarSettings.evoker.preservation
+		if preservation.colors and preservation.colors.bar and preservation.colors.bar.essenceBurst ~= nil
+			and type(preservation.colors.bar.essenceBurst) == "table"
+			and (preservation.colors.shared == nil or preservation.colors.shared.indicatorColors == nil) then
+
+			preservation.colors.shared = preservation.colors.shared or {}
+			preservation.colors.shared.nodeOrder = { "innervate", "essenceBurst" }
+			preservation.colors.shared.gradientOrder = {}
+			preservation.colors.shared.indicatorColors = {}
+			local ic = preservation.colors.shared.indicatorColors
+			local bar = preservation.colors.bar
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			ic.innervate = {
+				color = bar.innervate and bar.innervate.color or "FF00FF00",
+				enabled = bar.innervate and bar.innervate.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.innervate = nil
+			bar.essenceBurst = nil
+		end
+	end
+
+	-- Migrate Evoker Augmentation indicator colors from colors.bar.* and colors.bars.ebonMight.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.augmentation then
+		local augmentation = TwintopInsanityBarSettings.evoker.augmentation
+		if augmentation.colors and augmentation.colors.bar and augmentation.colors.bar.ebonMight ~= nil
+			and type(augmentation.colors.bar.ebonMight) == "table"
+			and (augmentation.colors.shared == nil or augmentation.colors.shared.indicatorColors == nil) then
+
+			augmentation.colors.shared = augmentation.colors.shared or {}
+			augmentation.colors.shared.nodeOrder = { "ebonMightDropDuringCast", "ebonMightEnd", "ebonMight", "essenceBurst" }
+			augmentation.colors.shared.gradientOrder = {}
+			augmentation.colors.shared.indicatorColors = {}
+			local ic = augmentation.colors.shared.indicatorColors
+			local bar = augmentation.colors.bar
+			local ebonMightBar = augmentation.colors.bars and augmentation.colors.bars.ebonMight
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- ebonMightDropDuringCast: mana bar had enabled=false, EM bar wontExtend had enabled=true
+			-- Use EM bar wontExtend.enabled as the indicator enabled state; keep manaBar target off by default
+			ic.ebonMightDropDuringCast = {
+				color = bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.color or "FF550000",
+				enabled = (ebonMightBar and ebonMightBar.wontExtend and ebonMightBar.wontExtend.enabled ~= false)
+					or (bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.enabled == true),
+				targets = {
+					manaBar = { bar = bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = ebonMightBar and ebonMightBar.wontExtend and ebonMightBar.wontExtend.enabled ~= false or false, border = false, background = false },
+				},
+			}
+
+			-- ebonMightEnd: mana bar had enabled=false, EM bar endingSoon had enabled=true
+			ic.ebonMightEnd = {
+				color = bar.ebonMightEnd and bar.ebonMightEnd.color or "FFFF0000",
+				enabled = (ebonMightBar and ebonMightBar.endingSoon and ebonMightBar.endingSoon.enabled ~= false)
+					or (bar.ebonMightEnd and bar.ebonMightEnd.enabled == true),
+				targets = {
+					manaBar = { bar = bar.ebonMightEnd and bar.ebonMightEnd.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = ebonMightBar and ebonMightBar.endingSoon and ebonMightBar.endingSoon.enabled ~= false or false, border = false, background = false },
+				},
+			}
+
+			-- ebonMight (active): target mana bar and EM bar (EM bar was always visible in EM color when active)
+			ic.ebonMight = {
+				color = bar.ebonMight and bar.ebonMight.color or "FFFF9900",
+				enabled = bar.ebonMight and bar.ebonMight.enabled == true,
+				targets = {
+					manaBar = { bar = bar.ebonMight and bar.ebonMight.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = bar.ebonMight and bar.ebonMight.enabled == true, border = false, background = false },
+				},
+			}
+
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+					ebonMight = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.ebonMight and bar.essenceBurst.targets.ebonMight.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.ebonMight = nil
+			bar.ebonMightEnd = nil
+			bar.ebonMightDropDuringCast = nil
+			bar.essenceBurst = nil
+
+			-- Clean up old keys from colors.bars.ebonMight
+			if ebonMightBar then
+				ebonMightBar.endingSoon = nil
+				ebonMightBar.wontExtend = nil
+			end
+
+			-- Move endOf.ebonMight.enabled to nil; timing fields stay
+			if augmentation.endOf and augmentation.endOf.ebonMight then
+				augmentation.endOf.ebonMight.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Balance Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.balance then
+		local balance = TwintopInsanityBarSettings.druid.balance
+		if balance.colors and balance.colors.bar and balance.colors.bar.lunar ~= nil
+			and type(balance.colors.bar.lunar) == "table"
+			and (balance.colors.shared == nil or balance.colors.shared.indicatorColors == nil) then
+
+			balance.colors.shared = balance.colors.shared or {}
+			balance.colors.shared.nodeOrder = {
+				"eclipseEnd",
+				"celestial",
+				"solar",
+				"lunar",
+			}
+			balance.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			balance.colors.shared.indicatorColors = {}
+			local ic = balance.colors.shared.indicatorColors
+			local bar = balance.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					astralPowerBar = { bar = false, border = false, background = false },
+				}
+				t.astralPowerBar[elemKey] = true
+				return t
+			end
+
+			ic.eclipseEnd = {
+				color = bar.eclipseEnd and bar.eclipseEnd.color or "FFFF0000",
+				enabled = balance.endOf and balance.endOf.eclipse and balance.endOf.eclipse.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.celestial = {
+				color = bar.celestial and bar.celestial.color or "FF4A95CE",
+				enabled = bar.celestial and bar.celestial.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.solar = {
+				color = bar.solar and bar.solar.color or "FFFFEE00",
+				enabled = bar.solar and bar.solar.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.lunar = {
+				color = bar.lunar and bar.lunar.color or "FF144D72",
+				enabled = bar.lunar and bar.lunar.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.lunar = nil
+			bar.solar = nil
+			bar.celestial = nil
+			bar.eclipseEnd = nil
+			bar.borderOvercap = nil
+
+			if balance.endOf and balance.endOf.eclipse then
+				balance.endOf.eclipse.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Feral Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
+		local feral = TwintopInsanityBarSettings.druid.feral
+		if feral.colors and feral.colors.bar and feral.colors.bar.maxBite ~= nil
+			and type(feral.colors.bar.maxBite) == "table"
+			and (feral.colors.shared == nil or feral.colors.shared.indicatorColors == nil) then
+
+			feral.colors.shared = feral.colors.shared or {}
+			feral.colors.shared.nodeOrder = {
+				"apexPredator",
+				"borderStealth",
+			}
+			feral.colors.shared.gradientOrder = {
+				"maxBite",
+				"borderOvercap",
+			}
+			feral.colors.shared.indicatorColors = {}
+			local ic = feral.colors.shared.indicatorColors
+			local bar = feral.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					energyBar = { bar = false, border = false, background = false },
+				}
+				t.energyBar[elemKey] = true
+				return t
+			end
+
+			ic.apexPredator = {
+				color = bar.apexPredator and bar.apexPredator.color or "FFE75480",
+				enabled = bar.apexPredator and bar.apexPredator.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderStealth = {
+				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
+				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
+				targets = MakeTargets("border"),
+			}
+			ic.maxBite = {
+				color = bar.maxBite and bar.maxBite.color or "FF009900",
+				enabled = bar.maxBite and bar.maxBite.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.apexPredator = nil
+			bar.maxBite = nil
+			bar.borderStealth = nil
+			bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Guardian Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.guardian then
+		local guardian = TwintopInsanityBarSettings.druid.guardian
+		if guardian.colors and guardian.colors.bar and guardian.colors.bar.berserk ~= nil
+			and type(guardian.colors.bar.berserk) == "table"
+			and (guardian.colors.shared == nil or guardian.colors.shared.indicatorColors == nil) then
+
+			guardian.colors.shared = guardian.colors.shared or {}
+			guardian.colors.shared.nodeOrder = {
+				"berserkEnd",
+				"berserk",
+			}
+			guardian.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			guardian.colors.shared.indicatorColors = {}
+			local ic = guardian.colors.shared.indicatorColors
+			local bar = guardian.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					rageBar = { bar = false, border = false, background = false },
+				}
+				t.rageBar[elemKey] = true
+				return t
+			end
+
+			ic.berserkEnd = {
+				color = bar.berserkEnd and bar.berserkEnd.color or "FFFF5555",
+				enabled = guardian.endOf and guardian.endOf.berserk and guardian.endOf.berserk.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.berserk = {
+				color = bar.berserk and bar.berserk.color or "FFFFCC55",
+				enabled = bar.berserk and bar.berserk.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FF800000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("border"),
+			}
+
+			bar.berserk = nil
+			bar.berserkEnd = nil
+			bar.borderOvercap = nil
+
+			if guardian.endOf and guardian.endOf.berserk then
+				guardian.endOf.berserk.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Restoration Druid indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.bar and restoration.colors.bar.noEfflorescence ~= nil
+			and type(restoration.colors.bar.noEfflorescence) == "table"
+			and (restoration.colors.shared == nil or restoration.colors.shared.indicatorColors == nil) then
+
+			restoration.colors.shared = restoration.colors.shared or {}
+			restoration.colors.shared.nodeOrder = {
+				"incarnationEnd",
+				"incarnation",
+				"noEfflorescence",
+			}
+			restoration.colors.shared.gradientOrder = {}
+			restoration.colors.shared.indicatorColors = {}
+			local ic = restoration.colors.shared.indicatorColors
+			local bar = restoration.colors.bar
+
+			local function MakeTargets(elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+				}
+				t.manaBar[elemKey] = true
+				return t
+			end
+
+			ic.incarnationEnd = {
+				color = bar.incarnationEnd and bar.incarnationEnd.color or "FFDD5500",
+				enabled = restoration.endOf and restoration.endOf.incarnation and restoration.endOf.incarnation.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.incarnation = {
+				color = bar.incarnation and bar.incarnation.color or "FF005500",
+				enabled = bar.incarnation and bar.incarnation.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+			ic.noEfflorescence = {
+				color = bar.noEfflorescence and bar.noEfflorescence.color or "FFFF0000",
+				enabled = bar.noEfflorescence and bar.noEfflorescence.enabled ~= false,
+				targets = MakeTargets("bar"),
+			}
+
+			bar.noEfflorescence = nil
+			bar.incarnation = nil
+			bar.incarnationEnd = nil
+
+			if restoration.endOf and restoration.endOf.incarnation then
+				restoration.endOf.incarnation.enabled = nil
+			end
+		end
+	end
 end
+
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
@@ -6215,10 +7018,6 @@ function TRB.Functions.Settings:DefaultHolyWordsBarColors()
 			holyWordSanctify = { color = "FFFFDD22", enabled = true },
 			holyWordChastise = { color = "FFFF8080", enabled = true }
 		},
-		completeCooldown = {
-			color = "FF00B500",
-			enabled = true
-		}
 	}
 end
 
@@ -6361,10 +7160,6 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 		border = { color = "FF4466CC" },
 		background = { color = "66000000" },
 		sameColor = false,
-		benediction = {
-			color = "FFFCE58E",
-			enabled = true
-		},
 		nodeColors = {
 			charge1 = { color = "FF88CCFF" },
 			charge2 = { color = "FF55AAFF" },

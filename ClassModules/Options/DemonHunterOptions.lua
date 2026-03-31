@@ -197,7 +197,40 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"metamorphosisEnd",
+					"metamorphosis",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					metamorphosisEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+						},
+					},
+					metamorphosis = {
+						color = "FF67F100",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							furyBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -323,22 +356,11 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFA330C9"
 				},
-				borderOvercap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
 					color = "FFC942FD"
-				},
-				metamorphosis = {
-					color = "FF67F100",
-					enabled = true
-				},
-				metamorphosisEnd = {
-					color = "FFFF0000"
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -383,7 +405,43 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"metamorphosisEnd",
+					"metamorphosis",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					metamorphosisEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+					metamorphosis = {
+						color = "FF67F100",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							furyBar = { bar = false, border = true, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -598,7 +656,61 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {
+					"voidMetamorphosisReady",
+					"collapsingStarReady",
+					"voidMetamorphosis",
+					"voidRayReady",
+				},
+				gradientOrder = {
+					"borderOvercap",
+				},
+				indicatorColors = {
+					voidMetamorphosisReady = {
+						color = "FF431863",
+						enabled = true,
+						targets = {
+							furyBar = { bar = false, border = false, background = false },
+							soulFragmentsBar = { bar = true, border = false, background = false },
+						},
+					},
+					collapsingStarReady = {
+						color = "FF431863",
+						enabled = true,
+						targets = {
+							furyBar = { bar = false, border = false, background = false },
+							soulFragmentsBar = { bar = true, border = false, background = false },
+						},
+					},
+					voidMetamorphosis = {
+						color = "FF431863",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+					voidRayReady = {
+						color = "FF008B8B",
+						enabled = true,
+						targets = {
+							furyBar = { bar = true, border = false, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							furyBar = { bar = false, border = true, background = false },
+							soulFragmentsBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -761,43 +873,7 @@ local function HavocConstructFuryBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 12, 1, yCoord, {
-		endOfKey = "metamorphosis",
-		activeColorKey = "metamorphosis",
-		endColorKey = "metamorphosisEnd",
-		checkboxLabel = L["DemonHunterHavocCheckboxMetamorphosis"],
-		checkboxTooltip = L["DemonHunterHavocCheckboxMetamorphosisTooltip"],
-		activeColorLabel = L["DemonHunterHavocColorPickerMetamorphosis"],
-		endCheckboxLabel = L["DemonHunterHavocCheckboxEndOfMetamorphosis"],
-		endCheckboxTooltip = L["DemonHunterHavocCheckboxEndOfMetamorphosisTooltip"],
-		endColorLabel = L["DemonHunterHavocColorPickerMetamorphosisEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 12, 1, yCoord, {
-		endOfKey = "metamorphosis",
-		sectionHeader = L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"],
-		gcdRadioLabel = L["DemonHunterHavocCheckboxMetamorphosisGcds"],
-		gcdSliderLabel = L["DemonHunterHavocMetamorphosisGcds"],
-		timeRadioLabel = L["DemonHunterHavocCheckboxMetamorphosisTime"],
-		timeSliderLabel = L["DemonHunterHavocMetamorphosisTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], HAVOC_MAX_FURY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 1, HAVOC_MAX_FURY)
@@ -819,6 +895,47 @@ local function HavocConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 1, yCoord)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
+end
+
+local function HavocConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.havoc
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "metamorphosisEnd",  label = L["DemonHunterHavocColorPickerMetamorphosisEnd"],  tooltip = L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"],  colorLabel = L["DemonHunterHavocIndicatorMetamorphosisEndColor"] },
+			{ key = "metamorphosis",     label = L["DemonHunterHavocCheckboxMetamorphosis"],         tooltip = L["DemonHunterHavocIndicatorMetamorphosisTooltip"],     colorLabel = L["DemonHunterHavocIndicatorMetamorphosisColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap",     label = L["DemonHunterHavocCheckboxOvercap"],               tooltip = L["DemonHunterHavocIndicatorOvercapTooltip"],           colorLabel = L["DemonHunterHavocIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "furyBar", label = L["BarNameFuryBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_DemonHunter_Havoc",
+		endOfConfigs = {
+			{
+				endOfKey = "metamorphosis",
+				sectionHeader = L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"],
+				gcdRadioLabel = L["DemonHunterHavocCheckboxMetamorphosisGcds"],
+				gcdSliderLabel = L["DemonHunterHavocMetamorphosisGcds"],
+				timeRadioLabel = L["DemonHunterHavocCheckboxMetamorphosisTime"],
+				timeSliderLabel = L["DemonHunterHavocMetamorphosisTime"],
+			},
+		},
+		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = HAVOC_MAX_FURY },
+	}))
+
+	yCoord = yCoord - 40
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
@@ -1091,6 +1208,7 @@ local function HavocConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = HavocConstructFuryBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HavocConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HavocConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HavocConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HavocConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdPanel },
@@ -1214,43 +1332,7 @@ local function VengeanceConstructFuryBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 12, 2, yCoord, {
-		endOfKey = "metamorphosis",
-		activeColorKey = "metamorphosis",
-		endColorKey = "metamorphosisEnd",
-		checkboxLabel = L["DemonHunterVengeanceCheckboxMetamorphosis"],
-		checkboxTooltip = L["DemonHunterVengeanceCheckboxMetamorphosisTooltip"],
-		activeColorLabel = L["DemonHunterVengeanceColorPickerMetamorphosis"],
-		endCheckboxLabel = L["DemonHunterVengeanceCheckboxEndOfMetamorphosis"],
-		endCheckboxTooltip = L["DemonHunterVengeanceCheckboxEndOfMetamorphosisTooltip"],
-		endColorLabel = L["DemonHunterVengeanceColorPickerMetamorphosisEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 12, 2, yCoord, {
-		endOfKey = "metamorphosis",
-		sectionHeader = L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"],
-		gcdRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisGcds"],
-		gcdSliderLabel = L["DemonHunterVengeanceMetamorphosisGcds"],
-		timeRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisTime"],
-		timeSliderLabel = L["DemonHunterVengeanceMetamorphosisTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], VENGEANCE_MAX_FURY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 1, VENGEANCE_MAX_FURY)
@@ -1308,6 +1390,51 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
+end
+
+local function VengeanceConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.vengeance
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "metamorphosisEnd",  label = L["DemonHunterVengeanceColorPickerMetamorphosisEnd"],  tooltip = L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"],  colorLabel = L["DemonHunterVengeanceIndicatorMetamorphosisEndColor"] },
+			{ key = "metamorphosis",     label = L["DemonHunterVengeanceCheckboxMetamorphosis"],         tooltip = L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"],     colorLabel = L["DemonHunterVengeanceIndicatorMetamorphosisColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap",     label = L["DemonHunterVengeanceCheckboxOvercap"],               tooltip = L["DemonHunterVengeanceIndicatorOvercapTooltip"],           colorLabel = L["DemonHunterVengeanceIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "furyBar", label = L["BarNameFuryBar"] },
+			{ key = "soulFragmentsBar", label = L["BarNameSoulFragmentsBar"] },
+		},
+		gradientExcludedElements = {
+			soulFragmentsBar = { bar = true },
+		},
+		ddNamePrefix = "TwintopResourceBar_DemonHunter_Vengeance",
+		endOfConfigs = {
+			{
+				endOfKey = "metamorphosis",
+				sectionHeader = L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"],
+				gcdRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisGcds"],
+				gcdSliderLabel = L["DemonHunterVengeanceMetamorphosisGcds"],
+				timeRadioLabel = L["DemonHunterVengeanceCheckboxMetamorphosisTime"],
+				timeSliderLabel = L["DemonHunterVengeanceMetamorphosisTime"],
+			},
+		},
+		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = VENGEANCE_MAX_FURY },
+	}))
+
+	yCoord = yCoord - 40
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
@@ -1585,6 +1712,7 @@ local function VengeanceConstructOptionsPanel(cache)
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = VengeanceConstructFuryBarPanel },
 		{ key = "soulFragmentsBar", label = L["TabSoulFragments"], width = oUi.tabWidth.small, constructor = VengeanceConstructSoulFragmentsBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = VengeanceConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = VengeanceConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdPanel },
@@ -1670,107 +1798,7 @@ local function DevourerConstructFuryBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.voidMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_VoidMetamorphosis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidMetamorphosis
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxVoidMetamorphosis"])
-	f.tooltip = L["DemonHunterDevourerCheckboxVoidMetamorphosisTooltip"]
-	f:SetChecked(spec.colors.bar.voidMetamorphosis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.voidMetamorphosis.enabled = self:GetChecked()
-	end)
-
-	controls.colors.voidMetamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosis"], spec.colors.bar.voidMetamorphosis.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.voidMetamorphosis
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "voidMetamorphosis")
-	end)
-
-	--[[yCoord = yCoord - 30
-	controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EndOfMetamorphosisCheckbox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosis
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxEndOfMetamorphosis"])
-	f.tooltip = L["DemonHunterDevourerCheckboxEndOfMetamorphosisTooltip"]
-	f:SetChecked(spec.endOfMetamorphosis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.endOfMetamorphosis.enabled = self:GetChecked()
-	end)
-
-	controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.metamorphosisEnding
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
-	end)]]
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], true, false)
-
-
-	--[[yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterDevourerEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosisModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfMetamorphosis.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(true)
-		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(false)
-		spec.endOfMetamorphosis.mode = "gcd"
-	end)
-
-	title = L["DemonHunterDevourerMetamorphosisGcds"]
-	controls.endOfMetamorphosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.endOfMetamorphosis.gcdsMax = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_EOT_M_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.endOfMetamorphosisModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxMetamorphosisTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.endOfMetamorphosis.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.endOfMetamorphosisModeGCDs:SetChecked(false)
-		controls.checkBoxes.endOfMetamorphosisModeTime:SetChecked(true)
-		spec.endOfMetamorphosis.mode = "time"
-	end)
-
-	title = L["DemonHunterDevourerMetamorphosisTime"]
-	controls.endOfMetamorphosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.endOfMetamorphosis.timeMax = value
-	end)]]
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], DEVOURER_MAX_FURY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], 1, DEVOURER_MAX_FURY)
@@ -1802,44 +1830,10 @@ local function DevourerConstructSoulFragmentsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.voidMetamorphosisReady = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_VoidMetamorphosisReady", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidMetamorphosisReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxVoidMetamorphosisReady"])
-	f.tooltip = L["DemonHunterDevourerCheckboxVoidMetamorphosisReadyTooltip"]
-	f:SetChecked(spec.colors.comboPoints.voidMetamorphosisReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.voidMetamorphosisReady.enabled = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.voidMetamorphosisReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentVoidMetamorphosisReady"], spec.colors.comboPoints.voidMetamorphosisReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.voidMetamorphosisReady
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "voidMetamorphosisReady")
-	end)
-
-	yCoord = yCoord - 30
 	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.collapsingStar
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStar")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.collapsingStarReady = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Checkbox_CollapsingStarReady", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.collapsingStarReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerCheckboxCollapsingStarReady"])
-	f.tooltip = L["DemonHunterDevourerCheckboxCollapsingStarReadyTooltip"]
-	f:SetChecked(spec.colors.comboPoints.collapsingStarReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.collapsingStarReady.enabled = self:GetChecked()
-	end)
-
-	controls.colors.comboPoints.collapsingStarReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterDevourerColorPickerSoulFragmentCollapsingStarReady"], spec.colors.comboPoints.collapsingStarReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.collapsingStarReady
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStarReady")
 	end)
 
 	yCoord = yCoord - 30
@@ -1871,6 +1865,43 @@ local function DevourerConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 12, 3, yCoord)
+end
+
+local function DevourerConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.devourer
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "voidMetamorphosisReady", label = L["DemonHunterDevourerCheckboxVoidMetamorphosisReady"], tooltip = L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyTooltip"], colorLabel = L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyColor"] },
+			{ key = "collapsingStarReady",    label = L["DemonHunterDevourerCheckboxCollapsingStarReady"],    tooltip = L["DemonHunterDevourerIndicatorCollapsingStarReadyTooltip"], colorLabel = L["DemonHunterDevourerIndicatorCollapsingStarReadyColor"] },
+			{ key = "voidMetamorphosis",      label = L["DemonHunterDevourerCheckboxVoidMetamorphosis"],      tooltip = L["DemonHunterDevourerIndicatorVoidMetamorphosisTooltip"],  colorLabel = L["DemonHunterDevourerIndicatorVoidMetamorphosisColor"] },
+			{ key = "voidRayReady",           label = L["DemonHunterDevourerCheckboxVoidRayReady"],             tooltip = L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"],       colorLabel = L["DemonHunterDevourerIndicatorVoidRayReadyColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["DemonHunterDevourerCheckboxOvercap"], tooltip = L["DemonHunterDevourerIndicatorOvercapTooltip"], colorLabel = L["DemonHunterDevourerIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "furyBar", label = L["BarNameFuryBar"] },
+			{ key = "soulFragmentsBar", label = L["BarNameSoulFragmentsBar"] },
+		},
+		gradientExcludedElements = {
+			soulFragmentsBar = { bar = true },
+		},
+		ddNamePrefix = "TwintopResourceBar_DemonHunter_Devourer",
+		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = DEVOURER_MAX_FURY },
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = controls
 end
 
 local function DevourerConstructBarTexturesPanel(parent)
@@ -2102,6 +2133,7 @@ local function DevourerConstructOptionsPanel(cache)
 		{ key = "furyBar", label = L["TabFury"], width = oUi.tabWidth.small, constructor = DevourerConstructFuryBarPanel },
 		{ key = "soulFragmentsBar", label = L["TabSoulFragmentsCollapsingStar"], width = oUi.tabWidth.xlarge, constructor = DevourerConstructSoulFragmentsBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevourerConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DevourerConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevourerConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevourerConstructBarVisibilityPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdPanel },

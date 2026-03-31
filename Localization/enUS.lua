@@ -2424,7 +2424,7 @@ L["PriestShadowColorPickerBorderOvercap"] = "Overcap border color"
 
 -- Gradient Color Overrides section
 L["GradientColorOverridesHeader"] = "Gradient Colors (Secrets)"
-L["GradientColorOverridesNote"] = "Gradient indicators use secret values and will always override Color Indicator Priority colors when active."
+L["GradientColorOverridesNote"] = "Gradient indicators use secret values and may override Color Indicator Priority colors when conditions activate them."
 
 -- Shadow Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
 L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this color when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
@@ -2443,5 +2443,166 @@ L["PriestShadowIndicatorEntropicRiftTooltip"] = "Changes to this color while Ent
 L["PriestShadowIndicatorEntropicRiftColor"] = "Entropic Rift is active"
 L["PriestShadowIndicatorMindFlayInsanityTooltip"] = "Changes to this color when you are able to cast Mind Flay: Insanity."
 L["PriestShadowIndicatorMindFlayInsanityColor"] = "Mind Flay: Insanity is available"
-L["PriestShadowIndicatorOvercapTooltip"] = "Gradually changes to this color as your Insanity approaches the overcap threshold."
+L["PriestShadowIndicatorOvercapTooltip"] = "Changes to this color when your Insanity approaches the overcap threshold."
 L["PriestShadowIndicatorOvercapColor"] = "Overcapping Insanity"
+
+-- Priest Holy Indicator Colors
+-- Bar target names
+L["BarNameHolyWordsBar"] = "Holy Words"
+L["BarNameLightweaverBar"] = "Lightweaver"
+
+-- Indicator labels (new, bar-agnostic)
+L["PriestHolyCheckboxCompleteCooldown"] = "Completes Holy Word cooldown"
+L["PriestHolyCheckboxBenedictionIndicator"] = "Benediction"
+L["PriestHolyCheckboxHolyWordSerenityCooldown"] = "Holy Word: Serenity cooldown"
+L["PriestHolyCheckboxHolyWordSanctifyCooldown"] = "Holy Word: Sanctify cooldown"
+L["PriestHolyCheckboxHolyWordChastiseCooldown"] = "Holy Word: Chastise cooldown"
+L["PriestHolyCheckboxApotheosisEndIndicator"] = "Apotheosis ending"
+
+-- Indicator tooltips (all bar-agnostic)
+L["PriestHolyIndicatorCompleteCooldownTooltip"] = "Changes to this color when your current cast will complete the cooldown of its related Holy Word."
+L["PriestHolyIndicatorBenedictionTooltip"] = "Changes to this color while Benediction has replaced Flash Heal. If Lightweaver's Background is selected, the next unfilled Lightweaver node will change to this color."
+L["PriestHolyIndicatorHolyWordSerenityTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Serenity."
+L["PriestHolyIndicatorHolyWordSanctifyTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Sanctify."
+L["PriestHolyIndicatorHolyWordChastiseTooltip"] = "Changes to this color when your current cast will complete the cooldown of Holy Word: Chastise."
+L["PriestHolyIndicatorApotheosisTooltip"] = "Changes to this color when Apotheosis is active."
+L["PriestHolyIndicatorApotheosisEndTooltip"] = "Changes to this color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["PriestHolyIndicatorSurgeOfLightTooltip"] = "Changes to this color when you have Surge of Light."
+L["PriestHolyIndicatorLightweaverTooltip"] = "Changes to this color when you have any stacks of Lightweaver."
+
+-- Indicator color labels (condition descriptions, no bar references)
+L["PriestHolyIndicatorCompleteCooldownColor"] = "Cast completes a Holy Word cooldown"
+L["PriestHolyIndicatorBenedictionColor"] = "Benediction is active"
+L["PriestHolyIndicatorHolyWordSerenityColor"] = "Cast completes Holy Word: Serenity cooldown"
+L["PriestHolyIndicatorHolyWordSanctifyColor"] = "Cast completes Holy Word: Sanctify cooldown"
+L["PriestHolyIndicatorHolyWordChastiseColor"] = "Cast completes Holy Word: Chastise cooldown"
+L["PriestHolyIndicatorApotheosisColor"] = "Apotheosis is active"
+L["PriestHolyIndicatorApotheosisEndColor"] = "Apotheosis is ending (as configured)"
+L["PriestHolyIndicatorSurgeOfLightColor"] = "Surge of Light is active"
+L["PriestHolyIndicatorLightweaverColor"] = "Lightweaver has any stacks"
+
+-- Discipline Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PriestDisciplineCheckboxSurgeOfLight"] = "Surge of Light"
+L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this color when you have Surge of Light."
+L["PriestDisciplineIndicatorSurgeOfLightColor"] = "Surge of Light is active"
+L["BarNamePowerWordsBar"] = "Power Words"
+
+-- Discipline Priest Void Shield indicator and bar text
+L["PriestDisciplineCheckboxVoidShield"] = "Void Shield"
+L["PriestDisciplineIndicatorVoidShieldTooltip"] = "Changes to this color when the Void Shield proc is active."
+L["PriestDisciplineIndicatorVoidShieldColor"] = "Void Shield proc is active"
+L["PriestDisciplineBarTextVariable_voidShieldTime"] = "Time remaining on the Void Shield proc"
+
+-- Demon Hunter Havoc Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["BarNameFuryBar"] = "Fury"
+L["DemonHunterHavocCheckboxOvercap"] = "Overcap (gradient)"
+L["DemonHunterHavocIndicatorMetamorphosisTooltip"] = "Changes to this color when Metamorphosis is active."
+L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"] = "Changes to this color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DemonHunterHavocIndicatorOvercapTooltip"] = "Changes to this color when your Fury approaches the overcap threshold."
+L["DemonHunterHavocIndicatorMetamorphosisColor"] = "Metamorphosis is active"
+L["DemonHunterHavocIndicatorMetamorphosisEndColor"] = "Metamorphosis is ending (as configured)"
+L["DemonHunterHavocIndicatorOvercapColor"] = "Overcapping Fury"
+
+-- Base Colors section header
+L["BaseColorsHeader"] = "Base Colors"
+L["ColorPickerBorder"] = "Border"
+
+-- Demon Hunter Vengeance Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"] = "Changes to this color when Metamorphosis is active."
+L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"] = "Changes to this color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DemonHunterVengeanceIndicatorOvercapTooltip"] = "Changes to this color when your Fury approaches the overcap threshold."
+L["DemonHunterVengeanceIndicatorMetamorphosisColor"] = "Metamorphosis is active"
+L["DemonHunterVengeanceIndicatorMetamorphosisEndColor"] = "Metamorphosis is ending (as configured)"
+L["DemonHunterVengeanceIndicatorOvercapColor"] = "Overcapping Fury"
+L["DemonHunterVengeanceCheckboxOvercap"] = "Overcap (gradient)"
+
+-- Demon Hunter Vengeance Soul Fragments bar name for indicator color targets
+L["BarNameSoulFragmentsBar"] = "Soul Fragments"
+
+-- Demon Hunter Devourer Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DemonHunterDevourerIndicatorVoidMetamorphosisTooltip"] = "Changes to this color when Void Metamorphosis is active."
+L["DemonHunterDevourerIndicatorVoidMetamorphosisColor"] = "Void Metamorphosis is active"
+L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyTooltip"] = "Changes to this color when Void Metamorphosis is ready."
+L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyColor"] = "Void Metamorphosis is ready"
+L["DemonHunterDevourerIndicatorCollapsingStarReadyTooltip"] = "Changes to this color when Collapsing Star is ready."
+L["DemonHunterDevourerIndicatorCollapsingStarReadyColor"] = "Collapsing Star is ready"
+L["DemonHunterDevourerCheckboxOvercap"] = "Overcap (gradient)"
+L["DemonHunterDevourerIndicatorOvercapTooltip"] = "Gradually changes to this color as your Fury approaches the overcap threshold."
+L["DemonHunterDevourerIndicatorOvercapColor"] = "Overcapping Fury"
+
+-- Demon Hunter Devourer Void Ray Ready Indicator
+L["DemonHunterDevourerCheckboxVoidRayReady"] = "Void Ray Ready"
+L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"] = "Changes to this color when Void Ray is usable and Void Metamorphosis is not active."
+L["DemonHunterDevourerIndicatorVoidRayReadyColor"] = "Void Ray is usable"
+
+-- Evoker Devastation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerDevastationIndicatorDragonrageTooltip"] = "Changes to this color when Dragonrage is active."
+L["EvokerDevastationIndicatorDragonrageEndTooltip"] = "Changes to this color when Dragonrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["EvokerDevastationIndicatorDragonrageColor"] = "Dragonrage is active"
+L["EvokerDevastationIndicatorDragonrageEndColor"] = "Dragonrage is ending (as configured)"
+L["EvokerDevastationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerDevastationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Evoker Preservation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerPreservationCheckboxInnervate"] = "Innervate"
+L["EvokerPreservationIndicatorInnervateTooltip"] = "Changes to this color when you have Innervate."
+L["EvokerPreservationIndicatorInnervateColor"] = "Innervate is active"
+L["EvokerPreservationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerPreservationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Evoker Augmentation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerAugmentationIndicatorEbonMightTooltip"] = "Changes to this color when Ebon Might is active."
+L["EvokerAugmentationIndicatorEbonMightEndTooltip"] = "Changes to this color when Ebon Might is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["EvokerAugmentationIndicatorEbonMightColor"] = "Ebon Might is active"
+L["EvokerAugmentationIndicatorEbonMightEndColor"] = "Ebon Might is ending (as configured)"
+L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to this color when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
+L["EvokerAugmentationIndicatorEbonMightDropDuringCastColor"] = "Cast won't extend Ebon Might"
+L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerAugmentationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Druid Indicator Colors: BarName keys
+L["BarNameAstralPowerBar"] = "Astral Power"
+L["BarNameEnergyBar"] = "Energy"
+L["BarNameRageBar"] = "Rage"
+L["BarNameComboPoints"] = "Combo Points"
+
+-- Druid Indicator Colors: New label keys
+L["DruidBalanceCheckboxEclipseEnding"] = "Eclipse Ending"
+L["DruidGuardianCheckboxBerserkActive"] = "Berserk / Incarnation"
+L["DruidGuardianCheckboxBerserkEnding"] = "Berserk Ending"
+L["DruidRestorationCheckboxIncarnationEnding"] = "Incarnation Ending"
+
+-- Druid Balance Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidBalanceIndicatorSolarTooltip"] = "Changes to this color when you are in Solar Eclipse."
+L["DruidBalanceIndicatorLunarTooltip"] = "Changes to this color when you are in Lunar Eclipse."
+L["DruidBalanceIndicatorCelestialTooltip"] = "Changes to this color when you have Celestial Alignment or Incarnation: Chosen of Elune active."
+L["DruidBalanceIndicatorEclipseEndTooltip"] = "Changes to this color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidBalanceIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Astral Power approaches the overcap threshold."
+L["DruidBalanceIndicatorEclipseEndColor"] = "Eclipse is ending (as configured)"
+L["DruidBalanceIndicatorBorderOvercapColor"] = "Overcapping Astral Power"
+
+-- Druid Feral Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidFeralIndicatorMaxBiteTooltip"] = "Gradually changes to this color as your Energy approaches the amount needed for a maximum damage Ferocious Bite."
+L["DruidFeralIndicatorApexPredatorTooltip"] = "Changes to this color when you have an Apex Predator's Craving proc."
+L["DruidFeralIndicatorBorderStealthTooltip"] = "Changes to this color when you are stealthed."
+L["DruidFeralIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["DruidFeralIndicatorMaxBiteColor"] = "Ferocious Bite will do max damage"
+L["DruidFeralIndicatorApexPredatorColor"] = "Apex Predator's Craving proc is active"
+L["DruidFeralIndicatorBorderStealthColor"] = "Stealthed"
+L["DruidFeralIndicatorBorderOvercapColor"] = "Overcapping Energy"
+
+-- Druid Guardian Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidGuardianIndicatorBerserkTooltip"] = "Changes to this color when Berserk or Incarnation: Guardian of Ursoc is active."
+L["DruidGuardianIndicatorBerserkEndTooltip"] = "Changes to this color when Berserk is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidGuardianIndicatorBorderOvercapTooltip"] = "Gradually changes to this color as your Rage approaches the overcap threshold."
+L["DruidGuardianIndicatorBerserkColor"] = "Berserk is active"
+L["DruidGuardianIndicatorBerserkEndColor"] = "Berserk is ending (as configured)"
+L["DruidGuardianIndicatorBorderOvercapColor"] = "Overcapping Rage"
+
+-- Druid Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DruidRestorationIndicatorNoEfflorescenceTooltip"] = "Changes to this color when Efflorescence is not active on the ground."
+L["DruidRestorationIndicatorIncarnationTooltip"] = "Changes to this color when you have Incarnation: Tree of Life active."
+L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this color when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["DruidRestorationIndicatorNoEfflorescenceColor"] = "Efflorescence is not active"
+L["DruidRestorationIndicatorIncarnationColor"] = "Incarnation: Tree of Life is active"
+L["DruidRestorationIndicatorIncarnationEndColor"] = "Incarnation is ending (as configured)"

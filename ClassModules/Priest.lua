@@ -230,6 +230,8 @@ local function FillSpecializationCache()
 	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.masterTheDarkness.id] = TRB.Classes.Snapshot:New(spells.masterTheDarkness)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -752,6 +754,20 @@ local function RefreshLookupData_Discipline()
 	if not activeVars or activeVars["$surgeOfLight"] then
 		lookupLogic["$surgeOfLight"] = snapshotData.attributes.surgeOfLightActive or false
 		lookup["$surgeOfLight"] = ""
+	end
+
+	-- Block E: Void Shield duration ($voidShieldTime)
+	if not activeVars or activeVars["$voidShieldTime"] or activeVars["$masterTheDarknessTime"] then
+		local _voidShieldTime = snapshots[spells.masterTheDarkness.id].buff.remaining
+
+		lookupLogic["$voidShieldTime"] = _voidShieldTime
+		lookupLogic["$masterTheDarknessTime"] = _voidShieldTime
+
+		if lookupChanged(prevState, "$voidShieldTime", _voidShieldTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_voidShieldTime)
+			lookup["$voidShieldTime"] = f
+			lookup["$masterTheDarknessTime"] = f
+		end
 	end
 
 	--[[lookup["$scTime"] = scTime
@@ -1603,7 +1619,19 @@ local function HandleSpellEvents(self, event, ...)
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		if TRB.Data.character.specId == 2 then
+		if TRB.Data.character.specId == 1 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+			if spellId == spells.powerWordShield.id then
+				if rSpellId == nil or rSpellId ~= spells.masterTheDarkness.id then
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff:Reset()
+					-- Keep isCustom so RefreshAllBuffs() won't re-detect the game aura
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff.isCustom = true
+					TRB.Data.lookupDirty = true
+				elseif rSpellId == spells.masterTheDarkness.id then
+					snapshotData.snapshots[spells.masterTheDarkness.id].buff:AddTimeOrInitializeCustom(spells.masterTheDarkness.duration, GetTime())
+				end
+			end
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 			if spellId == spells.flashHeal.id then
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
@@ -1693,6 +1721,7 @@ local function UpdateSnapshot_Discipline()
 	--[[snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)]]
 
+	snapshots[spells.masterTheDarkness.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 end
 
@@ -1777,32 +1806,53 @@ local function UpdateResourceBar()
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Discipline()
 		if snapshotData.attributes.isTracking then
+			-- Build indicator condition map (shared across primary and secondary bar blocks)
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				surgeOfLight = snapshotData.attributes.surgeOfLightActive,
+				voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = specSettings.colors.bar.base.color, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border.color
-
-				-- Detect Surge of Light via Flash Heal mana cost reduction
-				if snapshotData.attributes.surgeOfLightActive then
-					if specSettings.colors.bar.surgeOfLight.enabled then
-						barBorderColor = specSettings.colors.bar.surgeOfLight.color
-					end
-				end
-
-				--[[if snapshots[spells.shadowCovenant.id].buff.isActive then
-					if specSettings.colors.bar.shadowCovenant.enabled then
-						barBorderColor = specSettings.colors.bar.shadowCovenant.color
-					end
-				end]]
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				
-				local barColor = specSettings.colors.bar.base.color
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				primaryNode:SetColor(manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1838,9 +1888,9 @@ local function UpdateResourceBar()
 									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 								end
-								cpNode:SetColor(cpColor)
-								cpNode:SetBorderColor(cpBorderColor)
-								cpNode:SetBackgroundColorFromString(specSettings.colors.comboPoints.background.color)
+								cpNode:SetColor(powerWordsBarColors.bar)
+								cpNode:SetBorderColor(powerWordsBarColors.border)
+								cpNode:SetBackgroundColorFromString(powerWordsBarColors.background)
 								currentCp = currentCp + 1
 							end
 						end
@@ -1911,7 +1961,6 @@ local function UpdateResourceBar()
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Holy()
 		if snapshotData.attributes.isTracking then
-			local holyWordCooldownCompletes = false
 			local holyWordCooldownCompletesKey = nil
 
 			if snapshotData.casting.spellKey ~= nil then
@@ -1940,82 +1989,98 @@ local function UpdateResourceBar()
 						local calcHolyWordCooldown = CalculateHolyWordCooldown(reduction)
 
 						if (holyWordCooldownRemaining - calcHolyWordCooldown - castTimeRemains) <= 0 then
-							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = effectiveHolyWordKey
 						end
 					end
 				end
 			end
 
-			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
-				refreshText = true
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local barBorderColor = specSettings.colors.bar.border.color
+			-- Build indicator condition map (hoisted above primary/HW/LW blocks so all share these)
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
-				-- Detect Surge of Light via Flash Heal mana cost reduction
-				if snapshotData.attributes.surgeOfLightActive then
-					if specSettings.colors.bar.surgeOfLight.enabled then
-						barBorderColor = specSettings.colors.bar.surgeOfLight.color
-					end
-				elseif snapshots[spells.lightweaver.id].buff.isActive then
-					if specSettings.colors.bar.lightweaver.enabled then
-						barBorderColor = specSettings.colors.bar.lightweaver.color
-					end
+			-- Precompute apotheosis end timing threshold
+			local apotheosisActive = snapshots[spells.apotheosis.id].buff.isActive
+			local apotheosisEndMet = false
+			if apotheosisActive then
+				local timeLeft = snapshots[spells.apotheosis.id].buff.remaining
+				local timeThreshold = 0
+				if specSettings.endOf.apotheosis.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.apotheosis.gcdsMax
+				elseif specSettings.endOf.apotheosis.mode == "time" then
+					timeThreshold = specSettings.endOf.apotheosis.timeMax
 				end
-				
-				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				apotheosisEndMet = timeLeft <= timeThreshold
+			end
 
-				local barColor = nil
+			local conditionMap = {
+				benediction = snapshotData.attributes.benedictionOverride,
+				holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity",
+				holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify",
+				holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise",
+				apotheosisEnd = apotheosisActive and apotheosisEndMet,
+				apotheosis = apotheosisActive,
+				surgeOfLight = snapshotData.attributes.surgeOfLightActive,
+				lightweaver = snapshots[spells.lightweaver.id].buff.isActive,
+			}
 
-				if snapshots[spells.apotheosis.id].buff.isActive then
-					local timeThreshold = 0
-					local useEndOfApotheosisColor = false
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = specSettings.colors.bar.base.color, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local holyWordsBarColors = { bar = nil, border = nil, background = nil }
+			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
 
-					if specSettings.endOf.apotheosis.enabled then
-						useEndOfApotheosisColor = true
-						if specSettings.endOf.apotheosis.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.apotheosis.gcdsMax
-							elseif specSettings.endOf.apotheosis.mode == "time" then
-							timeThreshold = specSettings.endOf.apotheosis.timeMax
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										-- Benediction on lightweaverBar.background is node-specific (next empty node only)
+										-- Per-HW indicators on holyWordsBar are node-specific (recharging node only)
+										if isTargeted
+											and not (key == "benediction" and barKey == "lightweaverBar" and elemKey == "background")
+											and not ((key == "holyWordSerenity" or key == "holyWordSanctify" or key == "holyWordChastise") and barKey == "holyWordsBar") then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
 						end
 					end
+				end
+			end
 
-					if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
-						barColor = specSettings.colors.bar.apotheosisEnd.color
-					elseif specSettings.colors.bar.apotheosis.enabled then
-						barColor = specSettings.colors.bar.apotheosis.color
-					end
-				end
+			if not specSettings.displayBar.primary.neverShow then
+				refreshText = true
+				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 
-				if snapshotData.attributes.benedictionOverride and barColor == nil then
-					if specSettings.colors.bar.benediction and specSettings.colors.bar.benediction.enabled then
-						barColor = specSettings.colors.bar.benediction.color
-					end
-				end
+				-- Resolve final mana bar colors from the map
+				local barColor = manaBarColors.bar
+				local barBorderColor = manaBarColors.border
+				local barBackgroundColor = manaBarColors.background
 
-				if holyWordCooldownCompletes and barColor == nil then
-					if specSettings.colors.bar[holyWordCooldownCompletesKey] and specSettings.colors.bar[holyWordCooldownCompletesKey].enabled then
-						barColor = specSettings.colors.bar[holyWordCooldownCompletesKey].color
-					end
-				end
-				
-				if barColor == nil then
-					barColor = specSettings.colors.bar.base.color
-				end
+				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.holyWords.neverShow then
 				local hwColors = specSettings.colors.bars.holyWords
-				local cpBR, cpBG, cpBB, cpBA = Color:GetRGBAFromString(hwColors.background.color, true)
-				local cpBorderColor = hwColors.border.color
+				local cpBorderColor = holyWordsBarColors.border or hwColors.border.color
+				local cpBackgroundColor = holyWordsBarColors.background or hwColors.background.color
+				local cpBR, cpBG, cpBB, cpBA = Color:GetRGBAFromString(cpBackgroundColor, true)
 				local currentCp = 1
 
 				-- Use BarTypeDefinition ordering to iterate Holy Words in user-configured order
@@ -2038,11 +2103,19 @@ local function UpdateResourceBar()
 							local maxCharges = cooldown.manualMaxCharges or 1
 							local baseColor = nodeColorEntry.color or "FFFFFFFF"
 
+							-- Read per-HW indicator for node-specific coloring on the recharging node
+							local hwIndicator = indicatorColors and indicatorColors[hwDef.key]
+							local hwIndTargets = hwIndicator and hwIndicator.enabled
+								and conditionMap[hwDef.key]
+								and hwIndicator.targets and hwIndicator.targets.holyWordsBar
+
 							for chargeIndex = 1, maxCharges do
 								if barGroups and barGroups.holyWords then
 									local cpNode = barGroups.holyWords:GetNode(currentCp)
 									if cpNode then
-										local cpColor = baseColor
+										local cpColor = holyWordsBarColors.bar or baseColor
+										local nodeBorderColor = cpBorderColor
+										local nodeBgR, nodeBgG, nodeBgB, nodeBgA = cpBR, cpBG, cpBB, cpBA
 										local cpKey = "comboPoint" .. currentCp
 										if chargeIndex <= charges then
 											-- Available charge: full bar
@@ -2055,17 +2128,20 @@ local function UpdateResourceBar()
 											-- Invalidate cache so continuously changing progress always renders
 											TRB.Data.cache.values.bar[cpKey] = nil
 											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
-											if holyWordCooldownCompletesKey == hwDef.key and hwColors.completeCooldown.enabled and nodeColorEntry and nodeColorEntry.enabled then
-												cpColor = hwColors.completeCooldown.color
-											end
 										else
 											-- Empty charge (not yet recharging)
 											cpNode:ClearTimerDuration()
 											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 										end
+										-- Per-HW indicator: node-specific coloring on the recharging node only
+										if hwIndTargets and chargeIndex == charges + 1 then
+											if hwIndTargets.bar then cpColor = hwIndicator.color end
+											if hwIndTargets.border then nodeBorderColor = hwIndicator.color end
+											if hwIndTargets.background then nodeBgR, nodeBgG, nodeBgB, nodeBgA = Color:GetRGBAFromString(hwIndicator.color, true) end
+										end
 										cpNode:SetColor(cpColor)
-										cpNode:SetBorderColor(cpBorderColor)
-										cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBA)
+										cpNode:SetBorderColor(nodeBorderColor)
+										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
 									end
 								end
 								currentCp = currentCp + 1
@@ -2157,16 +2233,18 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 0, 1)
 							end
-							lwNode:SetColor(nodeColor)
-							lwNode:SetBorderColor(lightweaverColors.border.color)
-							local bgColor = lightweaverColors.background.color
-							if chargeIndex == lwStacks + 1
-								and snapshotData.attributes.benedictionOverride
-								and lightweaverColors.benediction
-								and lightweaverColors.benediction.enabled then
-								bgColor = lightweaverColors.benediction.color
+							lwNode:SetColor(lightweaverBarColors.bar or nodeColor)
+							lwNode:SetBorderColor(lightweaverBarColors.border or lightweaverColors.border.color)
+							local lwBgColor = lightweaverBarColors.background or lightweaverColors.background.color
+							-- Benediction on lightweaver background is node-specific: only the next empty node
+							local benIndicator = indicatorColors and indicatorColors.benediction
+							if benIndicator and benIndicator.enabled and conditionMap.benediction
+								and benIndicator.targets and benIndicator.targets.lightweaverBar
+								and benIndicator.targets.lightweaverBar.background
+								and chargeIndex == lwStacks + 1 then
+								lwBgColor = benIndicator.color
 							end
-							lwNode:SetBackgroundColorFromString(bgColor)
+							lwNode:SetBackgroundColorFromString(lwBgColor)
 						end
 					end
 				end
@@ -2700,6 +2778,8 @@ local function SwitchSpec()
 		lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
+		lookup["#voidShield"] = spells.masterTheDarkness.icon
+		lookup["#masterTheDarkness"] = spells.masterTheDarkness.icon
 		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
@@ -3349,6 +3429,14 @@ do
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
 		["$surgeOfLight"] = function() return TRB.Data.snapshotData.attributes.surgeOfLightActive or false end,
+		["$voidShieldTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
+		end,
+		["$masterTheDarknessTime"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
+		end,
 	}
 	for k, v in pairs(healthVars) do discipline[k] = v end
 	-- Holy
