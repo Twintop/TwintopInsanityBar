@@ -342,4 +342,16 @@ if locale == "enGB" then
     L["DemonHunterDevourerIndicatorCollapsingStarReadyTooltip"] = "Changes to this colour when Collapsing Star is ready."
     L["DemonHunterDevourerIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Fury approaches the overcap threshold."
     L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"] = "Changes to this colour when Void Ray is usable and Void Metamorphosis is not active."
+    -- Evoker Devastation Indicator Colors (bar-agnostic)
+    L["EvokerDevastationIndicatorDragonrageTooltip"] = "Changes to this colour when Dragonrage is active."
+    L["EvokerDevastationIndicatorDragonrageEndTooltip"] = "Changes to this colour when Dragonrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["EvokerDevastationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
+    -- Evoker Preservation Indicator Colors (bar-agnostic)
+    L["EvokerPreservationIndicatorInnervateTooltip"] = "Changes to this colour when you have Innervate."
+    L["EvokerPreservationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
+    -- Evoker Augmentation Indicator Colors (bar-agnostic)
+    L["EvokerAugmentationIndicatorEbonMightTooltip"] = "Changes to this colour when Ebon Might is active."
+    L["EvokerAugmentationIndicatorEbonMightEndTooltip"] = "Changes to this colour when Ebon Might is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to this colour when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
+    L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
 end

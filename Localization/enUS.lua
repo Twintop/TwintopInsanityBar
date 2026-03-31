@@ -2534,3 +2534,28 @@ L["DemonHunterDevourerIndicatorOvercapColor"] = "Overcapping Fury"
 L["DemonHunterDevourerCheckboxVoidRayReady"] = "Void Ray Ready"
 L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"] = "Changes to this color when Void Ray is usable and Void Metamorphosis is not active."
 L["DemonHunterDevourerIndicatorVoidRayReadyColor"] = "Void Ray is usable"
+
+-- Evoker Devastation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerDevastationIndicatorDragonrageTooltip"] = "Changes to this color when Dragonrage is active."
+L["EvokerDevastationIndicatorDragonrageEndTooltip"] = "Changes to this color when Dragonrage is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["EvokerDevastationIndicatorDragonrageColor"] = "Dragonrage is active"
+L["EvokerDevastationIndicatorDragonrageEndColor"] = "Dragonrage is ending (as configured)"
+L["EvokerDevastationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerDevastationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Evoker Preservation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerPreservationCheckboxInnervate"] = "Innervate"
+L["EvokerPreservationIndicatorInnervateTooltip"] = "Changes to this color when you have Innervate."
+L["EvokerPreservationIndicatorInnervateColor"] = "Innervate is active"
+L["EvokerPreservationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerPreservationIndicatorEssenceBurstColor"] = "Essence Burst is active"
+
+-- Evoker Augmentation Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["EvokerAugmentationIndicatorEbonMightTooltip"] = "Changes to this color when Ebon Might is active."
+L["EvokerAugmentationIndicatorEbonMightEndTooltip"] = "Changes to this color when Ebon Might is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["EvokerAugmentationIndicatorEbonMightColor"] = "Ebon Might is active"
+L["EvokerAugmentationIndicatorEbonMightEndColor"] = "Ebon Might is ending (as configured)"
+L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to this color when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
+L["EvokerAugmentationIndicatorEbonMightDropDuringCastColor"] = "Cast won't extend Ebon Might"
+L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this color when you have Essence Burst."
+L["EvokerAugmentationIndicatorEssenceBurstColor"] = "Essence Burst is active"

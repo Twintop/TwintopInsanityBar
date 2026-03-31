@@ -698,24 +698,32 @@ end
 ---Updates Essence bar nodes with current values and colors
 ---@param specSettings table # The spec-specific settings
 ---@param specCacheSettings table # The spec cache settings
----@param borderOverrideColor string? # Optional border color override (e.g., from Essence Burst)
-local function UpdateEssence(specSettings, specCacheSettings, borderOverrideColor)
+---@param essenceOverrides table? # Optional { bar = color?, border = color?, background = color? } from indicator system
+local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
+	if essenceOverrides and essenceOverrides.background then
+		cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(essenceOverrides.background, true)
+	end
+
+	local barOverrideActive = essenceOverrides and essenceOverrides.bar
+
 	for x = 1, TRB.Data.character.maxResource2 do
-		local cpBorderColor = borderOverrideColor or specSettings.colors.comboPoints.border.color
-		local cpColor = specSettings.colors.comboPoints.base.color
+		local cpBorderColor = (essenceOverrides and essenceOverrides.border) or specSettings.colors.comboPoints.border.color
+		local cpColor = (barOverrideActive) or specSettings.colors.comboPoints.base.color
 
 		local essenceValue = 0
 		if snapshotData.attributes.resource2 >= x then
 			essenceValue = 1000
-			-- Color logic for penultimate/final
-			if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-				cpColor = specSettings.colors.comboPoints.penultimate.color
-			elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2) or x == TRB.Data.character.maxResource2 then
-				cpColor = specSettings.colors.comboPoints.final.color
+			-- Color logic for penultimate/final (only when no indicator bar override)
+			if not barOverrideActive then
+				if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+					cpColor = specSettings.colors.comboPoints.penultimate.color
+				elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2) or x == TRB.Data.character.maxResource2 then
+					cpColor = specSettings.colors.comboPoints.final.color
+				end
 			end
 		elseif snapshotData.attributes.resource2 + 1 == x then
 			essenceValue = snapshotData.attributes.essencePartial or UnitPartialPower("player", Enum.PowerType.Essence)
@@ -755,12 +763,12 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateEssenceOuter(specSettings, specCacheSettings, borderOverrideColor)
+	local function UpdateEssenceOuter(specSettings, specCacheSettings, essenceOverrides)
 		local refreshTextEssence = false
 		
 		if not specSettings.displayBar.secondary.neverShow then
 			refreshTextEssence = true
-			UpdateEssence(specSettings, specCacheSettings, borderOverrideColor)
+			UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 		end
 
 		if specSettings.audio.secondaryThreshold.enabled and not snapshotData.audio.secondaryThresholdPlayed and snapshotData.attributes.resource2 <= specSettings.audio.secondaryThreshold.configuration.thresholdValue then
@@ -779,66 +787,85 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
-			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
-			local essenceBorderOverride = nil
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+			local barColor = specSettings.colors.bar.base.color
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			if snapshotData.attributes.essenceBurstActive then
-				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
-					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			-- Precompute dragonrage end timing threshold
+			local dragonrageActive = snapshots[spells.dragonrage.id].buff.isActive
+			local dragonrageEndMet = false
+			if dragonrageActive then
+				local dragonrageTimeLeft = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.dragonrage.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.dragonrage.gcdsMax
+				elseif specSettings.endOf.dragonrage.mode == "time" then
+					timeThreshold = specSettings.endOf.dragonrage.timeMax
+				end
+				dragonrageEndMet = dragonrageTimeLeft <= timeThreshold
+			end
+
+			local conditionMap = {
+				dragonrageEnd = dragonrageActive and dragonrageEndMet,
+				dragonrage = dragonrageActive,
+				essenceBurst = snapshotData.attributes.essenceBurstActive,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local essenceColors = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
 				end
 			end
 
+			-- Read final mana bar colors from the color map
+			barColor = manaBarColors.bar
+			barBorderColor = manaBarColors.border
+			barBackgroundColor = manaBarColors.background
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
-				local snapshots = snapshotData.snapshots
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
-				-- Dragonrage bar color changes
-				if specSettings.colors.bar.dragonrage.enabled and snapshots[spells.dragonrage.id].buff.isActive then
-					local dragonrageTimeLeft = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
-					local dragonrageTimeThreshold = 0
-					local useEndOfDragonrageColor = false
-
-					if specSettings.endOf.dragonrage.enabled then
-						useEndOfDragonrageColor = true
-						if specSettings.endOf.dragonrage.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							dragonrageTimeThreshold = gcd * specSettings.endOf.dragonrage.gcdsMax
-						elseif specSettings.endOf.dragonrage.mode == "time" then
-							dragonrageTimeThreshold = specSettings.endOf.dragonrage.timeMax
-						end
-					end
-
-					if useEndOfDragonrageColor and dragonrageTimeLeft <= dragonrageTimeThreshold then
-						-- Dragonrage is ending soon
-						barColor = specSettings.colors.bar.dragonrageEnd.color
-					else
-						-- Dragonrage is active
-						barColor = specSettings.colors.bar.dragonrage.color
-					end
-				end
-
-				if snapshotData.attributes.essenceBurstActive then
-					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
-						barBorderColor = specSettings.colors.bar.essenceBurst.color
-					end
-				end
-
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceColors) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
@@ -860,36 +887,64 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
-			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
-			local essenceBorderOverride = nil
+			local barColor = specSettings.colors.bar.base.color
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			if snapshotData.attributes.essenceBurstActive then
-				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
-					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				innervate = false,
+				essenceBurst = snapshotData.attributes.essenceBurstActive,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local essenceColors = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
 				end
 			end
 
+			-- Read final mana bar colors from the color map
+			barColor = manaBarColors.bar
+			barBorderColor = manaBarColors.border
+			barBackgroundColor = manaBarColors.background
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base.color
-
-				if snapshotData.attributes.essenceBurstActive then
-					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
-						barBorderColor = specSettings.colors.bar.essenceBurst.color
-					end
-				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceColors) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
@@ -911,86 +966,109 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
-			local essenceBurstTargets = specSettings.colors.bar.essenceBurst.targets
-			local essenceBorderOverride = nil
-			local ebonMightBorderOverride = nil
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+			local barColor = specSettings.colors.bar.base.color
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			if snapshotData.attributes.essenceBurstActive then
-				if essenceBurstTargets and essenceBurstTargets.essences and essenceBurstTargets.essences.border then
-					essenceBorderOverride = specSettings.colors.bar.essenceBurst.color
+			local ebonMightBarColors = specSettings.colors.bars and specSettings.colors.bars.ebonMight
+			local ebonMightBarColor = ebonMightBarColors and ebonMightBarColors.bar.color
+			local ebonMightBorderColor = ebonMightBarColors and ebonMightBarColors.border.color
+			local ebonMightBackgroundColor = ebonMightBarColors and ebonMightBarColors.background.color
+
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			-- Precompute Ebon Might conditions
+			local ebonMightActive = snapshots[spells.ebonMight.id].buff.isActive
+			local ebonMightDropDuringCastMet = false
+			local ebonMightEndMet = false
+			if ebonMightActive then
+				local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.ebonMight.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
+				elseif specSettings.endOf.ebonMight.mode == "time" then
+					timeThreshold = specSettings.endOf.ebonMight.timeMax
 				end
-				if essenceBurstTargets and essenceBurstTargets.ebonMight and essenceBurstTargets.ebonMight.border then
-					ebonMightBorderOverride = specSettings.colors.bar.essenceBurst.color
+				ebonMightEndMet = ebonMightTimeLeft <= timeThreshold
+
+				-- Check if casting an ability that extends Ebon Might but won't finish before it expires
+				local castTimeRemaining = 0
+				if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
+					castTimeRemaining = snapshotData.casting.endTime - currentTime
+					if castTimeRemaining < 0 then
+						castTimeRemaining = 0
+					end
+				end
+				ebonMightDropDuringCastMet = snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft
+			end
+
+			-- Audio cue for Ebon Might dropping during cast
+			if ebonMightActive and ebonMightDropDuringCastMet then
+				if specSettings.audio.ebonMightEnding.enabled and not snapshotData.audio.playedEbonMightCue then
+					snapshotData.audio.playedEbonMightCue = true
+					PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
+				end
+			else
+				snapshotData.audio.playedEbonMightCue = false
+			end
+
+			local conditionMap = {
+				ebonMightDropDuringCast = ebonMightActive and ebonMightDropDuringCastMet,
+				ebonMightEnd = ebonMightActive and ebonMightEndMet,
+				ebonMight = ebonMightActive,
+				essenceBurst = snapshotData.attributes.essenceBurstActive,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local essenceColors = { bar = nil, border = nil, background = nil }
+			local ebonMightColors = { bar = ebonMightBarColor, border = ebonMightBorderColor, background = ebonMightBackgroundColor }
+			local barColorMap = { manaBar = manaBarColors, essences = essenceColors, ebonMight = ebonMightColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
 				end
 			end
 
+			-- Read final mana bar colors from the color map
+			barColor = manaBarColors.bar
+			barBorderColor = manaBarColors.border
+			barBackgroundColor = manaBarColors.background
+
 			if not specSettings.displayBar.primary.neverShow and primaryNode then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				local targetData = snapshotData.targetData
 				local target = targetData.targets[targetData.currentTargetGuid]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
-				-- Ebon Might bar color changes
-				if snapshots[spells.ebonMight.id].buff.isActive then
-					local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
-					local ebonMightTimeThreshold = 0
-					local useEndOfEbonMightColor = false
-
-					if specSettings.colors.bar.ebonMightEnd.enabled then
-						useEndOfEbonMightColor = true
-						if specSettings.endOf.ebonMight.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							ebonMightTimeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
-						elseif specSettings.endOf.ebonMight.mode == "time" then
-							ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
-						end
-					end
-
-					-- Check if casting an ability that extends Ebon Might but won't finish before it expires
-					local castTimeRemaining = 0
-					if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
-						castTimeRemaining = snapshotData.casting.endTime - currentTime
-						if castTimeRemaining < 0 then
-							castTimeRemaining = 0
-						end
-					end
-
-					if specSettings.colors.bar.ebonMightDropDuringCast.enabled and snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft then
-						-- Cast will finish after Ebon Might expires
-						barColor = specSettings.colors.bar.ebonMightDropDuringCast.color
-
-						-- Play audio cue for ending soon
-						if specSettings.audio.ebonMightEnding.enabled and not snapshotData.audio.playedEbonMightCue then
-							snapshotData.audio.playedEbonMightCue = true
-							PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
-						end
-					elseif useEndOfEbonMightColor and ebonMightTimeLeft <= ebonMightTimeThreshold then
-						-- Ebon Might is ending soon
-						barColor = specSettings.colors.bar.ebonMightEnd.color
-					elseif specSettings.colors.bar.ebonMight.enabled then
-						-- Ebon Might is active
-						barColor = specSettings.colors.bar.ebonMight.color
-						snapshotData.audio.playedEbonMightCue = false
-					end
-				else
-					snapshotData.audio.playedEbonMightCue = false
-				end
-
-				if snapshotData.attributes.essenceBurstActive then
-					if essenceBurstTargets and essenceBurstTargets.manaBar and essenceBurstTargets.manaBar.border then
-						barBorderColor = specSettings.colors.bar.essenceBurst.color
-					end
-				end
-
 				primaryNode:SetBorderColor(barBorderColor)
 				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -999,7 +1077,6 @@ local function UpdateResourceBar()
 				refreshText = true
 				local ebonMightNode = barGroups and barGroups.ebonMight and barGroups.ebonMight:GetNode(1)
 				if ebonMightNode then
-					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 					local ebonMightSnapshot = snapshots[spells.ebonMight.id]
 					local ebonMightDuration = ebonMightSnapshot.buff.duration or 1
 					local ebonMightRemaining = 0
@@ -1011,43 +1088,15 @@ local function UpdateResourceBar()
 					ebonMightNode:SetMinMax(0, ebonMightDuration)
 					ebonMightNode:SetValue(ebonMightRemaining)
 
-					local ebonMightBarColors = specSettings.colors.bars and specSettings.colors.bars.ebonMight
 					if ebonMightBarColors then
-						ebonMightNode:SetBorderColor(ebonMightBorderOverride or ebonMightBarColors.border.color)
-						ebonMightNode:SetBackgroundColorFromString(ebonMightBarColors.background.color)
-
-						local ebonMightBarColor = ebonMightBarColors.bar.color
-						if ebonMightSnapshot.buff.isActive then
-							local ebonMightTimeLeft = ebonMightSnapshot.buff:GetRemainingTime(currentTime)
-
-							local castTimeRemaining = 0
-							if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
-								castTimeRemaining = snapshotData.casting.endTime - currentTime
-								if castTimeRemaining < 0 then
-									castTimeRemaining = 0
-								end
-							end
-
-							if ebonMightBarColors.wontExtend and ebonMightBarColors.wontExtend.enabled and snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft then
-								ebonMightBarColor = ebonMightBarColors.wontExtend.color
-							elseif ebonMightBarColors.endingSoon and ebonMightBarColors.endingSoon.enabled and specSettings.endOf.ebonMight.enabled then
-								local ebonMightTimeThreshold = 0
-								if specSettings.endOf.ebonMight.mode == "gcd" then
-									ebonMightTimeThreshold = Character:GetCurrentGCDTime() * specSettings.endOf.ebonMight.gcdsMax
-								elseif specSettings.endOf.ebonMight.mode == "time" then
-									ebonMightTimeThreshold = specSettings.endOf.ebonMight.timeMax
-								end
-								if ebonMightTimeLeft <= ebonMightTimeThreshold then
-									ebonMightBarColor = ebonMightBarColors.endingSoon.color
-								end
-							end
-						end
-						ebonMightNode:SetColor(ebonMightBarColor)
+						ebonMightNode:SetColor(ebonMightColors.bar)
+						ebonMightNode:SetBorderColor(ebonMightColors.border)
+						ebonMightNode:SetBackgroundColorFromString(ebonMightColors.background)
 					end
 				end
 			end
 
-			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceBorderOverride) or refreshText
+			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceColors) or refreshText
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true

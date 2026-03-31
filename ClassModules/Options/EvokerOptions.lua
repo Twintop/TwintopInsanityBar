@@ -296,7 +296,37 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = { "dragonrageEnd", "dragonrage", "essenceBurst" },
+				gradientOrder = {},
+				indicatorColors = {
+					dragonrageEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+						},
+					},
+					dragonrage = {
+						color = "FFFF6B00",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+						},
+					},
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							essences = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -421,6 +451,28 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "innervate", "essenceBurst" },
+				gradientOrder = {},
+				indicatorColors = {
+					innervate = {
+						color = "FF00FF00",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+						},
+					},
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							essences = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -648,7 +700,49 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = { "ebonMightDropDuringCast", "ebonMightEnd", "ebonMight", "essenceBurst" },
+				gradientOrder = {},
+				indicatorColors = {
+					ebonMightDropDuringCast = {
+						color = "FF550000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+							ebonMight = { bar = true, border = false, background = false },
+						},
+					},
+					ebonMightEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+							ebonMight = { bar = true, border = false, background = false },
+						},
+					},
+					ebonMight = {
+						color = "FFFF9900",
+						enabled = false,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							essences = { bar = false, border = false, background = false },
+							ebonMight = { bar = false, border = false, background = false },
+						},
+					},
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							essences = { bar = false, border = false, background = false },
+							ebonMight = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -817,96 +911,6 @@ local function DevastationConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
----Builds a multi-select dropdown for Essence Burst border targets and the associated color picker.
----@param parent Frame
----@param controls table
----@param spec table
----@param targetDefs table[] # Array of { key=string, label=string } for each available target
----@param frameName string # Unique frame name for the dropdown
----@param yCoord number
----@return number yCoord # Updated yCoord after placing the dropdown
-local function BuildEssenceBurstTargetDropdown(parent, controls, spec, targetDefs, frameName, yCoord)
-	local essenceBurst = spec.colors.bar.essenceBurst
-
-	local function GetSummaryText()
-		local parts = {}
-		for _, def in ipairs(targetDefs) do
-			if essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border then
-				table.insert(parts, def.label)
-			end
-		end
-		if #parts == 0 then
-			return L["BarNameDisabled"]
-		elseif #parts == 1 then
-			return parts[1]
-		end
-		return table.concat(parts, ", ")
-	end
-
-	local function SyncEnabled()
-		local anyEnabled = false
-		for _, def in ipairs(targetDefs) do
-			if essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border then
-				anyEnabled = true
-				break
-			end
-		end
-		essenceBurst.enabled = anyEnabled
-		if controls.colors.essenceBurst then
-			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(controls.colors.essenceBurst, anyEnabled)
-		end
-	end
-
-	-- Label
-	controls.dropdowns = controls.dropdowns or {}
-	controls.dropdowns.essenceBurstTarget = CreateFrame("DropdownButton", frameName, parent, "WowStyle1DropdownTemplate")
-	local dd = controls.dropdowns.essenceBurstTarget
-	dd:SetWidth(350)
-	dd.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerEssenceBurstTargetLabel"], oUi.xCoord, yCoord)
-	dd.label.font:SetFontObject(GameFontNormal)
-
-	-- Hook SetText so the framework's auto-text is replaced with our summary
-	local originalSetText = dd.SetText
-	dd.SetText = function(self, text)
-		originalSetText(self, GetSummaryText())
-	end
-
-	dd:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-
-	dd:SetupMenu(function(dropdown, rootDescription)
-		for _, def in ipairs(targetDefs) do
-			rootDescription:CreateCheckbox(
-				def.label,
-				function()
-					return essenceBurst.targets and essenceBurst.targets[def.key] and essenceBurst.targets[def.key].border or false
-				end,
-				function()
-					essenceBurst.targets = essenceBurst.targets or {}
-					essenceBurst.targets[def.key] = essenceBurst.targets[def.key] or {}
-					essenceBurst.targets[def.key].border = not essenceBurst.targets[def.key].border
-					SyncEnabled()
-				end
-			)
-		end
-	end)
-
-	dd:SetText(GetSummaryText())
-
-	yCoord = yCoord - 30
-
-	-- Color picker (same line as dropdown)
-	controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBurst"], essenceBurst.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	local f = controls.colors.essenceBurst
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
-	end)
-
-	-- Set initial color picker enabled state
-	SyncEnabled()
-
-	return yCoord
-end
-
 local function DevastationConstructManaBarPanel(parent)
 	if parent == nil then
 		return
@@ -916,53 +920,11 @@ local function DevastationConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
-
-	-- Dragonrage color options
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 13, 1, yCoord, {
-		endOfKey = "dragonrage",
-		activeColorKey = "dragonrage",
-		endColorKey = "dragonrageEnd",
-		checkboxLabel = L["EvokerDevastationCheckboxDragonrage"],
-		checkboxTooltip = L["EvokerDevastationCheckboxDragonrageTooltip"],
-		activeColorLabel = L["EvokerDevastationColorPickerDragonrage"],
-		endCheckboxLabel = L["EvokerDevastationCheckboxDragonrageEnd"],
-		endCheckboxTooltip = L["EvokerDevastationCheckboxDragonrageEndTooltip"],
-		endColorLabel = L["EvokerDevastationColorPickerDragonrageEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], false, false)
-	
-	yCoord = yCoord - 30
-	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
-		{ key = "manaBar", label = L["BarNameManaBar"] },
-		{ key = "essences", label = L["BarNameEssences"] },
-	}, "TwintopResourceBar_Evoker_Devastation_Dropdown_essenceBurstTarget", yCoord)
-
-	-- Dragonrage configuration options
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 1, yCoord, {
-		endOfKey = "dragonrage",
-		sectionHeader = L["EvokerDevastationEndOfDragonrageConfigurationHeader"],
-		gcdRadioLabel = L["EvokerDevastationCheckboxDragonrageGcds"],
-		gcdSliderLabel = L["EvokerDevastationDragonrageGcds"],
-		timeRadioLabel = L["EvokerDevastationCheckboxDragonrageTime"],
-		timeSliderLabel = L["EvokerDevastationDragonrageTime"],
-	})
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
 end
 
 local function DevastationConstructEssenceBarPanel(parent)
@@ -1041,6 +1003,43 @@ local function DevastationConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 1, yCoord)
+end
+
+local function DevastationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.devastation
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 13, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "dragonrageEnd",  label = L["EvokerDevastationColorPickerDragonrageEnd"],  tooltip = L["EvokerDevastationIndicatorDragonrageEndTooltip"],  colorLabel = L["EvokerDevastationIndicatorDragonrageEndColor"] },
+			{ key = "dragonrage",     label = L["EvokerDevastationColorPickerDragonrage"],      tooltip = L["EvokerDevastationIndicatorDragonrageTooltip"],     colorLabel = L["EvokerDevastationIndicatorDragonrageColor"] },
+			{ key = "essenceBurst",   label = L["EvokerEssenceBurst"],                          tooltip = L["EvokerDevastationIndicatorEssenceBurstTooltip"],   colorLabel = L["EvokerDevastationIndicatorEssenceBurstColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "essences", label = L["BarNameEssences"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Evoker_Devastation",
+		endOfConfigs = {
+			{
+				endOfKey = "dragonrage",
+				sectionHeader = L["EvokerDevastationEndOfDragonrageConfigurationHeader"],
+				gcdRadioLabel = L["EvokerDevastationCheckboxDragonrageGcds"],
+				gcdSliderLabel = L["EvokerDevastationDragonrageGcds"],
+				timeRadioLabel = L["EvokerDevastationCheckboxDragonrageTime"],
+				timeSliderLabel = L["EvokerDevastationDragonrageTime"],
+			},
+		},
+	}))
+
+	yCoord = yCoord - 40
 end
 
 local function DevastationConstructBarTexturesPanel(parent)
@@ -1199,6 +1198,7 @@ local function DevastationConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel },
 		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = DevastationConstructEssenceBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevastationConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DevastationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevastationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevastationConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevastationConstructFontAndTextPanel },
@@ -1318,28 +1318,11 @@ local function PreservationConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.evoker_preservation
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
-	
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], false, true)
-	
-	yCoord = yCoord - 30
-	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
-		{ key = "manaBar", label = L["BarNameManaBar"] },
-		{ key = "essences", label = L["BarNameEssences"] },
-	}, "TwintopResourceBar_Evoker_Preservation_Dropdown_essenceBurstTarget", yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
 end
 
 local function PreservationConstructEssenceBarPanel(parent)
@@ -1418,6 +1401,32 @@ local function PreservationConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 13, 2, yCoord)
+end
+
+local function PreservationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.preservation
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.evoker_preservation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 13, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "innervate",    label = L["EvokerPreservationCheckboxInnervate"],  tooltip = L["EvokerPreservationIndicatorInnervateTooltip"],    colorLabel = L["EvokerPreservationIndicatorInnervateColor"] },
+			{ key = "essenceBurst", label = L["EvokerEssenceBurst"],                   tooltip = L["EvokerPreservationIndicatorEssenceBurstTooltip"], colorLabel = L["EvokerPreservationIndicatorEssenceBurstColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "essences", label = L["BarNameEssences"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Evoker_Preservation",
+	}))
+
+	yCoord = yCoord - 40
 end
 
 local function PreservationConstructBarTexturesPanel(parent)
@@ -1601,6 +1610,7 @@ local function PreservationConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = PreservationConstructManaBarPanel },
 		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = PreservationConstructEssenceBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = PreservationConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = PreservationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = PreservationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = PreservationConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = PreservationConstructFontAndTextPanel },
@@ -1723,81 +1733,11 @@ local function AugmentationConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.evoker_augmentation
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.ebonMightBarChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Bar_Option_ebonMightChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ebonMightBarChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.ebonMight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.ebonMight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.ebonMight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMight"], spec.colors.bar.ebonMight.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.ebonMight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMight")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.ebonMightEndBarChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Bar_Option_ebonMightEndChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ebonMightEndBarChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEndOfEbonMight"])
-	f.tooltip = L["EvokerAugmentationCheckboxEndOfEbonMightTooltip"]
-	f:SetChecked(spec.colors.bar.ebonMightEnd.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.ebonMightEnd.enabled = self:GetChecked()
-	end)
-
-	controls.colors.ebonMightEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightEnd"], spec.colors.bar.ebonMightEnd.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.ebonMightEnd
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMightEnd")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.ebonMightDropDuringCast = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightDropDuringCast", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ebonMightDropDuringCast
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightDropDuringCast"])
-	f.tooltip = L["EvokerAugmentationCheckboxEbonMightDropDuringCastTooltip"]
-	f:SetChecked(spec.colors.bar.ebonMightDropDuringCast.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.ebonMightDropDuringCast.enabled = self:GetChecked()
-	end)
-
-	controls.colors.ebonMightDropDuringCast = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerEbonMightDropDuringCast"], spec.colors.bar.ebonMightDropDuringCast.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.ebonMightDropDuringCast
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "ebonMightDropDuringCast")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], false, false)
-	
-	yCoord = yCoord - 30
-	yCoord = BuildEssenceBurstTargetDropdown(parent, controls, spec, {
-		{ key = "manaBar", label = L["BarNameManaBar"] },
-		{ key = "essences", label = L["BarNameEssences"] },
-		{ key = "ebonMight", label = L["BarNameEbonMight"] },
-	}, "TwintopResourceBar_Evoker_Augmentation_Dropdown_essenceBurstTarget", yCoord)
-
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 end
 
 local function AugmentationConstructEssenceBarPanel(parent)
@@ -1895,57 +1835,47 @@ local function AugmentationConstructEbonMightBarPanel(parent)
 
 	yCoord = yCoord - 90
 	if ebonMightBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 13, 3, yCoord, ebonMightBarDef, function(cbParent, cbYCoord)
-			local f = nil
-			local cbControls = interfaceSettingsFrame.controls.evoker_augmentation
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 13, 3, yCoord, ebonMightBarDef)
+	end
+end
 
-			cbControls.checkBoxes.ebonMightBarEndingSoon = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightBarEndingSoon", cbParent, "ChatConfigCheckButtonTemplate")
-			f = cbControls.checkBoxes.ebonMightBarEndingSoon
-			f:SetPoint("TOPLEFT", oUi.xCoord, cbYCoord)
-			getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightBarEndingSoon"])
-			f.tooltip = L["EvokerAugmentationCheckboxEbonMightBarEndingSoonTooltip"]
-			f:SetChecked(spec.colors.bars.ebonMight.endingSoon.enabled)
-			f:SetScript("OnClick", function(self, ...)
-				spec.colors.bars.ebonMight.endingSoon.enabled = self:GetChecked()
-			end)
-
-			cbControls.colors.endingSoon = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarEndingSoon"], spec.colors.bars.ebonMight.endingSoon.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
-			f = cbControls.colors.endingSoon
-			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "endingSoon")
-			end)
-
-			cbYCoord = cbYCoord - 30
-			cbControls.checkBoxes.ebonMightBarWontExtend = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_ebonMightBarWontExtend", cbParent, "ChatConfigCheckButtonTemplate")
-			f = cbControls.checkBoxes.ebonMightBarWontExtend
-			f:SetPoint("TOPLEFT", oUi.xCoord, cbYCoord)
-			getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxEbonMightBarWontExtend"])
-			f.tooltip = L["EvokerAugmentationCheckboxEbonMightBarWontExtendTooltip"]
-			f:SetChecked(spec.colors.bars.ebonMight.wontExtend.enabled)
-			f:SetScript("OnClick", function(self, ...)
-				spec.colors.bars.ebonMight.wontExtend.enabled = self:GetChecked()
-			end)
-
-			cbControls.colors.wontExtend = TRB.Functions.OptionsUi:BuildColorPicker(cbParent, L["EvokerAugmentationColorPickerEbonMightBarWontExtend"], spec.colors.bars.ebonMight.wontExtend.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, cbYCoord)
-			f = cbControls.colors.wontExtend
-			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bars.ebonMight, cbControls.colors, "wontExtend")
-			end)
-
-			cbYCoord = cbYCoord - 30
-			return cbYCoord
-		end)
+local function AugmentationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
 	end
 
+	local spec = TRB.Data.settings.evoker.augmentation
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.evoker_augmentation
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 13, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "ebonMightDropDuringCast", label = L["EvokerAugmentationCheckboxEbonMightDropDuringCast"], tooltip = L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"], colorLabel = L["EvokerAugmentationIndicatorEbonMightDropDuringCastColor"] },
+			{ key = "ebonMightEnd",            label = L["EvokerAugmentationCheckboxEndOfEbonMight"],          tooltip = L["EvokerAugmentationIndicatorEbonMightEndTooltip"],            colorLabel = L["EvokerAugmentationIndicatorEbonMightEndColor"] },
+			{ key = "ebonMight",               label = L["EvokerAugmentationCheckboxEbonMight"],               tooltip = L["EvokerAugmentationIndicatorEbonMightTooltip"],               colorLabel = L["EvokerAugmentationIndicatorEbonMightColor"] },
+			{ key = "essenceBurst",            label = L["EvokerEssenceBurst"],                                tooltip = L["EvokerAugmentationIndicatorEssenceBurstTooltip"],            colorLabel = L["EvokerAugmentationIndicatorEssenceBurstColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "essences", label = L["BarNameEssences"] },
+			{ key = "ebonMight", label = L["BarNameEbonMight"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Evoker_Augmentation",
+		endOfConfigs = {
+			{
+				endOfKey = "ebonMight",
+				sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
+				gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
+				gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
+				timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
+				timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
+			},
+		},
+	}))
+
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 13, 3, yCoord, {
-		endOfKey = "ebonMight",
-		sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
-		gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
-		gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
-		timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
-		timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
-	})
 end
 
 local function AugmentationConstructBarTexturesPanel(parent)
@@ -2118,6 +2048,7 @@ local function AugmentationConstructOptionsPanel(cache)
 		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = AugmentationConstructEssenceBarPanel },
 		{ key = "ebonMightBar", label = L["TabEbonMight"], width = oUi.tabWidth.medium, constructor = AugmentationConstructEbonMightBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = AugmentationConstructHealthBarPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = AugmentationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = AugmentationConstructFontAndTextPanel },

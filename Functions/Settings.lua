@@ -6105,7 +6105,201 @@ function TRB.Functions.Settings:PortForwardSettings()
 			table.insert(devourer.colors.shared.nodeOrder, "voidRayReady")
 		end
 	end
+
+	-- Migrate Evoker Devastation indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.devastation then
+		local devastation = TwintopInsanityBarSettings.evoker.devastation
+		if devastation.colors and devastation.colors.bar and devastation.colors.bar.dragonrage ~= nil
+			and type(devastation.colors.bar.dragonrage) == "table"
+			and (devastation.colors.shared == nil or devastation.colors.shared.indicatorColors == nil) then
+
+			devastation.colors.shared = devastation.colors.shared or {}
+			devastation.colors.shared.nodeOrder = { "dragonrageEnd", "dragonrage", "essenceBurst" }
+			devastation.colors.shared.gradientOrder = {}
+			devastation.colors.shared.indicatorColors = {}
+			local ic = devastation.colors.shared.indicatorColors
+			local bar = devastation.colors.bar
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			ic.dragonrageEnd = {
+				color = bar.dragonrageEnd and bar.dragonrageEnd.color or "FFFF0000",
+				enabled = devastation.endOf and devastation.endOf.dragonrage and devastation.endOf.dragonrage.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.dragonrage = {
+				color = bar.dragonrage and bar.dragonrage.color or "FFFF6B00",
+				enabled = bar.dragonrage and bar.dragonrage.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.dragonrage = nil
+			bar.dragonrageEnd = nil
+			bar.essenceBurst = nil
+
+			-- Move endOf.dragonrage.enabled to the indicator; leave timing fields in place
+			if devastation.endOf and devastation.endOf.dragonrage then
+				devastation.endOf.dragonrage.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Evoker Preservation indicator colors from colors.bar.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.preservation then
+		local preservation = TwintopInsanityBarSettings.evoker.preservation
+		if preservation.colors and preservation.colors.bar and preservation.colors.bar.essenceBurst ~= nil
+			and type(preservation.colors.bar.essenceBurst) == "table"
+			and (preservation.colors.shared == nil or preservation.colors.shared.indicatorColors == nil) then
+
+			preservation.colors.shared = preservation.colors.shared or {}
+			preservation.colors.shared.nodeOrder = { "innervate", "essenceBurst" }
+			preservation.colors.shared.gradientOrder = {}
+			preservation.colors.shared.indicatorColors = {}
+			local ic = preservation.colors.shared.indicatorColors
+			local bar = preservation.colors.bar
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			ic.innervate = {
+				color = bar.innervate and bar.innervate.color or "FF00FF00",
+				enabled = bar.innervate and bar.innervate.enabled ~= false,
+				targets = MakeTargets("manaBar", "bar"),
+			}
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.innervate = nil
+			bar.essenceBurst = nil
+		end
+	end
+
+	-- Migrate Evoker Augmentation indicator colors from colors.bar.* and colors.bars.ebonMight.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.augmentation then
+		local augmentation = TwintopInsanityBarSettings.evoker.augmentation
+		if augmentation.colors and augmentation.colors.bar and augmentation.colors.bar.ebonMight ~= nil
+			and type(augmentation.colors.bar.ebonMight) == "table"
+			and (augmentation.colors.shared == nil or augmentation.colors.shared.indicatorColors == nil) then
+
+			augmentation.colors.shared = augmentation.colors.shared or {}
+			augmentation.colors.shared.nodeOrder = { "ebonMightDropDuringCast", "ebonMightEnd", "ebonMight", "essenceBurst" }
+			augmentation.colors.shared.gradientOrder = {}
+			augmentation.colors.shared.indicatorColors = {}
+			local ic = augmentation.colors.shared.indicatorColors
+			local bar = augmentation.colors.bar
+			local ebonMightBar = augmentation.colors.bars and augmentation.colors.bars.ebonMight
+
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					manaBar = { bar = false, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- ebonMightDropDuringCast: mana bar had enabled=false, EM bar wontExtend had enabled=true
+			-- Use EM bar wontExtend.enabled as the indicator enabled state; keep manaBar target off by default
+			ic.ebonMightDropDuringCast = {
+				color = bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.color or "FF550000",
+				enabled = (ebonMightBar and ebonMightBar.wontExtend and ebonMightBar.wontExtend.enabled ~= false)
+					or (bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.enabled == true),
+				targets = {
+					manaBar = { bar = bar.ebonMightDropDuringCast and bar.ebonMightDropDuringCast.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = ebonMightBar and ebonMightBar.wontExtend and ebonMightBar.wontExtend.enabled ~= false or false, border = false, background = false },
+				},
+			}
+
+			-- ebonMightEnd: mana bar had enabled=false, EM bar endingSoon had enabled=true
+			ic.ebonMightEnd = {
+				color = bar.ebonMightEnd and bar.ebonMightEnd.color or "FFFF0000",
+				enabled = (ebonMightBar and ebonMightBar.endingSoon and ebonMightBar.endingSoon.enabled ~= false)
+					or (bar.ebonMightEnd and bar.ebonMightEnd.enabled == true),
+				targets = {
+					manaBar = { bar = bar.ebonMightEnd and bar.ebonMightEnd.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = ebonMightBar and ebonMightBar.endingSoon and ebonMightBar.endingSoon.enabled ~= false or false, border = false, background = false },
+				},
+			}
+
+			-- ebonMight (active): target mana bar and EM bar (EM bar was always visible in EM color when active)
+			ic.ebonMight = {
+				color = bar.ebonMight and bar.ebonMight.color or "FFFF9900",
+				enabled = bar.ebonMight and bar.ebonMight.enabled == true,
+				targets = {
+					manaBar = { bar = bar.ebonMight and bar.ebonMight.enabled == true, border = false, background = false },
+					essences = { bar = false, border = false, background = false },
+					ebonMight = { bar = bar.ebonMight and bar.ebonMight.enabled == true, border = false, background = false },
+				},
+			}
+
+			ic.essenceBurst = {
+				color = bar.essenceBurst and bar.essenceBurst.color or "FFFCE58E",
+				enabled = bar.essenceBurst and bar.essenceBurst.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.manaBar and bar.essenceBurst.targets.manaBar.border) or false, background = false },
+					essences = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.essences and bar.essenceBurst.targets.essences.border) or false, background = false },
+					ebonMight = { bar = false, border = (bar.essenceBurst and bar.essenceBurst.targets and bar.essenceBurst.targets.ebonMight and bar.essenceBurst.targets.ebonMight.border) or false, background = false },
+				},
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.ebonMight = nil
+			bar.ebonMightEnd = nil
+			bar.ebonMightDropDuringCast = nil
+			bar.essenceBurst = nil
+
+			-- Clean up old keys from colors.bars.ebonMight
+			if ebonMightBar then
+				ebonMightBar.endingSoon = nil
+				ebonMightBar.wontExtend = nil
+			end
+
+			-- Move endOf.ebonMight.enabled to nil; timing fields stay
+			if augmentation.endOf and augmentation.endOf.ebonMight then
+				augmentation.endOf.ebonMight.enabled = nil
+			end
+		end
+	end
 end
+
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys
 function TRB.Functions.Settings:CleanupSettings(oldSettings)
