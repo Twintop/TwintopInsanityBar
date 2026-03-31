@@ -6590,14 +6590,7 @@ end
 ---@param classId integer The class ID
 ---@param specId integer The spec ID
 ---@param yCoord number The current Y coordinate for layout positioning
----@param config table Configuration table with the following fields:
----  indicatorDefs: table[] - Flat indicator definitions: { key, label, tooltip, colorLabel }
----  gradientDefs: table[]? - Gradient indicator definitions (default: {})
----  barTargetDefs: table[] - Bar targets: { key, label }
----  gradientExcludedElements: table? - Map of barKey -> { elementKey = true } to exclude from gradient dropdowns
----  ddNamePrefix: string - Unique prefix for dropdown frame names (e.g., "TwintopResourceBar_Priest_Shadow")
----  endOfConfigs: table[]? - List of config tables to pass to GenerateEndOfConfigurationOptions
----  overcapConfig: table? - { primaryResourceString, primaryResourceMax } for GenerateOvercapOptions
+---@param config TRB.Classes.OptionsUi.IndicatorColorsPanelConfig Configuration for the Indicator Colors panel
 ---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, config)
 	local indicatorDefs = config.indicatorDefs

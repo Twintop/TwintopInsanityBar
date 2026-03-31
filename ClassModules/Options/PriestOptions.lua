@@ -1376,7 +1376,7 @@ local function DisciplineConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_discipline
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 1, yCoord, {
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "surgeOfLight",  label = L["PriestDisciplineCheckboxSurgeOfLight"],  tooltip = L["PriestDisciplineIndicatorSurgeOfLightTooltip"],  colorLabel = L["PriestDisciplineIndicatorSurgeOfLightColor"] },
 			{ key = "voidShield",   label = L["PriestDisciplineCheckboxVoidShield"],   tooltip = L["PriestDisciplineIndicatorVoidShieldTooltip"],   colorLabel = L["PriestDisciplineIndicatorVoidShieldColor"] },
@@ -1386,7 +1386,7 @@ local function DisciplineConstructIndicatorColorsPanel(parent)
 			{ key = "powerWordsBar", label = L["BarNamePowerWordsBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Priest_Discipline",
-	})
+	}))
 
 	yCoord = yCoord - 40
 end
@@ -2111,7 +2111,7 @@ local function HolyConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_holy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 2, yCoord, {
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "benediction",        label = L["PriestHolyCheckboxBenedictionIndicator"],      tooltip = L["PriestHolyIndicatorBenedictionTooltip"],        colorLabel = L["PriestHolyIndicatorBenedictionColor"] },
 			{ key = "holyWordSerenity",   label = L["PriestHolyCheckboxHolyWordSerenityCooldown"],  tooltip = L["PriestHolyIndicatorHolyWordSerenityTooltip"],   colorLabel = L["PriestHolyIndicatorHolyWordSerenityColor"] },
@@ -2138,7 +2138,7 @@ local function HolyConstructIndicatorColorsPanel(parent)
 				timeSliderLabel = L["PriestHolyApotheosisTime"],
 			},
 		},
-	})
+	}))
 
 	yCoord = yCoord - 40
 end
@@ -2317,7 +2317,7 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 3, yCoord, {
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "instantMindBlast",                label = L["PriestShadowCheckboxInstantMindBlast"],                tooltip = L["PriestShadowIndicatorInstantMindBlastTooltip"],                colorLabel = L["PriestShadowIndicatorInstantMindBlastColor"] },
 			{ key = "voidformEnd",                     label = L["PriestShadowCheckboxVoidformEnd"],                     tooltip = L["PriestShadowIndicatorVoidformEndTooltip"],                     colorLabel = L["PriestShadowIndicatorVoidformEndColor"] },
@@ -2347,7 +2347,7 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceInsanity"], primaryResourceMax = SHADOW_MAX_INSANITY },
-	})
+	}))
 
 	yCoord = yCoord - 40
 end

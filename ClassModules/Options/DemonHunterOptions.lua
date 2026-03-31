@@ -856,7 +856,7 @@ local function HavocConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 1, yCoord, {
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "metamorphosisEnd",  label = L["DemonHunterHavocColorPickerMetamorphosisEnd"],  tooltip = L["DemonHunterHavocIndicatorMetamorphosisEndTooltip"],  colorLabel = L["DemonHunterHavocIndicatorMetamorphosisEndColor"] },
 			{ key = "metamorphosis",     label = L["DemonHunterHavocCheckboxMetamorphosis"],         tooltip = L["DemonHunterHavocIndicatorMetamorphosisTooltip"],     colorLabel = L["DemonHunterHavocIndicatorMetamorphosisColor"] },
@@ -879,7 +879,7 @@ local function HavocConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = HAVOC_MAX_FURY },
-	})
+	}))
 
 	yCoord = yCoord - 40
 
@@ -1351,7 +1351,7 @@ local function VengeanceConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 2, yCoord, {
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 12, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "metamorphosisEnd",  label = L["DemonHunterVengeanceColorPickerMetamorphosisEnd"],  tooltip = L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"],  colorLabel = L["DemonHunterVengeanceIndicatorMetamorphosisEndColor"] },
 			{ key = "metamorphosis",     label = L["DemonHunterVengeanceCheckboxMetamorphosis"],         tooltip = L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"],     colorLabel = L["DemonHunterVengeanceIndicatorMetamorphosisColor"] },
@@ -1378,7 +1378,7 @@ local function VengeanceConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = VENGEANCE_MAX_FURY },
-	})
+	}))
 
 	yCoord = yCoord - 40
 
