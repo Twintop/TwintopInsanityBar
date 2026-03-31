@@ -6010,6 +6010,101 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Devourer Demon Hunter indicator colors from colors.bar.* and colors.comboPoints.* to colors.shared.indicatorColors.*
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.demonhunter and TwintopInsanityBarSettings.demonhunter.devourer then
+		local devourer = TwintopInsanityBarSettings.demonhunter.devourer
+		if devourer.colors and devourer.colors.bar and devourer.colors.bar.voidMetamorphosis ~= nil
+			and type(devourer.colors.bar.voidMetamorphosis) == "table"
+			and (devourer.colors.shared == nil or devourer.colors.shared.indicatorColors == nil) then
+
+			devourer.colors.shared = devourer.colors.shared or {}
+			devourer.colors.shared.nodeOrder = {
+				"voidMetamorphosisReady",
+				"collapsingStarReady",
+				"voidMetamorphosis",
+				"voidRayReady",
+			}
+			devourer.colors.shared.gradientOrder = {
+				"borderOvercap",
+			}
+			devourer.colors.shared.indicatorColors = {}
+			local ic = devourer.colors.shared.indicatorColors
+			local bar = devourer.colors.bar
+			local cp = devourer.colors.comboPoints
+
+			-- Helper to build targets with a single default element on a specific bar
+			local function MakeTargets(barKey, elemKey)
+				local t = {
+					furyBar = { bar = false, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				}
+				if t[barKey] then
+					t[barKey][elemKey] = true
+				end
+				return t
+			end
+
+			-- Fury bar indicators
+			ic.voidMetamorphosis = {
+				color = bar.voidMetamorphosis and bar.voidMetamorphosis.color or "FF431863",
+				enabled = bar.voidMetamorphosis and bar.voidMetamorphosis.enabled ~= false,
+				targets = MakeTargets("furyBar", "bar"),
+			}
+
+			-- Border gradient indicator
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("furyBar", "border"),
+			}
+
+			-- Soul Fragments bar indicators
+			ic.voidMetamorphosisReady = {
+				color = cp and cp.voidMetamorphosisReady and cp.voidMetamorphosisReady.color or "FF431863",
+				enabled = cp and cp.voidMetamorphosisReady and cp.voidMetamorphosisReady.enabled ~= false,
+				targets = MakeTargets("soulFragmentsBar", "bar"),
+			}
+			ic.collapsingStarReady = {
+				color = cp and cp.collapsingStarReady and cp.collapsingStarReady.color or "FF431863",
+				enabled = cp and cp.collapsingStarReady and cp.collapsingStarReady.enabled ~= false,
+				targets = MakeTargets("soulFragmentsBar", "bar"),
+			}
+
+			-- New indicator (no legacy key to migrate from)
+			ic.voidRayReady = {
+				color = "FF008B8B",
+				enabled = true,
+				targets = MakeTargets("furyBar", "bar"),
+			}
+
+			-- Clean up old keys from colors.bar
+			bar.voidMetamorphosis = nil
+			bar.borderOvercap = nil
+
+			-- Clean up old keys from colors.comboPoints
+			if cp then
+				cp.voidMetamorphosisReady = nil
+				cp.collapsingStarReady = nil
+			end
+		end
+
+		-- Add voidRayReady indicator for users who already migrated to shared indicators but don't have this new entry
+		if devourer.colors and devourer.colors.shared and devourer.colors.shared.indicatorColors
+			and devourer.colors.shared.indicatorColors.voidRayReady == nil then
+			devourer.colors.shared.indicatorColors.voidRayReady = {
+				color = "FF008B8B",
+				enabled = true,
+				targets = {
+					furyBar = { bar = true, border = false, background = false },
+					soulFragmentsBar = { bar = false, border = false, background = false },
+				},
+			}
+			-- Append to nodeOrder at the end (lowest priority)
+			table.insert(devourer.colors.shared.nodeOrder, "voidRayReady")
+		end
+	end
 end
 ---@param oldSettings table? # The raw saved-variables table to clean
 ---@return table # A new table containing only recognized top-level keys

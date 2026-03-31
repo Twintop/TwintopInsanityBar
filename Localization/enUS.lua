@@ -2518,3 +2518,19 @@ L["DemonHunterVengeanceCheckboxOvercap"] = "Overcap (gradient)"
 
 -- Demon Hunter Vengeance Soul Fragments bar name for indicator color targets
 L["BarNameSoulFragmentsBar"] = "Soul Fragments"
+
+-- Demon Hunter Devourer Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["DemonHunterDevourerIndicatorVoidMetamorphosisTooltip"] = "Changes to this color when Void Metamorphosis is active."
+L["DemonHunterDevourerIndicatorVoidMetamorphosisColor"] = "Void Metamorphosis is active"
+L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyTooltip"] = "Changes to this color when Void Metamorphosis is ready."
+L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyColor"] = "Void Metamorphosis is ready"
+L["DemonHunterDevourerIndicatorCollapsingStarReadyTooltip"] = "Changes to this color when Collapsing Star is ready."
+L["DemonHunterDevourerIndicatorCollapsingStarReadyColor"] = "Collapsing Star is ready"
+L["DemonHunterDevourerCheckboxOvercap"] = "Overcap (gradient)"
+L["DemonHunterDevourerIndicatorOvercapTooltip"] = "Gradually changes to this color as your Fury approaches the overcap threshold."
+L["DemonHunterDevourerIndicatorOvercapColor"] = "Overcapping Fury"
+
+-- Demon Hunter Devourer Void Ray Ready Indicator
+L["DemonHunterDevourerCheckboxVoidRayReady"] = "Void Ray Ready"
+L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"] = "Changes to this color when Void Ray is usable and Void Metamorphosis is not active."
+L["DemonHunterDevourerIndicatorVoidRayReadyColor"] = "Void Ray is usable"

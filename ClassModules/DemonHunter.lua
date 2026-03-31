@@ -1668,23 +1668,112 @@ local function UpdateResourceBar()
 					end
 					
 					local barColor = specSettings.colors.bar.base.color
-					if snapshots[spells.metamorphosis.id].buff.isActive and specSettings.colors.bar.voidMetamorphosis.enabled then
-						barColor = specSettings.colors.bar.voidMetamorphosis.color
+					local barBorderColor = specSettings.colors.bar.border.color
+					local barBackgroundColor = specSettings.colors.bar.background.color
+
+					-- Indicator color system
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+					local voidRayUsable = (not metaActive) and spells.voidRay:IsUsable()
+
+					local conditionMap = {
+						voidMetamorphosisReady = metaUsable,
+						collapsingStarReady = collapsingStarUsable,
+						voidMetamorphosis = metaActive,
+						voidRayReady = voidRayUsable,
+						borderOvercap = affectingCombat,
+					}
+
+					-- Color targets: barKey -> elementKey -> current color
+					local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+					local barColorMap = { furyBar = furyBarColors }
+
+					-- Apply flat indicator colors (priority order, last writer wins)
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] then
+								if indicator.targets then
+									for barKey, elements in pairs(indicator.targets) do
+										local targetColors = barColorMap[barKey]
+										if targetColors and elements then
+											for elemKey, isTargeted in pairs(elements) do
+												if isTargeted then
+													targetColors[elemKey] = indicator.color
+												end
+											end
+										end
+									end
+								end
+							end
+						end
 					end
 
-					local barBorderColor = specSettings.colors.bar.border.color
+					-- Find active gradient indicators (separate priority group, always override flat colors when active)
+					local gradientOrder = sharedColors and sharedColors.gradientOrder
+					local overcapIndicator = nil
+					if gradientOrder and indicatorColors then
+						for i = #gradientOrder, 1, -1 do
+							local key = gradientOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+								overcapIndicator = indicator
+								break
+							end
+						end
+					end
+
+					-- Read final colors from the color map (after flat indicator overrides)
+					barColor = furyBarColors.bar
+					barBorderColor = furyBarColors.border
+					barBackgroundColor = furyBarColors.background
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+
+					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
+					local overcapCurves = {}
+					if overcapIndicator and overcapIndicator.targets then
+						local furyTargets = overcapIndicator.targets.furyBar
+						if furyTargets then
+							if furyTargets.border then
+								overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+							end
+							if furyTargets.bar then
+								overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+							end
+							if furyTargets.background then
+								overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+							end
+						end
+					end
+
+					-- Apply border
+					if overcapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+
+					-- Apply bar color
+					if overcapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+						primaryNode:SetColorCurve(barColorResult)
+					else
+						primaryNode:SetColor(barColor)
+					end
+
+					-- Apply background
+					if overcapCurves.background then
+						local bgColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+						primaryNode:SetBackgroundColorCurve(bgColorResult)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
+
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1704,17 +1793,67 @@ local function UpdateResourceBar()
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
 				local cpColor = specSettings.colors.comboPoints.base.color
 
-				if specSettings.colors.comboPoints.voidMetamorphosisReady.enabled and metaUsable then
-					cpColor = specSettings.colors.comboPoints.voidMetamorphosisReady.color
-				elseif specSettings.colors.comboPoints.collapsingStarReady.enabled and collapsingStarUsable then
-					cpColor = specSettings.colors.comboPoints.collapsingStarReady.color
-				elseif metaActive then
+				-- Collapsing Star contextual base color (not an indicator)
+				if metaActive then
 					cpColor = specSettings.colors.comboPoints.collapsingStar.color
 				end
 
-				local cpBR = cpBackgroundRed
-				local cpBG = cpBackgroundGreen
-				local cpBB = cpBackgroundBlue
+				-- Compute indicator overrides for soul fragment elements
+				local sfBarOverride, sfBorderOverride, sfBackgroundOverride = nil, nil, nil
+				local sfSharedColors = specSettings.colors.shared
+				local sfIndicatorColors = sfSharedColors and sfSharedColors.indicatorColors
+				local sfNodeOrder = sfSharedColors and sfSharedColors.nodeOrder
+
+				if sfNodeOrder and sfIndicatorColors then
+					local sfConditionMap = {
+						voidMetamorphosisReady = metaUsable,
+						collapsingStarReady = collapsingStarUsable,
+						voidMetamorphosis = metaActive,
+						voidRayReady = (not metaActive) and spells.voidRay:IsUsable(),
+					}
+
+					for i = #sfNodeOrder, 1, -1 do
+						local key = sfNodeOrder[i]
+						local indicator = sfIndicatorColors[key]
+						if indicator and indicator.enabled and sfConditionMap[key] then
+							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
+							if sfTargets then
+								if sfTargets.bar then sfBarOverride = indicator.color end
+								if sfTargets.border then sfBorderOverride = indicator.color end
+								if sfTargets.background then sfBackgroundOverride = indicator.color end
+							end
+						end
+					end
+				end
+
+				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
+				local sfOvercapCurves = {}
+				local sfGradientOrder = sfSharedColors and sfSharedColors.gradientOrder
+				local sfAffectingCombat = TRB.Data.character.inCombat
+				if sfGradientOrder and sfIndicatorColors then
+					local sfGradientConditionMap = {
+						borderOvercap = sfAffectingCombat,
+					}
+					for i = #sfGradientOrder, 1, -1 do
+						local key = sfGradientOrder[i]
+						local indicator = sfIndicatorColors[key]
+						if indicator and indicator.enabled and sfGradientConditionMap[key] and indicator.isGradient then
+							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
+							if sfTargets then
+								if sfTargets.border then
+									sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, indicator.color)
+								end
+								if sfTargets.background then
+									sfOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, sfBackgroundOverride or specSettings.colors.comboPoints.background.color, indicator.color)
+								end
+							end
+							break
+						end
+					end
+				end
+
+				-- Apply final fill color (indicator > contextual base > default)
+				if sfBarOverride then cpColor = sfBarOverride end
 
 				-- Update secondary bar (Soul Fragments)
 				if barGroups.secondary then
@@ -1726,9 +1865,28 @@ local function UpdateResourceBar()
 						end
 						local expectedValue = math.min(current, max)
 						sfNode:SetValue(expectedValue, false)
-						sfNode:SetBorderColor(cpBorderColor)
+
+						-- Border: gradient > flat indicator > default
+						if sfOvercapCurves.border then
+							local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.border)
+							sfNode:SetBorderColorCurve(borderResult)
+						else
+							sfNode:SetBorderColor(sfBorderOverride or cpBorderColor)
+						end
+
 						sfNode:SetColor(cpColor)
-						sfNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+						-- Background: gradient > flat indicator > default
+						if sfOvercapCurves.background then
+							local bgResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.background)
+							sfNode:SetBackgroundColorCurve(bgResult)
+						else
+							if sfBackgroundOverride then
+								sfNode:SetBackgroundColorFromString(sfBackgroundOverride)
+							else
+								sfNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+							end
+						end
 						
 						-- Collapsing Star threshold (only visible when buff is active)
 						local thresholds = sfNode:GetThresholds()

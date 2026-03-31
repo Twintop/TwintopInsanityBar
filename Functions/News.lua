@@ -15,9 +15,20 @@ local content = [====[
 # 12.0.1.46-release (2026-03-31)
 ## General
 
-- Bar color changes have leveled up! You can now choose which bar(s), which part(s) of bars, and priority order of color change notifications.
+- [#152](#152) Bar color changes have leveled up! You can now choose which bar(s), which part(s) of bars, and priority order of color change notifications. This is rolling out to specializations as I have time to implement it. When specializations are migrated I'll call it out as an entry in this news section.
+
+## Demon Hunter
+
+- [#152](#152) Migrated Havoc, Vengeance, and Devourer to the new bar color change system.
+
+### Devourer
+
+- Added a new color change option for when Void Ray is ready to be used while not in Metamorphosis.
 
 ## Priest
+
+- [#152](#152) Migrated Discipline, Holy, and Shadow to the new bar color change system.
+
 ### Discipline
 
 - Add Void Shield (Master the Darkness buff) proc tracking via bar border color change and new bar text variable `$voidShieldTime`.
