@@ -373,4 +373,6 @@ if locale == "enGB" then
     L["DruidRestorationIndicatorNoEfflorescenceTooltip"] = "Changes to this colour when Efflorescence is not active on the ground."
     L["DruidRestorationIndicatorIncarnationTooltip"] = "Changes to this colour when you have Incarnation: Tree of Life active."
     L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this colour when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["DruidFeralCheckboxRavage"] = "Change colour when Ravage proc is active"
+    L["DruidFeralIndicatorRavageTooltip"] = "Changes to this colour when a Ravage proc is active."
 end

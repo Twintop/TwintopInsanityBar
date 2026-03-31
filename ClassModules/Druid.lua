@@ -784,9 +784,9 @@ local function RefreshLookupData_Feral()
 	local prevState = TRB.Data.prevLookupState or {}
 	local activeVars = TRB.Data.activeVariables
 
-	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax, $inStealth)
+	-- Block A: Core energy ($energy, $resource, $casting, $energyMax, $resourceMax, $inStealth, $ravageActive)
 	if not activeVars or activeVars["$energy"] or activeVars["$resource"] or activeVars["$casting"]
-		or activeVars["$energyMax"] or activeVars["$resourceMax"] or activeVars["$inStealth"] then
+		or activeVars["$energyMax"] or activeVars["$resourceMax"] or activeVars["$inStealth"] or activeVars["$ravageActive"] then
 
 		local currentEnergyColor = sharedSettings.colors.text.current.color
 		local castingEnergyColor = sharedSettings.colors.text.casting.color
@@ -814,6 +814,7 @@ local function RefreshLookupData_Feral()
 
 		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
+		local ravageActive = snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -821,6 +822,7 @@ local function RefreshLookupData_Feral()
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 		lookupLogic["$energy"] = snapshotData.attributes.resource
 		lookupLogic["$inStealth"] = isStealthed
+		lookupLogic["$ravageActive"] = ravageActive
 
 		local resourceFormatted = snapshotData.formatted.resource or ""
 		local energyChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
@@ -844,6 +846,7 @@ local function RefreshLookupData_Feral()
 		lookup["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 		lookup["$energyMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
 		lookup["$inStealth"] = ""
+		lookup["$ravageActive"] = ""
 	end
 
 	-- Block B: Combo Points ($comboPoints, $comboPointsMax)
@@ -2313,6 +2316,7 @@ local function UpdateResourceBar()
 
 					local conditionMap = {
 						apexPredator = apcActive,
+						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
 						borderStealth = isStealthed,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
@@ -3320,6 +3324,7 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+eventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
@@ -3333,6 +3338,26 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	end
 	
 	if TRB.Data.character.classId == 11 then
+		if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+			local baseSpellId = arg1
+			local overrideSpellId = ...
+			local feralSpells = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.spellsData and TRB.Data.specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells?]]
+			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+
+			if feralSpells ~= nil and snapshotData ~= nil and snapshotData.snapshots ~= nil and baseSpellId == feralSpells.ferociousBiteMinimum.id then
+				local ravageSnapshot = snapshotData.snapshots[feralSpells.ravageMinimum.id]
+				if ravageSnapshot ~= nil then
+					if overrideSpellId == feralSpells.ravageMinimum.id then
+						ravageSnapshot.buff:InitializeCustomSimple()
+					else
+						ravageSnapshot.buff:Reset()
+					end
+					TRB.Data.lookupDirty = true
+				end
+			end
+			return
+		end
+
 		if (event == "ADDON_LOADED" and arg1 == "TwintopInsanityBar") then
 			if not TRB.Details.addonData.loaded then
 				TRB.Details.addonData.loaded = true
@@ -3787,6 +3812,10 @@ do
 		["$incarnationTickTime"] = incarnFeralBuffFn,
 		["$incarnationNextCp"] = incarnFeralBuffFn,
 		["$inStealth"] = function() return IsStealthed() end,
+		["$ravageActive"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive
+		end,
 		["$casting"] = castingFn,
 	}
 	for k, v in pairs(healthVars) do feral[k] = v end

@@ -6377,6 +6377,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 			feral.colors.shared = feral.colors.shared or {}
 			feral.colors.shared.nodeOrder = {
 				"apexPredator",
+				"ravage",
 				"borderStealth",
 			}
 			feral.colors.shared.gradientOrder = {
@@ -6400,6 +6401,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 				enabled = bar.apexPredator and bar.apexPredator.enabled ~= false,
 				targets = MakeTargets("bar"),
 			}
+			ic.ravage = {
+				color = "FFF4B183",
+				enabled = true,
+				targets = {
+					comboPoints = { bar = true, border = false, background = false },
+				},
+			}
 			ic.borderStealth = {
 				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
 				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
@@ -6422,6 +6430,42 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.maxBite = nil
 			bar.borderStealth = nil
 			bar.borderOvercap = nil
+		end
+
+		-- Add Ravage indicator for existing Feral users and ensure it has higher priority than Stealth.
+		if feral.colors and feral.colors.shared and feral.colors.shared.indicatorColors then
+			local ic = feral.colors.shared.indicatorColors
+			if ic.ravage == nil then
+				ic.ravage = {
+					color = "FFF4B183",
+					enabled = true,
+					targets = {
+						comboPoints = { bar = true, border = false, background = false },
+					},
+				}
+			end
+
+			feral.colors.shared.nodeOrder = feral.colors.shared.nodeOrder or {}
+			local filtered = {}
+			for _, key in ipairs(feral.colors.shared.nodeOrder) do
+				if key ~= "ravage" then
+					table.insert(filtered, key)
+				end
+			end
+
+			local inserted = false
+			local rebuilt = {}
+			for _, key in ipairs(filtered) do
+				if key == "borderStealth" and not inserted then
+					table.insert(rebuilt, "ravage")
+					inserted = true
+				end
+				table.insert(rebuilt, key)
+			end
+			if not inserted then
+				table.insert(rebuilt, "ravage")
+			end
+			feral.colors.shared.nodeOrder = rebuilt
 		end
 	end
 

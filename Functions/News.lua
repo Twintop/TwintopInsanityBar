@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.47-release (2026-04-01)
+## Druid
+### Feral
+
+- [#568](#568) Restore Ravage proc tracking, add a new Ravage color indicator, and add the logic-only bar text variable `$ravageActive` for conditional bar text logic.
+
+---
+
 # 12.0.1.46-release (2026-03-31)
 ## General
 

@@ -537,6 +537,7 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
+        { variable = "$ravageActive", description = "", printInSettings = false, color = false },
 
 		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },

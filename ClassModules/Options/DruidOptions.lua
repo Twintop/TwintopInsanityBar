@@ -823,6 +823,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			shared = {
 				nodeOrder = {
 					"apexPredator",
+					"ravage",
 					"borderStealth",
 				},
 				gradientOrder = {
@@ -835,6 +836,13 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							energyBar = { bar = true, border = false, background = false },
+						},
+					},
+					ravage = {
+						color = "FFF4B183",
+						enabled = true,
+						targets = {
+							comboPoints = { bar = true, border = false, background = false },
 						},
 					},
 					borderStealth = {
@@ -2128,6 +2136,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 11, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "apexPredator",   label = L["DruidFeralCheckboxApexPredator"],  tooltip = L["DruidFeralIndicatorApexPredatorTooltip"],    colorLabel = L["DruidFeralIndicatorApexPredatorColor"] },
+			{ key = "ravage",        label = L["DruidFeralCheckboxRavage"],        tooltip = L["DruidFeralIndicatorRavageTooltip"],          colorLabel = L["DruidFeralIndicatorRavageColor"] },
 			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
 		},
 		gradientDefs = {

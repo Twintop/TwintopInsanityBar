@@ -2606,3 +2606,6 @@ L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this color whe
 L["DruidRestorationIndicatorNoEfflorescenceColor"] = "Efflorescence is not active"
 L["DruidRestorationIndicatorIncarnationColor"] = "Incarnation: Tree of Life is active"
 L["DruidRestorationIndicatorIncarnationEndColor"] = "Incarnation is ending (as configured)"
+L["DruidFeralCheckboxRavage"] = "Change color when Ravage proc is active"
+L["DruidFeralIndicatorRavageTooltip"] = "Changes to this color when a Ravage proc is active."
+L["DruidFeralIndicatorRavageColor"] = "Ravage proc is active"
