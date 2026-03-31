@@ -17,6 +17,10 @@ local content = [====[
 
 - [#152](#152) Bar color changes have leveled up! You can now choose which bar(s), which part(s) of bars, and priority order of color change notifications. This is rolling out to specializations as I have time to implement it. When specializations are migrated I'll call it out as an entry in this news section.
 
+### Localization
+
+- [#724](#724) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Demon Hunter
 
 - [#152](#152) Migrated Havoc, Vengeance, and Devourer to the new bar color change system.
