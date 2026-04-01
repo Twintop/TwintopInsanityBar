@@ -3849,6 +3849,12 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(bar.background) == "string" then
 			bar.background = { color = bar.background }
 		end
+		if type(bar.infusionOfLight) == "string" then
+			local enabled = bar.infusionOfLightEnabled
+			if enabled == nil then enabled = true end
+			bar.infusionOfLight = { color = bar.infusionOfLight, enabled = enabled }
+			bar.infusionOfLightEnabled = nil
+		end
 	end
 
 	-- Paladin Protection colors.comboPoints migration from flat string to table format
@@ -6866,9 +6872,50 @@ function TRB.Functions.Settings:PortForwardSettings()
 			ic.infusionOfLight = {
 				color = bar.infusionOfLight and bar.infusionOfLight.color or "FFFCE58E",
 				enabled = bar.infusionOfLight and bar.infusionOfLight.enabled ~= false,
-				targets = { manaBar = { bar = false, border = true, background = false } }
+				targets = {
+					manaBar = { bar = false, border = true, background = false },
+					holyPowerBar = { bar = false, border = false, background = false },
+				}
 			}
 			bar.infusionOfLight = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors and spec.colors.shared.indicatorColors.infusionOfLight then
+			local targets = spec.colors.shared.indicatorColors.infusionOfLight.targets or {}
+			spec.colors.shared.indicatorColors.infusionOfLight.targets = targets
+			targets.manaBar = targets.manaBar or { bar = false, border = false, background = false }
+			targets.holyPowerBar = targets.holyPowerBar or { bar = false, border = false, background = false }
+		end
+	end
+
+	-- Migrate Paladin Protection to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.protection then
+		local spec = TwintopInsanityBarSettings.paladin.protection
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.infusionOfLight
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "infusionOfLight" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.infusionOfLight = {
+				color = bar.infusionOfLight and bar.infusionOfLight.color or "FFFCE58E",
+				enabled = bar.infusionOfLight and bar.infusionOfLight.enabled ~= false,
+				targets = {
+					manaBar = { bar = false, border = true, background = false },
+					holyPowerBar = { bar = false, border = false, background = false },
+				}
+			}
+			bar.infusionOfLight = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors and spec.colors.shared.indicatorColors.infusionOfLight then
+			local targets = spec.colors.shared.indicatorColors.infusionOfLight.targets or {}
+			spec.colors.shared.indicatorColors.infusionOfLight.targets = targets
+			targets.manaBar = targets.manaBar or { bar = false, border = false, background = false }
+			targets.holyPowerBar = targets.holyPowerBar or { bar = false, border = false, background = false }
 		end
 	end
 

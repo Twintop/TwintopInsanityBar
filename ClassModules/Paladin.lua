@@ -575,6 +575,9 @@ end
 local function UpdateSnapshot_Protection()
 	local currentTime = GetTime()
 	UpdateSnapshot()
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	spells.flashOfLight:GetCastTime()
 end
 
 local function UpdateSnapshot_Retribution()
@@ -668,18 +671,20 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateHolyPower(specSettings, specCacheSettings)
+	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
 		local currentHolyPower = snapshotData.attributes.resource2 or 0
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+		local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
+		local barOverrideActive = holyPowerColors and holyPowerColors.bar ~= nil
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base.color
+			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
+			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base.color
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = currentHolyPower >= x
 
-			if filled then
+			if filled and not barOverrideActive then
 				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
 					cpColor = specSettings.colors.comboPoints.second.color
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
@@ -703,42 +708,77 @@ local function UpdateResourceBar()
 		end
 	end
 
+	local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
+		if sharedColors == nil then
+			return
+		end
+
+		local indicatorColors = sharedColors.indicatorColors
+		local nodeOrder = sharedColors.nodeOrder
+		if indicatorColors and nodeOrder then
+			for i = #nodeOrder, 1, -1 do
+				local key = nodeOrder[i]
+				local indicator = indicatorColors[key]
+				if indicator and indicator.enabled and conditionMap[key] then
+					local targets = indicator.targets
+					for barKey, colorEntry in pairs(barColorMap) do
+						local barTargets = targets and targets[barKey]
+						if barTargets then
+							if barTargets.bar then colorEntry.bar = indicator.color end
+							if barTargets.border then colorEntry.border = indicator.color end
+							if barTargets.background then colorEntry.background = indicator.color end
+						end
+					end
+				end
+			end
+		end
+	end
+
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
 		UpdateSnapshot_Holy()
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local infusionOfLightActive = spells.flashOfLight:IsInstant()
+		local manaBarColors = {
+			bar = specSettings.colors.bar.base.color,
+			border = specSettings.colors.bar.border.color,
+			background = specSettings.colors.bar.background.color,
+		}
+		local holyPowerColors = {
+			bar = specSettings.colors.comboPoints.base.color,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive }, {
+			manaBar = manaBarColors,
+			holyPowerBar = holyPowerColors,
+		})
 		if snapshotData.attributes.isTracking then
+			if infusionOfLightActive then
+				if specSettings.audio.infusionOfLight.enabled and not snapshotData.audio.infusionOfLightPlayed then
+					PlaySoundFile(specSettings.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+					snapshotData.audio.infusionOfLightPlayed = true
+				end
+			else
+				snapshotData.audio.infusionOfLightPlayed = false
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base.color
-
-				-- Check for Infusion of Light (Flash of Light becomes instant)
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
-				if spells.flashOfLight:IsInstant() then
-					if specSettings.colors.bar.infusionOfLight.enabled then
-						barBorderColor = specSettings.colors.bar.infusionOfLight.color
-					end
-					if specSettings.audio.infusionOfLight.enabled and not snapshotData.audio.infusionOfLightPlayed then
-						PlaySoundFile(specSettings.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.infusionOfLightPlayed = true
-					end
-				else
-					snapshotData.audio.infusionOfLightPlayed = false
-				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				primaryNode:SetColor(manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateHolyPower(specSettings, specCacheSettings)
+				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -766,23 +806,37 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.protection
 		local specCacheSettings = TRB.Data.specCache.paladin_protection.settings
 		UpdateSnapshot_Protection()
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+		local infusionOfLightActive = spells.flashOfLight:IsInstant()
+		local manaBarColors = {
+			bar = specSettings.colors.bar.base.color,
+			border = specSettings.colors.bar.border.color,
+			background = specSettings.colors.bar.background.color,
+		}
+		local holyPowerColors = {
+			bar = specSettings.colors.comboPoints.base.color,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive }, {
+			manaBar = manaBarColors,
+			holyPowerBar = holyPowerColors,
+		})
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				primaryNode:SetColor(manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateHolyPower(specSettings, specCacheSettings)
+				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
