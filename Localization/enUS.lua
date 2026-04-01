@@ -2609,3 +2609,135 @@ L["DruidRestorationIndicatorIncarnationEndColor"] = "Incarnation is ending (as c
 L["DruidFeralCheckboxRavage"] = "Change color when Ravage proc is active"
 L["DruidFeralIndicatorRavageTooltip"] = "Changes to this color when a Ravage proc is active."
 L["DruidFeralIndicatorRavageColor"] = "Ravage proc is active"
+
+-- Focus bar name for Hunter Indicator Color targets
+L["BarNameFocusBar"] = "Focus"
+
+-- Hunter Beast Mastery Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterBeastMasteryIndicatorBestialWrathTooltip"] = "Changes to this color when Bestial Wrath is active."
+L["HunterBeastMasteryIndicatorBestialWrathColor"] = "Bestial Wrath is active"
+L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"] = "Changes to this color when Bestial Wrath is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterBeastMasteryIndicatorBestialWrathEndColor"] = "Bestial Wrath is ending (as configured)"
+L["HunterBeastMasteryIndicatorBeastCleaveTooltip"] = "Changes to this color when Beast Cleave is active."
+L["HunterBeastMasteryIndicatorBeastCleaveColor"] = "Beast Cleave is active"
+
+-- Hunter Marksmanship Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterMarksmanshipIndicatorTrueshotTooltip"] = "Changes to this color when Trueshot is active."
+L["HunterMarksmanshipIndicatorTrueshotColor"] = "Trueshot is active"
+L["HunterMarksmanshipIndicatorTrueshotEndTooltip"] = "Changes to this color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterMarksmanshipIndicatorTrueshotEndColor"] = "Trueshot is ending (as configured)"
+
+-- Hunter Survival Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterSurvivalIndicatorTakedownTooltip"] = "Changes to this color when Takedown is active."
+L["HunterSurvivalIndicatorTakedownColor"] = "Takedown is active"
+L["HunterSurvivalIndicatorTakedownEndTooltip"] = "Changes to this color when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterSurvivalIndicatorTakedownEndColor"] = "Takedown is ending (as configured)"
+-- Shaman Indicator Colors: BarName key
+L["BarNameMaelstromBar"] = "Maelstrom"
+
+-- Monk Brewmaster Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "Changes to this color when Invoke Niuzao is active."
+L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] = "Invoke Niuzao is active"
+L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "Changes to this color when Invoke Niuzao is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "Invoke Niuzao is ending (as configured)"
+
+-- Monk Mistweaver Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivacious Vivification is active."
+L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivacious Vivification is active"
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this color when Heart of the Jade Serpent is ready to use."
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "Heart of the Jade Serpent is ready"
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this color when Heart of the Jade Serpent is active."
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] = "Heart of the Jade Serpent is active"
+
+-- Monk Windwalker Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this color when Heart of the Jade Serpent is ready to use."
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] = "Heart of the Jade Serpent is ready"
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this color when Heart of the Jade Serpent is active."
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] = "Heart of the Jade Serpent is active"
+L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"] = "Changes to this color when Dance of Chi-Ji is active."
+L["MonkWindwalkerIndicatorDanceOfChiJiColor"] = "Dance of Chi-Ji is active"
+
+-- Paladin Holy Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "Changes to this color when Infusion of Light is active (Flash of Light becomes instant cast)."
+L["PaladinHolyIndicatorInfusionOfLightColor"] = "Infusion of Light is active"
+
+-- Rogue Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["RogueIndicatorStealthTooltip"] = "Changes to this color when you are stealthed."
+L["RogueIndicatorStealthColor"] = "Stealthed"
+L["RogueSubtletyIndicatorShadowcraftTooltip"] = "Changes to this color when Shadowcraft conditions are met (Symbols of Death active, max Shadow Techniques stacks, and Shadowcraft talented)."
+L["RogueSubtletyIndicatorShadowcraftColor"] = "Shadowcraft conditions met"
+
+-- Shaman Elemental Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanElementalIndicatorEarthShockTooltip"] = "Changes to this color when Earth Shock or Elemental Blast is usable."
+L["ShamanElementalIndicatorEarthShockColor"] = "Earth Shock or Elemental Blast is usable"
+L["ShamanElementalIndicatorEarthquakeTooltip"] = "Changes to this color when Earthquake is usable."
+L["ShamanElementalIndicatorEarthquakeColor"] = "Earthquake is usable"
+L["ShamanElementalIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanElementalIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanElementalIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanElementalIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Shaman Enhancement Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanEnhancementIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanEnhancementIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanEnhancementIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanEnhancementIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Shaman Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanRestorationIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanRestorationIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanRestorationIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanRestorationIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Warrior Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["WarriorIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["WarriorIndicatorOvercapTooltip"] = "Gradually changes to this color as your Rage approaches the overcap threshold."
+L["WarriorIndicatorOvercapColor"] = "Overcapping Rage"
+
+-- Death Knight Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["BarNameRunicPowerBar"] = "Runic Power"
+L["DeathKnightIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["DeathKnightIndicatorOvercapTooltip"] = "Gradually changes to this color as your Runic Power approaches the overcap threshold."
+L["DeathKnightIndicatorOvercapColor"] = "Overcapping Runic Power"
+
+-- Paladin Protection Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PaladinProtectionCheckboxInfusionOfLight"] = "Infusion of Light"
+L["PaladinProtectionIndicatorInfusionOfLightTooltip"] = "Changes to this color when Infusion of Light is active (Flash of Light becomes instant cast)."
+L["PaladinProtectionIndicatorInfusionOfLightColor"] = "Infusion of Light is active"
+
+-- Monk Brewmaster Indicator Colors
+L["BarNameStaggerBar"] = "Stagger"
+
+-- Shaman Enhancement Indicator Colors
+L["BarNameMaelstromWeaponBar"] = "Maelstrom Weapon"
+
+-- Warrior Fury Indicator Colors
+L["BarNameWhirlwindBar"] = "Whirlwind"
+L["WarriorFuryCheckboxZeroStackBackground"] = "0 Whirlwind Charges"
+L["WarriorFuryIndicatorZeroStackBackgroundTooltip"] = "Changes to this color when you have 0 Whirlwind Charges."
+L["WarriorFuryIndicatorZeroStackBackgroundColor"] = "0 Whirlwind Charges"
+
+-- Warrior Protection Indicator Colors
+L["BarNameDefensivesIgnorePainTimeBar"] = "Ignore Pain (Time)"
+L["BarNameDefensivesIgnorePainAbsorbBar"] = "Ignore Pain (Absorb)"
+L["BarNameDefensivesShieldBlockBar"] = "Shield Block"
+
+-- Hunter Indicator Colors
+L["HunterIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["HunterIndicatorOvercapTooltip"] = "Gradually changes to this color as your Focus approaches the overcap threshold."
+L["HunterIndicatorOvercapColor"] = "Overcapping Focus"
+
+-- Monk Indicator Colors
+L["MonkIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["MonkIndicatorOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["MonkIndicatorOvercapColor"] = "Overcapping Energy"
+
+-- Rogue Indicator Colors
+L["RogueIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["RogueIndicatorOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["RogueIndicatorOvercapColor"] = "Overcapping Energy"
+
+-- Shaman Elemental Indicator Colors
+L["ShamanElementalIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this color as your Maelstrom approaches the overcap threshold."
+L["ShamanElementalIndicatorOvercapColor"] = "Overcapping Maelstrom"

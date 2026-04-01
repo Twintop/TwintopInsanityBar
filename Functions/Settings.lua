@@ -6574,6 +6574,631 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Migrate Hunter BeastMastery to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.beastMastery then
+		local spec = TwintopInsanityBarSettings.hunter.beastMastery
+		if spec.colors and spec.colors.bar
+		and (spec.colors.bar.bestialWrath or spec.colors.bar.beastCleave)
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "bestialWrathEnd", "beastCleave", "bestialWrath" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.bestialWrath = {
+				color = bar.bestialWrath and bar.bestialWrath.color or "FF005500",
+				enabled = bar.bestialWrath and bar.bestialWrath.enabled ~= false,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			ic.bestialWrathEnd = {
+				color = bar.bestialWrathEnd and bar.bestialWrathEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			ic.beastCleave = {
+				color = bar.beastCleave and bar.beastCleave.color or "FF77FF77",
+				enabled = bar.beastCleave and bar.beastCleave.enabled ~= false,
+				targets = { focusBar = { bar = false, border = true, background = false } }
+			}
+			bar.bestialWrath = nil
+			bar.bestialWrathEnd = nil
+			bar.beastCleave = nil
+		end
+	end
+
+	-- Migrate Hunter Marksmanship to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.marksmanship then
+		local spec = TwintopInsanityBarSettings.hunter.marksmanship
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.trueshot
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "trueshotEnd", "trueshot" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.trueshot = {
+				color = bar.trueshot and bar.trueshot.color or "FF00B60E",
+				enabled = bar.trueshot and bar.trueshot.enabled ~= false,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			ic.trueshotEnd = {
+				color = bar.trueshotEnd and bar.trueshotEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			bar.trueshot = nil
+			bar.trueshotEnd = nil
+		end
+	end
+
+	-- Migrate Hunter Survival to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.survival then
+		local spec = TwintopInsanityBarSettings.hunter.survival
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.takedown
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "takedownEnd", "takedown" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.takedown = {
+				color = bar.takedown and bar.takedown.color or "FF005500",
+				enabled = bar.takedown and bar.takedown.enabled ~= false,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			ic.takedownEnd = {
+				color = bar.takedownEnd and bar.takedownEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { focusBar = { bar = true, border = false, background = false } }
+			}
+			bar.takedown = nil
+			bar.takedownEnd = nil
+		end
+	end
+
+	-- Migrate Hunter borderOvercap gradient to indicator colors (for users who already have flat indicators migrated but not the gradient)
+	for _, specName in ipairs({ "beastMastery", "marksmanship", "survival" }) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter[specName] then
+			local spec = TwintopInsanityBarSettings.hunter[specName]
+			if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+			and spec.colors.shared.indicatorColors.borderOvercap == nil then
+				spec.colors.shared.gradientOrder = { "borderOvercap" }
+				spec.colors.shared.indicatorColors.borderOvercap = {
+					color = (spec.colors.bar and spec.colors.bar.borderOvercap and spec.colors.bar.borderOvercap.color) or "FFFF0000",
+					enabled = (spec.colors.bar and spec.colors.bar.borderOvercap and spec.colors.bar.borderOvercap.enabled) ~= false,
+					isGradient = true,
+					targets = { focusBar = { bar = false, border = true, background = false } },
+				}
+				if spec.colors.bar and spec.colors.bar.borderOvercap then
+					spec.colors.bar.borderOvercap = nil
+				end
+			end
+		end
+	end
+
+	-- Migrate Warrior Arms to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.arms then
+		local spec = TwintopInsanityBarSettings.warrior.arms
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FF800000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { rageBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Warrior Fury to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury then
+		local spec = TwintopInsanityBarSettings.warrior.fury
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FF800000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { rageBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Warrior Fury zeroStackBackground from whirlwind bar colors to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury then
+		local spec = TwintopInsanityBarSettings.warrior.fury
+		if spec.colors and spec.colors.bars and spec.colors.bars.whirlwind
+		and spec.colors.bars.whirlwind.zeroStackBackground
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil or spec.colors.shared.indicatorColors.zeroStackBackground == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+
+			local old = spec.colors.bars.whirlwind.zeroStackBackground
+			spec.colors.shared.indicatorColors.zeroStackBackground = {
+				color = old.color or "FF333333",
+				enabled = old.enabled ~= false,
+				targets = { whirlwindBar = { bar = false, border = false, background = true } },
+			}
+
+			-- Add to nodeOrder if not already present
+			local found = false
+			for _, v in ipairs(spec.colors.shared.nodeOrder) do
+				if v == "zeroStackBackground" then found = true break end
+			end
+			if not found then
+				table.insert(spec.colors.shared.nodeOrder, 1, "zeroStackBackground")
+			end
+
+			spec.colors.bars.whirlwind.zeroStackBackground = nil
+		end
+	end
+
+	-- Migrate Warrior Protection to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.protection then
+		local spec = TwintopInsanityBarSettings.warrior.protection
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FF800000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { rageBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Death Knight Blood to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.blood then
+		local spec = TwintopInsanityBarSettings.deathknight.blood
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { runicPowerBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Death Knight Frost to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.frost then
+		local spec = TwintopInsanityBarSettings.deathknight.frost
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { runicPowerBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Death Knight Unholy to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.unholy then
+		local spec = TwintopInsanityBarSettings.deathknight.unholy
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderOvercap
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = {}
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			spec.colors.shared.indicatorColors.borderOvercap = {
+				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
+				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { runicPowerBar = { bar = false, border = true, background = false } },
+			}
+			spec.colors.bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Paladin Holy to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.holy then
+		local spec = TwintopInsanityBarSettings.paladin.holy
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.infusionOfLight
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "infusionOfLight" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.infusionOfLight = {
+				color = bar.infusionOfLight and bar.infusionOfLight.color or "FFFCE58E",
+				enabled = bar.infusionOfLight and bar.infusionOfLight.enabled ~= false,
+				targets = { manaBar = { bar = false, border = true, background = false } }
+			}
+			bar.infusionOfLight = nil
+		end
+	end
+
+	-- Migrate Rogue Assassination to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.rogue and TwintopInsanityBarSettings.rogue.assassination then
+		local spec = TwintopInsanityBarSettings.rogue.assassination
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderStealth
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "borderStealth" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.borderStealth = {
+				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
+				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			bar.borderStealth = nil
+			bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Rogue Outlaw to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.rogue and TwintopInsanityBarSettings.rogue.outlaw then
+		local spec = TwintopInsanityBarSettings.rogue.outlaw
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderStealth
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "borderStealth" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.borderStealth = {
+				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
+				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			bar.borderStealth = nil
+			bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Rogue Subtlety to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.rogue and TwintopInsanityBarSettings.rogue.subtlety then
+		local spec = TwintopInsanityBarSettings.rogue.subtlety
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.borderStealth
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "borderShadowcraft", "borderStealth" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.borderStealth = {
+				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
+				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			ic.borderShadowcraft = {
+				color = bar.borderShadowcraft and bar.borderShadowcraft.color or "FF431863",
+				enabled = bar.borderShadowcraft and bar.borderShadowcraft.enabled ~= false,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			bar.borderStealth = nil
+			bar.borderShadowcraft = nil
+			bar.borderOvercap = nil
+		end
+	end
+
+	-- Migrate Shaman Elemental to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.shaman and TwintopInsanityBarSettings.shaman.elemental then
+		local spec = TwintopInsanityBarSettings.shaman.elemental
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.ascendance
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "ascendanceEnd", "earthShock", "earthquake", "ascendance" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.ascendance = {
+				color = bar.ascendance and bar.ascendance.color or "FF00FFFF",
+				enabled = bar.ascendance and bar.ascendance.enabled ~= false,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			ic.ascendanceEnd = {
+				color = bar.ascendanceEnd and bar.ascendanceEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			ic.earthShock = {
+				color = bar.earthShock and bar.earthShock.color or "FF00A2FF",
+				enabled = bar.earthShock and bar.earthShock.enabled ~= false,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			ic.earthquake = {
+				color = bar.earthquake and bar.earthquake.color or "FFFF8800",
+				enabled = bar.earthquake and bar.earthquake.enabled ~= false,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { maelstromBar = { bar = false, border = true, background = false } }
+			}
+			bar.ascendance = nil
+			bar.ascendanceEnd = nil
+			bar.earthShock = nil
+			bar.earthquake = nil
+			bar.borderOvercap = nil
+			if spec.endOf and spec.endOf.ascendance then
+				spec.endOf.ascendance.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Shaman Enhancement to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.shaman and TwintopInsanityBarSettings.shaman.enhancement then
+		local spec = TwintopInsanityBarSettings.shaman.enhancement
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.ascendance
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "ascendanceEnd", "ascendance" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.ascendance = {
+				color = bar.ascendance and bar.ascendance.color or "FF00FFFF",
+				enabled = bar.ascendance and bar.ascendance.enabled ~= false,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			ic.ascendanceEnd = {
+				color = bar.ascendanceEnd and bar.ascendanceEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { maelstromBar = { bar = true, border = false, background = false } }
+			}
+			bar.ascendance = nil
+			bar.ascendanceEnd = nil
+			if spec.endOf and spec.endOf.ascendance then
+				spec.endOf.ascendance.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Shaman Restoration to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.shaman and TwintopInsanityBarSettings.shaman.restoration then
+		local spec = TwintopInsanityBarSettings.shaman.restoration
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.ascendance
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "ascendanceEnd", "ascendance" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.ascendance = {
+				color = bar.ascendance and bar.ascendance.color or "FF00FFFF",
+				enabled = bar.ascendance and bar.ascendance.enabled ~= false,
+				targets = { manaBar = { bar = true, border = false, background = false } }
+			}
+			ic.ascendanceEnd = {
+				color = bar.ascendanceEnd and bar.ascendanceEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { manaBar = { bar = true, border = false, background = false } }
+			}
+			bar.ascendance = nil
+			bar.ascendanceEnd = nil
+			if spec.endOf and spec.endOf.ascendance then
+				spec.endOf.ascendance.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Monk Brewmaster to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.monk and TwintopInsanityBarSettings.monk.brewmaster then
+		local spec = TwintopInsanityBarSettings.monk.brewmaster
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.invokeNiuzao
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "invokeNiuzaoEnd", "invokeNiuzao" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.invokeNiuzao = {
+				color = bar.invokeNiuzao and bar.invokeNiuzao.color or "FFFF8000",
+				enabled = bar.invokeNiuzao and bar.invokeNiuzao.enabled ~= false,
+				targets = { energyBar = { bar = true, border = false, background = false } }
+			}
+			ic.invokeNiuzaoEnd = {
+				color = bar.invokeNiuzaoEnd and bar.invokeNiuzaoEnd.color or "FFFF0000",
+				enabled = true,
+				targets = { energyBar = { bar = true, border = false, background = false } }
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = { energyBar = { bar = false, border = true, background = false } }
+			}
+			bar.invokeNiuzao = nil
+			bar.invokeNiuzaoEnd = nil
+			bar.borderOvercap = nil
+			if spec.endOf and spec.endOf.invokeNiuzao then
+				spec.endOf.invokeNiuzao.enabled = nil
+			end
+		end
+	end
+
+	-- Migrate Monk Mistweaver to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.monk and TwintopInsanityBarSettings.monk.mistweaver then
+		local spec = TwintopInsanityBarSettings.monk.mistweaver
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.vivaciousVivification
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "vivaciousVivification", "heartOfTheJadeSerpent", "heartOfTheJadeSerpentReady" }
+			spec.colors.shared.gradientOrder = {}
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			ic.vivaciousVivification = {
+				color = bar.vivaciousVivification and bar.vivaciousVivification.color or "FF00FF00",
+				enabled = bar.vivaciousVivification and bar.vivaciousVivification.enabled ~= false,
+				targets = { manaBar = { bar = true, border = false, background = false } }
+			}
+			ic.heartOfTheJadeSerpentReady = {
+				color = bar.heartOfTheJadeSerpentReady and bar.heartOfTheJadeSerpentReady.color or "FFFF8000",
+				enabled = bar.heartOfTheJadeSerpentReady and bar.heartOfTheJadeSerpentReady.enabled ~= false,
+				targets = { manaBar = { bar = false, border = true, background = false } }
+			}
+			ic.heartOfTheJadeSerpent = {
+				color = bar.heartOfTheJadeSerpent and bar.heartOfTheJadeSerpent.color or "FFFF0000",
+				enabled = bar.heartOfTheJadeSerpent and bar.heartOfTheJadeSerpent.enabled ~= false,
+				targets = { manaBar = { bar = false, border = true, background = false } }
+			}
+			bar.vivaciousVivification = nil
+			bar.heartOfTheJadeSerpentReady = nil
+			bar.heartOfTheJadeSerpent = nil
+		end
+	end
+
+	-- Migrate Monk Windwalker to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.monk and TwintopInsanityBarSettings.monk.windwalker then
+		local spec = TwintopInsanityBarSettings.monk.windwalker
+		if spec.colors and spec.colors.bar
+		and spec.colors.bar.heartOfTheJadeSerpentReady
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = { "heartOfTheJadeSerpentReady", "heartOfTheJadeSerpent", "danceOfChiJi" }
+			spec.colors.shared.gradientOrder = { "borderOvercap" }
+			spec.colors.shared.indicatorColors = {}
+			local ic = spec.colors.shared.indicatorColors
+			local bar = spec.colors.bar
+			local function MakeTargets(defaultBarKey, defaultElementKey)
+				local targets = {
+					energyBar = { bar = false, border = false, background = false },
+					chiBar = { bar = false, border = false, background = false },
+				}
+				if targets[defaultBarKey] then
+					targets[defaultBarKey][defaultElementKey] = true
+				end
+				return targets
+			end
+			ic.heartOfTheJadeSerpentReady = {
+				color = bar.heartOfTheJadeSerpentReady and bar.heartOfTheJadeSerpentReady.color or "FFFF8000",
+				enabled = bar.heartOfTheJadeSerpentReady and bar.heartOfTheJadeSerpentReady.enabled ~= false,
+				targets = MakeTargets("energyBar", "border")
+			}
+			ic.heartOfTheJadeSerpent = {
+				color = bar.heartOfTheJadeSerpent and bar.heartOfTheJadeSerpent.color or "FFFF0000",
+				enabled = bar.heartOfTheJadeSerpent and bar.heartOfTheJadeSerpent.enabled ~= false,
+				targets = MakeTargets("energyBar", "border")
+			}
+			ic.danceOfChiJi = {
+				color = ((bar.danceOfChiJi and bar.danceOfChiJi.color) or (bar.borderChiJi and bar.borderChiJi.color)) or "FFFF00FF",
+				enabled = ((bar.danceOfChiJi and bar.danceOfChiJi.enabled ~= false) or (bar.borderChiJi and bar.borderChiJi.enabled ~= false)) ~= false,
+				targets = MakeTargets("energyBar", "border")
+			}
+			ic.borderOvercap = {
+				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
+				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
+				isGradient = true,
+				targets = MakeTargets("energyBar", "border")
+			}
+			bar.heartOfTheJadeSerpentReady = nil
+			bar.heartOfTheJadeSerpent = nil
+			bar.danceOfChiJi = nil
+			bar.borderChiJi = nil
+			bar.borderOvercap = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
+			local ic = spec.colors.shared.indicatorColors
+			for _, key in ipairs({ "heartOfTheJadeSerpentReady", "heartOfTheJadeSerpent", "danceOfChiJi", "borderOvercap" }) do
+				if ic[key] then
+					ic[key].targets = ic[key].targets or {}
+					ic[key].targets.energyBar = ic[key].targets.energyBar or { bar = false, border = false, background = false }
+					ic[key].targets.chiBar = ic[key].targets.chiBar or { bar = false, border = false, background = false }
+				end
+			end
+		end
+	end
+
+	-- Remove legacy consistentUnfilledColor from comboPoints colors (deprecated option removed)
+	if TwintopInsanityBarSettings ~= nil then
+		for _, classValue in pairs(TwintopInsanityBarSettings) do
+			if type(classValue) == "table" then
+				for _, specVal in pairs(classValue) do
+					if type(specVal) == "table" and
+					specVal.colors ~= nil and
+					specVal.colors.comboPoints ~= nil then
+						specVal.colors.comboPoints.consistentUnfilledColor = nil
+					end
+				end
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

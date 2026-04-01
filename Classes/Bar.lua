@@ -146,6 +146,7 @@ function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
+	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
 	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		texture:SetVertexColor(colorResult:GetRGBA())
@@ -1560,6 +1561,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		nodeColors = {
 			{ key = "charge1", displayName = L["WhirlwindCharge1"], colorLabel = L["WhirlwindColorPickerBase"] },
@@ -1581,6 +1583,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		visibilityKey = "utility",
 		defaultDimensionsFunc = function(classic)
@@ -1602,6 +1605,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		visibilityKey = "lightweaver",
 		nodeColors = {

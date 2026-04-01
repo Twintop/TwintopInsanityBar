@@ -200,22 +200,11 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFFFD300"
 				},
-				borderOvercap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
 					color = "FFFFFF00"
-				},
-				invokeNiuzao = {
-					color = "FF8B6914",
-					enabled = true
-				},
-				invokeNiuzaoEnd = {
-					color = "FFFF0000"
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -234,6 +223,39 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"invokeNiuzaoEnd",
+					"invokeNiuzao"
+				},
+				gradientOrder = {
+					"borderOvercap"
+				},
+				indicatorColors = {
+					invokeNiuzao = {
+						color = "FF8B6914",
+						enabled = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false }
+						}
+					},
+					invokeNiuzaoEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false }
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false }
+						}
+					}
+				}
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -342,24 +364,43 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
-				vivaciousVivification = {
-					color = "FF00FFBB",
-					enabled = true
-				},
-				heartOfTheJadeSerpentReady = {
-					color = "FF008461",
-					enabled = true
-				},
-				heartOfTheJadeSerpent = {
-					color = "FF00FFBB",
-					enabled = true
-				},
 				casting = {
 					color = "FFFFFFFF",
 					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"vivaciousVivification",
+					"heartOfTheJadeSerpent",
+					"heartOfTheJadeSerpentReady"
+				},
+				gradientOrder = {},
+				indicatorColors = {
+					vivaciousVivification = {
+						color = "FF00FFBB",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					},
+					heartOfTheJadeSerpentReady = {
+						color = "FF008461",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					},
+					heartOfTheJadeSerpent = {
+						color = "FF00FFBB",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					}
+				}
+			},
 		},
 		displayText={
 			default = {
@@ -499,27 +540,11 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFFFD300"
 				},
-				borderOvercap = {
-					color = "FFFF0000",
-					enabled = true
-				},
-				danceOfChiJi = {
-					color = "FF00FF00",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
 					color = "FFFFFF00"
-				},
-				heartOfTheJadeSerpentReady = {
-					color = "FF008461",
-					enabled = true
-				},
-				heartOfTheJadeSerpent = {
-					color = "FF00FFBB",
-					enabled = true
 				},
 				casting = {
 					color = "FFFFFFFF",
@@ -545,6 +570,51 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"heartOfTheJadeSerpentReady",
+					"heartOfTheJadeSerpent",
+					"danceOfChiJi"
+				},
+				gradientOrder = {
+					"borderOvercap"
+				},
+				indicatorColors = {
+					danceOfChiJi = {
+						color = "FF00FF00",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							chiBar = { bar = false, border = false, background = false }
+						}
+					},
+					heartOfTheJadeSerpentReady = {
+						color = "FF008461",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							chiBar = { bar = false, border = false, background = false }
+						}
+					},
+					heartOfTheJadeSerpent = {
+						color = "FF00FFBB",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							chiBar = { bar = false, border = false, background = false }
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							chiBar = { bar = false, border = false, background = false }
+						}
+					}
+				}
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -758,45 +828,7 @@ local function BrewmasterConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
-
-	-- Invoke Niuzao color options
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 10, 1, yCoord, {
-		endOfKey = "invokeNiuzao",
-		activeColorKey = "invokeNiuzao",
-		endColorKey = "invokeNiuzaoEnd",
-		checkboxLabel = L["MonkBrewmasterCheckboxInvokeNiuzao"],
-		checkboxTooltip = L["MonkBrewmasterCheckboxInvokeNiuzaoTooltip"],
-		activeColorLabel = L["MonkBrewmasterColorPickerInvokeNiuzao"],
-		endCheckboxLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoEnd"],
-		endCheckboxTooltip = L["MonkBrewmasterCheckboxInvokeNiuzaoEndTooltip"],
-		endColorLabel = L["MonkBrewmasterColorPickerInvokeNiuzaoEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, false)
-
-	-- Invoke Niuzao configuration options
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 10, 1, yCoord, {
-		endOfKey = "invokeNiuzao",
-		sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
-		gcdRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoGcds"],
-		gcdSliderLabel = L["MonkBrewmasterInvokeNiuzaoGcds"],
-		timeRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoTime"],
-		timeSliderLabel = L["MonkBrewmasterInvokeNiuzaoTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], BREWMASTER_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
@@ -855,6 +887,53 @@ local function BrewmasterConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+end
+
+local function BrewmasterConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 10
+	local specId = 1
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "invokeNiuzaoEnd", label = L["MonkBrewmasterCheckboxInvokeNiuzaoEnd"], tooltip = L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"], colorLabel = L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] },
+			{ key = "invokeNiuzao", label = L["MonkBrewmasterCheckboxInvokeNiuzao"], tooltip = L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"], colorLabel = L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["MonkIndicatorBorderOvercap"], tooltip = L["MonkIndicatorOvercapTooltip"], colorLabel = L["MonkIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "staggerBar", label = L["BarNameStaggerBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Monk_Brewmaster",
+		excludedElements = {
+			staggerBar = { bar = true },
+		},
+		endOfConfigs = {
+			{
+				endOfKey = "invokeNiuzao",
+				sectionHeader = L["MonkBrewmasterEndOfInvokeNiuzaoConfigurationHeader"],
+				gcdRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoGcds"],
+				gcdSliderLabel = L["MonkBrewmasterInvokeNiuzaoGcds"],
+				timeRadioLabel = L["MonkBrewmasterCheckboxInvokeNiuzaoTime"],
+				timeSliderLabel = L["MonkBrewmasterInvokeNiuzaoTime"],
+			},
+		},
+		overcapConfig = {
+			primaryResourceString = L["ResourceEnergy"],
+			primaryResourceMax = BREWMASTER_MAX_ENERGY,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function BrewmasterConstructBarTexturesPanel(parent)
@@ -1246,6 +1325,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel },
 		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BrewmasterConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BrewmasterConstructThresholdPanel },
@@ -1375,34 +1455,7 @@ local function MistweaverConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.vivaciousVivification = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_vivaciousVivification", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vivaciousVivification
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxVivify"])
-	f.tooltip = L["MonkMistweaverCheckboxVivifyTooltip"]
-	f:SetChecked(spec.colors.bar.vivaciousVivification.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.vivaciousVivification.enabled = self:GetChecked()
-	end)
-
-	controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerVivify"], spec.colors.bar.vivaciousVivification.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.vivaciousVivification
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "vivaciousVivification")
-	end)
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 	--[[	
 	yCoord = yCoord - 30
@@ -1438,6 +1491,33 @@ local function MistweaverConstructManaBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
 	end)]]
+end
+
+local function MistweaverConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 10
+	local specId = 2
+	local spec = TRB.Data.settings.monk.mistweaver
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "vivaciousVivification", label = L["MonkMistweaverCheckboxVivify"], tooltip = L["MonkMistweaverIndicatorVivaciousVivificationTooltip"], colorLabel = L["MonkMistweaverIndicatorVivaciousVivificationColor"] },
+			{ key = "heartOfTheJadeSerpent", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] },
+			{ key = "heartOfTheJadeSerpentReady", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpentReady"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Monk_Mistweaver",
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function MistweaverConstructHealthBarPanel(parent)
@@ -1617,6 +1697,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MistweaverConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MistweaverConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MistweaverConstructFontAndTextPanel },
@@ -1745,72 +1826,8 @@ local function WindwalkerConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.heartOfTheJadeSerpentReady = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_heartOfTheJadeSerpentReady", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.heartOfTheJadeSerpentReady
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReady"])
-	f.tooltip = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReadyTooltip"]
-	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpentReady.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
-	end)
-
-	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.heartOfTheJadeSerpentReady
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.heartOfTheJadeSerpent = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_heartOfTheJadeSerpent", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.heartOfTheJadeSerpent
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"])
-	f.tooltip = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentTooltip"]
-	f:SetChecked(spec.colors.bar.heartOfTheJadeSerpent.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
-	end)
-
-	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.heartOfTheJadeSerpent
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.danceOfChiJi = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_danceOfChiJi", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.danceOfChiJi
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxDanceOfChiJi"])
-	f.tooltip = L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"]
-	f:SetChecked(spec.colors.bar.danceOfChiJi.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.danceOfChiJi.enabled = self:GetChecked()
-	end)
-
-	controls.colors.danceOfChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.danceOfChiJi.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.danceOfChiJi
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "danceOfChiJi")
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 	
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], WINDWALKER_MAX_ENERGY)
-
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
 end
@@ -1891,6 +1908,41 @@ local function WindwalkerConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
+end
+
+local function WindwalkerConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 10
+	local specId = 3
+	local spec = TRB.Data.settings.monk.windwalker
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "danceOfChiJi", label = L["MonkWindwalkerCheckboxDanceOfChiJi"], tooltip = L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"], colorLabel = L["MonkWindwalkerIndicatorDanceOfChiJiColor"] },
+			{ key = "heartOfTheJadeSerpent", label = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] },
+			{ key = "heartOfTheJadeSerpentReady", label = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReady"], tooltip = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"], colorLabel = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["MonkIndicatorBorderOvercap"], tooltip = L["MonkIndicatorOvercapTooltip"], colorLabel = L["MonkIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+				{ key = "chiBar", label = L["ResourceChi"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Monk_Windwalker",
+		overcapConfig = {
+			primaryResourceString = L["ResourceEnergy"],
+			primaryResourceMax = WINDWALKER_MAX_ENERGY,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function WindwalkerConstructBarTexturesPanel(parent)
@@ -2230,6 +2282,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel },
 		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, WindwalkerConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, WindwalkerConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdPanel },
