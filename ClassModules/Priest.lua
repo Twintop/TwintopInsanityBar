@@ -2395,7 +2395,6 @@ local function UpdateResourceBar()
 					mindDevourer = spells.shadowWordMadness:IsFree(),
 					entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
 					borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-					shadowWordMadnessUsableCasting = swmUsable and isCasting,
 					shadowWordMadnessUsable = swmUsable,
 					voidform = voidformActive,
 					borderOvercap = affectingCombat,

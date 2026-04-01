@@ -42,7 +42,8 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public indicatorDefs TRB.Classes.OptionsUi.IndicatorDef[] Flat indicator definitions
 ---@field public gradientDefs TRB.Classes.OptionsUi.IndicatorDef[]? Gradient indicator definitions (default: {})
 ---@field public barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] Bar targets
----@field public gradientExcludedElements table<string, table<string, boolean>>? Map of barKey -> { elementKey = true } to exclude from gradient dropdowns
+---@field public excludedElements table<string, table<string, boolean>>? Map of barKey -> { elementKey = true } to exclude from ALL indicator dropdowns (flat and gradient)
+---@field public gradientExcludedElements table<string, table<string, boolean>>? Map of barKey -> { elementKey = true } to exclude from gradient dropdowns only
 ---@field public ddNamePrefix string Unique prefix for dropdown frame names (e.g., "TwintopResourceBar_Priest_Shadow")
 ---@field public endOfConfigs TRB.Classes.OptionsUi.EndOfConfig[]? List of EndOf configuration entries
 ---@field public overcapConfig TRB.Classes.OptionsUi.OvercapConfig? Overcap configuration
@@ -57,6 +58,7 @@ function TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New(data)
 	obj.indicatorDefs = data.indicatorDefs
 	obj.gradientDefs = data.gradientDefs
 	obj.barTargetDefs = data.barTargetDefs
+	obj.excludedElements = data.excludedElements
 	obj.gradientExcludedElements = data.gradientExcludedElements
 	obj.ddNamePrefix = data.ddNamePrefix
 	obj.endOfConfigs = data.endOfConfigs

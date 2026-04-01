@@ -6596,6 +6596,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	local indicatorDefs = config.indicatorDefs
 	local gradientDefs = config.gradientDefs or {}
 	local barTargetDefs = config.barTargetDefs
+	local excludedElements = config.excludedElements or {}
 	local gradientExcludedElements = config.gradientExcludedElements or {}
 	local ddNamePrefix = config.ddNamePrefix
 
@@ -6821,24 +6822,27 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 					rootDescription:CreateTitle(barDef.label)
 					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
 
+					local excluded = excludedElements[barDef.key]
 					for _, elemDef in ipairs(elementDefs) do
-						rootDescription:CreateCheckbox(
-							elemDef.label,
-							function()
-								local ck = orderedKeys[capturedRowIdx]
-								local ci = indicatorColors[ck]
-								return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-							end,
-							function()
-								local ck = orderedKeys[capturedRowIdx]
-								local ci = indicatorColors[ck]
-								if not ci then return end
-								ci.targets = ci.targets or {}
-								ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-								ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-								SyncEnabled(ck, capturedRowIdx)
-							end
-						)
+						if not (excluded and excluded[elemDef.key]) then
+							rootDescription:CreateCheckbox(
+								elemDef.label,
+								function()
+									local ck = orderedKeys[capturedRowIdx]
+									local ci = indicatorColors[ck]
+									return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+								end,
+								function()
+									local ck = orderedKeys[capturedRowIdx]
+									local ci = indicatorColors[ck]
+									if not ci then return end
+									ci.targets = ci.targets or {}
+									ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+									ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+									SyncEnabled(ck, capturedRowIdx)
+								end
+							)
+						end
 					end
 				end
 			end)
@@ -6996,9 +7000,10 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 						rootDescription:CreateTitle(barDef.label)
 						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
 
-						local excluded = gradientExcludedElements[barDef.key]
+						local globalExcluded = excludedElements[barDef.key]
+						local gradExcluded = gradientExcludedElements[barDef.key]
 						for _, elemDef in ipairs(elementDefs) do
-							if not (excluded and excluded[elemDef.key]) then
+							if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
 								rootDescription:CreateCheckbox(
 									elemDef.label,
 									function()
