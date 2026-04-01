@@ -4071,9 +4071,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(bar.borderStealth) == "string" then
 			bar.borderStealth = { color = bar.borderStealth }
 		end
-		if type(bar.borderShadowcraft) == "string" then
-			bar.borderShadowcraft = { color = bar.borderShadowcraft }
-		end
 	end
 
 	-- Rogue Subtlety colors.comboPoints migration from flat string to table format
@@ -6890,16 +6887,33 @@ function TRB.Functions.Settings:PortForwardSettings()
 			ic.borderStealth = {
 				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
 				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			ic.borderOvercap = {
 				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
 				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
 				isGradient = true,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			bar.borderStealth = nil
 			bar.borderOvercap = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
+			local ic = spec.colors.shared.indicatorColors
+			for _, key in ipairs({ "borderStealth", "borderOvercap" }) do
+				if ic[key] then
+					ic[key].targets = ic[key].targets or {}
+					ic[key].targets.energyBar = ic[key].targets.energyBar or { bar = false, border = false, background = false }
+					ic[key].targets.comboPointsBar = ic[key].targets.comboPointsBar or { bar = false, border = false, background = false }
+				end
+			end
 		end
 	end
 
@@ -6918,16 +6932,33 @@ function TRB.Functions.Settings:PortForwardSettings()
 			ic.borderStealth = {
 				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
 				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			ic.borderOvercap = {
 				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
 				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
 				isGradient = true,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			bar.borderStealth = nil
 			bar.borderOvercap = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
+			local ic = spec.colors.shared.indicatorColors
+			for _, key in ipairs({ "borderStealth", "borderOvercap" }) do
+				if ic[key] then
+					ic[key].targets = ic[key].targets or {}
+					ic[key].targets.energyBar = ic[key].targets.energyBar or { bar = false, border = false, background = false }
+					ic[key].targets.comboPointsBar = ic[key].targets.comboPointsBar or { bar = false, border = false, background = false }
+				end
+			end
 		end
 	end
 
@@ -6938,7 +6969,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 		and spec.colors.bar.borderStealth
 		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
 			spec.colors.shared = spec.colors.shared or {}
-			spec.colors.shared.nodeOrder = { "borderShadowcraft", "borderStealth" }
+			spec.colors.shared.nodeOrder = { "borderStealth" }
 			spec.colors.shared.gradientOrder = { "borderOvercap" }
 			spec.colors.shared.indicatorColors = {}
 			local ic = spec.colors.shared.indicatorColors
@@ -6946,22 +6977,33 @@ function TRB.Functions.Settings:PortForwardSettings()
 			ic.borderStealth = {
 				color = bar.borderStealth and bar.borderStealth.color or "FF000000",
 				enabled = bar.borderStealth and bar.borderStealth.enabled ~= false,
-				targets = { energyBar = { bar = false, border = true, background = false } }
-			}
-			ic.borderShadowcraft = {
-				color = bar.borderShadowcraft and bar.borderShadowcraft.color or "FF431863",
-				enabled = bar.borderShadowcraft and bar.borderShadowcraft.enabled ~= false,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			ic.borderOvercap = {
 				color = bar.borderOvercap and bar.borderOvercap.color or "FFFF0000",
 				enabled = bar.borderOvercap and bar.borderOvercap.enabled ~= false,
 				isGradient = true,
-				targets = { energyBar = { bar = false, border = true, background = false } }
+				targets = {
+					energyBar = { bar = false, border = true, background = false },
+					comboPointsBar = { bar = false, border = false, background = false },
+				}
 			}
 			bar.borderStealth = nil
-			bar.borderShadowcraft = nil
 			bar.borderOvercap = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
+			local ic = spec.colors.shared.indicatorColors
+			for _, key in ipairs({ "borderStealth", "borderOvercap" }) do
+				if ic[key] then
+					ic[key].targets = ic[key].targets or {}
+					ic[key].targets.energyBar = ic[key].targets.energyBar or { bar = false, border = false, background = false }
+					ic[key].targets.comboPointsBar = ic[key].targets.comboPointsBar or { bar = false, border = false, background = false }
+				end
+			end
 		end
 	end
 

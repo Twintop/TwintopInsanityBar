@@ -845,6 +845,70 @@ local function ProcessComboPointAudioCues(specSettings)
 	end
 end
 
+local function ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
+	local flatIndicatorTargets = {}
+	for barKey, _ in pairs(barColorMap) do
+		flatIndicatorTargets[barKey] = { bar = false, border = false, background = false }
+	end
+
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local nodeOrder = sharedColors and sharedColors.nodeOrder
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+
+	if nodeOrder and indicatorColors then
+		for i = #nodeOrder, 1, -1 do
+			local key = nodeOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+				for barKey, elements in pairs(indicator.targets) do
+					local targetColors = barColorMap[barKey]
+					local targetFlags = flatIndicatorTargets[barKey]
+					if targetColors and targetFlags and elements then
+						for elemKey, isTargeted in pairs(elements) do
+							if isTargeted then
+								targetColors[elemKey] = indicator.color
+								targetFlags[elemKey] = true
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	local overcapIndicator = nil
+	if gradientOrder and indicatorColors then
+		for i = #gradientOrder, 1, -1 do
+			local key = gradientOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+				overcapIndicator = indicator
+				break
+			end
+		end
+	end
+
+	return flatIndicatorTargets, overcapIndicator
+end
+
+local function BuildBarElementOvercapCurves(specSettings, overcapIndicator, barKey, targetColors)
+	local curves = {}
+	local targets = overcapIndicator and overcapIndicator.targets and overcapIndicator.targets[barKey]
+	if targets == nil or overcapIndicator == nil or overcapIndicator.color == nil then
+		return curves
+	end
+
+	for elemKey, isTargeted in pairs(targets) do
+		local baseColor = targetColors[elemKey]
+		if isTargeted and baseColor ~= nil then
+			local thresholdCurve = Color:BuildResourceThresholdCurve(specSettings, baseColor, overcapIndicator.color)
+			curves[elemKey] = UnitPowerPercent("player", TRB.Data.resource, true, thresholdCurve)
+		end
+	end
+
+	return curves
+end
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -871,6 +935,22 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.assassination
 		local specCacheSettings = TRB.Data.specCache.rogue_assassination.settings
 		UpdateSnapshot_Assassination()
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+		local comboPointAffectingCombat = TRB.Data.character.inCombat
+		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
+		local comboPointsColors = {
+			bar = specSettings.colors.comboPoints.base.color,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		local comboPointConditionMap = {
+			borderStealth = IsStealthed() or comboPointStealthViaBuff,
+			borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff),
+		}
+		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1015,38 +1095,65 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base.color
-
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local stealthActive = IsStealthed() or stealthViaBuff
+				local sharedColors = specSettings.colors.shared
+				local conditionMap = {
+					borderStealth = stealthActive,
+					borderOvercap = affectingCombat and not stealthActive,
+				}
+				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local comboPointsColors = {
+					bar = specSettings.colors.comboPoints.base.color,
+					border = specSettings.colors.comboPoints.border.color,
+					background = specSettings.colors.comboPoints.background.color,
+				}
+				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
+
+				barColor = energyBarColors.bar
+				barBorderColor = energyBarColors.border
+				barBackgroundColor = energyBarColors.background
 
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then
-					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
-					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+					if energyBarOvercapCurves.border ~= nil then
+						primaryNode:SetBorderColorCurve(energyBarOvercapCurves.border)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					if energyBarOvercapCurves.bar ~= nil then
+						primaryNode:SetColorCurve(energyBarOvercapCurves.bar)
+					else
+						primaryNode:SetColor(barColor)
+					end
+					if energyBarOvercapCurves.background ~= nil then
+						primaryNode:SetBackgroundColorCurve(energyBarOvercapCurves.background)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(comboPointsColors.background, true)
+				local comboPointBarOverrideActive = comboPointFlatTargets.bar or comboPointsOvercapCurves.bar ~= nil
+				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
+				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
 				local charged = GetUnitChargedPowerPoints("player")
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpBorderColor = comboPointsColors.border
+					local cpColor = comboPointsColors.bar
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1057,10 +1164,12 @@ local function UpdateResourceBar()
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
-								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
-								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final.color
+								if not comboPointBarOverrideActive then
+									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+										cpColor = specSettings.colors.comboPoints.penultimate.color
+									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+										cpColor = specSettings.colors.comboPoints.final.color
+									end
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1069,22 +1178,36 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										if not comboPointBarOverrideActive then
+											cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										end
 										
-										if not sbs then
+										if not comboPointBorderOverrideActive and not sbs then
 											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
 										end
-			
-										if not specSettings.colors.comboPoints.consistentUnfilledColor then
+
+										if not comboPointBackgroundOverrideActive then
 											cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 									end
 								end
 							end
 							
-							cpNode:SetBorderColor(cpBorderColor)
-							cpNode:SetColor(cpColor)
-							cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							if comboPointsOvercapCurves.border ~= nil then
+								cpNode:SetBorderColorCurve(comboPointsOvercapCurves.border)
+							else
+								cpNode:SetBorderColor(cpBorderColor)
+							end
+							if comboPointsOvercapCurves.bar ~= nil then
+								cpNode:SetColorCurve(comboPointsOvercapCurves.bar)
+							else
+								cpNode:SetColor(cpColor)
+							end
+							if comboPointsOvercapCurves.background ~= nil then
+								cpNode:SetBackgroundColorCurve(comboPointsOvercapCurves.background)
+							else
+								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							end
 						end
 					end
 				end
@@ -1114,6 +1237,22 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.outlaw
 		local specCacheSettings = TRB.Data.specCache.rogue_outlaw.settings
 		UpdateSnapshot_Outlaw()
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+		local comboPointAffectingCombat = TRB.Data.character.inCombat
+		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
+		local comboPointsColors = {
+			bar = specSettings.colors.comboPoints.base.color,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		local comboPointConditionMap = {
+			borderStealth = IsStealthed() or comboPointStealthViaBuff,
+			borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff),
+		}
+		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1315,43 +1454,66 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base.color
-
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local stealthActive = IsStealthed() or stealthViaBuff
+				local sharedColors = specSettings.colors.shared
+				local conditionMap = {
+					borderStealth = stealthActive,
+					borderOvercap = affectingCombat and not stealthActive,
+				}
+				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local comboPointsColors = {
+					bar = specSettings.colors.comboPoints.base.color,
+					border = specSettings.colors.comboPoints.border.color,
+					background = specSettings.colors.comboPoints.background.color,
+				}
+				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
+
+				barColor = energyBarColors.bar
+				barBorderColor = energyBarColors.border
+				barBackgroundColor = energyBarColors.background
 
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then
-					if specSettings.colors.bar.borderStealth.enabled and (IsStealthed() or stealthViaBuff) then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
-					--[[elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == true and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbGood)
-					elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == false and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderRtbBad)]]
-					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+					if energyBarOvercapCurves.border ~= nil then
+						primaryNode:SetBorderColorCurve(energyBarOvercapCurves.border)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					if energyBarOvercapCurves.bar ~= nil then
+						primaryNode:SetColorCurve(energyBarOvercapCurves.bar)
+					else
+						primaryNode:SetColor(barColor)
+					end
+					if energyBarOvercapCurves.background ~= nil then
+						primaryNode:SetBackgroundColorCurve(energyBarOvercapCurves.background)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(comboPointsColors.background, true)
+				local comboPointBarOverrideActive = comboPointFlatTargets.bar or comboPointsOvercapCurves.bar ~= nil
+				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
+				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
 				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpBorderColor = comboPointsColors.border
+					local cpColor = comboPointsColors.bar
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1361,10 +1523,12 @@ local function UpdateResourceBar()
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
-								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
-								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final.color
+								if not comboPointBarOverrideActive then
+									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+										cpColor = specSettings.colors.comboPoints.penultimate.color
+									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+										cpColor = specSettings.colors.comboPoints.final.color
+									end
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1373,19 +1537,35 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
-										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
-				
-										if not specSettings.colors.comboPoints.consistentUnfilledColor then
+										if not comboPointBarOverrideActive then
+											cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										end
+										if not comboPointBorderOverrideActive then
+											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
+										end
+
+										if not comboPointBackgroundOverrideActive then
 											cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 									end
 								end
 							end
 							
-							cpNode:SetBorderColor(cpBorderColor)
-							cpNode:SetColor(cpColor)
-							cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							if comboPointsOvercapCurves.border ~= nil then
+								cpNode:SetBorderColorCurve(comboPointsOvercapCurves.border)
+							else
+								cpNode:SetBorderColor(cpBorderColor)
+							end
+							if comboPointsOvercapCurves.bar ~= nil then
+								cpNode:SetColorCurve(comboPointsOvercapCurves.bar)
+							else
+								cpNode:SetColor(cpColor)
+							end
+							if comboPointsOvercapCurves.background ~= nil then
+								cpNode:SetBackgroundColorCurve(comboPointsOvercapCurves.background)
+							else
+								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							end
 						end
 					end
 				end
@@ -1415,6 +1595,22 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.subtlety
 		local specCacheSettings = TRB.Data.specCache.rogue_subtlety.settings
 		UpdateSnapshot_Subtlety()
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+		local comboPointAffectingCombat = TRB.Data.character.inCombat
+		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive or snapshots[comboPointSpells.shadowDance.id].buff.isActive
+		local comboPointsColors = {
+			bar = specSettings.colors.comboPoints.base.color,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		local comboPointConditionMap = {
+			borderStealth = comboPointStealthViaBuff or IsStealthed(),
+			borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or IsStealthed()),
+		}
+		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1601,31 +1797,50 @@ local function UpdateResourceBar()
 				end
 
 				local barColor = specSettings.colors.bar.base.color
-
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local stealthActive = stealthViaBuff or IsStealthed()
+				local sharedColors = specSettings.colors.shared
+				local conditionMap = {
+					borderStealth = stealthActive,
+					borderOvercap = affectingCombat and not stealthActive,
+				}
+				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local comboPointsColors = {
+					bar = specSettings.colors.comboPoints.base.color,
+					border = specSettings.colors.comboPoints.border.color,
+					background = specSettings.colors.comboPoints.background.color,
+				}
+				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
+
+				barColor = energyBarColors.bar
+				barBorderColor = energyBarColors.border
+				barBackgroundColor = energyBarColors.background
 				
 				if barGroups and barGroups.primary then
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
 				if primaryNode then
-					if specSettings.colors.bar.borderShadowcraft.enabled and
-						snapshots[spells.symbolsOfDeath.id].buff.isActive and
-						snapshots[spells.shadowTechniques.id].buff.applications >= TRB.Data.character.maxResource2 and
-						talents:IsTalentActive(spells.shadowcraft) then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderShadowcraft.color)
-					elseif specSettings.colors.bar.borderStealth.enabled and (stealthViaBuff or IsStealthed()) then
-						primaryNode:SetBorderColor(specSettings.colors.bar.borderStealth.color)
-					elseif specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						-- Apply overcap border color if enabled (skipped when stealthed)
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+					if energyBarOvercapCurves.border ~= nil then
+						primaryNode:SetBorderColorCurve(energyBarOvercapCurves.border)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					if energyBarOvercapCurves.bar ~= nil then
+						primaryNode:SetColorCurve(energyBarOvercapCurves.bar)
+					else
+						primaryNode:SetColor(barColor)
+					end
+					if energyBarOvercapCurves.background ~= nil then
+						primaryNode:SetBackgroundColorCurve(energyBarOvercapCurves.background)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1633,13 +1848,16 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(comboPointsColors.background, true)
+				local comboPointBarOverrideActive = comboPointFlatTargets.bar or comboPointsOvercapCurves.bar ~= nil
+				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
+				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
 				local charged = GetUnitChargedPowerPoints("player")
 
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpBorderColor = comboPointsColors.border
+					local cpColor = comboPointsColors.bar
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -1649,10 +1867,12 @@ local function UpdateResourceBar()
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
-								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
-								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final.color
+								if not comboPointBarOverrideActive then
+									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+										cpColor = specSettings.colors.comboPoints.penultimate.color
+									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+										cpColor = specSettings.colors.comboPoints.final.color
+									end
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
@@ -1662,10 +1882,14 @@ local function UpdateResourceBar()
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
-										cpColor = specSettings.colors.comboPoints.echoingReprimand.color
-										cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
-				
-										if not specSettings.colors.comboPoints.consistentUnfilledColor then
+										if not comboPointBarOverrideActive then
+											cpColor = specSettings.colors.comboPoints.echoingReprimand.color
+										end
+										if not comboPointBorderOverrideActive then
+											cpBorderColor = specSettings.colors.comboPoints.echoingReprimand.color
+										end
+
+										if not comboPointBackgroundOverrideActive then
 											cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
 										isCharged = true
@@ -1674,16 +1898,29 @@ local function UpdateResourceBar()
 							end
 
 							if not isCharged and x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
-								cpBorderColor = specSettings.colors.comboPoints.shadowTechniques.color
-
-								if not specSettings.colors.comboPoints.consistentUnfilledColor then
+								if not comboPointBorderOverrideActive then
+									cpBorderColor = specSettings.colors.comboPoints.shadowTechniques.color
+								end
+								if not comboPointBackgroundOverrideActive then
 									cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques.color, true)
 								end
 							end
 							
-							cpNode:SetBorderColor(cpBorderColor)
-							cpNode:SetColor(cpColor)
-							cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							if comboPointsOvercapCurves.border ~= nil then
+								cpNode:SetBorderColorCurve(comboPointsOvercapCurves.border)
+							else
+								cpNode:SetBorderColor(cpBorderColor)
+							end
+							if comboPointsOvercapCurves.bar ~= nil then
+								cpNode:SetColorCurve(comboPointsOvercapCurves.bar)
+							else
+								cpNode:SetColor(cpColor)
+							end
+							if comboPointsOvercapCurves.background ~= nil then
+								cpNode:SetBackgroundColorCurve(comboPointsOvercapCurves.background)
+							else
+								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							end
 						end
 					end
 				end
