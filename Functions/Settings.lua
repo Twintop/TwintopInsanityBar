@@ -2730,9 +2730,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 		if type(bar.shadowWordMadnessUsable) == "string" then
 			bar.shadowWordMadnessUsable = { color = bar.shadowWordMadnessUsable }
 		end
-		if type(bar.shadowWordMadnessUsableCasting) == "string" then
-			bar.shadowWordMadnessUsableCasting = { color = bar.shadowWordMadnessUsableCasting }
-		end
 		if type(bar.critMindBlast) == "string" then
 			local enabled = bar.critMindBlastEnabled
 			if enabled == nil then enabled = true end
@@ -5616,7 +5613,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			shadow.colors.shared.nodeOrder = {
 				"instantMindBlast",
 				"voidformEnd",
-				"shadowWordMadnessUsableCasting",
 				"shadowWordMadnessUsable",
 				"voidform",
 				"mindDevourer",
@@ -5651,11 +5647,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			ic.voidformEnd = {
 				color = bar.voidformEnd and bar.voidformEnd.color or "FFFF0000",
 				enabled = shadow.endOf and shadow.endOf.voidform and shadow.endOf.voidform.enabled ~= false,
-				targets = MakeTargets("insanityBar", "bar"),
-			}
-			ic.shadowWordMadnessUsableCasting = {
-				color = bar.shadowWordMadnessUsableCasting and bar.shadowWordMadnessUsableCasting.color or "FFFFFFFF",
-				enabled = bar.shadowWordMadnessUsableCasting and bar.shadowWordMadnessUsableCasting.enabled ~= false,
 				targets = MakeTargets("insanityBar", "bar"),
 			}
 			ic.shadowWordMadnessUsable = {
@@ -5697,7 +5688,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 			bar.voidform = nil
 			bar.voidformEnd = nil
 			bar.shadowWordMadnessUsable = nil
-			bar.shadowWordMadnessUsableCasting = nil
 			bar.borderMindFlayInsanity = nil
 			bar.entropicRift = nil
 			bar.mindDevourer = nil
@@ -6647,18 +6637,39 @@ function TRB.Functions.Settings:PortForwardSettings()
 			spec.colors.shared.indicatorColors = {}
 			local ic = spec.colors.shared.indicatorColors
 			local bar = spec.colors.bar
+			local function MakeTargets(defaultBarKey, defaultElementKey)
+				local targets = {
+					focusBar = { bar = false, border = false, background = false },
+					tipOfTheSpearBar = { bar = false, border = false, background = false },
+				}
+				if targets[defaultBarKey] then
+					targets[defaultBarKey][defaultElementKey] = true
+				end
+				return targets
+			end
 			ic.takedown = {
 				color = bar.takedown and bar.takedown.color or "FF005500",
 				enabled = bar.takedown and bar.takedown.enabled ~= false,
-				targets = { focusBar = { bar = true, border = false, background = false } }
+				targets = MakeTargets("focusBar", "bar")
 			}
 			ic.takedownEnd = {
 				color = bar.takedownEnd and bar.takedownEnd.color or "FFFF0000",
 				enabled = true,
-				targets = { focusBar = { bar = true, border = false, background = false } }
+				targets = MakeTargets("focusBar", "bar")
 			}
 			bar.takedown = nil
 			bar.takedownEnd = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
+			local ic = spec.colors.shared.indicatorColors
+			for _, key in ipairs({ "takedown", "takedownEnd", "borderOvercap" }) do
+				if ic[key] then
+					ic[key].targets = ic[key].targets or {}
+					ic[key].targets.focusBar = ic[key].targets.focusBar or { bar = false, border = false, background = false }
+					ic[key].targets.tipOfTheSpearBar = ic[key].targets.tipOfTheSpearBar or { bar = false, border = false, background = false }
+				end
+			end
 		end
 	end
 
@@ -6673,10 +6684,20 @@ function TRB.Functions.Settings:PortForwardSettings()
 					color = (spec.colors.bar and spec.colors.bar.borderOvercap and spec.colors.bar.borderOvercap.color) or "FFFF0000",
 					enabled = (spec.colors.bar and spec.colors.bar.borderOvercap and spec.colors.bar.borderOvercap.enabled) ~= false,
 					isGradient = true,
-					targets = { focusBar = { bar = false, border = true, background = false } },
+					targets = {
+						focusBar = { bar = false, border = true, background = false },
+						tipOfTheSpearBar = { bar = false, border = false, background = false },
+					},
 				}
 				if spec.colors.bar and spec.colors.bar.borderOvercap then
 					spec.colors.bar.borderOvercap = nil
+				end
+			elseif specName == "survival" then
+				local ic = spec.colors.shared.indicatorColors.borderOvercap
+				if ic then
+					ic.targets = ic.targets or {}
+					ic.targets.focusBar = ic.targets.focusBar or { bar = false, border = false, background = false }
+					ic.targets.tipOfTheSpearBar = ic.targets.tipOfTheSpearBar or { bar = false, border = false, background = false }
 				end
 			end
 		end

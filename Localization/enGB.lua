@@ -305,7 +305,6 @@ if locale == "enGB" then
     -- Shadow Priest Indicator Colors (bar-agnostic)
     L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this colour when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
     L["PriestShadowIndicatorVoidformEndTooltip"] = "Changes to this colour when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"] = "Changes to this colour when Shadow Word: Madness is usable and you are casting."
     L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"] = "Changes to this colour when you have enough Insanity to cast Shadow Word: Madness."
     L["PriestShadowIndicatorVoidformTooltip"] = "Changes to this colour when Voidform is active."
     L["PriestShadowIndicatorMindDevourerTooltip"] = "Changes to this colour when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."

@@ -1034,7 +1034,6 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				nodeOrder = {
 					"instantMindBlast",
 					"voidformEnd",
-					"shadowWordMadnessUsableCasting",
 					"shadowWordMadnessUsable",
 					"voidform",
 					"mindDevourer",
@@ -1082,14 +1081,6 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							insanityBar = { bar = false, border = true, background = false },
-							manaBar = { bar = false, border = false, background = false },
-						},
-					},
-					shadowWordMadnessUsableCasting = {
-						color = "FFFFFFFF",
-						enabled = true,
-						targets = {
-							insanityBar = { bar = true, border = false, background = false },
 							manaBar = { bar = false, border = false, background = false },
 						},
 					},
@@ -2321,7 +2312,6 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "instantMindBlast",                label = L["PriestShadowCheckboxInstantMindBlast"],                tooltip = L["PriestShadowIndicatorInstantMindBlastTooltip"],                colorLabel = L["PriestShadowIndicatorInstantMindBlastColor"] },
 			{ key = "voidformEnd",                     label = L["PriestShadowCheckboxVoidformEnd"],                     tooltip = L["PriestShadowIndicatorVoidformEndTooltip"],                     colorLabel = L["PriestShadowIndicatorVoidformEndColor"] },
-			{ key = "shadowWordMadnessUsableCasting",  label = L["PriestShadowCheckboxShadowWordMadnessUsableCasting"],  tooltip = L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"],  colorLabel = L["PriestShadowIndicatorShadowWordMadnessUsableCastingColor"] },
 			{ key = "shadowWordMadnessUsable",         label = L["PriestShadowCheckboxShadowWordMadnessUsable"],         tooltip = L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"],         colorLabel = L["PriestShadowIndicatorShadowWordMadnessUsableColor"] },
 			{ key = "voidform",                        label = L["PriestShadowCheckboxVoidform"],                        tooltip = L["PriestShadowIndicatorVoidformTooltip"],                        colorLabel = L["PriestShadowIndicatorVoidformColor"] },
 			{ key = "mindDevourer",                    label = L["PriestShadowCheckboxMindDevourer"],                    tooltip = L["PriestShadowIndicatorMindDevourerTooltip"],                    colorLabel = L["PriestShadowIndicatorMindDevourerColor"] },
