@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.1.47-release (2026-04-01)
+## General
+### Localization
+
+- [#727](#727) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Druid
 ### Feral
