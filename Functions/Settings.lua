@@ -6695,7 +6695,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 				if spec.colors.bar and spec.colors.bar.borderOvercap then
 					spec.colors.bar.borderOvercap = nil
 				end
-			elseif specName == "survival" then
+			elseif specName == "survival" and spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
 				local ic = spec.colors.shared.indicatorColors.borderOvercap
 				if ic then
 					ic.targets = ic.targets or {}

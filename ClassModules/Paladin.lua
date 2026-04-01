@@ -674,7 +674,7 @@ local function UpdateResourceBar()
 	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
 		local currentHolyPower = snapshotData.attributes.resource2 or 0
 		local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
-		local barOverrideActive = holyPowerColors and holyPowerColors.bar ~= nil
+		local barOverrideActive = holyPowerColors and holyPowerColors.barOverridden == true
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
@@ -724,7 +724,7 @@ local function UpdateResourceBar()
 					for barKey, colorEntry in pairs(barColorMap) do
 						local barTargets = targets and targets[barKey]
 						if barTargets then
-							if barTargets.bar then colorEntry.bar = indicator.color end
+							if barTargets.bar then colorEntry.bar = indicator.color; colorEntry.barOverridden = true end
 							if barTargets.border then colorEntry.border = indicator.color end
 							if barTargets.background then colorEntry.background = indicator.color end
 						end
