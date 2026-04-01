@@ -119,7 +119,6 @@ if locale == "enGB" then
     L["RogueOutlawThresholdKillingSpreeTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Killing Spree. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdSliceAndDiceTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
-    L["RogueSubtletyColorPickerShadowcraft"] = "Border colour when Shadowcraft will grant full Combo Points after using a finisher"
     L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' colour above for their background. Borders will still change colour depending on Supercharger settings."
     L["RogueSubtletyThresholdBlackPowderTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Black Powder. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueSubtletyThresholdEviscerateTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Eviscerate. If you do not have any combo points, will be coloured as 'unusable'."
@@ -399,7 +398,6 @@ if locale == "enGB" then
     L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "Changes to this colour when Infusion of Light is active (Flash of Light becomes instant cast)."
     -- Rogue Indicator Colors (British English)
     L["RogueIndicatorStealthTooltip"] = "Changes to this colour when you are stealthed."
-    L["RogueSubtletyIndicatorShadowcraftTooltip"] = "Changes to this colour when Shadowcraft conditions are met (Symbols of Death active, max Shadow Techniques stacks, and Shadowcraft talented)."
     -- Shaman Elemental Indicator Colors (British English)
     L["ShamanElementalIndicatorEarthShockTooltip"] = "Changes to this colour when Earth Shock or Elemental Blast is usable."
     L["ShamanElementalIndicatorEarthquakeTooltip"] = "Changes to this colour when Earthquake is usable."

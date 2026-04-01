@@ -765,7 +765,6 @@ if locale == "zhCN" then
     L["RogueOutlawThresholdSapTooltip"] = "在资源条上显示竖线，标记施放闷棍所需的能量阈值，仅潜行、或通过脓疮/诡诈可使用时可见"
     L["RogueOutlawThresholdDeathFromAbove"] = "天降杀机"
     L["RogueOutlawThresholdDeathFromAboveTooltip"] = "在资源条上显示竖线，标记施放天降杀机所需的能量阈值，技能冷却或无连击点时显示为「不可用」颜色"
-    L["RogueSubtletyColorPickerShadowcraft"] = "暗影变幻在终结技后提供满连击点时的边框颜色"
     L["RogueSubtletyColorPickerShadowTechniques"] = "暗影技法将生成的连击点"
     L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "勾选后，未填充的连击点始终使用上方「未填充连击点背景」颜色，边框仍会根据超充设置变色"
     L["RogueSubtletyThresholdBackstab"] = "背刺/幽暗之刃"

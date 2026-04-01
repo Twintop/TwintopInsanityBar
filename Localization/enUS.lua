@@ -798,7 +798,6 @@ L["RogueOutlawThresholdSap"] = "Sap (stealth)"
 L["RogueOutlawThresholdSapTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via Sepsis or Subterfuge."
 L["RogueOutlawThresholdDeathFromAbove"] = "Death from Above"
 L["RogueOutlawThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
-L["RogueSubtletyColorPickerShadowcraft"] = "Border color when Shadowcraft will grant full Combo Points after using a finisher"
 L["RogueSubtletyColorPickerShadowTechniques"] = "Combo Point that will generate from Shadow Techniques"
 L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Supercharger settings."
 L["RogueSubtletyThresholdBackstab"] = "Backstab / Gloomblade"
@@ -2660,8 +2659,6 @@ L["PaladinHolyIndicatorInfusionOfLightColor"] = "Infusion of Light is active"
 -- Rogue Indicator Colors (bar-agnostic tooltips and color picker labels)
 L["RogueIndicatorStealthTooltip"] = "Changes to this color when you are stealthed."
 L["RogueIndicatorStealthColor"] = "Stealthed"
-L["RogueSubtletyIndicatorShadowcraftTooltip"] = "Changes to this color when Shadowcraft conditions are met (Symbols of Death active, max Shadow Techniques stacks, and Shadowcraft talented)."
-L["RogueSubtletyIndicatorShadowcraftColor"] = "Shadowcraft conditions met"
 
 -- Shaman Elemental Indicator Colors (bar-agnostic tooltips and color picker labels)
 L["ShamanElementalIndicatorEarthShockTooltip"] = "Changes to this color when Earth Shock or Elemental Blast is usable."
