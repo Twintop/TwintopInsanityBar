@@ -826,12 +826,36 @@ end
 function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
-	local oldHaste = snapshotData.attributes.haste
 	snapshotData.attributes.haste = UnitSpellHaste("player")
 
-	-- Recalculate hasted cooldowns when haste changes
-	if oldHaste ~= nil and oldHaste ~= snapshotData.attributes.haste then
-		snapshotData:RecalculateHastedCooldowns(snapshotData.attributes.haste)
+	-- Try to immediately read the new GCD duration. If we're mid-GCD, GetTotalDuration()
+	-- returns the real value and we can update right away. Otherwise we fall back to the
+	-- deferred path (actioned on next cast in SpellCastEvent).
+	local oldGcd = snapshotData.attributes.gcdDuration or 1.5
+	local immediateGcd
+	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
+	if durationObj then
+		local totalDuration = durationObj:GetTotalDuration()
+		if not issecretvalue(totalDuration) and totalDuration > 0 then
+			immediateGcd = totalDuration
+		end
+	end
+
+	if immediateGcd and immediateGcd ~= oldGcd then
+		snapshotData.attributes.gcdDuration = immediateGcd
+		snapshotData:RecalculateHastedCooldowns(oldGcd, immediateGcd, GetTime())
+		snapshotData.attributes.pendingGcdRecalc = nil
+
+		local displayGcd = immediateGcd
+		if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
+		snapshotData.formatted.gcd = string.format("%.2f", displayGcd)
+		snapshotData.formatted.gcdRaw = displayGcd
+	else
+		-- Flag deferred haste recalc — actioned on next GCD observation in SpellCastEvent.
+		snapshotData.attributes.pendingGcdRecalc = {
+			time = GetTime(),
+			oldGcd = oldGcd,
+		}
 	end
 
 	snapshotData.attributes.crit = GetCritChance()
@@ -868,7 +892,8 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
 
 	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
-	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste / 100))
+	-- Uses cached GCD duration from SpellCastEvent instead of haste math (haste is secret)
+	local _gcd = snapshotData.attributes.gcdDuration or 1.5
 	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
 	formatted.gcd = string.format("%.2f", _gcd)
 ---@diagnostic disable-next-line: assign-type-mismatch
@@ -1453,7 +1478,9 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 	return entry
 end
 
----Calculates the player's current GCD duration based on haste, clamped between 0.75s and 1.5s.
+---Calculates the player's current GCD duration, clamped between 0.75s and 1.5s.
+---Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(61304)
+---during the last spell cast, since haste is now a secret value.
 ---@param floor boolean|nil If true, skips the 0.75s minimum clamp (allows sub-0.75 values)
 ---@return number gcd The GCD duration in seconds
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
@@ -1461,12 +1488,8 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 		floor = false
 	end
 
-	-- Read haste from snapshotted value instead of calling live API each time
 	local snapshotData = TRB.Data.snapshotData
-	local hastePercent = (snapshotData and snapshotData.attributes and snapshotData.attributes.haste) or UnitSpellHaste("player")
-	local haste = hastePercent / 100
-
-	local gcd = 1.5 / (1 + haste)
+	local gcd = (snapshotData and snapshotData.attributes and snapshotData.attributes.gcdDuration) or 1.5
 
 	if not floor and gcd < 0.75 then
 		gcd = 0.75

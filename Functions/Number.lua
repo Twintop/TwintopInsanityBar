@@ -35,6 +35,13 @@ local math_floor = math.floor
 ---@param returnAsNumber boolean? # Should the method return a number or a string
 ---@return number|string
 function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode, returnAsNumber)
+	-- Secret values: string.format handles them without taint; tostring() taints.
+	if issecretvalue(num) then
+		if returnAsNumber then return num end
+		numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
+		return string.format("%." .. numDecimalPlaces .. "f", num)
+	end
+
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 
 	-- Normalize function-reference modes to their string equivalents so all code paths behave consistently.

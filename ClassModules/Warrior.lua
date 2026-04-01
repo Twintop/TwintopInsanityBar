@@ -697,7 +697,8 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if talents:IsTalentActive(spells.improvedWhirlwind) then
 				if spellId == spells.bladestorm.id and talents:IsTalentActive(spells.unhinged) then
-					local duration = spells.bladestorm.duration / (1 + (snapshotData.attributes.haste / 100))
+					local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+					local duration = spells.bladestorm.duration * (cachedGcd / 1.5)
 					snapshots[spells.bladestorm.id].buff:InitializeCustom(duration, currentTime)
 				elseif spells.improvedWhirlwind.attributes.builderIds[spellId] or (spells.crashingThunder.attributes.builderIds[spellId] and talents:IsTalentActive(spells.crashingThunder)) then
 					snapshots[spells.improvedWhirlwind.id].buff:InitializeCustom(spells.improvedWhirlwind.duration, currentTime, true, spells.improvedWhirlwind.maxStacks)
