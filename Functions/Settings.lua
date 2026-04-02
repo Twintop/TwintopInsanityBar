@@ -4430,7 +4430,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 			cp.secondary = { color = cp.base.color }
 		end
 		if cp.zeroStackBackground == nil then
-			cp.zeroStackBackground = { color = "66333333", enabled = false }
+			cp.zeroStackBackground = { color = "B3FF5E5E", enabled = true }
 		end
 
 		-- Migrate colors.comboPoints -> colors.bars.whirlwind
@@ -6758,9 +6758,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
 
 			local old = spec.colors.bars.whirlwind.zeroStackBackground
+			local enabled = old.enabled ~= false
+			if old.enabled == false and old.color == "66333333" then
+				enabled = true
+			end
 			spec.colors.shared.indicatorColors.zeroStackBackground = {
 				color = old.color or "FF333333",
-				enabled = old.enabled ~= false,
+				enabled = enabled,
 				targets = { whirlwindBar = { bar = false, border = false, background = true } },
 			}
 
@@ -6774,6 +6778,15 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 
 			spec.colors.bars.whirlwind.zeroStackBackground = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors and spec.colors.shared.indicatorColors.zeroStackBackground then
+			local indicator = spec.colors.shared.indicatorColors.zeroStackBackground
+			indicator.targets = indicator.targets or {}
+			indicator.targets.whirlwindBar = indicator.targets.whirlwindBar or { bar = false, border = false, background = true }
+			if indicator.enabled == false and indicator.color == "66333333" and indicator.targets.whirlwindBar.background then
+				indicator.enabled = true
+			end
 		end
 	end
 
