@@ -1053,6 +1053,21 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	if useZeroStackBg then
 		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(zeroStackInd.color, true)
 	end
+	local whirlwindTargets = overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar or nil
+	local overcapColor = overcapIndicator and overcapIndicator.color or nil
+	local overcapBorderColorResult = nil
+	local overcapBackgroundColorResult = nil
+	local overcapBarColorResults = {}
+	local borderBaseColor = zeroStackTargets and zeroStackTargets.border and zeroStackInd.color or whirlwindColors.border.color
+	local backgroundBaseColor = zeroStackTargets and zeroStackTargets.background and zeroStackInd.color or cpBackgroundColor
+	if whirlwindTargets and whirlwindTargets.border and overcapColor then
+		local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, borderBaseColor, overcapColor)
+		overcapBorderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+	end
+	if whirlwindTargets and whirlwindTargets.background and overcapColor then
+		local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, backgroundBaseColor, overcapColor)
+		overcapBackgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
+	end
 
 	for x = 1, 4 do
 		local cpBorderColor = whirlwindColors.border.color
@@ -1085,26 +1100,26 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 		local node = barGroups.secondary:GetNode(x)
 		if node then
 			Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
-			if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar and overcapIndicator.targets.whirlwindBar.border then
-				local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, cpBorderColor, overcapIndicator.color)
-				local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-				node:SetBorderColorCurve(borderColorResult)
+			if overcapBorderColorResult then
+				node:SetBorderColorCurve(overcapBorderColorResult)
 			else
 				node:SetBorderColor(cpBorderColor)
 			end
 
-			if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar and overcapIndicator.targets.whirlwindBar.bar then
-				local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, cpColor, overcapIndicator.color)
-				local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+			if whirlwindTargets and whirlwindTargets.bar and overcapColor then
+				local barColorResult = overcapBarColorResults[cpColor]
+				if barColorResult == nil then
+					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, cpColor, overcapColor)
+					barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+					overcapBarColorResults[cpColor] = barColorResult
+				end
 				node:SetColorCurve(barColorResult)
 			else
 				node:SetColor(cpColor)
 			end
 
-			if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar and overcapIndicator.targets.whirlwindBar.background then
-				local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, currentBackgroundColor, overcapIndicator.color)
-				local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
-				node:SetBackgroundColorCurve(backgroundColorResult)
+			if overcapBackgroundColorResult then
+				node:SetBackgroundColorCurve(overcapBackgroundColorResult)
 			elseif useZeroStackBg then
 				node:SetBackgroundColor(zsBgR, zsBgG, zsBgB, zsBgA)
 			else

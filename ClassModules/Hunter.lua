@@ -897,7 +897,7 @@ local function UpdateResourceBar()
 					bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
 					bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
 						and specSettings.endOf.bestialWrath.enabled
-						and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime() <=
+						and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
 							(specSettings.endOf.bestialWrath.mode == "gcd"
 								and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
 								or specSettings.endOf.bestialWrath.timeMax)),
@@ -1131,7 +1131,7 @@ local function UpdateResourceBar()
 					trueshot = snapshots[spells.trueshot.id].buff.isActive,
 					trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
 						and specSettings.endOf.trueshot.enabled
-						and (snapshots[spells.trueshot.id].buff:GetRemainingTime() <=
+						and (snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime) <=
 							(specSettings.endOf.trueshot.mode == "gcd"
 								and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
 								or specSettings.endOf.trueshot.timeMax)),
@@ -1235,7 +1235,7 @@ local function UpdateResourceBar()
 				takedown = snapshots[spells.takedown.id].buff.isActive,
 				takedownEnd = snapshots[spells.takedown.id].buff.isActive
 					and specSettings.endOf.takedown.enabled
-					and (snapshots[spells.takedown.id].buff:GetRemainingTime() <=
+					and (snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.takedown.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.takedown.gcdsMax
 							or specSettings.endOf.takedown.timeMax)),

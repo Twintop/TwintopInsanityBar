@@ -6814,9 +6814,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 		indicator.targets = indicator.targets or {}
 		indicator.targets.runicPowerBar = indicator.targets.runicPowerBar or { bar = false, border = false, background = false }
 		indicator.targets.runesBar = indicator.targets.runesBar or { bar = false, border = false, background = false }
-		if indicator.targets.boneShield ~= nil then
-			indicator.targets.boneShield = indicator.targets.boneShield or { bar = false, border = false, background = false }
-		end
 	end
 
 	local function EnsureDeathKnightBloodIndicatorTargetTables(indicator)
