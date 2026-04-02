@@ -4430,7 +4430,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 			cp.secondary = { color = cp.base.color }
 		end
 		if cp.zeroStackBackground == nil then
-			cp.zeroStackBackground = { color = "66333333", enabled = false }
+			cp.zeroStackBackground = { color = "B3FF5E5E", enabled = true }
 		end
 
 		-- Migrate colors.comboPoints -> colors.bars.whirlwind
@@ -6695,7 +6695,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 				if spec.colors.bar and spec.colors.bar.borderOvercap then
 					spec.colors.bar.borderOvercap = nil
 				end
-			elseif specName == "survival" then
+			elseif specName == "survival" and spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors then
 				local ic = spec.colors.shared.indicatorColors.borderOvercap
 				if ic then
 					ic.targets = ic.targets or {}
@@ -6758,9 +6758,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
 
 			local old = spec.colors.bars.whirlwind.zeroStackBackground
+			local enabled = old.enabled ~= false
+			if old.enabled == false and old.color == "66333333" then
+				enabled = true
+			end
 			spec.colors.shared.indicatorColors.zeroStackBackground = {
 				color = old.color or "FF333333",
-				enabled = old.enabled ~= false,
+				enabled = enabled,
 				targets = { whirlwindBar = { bar = false, border = false, background = true } },
 			}
 
@@ -6774,6 +6778,15 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 
 			spec.colors.bars.whirlwind.zeroStackBackground = nil
+		end
+
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors and spec.colors.shared.indicatorColors.zeroStackBackground then
+			local indicator = spec.colors.shared.indicatorColors.zeroStackBackground
+			indicator.targets = indicator.targets or {}
+			indicator.targets.whirlwindBar = indicator.targets.whirlwindBar or { bar = false, border = false, background = true }
+			if indicator.enabled == false and indicator.color == "66333333" and indicator.targets.whirlwindBar.background then
+				indicator.enabled = true
+			end
 		end
 	end
 
@@ -6797,64 +6810,130 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
-	-- Migrate Death Knight Blood to indicator colors
-	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.blood then
-		local spec = TwintopInsanityBarSettings.deathknight.blood
-		if spec.colors and spec.colors.bar
-		and spec.colors.bar.borderOvercap
-		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
-			spec.colors.shared = spec.colors.shared or {}
-			spec.colors.shared.nodeOrder = {}
-			spec.colors.shared.gradientOrder = { "borderOvercap" }
-			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
-			spec.colors.shared.indicatorColors.borderOvercap = {
-				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
-				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
+	local function EnsureDeathKnightIndicatorTargetTables(indicator)
+		indicator.targets = indicator.targets or {}
+		indicator.targets.runicPowerBar = indicator.targets.runicPowerBar or { bar = false, border = false, background = false }
+		indicator.targets.runesBar = indicator.targets.runesBar or { bar = false, border = false, background = false }
+	end
+
+	local function EnsureDeathKnightBloodIndicatorTargetTables(indicator)
+		EnsureDeathKnightIndicatorTargetTables(indicator)
+		indicator.targets = indicator.targets or {}
+		indicator.targets.boneShield = indicator.targets.boneShield or { bar = false, border = false, background = false }
+	end
+
+	local function EnsureDeathKnightIndicatorOrder(order, key)
+		order = order or {}
+		for _, existingKey in ipairs(order) do
+			if existingKey == key then
+				return order
+			end
+		end
+		table.insert(order, key)
+		return order
+	end
+
+	local function MigrateDeathKnightIndicatorColors(spec)
+		if not (spec and spec.colors) then
+			return
+		end
+
+		spec.colors.shared = spec.colors.shared or {}
+		spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+		spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+		spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+
+		local indicatorColors = spec.colors.shared.indicatorColors
+		local legacyBarOvercap = spec.colors.bar and spec.colors.bar.borderOvercap
+		local legacyRuneOvercap = spec.colors.comboPoints and spec.colors.comboPoints.overcap
+
+		if indicatorColors.borderOvercap == nil and legacyBarOvercap then
+			indicatorColors.borderOvercap = {
+				color = legacyBarOvercap.color or "FFFF0000",
+				enabled = legacyBarOvercap.enabled ~= false,
 				isGradient = true,
-				targets = { runicPowerBar = { bar = false, border = true, background = false } },
+				targets = {
+					runicPowerBar = { bar = false, border = true, background = false },
+					runesBar = { bar = false, border = false, background = false },
+					boneShield = spec.bars and spec.bars.boneShield and { bar = false, border = false, background = false } or nil,
+				},
 			}
+		end
+
+		if indicatorColors.borderOvercap then
+			indicatorColors.borderOvercap.isGradient = true
+			if spec.bars and spec.bars.boneShield then
+				EnsureDeathKnightBloodIndicatorTargetTables(indicatorColors.borderOvercap)
+			else
+				EnsureDeathKnightIndicatorTargetTables(indicatorColors.borderOvercap)
+			end
+			spec.colors.shared.gradientOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.gradientOrder, "borderOvercap")
+		end
+
+		if indicatorColors.runeRegenOvercap == nil then
+			local legacyEnabled = legacyRuneOvercap and legacyRuneOvercap.enabled == true or false
+			local defaultEnabled = legacyRuneOvercap == nil
+			local enabled = legacyRuneOvercap ~= nil and legacyEnabled or defaultEnabled
+			indicatorColors.runeRegenOvercap = {
+				color = legacyRuneOvercap and legacyRuneOvercap.color or "FFFF4500",
+				enabled = enabled,
+				targets = {
+					runicPowerBar = { bar = false, border = false, background = false },
+					runesBar = { bar = enabled, border = false, background = false },
+					boneShield = spec.bars and spec.bars.boneShield and { bar = false, border = false, background = false } or nil,
+				},
+			}
+		end
+
+		if indicatorColors.runeRegenOvercap then
+			if spec.bars and spec.bars.boneShield then
+				EnsureDeathKnightBloodIndicatorTargetTables(indicatorColors.runeRegenOvercap)
+			else
+				EnsureDeathKnightIndicatorTargetTables(indicatorColors.runeRegenOvercap)
+			end
+			if legacyRuneOvercap == nil then
+				local runeTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runesBar
+				local runicPowerTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runicPowerBar
+				local boneShieldTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.boneShield
+				local hasAnyTarget = false
+				if runeTargets then
+					hasAnyTarget = runeTargets.bar or runeTargets.border or runeTargets.background or false
+				end
+				if not hasAnyTarget and runicPowerTargets then
+					hasAnyTarget = runicPowerTargets.bar or runicPowerTargets.border or runicPowerTargets.background or false
+				end
+				if not hasAnyTarget and boneShieldTargets then
+					hasAnyTarget = boneShieldTargets.bar or boneShieldTargets.border or boneShieldTargets.background or false
+				end
+				if indicatorColors.runeRegenOvercap.enabled == false and not hasAnyTarget then
+					indicatorColors.runeRegenOvercap.enabled = true
+					indicatorColors.runeRegenOvercap.targets.runesBar.bar = true
+				end
+			end
+			spec.colors.shared.nodeOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.nodeOrder, "runeRegenOvercap")
+		end
+
+		if spec.colors.bar then
 			spec.colors.bar.borderOvercap = nil
 		end
+		if spec.colors.comboPoints then
+			spec.colors.comboPoints.overcap = nil
+		end
+	end
+
+	-- Migrate Death Knight Blood to indicator colors
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.blood then
+		MigrateDeathKnightIndicatorColors(TwintopInsanityBarSettings.deathknight.blood)
 	end
 
 	-- Migrate Death Knight Frost to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.frost then
-		local spec = TwintopInsanityBarSettings.deathknight.frost
-		if spec.colors and spec.colors.bar
-		and spec.colors.bar.borderOvercap
-		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
-			spec.colors.shared = spec.colors.shared or {}
-			spec.colors.shared.nodeOrder = {}
-			spec.colors.shared.gradientOrder = { "borderOvercap" }
-			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
-			spec.colors.shared.indicatorColors.borderOvercap = {
-				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
-				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
-				isGradient = true,
-				targets = { runicPowerBar = { bar = false, border = true, background = false } },
-			}
-			spec.colors.bar.borderOvercap = nil
-		end
+		MigrateDeathKnightIndicatorColors(TwintopInsanityBarSettings.deathknight.frost)
 	end
 
 	-- Migrate Death Knight Unholy to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.unholy then
-		local spec = TwintopInsanityBarSettings.deathknight.unholy
-		if spec.colors and spec.colors.bar
-		and spec.colors.bar.borderOvercap
-		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
-			spec.colors.shared = spec.colors.shared or {}
-			spec.colors.shared.nodeOrder = {}
-			spec.colors.shared.gradientOrder = { "borderOvercap" }
-			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
-			spec.colors.shared.indicatorColors.borderOvercap = {
-				color = spec.colors.bar.borderOvercap.color or "FFFF0000",
-				enabled = spec.colors.bar.borderOvercap.enabled ~= false,
-				isGradient = true,
-				targets = { runicPowerBar = { bar = false, border = true, background = false } },
-			}
-			spec.colors.bar.borderOvercap = nil
-		end
+		MigrateDeathKnightIndicatorColors(TwintopInsanityBarSettings.deathknight.unholy)
 	end
 
 	-- Migrate Paladin Holy to indicator colors

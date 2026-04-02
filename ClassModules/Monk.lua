@@ -1070,9 +1070,10 @@ local function UpdateResourceBar()
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
+					local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
 					local invokeNiuzaoEndMet = false
 
-					if invokeNiuzaoActive then
+					if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
 						local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 						local timeThreshold = 0
 						if specSettings.endOf.invokeNiuzao.mode == "gcd" then
@@ -1127,16 +1128,45 @@ local function UpdateResourceBar()
 					barBorderColor = energyBarColors.border
 					barBackgroundColor = energyBarColors.background
 
+					local energyOvercapCurves = {}
+					if overcapIndicator and overcapIndicator.targets then
+						local energyTargets = overcapIndicator.targets.energyBar
+						if energyTargets then
+							if energyTargets.border then
+								energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+							end
+							if energyTargets.bar then
+								energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+							end
+							if energyTargets.background then
+								energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+							end
+						end
+					end
+
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.energyBar and overcapIndicator.targets.energyBar.border then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+
+					if energyOvercapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+
+					if energyOvercapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
+						primaryNode:SetColorCurve(barColorResult)
+					else
+						primaryNode:SetColor(barColor)
+					end
+
+					if energyOvercapCurves.background then
+						local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.background)
+						primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
+
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1183,8 +1213,9 @@ local function UpdateResourceBar()
 						if stNodeOrder and stIndicatorColors then
 							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
+							local stInvokeNiuzaoEndIndicator = stIndicatorColors.invokeNiuzaoEnd
 							local invokeNiuzaoEndMet = false
-							if invokeNiuzaoActive then
+							if invokeNiuzaoActive and stInvokeNiuzaoEndIndicator and stInvokeNiuzaoEndIndicator.enabled then
 								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 								local timeThreshold = 0
 								if specSettings.endOf.invokeNiuzao.mode == "gcd" then

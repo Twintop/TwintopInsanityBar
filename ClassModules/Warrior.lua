@@ -872,6 +872,7 @@ end
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	local currentTime = GetTime()
+	local affectingCombat = TRB.Data.character.inCombat
 	-- Handle both raw string and { color = "..." } object formats
 	local bgColor = specSettings.colors.bars.defensives.background
 	if type(bgColor) == "table" then bgColor = bgColor.color end
@@ -883,6 +884,20 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local sharedColors = specSettings.colors.shared
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+	local overcapIndicator = nil
+	if gradientOrder and indicatorColors then
+		for i = #gradientOrder, 1, -1 do
+			local key = gradientOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and indicator.isGradient and key == "borderOvercap" and affectingCombat then
+				overcapIndicator = indicator
+				break
+			end
+		end
+	end
 	
 	local currentDefensiveBar = 1
 
@@ -910,6 +925,14 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			
 			if talents:IsTalentActive(spell) and defensiveBarEnabled then
 				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
+				local defensiveBarTargetKey = nil
+				if colorKey == "ignorePain" then
+					defensiveBarTargetKey = "defensivesIgnorePainTimeBar"
+				elseif colorKey == "ignorePainAbsorb" then
+					defensiveBarTargetKey = "defensivesIgnorePainAbsorbBar"
+				elseif colorKey == "shieldBlock" then
+					defensiveBarTargetKey = "defensivesShieldBlockBar"
+				end
 				local buff = snapshots[spell.id].buff
 				
 				-- Refresh isActive before reading it (GetRemainingTime updates isActive as a side-effect)
@@ -945,9 +968,29 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 					if defensiveNode then
 						defensiveNode:SetMinMax(0, cpDuration)
 						defensiveNode:SetValue(cpTime)
-						defensiveNode:SetBorderColor(cpBorderColor)
-						defensiveNode:SetColor(cpColor)
-						defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].border then
+							local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, cpBorderColor, overcapIndicator.color)
+							local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+							defensiveNode:SetBorderColorCurve(borderColorResult)
+						else
+							defensiveNode:SetBorderColor(cpBorderColor)
+						end
+
+						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].bar then
+							local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, cpColor, overcapIndicator.color)
+							local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+							defensiveNode:SetColorCurve(barColorResult)
+						else
+							defensiveNode:SetColor(cpColor)
+						end
+
+						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].background then
+							local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, bgColor, overcapIndicator.color)
+							local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
+							defensiveNode:SetBackgroundColorCurve(backgroundColorResult)
+						else
+							defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+						end
 					end
 				end
 				
@@ -984,16 +1027,52 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	if stacks > 4 then stacks = 4 end
 
 	local whirlwindColors = specSettings.colors.bars.whirlwind
+	local cpBackgroundColor = whirlwindColors.background.color
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(whirlwindColors.background.color, true)
-	local useZeroStackBg = whirlwindColors.zeroStackBackground.enabled and stacks == 0 and TRB.Data.character.inCombat
+
+	-- Read Fury indicator colors system
+	local sharedColors = specSettings.colors.shared
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+	local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
+	local zeroStackTargets = zeroStackInd and zeroStackInd.enabled and stacks == 0 and TRB.Data.character.inCombat
+		and zeroStackInd.targets and zeroStackInd.targets.whirlwindBar or nil
+	local useZeroStackBg = zeroStackTargets and zeroStackTargets.background
+	local overcapIndicator = nil
+	if gradientOrder and indicatorColors and TRB.Data.character.inCombat then
+		for i = #gradientOrder, 1, -1 do
+			local key = gradientOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and indicator.isGradient then
+				overcapIndicator = indicator
+				break
+			end
+		end
+	end
 	local zsBgR, zsBgG, zsBgB, zsBgA
 	if useZeroStackBg then
-		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(whirlwindColors.zeroStackBackground.color, true)
+		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(zeroStackInd.color, true)
+	end
+	local whirlwindTargets = overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar or nil
+	local overcapColor = overcapIndicator and overcapIndicator.color or nil
+	local overcapBorderColorResult = nil
+	local overcapBackgroundColorResult = nil
+	local overcapBarColorResults = {}
+	local borderBaseColor = zeroStackTargets and zeroStackTargets.border and zeroStackInd.color or whirlwindColors.border.color
+	local backgroundBaseColor = zeroStackTargets and zeroStackTargets.background and zeroStackInd.color or cpBackgroundColor
+	if whirlwindTargets and whirlwindTargets.border and overcapColor then
+		local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, borderBaseColor, overcapColor)
+		overcapBorderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+	end
+	if whirlwindTargets and whirlwindTargets.background and overcapColor then
+		local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, backgroundBaseColor, overcapColor)
+		overcapBackgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
 	end
 
 	for x = 1, 4 do
 		local cpBorderColor = whirlwindColors.border.color
 		local cpColor = whirlwindColors.nodeColors.charge1.color
+		local currentBackgroundColor = cpBackgroundColor
 		local filled = stacks >= x
 
 		if filled then
@@ -1006,12 +1085,42 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			end
 		end
 
+		if zeroStackTargets then
+			if zeroStackTargets.border then
+				cpBorderColor = zeroStackInd.color
+			end
+			if zeroStackTargets.bar then
+				cpColor = zeroStackInd.color
+			end
+			if zeroStackTargets.background then
+				currentBackgroundColor = zeroStackInd.color
+			end
+		end
+
 		local node = barGroups.secondary:GetNode(x)
 		if node then
 			Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
-			node:SetBorderColor(cpBorderColor)
-			node:SetColor(cpColor)
-			if useZeroStackBg then
+			if overcapBorderColorResult then
+				node:SetBorderColorCurve(overcapBorderColorResult)
+			else
+				node:SetBorderColor(cpBorderColor)
+			end
+
+			if whirlwindTargets and whirlwindTargets.bar and overcapColor then
+				local barColorResult = overcapBarColorResults[cpColor]
+				if barColorResult == nil then
+					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, cpColor, overcapColor)
+					barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+					overcapBarColorResults[cpColor] = barColorResult
+				end
+				node:SetColorCurve(barColorResult)
+			else
+				node:SetColor(cpColor)
+			end
+
+			if overcapBackgroundColorResult then
+				node:SetBackgroundColorCurve(overcapBackgroundColorResult)
+			elseif useZeroStackBg then
 				node:SetBackgroundColor(zsBgR, zsBgG, zsBgB, zsBgA)
 			else
 				node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
@@ -1175,18 +1284,52 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base.color
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local conditionMap = {
+					borderOvercap = affectingCombat,
+				}
+				local overcapIndicator = nil
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+							overcapIndicator = indicator
+							break
+						end
+					end
+				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
+					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				elseif specSettings.colors.bar.borderOvercap and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.bar then
+					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					primaryNode:SetColor(barColor)
+				end
+
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then
+					local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
+					primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1321,18 +1464,74 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base.color
 
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local zeroStackTargets
+				do
+					local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
+					local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
+					wwBuff:GetRemainingTime(currentTime)
+					local whirlwindStacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
+					if whirlwindStacks < 0 then whirlwindStacks = 0 end
+					if whirlwindStacks > 4 then whirlwindStacks = 4 end
+					zeroStackTargets = zeroStackInd and zeroStackInd.enabled and whirlwindStacks == 0 and affectingCombat
+						and zeroStackInd.targets and zeroStackInd.targets.rageBar or nil
+					if zeroStackTargets then
+						if zeroStackTargets.bar then
+							barColor = zeroStackInd.color
+						end
+						if zeroStackTargets.border then
+							barBorderColor = zeroStackInd.color
+						end
+						if zeroStackTargets.background then
+							barBackgroundColor = zeroStackInd.color
+						end
+					end
+				end
+				local conditionMap = {
+					borderOvercap = affectingCombat,
+				}
+				local overcapIndicator = nil
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+							overcapIndicator = indicator
+							break
+						end
+					end
+				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
+					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				elseif specSettings.colors.bar.borderOvercap and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.bar then
+					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					primaryNode:SetColor(barColor)
+				end
+
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then
+					local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
+					primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1463,18 +1662,52 @@ local function UpdateResourceBar()
 				
 				local barColor = specSettings.colors.bar.base.color
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local conditionMap = {
+					borderOvercap = affectingCombat,
+				}
+				local overcapIndicator = nil
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+							overcapIndicator = indicator
+							break
+						end
+					end
+				end
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
+					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+					primaryNode:SetBorderColorCurve(borderColorResult)
+				elseif specSettings.colors.bar.borderOvercap and specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.bar then
+					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					primaryNode:SetColor(barColor)
+				end
+
+				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then
+					local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
+					primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 

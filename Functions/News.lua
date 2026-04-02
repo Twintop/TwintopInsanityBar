@@ -12,7 +12,26 @@ local content = [====[
 
 ---
 
-# 12.0.1.47-release (2026-04-01)
+# 12.0.1.48-release (2026-04-02)
+## General
+
+- [#152](#152) Fix some issues with settings migration that could result in resets and Lua errors.
+
+## Death Knight
+
+- [#152](#152) Migrated Blood, Frost, and Unholy to the new bar color change system.
+
+## Shaman
+
+- [#152](#152) Migrated Elemental, Enhancement, and Restoration to the new bar color change system.
+
+## Warrior
+
+- [#152](#152) Migrated Arms, Fury, and Protection to the new bar color change system.
+
+---
+
+# 12.0.1.47-release (2026-04-02)
 ## General
 ### Localization
 

@@ -425,4 +425,6 @@ if locale == "enGB" then
     L["RogueIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Energy approaches the overcap threshold."
     -- Shaman Elemental Indicator Colors (British English)
     L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Maelstrom approaches the overcap threshold."
+    -- Death Knight Indicator Colors (British English)
+    L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this colour when fewer than 3 runes are on cooldown while in combat."
 end

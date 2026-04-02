@@ -887,30 +887,64 @@ local function UpdateResourceBar()
 
 				local barColor = specSettings.colors.bar.base.color
 				local barBorderColor = specSettings.colors.bar.border.color
+				local barBackgroundColor = specSettings.colors.bar.background.color
 
 				local sharedColors = specSettings.colors.shared
 				local indicatorColors = sharedColors and sharedColors.indicatorColors
 				local nodeOrder = sharedColors and sharedColors.nodeOrder
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local conditionMap = {
+					bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
+					bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
+						and specSettings.endOf.bestialWrath.enabled
+						and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
+							(specSettings.endOf.bestialWrath.mode == "gcd"
+								and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
+								or specSettings.endOf.bestialWrath.timeMax)),
+					beastCleave = snapshots[spells.beastCleave.id].buff.isActive,
+					borderOvercap = affectingCombat,
+				}
+				local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local barColorMap = { focusBar = focusBarColors }
+
 				if nodeOrder and indicatorColors then
-					local conditionMap = {
-						bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
-						bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
-							and specSettings.endOf.bestialWrath.enabled
-							and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime() <=
-								(specSettings.endOf.bestialWrath.mode == "gcd"
-									and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
-									or specSettings.endOf.bestialWrath.timeMax)),
-						beastCleave = snapshots[spells.beastCleave.id].buff.isActive,
-					}
 					for i = #nodeOrder, 1, -1 do
 						local key = nodeOrder[i]
 						local indicator = indicatorColors[key]
 						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				local overcapCurves = {}
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient and indicator.targets then
 							local fbTargets = indicator.targets.focusBar
 							if fbTargets then
-								if fbTargets.bar then barColor = indicator.color end
-								if fbTargets.border then barBorderColor = indicator.color end
+								if fbTargets.border then
+									overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, indicator.color)
+								end
+								if fbTargets.bar then
+									overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, indicator.color)
+								end
+								if fbTargets.background then
+									overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, indicator.color)
+								end
 							end
+							break
 						end
 					end
 				end
@@ -925,16 +959,24 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				end
 
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+				if overcapCurves.border then
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
-					primaryNode:SetBorderColor(barBorderColor)
+					primaryNode:SetBorderColor(focusBarColors.border)
 				end
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapCurves.bar then
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					primaryNode:SetColor(focusBarColors.bar)
+				end
+				if overcapCurves.background then
+					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+					primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(focusBarColors.background)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 		end
@@ -1089,7 +1131,7 @@ local function UpdateResourceBar()
 					trueshot = snapshots[spells.trueshot.id].buff.isActive,
 					trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
 						and specSettings.endOf.trueshot.enabled
-						and (snapshots[spells.trueshot.id].buff:GetRemainingTime() <=
+						and (snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime) <=
 							(specSettings.endOf.trueshot.mode == "gcd"
 								and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
 								or specSettings.endOf.trueshot.timeMax)),
@@ -1193,7 +1235,7 @@ local function UpdateResourceBar()
 				takedown = snapshots[spells.takedown.id].buff.isActive,
 				takedownEnd = snapshots[spells.takedown.id].buff.isActive
 					and specSettings.endOf.takedown.enabled
-					and (snapshots[spells.takedown.id].buff:GetRemainingTime() <=
+					and (snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.takedown.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.takedown.gcdsMax
 							or specSettings.endOf.takedown.timeMax)),

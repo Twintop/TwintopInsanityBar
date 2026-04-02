@@ -130,10 +130,6 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFC21807"
 				},
-				borderOvercap = {
-					color = "FF800000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
@@ -161,6 +157,19 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
+			}
+			,
+			shared = {
+				nodeOrder = {},
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					borderOvercap = {
+						color = "FF800000",
+						enabled = true,
+						isGradient = true,
+						targets = { rageBar = { bar = false, border = true, background = false } },
+					},
+				},
 			}
 		},
 		displayText={
@@ -428,10 +437,6 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFC21807"
 				},
-				borderOvercap = {
-					color = "FF800000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
@@ -466,6 +471,24 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
+			}
+			,
+			shared = {
+				nodeOrder = { "zeroStackBackground" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					zeroStackBackground = {
+						color = "FF333333",
+						enabled = true,
+						targets = { whirlwindBar = { bar = false, border = false, background = true } },
+					},
+					borderOvercap = {
+						color = "FF800000",
+						enabled = true,
+						isGradient = true,
+						targets = { rageBar = { bar = false, border = true, background = false } },
+					},
+				},
 			}
 		},
 		displayText={
@@ -719,10 +742,6 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FFC21807"
 				},
-				borderOvercap = {
-					color = "FF800000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
@@ -753,6 +772,19 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 					show = true
 				}
+			}
+			,
+			shared = {
+				nodeOrder = {},
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					borderOvercap = {
+						color = "FF800000",
+						enabled = true,
+						isGradient = true,
+						targets = { rageBar = { bar = false, border = true, background = false } },
+					},
+				},
 			}
 		},
 		displayText={
@@ -934,27 +966,46 @@ local function ArmsConstructRageBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 	local f = nil
+	local classId = 1
+	local specId = 1
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, classId, specId, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], ARMS_MAX_RAGE)
+	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, classId, specId, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
+end
+
+local function ArmsConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 1
+	local specId = 1
+	local spec = TRB.Data.settings.warrior.arms
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_arms
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["WarriorIndicatorBorderOvercap"], tooltip = L["WarriorIndicatorOvercapTooltip"], colorLabel = L["WarriorIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "rageBar", label = L["BarNameRageBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warrior_Arms",
+		overcapConfig = {
+			primaryResourceString = L["ResourceRage"],
+			primaryResourceMax = ARMS_MAX_RAGE,
+		},
+	})
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
 end
 
 local function ArmsConstructHealthBarPanel(parent)
@@ -1300,6 +1351,7 @@ local function ArmsConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ArmsConstructRageBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ArmsConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ArmsConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ArmsConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ArmsConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ArmsConstructThresholdPanel },
@@ -1438,34 +1490,49 @@ local function FuryConstructRageBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 	local f = nil
+	local classId = 1
+	local specId = 2
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
-
-	--[[yCoord = yCoord - 30
-	controls.colors.enrage = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorFuryColorPickerEnrage"], spec.colors.bar.enrage.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.enrage
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "enrage")
-	end)]]
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], FURY_MAX_RAGE)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
+end
+
+local function FuryConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 1
+	local specId = 2
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_fury
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "zeroStackBackground", label = L["WarriorFuryCheckboxZeroStackBackground"], tooltip = L["WarriorFuryIndicatorZeroStackBackgroundTooltip"], colorLabel = L["WarriorFuryIndicatorZeroStackBackgroundColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["WarriorIndicatorBorderOvercap"], tooltip = L["WarriorIndicatorOvercapTooltip"], colorLabel = L["WarriorIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "rageBar", label = L["BarNameRageBar"] },
+			{ key = "whirlwindBar", label = L["BarNameWhirlwindBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warrior_Fury",
+		overcapConfig = {
+			primaryResourceString = L["ResourceRage"],
+			primaryResourceMax = FURY_MAX_RAGE,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function FuryConstructWhirlwindBarPanel(parent)
@@ -1485,28 +1552,6 @@ local function FuryConstructWhirlwindBarPanel(parent)
 	local whirlwindBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("whirlwind")
 	if whirlwindBarDef then
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 1, 2, yCoord, whirlwindBarDef)
-	end
-
-	-- Zero stack background (extra Whirlwind-specific option)
-	local whirlwindColors = spec.colors and spec.colors.bars and spec.colors.bars.whirlwind
-	if whirlwindColors and whirlwindColors.zeroStackBackground then
-		controls.checkBoxes.zeroStackBackgroundEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_comboPointsZeroStackBackground", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.zeroStackBackgroundEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["WhirlwindCheckboxZeroStackBackground"])
-		f.tooltip = L["WhirlwindCheckboxZeroStackBackgroundTooltip"]
-		f:SetChecked(whirlwindColors.zeroStackBackground.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			whirlwindColors.zeroStackBackground.enabled = self:GetChecked()
-		end)
-
-		controls.colors.bars = controls.colors.bars or {}
-		controls.colors.bars.whirlwind = controls.colors.bars.whirlwind or {}
-		controls.colors.bars.whirlwind.zeroStackBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WhirlwindColorPickerZeroStackBackground"], whirlwindColors.zeroStackBackground.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-		f = controls.colors.bars.whirlwind.zeroStackBackground
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, whirlwindColors, controls.colors.bars.whirlwind, "zeroStackBackground")
-		end)
 	end
 end
 
@@ -1817,6 +1862,7 @@ local function FuryConstructOptionsPanel(cache)
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel },
 		{ "whirlwindBar", L["TabWhirlwind"], oUi.tabWidth.small, FuryConstructWhirlwindBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, FuryConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, FuryConstructThresholdPanel },
@@ -1955,27 +2001,49 @@ local function ProtectionConstructRageBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 	local f = nil
+	local classId = 1
+	local specId = 3
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], PROTECTION_MAX_RAGE)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 1, PROTECTION_MAX_RAGE)
+end
+
+local function ProtectionConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 1
+	local specId = 3
+	local spec = TRB.Data.settings.warrior.protection
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_protection
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["WarriorIndicatorBorderOvercap"], tooltip = L["WarriorIndicatorOvercapTooltip"], colorLabel = L["WarriorIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "rageBar", label = L["BarNameRageBar"] },
+			{ key = "defensivesIgnorePainTimeBar", label = L["BarNameDefensivesIgnorePainTimeBar"] },
+			{ key = "defensivesIgnorePainAbsorbBar", label = L["BarNameDefensivesIgnorePainAbsorbBar"] },
+			{ key = "defensivesShieldBlockBar", label = L["BarNameDefensivesShieldBlockBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warrior_Protection",
+		overcapConfig = {
+			primaryResourceString = L["ResourceRage"],
+			primaryResourceMax = PROTECTION_MAX_RAGE,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function ProtectionConstructDefensivesBarPanel(parent)
@@ -2338,6 +2406,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ProtectionConstructRageBarPanel },
 		{ "defensivesBar", L["TabDefensives"], oUi.tabWidth.small, ProtectionConstructDefensivesBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ProtectionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ProtectionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdPanel },

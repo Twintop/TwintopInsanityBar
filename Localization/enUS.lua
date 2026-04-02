@@ -2734,3 +2734,10 @@ L["RogueIndicatorOvercapColor"] = "Overcapping Energy"
 L["ShamanElementalIndicatorBorderOvercap"] = "Overcap (gradient)"
 L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this color as your Maelstrom approaches the overcap threshold."
 L["ShamanElementalIndicatorOvercapColor"] = "Overcapping Maelstrom"
+
+-- Death Knight Indicator Colors
+L["BarNameRunesBar"] = "Runes"
+L["DeathKnightIndicatorOvercap"] = "Overcap (gradient)"
+L["DeathKnightIndicatorRuneRegenOvercap"] = "Rune Regen Overcap"
+L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this color when fewer than 3 runes are on cooldown while in combat."
+L["DeathKnightIndicatorRuneRegenOvercapColor"] = "Rune Regen is Overcapping"

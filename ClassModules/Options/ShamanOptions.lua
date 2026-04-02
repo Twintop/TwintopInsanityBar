@@ -119,30 +119,11 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				border = {
 					color = "FF00008D"
 				},
-				borderOvercap = {
-					color = "FFFF0000",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
 					color = "FF0055FF"
-				},
-				earthShock = {
-					color = "FF00096A",
-					enabled = true
-				},
-				earthquake = {
-					color = "FF5C4033",
-					enabled = false
-				},
-				ascendance = {
-					color = "FFFA8128",
-					enabled = true
-				},
-				ascendanceEnd = {
-					color = "FFFF0000"
 				},
 				flashAlpha = 0.70,
 				flashPeriod = 0.5,
@@ -172,6 +153,55 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+			},
+			shared = {
+				nodeOrder = {
+					"ascendanceEnd",
+					"earthShock",
+					"earthquake",
+					"ascendance"
+				},
+				gradientOrder = {
+					"borderOvercap"
+				},
+				indicatorColors = {
+					earthShock = {
+						color = "FF00096A",
+						enabled = true,
+						targets = {
+							maelstromBar = { bar = true, border = false, background = false }
+						}
+					},
+					earthquake = {
+						color = "FF5C4033",
+						enabled = false,
+						targets = {
+							maelstromBar = { bar = true, border = false, background = false }
+						}
+					},
+					ascendance = {
+						color = "FFFA8128",
+						enabled = true,
+						targets = {
+							maelstromBar = { bar = true, border = false, background = false }
+						}
+					},
+					ascendanceEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							maelstromBar = { bar = true, border = false, background = false }
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							maelstromBar = { bar = false, border = true, background = false }
+						}
+					}
+				}
 			},
 		},
 		displayText={
@@ -272,13 +302,6 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
-				ascendance = {
-					color = "FFFA8128",
-					enabled = true
-				},
-				ascendanceEnd = {
-					color = "FFFF0000"
-				},
 				casting = {
 					color = "FFFFFFFF",
 					enabled = true
@@ -326,6 +349,29 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"ascendanceEnd",
+					"ascendance"
+				},
+				gradientOrder = {},
+				indicatorColors = {
+					ascendance = {
+						color = "FFFA8128",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					},
+					ascendanceEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					}
+				}
+			},
 		},
 		displayText={
 			default = {
@@ -437,19 +483,35 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				base = {
 					color = "FF0000FF"
 				},
-				ascendance = {
-					color = "FFFA8128",
-					enabled = true
-				},
-				ascendanceEnd = {
-					color = "FFFF0000"
-				},
 				casting = {
 					color = "FFFFFFFF",
 					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"ascendanceEnd",
+					"ascendance"
+				},
+				gradientOrder = {},
+				indicatorColors = {
+					ascendance = {
+						color = "FFFA8128",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					},
+					ascendanceEnd = {
+						color = "FFFF0000",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false }
+						}
+					}
+				}
+			},
 		},
 		displayText={
 			default = {
@@ -630,77 +692,7 @@ local function ElementalConstructMaelstromBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.earthShock = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_earthShockColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.earthShock
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxEarthShock"])
-	f.tooltip = L["ShamanElementalCheckboxEarthShockTooltip"]
-	f:SetChecked(spec.colors.bar.earthShock.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.earthShock.enabled = self:GetChecked()
-	end)
-
-	controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.earthShock
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.earthquake = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Bar_Option_earthquakeColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.earthquake
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxEarthquakeBarColor"])
-	f.tooltip = L["ShamanElementalCheckboxEarthquakeBarColorTooltip"]
-	f:SetChecked(spec.colors.bar.earthquake.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.earthquake.enabled = self:GetChecked()
-	end)
-
-	controls.colors.earthquake = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthquake"], spec.colors.bar.earthquake.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.earthquake
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthquake")
-	end)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 1, yCoord, {
-		endOfKey = "ascendance",
-		activeColorKey = "ascendance",
-		endColorKey = "ascendanceEnd",
-		checkboxLabel = L["ShamanElementalCheckboxAscendance"],
-		checkboxTooltip = L["ShamanElementalCheckboxAscendanceTooltip"],
-		activeColorLabel = L["ShamanElementalColorPickerAscendance"],
-		endCheckboxLabel = L["ShamanElementalCheckboxAscendanceEnd"],
-		endCheckboxTooltip = L["ShamanElementalCheckboxAscendanceEndTooltip"],
-		endColorLabel = L["ShamanElementalColorPickerAscendanceEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 1, yCoord, {
-		endOfKey = "ascendance",
-		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
-		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
-		gcdSliderLabel = L["ShamanAscendanceGcds"],
-		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
-		timeSliderLabel = L["ShamanAscendanceTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], ELEMENTAL_MAX_MAELSTROM)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
@@ -741,6 +733,52 @@ local function ElementalConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 7, 1, yCoord)
 end
 
+local function ElementalConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 7
+	local specId = 1
+	local spec = TRB.Data.settings.shaman.elemental
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "ascendanceEnd", label = L["ShamanElementalCheckboxAscendanceEnd"], tooltip = L["ShamanElementalIndicatorAscendanceEndTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceEndColor"] },
+			{ key = "ascendance", label = L["ShamanElementalCheckboxAscendance"], tooltip = L["ShamanElementalIndicatorAscendanceTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceColor"] },
+			{ key = "earthquake", label = L["ShamanElementalCheckboxEarthquakeBarColor"], tooltip = L["ShamanElementalIndicatorEarthquakeTooltip"], colorLabel = L["ShamanElementalIndicatorEarthquakeColor"] },
+			{ key = "earthShock", label = L["ShamanElementalCheckboxEarthShock"], tooltip = L["ShamanElementalIndicatorEarthShockTooltip"], colorLabel = L["ShamanElementalIndicatorEarthShockColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["ShamanElementalIndicatorBorderOvercap"], tooltip = L["ShamanElementalIndicatorOvercapTooltip"], colorLabel = L["ShamanElementalIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "maelstromBar", label = L["BarNameMaelstromBar"] },
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Shaman_Elemental",
+		endOfConfigs = {
+			{
+				endOfKey = "ascendance",
+				sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+				gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+				gcdSliderLabel = L["ShamanAscendanceGcds"],
+				timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+				timeSliderLabel = L["ShamanAscendanceTime"],
+			},
+		},
+		overcapConfig = {
+			primaryResourceString = L["ResourceMaelstrom"],
+			primaryResourceMax = ELEMENTAL_MAX_MAELSTROM,
+		},
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function ElementalConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -751,7 +789,7 @@ local function ElementalConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, nil, true)
 end
 
 local function ElementalConstructBarVisibilityPanel(parent)
@@ -983,6 +1021,7 @@ local function ElementalConstructOptionsPanel(cache)
 		{ "maelstromBar", L["TabMaelstrom"], oUi.tabWidth.small, ElementalConstructMaelstromBarPanel },
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ElementalConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ElementalConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ElementalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ElementalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ElementalConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdPanel },
@@ -1127,40 +1166,44 @@ local function EnhancementConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
+end
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 2, yCoord, {
-		endOfKey = "ascendance",
-		activeColorKey = "ascendance",
-		endColorKey = "ascendanceEnd",
-		checkboxLabel = L["ShamanManaCheckboxAscendance"],
-		checkboxTooltip = L["ShamanManaCheckboxAscendanceTooltip"],
-		activeColorLabel = L["ShamanManaColorPickerAscendance"],
-		endCheckboxLabel = L["ShamanManaCheckboxAscendanceEnd"],
-		endCheckboxTooltip = L["ShamanManaCheckboxAscendanceEndTooltip"],
-		endColorLabel = L["ShamanManaColorPickerAscendanceEnd"],
+local function EnhancementConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 7
+	local specId = 2
+	local spec = TRB.Data.settings.shaman.enhancement
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "ascendanceEnd", label = L["ShamanManaCheckboxAscendanceEnd"], tooltip = L["ShamanElementalIndicatorAscendanceEndTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceEndColor"] },
+			{ key = "ascendance", label = L["ShamanManaCheckboxAscendance"], tooltip = L["ShamanElementalIndicatorAscendanceTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "maelstromWeaponBar", label = L["BarNameMaelstromWeaponBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Shaman_Enhancement",
+		endOfConfigs = {
+			{
+				endOfKey = "ascendance",
+				sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+				gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+				gcdSliderLabel = L["ShamanAscendanceGcds"],
+				timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+				timeSliderLabel = L["ShamanAscendanceTime"],
+			},
+		},
 	})
 
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], false, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 2, yCoord, {
-		endOfKey = "ascendance",
-		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
-		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
-		gcdSliderLabel = L["ShamanAscendanceGcds"],
-		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
-		timeSliderLabel = L["ShamanAscendanceTime"],
-	})
 end
 
 local function EnhancementConstructMaelstromWeaponBarPanel(parent)
@@ -1437,6 +1480,7 @@ local function EnhancementConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, EnhancementConstructManaBarPanel },
 		{ "maelstromWeaponBar", L["TabMaelstromWeapon"], oUi.tabWidth.small, EnhancementConstructMaelstromWeaponBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, EnhancementConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, EnhancementConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, EnhancementConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, EnhancementConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, EnhancementConstructFontAndTextPanel },
@@ -1574,40 +1618,43 @@ local function RestorationConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
+end
 
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 7, 3, yCoord, {
-		endOfKey = "ascendance",
-		activeColorKey = "ascendance",
-		endColorKey = "ascendanceEnd",
-		checkboxLabel = L["ShamanManaCheckboxAscendance"],
-		checkboxTooltip = L["ShamanManaCheckboxAscendanceTooltip"],
-		activeColorLabel = L["ShamanManaColorPickerAscendance"],
-		endCheckboxLabel = L["ShamanManaCheckboxAscendanceEnd"],
-		endCheckboxTooltip = L["ShamanManaCheckboxAscendanceEndTooltip"],
-		endColorLabel = L["ShamanManaColorPickerAscendanceEnd"],
+local function RestorationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 7
+	local specId = 3
+	local spec = TRB.Data.settings.shaman.restoration
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "ascendanceEnd", label = L["ShamanManaCheckboxAscendanceEnd"], tooltip = L["ShamanElementalIndicatorAscendanceEndTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceEndColor"] },
+			{ key = "ascendance", label = L["ShamanManaCheckboxAscendance"], tooltip = L["ShamanElementalIndicatorAscendanceTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Shaman_Restoration",
+		endOfConfigs = {
+			{
+				endOfKey = "ascendance",
+				sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
+				gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
+				gcdSliderLabel = L["ShamanAscendanceGcds"],
+				timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
+				timeSliderLabel = L["ShamanAscendanceTime"],
+			},
+		},
 	})
 
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], false, true)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 7, 3, yCoord, {
-		endOfKey = "ascendance",
-		sectionHeader = L["ShamanHeaderEndOfAscendanceConfiguration"],
-		gcdRadioLabel = L["ShamanCheckboxAscendanceGcds"],
-		gcdSliderLabel = L["ShamanAscendanceGcds"],
-		timeRadioLabel = L["ShamanCheckboxAscendanceTime"],
-		timeSliderLabel = L["ShamanAscendanceTime"],
-	})
 end
 
 local function RestorationConstructHealthBarPanel(parent)
@@ -1786,6 +1833,7 @@ local function RestorationConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RestorationConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RestorationConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RestorationConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, RestorationConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, RestorationConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, RestorationConstructFontAndTextPanel },
