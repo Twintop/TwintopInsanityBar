@@ -96,6 +96,11 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				consistentUnfilledColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -232,7 +237,12 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 				},
 				sameColor = false,
 			},
-			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				shared = {
+					nodeOrder = {},
+					gradientOrder = {},
+					indicatorColors = {},
+				},
 		},
 		displayText={
 			default = {
@@ -371,6 +381,11 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				sameColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				shared = {
+					nodeOrder = {},
+					gradientOrder = {},
+					indicatorColors = {},
+				},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"

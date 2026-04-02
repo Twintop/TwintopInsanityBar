@@ -99,6 +99,20 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "infusionOfLight" },
+				gradientOrder = {},
+				indicatorColors = {
+					infusionOfLight = {
+						color = "FFFCE58E",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							holyPowerBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -410,6 +424,11 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {

@@ -12,6 +12,17 @@ local content = [====[
 
 ---
 
+# 12.0.1.49-release (2026-04-02)
+## General
+
+- Ensure all specs have the defaults/placeholder values for the new color indications options so there are no Lua errors when opening options.
+
+### Localization
+
+- [#731](#731) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
 # 12.0.1.48-release (2026-04-02)
 ## General
 

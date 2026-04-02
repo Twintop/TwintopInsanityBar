@@ -93,6 +93,11 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				sameColor=true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -207,6 +212,11 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -321,6 +331,11 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {

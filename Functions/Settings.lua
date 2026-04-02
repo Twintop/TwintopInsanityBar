@@ -6939,24 +6939,27 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Migrate Paladin Holy to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.holy then
 		local spec = TwintopInsanityBarSettings.paladin.holy
-		if spec.colors and spec.colors.bar
-		and spec.colors.bar.infusionOfLight
+		if spec.colors
 		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil) then
 			spec.colors.shared = spec.colors.shared or {}
-			spec.colors.shared.nodeOrder = { "infusionOfLight" }
-			spec.colors.shared.gradientOrder = {}
-			spec.colors.shared.indicatorColors = {}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or { "infusionOfLight" }
+			spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
 			local ic = spec.colors.shared.indicatorColors
-			local bar = spec.colors.bar
-			ic.infusionOfLight = {
-				color = bar.infusionOfLight and bar.infusionOfLight.color or "FFFCE58E",
-				enabled = bar.infusionOfLight and bar.infusionOfLight.enabled ~= false,
-				targets = {
-					manaBar = { bar = false, border = true, background = false },
-					holyPowerBar = { bar = false, border = false, background = false },
+			local bar = spec.colors.bar or {}
+			if ic.infusionOfLight == nil then
+				ic.infusionOfLight = {
+					color = bar.infusionOfLight and bar.infusionOfLight.color or "FFFCE58E",
+					enabled = (bar.infusionOfLight == nil) or (bar.infusionOfLight.enabled ~= false),
+					targets = {
+						manaBar = { bar = false, border = true, background = false },
+						holyPowerBar = { bar = false, border = false, background = false },
+					}
 				}
-			}
-			bar.infusionOfLight = nil
+			end
+			if spec.colors.bar then
+				spec.colors.bar.infusionOfLight = nil
+			end
 		end
 
 		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors and spec.colors.shared.indicatorColors.infusionOfLight then
@@ -7369,6 +7372,20 @@ function TRB.Functions.Settings:PortForwardSettings()
 					ic[key].targets = ic[key].targets or {}
 					ic[key].targets.energyBar = ic[key].targets.energyBar or { bar = false, border = false, background = false }
 					ic[key].targets.chiBar = ic[key].targets.chiBar or { bar = false, border = false, background = false }
+				end
+			end
+		end
+	end
+
+	-- Ensure colors.shared exists for all specs so indicator-color consumers can rely on it.
+	for _, className in ipairs(classes) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for _, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+				if type(specSettings) == "table" and specSettings.colors ~= nil then
+					specSettings.colors.shared = specSettings.colors.shared or {}
+					specSettings.colors.shared.nodeOrder = specSettings.colors.shared.nodeOrder or {}
+					specSettings.colors.shared.gradientOrder = specSettings.colors.shared.gradientOrder or {}
+					specSettings.colors.shared.indicatorColors = specSettings.colors.shared.indicatorColors or {}
 				end
 			end
 		end
