@@ -292,7 +292,7 @@ local function ConstructResourceBar(settings)
 				node:SetMinMax(0, 1)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-				node:SetColor(settings.colors.comboPoints.base.color)
+				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -678,7 +678,7 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
-			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base.color
+			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -686,13 +686,13 @@ local function UpdateResourceBar()
 
 			if filled and not barOverrideActive then
 				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second.color
+					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third.color
+					cpColor = specSettings.colors.comboPoints.third
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
 
@@ -701,7 +701,7 @@ local function UpdateResourceBar()
 				if holyPowerNode then
 					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, holyPowerNode, filled and 1 or 0, 1)
 					holyPowerNode:SetBorderColor(cpBorderColor)
-					holyPowerNode:SetColor(cpColor)
+					TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
@@ -724,7 +724,7 @@ local function UpdateResourceBar()
 					for barKey, colorEntry in pairs(barColorMap) do
 						local barTargets = targets and targets[barKey]
 						if barTargets then
-							if barTargets.bar then colorEntry.bar = indicator.color; colorEntry.barOverridden = true end
+							if barTargets.bar then colorEntry.bar = indicator; colorEntry.barOverridden = true end
 							if barTargets.border then colorEntry.border = indicator.color end
 							if barTargets.background then colorEntry.background = indicator.color end
 						end
@@ -741,12 +741,12 @@ local function UpdateResourceBar()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local manaBarColors = {
-			bar = specSettings.colors.bar.base.color,
+			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
 			background = specSettings.colors.bar.background.color,
 		}
 		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
@@ -770,7 +770,7 @@ local function UpdateResourceBar()
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(manaBarColors.border)
-				primaryNode:SetColor(manaBarColors.bar)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
@@ -809,12 +809,12 @@ local function UpdateResourceBar()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local manaBarColors = {
-			bar = specSettings.colors.bar.base.color,
+			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
 			background = specSettings.colors.bar.background.color,
 		}
 		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
@@ -828,7 +828,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(manaBarColors.border)
-				primaryNode:SetColor(manaBarColors.bar)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
@@ -868,11 +868,11 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)

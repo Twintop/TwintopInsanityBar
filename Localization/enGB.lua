@@ -427,4 +427,7 @@ if locale == "enGB" then
     L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Maelstrom approaches the overcap threshold."
     -- Death Knight Indicator Colors (British English)
     L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this colour when fewer than 3 runes are on cooldown while in combat."
+    -- Gradient Color System (British English)
+    L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first colour."
+    L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
 end

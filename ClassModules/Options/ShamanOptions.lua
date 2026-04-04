@@ -123,29 +123,41 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0055FF"
+					color = "FF0055FF",
+					color2 = "FF0055FF",
+					gradientDirection = "disabled"
 				},
 				flashAlpha = 0.70,
 				flashPeriod = 0.5,
 				flashEnabled = true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
 				threshold = {
 				under = {
-					color = "FFFFFFFF"
+					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled"
 				},
 				over = {
-					color = "FF00FF00"
+					color = "FF00FF00",
+					color2 = "FF00FF00",
+					gradientDirection = "disabled"
 				},
 				special = {
 					color = "FFFF00FF",
+					color2 = "FFFF00FF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
+					color2 = "FF440000",
+					gradientDirection = "disabled",
 					enabled = true,
 					show = true
 				}
@@ -167,6 +179,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					earthShock = {
 						color = "FF00096A",
+						color2 = "FF00096A",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							maelstromBar = { bar = true, border = false, background = false }
@@ -174,6 +188,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					},
 					earthquake = {
 						color = "FF5C4033",
+						color2 = "FF5C4033",
+						gradientDirection = "disabled",
 						enabled = false,
 						targets = {
 							maelstromBar = { bar = true, border = false, background = false }
@@ -181,6 +197,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					},
 					ascendance = {
 						color = "FFFA8128",
+						color2 = "FFFA8128",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							maelstromBar = { bar = true, border = false, background = false }
@@ -188,6 +206,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					},
 					ascendanceEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							maelstromBar = { bar = true, border = false, background = false }
@@ -300,10 +320,14 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -315,19 +339,29 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF55E2FF"
+					color = "FF55E2FF",
+					color2 = "FF55E2FF",
+					gradientDirection = "disabled"
 				},
 				fiveStack = {
-					color = "FF00B400"
+					color = "FF00B400",
+					color2 = "FF00B400",
+					gradientDirection = "disabled"
 				},
 				overflowBase = {
-					color = "FF0077DD"
+					color = "FF0077DD",
+					color2 = "FF0077DD",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
 				compressedView = true
@@ -358,6 +392,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					ascendance = {
 						color = "FFFA8128",
+						color2 = "FFFA8128",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -365,6 +401,8 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 					},
 					ascendanceEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -481,10 +519,14 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -498,6 +540,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					ascendance = {
 						color = "FFFA8128",
+						color2 = "FFFA8128",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -505,6 +549,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					},
 					ascendanceEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -1224,36 +1270,51 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+	end)
 
-	controls.colors.comboPoints.fiveStack = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"], spec.colors.comboPoints.fiveStack.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.fiveStack = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"], spec.colors.comboPoints.fiveStack, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.fiveStack
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "fiveStack")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveStack, self)
+	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.overflowBase = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"], spec.colors.comboPoints.overflowBase, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.overflowBase
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overflowBase")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.overflowBase, self)
+	end)
 
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)

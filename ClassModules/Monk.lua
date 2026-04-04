@@ -339,7 +339,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1063,7 +1063,7 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border.color
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
@@ -1103,7 +1103,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -1157,7 +1157,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					if energyOvercapCurves.background then
@@ -1360,7 +1360,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
@@ -1384,7 +1384,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -1395,7 +1395,7 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					primaryNode:SetBorderColor(manaBarColors.border)
-					primaryNode:SetColor(manaBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 					primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
@@ -1439,12 +1439,12 @@ local function UpdateResourceBar()
 			borderOvercap = affectingCombat,
 		}
 		local energyBarColors = {
-			bar = specSettings.colors.bar.base.color,
+			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
 			background = specSettings.colors.bar.background.color,
 		}
 		local chiBarColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
@@ -1464,7 +1464,7 @@ local function UpdateResourceBar()
 						if targetColors and elements then
 							for elemKey, isTargeted in pairs(elements) do
 								if isTargeted then
-									targetColors[elemKey] = indicator.color
+									targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 									if barKey == "chiBar" then
 										chiBarOverrides[elemKey] = true
 									end
@@ -1618,7 +1618,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(energyBarColors.bar)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, energyBarColors.bar)
 					end
 
 					if energyOvercapCurves.background then
@@ -1647,9 +1647,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
 								if not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
+									cpColor = specSettings.colors.comboPoints.penultimate
 								elseif not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2) then
-									cpColor = specSettings.colors.comboPoints.final.color
+									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
@@ -1666,7 +1666,7 @@ local function UpdateResourceBar()
 								local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.bar)
 								chiNode:SetColorCurve(barColorResult)
 							else
-								chiNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(chiNode, cpColor)
 							end
 
 							if chiOvercapCurves.background then
@@ -2120,7 +2120,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetMinMax(0, 1)
 							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
-							node:SetColor(sharedSettings.colors.comboPoints.base.color)
+							TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
 							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end

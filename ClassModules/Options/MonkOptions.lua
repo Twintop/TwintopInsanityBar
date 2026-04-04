@@ -204,10 +204,14 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -216,10 +220,22 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					border = { color = "FF00FF98" },
 					background = { color = "66000000" },
 					type = "step",
-					low = { color = "FF85FF85", threshold = 0.0 },
-					medium = { color = "FFFFFAB8", threshold = 0.30 },
-					heavy = { color = "FFFF6B6B", threshold = 0.60 },
-					extreme = { color = "FFBB1111", threshold = 1.0 }
+					low = {
+						color = "FF85FF85",
+						threshold = 0.0
+					},
+					medium = {
+						color = "FFFFFAB8",
+						threshold = 0.30
+					},
+					heavy = {
+						color = "FFFF6B6B",
+						threshold = 0.60
+					},
+					extreme = {
+						color = "FFBB1111",
+						threshold = 1.0
+					}
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -234,6 +250,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					invokeNiuzao = {
 						color = "FF8B6914",
+						color2 = "FF8B6914",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = true, border = false, background = false }
@@ -241,6 +259,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					},
 					invokeNiuzaoEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = true, border = false, background = false }
@@ -362,10 +382,14 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -380,6 +404,8 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					vivaciousVivification = {
 						color = "FF00FFBB",
+						color2 = "FF00FFBB",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -387,6 +413,8 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 					},
 					heartOfTheJadeSerpentReady = {
 						color = "FF008461",
+						color2 = "FF008461",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -394,6 +422,8 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 					},
 					heartOfTheJadeSerpent = {
 						color = "FF00FFBB",
+						color2 = "FF00FFBB",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
@@ -544,10 +574,14 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -559,13 +593,19 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFB5FFEB"
+					color = "FFB5FFEB",
+					color2 = "FFB5FFEB",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor=false
 			},
@@ -582,6 +622,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					danceOfChiJi = {
 						color = "FF00FF00",
+						color2 = "FF00FF00",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -590,6 +632,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					},
 					heartOfTheJadeSerpentReady = {
 						color = "FF008461",
+						color2 = "FF008461",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -598,6 +642,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					},
 					heartOfTheJadeSerpent = {
 						color = "FF00FFBB",
+						color2 = "FF00FFBB",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -1850,10 +1896,13 @@ local function WindwalkerConstructChiPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1863,10 +1912,13 @@ local function WindwalkerConstructChiPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1876,10 +1928,13 @@ local function WindwalkerConstructChiPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30

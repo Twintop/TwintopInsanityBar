@@ -885,7 +885,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -917,7 +917,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -969,7 +969,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(focusBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, focusBarColors.bar)
 				end
 				if overcapCurves.background then
 					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
@@ -1120,7 +1120,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
 				local sharedColors = specSettings.colors.shared
@@ -1150,7 +1150,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -1193,7 +1193,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(focusBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, focusBarColors.bar)
 				end
 				if overcapCurves.background then
 					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
@@ -1242,12 +1242,12 @@ local function UpdateResourceBar()
 				borderOvercap = affectingCombat,
 			}
 			local focusBarColors = {
-				bar = specSettings.colors.bar.base.color,
+				bar = specSettings.colors.bar.base,
 				border = specSettings.colors.bar.border.color,
 				background = specSettings.colors.bar.background.color,
 			}
 			local tipOfTheSpearBarColors = {
-				bar = specSettings.colors.comboPoints.base.color,
+				bar = specSettings.colors.comboPoints.base,
 				border = specSettings.colors.comboPoints.border.color,
 				background = specSettings.colors.comboPoints.background.color,
 			}
@@ -1267,7 +1267,7 @@ local function UpdateResourceBar()
 							if targetColors and elements then
 								for elemKey, isTargeted in pairs(elements) do
 									if isTargeted then
-										targetColors[elemKey] = indicator.color
+										targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										if barKey == "tipOfTheSpearBar" then
 											tipOfTheSpearOverrides[elemKey] = true
 										end
@@ -1403,7 +1403,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, focusOvercapCurves.bar)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(focusBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, focusBarColors.bar)
 				end
 				if focusOvercapCurves.background then
 					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, focusOvercapCurves.background)
@@ -1438,20 +1438,20 @@ local function UpdateResourceBar()
 								if not tipOfTheSpearOverrides.bar and not tipOfTheSpearOvercapCurves.bar and specSettings.colors.comboPoints.sameColor then
 									-- sameColor: all filled nodes share the highest applicable color
 									if currentStacks == maxStacks then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									elseif currentStacks == maxStacks - 1 then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									else
-										cpColor = specSettings.colors.comboPoints.base.color
+										cpColor = specSettings.colors.comboPoints.base
 									end
 								elseif not tipOfTheSpearOverrides.bar and not tipOfTheSpearOvercapCurves.bar then
 									-- Per-node coloring
 									if x == maxStacks then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									elseif x == maxStacks - 1 then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									else
-										cpColor = specSettings.colors.comboPoints.base.color
+										cpColor = specSettings.colors.comboPoints.base
 									end
 								end
 							else
@@ -1469,7 +1469,7 @@ local function UpdateResourceBar()
 								local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, tipOfTheSpearOvercapCurves.bar)
 								stackNode:SetColorCurve(barColorResult)
 							else
-								stackNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 							end
 
 							if tipOfTheSpearOvercapCurves.background then

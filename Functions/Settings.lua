@@ -7405,6 +7405,113 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Backfill color2 + gradientDirection on fill color entries for bar gradient support
+	local comboPointNonFillKeys = {
+		border = true, background = true, sameColor = true, sortRunes = true,
+		generation = true, compressedView = true,
+	}
+	local customBarNonFillKeys = {
+		border = true, background = true, type = true, sameColor = true,
+		nodeOrder = true, nodeColors = true,
+	}
+
+	---@param entry table
+	local function BackfillGradientFields(entry)
+		if type(entry) == "table" and entry.color ~= nil then
+			if entry.color2 == nil then
+				entry.color2 = entry.color
+			end
+			if entry.gradientDirection == nil then
+				entry.gradientDirection = "disabled"
+			end
+		end
+	end
+
+	---@param entry table
+	local function StripGradientFields(entry)
+		if type(entry) == "table" then
+			entry.color2 = nil
+			entry.gradientDirection = nil
+		end
+	end
+
+	-- Backfill global health bar settings
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil and TwintopInsanityBarSettings.core.healthBar ~= nil then
+		local hb = TwintopInsanityBarSettings.core.healthBar
+		StripGradientFields(hb.low)
+		StripGradientFields(hb.medium)
+		StripGradientFields(hb.high)
+	end
+
+	-- Backfill all per-spec fill color entries
+	for _, className in ipairs(classes) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for _, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+				if type(specSettings) == "table" and specSettings.colors ~= nil then
+					local colors = specSettings.colors
+
+					-- colors.bar: base, casting, spending (fills only)
+					if colors.bar then
+						BackfillGradientFields(colors.bar.base)
+						BackfillGradientFields(colors.bar.casting)
+						BackfillGradientFields(colors.bar.spending)
+					end
+
+					-- colors.comboPoints: all fill keys
+					if colors.comboPoints then
+						for key, entry in pairs(colors.comboPoints) do
+							if not comboPointNonFillKeys[key] then
+								BackfillGradientFields(entry)
+							end
+						end
+					end
+
+					-- colors.healthBar: low, medium, high (fills only)
+					if colors.healthBar then
+						StripGradientFields(colors.healthBar.low)
+						StripGradientFields(colors.healthBar.medium)
+						StripGradientFields(colors.healthBar.high)
+					end
+
+					-- colors.bars.*: custom bars (BarTypeRegistry)
+					if colors.bars then
+						for barName, barSettings in pairs(colors.bars) do
+							if type(barSettings) == "table" then
+								-- Simple bar fill (e.g., boneShield.bar, mana.bar)
+								BackfillGradientFields(barSettings.bar)
+
+								-- Step-based fills (e.g., stagger.low/medium/heavy/extreme)
+								for barKey, barEntry in pairs(barSettings) do
+									if not customBarNonFillKeys[barKey] and barKey ~= "bar" then
+										if barName == "stagger" then
+											StripGradientFields(barEntry)
+										else
+											BackfillGradientFields(barEntry)
+										end
+									end
+								end
+
+								-- Per-node fills (e.g., defensives.nodeColors.*)
+								if barSettings.nodeColors then
+									for _, nodeEntry in pairs(barSettings.nodeColors) do
+										BackfillGradientFields(nodeEntry)
+									end
+								end
+							end
+						end
+					end
+
+					-- colors.shared.indicatorColors.*
+					if colors.shared and colors.shared.indicatorColors then
+						for _, indicator in pairs(colors.shared.indicatorColors) do
+							BackfillGradientFields(indicator)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -7619,7 +7726,7 @@ end
 ---@return TRB.Classes.Settings.GenericBarColorsBase
 function TRB.Functions.Settings:DefaultManaBarColors()
 	return {
-		bar = { color = "FF0000FF" },
+		bar = { color = "FF0000FF", color2 = "FF0000FF", gradientDirection = "disabled" },
 		border = { color = "FF0000AA" },
 		background = { color = "66000000" }
 	}
@@ -7642,8 +7749,8 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultEbonMightBarColors()
 	local colors = self:DefaultCustomBarColors("FFFF9900", "FFCC7700", "66000000")
-	colors.endingSoon = { color = "FFFF0000", enabled = true }
-	colors.wontExtend = { color = "FF550000", enabled = true }
+	colors.endingSoon = { color = "FFFF0000", color2 = "FFFF0000", gradientDirection = "disabled", enabled = true }
+	colors.wontExtend = { color = "FF550000", color2 = "FF550000", gradientDirection = "disabled", enabled = true }
 	return colors
 end
 
@@ -7709,7 +7816,7 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultCustomBarColors(barColor, borderColor, backgroundColor)
 	return {
-		bar = { color = barColor or "FF0000FF" },
+		bar = { color = barColor or "FF0000FF", color2 = barColor or "FF0000FF", gradientDirection = "disabled" },
 		border = { color = borderColor or "FF0000AA" },
 		background = { color = backgroundColor or "66000000" }
 	}
@@ -7728,9 +7835,9 @@ function TRB.Functions.Settings:DefaultCustomBarThresholdColors(lowColor, medium
 		border = { color = "FF000066" },
 		background = { color = "66000000" },
 		type = colorType or "step",
-		low = { color = lowColor or "FF00FF00", threshold = 0.0 },
-		medium = { color = mediumColor or "FFFFFF00", threshold = mediumThreshold or 0.30 },
-		high = { color = highColor or "FFFF0000", threshold = highThreshold or 0.70 }
+		low = { color = lowColor or "FF00FF00", color2 = lowColor or "FF00FF00", gradientDirection = "disabled", threshold = 0.0 },
+		medium = { color = mediumColor or "FFFFFF00", color2 = mediumColor or "FFFFFF00", gradientDirection = "disabled", threshold = mediumThreshold or 0.30 },
+		high = { color = highColor or "FFFF0000", color2 = highColor or "FFFF0000", gradientDirection = "disabled", threshold = highThreshold or 0.70 }
 	}
 end
 
@@ -7761,9 +7868,9 @@ function TRB.Functions.Settings:DefaultStaggerBarColors()
 		border = { color = "FF000066" },
 		background = { color = "66000000" },
 		type = "step",
-		low = { color = "FF00FF00", threshold = 0.0 },     -- Green (light stagger)
-		medium = { color = "FFFFFF00", threshold = 0.30 }, -- Yellow (medium stagger)
-		heavy = { color = "FFFF0000", threshold = 0.60 }   -- Red (heavy stagger)
+		low = { color = "FF00FF00", threshold = 0.0 },
+		medium = { color = "FFFFFF00", threshold = 0.30 },
+		heavy = { color = "FFFF0000", threshold = 0.60 }
 	}
 end
 
@@ -7825,9 +7932,9 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 		background = { color = "66000000" },
 		nodeOrder = { "ignorePain", "ignorePainAbsorb", "shieldBlock" },
 		nodeColors = {
-			ignorePain = { color = "FFFFD000", enabled = true },
-			ignorePainAbsorb = { color = "FFFF9800", enabled = true },
-			shieldBlock = { color = "FF0099FF", enabled = true }
+			ignorePain = { color = "FFFFD000", color2 = "FFFFD000", gradientDirection = "disabled", enabled = true },
+			ignorePainAbsorb = { color = "FFFF9800", color2 = "FFFF9800", gradientDirection = "disabled", enabled = true },
+			shieldBlock = { color = "FF0099FF", color2 = "FF0099FF", gradientDirection = "disabled", enabled = true }
 		}
 	}
 end
@@ -7889,9 +7996,9 @@ function TRB.Functions.Settings:DefaultHolyWordsBarColors()
 		background = { color = "66000000" },
 		nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" },
 		nodeColors = {
-			holyWordSerenity = { color = "FF00DDDD", enabled = true },
-			holyWordSanctify = { color = "FFFFDD22", enabled = true },
-			holyWordChastise = { color = "FFFF8080", enabled = true }
+			holyWordSerenity = { color = "FF00DDDD", color2 = "FF00DDDD", gradientDirection = "disabled", enabled = true },
+			holyWordSanctify = { color = "FFFFDD22", color2 = "FFFFDD22", gradientDirection = "disabled", enabled = true },
+			holyWordChastise = { color = "FFFF8080", color2 = "FFFF8080", gradientDirection = "disabled", enabled = true }
 		},
 	}
 end
@@ -7953,10 +8060,10 @@ function TRB.Functions.Settings:DefaultWhirlwindBarColors()
 		background = { color = "66000000" },
 		sameColor = false,
 		nodeColors = {
-			charge1 = { color = "FFFFFFAA" },
-			charge2 = { color = "FFFFFF00" },
-			charge3 = { color = "FFFF9900" },
-			charge4 = { color = "FFFF0000" },
+			charge1 = { color = "FFFFFFAA", color2 = "FFFFFFAA", gradientDirection = "disabled" },
+			charge2 = { color = "FFFFFF00", color2 = "FFFFFF00", gradientDirection = "disabled" },
+			charge3 = { color = "FFFF9900", color2 = "FFFF9900", gradientDirection = "disabled" },
+			charge4 = { color = "FFFF0000", color2 = "FFFF0000", gradientDirection = "disabled" },
 		},
 		zeroStackBackground = {
 			color = "B3FF5E5E",
@@ -7972,9 +8079,9 @@ function TRB.Functions.Settings:DefaultUtilityBarColors()
 		border = { color = "FF888888" },
 		background = { color = "66000000" },
 		nodeColors = {
-			charge1 = { color = "FFAAAAAA", enabled = true },
-			charge2 = { color = "FFAAAAAA", enabled = true },
-			charge3 = { color = "FFAAAAAA", enabled = true }
+			charge1 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
+			charge2 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
+			charge3 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true }
 		}
 	}
 end
@@ -8036,10 +8143,10 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 		background = { color = "66000000" },
 		sameColor = false,
 		nodeColors = {
-			charge1 = { color = "FF88CCFF" },
-			charge2 = { color = "FF55AAFF" },
-			charge3 = { color = "FF3388EE" },
-			charge4 = { color = "FF1166CC" },
+			charge1 = { color = "FF88CCFF", color2 = "FF88CCFF", gradientDirection = "disabled" },
+			charge2 = { color = "FF55AAFF", color2 = "FF55AAFF", gradientDirection = "disabled" },
+			charge3 = { color = "FF3388EE", color2 = "FF3388EE", gradientDirection = "disabled" },
+			charge4 = { color = "FF1166CC", color2 = "FF1166CC", gradientDirection = "disabled" },
 		}
 	}
 end
@@ -8097,7 +8204,7 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultBoneShieldBarColors()
 	return {
-		bar = { color = "FF8DD48D" },
+		bar = { color = "FF8DD48D", color2 = "FF8DD48D", gradientDirection = "disabled" },
 		border = { color = "FF205E20" },
 		background = { color = "66000000" }
 	}

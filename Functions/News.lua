@@ -12,12 +12,17 @@ local content = [====[
 
 ---
 
-# 12.0.1.50-release (2026-04-04)
+# 12.0.1.50-release (2026-04-05)
+## General
+
+- [#625](#625) Add optional gradient color support for bar fills and casting overlays.
+
 ## Priest
 ### Shadow
 
 - Fix the base passive Insanity generation of Mind Flay (2 -> 3 per tick).
 
+---
 
 # 12.0.1.49-release (2026-04-02)
 ## General

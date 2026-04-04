@@ -124,6 +124,7 @@ TRB.Data.constants = {
 		maxOptionsWidth = 720,
 		colorPickerTextWidth = 350,
 		colorPickerFrameSize = 25,
+		gradientColorPickerFrameSize = 25,
 		tabWidth = {
 			small = 125,
 			medium = 150,
@@ -191,7 +192,8 @@ TRB.Data.cache.barTextTree = {}
 TRB.Data.cache.colors = {
 	bar = {},
 	border = {},
-	backdrop = {}
+	backdrop = {},
+	gradient = {}
 }
 TRB.Data.cache.values = {
 	bar = {},

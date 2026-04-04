@@ -1659,7 +1659,7 @@ local function UpdateResourceBar()
 
 			for x = 1, TRB.Data.character.maxComboPoints do
 				local cpBorderColor = (cpOverrides and cpOverrides.border) or cpSettings.colors.comboPoints.border.color
-				local cpColor = barOverrideActive or cpSettings.colors.comboPoints.base.color
+				local cpColor = barOverrideActive or cpSettings.colors.comboPoints.base
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
 				local cpBB = cpBackgroundBlue
@@ -1671,9 +1671,9 @@ local function UpdateResourceBar()
 							Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 							if not barOverrideActive then
 								if (cpSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints - 1)) or (not cpSettings.comboPoints.sameColor and x == (TRB.Data.character.maxComboPoints - 1)) then
-									cpColor = cpSettings.colors.comboPoints.penultimate.color
+									cpColor = cpSettings.colors.comboPoints.penultimate
 								elseif (cpSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints)) or x == TRB.Data.character.maxComboPoints then
-									cpColor = cpSettings.colors.comboPoints.final.color
+									cpColor = cpSettings.colors.comboPoints.final
 								end
 							end
 						else
@@ -1681,7 +1681,7 @@ local function UpdateResourceBar()
 						end
 						
 						cpNode:SetBorderColor(cpBorderColor)
-						cpNode:SetColor(cpColor)
+						TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 						cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
 						-- Apply curve overrides if present (from gradient indicators like maxBite)
@@ -1740,10 +1740,10 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
@@ -1963,7 +1963,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -2016,7 +2016,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2057,7 +2057,7 @@ local function UpdateResourceBar()
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
-					manaNode:SetColor(specSettings.colors.bars.mana.bar.color)
+					TRB.Functions.Color:ApplyFillColor(manaNode, specSettings.colors.bars.mana.bar)
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
 				end
@@ -2083,7 +2083,7 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -2092,7 +2092,7 @@ local function UpdateResourceBar()
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
@@ -2338,7 +2338,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -2446,7 +2446,7 @@ local function UpdateResourceBar()
 						-- Process combo point elements
 						local maxBiteCpTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.comboPoints
 						local overcapCpTargets = overcapActive and overcapInd.targets and overcapInd.targets.comboPoints
-						local cpBaseColors = { bar = specSettings.colors.comboPoints.base.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+						local cpBaseColors = { bar = specSettings.colors.comboPoints.base, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
 						for _, elem in ipairs({"bar", "border", "background"}) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
@@ -2491,7 +2491,7 @@ local function UpdateResourceBar()
 					primaryNode:SetColorCurve(barColorCurveResult)
 					TRB.Data.cache.colors.bar[primaryNode.name .. "_resource"] = nil
 				elseif barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2518,7 +2518,7 @@ local function UpdateResourceBar()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = (comboPointOverrides and comboPointOverrides.border) or specSettings.colors.comboPoints.border.color
-					local cpColor = barOverrideActive or specSettings.colors.comboPoints.base.color
+					local cpColor = barOverrideActive or specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -2530,9 +2530,9 @@ local function UpdateResourceBar()
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if not barOverrideActive then
 									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									end
 								end
 							else
@@ -2542,9 +2542,9 @@ local function UpdateResourceBar()
 
 									if not barOverrideActive then
 										if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										end
 									end
 								else
@@ -2556,7 +2556,7 @@ local function UpdateResourceBar()
 							if comboPointOverrides and comboPointOverrides.barCurve then
 								cpNode:SetColorCurve(comboPointOverrides.barCurve)
 							else
-								cpNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 							end
 
 							-- Apply background: use curve override if available, otherwise flat color
@@ -2653,13 +2653,13 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local guardianBerserkEndMet = false
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
@@ -2899,7 +2899,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -2953,7 +2953,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2999,11 +2999,11 @@ local function UpdateResourceBar()
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
 				local barBorderColor = formSpecSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
 					-- Precompute incarnation end timing threshold
@@ -3050,7 +3050,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -3077,7 +3077,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -3556,7 +3556,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetMinMax(0, 1)
 							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
-							node:SetColor(feralSettings.colors.comboPoints.base.color)
+							TRB.Functions.Color:ApplyFillColor(node, feralSettings.colors.comboPoints.base)
 							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end
