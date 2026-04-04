@@ -573,7 +573,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	-- Shadow Baseline Abilities
 	self.mindFlay = TRB.Classes.SpellBase:New({
 		id = 15407,
-		resource = 2,
+		resource = 3,
 		isTalent = false,
 		baseline = true
 	})
