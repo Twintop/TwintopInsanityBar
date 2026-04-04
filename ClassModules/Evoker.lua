@@ -712,7 +712,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 
 	for x = 1, TRB.Data.character.maxResource2 do
 		local cpBorderColor = (essenceOverrides and essenceOverrides.border) or specSettings.colors.comboPoints.border.color
-		local cpColor = (barOverrideActive) or specSettings.colors.comboPoints.base.color
+		local cpColor = (barOverrideActive) or specSettings.colors.comboPoints.base
 
 		local essenceValue = 0
 		if snapshotData.attributes.resource2 >= x then
@@ -720,9 +720,9 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 			-- Color logic for penultimate/final (only when no indicator bar override)
 			if not barOverrideActive then
 				if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
 		elseif snapshotData.attributes.resource2 + 1 == x then

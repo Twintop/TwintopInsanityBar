@@ -292,7 +292,7 @@ local function ConstructResourceBar(settings)
 				node:SetMinMax(0, 1)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-				node:SetColor(settings.colors.comboPoints.base.color)
+				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -678,7 +678,7 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
-			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base.color
+			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -686,13 +686,13 @@ local function UpdateResourceBar()
 
 			if filled and not barOverrideActive then
 				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second.color
+					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third.color
+					cpColor = specSettings.colors.comboPoints.third
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
 
@@ -746,7 +746,7 @@ local function UpdateResourceBar()
 			background = specSettings.colors.bar.background.color,
 		}
 		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
@@ -814,7 +814,7 @@ local function UpdateResourceBar()
 			background = specSettings.colors.bar.background.color,
 		}
 		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}

@@ -294,7 +294,7 @@ local function ConstructResourceBar(settings)
 					)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1527,11 +1527,11 @@ local function UpdateResourceBar()
 							Bar:SetBarNodeValue(specCacheSettings, "soulFragment" .. x, cpNode, soulFragments)
 
 							-- Positional coloring: base for 1-4, penultimate for 5, final for 6
-							local cpColor = specSettings.colors.comboPoints.base.color
+							local cpColor = specSettings.colors.comboPoints.base
 							if x == maxSoulFragments then
-								cpColor = specSettings.colors.comboPoints.final.color
+								cpColor = specSettings.colors.comboPoints.final
 							elseif x == (maxSoulFragments - 1) then
-								cpColor = specSettings.colors.comboPoints.penultimate.color
+								cpColor = specSettings.colors.comboPoints.penultimate
 							end
 
 							-- Flat indicator override for soul fragment fill (overrides positional coloring)
@@ -1791,11 +1791,11 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
-				local cpColor = specSettings.colors.comboPoints.base.color
+				local cpColor = specSettings.colors.comboPoints.base
 
 				-- Collapsing Star contextual base color (not an indicator)
 				if metaActive then
-					cpColor = specSettings.colors.comboPoints.collapsingStar.color
+					cpColor = specSettings.colors.comboPoints.collapsingStar
 				end
 
 				-- Compute indicator overrides for soul fragment elements
@@ -2282,7 +2282,7 @@ function TRB.Functions.Class:CheckCharacter()
 								)
 								node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 								node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
-								node:SetColor(sharedSettings.colors.comboPoints.base.color)
+								TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
 								node:SetFrameLevel(frameLevels.comboPoint)
 							end
 						end
@@ -2546,7 +2546,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-				node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end

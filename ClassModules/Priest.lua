@@ -491,7 +491,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.powerWordRadiance.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.powerWordRadiance)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -586,8 +586,8 @@ local function ConstructResourceBar(settings)
 				node:SetMinMax(0, 1)
 				-- Per-node charge color (sameColor uses highest filled charge's color)
 				local chargeKey = "charge" .. i
-				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
-				node:SetColor(nodeColor)
+				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey]
+				TRB.Functions.Color:ApplyFillColor(node, nodeColor)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -1818,7 +1818,7 @@ local function UpdateResourceBar()
 
 			-- Color targets: barKey -> elementKey -> current color
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
 			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
@@ -1870,7 +1870,7 @@ local function UpdateResourceBar()
 						if barGroups and barGroups.secondary then
 							local cpNode = barGroups.secondary:GetNode(currentCp)
 							if cpNode then
-								local cpColor = specSettings.colors.comboPoints.powerWordRadiance.color
+								local cpColor = specSettings.colors.comboPoints.powerWordRadiance
 								local cpKey = "comboPoint" .. currentCp
 								if chargeIndex <= charges then
 									-- Available charge: full bar
@@ -1926,11 +1926,11 @@ local function UpdateResourceBar()
 						if utilNode then
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
-							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 								local highestKey = "angelicFeather" .. charges
-								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
@@ -1945,7 +1945,7 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
-							utilNode:SetColor(nodeColor)
+							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 							utilNode:SetBorderColor(utilityColors.border.color)
 							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 						end
@@ -2179,11 +2179,11 @@ local function UpdateResourceBar()
 						if utilNode then
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
-							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 								local highestKey = "angelicFeather" .. charges
-								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
@@ -2198,7 +2198,7 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
-							utilNode:SetColor(nodeColor)
+							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 							utilNode:SetBorderColor(utilityColors.border.color)
 							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 						end
@@ -2224,7 +2224,7 @@ local function UpdateResourceBar()
 							if lightweaverColors.sameColor and lwStacks > 0 and chargeIndex <= lwStacks then
 								colorKey = "charge" .. lwStacks
 							end
-							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey] and lightweaverColors.nodeColors[colorKey].color
+							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey]
 							if chargeIndex <= lwStacks then
 								lwNode:ClearTimerDuration()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
@@ -2708,11 +2708,11 @@ local function UpdateResourceBar()
 					if utilNode then
 						local nodeKey = "utility" .. chargeIndex
 						local nodeColorKey = "angelicFeather" .. chargeIndex
-						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 						-- sameColor: use highest filled charge's color for all filled nodes
 						if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 							local highestKey = "angelicFeather" .. charges
-							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 						end
 						if chargeIndex <= charges then
 							utilNode:ClearTimerDuration()
@@ -2727,7 +2727,7 @@ local function UpdateResourceBar()
 							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 						end
-						utilNode:SetColor(nodeColor)
+						TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 						utilNode:SetBorderColor(utilityColors.border.color)
 						utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 					end

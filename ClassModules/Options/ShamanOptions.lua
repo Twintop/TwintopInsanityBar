@@ -1,4 +1,4 @@
-﻿local _, TRB = ...
+local _, TRB = ...
 
 local L = TRB.Localization
 
@@ -1276,7 +1276,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.fiveStack = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"], spec.colors.comboPoints.fiveStack, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1285,7 +1285,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "fiveStack")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveStack, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveStack, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1295,7 +1295,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "overflowBase")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.overflowBase, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.overflowBase, self)
 	end)
 
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1304,7 +1304,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1314,7 +1314,7 @@ local function EnhancementConstructMaelstromWeaponBarPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)

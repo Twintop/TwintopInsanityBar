@@ -1210,7 +1210,7 @@ local function UpdateResourceBar()
 						for nodeIndex = 1, displayNodes do
 							local stackNode = barGroups.secondary:GetNode(nodeIndex)
 							if stackNode then
-								local cpColor = mwBarOverride or specSettings.colors.comboPoints.base.color
+								local cpColor = mwBarOverride or specSettings.colors.comboPoints.base
 								local isFilled = false
 								local isOverflow = false
 								
@@ -1220,14 +1220,14 @@ local function UpdateResourceBar()
 									isFilled = true
 									isOverflow = true
 									if not barOverrideActive then
-										cpColor = specSettings.colors.comboPoints.overflowBase.color
+										cpColor = specSettings.colors.comboPoints.overflowBase
 									end
 								elseif nodeIndex <= firstHalf then
 									-- This node is in the base range (stacks 1-5)
 									isFilled = true
 									isOverflow = false
 									if not barOverrideActive then
-										cpColor = specSettings.colors.comboPoints.base.color
+										cpColor = specSettings.colors.comboPoints.base
 									end
 								end
 								
@@ -1237,20 +1237,20 @@ local function UpdateResourceBar()
 									if currentStacks == maxStacks then
 										-- At max stacks (10): sameColor makes all overflow nodes final, otherwise only node 5
 										if specSettings.comboPoints.sameColor or nodeIndex == displayNodes then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif nodeIndex == displayNodes - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										end
 									elseif currentStacks == maxStacks - 1 then
 										-- At penultimate stacks (9): sameColor makes all overflow nodes penultimate
 										if specSettings.comboPoints.sameColor or nodeIndex == secondHalf then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										end
 									end
 								elseif isFilled and not isOverflow and not barOverrideActive then
 									-- Use fiveStack color for the 5th node, or all base nodes when overflow is present
 									if secondHalf > 0 or nodeIndex == displayNodes then
-										cpColor = specSettings.colors.comboPoints.fiveStack.color
+										cpColor = specSettings.colors.comboPoints.fiveStack
 									end
 								end
 								
@@ -1271,7 +1271,7 @@ local function UpdateResourceBar()
 						local halfPoint = math.ceil(maxStacks / 2) -- 5 for 10 stacks
 						
 						for x = 1, maxStacks do
-							local cpColor = mwBarOverride or specSettings.colors.comboPoints.base.color
+							local cpColor = mwBarOverride or specSettings.colors.comboPoints.base
 							local isFilled = currentStacks >= x
 
 							local stackNode = barGroups.secondary:GetNode(x)
@@ -1283,28 +1283,28 @@ local function UpdateResourceBar()
 									if not barOverrideActive and specSettings.comboPoints.sameColor then
 										-- sameColor: all filled nodes share the highest applicable color
 										if currentStacks == maxStacks then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif currentStacks == maxStacks - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif currentStacks > halfPoint then
-											cpColor = specSettings.colors.comboPoints.overflowBase.color
+											cpColor = specSettings.colors.comboPoints.overflowBase
 										elseif currentStacks == halfPoint then
-											cpColor = specSettings.colors.comboPoints.fiveStack.color
+											cpColor = specSettings.colors.comboPoints.fiveStack
 										else
-											cpColor = specSettings.colors.comboPoints.base.color
+											cpColor = specSettings.colors.comboPoints.base
 										end
 									elseif not barOverrideActive then
 										-- Per-node coloring
 										if x == maxStacks then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif x == maxStacks - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif x > halfPoint then
-											cpColor = specSettings.colors.comboPoints.overflowBase.color
+											cpColor = specSettings.colors.comboPoints.overflowBase
 										elseif x == halfPoint then
-											cpColor = specSettings.colors.comboPoints.fiveStack.color
+											cpColor = specSettings.colors.comboPoints.fiveStack
 										else
-											cpColor = specSettings.colors.comboPoints.base.color
+											cpColor = specSettings.colors.comboPoints.base
 										end
 									end
 								else

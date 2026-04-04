@@ -339,7 +339,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1444,7 +1444,7 @@ local function UpdateResourceBar()
 			background = specSettings.colors.bar.background.color,
 		}
 		local chiBarColors = {
-			bar = specSettings.colors.comboPoints.base.color,
+			bar = specSettings.colors.comboPoints.base,
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
@@ -1647,9 +1647,9 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
 								if not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
+									cpColor = specSettings.colors.comboPoints.penultimate
 								elseif not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2) then
-									cpColor = specSettings.colors.comboPoints.final.color
+									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
@@ -2120,7 +2120,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetMinMax(0, 1)
 							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
-							node:SetColor(sharedSettings.colors.comboPoints.base.color)
+							TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
 							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end

@@ -326,7 +326,7 @@ local function ConstructResourceBar(settings)
 					if whirlwindColors then
 						wwNode:SetBorderColor(whirlwindColors.border.color)
 						wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
-						wwNode:SetColor(whirlwindColors.nodeColors.charge1.color)
+						TRB.Functions.Color:ApplyFillColor(wwNode, whirlwindColors.nodeColors.charge1)
 					end
 					wwNode:SetFrameLevel(frameLevels.comboPoint)
 				end
@@ -924,7 +924,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			local defensiveBarEnabled = specSettings.colors.bars.defensives.nodeColors[colorKey] and specSettings.colors.bars.defensives.nodeColors[colorKey].enabled
 			
 			if talents:IsTalentActive(spell) and defensiveBarEnabled then
-				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey].color
+				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey]
 				local defensiveBarTargetKey = nil
 				if colorKey == "ignorePain" then
 					defensiveBarTargetKey = "defensivesIgnorePainTimeBar"
@@ -1071,17 +1071,17 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 
 	for x = 1, 4 do
 		local cpBorderColor = whirlwindColors.border.color
-		local cpColor = whirlwindColors.nodeColors.charge1.color
+		local cpColor = whirlwindColors.nodeColors.charge1
 		local currentBackgroundColor = cpBackgroundColor
 		local filled = stacks >= x
 
 		if filled then
 			if (whirlwindColors.sameColor and stacks == 2) or (not whirlwindColors.sameColor and x == 2) then
-				cpColor = whirlwindColors.nodeColors.charge2.color
+				cpColor = whirlwindColors.nodeColors.charge2
 			elseif (whirlwindColors.sameColor and stacks == 3) or (not whirlwindColors.sameColor and x == 3) then
-				cpColor = whirlwindColors.nodeColors.charge3.color
+				cpColor = whirlwindColors.nodeColors.charge3
 			elseif (whirlwindColors.sameColor and stacks == 4) or x == 4 then
-				cpColor = whirlwindColors.nodeColors.charge4.color
+				cpColor = whirlwindColors.nodeColors.charge4
 			end
 		end
 
@@ -1107,11 +1107,12 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			end
 
 			if whirlwindTargets and whirlwindTargets.bar and overcapColor then
-				local barColorResult = overcapBarColorResults[cpColor]
+				local overcapBarCacheKey = type(cpColor) == "table" and cpColor.color or cpColor
+				local barColorResult = overcapBarColorResults[overcapBarCacheKey]
 				if barColorResult == nil then
 					local overcapBarCurve = Color:BuildResourceThresholdCurve(specSettings, cpColor, overcapColor)
 					barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
-					overcapBarColorResults[cpColor] = barColorResult
+					overcapBarColorResults[overcapBarCacheKey] = barColorResult
 				end
 				node:SetColorCurve(barColorResult)
 			else

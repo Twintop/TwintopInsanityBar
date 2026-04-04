@@ -1659,7 +1659,7 @@ local function UpdateResourceBar()
 
 			for x = 1, TRB.Data.character.maxComboPoints do
 				local cpBorderColor = (cpOverrides and cpOverrides.border) or cpSettings.colors.comboPoints.border.color
-				local cpColor = barOverrideActive or cpSettings.colors.comboPoints.base.color
+				local cpColor = barOverrideActive or cpSettings.colors.comboPoints.base
 				local cpBR = cpBackgroundRed
 				local cpBG = cpBackgroundGreen
 				local cpBB = cpBackgroundBlue
@@ -1671,9 +1671,9 @@ local function UpdateResourceBar()
 							Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 							if not barOverrideActive then
 								if (cpSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints - 1)) or (not cpSettings.comboPoints.sameColor and x == (TRB.Data.character.maxComboPoints - 1)) then
-									cpColor = cpSettings.colors.comboPoints.penultimate.color
+									cpColor = cpSettings.colors.comboPoints.penultimate
 								elseif (cpSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints)) or x == TRB.Data.character.maxComboPoints then
-									cpColor = cpSettings.colors.comboPoints.final.color
+									cpColor = cpSettings.colors.comboPoints.final
 								end
 							end
 						else
@@ -2446,7 +2446,7 @@ local function UpdateResourceBar()
 						-- Process combo point elements
 						local maxBiteCpTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.comboPoints
 						local overcapCpTargets = overcapActive and overcapInd.targets and overcapInd.targets.comboPoints
-						local cpBaseColors = { bar = specSettings.colors.comboPoints.base.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+						local cpBaseColors = { bar = specSettings.colors.comboPoints.base, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
 						for _, elem in ipairs({"bar", "border", "background"}) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
@@ -2518,7 +2518,7 @@ local function UpdateResourceBar()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = (comboPointOverrides and comboPointOverrides.border) or specSettings.colors.comboPoints.border.color
-					local cpColor = barOverrideActive or specSettings.colors.comboPoints.base.color
+					local cpColor = barOverrideActive or specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -2530,9 +2530,9 @@ local function UpdateResourceBar()
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if not barOverrideActive then
 									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									end
 								end
 							else
@@ -2542,9 +2542,9 @@ local function UpdateResourceBar()
 
 									if not barOverrideActive then
 										if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										end
 									end
 								else
@@ -3556,7 +3556,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetMinMax(0, 1)
 							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
-							node:SetColor(feralSettings.colors.comboPoints.base.color)
+							TRB.Functions.Color:ApplyFillColor(node, feralSettings.colors.comboPoints.base)
 							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end

@@ -1247,7 +1247,7 @@ local function UpdateResourceBar()
 				background = specSettings.colors.bar.background.color,
 			}
 			local tipOfTheSpearBarColors = {
-				bar = specSettings.colors.comboPoints.base.color,
+				bar = specSettings.colors.comboPoints.base,
 				border = specSettings.colors.comboPoints.border.color,
 				background = specSettings.colors.comboPoints.background.color,
 			}
@@ -1438,20 +1438,20 @@ local function UpdateResourceBar()
 								if not tipOfTheSpearOverrides.bar and not tipOfTheSpearOvercapCurves.bar and specSettings.colors.comboPoints.sameColor then
 									-- sameColor: all filled nodes share the highest applicable color
 									if currentStacks == maxStacks then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									elseif currentStacks == maxStacks - 1 then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									else
-										cpColor = specSettings.colors.comboPoints.base.color
+										cpColor = specSettings.colors.comboPoints.base
 									end
 								elseif not tipOfTheSpearOverrides.bar and not tipOfTheSpearOvercapCurves.bar then
 									-- Per-node coloring
 									if x == maxStacks then
-										cpColor = specSettings.colors.comboPoints.final.color
+										cpColor = specSettings.colors.comboPoints.final
 									elseif x == maxStacks - 1 then
-										cpColor = specSettings.colors.comboPoints.penultimate.color
+										cpColor = specSettings.colors.comboPoints.penultimate
 									else
-										cpColor = specSettings.colors.comboPoints.base.color
+										cpColor = specSettings.colors.comboPoints.base
 									end
 								end
 							else

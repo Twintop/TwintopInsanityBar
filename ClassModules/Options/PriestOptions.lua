@@ -1,4 +1,4 @@
-﻿---@diagnostic disable: undefined-field
+---@diagnostic disable: undefined-field
 local _, TRB = ...
 
 local L = TRB.Localization
@@ -1495,7 +1495,7 @@ local function DisciplineConstructPowerWordsPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.powerWordRadiance, f.Swatch2)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.powerWordRadiance, self)
 	end)
 
 	yCoord = yCoord - 30

@@ -286,7 +286,7 @@ local function ConstructResourceBar(settings)
 				node:SetMinMax(0, 1)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-				node:SetColor(settings.colors.comboPoints.base.color)
+				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -634,7 +634,7 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base.color
+			local cpColor = specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -642,13 +642,13 @@ local function UpdateResourceBar()
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second.color
+					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third.color
+					cpColor = specSettings.colors.comboPoints.third
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
 
@@ -657,7 +657,7 @@ local function UpdateResourceBar()
 				if shardNode then
 					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
 					shardNode:SetBorderColor(cpBorderColor)
-					shardNode:SetColor(cpColor)
+					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
@@ -668,7 +668,7 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base.color
+			local cpColor = specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -676,13 +676,13 @@ local function UpdateResourceBar()
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second.color
+					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third.color
+					cpColor = specSettings.colors.comboPoints.third
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			end
 
@@ -691,7 +691,7 @@ local function UpdateResourceBar()
 				if shardNode then
 					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
 					shardNode:SetBorderColor(cpBorderColor)
-					shardNode:SetColor(cpColor)
+					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end
@@ -702,7 +702,7 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base.color
+			local cpColor = specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -711,13 +711,13 @@ local function UpdateResourceBar()
 			if normalizedResource2 >= x then
 				fillValue = 1
 				if (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second.color
+					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third.color
+					cpColor = specSettings.colors.comboPoints.third
 				elseif (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate.color
+					cpColor = specSettings.colors.comboPoints.penultimate
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final.color
+					cpColor = specSettings.colors.comboPoints.final
 				end
 			elseif normalizedResource2 >= (x - 1) then
 				-- Partial fill for Destruction
@@ -729,7 +729,7 @@ local function UpdateResourceBar()
 				if shardNode then
 					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, fillValue, 1)
 					shardNode:SetBorderColor(cpBorderColor)
-					shardNode:SetColor(cpColor)
+					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 				end
 			end

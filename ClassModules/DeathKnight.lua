@@ -774,8 +774,8 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local cpBackgroundColor = specSettings.colors.comboPoints.background.color
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
 	local cpBorderColor = specSettings.colors.comboPoints.border.color
-	local cpBaseColor = specSettings.colors.comboPoints.base.color
-	local cpCooldownColor = specSettings.colors.comboPoints.cooldown.color
+	local cpBaseColor = specSettings.colors.comboPoints.base
+	local cpCooldownColor = specSettings.colors.comboPoints.cooldown
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -853,7 +853,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 		local boneShieldColors = specSettings.colors.bars.boneShield
 		local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
 		local boneShieldBarColors = {
-			bar = boneShieldColors.bar.color,
+			bar = boneShieldColors.bar,
 			border = boneShieldColors.border.color,
 			background = boneShieldColors.background.color,
 		}

@@ -299,7 +299,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -661,7 +661,7 @@ local function UpdateResourceBar()
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpColor = specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -669,9 +669,9 @@ local function UpdateResourceBar()
 
 					if filled then
 						if (specSettings.comboPoints.sameColor and currentCharges == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate.color
+							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.comboPoints.sameColor and currentCharges == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-							cpColor = specSettings.colors.comboPoints.final.color
+							cpColor = specSettings.colors.comboPoints.final
 						end
 					end
 
@@ -680,7 +680,7 @@ local function UpdateResourceBar()
 						if chargeNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chargeNode, filled and 1 or 0, 1)
 							chargeNode:SetBorderColor(cpBorderColor)
-							chargeNode:SetColor(cpColor)
+							TRB.Functions.Color:ApplyFillColor(chargeNode, cpColor)
 							chargeNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
 					end
@@ -801,7 +801,7 @@ local function UpdateResourceBar()
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				for x = 1, maxIcicles do
 					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
+					local cpColor = specSettings.colors.comboPoints.base
 					local cpBR = cpBackgroundRed
 					local cpBG = cpBackgroundGreen
 					local cpBB = cpBackgroundBlue
@@ -809,9 +809,9 @@ local function UpdateResourceBar()
 
 					if filled then
 						if (specSettings.colors.comboPoints.sameColor and currentIcicles == (maxIcicles - 1)) or (not specSettings.colors.comboPoints.sameColor and x == (maxIcicles - 1)) then
-							cpColor = specSettings.colors.comboPoints.penultimate.color
+							cpColor = specSettings.colors.comboPoints.penultimate
 						elseif (specSettings.colors.comboPoints.sameColor and currentIcicles == maxIcicles) or x == maxIcicles then
-							cpColor = specSettings.colors.comboPoints.final.color
+							cpColor = specSettings.colors.comboPoints.final
 						end
 					end
 
@@ -820,7 +820,7 @@ local function UpdateResourceBar()
 						if icicleNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
 							icicleNode:SetBorderColor(cpBorderColor)
-							icicleNode:SetColor(cpColor)
+							TRB.Functions.Color:ApplyFillColor(icicleNode, cpColor)
 							icicleNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 						end
 					end
