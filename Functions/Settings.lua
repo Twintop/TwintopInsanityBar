@@ -7409,7 +7409,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 	-- Backfill color2 + gradientDirection on fill color entries for bar gradient support
 	local comboPointNonFillKeys = {
 		border = true, background = true, sameColor = true, sortRunes = true,
-		consistentUnfilledColor = true, generation = true, compressedView = true,
+		generation = true, compressedView = true,
 	}
 	local customBarNonFillKeys = {
 		border = true, background = true, type = true, sameColor = true,

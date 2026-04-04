@@ -205,7 +205,6 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false,
 			},
 			threshold = {
 				under = {
@@ -513,7 +512,6 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false
 			},
 			threshold = {
 				under = {
@@ -827,7 +825,6 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false
 			},
 			threshold = {
 				under = {
@@ -1159,17 +1156,6 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["ComboPointsCheckboxAlwaysDefaultBackground"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 end
 
@@ -1951,17 +1937,6 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
-	end)
 end
 
 local function OutlawConstructHealthBarPanel(parent)
@@ -2733,17 +2708,6 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 end
 
