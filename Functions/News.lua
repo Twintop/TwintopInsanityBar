@@ -13,6 +13,10 @@ local content = [====[
 ---
 
 # 12.0.1.50-release (2026-04-04)
+## General
+
+- [#625](#625) Add optional gradient color support for barfills and casting overlays.
+
 ## Priest
 ### Shadow
 
