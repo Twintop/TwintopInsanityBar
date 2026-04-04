@@ -2434,4 +2434,117 @@ if locale == "zhCN" then
 	L["DruidFeralIndicatorRavageTooltip"] = "狂暴：掠食触发激活时，切换为此颜色。"
 	L["DruidFeralIndicatorRavageColor"] = "狂暴：掠食触发激活"
 
+	L["BarNameFocusBar"] = "集中值"
+	
+	L["HunterBeastMasteryIndicatorBestialWrathTooltip"] = "狂野怒火激活时变为该颜色。"
+	L["HunterBeastMasteryIndicatorBestialWrathColor"] = "狂野怒火已激活"
+	L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"] = "狂野怒火即将在 X 个 GCD 或固定时间后结束时变为该颜色。可在下方选项中选择触发方式。"
+	L["HunterBeastMasteryIndicatorBestialWrathEndColor"] = "狂野怒火即将结束（按设置）"
+	L["HunterBeastMasteryIndicatorBeastCleaveTooltip"] = "野兽顺劈激活时变为该颜色。"
+	L["HunterBeastMasteryIndicatorBeastCleaveColor"] = "野兽顺劈已激活"
+	
+	L["HunterMarksmanshipIndicatorTrueshotTooltip"] = "百发百中激活时变为该颜色。"
+	L["HunterMarksmanshipIndicatorTrueshotColor"] = "百发百中已激活"
+	L["HunterMarksmanshipIndicatorTrueshotEndTooltip"] = "百发百中即将结束时变为该颜色。"
+	L["HunterMarksmanshipIndicatorTrueshotEndColor"] = "百发百中即将结束（按设置）"
+	
+	L["HunterSurvivalIndicatorTakedownTooltip"] = "守魂一击激活时变为该颜色。"
+	L["HunterSurvivalIndicatorTakedownColor"] = "守魂一击已激活"
+	L["HunterSurvivalIndicatorTakedownEndTooltip"] = "守魂一击即将结束时变为该颜色。"
+	L["HunterSurvivalIndicatorTakedownEndColor"] = "守魂一击即将结束（按设置）"
+	
+	L["BarNameMaelstromBar"] = "漩涡值"
+	
+	L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "玄牛下凡激活时变为该颜色。"
+	L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] = "玄牛下凡已激活"
+	L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "玄牛下凡即将结束时变为该颜色。"
+	L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "玄牛下凡即将结束（按设置）"
+	
+	L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "活力苏醒激活时变为该颜色。"
+	L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "活力苏醒已激活"
+	L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
+	L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
+	L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
+	L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] = "玉珑之心已激活"
+	
+	L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
+	L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
+	L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
+	L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] = "玉珑之心已激活"
+	L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"] = "赤精之舞激活时变为该颜色。"
+	L["MonkWindwalkerIndicatorDanceOfChiJiColor"] = "赤精之舞已激活"
+	
+	L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "圣光灌注激活时（圣光闪现瞬发）变为该颜色。"
+	L["PaladinHolyIndicatorInfusionOfLightColor"] = "圣光灌注已激活"
+	
+	L["RogueIndicatorStealthTooltip"] = "潜行时变为该颜色。"
+	L["RogueIndicatorStealthColor"] = "已潜行"
+	
+	L["ShamanElementalIndicatorEarthShockTooltip"] = "大地震击 / 元素冲击可用时变为该颜色。"
+	L["ShamanElementalIndicatorEarthShockColor"] = "大地震击 / 元素冲击可用"
+	L["ShamanElementalIndicatorEarthquakeTooltip"] = "地震术可用时变为该颜色。"
+	L["ShamanElementalIndicatorEarthquakeColor"] = "地震术可用"
+	L["ShamanElementalIndicatorAscendanceTooltip"] = "升腾激活时变为该颜色。"
+	L["ShamanElementalIndicatorAscendanceColor"] = "升腾已激活"
+	L["ShamanElementalIndicatorAscendanceEndTooltip"] = "升腾即将结束时变为该颜色。"
+	L["ShamanElementalIndicatorAscendanceEndColor"] = "升腾即将结束（按设置）"
+	
+	L["ShamanEnhancementIndicatorAscendanceTooltip"] = "升腾激活时变为该颜色。"
+	L["ShamanEnhancementIndicatorAscendanceColor"] = "升腾已激活"
+	L["ShamanEnhancementIndicatorAscendanceEndTooltip"] = "升腾即将结束时变为该颜色。"
+	L["ShamanEnhancementIndicatorAscendanceEndColor"] = "升腾即将结束（按设置）"
+	
+	L["ShamanRestorationIndicatorAscendanceTooltip"] = "升腾激活时变为该颜色。"
+	L["ShamanRestorationIndicatorAscendanceColor"] = "升腾已激活"
+	L["ShamanRestorationIndicatorAscendanceEndTooltip"] = "升腾即将结束时变为该颜色。"
+	L["ShamanRestorationIndicatorAscendanceEndColor"] = "升腾即将结束（按设置）"
+	
+	L["WarriorIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["WarriorIndicatorOvercapTooltip"] = "怒气即将溢出时逐渐变为该颜色。"
+	L["WarriorIndicatorOvercapColor"] = "怒气溢出中"
+	
+	L["BarNameRunicPowerBar"] = "符文能量"
+	L["DeathKnightIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["DeathKnightIndicatorOvercapTooltip"] = "符文能量即将溢出时逐渐变为该颜色。"
+	L["DeathKnightIndicatorOvercapColor"] = "符文能量溢出中"
+	
+	L["PaladinProtectionCheckboxInfusionOfLight"] = "圣光灌注"
+	L["PaladinProtectionIndicatorInfusionOfLightTooltip"] = "圣光灌注激活时变为该颜色。"
+	L["PaladinProtectionIndicatorInfusionOfLightColor"] = "圣光灌注已激活"
+	
+	L["BarNameStaggerBar"] = "醉拳"
+	
+	L["BarNameMaelstromWeaponBar"] = "漩涡武器"
+	
+	L["BarNameWhirlwindBar"] = "旋风斩"
+	L["WarriorFuryCheckboxZeroStackBackground"] = "0 层旋风斩"
+	L["WarriorFuryIndicatorZeroStackBackgroundTooltip"] = "旋风斩层数为 0 时变为该颜色。"
+	L["WarriorFuryIndicatorZeroStackBackgroundColor"] = "0 层旋风斩"
+	
+	L["BarNameDefensivesIgnorePainTimeBar"] = "无视痛苦（持续时间）"
+	L["BarNameDefensivesIgnorePainAbsorbBar"] = "无视痛苦（吸收量）"
+	L["BarNameDefensivesShieldBlockBar"] = "盾牌格挡"
+	
+	L["HunterIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["HunterIndicatorOvercapTooltip"] = "集中值即将溢出时逐渐变为该颜色。"
+	L["HunterIndicatorOvercapColor"] = "集中值溢出中"
+	
+	L["MonkIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["MonkIndicatorOvercapTooltip"] = "能量即将溢出时逐渐变为该颜色。"
+	L["MonkIndicatorOvercapColor"] = "能量溢出中"
+	
+	L["RogueIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["RogueIndicatorOvercapTooltip"] = "能量即将溢出时逐渐变为该颜色。"
+	L["RogueIndicatorOvercapColor"] = "能量溢出中"
+	
+	L["ShamanElementalIndicatorBorderOvercap"] = "溢出（渐变）"
+	L["ShamanElementalIndicatorOvercapTooltip"] = "漩涡值即将溢出时逐渐变为该颜色。"
+	L["ShamanElementalIndicatorOvercapColor"] = "漩涡值溢出中"
+	
+	L["BarNameRunesBar"] = "符文"
+	L["DeathKnightIndicatorOvercap"] = "溢出（渐变）"
+	L["DeathKnightIndicatorRuneRegenOvercap"] = "符文恢复溢出"
+	L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "战斗中少于 3 个符文冷却时变为该颜色。"
+	L["DeathKnightIndicatorRuneRegenOvercapColor"] = "符文恢复溢出中"
+
 end
