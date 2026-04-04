@@ -430,4 +430,11 @@ if locale == "enGB" then
     -- Gradient Color System (British English)
     L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first colour."
     L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
+    -- Blood Death Knight Bone Shield Ossuary (British English)
+    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
+    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield colour for Ossuary building range"
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill colour for nodes 1 through 5 when Ossuary is talented."
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield colour at Ossuary threshold"
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill colour at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range colour."
 end

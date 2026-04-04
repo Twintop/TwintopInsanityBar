@@ -37,6 +37,7 @@ end
 ---@field boneShield TRB.Classes.SpellBase
 ---@field improvedBoneShield TRB.Classes.SpellBase
 ---@field marrowrend TRB.Classes.SpellBase
+---@field ossuary TRB.Classes.SpellBase
 ---@field raiseAlly TRB.Classes.SpellThreshold
 TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
@@ -61,12 +62,18 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
     })
     self.improvedBoneShield = TRB.Classes.SpellBase:New({
         id = 374715,
-            maxStacksMod = 2
+        maxStacksMod = 2
     })
 
     self.marrowrend = TRB.Classes.SpellBase:New({
         id = 195182,
         isTalent = true
+    })
+
+    self.ossuary = TRB.Classes.SpellBase:New({
+        id = 219786,
+        isTalent = true,
+        stackThreshold = 5
     })
 
     self.deathStrike.baseline = true

@@ -1066,6 +1066,7 @@ local function BloodConstructBoneShieldBarPanel(parent)
 	end
 
 	local spec = TRB.Data.settings.deathknight.blood
+	local boneShieldColors = spec.colors.bars.boneShield
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
@@ -1075,7 +1076,66 @@ local function BloodConstructBoneShieldBarPanel(parent)
 		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef, L["ResourceRunicPower"])
 
 		yCoord = yCoord - 90
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef)
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef,
+			function(callbackParent, callbackYCoord)
+				local f = nil
+
+				-- Ossuary building range (nodes 1-5)
+				controls.checkBoxes.boneShieldOssuary = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_boneShieldOssuaryEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.boneShieldOssuary
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"])
+				f.tooltip = L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"]
+				f:SetChecked(boneShieldColors.ossuary.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					boneShieldColors.ossuary.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars = controls.colors.bars or {}
+				controls.colors.bars.boneShield = controls.colors.bars.boneShield or {}
+				controls.colors.bars.boneShield.ossuary = TRB.Functions.OptionsUi:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"], boneShieldColors.ossuary, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.boneShield.ossuary
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuary", nil, nil, 6, 1)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, boneShieldColors.ossuary, self, 6, 1)
+				end)
+
+				callbackYCoord = callbackYCoord - 30
+
+				-- Ossuary threshold (node 5 specifically)
+				controls.checkBoxes.boneShieldOssuaryThreshold = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_boneShieldOssuaryThresholdEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.boneShieldOssuaryThreshold
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"])
+				f.tooltip = L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"]
+				f:SetChecked(boneShieldColors.ossuaryThreshold.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					boneShieldColors.ossuaryThreshold.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars.boneShield.ossuaryThreshold = TRB.Functions.OptionsUi:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"], boneShieldColors.ossuaryThreshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.boneShield.ossuaryThreshold
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuaryThreshold", nil, nil, 6, 1)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, boneShieldColors.ossuaryThreshold, self, 6, 1)
+				end)
+
+				return callbackYCoord - 30
+			end)
 	end
 end
 
@@ -1296,6 +1356,9 @@ local function BloodConstructIndicatorColorsPanel(parent)
 			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
 			{ key = "boneShield", label = L["ResourceBoneShield"] },
+		},
+		gradientExcludedElements = {
+			["boneShield"] = { bar = true },
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Blood",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = BLOOD_MAX_RUNIC_POWER },

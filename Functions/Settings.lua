@@ -2226,6 +2226,13 @@ function TRB.Functions.Settings:PortForwardSettings()
 							specSettings.colors.bars = specSettings.colors.bars or {}
 							if not specSettings.colors.bars.boneShield then
 								specSettings.colors.bars.boneShield = TRB.Functions.Settings:DefaultBoneShieldBarColors()
+							else
+								local defaultBoneShieldColors = TRB.Functions.Settings:DefaultBoneShieldBarColors()
+								specSettings.colors.bars.boneShield.bar = specSettings.colors.bars.boneShield.bar or defaultBoneShieldColors.bar
+								specSettings.colors.bars.boneShield.border = specSettings.colors.bars.boneShield.border or defaultBoneShieldColors.border
+								specSettings.colors.bars.boneShield.background = specSettings.colors.bars.boneShield.background or defaultBoneShieldColors.background
+								specSettings.colors.bars.boneShield.ossuary = specSettings.colors.bars.boneShield.ossuary or defaultBoneShieldColors.ossuary
+								specSettings.colors.bars.boneShield.ossuaryThreshold = specSettings.colors.bars.boneShield.ossuaryThreshold or defaultBoneShieldColors.ossuaryThreshold
 							end
 						end
 
@@ -8205,6 +8212,8 @@ end
 function TRB.Functions.Settings:DefaultBoneShieldBarColors()
 	return {
 		bar = { color = "FF8DD48D", color2 = "FF8DD48D", gradientDirection = "disabled" },
+		ossuary = { color = "FFB8FFB8", color2 = "FFB8FFB8", gradientDirection = "disabled", enabled = true },
+		ossuaryThreshold = { color = "FF404040", color2 = "FF404040", gradientDirection = "disabled", enabled = true },
 		border = { color = "FF205E20" },
 		background = { color = "66000000" }
 	}

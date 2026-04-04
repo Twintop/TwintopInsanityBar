@@ -2752,3 +2752,15 @@ L["GradientDirectionVerticalAbbrev"] = "V"
 L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first color."
 L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
 L["GradientDirectionButtonTooltip"] = "Left-click to cycle the gradient direction between Disabled, Horizontal, and Vertical."
+
+-- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
+-- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
+-- REMOVED: L["DeathKnightBloodColorPickerBoneShieldOssuary"] - replaced by DeathKnightBloodColorPickerBoneShieldOssuaryRange
+
+-- Blood Death Knight Bone Shield Ossuary
+L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield color for Ossuary building range"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill color for nodes 1 through 5 when Ossuary is talented."
+L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"] = "Ossuary building range"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield color at Ossuary threshold"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill color at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range color."
+L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"] = "Ossuary threshold"

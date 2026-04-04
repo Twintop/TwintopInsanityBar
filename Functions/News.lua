@@ -17,6 +17,11 @@ local content = [====[
 
 - [#625](#625) Add optional gradient color support for bar fills and casting overlays.
 
+## Death Knight
+### Blood
+
+- Add optional new color indicators for Bone Shield when talented into Ossuary: one for the building range (1-5 stacks) and one for the threshold stack (5 stacks).
+
 ## Priest
 ### Shadow
 
