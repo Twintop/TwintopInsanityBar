@@ -866,7 +866,7 @@ local function ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, condition
 					if targetColors and targetFlags and elements then
 						for elemKey, isTargeted in pairs(elements) do
 							if isTargeted then
-								targetColors[elemKey] = indicator.color
+								targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 								targetFlags[elemKey] = true
 							end
 						end
@@ -1101,7 +1101,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = IsStealthed() or stealthViaBuff
@@ -1139,7 +1139,7 @@ local function UpdateResourceBar()
 					if energyBarOvercapCurves.bar ~= nil then
 						primaryNode:SetColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.bar))
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 					if energyBarOvercapCurves.background ~= nil then
 						primaryNode:SetBackgroundColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.background))
@@ -1208,7 +1208,7 @@ local function UpdateResourceBar()
 							if comboPointsOvercapCurves.bar ~= nil then
 								cpNode:SetColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.bar))
 							else
-								cpNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 							end
 							if comboPointsOvercapCurves.background ~= nil then
 								cpNode:SetBackgroundColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.background))
@@ -1460,7 +1460,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = IsStealthed() or stealthViaBuff
@@ -1498,7 +1498,7 @@ local function UpdateResourceBar()
 					if energyBarOvercapCurves.bar ~= nil then
 						primaryNode:SetColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.bar))
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 					if energyBarOvercapCurves.background ~= nil then
 						primaryNode:SetBackgroundColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.background))
@@ -1566,7 +1566,7 @@ local function UpdateResourceBar()
 							if comboPointsOvercapCurves.bar ~= nil then
 								cpNode:SetColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.bar))
 							else
-								cpNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 							end
 							if comboPointsOvercapCurves.background ~= nil then
 								cpNode:SetBackgroundColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.background))
@@ -1803,7 +1803,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = stealthViaBuff or IsStealthed()
@@ -1841,7 +1841,7 @@ local function UpdateResourceBar()
 					if energyBarOvercapCurves.bar ~= nil then
 						primaryNode:SetColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.bar))
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 					if energyBarOvercapCurves.background ~= nil then
 						primaryNode:SetBackgroundColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.background))
@@ -1921,7 +1921,7 @@ local function UpdateResourceBar()
 							if comboPointsOvercapCurves.bar ~= nil then
 								cpNode:SetColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.bar))
 							else
-								cpNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 							end
 							if comboPointsOvercapCurves.background ~= nil then
 								cpNode:SetBackgroundColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.background))

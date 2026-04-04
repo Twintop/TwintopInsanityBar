@@ -688,7 +688,7 @@ local function ApplyFlatIndicatorColors(barColorMap, indicatorColors, nodeOrder,
 				if targetColors and elements then
 					for elementKey, isTargeted in pairs(elements) do
 						if isTargeted then
-							targetColors[elementKey] = indicator.color
+							targetColors[elementKey] = (elementKey == "bar") and indicator or indicator.color
 						end
 					end
 				end
@@ -735,7 +735,7 @@ end
 local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 	local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
 	local runicPowerBarColors = {
-		bar = specSettings.colors.bar.base.color,
+		bar = specSettings.colors.bar.base,
 		border = specSettings.colors.bar.border.color,
 		background = specSettings.colors.bar.background.color,
 	}
@@ -756,7 +756,7 @@ local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 		local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 		primaryNode:SetColorCurve(barColorResult)
 	else
-		primaryNode:SetColor(runicPowerBarColors.bar)
+		TRB.Functions.Color:ApplyFillColor(primaryNode, runicPowerBarColors.bar)
 	end
 
 	if overcapCurves.background then
@@ -826,7 +826,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 				if runeGradientResults.bar then
 					runeNode:SetColorCurve(runeGradientResults.bar)
 				else
-					runeNode:SetColor(runeColor)
+					TRB.Functions.Color:ApplyFillColor(runeNode, runeColor)
 				end
 				if runeGradientResults.background then
 					runeNode:SetBackgroundColorCurve(runeGradientResults.background)
@@ -887,7 +887,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, boneShieldGradientCurves.bar)
 					boneShieldNode:SetColorCurve(barColorResult)
 				else
-					boneShieldNode:SetColor(boneShieldBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(boneShieldNode, boneShieldBarColors.bar)
 				end
 			end
 		end

@@ -76,8 +76,16 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorEntry
 ---@field public color string
 
+---@class TRB.Classes.Settings.ColorGradientEntry : TRB.Classes.Settings.ColorEntry
+---@field public color2 string
+---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
+
 ---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean
+
+---@class TRB.Classes.Settings.ColorGradientEnabledEntry : TRB.Classes.Settings.ColorEnabledEntry
+---@field public color2 string
+---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 

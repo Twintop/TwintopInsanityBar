@@ -734,7 +734,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 			if essenceNode then
 				Bar:SetBarNodeValue(specCacheSettings, "essence" .. x, essenceNode, essenceValue, 1000)
 				essenceNode:SetBorderColor(cpBorderColor)
-				essenceNode:SetColor(cpColor)
+				TRB.Functions.Color:ApplyFillColor(essenceNode, cpColor)
 				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 			end
 		end
@@ -788,7 +788,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
-			local barColor = specSettings.colors.bar.base.color
+			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -835,7 +835,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -860,7 +860,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -887,7 +887,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
-			local barColor = specSettings.colors.bar.base.color
+			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -918,7 +918,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -939,7 +939,7 @@ local function UpdateResourceBar()
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -967,7 +967,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
-			local barColor = specSettings.colors.bar.base.color
+			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1042,7 +1042,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -1067,7 +1067,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1089,7 +1089,7 @@ local function UpdateResourceBar()
 					ebonMightNode:SetValue(ebonMightRemaining)
 
 					if ebonMightBarColors then
-						ebonMightNode:SetColor(ebonMightColors.bar)
+						TRB.Functions.Color:ApplyFillColor(ebonMightNode, ebonMightColors.bar)
 						ebonMightNode:SetBorderColor(ebonMightColors.border)
 						ebonMightNode:SetBackgroundColorFromString(ebonMightColors.background)
 					end

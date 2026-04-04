@@ -18,6 +18,7 @@ local content = [====[
 
 - Fix the base passive Insanity generation of Mind Flay (2 -> 3 per tick).
 
+---
 
 # 12.0.1.49-release (2026-04-02)
 ## General

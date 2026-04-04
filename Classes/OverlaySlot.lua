@@ -13,8 +13,8 @@ TRB.Classes = TRB.Classes or {}
 ---@field public slotName string # Unique name for this slot (e.g., "casting", "absorb")
 ---@field public parentNode TRB.Classes.BarNode # Back-reference to the owning BarNode
 ---@field public texture string? # Last-applied texture path (for RefreshAppearance)
----@field public color string? # Last-applied color string (for RefreshAppearance)
----@field public spendingColor string? # Last-applied spending color string (for inset overlay on spend)
+---@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
+---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
@@ -37,6 +37,7 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.parentNode = parentNode
 	self.texture = nil
 	self.color = nil
+	self.spendingColor = nil
 	self.overlayFrame = nil
 	self.appendedClipFrame = nil
 	self.appendedOverlayFrame = nil
@@ -104,8 +105,37 @@ function TRB.Classes.OverlaySlot:SetOverlayColor(colorString)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.overlayFrame:GetStatusBarTexture()
 	if fillTexture then
+		-- Clear any active gradient before applying flat color
+		if self._overlayGradientActive then
+			local white = CreateColor(1, 1, 1, 1)
+			fillTexture:SetGradient("HORIZONTAL", white, white)
+			self._overlayGradientActive = false
+		end
 		fillTexture:SetVertexColor(r, g, b, a)
 	end
+end
+
+---Applies a two-color gradient to the overlay StatusBar fill texture. No-op if overlay has not been created.
+---@param color1String string # ARGB hex color string for the start color
+---@param color2String string # ARGB hex color string for the end color
+---@param direction string # "horizontal" or "vertical"
+function TRB.Classes.OverlaySlot:SetOverlayColorGradient(color1String, color2String, direction)
+	if not self.overlayFrame then return end
+	local Color = TRB.Functions.Color
+	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
+	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
+	self.overlayFrame:SetStatusBarColor(1, 1, 1, 1)
+	local fillTexture = self.overlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		fillTexture:SetGradient(apiDirection, minColor, maxColor)
+	end
+	self._overlayGradientActive = true
 end
 
 ---Shows the overlay StatusBar. No-op if overlay has not been created.
@@ -263,8 +293,37 @@ function TRB.Classes.OverlaySlot:SetAppendedOverlayColor(colorString)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
+		-- Clear any active gradient before applying flat color
+		if self._appendedGradientActive then
+			local white = CreateColor(1, 1, 1, 1)
+			fillTexture:SetGradient("HORIZONTAL", white, white)
+			self._appendedGradientActive = false
+		end
 		fillTexture:SetVertexColor(r, g, b, a)
 	end
+end
+
+---Applies a two-color gradient to the appended overlay fill texture. No-op if not created.
+---@param color1String string # ARGB hex color string for the start color
+---@param color2String string # ARGB hex color string for the end color
+---@param direction string # "horizontal" or "vertical"
+function TRB.Classes.OverlaySlot:SetAppendedOverlayColorGradient(color1String, color2String, direction)
+	if not self.appendedOverlayFrame then return end
+	local Color = TRB.Functions.Color
+	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
+	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
+	self.appendedOverlayFrame:SetStatusBarColor(1, 1, 1, 1)
+	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		fillTexture:SetGradient(apiDirection, minColor, maxColor)
+	end
+	self._appendedGradientActive = true
 end
 
 ---Shows the appended overlay. No-op if not created.
@@ -407,8 +466,37 @@ function TRB.Classes.OverlaySlot:SetInsetOverlayColor(colorString)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
+		-- Clear any active gradient before applying flat color
+		if self._insetGradientActive then
+			local white = CreateColor(1, 1, 1, 1)
+			fillTexture:SetGradient("HORIZONTAL", white, white)
+			self._insetGradientActive = false
+		end
 		fillTexture:SetVertexColor(r, g, b, a)
 	end
+end
+
+---Applies a two-color gradient to the inset overlay fill texture. No-op if not created.
+---@param color1String string # ARGB hex color string for the start color
+---@param color2String string # ARGB hex color string for the end color
+---@param direction string # "horizontal" or "vertical"
+function TRB.Classes.OverlaySlot:SetInsetOverlayColorGradient(color1String, color2String, direction)
+	if not self.insetOverlayFrame then return end
+	local Color = TRB.Functions.Color
+	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
+	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
+	self.insetOverlayFrame:SetStatusBarColor(1, 1, 1, 1)
+	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
+	if fillTexture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		fillTexture:SetGradient(apiDirection, minColor, maxColor)
+	end
+	self._insetGradientActive = true
 end
 
 ---Shows the inset overlay. No-op if not created.
@@ -456,6 +544,8 @@ end
 ---Does NOT call Show/Hide — purely cosmetic refresh.
 ---Called from ApplyBarGroupsAppearance when textures/colors change in options.
 function TRB.Classes.OverlaySlot:RefreshAppearance()
+	local Color = TRB.Functions.Color
+
 	if self.texture then
 		if self.overlayFrame then
 			self:SetOverlayTexture(self.texture)
@@ -470,15 +560,16 @@ function TRB.Classes.OverlaySlot:RefreshAppearance()
 
 	if self.color then
 		if self.overlayFrame then
-			self:SetOverlayColor(self.color)
+			Color:ApplyOverlayFillColor(self, self.color)
 		end
 		if self.appendedOverlayFrame then
-			self:SetAppendedOverlayColor(self.color)
-		end
-		if self.insetOverlayFrame then
-			self:SetInsetOverlayColor(self.color)
+			Color:ApplyOverlayFillColor(self, self.color, "appended")
 		end
 	end
+
+	if self.insetOverlayFrame and (self.spendingColor or self.color) then
+		Color:ApplyOverlayFillColor(self, self.spendingColor or self.color, "inset")
+		end
 end
 
 ---Hides all overlay frame types on this slot.

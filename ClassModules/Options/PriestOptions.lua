@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field
+﻿---@diagnostic disable: undefined-field
 local _, TRB = ...
 
 local L = TRB.Localization
@@ -263,18 +263,26 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				surgeOfLight = {
 					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				shadowCovenant = {
 					color = "FFC4A5E2",
+					color2 = "FFC4A5E2",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -290,6 +298,8 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				},
 				powerWordRadiance = {
 					color = "FFFFDD22",
+					color2 = "FFFFDD22",
+					gradientDirection = "disabled",
 					enabled = true
 				}
 			},
@@ -307,6 +317,8 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					surgeOfLight = {
 						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -315,6 +327,8 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 					},
 					voidShield = {
 						color = "FFC2A3E0",
+						color2 = "FFC2A3E0",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -670,41 +684,61 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				apotheosis = {
 					color = "FFFADA5E",
+					color2 = "FFFADA5E",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				apotheosisEnd = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				benediction = {
 					color = "FFC4933F",
+					color2 = "FFC4933F",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				holyWordChastise = {
 					color = "FFAAFFAA",
+					color2 = "FFAAFFAA",
+					gradientDirection = "disabled",
 					enabled = false
 				},
 				holyWordSanctify = {
 					color = "FF55FF55",
+					color2 = "FF55FF55",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				holyWordSerenity = {
 					color = "FF00FF00",
+					color2 = "FF00FF00",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				surgeOfLight = {
 					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				lightweaver = {
 					color = "FF00FFFF",
+					color2 = "FF00FFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -744,41 +778,57 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					benediction = {
 						color = "FFC4933F",
+						color2 = "FFC4933F",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = true } },
 					},
 					holyWordSerenity = {
 						color = "FF00FF00",
+						color2 = "FF00FF00",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = true, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					holyWordSanctify = {
 						color = "FF55FF55",
+						color2 = "FF55FF55",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = true, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					holyWordChastise = {
 						color = "FFAAFFAA",
+						color2 = "FFAAFFAA",
+						gradientDirection = "disabled",
 						enabled = false,
 						targets = { manaBar = { bar = false, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					apotheosisEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					apotheosis = {
 						color = "FFFADA5E",
+						color2 = "FFFADA5E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = true, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					surgeOfLight = {
 						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
 					lightweaver = {
 						color = "FF00FFFF",
+						color2 = "FF00FFFF",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
@@ -1016,10 +1066,14 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF763BAF"
+					color = "FF763BAF",
+					color2 = "FF763BAF",
+					gradientDirection = "disabled"
 				},
 				critMindBlast = {
 					color = "FFC2A3E0",
+					color2 = "FFC2A3E0",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				flashAlpha = 0.70,
@@ -1027,6 +1081,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				flashEnabled = true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -1046,6 +1102,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					instantMindBlast = {
 						color = "FFC2A3E0",
+						color2 = "FFC2A3E0",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = true, border = false, background = false },
@@ -1054,6 +1112,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					voidformEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = true, border = false, background = false },
@@ -1062,6 +1122,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					mindDevourer = {
 						color = "FF00C3FF",
+						color2 = "FF00C3FF",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = false, border = true, background = false },
@@ -1070,6 +1132,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					entropicRift = {
 						color = "FF8A004C",
+						color2 = "FF8A004C",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = false, border = true, background = false },
@@ -1086,6 +1150,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					shadowWordMadnessUsable = {
 						color = "FF5C2F89",
+						color2 = "FF5C2F89",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = true, border = false, background = false },
@@ -1094,6 +1160,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					voidform = {
 						color = "FF431863",
+						color2 = "FF431863",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = true, border = false, background = false },
@@ -1421,10 +1489,13 @@ local function DisciplineConstructPowerWordsPanel(parent)
 		end
 	end)
 
-	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.powerWordRadiance = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.powerWordRadiance
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.powerWordRadiance, f.Swatch2)
 	end)
 
 	yCoord = yCoord - 30

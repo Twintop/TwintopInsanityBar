@@ -1681,7 +1681,7 @@ local function UpdateResourceBar()
 						end
 						
 						cpNode:SetBorderColor(cpBorderColor)
-						cpNode:SetColor(cpColor)
+						TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 						cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
 						-- Apply curve overrides if present (from gradient indicators like maxBite)
@@ -1740,10 +1740,10 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
@@ -1963,7 +1963,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -2016,7 +2016,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2057,7 +2057,7 @@ local function UpdateResourceBar()
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
-					manaNode:SetColor(specSettings.colors.bars.mana.bar.color)
+					TRB.Functions.Color:ApplyFillColor(manaNode, specSettings.colors.bars.mana.bar)
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
 				end
@@ -2083,7 +2083,7 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -2092,7 +2092,7 @@ local function UpdateResourceBar()
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
@@ -2338,7 +2338,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -2491,7 +2491,7 @@ local function UpdateResourceBar()
 					primaryNode:SetColorCurve(barColorCurveResult)
 					TRB.Data.cache.colors.bar[primaryNode.name .. "_resource"] = nil
 				elseif barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2556,7 +2556,7 @@ local function UpdateResourceBar()
 							if comboPointOverrides and comboPointOverrides.barCurve then
 								cpNode:SetColorCurve(comboPointOverrides.barCurve)
 							else
-								cpNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 							end
 
 							-- Apply background: use curve override if available, otherwise flat color
@@ -2653,13 +2653,13 @@ local function UpdateResourceBar()
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local guardianBerserkEndMet = false
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 					primaryNode:SetBorderColor(barBorderColor)
@@ -2899,7 +2899,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -2953,7 +2953,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if barBackgroundColor then
 					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2999,11 +2999,11 @@ local function UpdateResourceBar()
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 
 				local barBorderColor = formSpecSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base.color
+					barColor = formSpecSettings.colors.bar.base
 					ConstructPrimaryGeneric(maxPrimaryBarResource)
 				else
 					-- Precompute incarnation end timing threshold
@@ -3050,7 +3050,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -3077,7 +3077,7 @@ local function UpdateResourceBar()
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 				if barColor then
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end

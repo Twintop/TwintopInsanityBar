@@ -740,7 +740,7 @@ local function UpdateResourceBar()
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -857,7 +857,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -926,7 +926,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 
 				if overcapCurves.background then
@@ -1007,7 +1007,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -1058,7 +1058,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.bar)
 						manaNode:SetColorCurve(barColorResult)
 					else
-						manaNode:SetColor(manaBarColors.bar)
+						TRB.Functions.Color:ApplyFillColor(manaNode, manaBarColors.bar)
 					end
 
 					if manaOvercapCurves.background then
@@ -1088,7 +1088,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -1131,7 +1131,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -1141,7 +1141,7 @@ local function UpdateResourceBar()
 				end
 
 				primaryNode:SetBorderColor(manaBarColors.border)
-				primaryNode:SetColor(manaBarColors.bar)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1187,7 +1187,7 @@ local function UpdateResourceBar()
 							if indicator and indicator.enabled and conditionMap[key] then
 								local mwTargets = indicator.targets and indicator.targets.maelstromWeaponBar
 								if mwTargets then
-									if mwTargets.bar then mwBarOverride = indicator.color end
+									if mwTargets.bar then mwBarOverride = indicator end
 									if mwTargets.border then mwBorderOverride = indicator.color end
 									if mwTargets.background then mwBackgroundOverride = indicator.color end
 								end
@@ -1261,7 +1261,7 @@ local function UpdateResourceBar()
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
-								stackNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
@@ -1312,7 +1312,7 @@ local function UpdateResourceBar()
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
-								stackNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
@@ -1387,7 +1387,7 @@ local function UpdateResourceBar()
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
@@ -1425,7 +1425,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -1435,7 +1435,7 @@ local function UpdateResourceBar()
 				end
 
 				primaryNode:SetBorderColor(manaBarColors.border)
-				primaryNode:SetColor(manaBarColors.bar)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end

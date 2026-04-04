@@ -1,4 +1,4 @@
-local _, TRB = ...
+﻿local _, TRB = ...
 local L = TRB.Localization
 
 local oUi = TRB.Data.constants.optionsUi
@@ -132,13 +132,17 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -148,16 +152,22 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					bestialWrath = {
 						color = "FF005500",
+						color2 = "FF005500",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
 					bestialWrathEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
 					beastCleave = {
 						color = "FF77FF77",
+						color2 = "FF77FF77",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { focusBar = { bar = false, border = true, background = false } }
 					},
@@ -343,17 +353,23 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				spending = {
 					color = "FFAAAAAA",
+					color2 = "FFAAAAAA",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -363,11 +379,15 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					trueshot = {
 						color = "FF00B60E",
+						color2 = "FF00B60E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
 					trueshotEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
@@ -539,13 +559,17 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -555,6 +579,8 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					takedown = {
 						color = "FF005500",
+						color2 = "FF005500",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							focusBar = { bar = true, border = false, background = false },
@@ -563,6 +589,8 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					},
 					takedownEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							focusBar = { bar = true, border = false, background = false },
@@ -600,9 +628,21 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			comboPoints = {
 				border = { color = "FFAB5124" },
 				background = { color = "66000000" },
-				base = { color = "FFFF8040" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor = false,
 			},
 		},
@@ -1894,10 +1934,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, f.Swatch2)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1907,10 +1950,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, f.Swatch2)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1920,10 +1966,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, f.Swatch2)
 	end)
 
 	yCoord = yCoord - 30

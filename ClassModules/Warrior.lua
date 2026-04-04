@@ -981,7 +981,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 							local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
 							defensiveNode:SetColorCurve(barColorResult)
 						else
-							defensiveNode:SetColor(cpColor)
+							TRB.Functions.Color:ApplyFillColor(defensiveNode, cpColor)
 						end
 
 						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].background then
@@ -1115,7 +1115,7 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 				end
 				node:SetColorCurve(barColorResult)
 			else
-				node:SetColor(cpColor)
+				TRB.Functions.Color:ApplyFillColor(node, cpColor)
 			end
 
 			if overcapBackgroundColorResult then
@@ -1282,7 +1282,7 @@ local function UpdateResourceBar()
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
@@ -1320,7 +1320,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then
@@ -1461,7 +1461,7 @@ local function UpdateResourceBar()
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
@@ -1522,7 +1522,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then
@@ -1660,7 +1660,7 @@ local function UpdateResourceBar()
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 				end
 				
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
@@ -1698,7 +1698,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBarCurve)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.background then

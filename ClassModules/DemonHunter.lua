@@ -1104,7 +1104,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1149,7 +1149,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1210,7 +1210,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1315,7 +1315,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1360,7 +1360,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1421,7 +1421,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1481,7 +1481,7 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and conditionMap[key] then
 							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
 							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator.color end
+								if sfTargets.bar then sfBarOverride = indicator end
 								if sfTargets.border then sfBorderOverride = indicator.color end
 								if sfTargets.background then sfBackgroundOverride = indicator.color end
 							end
@@ -1538,7 +1538,7 @@ local function UpdateResourceBar()
 							if sfBarOverride then
 								cpColor = sfBarOverride
 							end
-							cpNode:SetColor(cpColor)
+							TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 
 							-- Border: gradient > flat indicator > default
 							if sfOvercapCurves.border then
@@ -1667,7 +1667,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1702,7 +1702,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1763,7 +1763,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1818,7 +1818,7 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and sfConditionMap[key] then
 							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
 							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator.color end
+								if sfTargets.bar then sfBarOverride = indicator end
 								if sfTargets.border then sfBorderOverride = indicator.color end
 								if sfTargets.background then sfBackgroundOverride = indicator.color end
 							end
@@ -1874,7 +1874,7 @@ local function UpdateResourceBar()
 							sfNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 						end
 
-						sfNode:SetColor(cpColor)
+						TRB.Functions.Color:ApplyFillColor(sfNode, cpColor)
 
 						-- Background: gradient > flat indicator > default
 						if sfOvercapCurves.background then

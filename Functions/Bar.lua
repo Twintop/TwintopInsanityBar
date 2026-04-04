@@ -1320,7 +1320,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.border,
 				settings.textures.background
 			)
-			primaryNode:SetColor(settings.colors.bar.base.color)
+			TRB.Functions.Color:ApplyFillColor(primaryNode, settings.colors.bar.base)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
 			primaryNode:SetFrameLevel(frameLevels.bar)
@@ -1329,7 +1329,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			local castingSlot = primaryNode:GetOverlaySlot("casting")
 			if castingSlot then
 				local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
-				local castingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
+				local castingColor = settings.colors.bar.casting
 				castingSlot.texture = castingTexture
 				if castingColor then
 					castingSlot.color = castingColor
@@ -1338,7 +1338,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				local spendingColor = castingColor
 				local spendingSettings = settings.colors.bar.spending
 				if spendingSettings and spendingSettings.color then
-					spendingColor = spendingSettings.color
+					spendingColor = spendingSettings
 				end
 				castingSlot.spendingColor = spendingColor
 				castingSlot:RefreshAppearance()
@@ -1354,11 +1354,17 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				local secCastingSlot = secondaryNode:GetOverlaySlot("casting")
 				if secCastingSlot then
 					local secCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
-					local secCastingColor = settings.colors.bar.casting and settings.colors.bar.casting.color
+					local secCastingColor = settings.colors.bar.casting
 					secCastingSlot.texture = secCastingTexture
 					if secCastingColor then
 						secCastingSlot.color = secCastingColor
 					end
+					local secSpendingColor = secCastingColor
+					local secSpendingSettings = settings.colors.bar.spending
+					if secSpendingSettings and secSpendingSettings.color then
+						secSpendingColor = secSpendingSettings
+					end
+					secCastingSlot.spendingColor = secSpendingColor
 					secCastingSlot:RefreshAppearance()
 				end
 			end
@@ -1470,7 +1476,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				end
 				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
-				node:SetColor(effectiveSettings.colors.comboPoints.base.color)
+				TRB.Functions.Color:ApplyFillColor(node, effectiveSettings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -1492,7 +1498,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetMinMax(0, 1)
 				node:SetBorderColor(whirlwindColors.border.color)
 				node:SetBackgroundColorFromString(whirlwindColors.background.color)
-				node:SetColor(whirlwindColors.nodeColors.charge1.color)
+				TRB.Functions.Color:ApplyFillColor(node, whirlwindColors.nodeColors.charge1)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -1832,13 +1838,13 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 	end
 
 	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
-	local castingColor = castingSettings.color or "FFFFFFFF"
+	local castingColor = castingSettings
 
 	-- Resolve spending color: use spending if explicitly defined + enabled, otherwise fall back to casting
 	local spendingColor = castingColor
 	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
 	if spendingSettings and spendingSettings.enabled and spendingSettings.color then
-		spendingColor = spendingSettings.color
+		spendingColor = spendingSettings
 	end
 
 	-- Store for RefreshAppearance
@@ -1859,7 +1865,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		end
 		castingSlot:SetAppendedOverlayMinMax(0, maxResource)
 		castingSlot:SetAppendedOverlayTexture(castingTexture)
-		castingSlot:SetAppendedOverlayColor(castingColor)
+		TRB.Functions.Color:ApplyOverlayFillColor(castingSlot, castingColor, "appended")
 		castingSlot:SetAppendedOverlayValue(castingAmount)
 	else
 		-- Resource spend: inset overlay fills leftward from current fill
@@ -1874,7 +1880,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		end
 		castingSlot:SetInsetOverlayMinMax(0, maxResource)
 		castingSlot:SetInsetOverlayTexture(castingTexture)
-		castingSlot:SetInsetOverlayColor(spendingColor)
+		TRB.Functions.Color:ApplyOverlayFillColor(castingSlot, spendingColor, "inset")
 		castingSlot:SetInsetOverlayValue(math.abs(castingAmount))
 	end
 end
@@ -2884,11 +2890,8 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					end
 					node:SetBackgroundColorFromString(backgroundColor)
 
-					local barColor = colorSettings[config.colors.bar]
-					if type(barColor) == "table" then
-						barColor = barColor.color
-					end
-					node:SetColor(barColor)
+					local barColorEntry = colorSettings[config.colors.bar]
+					TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 				end
 			end
 		end
@@ -3159,22 +3162,21 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 					local backgroundColor = barColors.background
 					if type(backgroundColor) == "table" then backgroundColor = backgroundColor.color end
 					
-					-- Get bar color - could be simple or threshold-based
-					local barColor = nil
-					if barTypeDef.colorCurveType then
-						-- Threshold-based - use the "low" color as default
-						barColor = barColors.low and barColors.low.color
-					else
-						-- Simple bar color
-						barColor = barColors.bar
-						if type(barColor) == "table" then barColor = barColor.color end
-					end
-					
-					-- Apply colors with fallbacks
-					node:SetBorderColor(borderColor)
-					node:SetBackgroundColorFromString(backgroundColor)
-					if barColor then
-						node:SetColor(barColor)
+-- Get bar color entry - could be simple or threshold-based
+				local barColorEntry = nil
+				if barTypeDef.colorCurveType then
+					-- Threshold-based - use the "low" color entry as default
+					barColorEntry = barColors.low
+				else
+					-- Simple bar color entry
+					barColorEntry = barColors.bar
+				end
+				
+				-- Apply colors with fallbacks
+				node:SetBorderColor(borderColor)
+				node:SetBackgroundColorFromString(backgroundColor)
+				if barColorEntry then
+					TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 					end
 					
 					node:SetFrameLevel(frameLevels.comboPoint)

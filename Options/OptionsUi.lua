@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, undefined-global
+﻿---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
@@ -90,7 +90,7 @@ local function SettingKeyToBarKey(settingKey)
 	return map[settingKey] or settingKey
 end
 
----Applies sensible defaults when changing anchor target type (screen ↔ bar).
+---Applies sensible defaults when changing anchor target type (screen â†” bar).
 ---When transitioning between screen and bar anchoring, the existing offset/point values
 ---are meaningless for the new context, so reset them to useful defaults.
 ---@param anchor table The anchor block to modify
@@ -102,7 +102,7 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 	local goingToScreen = (newBarKey == "screen")
 
 	if wasScreen and not goingToScreen then
-		-- Screen → Bar: reset to bar-to-bar defaults
+		-- Screen â†’ Bar: reset to bar-to-bar defaults
 		-- Attach this bar's TOP to the target bar's BOTTOM (bar appears just below target)
 		anchor.anchorPoint = "BOTTOM"
 		anchor.attachPoint = "TOP"
@@ -111,7 +111,7 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 		anchor.matchWidth = true
 		return true
 	elseif not wasScreen and goingToScreen then
-		-- Bar → Screen: reset to screen defaults
+		-- Bar â†’ Screen: reset to screen defaults
 		anchor.anchorPoint = "CENTER"
 		anchor.attachPoint = "CENTER"
 		anchor.xOffset = 0
@@ -317,8 +317,8 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		-- Recreate bar text frames to match potentially changed settings.
 		-- FillSpecializationCacheSettings always rebuilds displayText, which can shift
 		-- entry indices (e.g., globalBarText prepends global entries) or change font
-		-- defaults. Without this, text frames become desynced from their entries —
-		-- wrong parents, fonts, or positions — causing bar text to vanish.
+		-- defaults. Without this, text frames become desynced from their entries â€”
+		-- wrong parents, fonts, or positions â€” causing bar text to vanish.
 		-- This matches the sequence in ConstructBarGroups.
 		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.BarVisibility:MarkDirty()
@@ -1159,6 +1159,188 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 	f.Font:SetJustifyH("LEFT")
 	f.Font:SetSize(sizeTotal - sizeFrame - 25, sizeFrame)
 	return f
+end
+
+local gradientDirectionCycle = { "disabled", "horizontal", "vertical" }
+local gradientDirectionAbbrevKeys = {
+	disabled = "GradientDirectionDisabledAbbrev",
+	horizontal = "GradientDirectionHorizontalAbbrev",
+	vertical = "GradientDirectionVerticalAbbrev",
+}
+
+---Builds a gradient-aware color picker with two swatches and a direction cycle button.
+---The first swatch controls `colorEntry.color`, the second controls `colorEntry.color2`.
+---The cycle button rotates through Disabled / Horizontal / Vertical gradient directions.
+---When direction is "disabled", the second swatch is grayed out and non-interactive.
+---@param parent Frame
+---@param description string # Label text beside the swatches
+---@param colorEntry table # Table with `color`, `color2`, `gradientDirection` fields
+---@param sizeTotal number # Total width reserved for the widget and label combined
+---@param sizeFrame number # Width and height of each color swatch square
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@param tooltipNote string? # Optional tooltip text shown on the direction button
+---@return Frame # Container frame with .Swatch1, .Swatch2, .DirectionButton, .Font children
+function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, colorEntry, sizeTotal, sizeFrame, posX, posY, tooltipNote)
+	local swatchSize = sizeFrame - 8
+	local gap = 2
+	local btnWidth = 22
+	local btnGap = 4
+
+	local container = CreateFrame("Frame", nil, parent)
+	container:SetSize(sizeTotal, sizeFrame)
+	container:SetPoint("TOPLEFT", posX, posY)
+
+	-- Swatch 1 (primary color)
+	local s1 = CreateFrame("Button", nil, container, "BackdropTemplate")
+	s1:SetSize(swatchSize, swatchSize)
+	s1:SetPoint("TOPLEFT", 0, -math.floor((sizeFrame - swatchSize) / 2))
+	s1:SetBackdrop({
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true, tileSize = 4, edgeSize = 10
+	})
+	---@diagnostic disable-next-line: inject-field
+	s1.Texture = s1:CreateTexture(nil)
+	s1.Texture:ClearAllPoints()
+	s1.Texture:SetPoint("TOPLEFT", 3, -3)
+	s1.Texture:SetPoint("BOTTOMRIGHT", -3, 3)
+	s1.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(colorEntry.color, true))
+	s1:EnableMouse(true)
+
+	-- Swatch 2 (secondary color)
+	local s2 = CreateFrame("Button", nil, container, "BackdropTemplate")
+	s2:SetSize(swatchSize, swatchSize)
+	s2:SetPoint("LEFT", s1, "RIGHT", gap, 0)
+	s2:SetBackdrop({
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true, tileSize = 4, edgeSize = 10
+	})
+	---@diagnostic disable-next-line: inject-field
+	s2.Texture = s2:CreateTexture(nil)
+	s2.Texture:ClearAllPoints()
+	s2.Texture:SetPoint("TOPLEFT", 3, -3)
+	s2.Texture:SetPoint("BOTTOMRIGHT", -3, 3)
+	s2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(colorEntry.color2, true))
+	s2:EnableMouse(true)
+
+	-- Direction cycle button
+	local btn = CreateFrame("Button", nil, container, "BackdropTemplate")
+	btn:SetSize(btnWidth, swatchSize)
+	btn:SetPoint("LEFT", s2, "RIGHT", btnGap, 0)
+	btn:SetBackdrop({
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true, tileSize = 4, edgeSize = 10,
+		insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	})
+	btn:SetBackdropColor(0.15, 0.15, 0.15, 0.9)
+	---@diagnostic disable-next-line: inject-field
+	btn.Font = btn:CreateFontString(nil)
+	btn.Font:SetPoint("CENTER", 0, 0)
+	btn.Font:SetFontObject(GameFontHighlightSmall)
+	btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+	btn:EnableMouse(true)
+
+	btn:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(L["GradientDirectionButtonTooltip"], 1, 1, 1)
+		if tooltipNote then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(tooltipNote, 1, 1, 1, true)
+		end
+		GameTooltip:Show()
+	end)
+	btn:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
+	-- Label
+	---@diagnostic disable-next-line: inject-field
+	container.Font = container:CreateFontString(nil)
+	container.Font:SetPoint("LEFT", btn, "RIGHT", 10, 0)
+	container.Font:SetFontObject(GameFontHighlight)
+	container.Font:SetText(description)
+	---@diagnostic disable-next-line: redundant-parameter
+	container.Font:SetWordWrap(true)
+	container.Font:SetJustifyH("LEFT")
+	local labelWidth = sizeTotal - (swatchSize * 2 + gap + btnGap + btnWidth + 35)
+	container.Font:SetSize(labelWidth, sizeFrame)
+
+	-- Apply initial disabled state to swatch 2
+	local function UpdateSwatch2State()
+		if colorEntry.gradientDirection == "disabled" then
+			s2:SetAlpha(0.35)
+			s2:EnableMouse(false)
+		else
+			s2:SetAlpha(1.0)
+			s2:EnableMouse(true)
+		end
+		btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+	end
+	UpdateSwatch2State()
+
+	-- Expose child references for external use
+	---@diagnostic disable-next-line: inject-field
+	container.Swatch1 = s1
+	---@diagnostic disable-next-line: inject-field
+	container.Swatch2 = s2
+	---@diagnostic disable-next-line: inject-field
+	container.DirectionButton = btn
+	-- Alias for compatibility: callers that read .Texture (like ToggleColorPickerEnabled) will find it on Swatch1
+	---@diagnostic disable-next-line: inject-field
+	container.Texture = s1.Texture
+	---@diagnostic disable-next-line: inject-field
+	container.UpdateSwatch2State = UpdateSwatch2State
+
+	-- Direction cycle click handler
+	btn:SetScript("OnMouseDown", function(self, mouseButton)
+		if mouseButton == "LeftButton" then
+			local currentIdx = 1
+			for idx, dir in ipairs(gradientDirectionCycle) do
+				if dir == colorEntry.gradientDirection then
+					currentIdx = idx
+					break
+				end
+			end
+			local nextIdx = (currentIdx % #gradientDirectionCycle) + 1
+			colorEntry.gradientDirection = gradientDirectionCycle[nextIdx]
+			UpdateSwatch2State()
+			TRB.Data.cache.colors.gradient = {}
+			TRB.Data.cache.colors.bar = {}
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
+	return container
+end
+
+---Handles mouse-down on a gradient color picker's secondary swatch: opens the color picker for `color2`.
+---@param button string # The mouse button pressed
+---@param colorEntry table # The settings entry with `color`, `color2`, `gradientDirection`
+---@param swatch2 Button|BackdropTemplate # The second swatch frame (to update its texture)
+---@param classId integer? # Class ID for the panel being edited
+---@param specId integer? # Spec ID for the panel being edited
+function TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorEntry, swatch2, classId, specId)
+	if button == "LeftButton" and colorEntry.gradientDirection ~= "disabled" then
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorEntry.color2, true)
+		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1 - a, function(color)
+			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			swatch2.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+			colorEntry.color2 = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+
+			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+				TRB.Data.cache.colors.gradient = {}
+				TRB.Data.cache.colors.bar = {}
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			end
+		end)
+	end
 end
 
 ---Builds standard TRB color picker with an optional enable/disable checkbox
@@ -2140,13 +2322,13 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 			if button == "LeftButton" and realrow and realrow > 0 then
 				local rowData = data[realrow]
 				if rowData and rowData.isHeader then
-					-- Section header click — do nothing
+					-- Section header click â€” do nothing
 					scrollingTable:ClearSelection()
 					return true
 				end
 
 				if column == 1 then
-					-- "Add" button column clicked — insert variable at cursor
+					-- "Add" button column clicked â€” insert variable at cursor
 					local editBox = TRB.Frames.activeBarTextEditBox
 					if editBox and rowData and rowData.variable and rowData.variable ~= "" then
 						local cursorPos = TRB.Frames.activeBarTextCursorPosition or editBox:GetCursorPosition()
@@ -2170,7 +2352,7 @@ function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name, cache, c
 					scrollingTable:ClearSelection()
 					return true
 				else
-					-- Normal click — show description and select the row
+					-- Normal click â€” show description and select the row
 					if rowData then
 						descLabel:SetText(rowData.variable or "")
 						descText:SetText(rowData.description or "")
@@ -2594,18 +2776,28 @@ end
 ---@param enable boolean # Whether to enable or disable the control
 function TRB.Functions.OptionsUi:ToggleColorPickerEnabled(colorPicker, enable)
 	if enable then
-		colorPicker:Enable()
+		if colorPicker.Enable then colorPicker:Enable() end
 		colorPicker:SetAlpha(1.0)
 		colorPicker:EnableMouse(true)
 		if colorPicker.Font then
 			colorPicker.Font:SetFontObject(GameFontHighlight)
 		end
+		if colorPicker.Swatch1 then
+			colorPicker.Swatch1:EnableMouse(true)
+			colorPicker.DirectionButton:EnableMouse(true)
+			if colorPicker.UpdateSwatch2State then colorPicker.UpdateSwatch2State() end
+		end
 	else
-		colorPicker:Disable()
+		if colorPicker.Disable then colorPicker:Disable() end
 		colorPicker:SetAlpha(0.5)
 		colorPicker:EnableMouse(false)
 		if colorPicker.Font then
 			colorPicker.Font:SetFontObject(GameFontDisable)
+		end
+		if colorPicker.Swatch1 then
+			colorPicker.Swatch1:EnableMouse(false)
+			colorPicker.Swatch2:EnableMouse(false)
+			colorPicker.DirectionButton:EnableMouse(false)
 		end
 	end
 end
@@ -2901,7 +3093,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen ↔ bar)
+			-- Update UI controls if anchor type changed (screen â†” bar)
 			if transitioned then
 				controls.horizontal:SetValue(a.xOffset)
 				controls.vertical:SetValue(a.yOffset)
@@ -3351,7 +3543,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen ↔ bar)
+			-- Update UI controls if anchor type changed (screen â†” bar)
 			if transitioned then
 				controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
 				controls[settingKey .. "Vertical"]:SetValue(a.yOffset)
@@ -3785,7 +3977,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen ↔ bar)
+			-- Update UI controls if anchor type changed (screen â†” bar)
 			if transitioned then
 				controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
 				controls[barTypeDef.key .. "YPos"]:SetValue(a.yOffset)
@@ -3980,12 +4172,23 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	-- Bar Color
 	
 	if colorSettings.bar then
-		local barColorValue = type(colorSettings.bar) == "table" and colorSettings.bar.color or colorSettings.bar
-		colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-		f = colorControls.bar
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
-		end)
+		if type(colorSettings.bar) == "table" and colorSettings.bar.color2 then
+			colorControls.bar = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), colorSettings.bar, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+			f = colorControls.bar
+			f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
+			end)
+			f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorSettings.bar, self, classId, specId)
+			end)
+		else
+			local barColorValue = type(colorSettings.bar) == "table" and colorSettings.bar.color or colorSettings.bar
+			colorControls.bar = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), barColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+			f = colorControls.bar
+			f:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "bar", barTypeDef.key)
+			end)
+		end
 		yCoord = yCoord - 30
 	end
 	
@@ -4029,7 +4232,23 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				row.label:SetText(nc.displayName)
 			end
 			if row.colorPicker and ncs then
-				row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(ncs.color, true))
+				local ncsColor = type(ncs) == "table" and ncs.color or ncs
+				row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(ncsColor, true))
+				if row.colorPicker.Swatch2 and type(ncs) == "table" and ncs.color2 then
+					row.colorPicker.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(ncs.color2, true))
+					local gradDir = ncs.gradientDirection or "disabled"
+					if gradDir == "disabled" then
+						row.colorPicker.Swatch2:SetAlpha(0.35)
+						row.colorPicker.Swatch2:EnableMouse(false)
+					else
+						row.colorPicker.Swatch2:SetAlpha(1.0)
+						row.colorPicker.Swatch2:EnableMouse(true)
+					end
+				end
+				if row.colorPicker.DirectionButton and type(ncs) == "table" then
+					local gradDir = ncs.gradientDirection or "disabled"
+					row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+				end
 				if row.colorPicker.Font then
 					row.colorPicker.Font:SetText(nc.colorLabel or nc.displayName)
 				end
@@ -4173,12 +4392,56 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 					
 					-- Create color picker (dereference via orderedKeys at click-time for settings, but use
 					-- nodeControls for the controls table so the callback updates THIS row's swatch frame)
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-					f = nodeControls.color
-					f:SetScript("OnMouseDown", function(self, button, ...)
-						local currentKey = orderedKeys[capturedRowIdx]
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
-					end)
+					if type(nodeColorSettings) == "table" and nodeColorSettings.color2 then
+						nodeControls.color = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, nodeColorLabel, nodeColorSettings, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+						f = nodeControls.color
+						f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
+						end)
+						f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorSettings.nodeColors[currentKey], self, classId, specId)
+						end)
+						f.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
+							if mouseButton == "LeftButton" then
+								local currentKey = orderedKeys[capturedRowIdx]
+								local currentColorEntry = colorSettings.nodeColors[currentKey]
+								local currentIdx = 1
+								for idx, dir in ipairs(gradientDirectionCycle) do
+									if dir == currentColorEntry.gradientDirection then
+										currentIdx = idx
+										break
+									end
+								end
+								local nextIdx = (currentIdx % #gradientDirectionCycle) + 1
+								currentColorEntry.gradientDirection = gradientDirectionCycle[nextIdx]
+								local gradDir = currentColorEntry.gradientDirection
+								local swatch2 = self:GetParent().Swatch2
+								if gradDir == "disabled" then
+									swatch2:SetAlpha(0.35)
+									swatch2:EnableMouse(false)
+								else
+									swatch2:SetAlpha(1.0)
+									swatch2:EnableMouse(true)
+								end
+								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								TRB.Data.cache.colors.gradient = {}
+								TRB.Data.cache.colors.bar = {}
+								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+									TRB.Data.lookupDirty = true
+									TRB.Functions.Class:TriggerResourceBarUpdates()
+								end
+							end
+						end)
+					else
+						nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+						f = nodeControls.color
+						f:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
+						end)
+					end
 					row.colorPicker = nodeControls.color
 				else
 					-- Place sameColor checkbox inline on the left if this row matches the target node
@@ -4198,13 +4461,57 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 
 					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time for
 					-- settings, but use nodeControls for the controls table so the callback updates THIS row's swatch)
-					local nodeColorValue = nodeColorSettings.color or nodeColorSettings
-					nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-					f = nodeControls.color
-					f:SetScript("OnMouseDown", function(self, button, ...)
-						local currentKey = orderedKeys[capturedRowIdx]
-						TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
-					end)
+					if type(nodeColorSettings) == "table" and nodeColorSettings.color2 then
+						nodeControls.color = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, nodeColorLabel, nodeColorSettings, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+						f = nodeControls.color
+						f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
+						end)
+						f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorSettings.nodeColors[currentKey], self, classId, specId)
+						end)
+						f.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
+							if mouseButton == "LeftButton" then
+								local currentKey = orderedKeys[capturedRowIdx]
+								local currentColorEntry = colorSettings.nodeColors[currentKey]
+								local currentIdx = 1
+								for idx, dir in ipairs(gradientDirectionCycle) do
+									if dir == currentColorEntry.gradientDirection then
+										currentIdx = idx
+										break
+									end
+								end
+								local nextIdx = (currentIdx % #gradientDirectionCycle) + 1
+								currentColorEntry.gradientDirection = gradientDirectionCycle[nextIdx]
+								local gradDir = currentColorEntry.gradientDirection
+								local swatch2 = self:GetParent().Swatch2
+								if gradDir == "disabled" then
+									swatch2:SetAlpha(0.35)
+									swatch2:EnableMouse(false)
+								else
+									swatch2:SetAlpha(1.0)
+									swatch2:EnableMouse(true)
+								end
+								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								TRB.Data.cache.colors.gradient = {}
+								TRB.Data.cache.colors.bar = {}
+								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+									TRB.Data.lookupDirty = true
+									TRB.Functions.Class:TriggerResourceBarUpdates()
+								end
+							end
+						end)
+					else
+						local nodeColorValue = type(nodeColorSettings) == "table" and nodeColorSettings.color or nodeColorSettings
+						nodeControls.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, nodeColorLabel, nodeColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+						f = nodeControls.color
+						f:SetScript("OnMouseDown", function(self, button, ...)
+							local currentKey = orderedKeys[capturedRowIdx]
+							TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings.nodeColors[currentKey], nodeControls, "color", barTypeDef.key .. "_node")
+						end)
+					end
 					row.colorPicker = nodeControls.color
 				end
 				rowFrames[rowIndex] = row
@@ -4395,16 +4702,28 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	end
 	
 	-- Build color pickers for each threshold
+	local gradientTooltip = barTypeDef.gradientTooltipNote
 	for _, thresholdLevel in ipairs(thresholdLevels) do
 		local thresholdKey = thresholdLevel.key
 		if colorSettings[thresholdKey] and colorSettings[thresholdKey].color then
 			-- Use resolved colorLabel string from thresholdLevel
 			local colorLabel = thresholdLevel.colorLabel
-			colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
-			f = colorControls[thresholdKey]
-			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
-			end)
+			if type(colorSettings[thresholdKey]) == "table" and colorSettings[thresholdKey].color2 then
+				colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, colorLabel, colorSettings[thresholdKey], oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2, gradientTooltip)
+				f = colorControls[thresholdKey]
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+						TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorSettings[thresholdKey], self, classId, specId)
+				end)
+			else
+				colorControls[thresholdKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+				f = colorControls[thresholdKey]
+				f:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, barTypeDef.key)
+				end)
+			end
 			yCoord2 = yCoord2 - 30
 		end
 	end
@@ -5951,7 +6270,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			refreshFunc()
 		end)
 
-		-- Alpha sliders — set scripts BEFORE values so SetValue doesn't write to the old entry
+		-- Alpha sliders â€” set scripts BEFORE values so SetValue doesn't write to the old entry
 		controls.sliders.selectedActiveAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -5991,7 +6310,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		-- Show/hide threshold controls based on current condition type
 		ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
 
-		-- Comparison dropdown — set up menu and current selection using CreateRadio for proper text+indicator
+		-- Comparison dropdown â€” set up menu and current selection using CreateRadio for proper text+indicator
 		local function ThresholdComparisonIsSelected(operator)
 			return (visSettings.resourceConditionOperator or ">=") == operator
 		end
@@ -6012,7 +6331,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		controls.dropDown.selectedThresholdComparison:SetDefaultText(GetComparisonLabel(currentOp))
 		controls.dropDown.selectedThresholdComparison:SetText(GetComparisonLabel(currentOp))
 
-		-- Threshold value slider — set script BEFORE value
+		-- Threshold value slider â€” set script BEFORE value
 		controls.sliders.selectedThresholdValue:SetScript("OnValueChanged", function(self, value)
 			-- Compute precision dynamically based on current condition type (may change after FillDetailPanel)
 			local ct = visSettings.resourceConditionType or "none"
@@ -6500,9 +6819,9 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 	controls.baseColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BaseColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
@@ -6510,13 +6829,19 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
+	end)
 
 	if includeCastingOverlay ~= false then
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
-		f:SetScript("OnMouseDown", function(self, button, ...)
+		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+		end)
+		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
 		end)
 
 		controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -6537,10 +6862,13 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 
 	if includeSpendingOverlay then
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
+		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+		end)
+		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
 		end)
 
 		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -6707,6 +7035,20 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 		-- Update color picker
 		if row.colorPicker then
 			row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
+			if row.colorPicker.Swatch2 and indicator.color2 then
+				row.colorPicker.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color2, true))
+				local gradDir = indicator.gradientDirection or "disabled"
+				if gradDir == "disabled" then
+					row.colorPicker.Swatch2:SetAlpha(0.35)
+					row.colorPicker.Swatch2:EnableMouse(false)
+				else
+					row.colorPicker.Swatch2:SetAlpha(1.0)
+					row.colorPicker.Swatch2:EnableMouse(true)
+				end
+			end
+			if row.colorPicker.DirectionButton and indicator.gradientDirection then
+				row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[indicator.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+			end
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
 			end
@@ -6851,11 +7193,41 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 			row.dropdown = dd
 
 			-- Color picker
-			local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, def.colorLabel, indicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-			cp:SetScript("OnMouseDown", function(self, button)
+			local cp = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, def.colorLabel, indicator, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"])
+			---@cast cp Button
+			cp.Swatch1:SetScript("OnMouseDown", function(self, button)
 				local currentKey = orderedKeys[capturedRowIdx]
 				TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
 			end)
+			cp.Swatch2:SetScript("OnMouseDown", function(self, button)
+				local currentKey = orderedKeys[capturedRowIdx]
+				TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, indicatorColors[currentKey], cp.Swatch2, classId, specId)
+			end)
+			cp.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
+				if mouseButton == "LeftButton" then
+					local currentKey = orderedKeys[capturedRowIdx]
+					local currentEntry = indicatorColors[currentKey]
+					local ci = 1
+					for idx, dir in ipairs(gradientDirectionCycle) do
+						if dir == currentEntry.gradientDirection then ci = idx; break end
+					end
+					currentEntry.gradientDirection = gradientDirectionCycle[(ci % #gradientDirectionCycle) + 1]
+					local gradDir = currentEntry.gradientDirection
+					if gradDir == "disabled" then
+						cp.Swatch2:SetAlpha(0.35); cp.Swatch2:EnableMouse(false)
+					else
+						cp.Swatch2:SetAlpha(1.0); cp.Swatch2:EnableMouse(true)
+					end
+					self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+					TRB.Data.cache.colors.gradient = {}
+					TRB.Data.cache.colors.bar = {}
+					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end
+			end)
+			---@cast cp Button
 			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, indicator.enabled)
 			row.colorPicker = cp
 
@@ -7047,6 +7419,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 
 				-- Color picker
 				local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+				---@cast cp Button
 				cp:SetScript("OnMouseDown", function(self, button)
 					local gk = orderedGradientKeys[capturedGradIdx]
 					TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk, "indicatorColor_" .. gk)
@@ -7096,9 +7469,9 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
@@ -7106,12 +7479,18 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		end
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
+	end)
 
 	yCoord = yCoord - 30
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.casting
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
 	end)
 
 	controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -7131,10 +7510,13 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 
 	if includeSpendingOverlay then
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
+		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+		end)
+		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
 		end)
 
 		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -7558,26 +7940,35 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	-- Light Stagger Color
 	controls.colors = controls.colors or {}
 	controls.colors.comboPoints = controls.colors.comboPoints or {}
-	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.light
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "light", "stagger")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.light, self)
 	end)
 
 	-- Medium Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.medium
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "medium", "stagger")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.medium, self)
 	end)
 
 	-- Heavy Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.heavy
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "heavy", "stagger")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.heavy, self)
 	end)
 	
 	yCoord2 = yCoord2 - 30
@@ -8283,7 +8674,7 @@ end
 
 -- Delete-bar-text confirmation dialog.  Defined once (outside GenerateBarTextEditor)
 -- so that every spec shares a single dialog whose OnAccept works entirely from the
--- per-invocation data payload — no closure references to the wrong spec's locals.
+-- per-invocation data payload â€” no closure references to the wrong spec's locals.
 StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 	text = "",
 	button1 = L["Yes"],

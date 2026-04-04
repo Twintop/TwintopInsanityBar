@@ -939,6 +939,7 @@ function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.bar)
 	wipe(TRB.Data.cache.colors.backdrop)
+	wipe(TRB.Data.cache.colors.gradient)
 	-- Invalidate cached health color curve so it rebuilds from fresh settings
 	TRB.Data.cache.healthCurve = nil
 	TRB.Data.cache.healthCurveKey = nil

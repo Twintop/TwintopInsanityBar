@@ -1063,7 +1063,7 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border.color
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
@@ -1103,7 +1103,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -1157,7 +1157,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					if energyOvercapCurves.background then
@@ -1360,7 +1360,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
@@ -1384,7 +1384,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -1395,7 +1395,7 @@ local function UpdateResourceBar()
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					primaryNode:SetBorderColor(manaBarColors.border)
-					primaryNode:SetColor(manaBarColors.bar)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 					primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
@@ -1439,7 +1439,7 @@ local function UpdateResourceBar()
 			borderOvercap = affectingCombat,
 		}
 		local energyBarColors = {
-			bar = specSettings.colors.bar.base.color,
+			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
 			background = specSettings.colors.bar.background.color,
 		}
@@ -1464,7 +1464,7 @@ local function UpdateResourceBar()
 						if targetColors and elements then
 							for elemKey, isTargeted in pairs(elements) do
 								if isTargeted then
-									targetColors[elemKey] = indicator.color
+									targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 									if barKey == "chiBar" then
 										chiBarOverrides[elemKey] = true
 									end
@@ -1618,7 +1618,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(energyBarColors.bar)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, energyBarColors.bar)
 					end
 
 					if energyOvercapCurves.background then
@@ -1666,7 +1666,7 @@ local function UpdateResourceBar()
 								local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.bar)
 								chiNode:SetColorCurve(barColorResult)
 							else
-								chiNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(chiNode, cpColor)
 							end
 
 							if chiOvercapCurves.background then
