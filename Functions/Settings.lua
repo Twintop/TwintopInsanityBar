@@ -7416,23 +7416,6 @@ function TRB.Functions.Settings:PortForwardSettings()
 		nodeOrder = true, nodeColors = true,
 	}
 
-	---@param order table|nil
-	---@param key string
-	---@return boolean
-	local function OrderContains(order, key)
-		if type(order) ~= "table" then
-			return false
-		end
-
-		for _, existingKey in ipairs(order) do
-			if existingKey == key then
-				return true
-			end
-		end
-
-		return false
-	end
-
 	---@param entry table
 	local function BackfillGradientFields(entry)
 		if type(entry) == "table" and entry.color ~= nil then
@@ -7521,13 +7504,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 
 					-- colors.shared.indicatorColors.*
 					if colors.shared and colors.shared.indicatorColors then
-						for key, indicator in pairs(colors.shared.indicatorColors) do
-							if OrderContains(colors.shared.gradientOrder, key) then
-								indicator.color2 = nil
-								indicator.gradientDirection = nil
-							else
-								BackfillGradientFields(indicator)
-							end
+						for _, indicator in pairs(colors.shared.indicatorColors) do
+							BackfillGradientFields(indicator)
 						end
 					end
 				end

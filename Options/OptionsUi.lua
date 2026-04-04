@@ -1168,13 +1168,27 @@ local gradientDirectionAbbrevKeys = {
 	vertical = "GradientDirectionVerticalAbbrev",
 }
 
+local function NormalizeGradientColorEntry(colorEntry)
+	if colorEntry == nil then
+		return
+	end
+
+	if colorEntry.color2 == nil then
+		colorEntry.color2 = colorEntry.color
+	end
+
+	if gradientDirectionAbbrevKeys[colorEntry.gradientDirection] == nil then
+		colorEntry.gradientDirection = "disabled"
+	end
+end
+
 ---Builds a gradient-aware color picker with two swatches and a direction cycle button.
 ---The first swatch controls `colorEntry.color`, the second controls `colorEntry.color2`.
 ---The cycle button rotates through Disabled / Horizontal / Vertical gradient directions.
 ---When direction is "disabled", the second swatch is grayed out and non-interactive.
 ---@param parent Frame
 ---@param description string # Label text beside the swatches
----@param colorEntry table # Table with `color`, `color2`, `gradientDirection` fields
+---@param colorEntry table # Table with `color`, plus optional `color2` and `gradientDirection` fields
 ---@param sizeTotal number # Total width reserved for the widget and label combined
 ---@param sizeFrame number # Width and height of each color swatch square
 ---@param posX number # X offset from parent's TOPLEFT
@@ -1182,6 +1196,8 @@ local gradientDirectionAbbrevKeys = {
 ---@param tooltipNote string? # Optional tooltip text shown on the direction button
 ---@return Frame # Container frame with .Swatch1, .Swatch2, .DirectionButton, .Font children
 function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, colorEntry, sizeTotal, sizeFrame, posX, posY, tooltipNote)
+	NormalizeGradientColorEntry(colorEntry)
+
 	local swatchSize = sizeFrame - 8
 	local gap = 2
 	local btnWidth = 22
@@ -1324,6 +1340,8 @@ end
 ---@param classId integer? # Class ID for the panel being edited
 ---@param specId integer? # Spec ID for the panel being edited
 function TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorEntry, swatch2, classId, specId)
+	NormalizeGradientColorEntry(colorEntry)
+
 	if button == "LeftButton" and colorEntry.gradientDirection ~= "disabled" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorEntry.color2, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1 - a, function(color)

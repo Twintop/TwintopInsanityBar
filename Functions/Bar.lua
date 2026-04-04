@@ -1337,7 +1337,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				-- Resolve spending color for inset overlay
 				local spendingColor = castingColor
 				local spendingSettings = settings.colors.bar.spending
-				if spendingSettings and spendingSettings.color then
+				if spendingSettings and spendingSettings.enabled and spendingSettings.color then
 					spendingColor = spendingSettings
 				end
 				castingSlot.spendingColor = spendingColor
@@ -1361,7 +1361,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 					end
 					local secSpendingColor = secCastingColor
 					local secSpendingSettings = settings.colors.bar.spending
-					if secSpendingSettings and secSpendingSettings.color then
+					if secSpendingSettings and secSpendingSettings.enabled and secSpendingSettings.color then
 						secSpendingColor = secSpendingSettings
 					end
 					secCastingSlot.spendingColor = secSpendingColor
@@ -3137,7 +3137,9 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
 			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
 			
-			-- Get colors from nested structure
+			-- Get colors from nested structure, falling back to registry defaults for
+			-- newly-added or partially-migrated custom bars.
+			local defaultBarColors = barTypeDef:GetDefaultColors() or {}
 			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
 			
 			-- Apply to all nodes (use enabled count for multi-node bars with per-node enable)
@@ -3157,26 +3159,26 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 					end
 					
 					-- Get colors (handle both raw string and { color = "..." } objects)
-					local borderColor = barColors.border
+					local borderColor = barColors.border or defaultBarColors.border
 					if type(borderColor) == "table" then borderColor = borderColor.color end
-					local backgroundColor = barColors.background
+					local backgroundColor = barColors.background or defaultBarColors.background
 					if type(backgroundColor) == "table" then backgroundColor = backgroundColor.color end
-					
--- Get bar color entry - could be simple or threshold-based
-				local barColorEntry = nil
-				if barTypeDef.colorCurveType then
-					-- Threshold-based - use the "low" color entry as default
-					barColorEntry = barColors.low
-				else
-					-- Simple bar color entry
-					barColorEntry = barColors.bar
-				end
+						
+					-- Get bar color entry - could be simple or threshold-based
+					local barColorEntry = nil
+					if barTypeDef.colorCurveType then
+						-- Threshold-based - use the "low" color entry as default
+						barColorEntry = barColors.low or defaultBarColors.low
+					else
+						-- Simple bar color entry
+						barColorEntry = barColors.bar or defaultBarColors.bar
+					end
 				
-				-- Apply colors with fallbacks
-				node:SetBorderColor(borderColor)
-				node:SetBackgroundColorFromString(backgroundColor)
-				if barColorEntry then
-					TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
+					-- Apply colors with fallbacks
+					node:SetBorderColor(borderColor)
+					node:SetBackgroundColorFromString(backgroundColor)
+					if barColorEntry then
+						TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 					end
 					
 					node:SetFrameLevel(frameLevels.comboPoint)
