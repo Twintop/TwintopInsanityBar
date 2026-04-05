@@ -1897,7 +1897,7 @@ local function UpdateResourceBar()
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
 							local frameLevel = frameLevels.thresholdOver
 							
-							if metaActive and talents:IsTalentActive(spells.collapsingStar) then
+							if snapshots[spells.collapsingStar.id].buff.isActive and talents:IsTalentActive(spells.collapsingStar) then
 								showThreshold = true
 								local collapsingStarSnapshot = snapshots[spells.collapsingStar.id]
 								local resourceAmount = spells.collapsingStarThreshold.resource

@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.51-release (2026-04-06)
+## Demon Hunter
+### Devourer
+
+- Fix an issue where sometimes the Collapsing Star threshold line would continue to be shown even after exiting Void Metamorphosis.
+
+---
+
 # 12.0.1.50-release (2026-04-05)
 ## General
 
