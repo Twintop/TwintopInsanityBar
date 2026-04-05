@@ -17,6 +17,7 @@ local content = [====[
 ### Devourer
 
 - Fix an issue where sometimes the Collapsing Star threshold line would continue to be shown even after exiting Void Metamorphosis.
+- Fix an issue where sometimes the Void Ray threshold line would not be shown even after exiting Void Metamorphosis.
 
 ---
 
