@@ -42,6 +42,7 @@ end
 ---@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public angelicFeather TRB.Classes.SpellBase
 ---@field public powerWordShield TRB.Classes.SpellBase
+---@field public voidbinding TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -77,6 +78,13 @@ function TRB.Classes.Priest.HealerSpells:New()
 		id = 17,
 		isTalent = false,
 		baseline = true
+	})
+
+	self.voidbinding = TRB.Classes.SpellBase:New({
+		id = 462661,
+		versPercent = 0.2,
+		cdrPercent = 0.3,
+		duration = 30
 	})
 
 	return self

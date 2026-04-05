@@ -23,6 +23,9 @@ local content = [====[
 - Add optional new color indicators for Bone Shield when talented into Ossuary: one for the building range (1-5 stacks) and one for the threshold stack (5 stacks).
 
 ## Priest
+
+- Add some new detection methods for tracking the M+5 affix Voidbinding debuff (CDR). This should even out tracking of Holy Words and Power Words for Holy and Discipline, respectively.
+
 ### Shadow
 
 - Fix the base passive Insanity generation of Mind Flay (2 -> 3 per tick).
