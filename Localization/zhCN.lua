@@ -2547,4 +2547,21 @@ if locale == "zhCN" then
 	L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "战斗中少于 3 个符文冷却时变为该颜色。"
 	L["DeathKnightIndicatorRuneRegenOvercapColor"] = "符文恢复溢出中"
 
+	L["GradientDirectionDisabled"] = "已禁用"
+	L["GradientDirectionHorizontal"] = "水平"
+	L["GradientDirectionVertical"] = "垂直"
+	L["GradientDirectionDisabledAbbrev"] = "|cFFFF0000禁|r"
+	L["GradientDirectionHorizontalAbbrev"] = "水"
+	L["GradientDirectionVerticalAbbrev"] = "垂"
+	L["GradientBarFillOnlyTooltip"] = "渐变仅应用于进度条填充区域，边框和背景将使用第一种颜色。"
+	L["GradientStaggerTooltip"] = "渐变仅应用于醉拳池填充区域，不影响醉拳阈值线条。"
+	L["GradientDirectionButtonTooltip"] = "左键点击循环切换渐变方向：已禁用、水平、垂直。"
+	
+	L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "埋骨之所蓄力阶段 更改白骨之盾颜色"
+	L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "点选埋骨之所天赋后，为1-5层白骨之盾节点切换填充颜色。"
+	L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"] = "埋骨之所蓄力阶段颜色"
+	L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "埋骨之所阈值 更改白骨之盾颜色"
+	L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "点选埋骨之所天赋后，在阈值节点（5层）切换白骨之盾填充颜色，优先级高于蓄力阶段颜色。"
+	L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"] = "埋骨之所阈值颜色"
+
 end
