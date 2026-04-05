@@ -251,16 +251,26 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
-				base = { color = "FF0000FF" },
+				base = {
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
+				},
 				dragonrage = {
 					color = "FFFF6B00",
+					color2 = "FFFF6B00",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				dragonrageEnd = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled",
 					enabled = true,
 					targets = {
 						manaBar = { border = true },
@@ -269,15 +279,29 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
 			comboPoints = {
 				border = { color = "FF246759" },
 				background = { color = "66000000" },
-				base = { color = "FF33937F" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FF33937F",
+					color2 = "FF33937F",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -303,6 +327,8 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					dragonrageEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -311,6 +337,8 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 					},
 					dragonrage = {
 						color = "FFFF6B00",
+						color2 = "FFFF6B00",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -319,6 +347,8 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 					},
 					essenceBurst = {
 						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -427,10 +457,21 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
-				base = { color = "FF0000FF" },
-				innervate = { color = "FF00FF00", enabled = true },
+				base = {
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
+				},
+				innervate = {
+					color = "FF00FF00",
+					color2 = "FF00FF00",
+					gradientDirection = "disabled",
+					enabled = true
+				},
 				essenceBurst = {
 					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled",
 					enabled = true,
 					targets = {
 						manaBar = { border = true },
@@ -439,15 +480,29 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
 			comboPoints = {
 				border = { color = "FF246759" },
 				background = { color = "66000000" },
-				base = { color = "FF33937F" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FF33937F",
+					color2 = "FF33937F",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor=false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -457,6 +512,8 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					innervate = {
 						color = "FF00FF00",
+						color2 = "FF00FF00",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -465,6 +522,8 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 					},
 					essenceBurst = {
 						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -646,21 +705,33 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
-				base = { color = "FF0000FF" },
+				base = {
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
+				},
 				ebonMight = {
 					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled",
 					enabled = false
 				},
 				ebonMightEnd = {
 					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled",
 					enabled = false
 				},
 				ebonMightDropDuringCast = {
 					color = "FF550000",
+					color2 = "FF550000",
+					gradientDirection = "disabled",
 					enabled = false
 				},
 				essenceBurst = {
 					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled",
 					enabled = true,
 					targets = {
 						manaBar = { border = true },
@@ -670,15 +741,29 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
 			comboPoints = {
 				border = { color = "FF246759" },
 				background = { color = "66000000" },
-				base = { color = "FF33937F" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FF33937F",
+					color2 = "FF33937F",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor=false
 			},
 			bars = {
@@ -707,6 +792,8 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					ebonMightDropDuringCast = {
 						color = "FF550000",
+						color2 = "FF550000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = false, background = false },
@@ -716,6 +803,8 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					},
 					ebonMightEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = false, background = false },
@@ -725,6 +814,8 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					},
 					ebonMight = {
 						color = "FFFF9900",
+						color2 = "FFFF9900",
+						gradientDirection = "disabled",
 						enabled = false,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -734,6 +825,8 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					},
 					essenceBurst = {
 						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
@@ -945,10 +1038,13 @@ local function DevastationConstructEssenceBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -958,10 +1054,13 @@ local function DevastationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -971,10 +1070,13 @@ local function DevastationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1343,10 +1445,13 @@ local function PreservationConstructEssenceBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1356,10 +1461,13 @@ local function PreservationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1369,10 +1477,13 @@ local function PreservationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1758,10 +1869,13 @@ local function AugmentationConstructEssenceBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceEssence"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerColorPickerEssenceBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1771,10 +1885,13 @@ local function AugmentationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1784,10 +1901,13 @@ local function AugmentationConstructEssenceBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["EvokerEssenceColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30

@@ -67,14 +67,14 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
-				},
-				infusionOfLight = {
-					color = "FFFCE58E",
-					enabled = true
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -86,23 +86,49 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FFFFC800"
+					color = "FFFFC800",
+					color2 = "FFFFC800",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "infusionOfLight" },
+				gradientOrder = {},
+				indicatorColors = {
+					infusionOfLight = {
+						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							holyPowerBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -223,10 +249,14 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -238,23 +268,49 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FFFFC800"
+					color = "FFFFC800",
+					color2 = "FFFFC800",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "infusionOfLight" },
+				gradientOrder = {},
+				indicatorColors = {
+					infusionOfLight = {
+						color = "FFFCE58E",
+						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							holyPowerBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
 		},
 		displayText={
 			default = {
@@ -368,10 +424,14 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -383,23 +443,38 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FFFCE58E"
+					color = "FFFCE58E",
+					color2 = "FFFCE58E",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FFFFC800"
+					color = "FFFFC800",
+					color2 = "FFFFC800",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -589,34 +664,8 @@ local function HolyConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 2, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"])
 
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], false, true)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.infusionOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_infusionOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.infusionOfLightBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyInfusionOfLight"])
-	f.tooltip = L["PaladinHolyCheckboxInfusionOfLightTooltip"]
-	f:SetChecked(spec.colors.bar.infusionOfLight.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.infusionOfLight.enabled = self:GetChecked()
-	end)
-
-	controls.colors.infusionOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLight"], spec.colors.bar.infusionOfLight.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.infusionOfLight
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight")
-	end)
 end
 
 local function HolyConstructHolyPowerBarPanel(parent)
@@ -638,10 +687,13 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -651,10 +703,13 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -664,10 +719,13 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint
@@ -680,17 +738,23 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 end
 
@@ -860,6 +924,33 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLight"], L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"])
 end
 
+local function HolyConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 2
+	local specId = 1
+	local spec = TRB.Data.settings.paladin.holy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.paladin_holy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "infusionOfLight", label = L["PaladinHolyInfusionOfLight"], tooltip = L["PaladinHolyIndicatorInfusionOfLightTooltip"], colorLabel = L["PaladinHolyIndicatorInfusionOfLightColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "holyPowerBar", label = L["ResourceHolyPower"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Paladin_Holy",
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function HolyConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -913,6 +1004,7 @@ local function HolyConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, HolyConstructManaBarPanel },
 		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, HolyConstructHolyPowerBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, HolyConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, HolyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, HolyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, HolyConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, HolyConstructFontAndTextPanel },
@@ -1038,17 +1130,7 @@ local function ProtectionConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 2, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"], false, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 2, 2, yCoord, L["ResourceMana"])
 end
 
 local function ProtectionConstructHolyPowerBarPanel(parent)
@@ -1070,10 +1152,13 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1083,10 +1168,13 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1096,10 +1184,13 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Protection_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint
@@ -1112,17 +1203,23 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 end
 
@@ -1310,6 +1407,31 @@ local function ProtectionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 2, 2, yCoord, cache)
 end
 
+local function ProtectionConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.paladin.protection
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.paladin_protection
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 2, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "infusionOfLight", label = L["PaladinProtectionCheckboxInfusionOfLight"], tooltip = L["PaladinProtectionIndicatorInfusionOfLightTooltip"], colorLabel = L["PaladinProtectionIndicatorInfusionOfLightColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "holyPowerBar", label = L["ResourceHolyPower"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Paladin_Protection",
+	}))
+
+	yCoord = yCoord - 40
+end
+
 local function ProtectionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(2, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1343,6 +1465,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ProtectionConstructManaBarPanel },
 		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, ProtectionConstructHolyPowerBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ProtectionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ProtectionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
@@ -1467,17 +1590,7 @@ local function RetributionConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 2, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"], false, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceMana"])
 end
 
 local function RetributionConstructHolyPowerBarPanel(parent)
@@ -1499,10 +1612,13 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1512,10 +1628,13 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1525,10 +1644,13 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Retribution_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint
@@ -1541,17 +1663,23 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 end
 
@@ -1739,6 +1867,9 @@ local function RetributionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 2, 3, yCoord, cache)
 end
 
+--local function RetributionConstructIndicatorColorsPanel(parent)
+--end
+
 local function RetributionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(2, 3)
 	local namePrefix = className .. "_" .. specName
@@ -1772,6 +1903,7 @@ local function RetributionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RetributionConstructManaBarPanel },
 		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, RetributionConstructHolyPowerBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RetributionConstructHealthBarPanel },
+		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RetributionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, RetributionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, RetributionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, RetributionConstructFontAndTextPanel },

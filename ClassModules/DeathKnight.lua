@@ -110,7 +110,6 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.DeathKnight.BloodSpells
 	specCache.deathknight_blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
-	local spells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
 	
 	specCache.deathknight_blood.snapshotData.audio = {
 	}
@@ -415,8 +414,8 @@ local function RefreshLookupData_Blood()
 		local maxBoneShield = TRB.Data.character.maxBoneShield or 10
 		lookupLogic["$boneShieldStacks"] = boneShieldStacks
 		lookupLogic["$boneShieldStacksMax"] = maxBoneShield
-		if lookupChanged(prevState, "$boneShieldStacks", boneShieldStacks) then
-			lookup["$boneShieldStacks"] = tostring(boneShieldStacks)
+		if lookupChanged(prevState, "$boneShieldStacks", boneShieldStacks, nil, true) then
+			lookup["$boneShieldStacks"] = string.format("%s", boneShieldStacks)
 		end
 		if lookupChanged(prevState, "$boneShieldStacksMax", maxBoneShield) then
 			lookup["$boneShieldStacksMax"] = tostring(maxBoneShield)
@@ -649,40 +648,168 @@ local function UpdateSnapshot_Unholy()
 	UpdateSnapshot()
 end
 
+local function CountRunesOnCooldown()
+	local runes = TRB.Data.character.runes
+	local runesOnCooldown = 0
+	for i = 1, TRB.Data.character.maxResource2 or 0 do
+		if runes[i] and not runes[i].ready then
+			runesOnCooldown = runesOnCooldown + 1
+		end
+	end
+	return runesOnCooldown
+end
+
+local function GetDeathKnightIndicatorState(specSettings)
+	local sharedColors = specSettings.colors.shared
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local nodeOrder = sharedColors and sharedColors.nodeOrder
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+	local runesOnCooldown = CountRunesOnCooldown()
+	local conditionMap = {
+		borderOvercap = TRB.Data.character.inCombat,
+		runeRegenOvercap = TRB.Data.character.inCombat and runesOnCooldown < 3,
+	}
+
+	return indicatorColors, nodeOrder, gradientOrder, conditionMap
+end
+
+local function ApplyFlatIndicatorColors(barColorMap, indicatorColors, nodeOrder, conditionMap)
+	if not (indicatorColors and nodeOrder and conditionMap) then
+		return
+	end
+
+	for i = #nodeOrder, 1, -1 do
+		local key = nodeOrder[i]
+		local indicator = indicatorColors[key]
+		if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+			for barKey, elements in pairs(indicator.targets) do
+				local targetColors = barColorMap[barKey]
+				if targetColors and elements then
+					for elementKey, isTargeted in pairs(elements) do
+						if isTargeted then
+							targetColors[elementKey] = (elementKey == "bar") and indicator or indicator.color
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+local function GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
+	if not (indicatorColors and gradientOrder and conditionMap) then
+		return nil
+	end
+
+	for i = #gradientOrder, 1, -1 do
+		local key = gradientOrder[i]
+		local indicator = indicatorColors[key]
+		if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+			return indicator
+		end
+	end
+
+	return nil
+end
+
+local function BuildGradientCurves(specSettings, barKey, currentColors, gradientIndicator)
+	local curves = {}
+	if gradientIndicator and gradientIndicator.targets then
+		local targets = gradientIndicator.targets[barKey]
+		if targets then
+			if targets.border then
+				curves.border = Color:BuildResourceThresholdCurve(specSettings, currentColors.border, gradientIndicator.color)
+			end
+			if targets.bar then
+				curves.bar = Color:BuildResourceThresholdCurve(specSettings, currentColors.bar, gradientIndicator.color)
+			end
+			if targets.background then
+				curves.background = Color:BuildResourceThresholdCurve(specSettings, currentColors.background, gradientIndicator.color)
+			end
+		end
+	end
+	return curves
+end
+
+local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+	local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
+	local runicPowerBarColors = {
+		bar = specSettings.colors.bar.base,
+		border = specSettings.colors.bar.border.color,
+		background = specSettings.colors.bar.background.color,
+	}
+
+	ApplyFlatIndicatorColors({ runicPowerBar = runicPowerBarColors }, indicatorColors, nodeOrder, conditionMap)
+
+	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
+	local overcapCurves = BuildGradientCurves(specSettings, "runicPowerBar", runicPowerBarColors, gradientIndicator)
+
+	if overcapCurves.border then
+		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
+		primaryNode:SetBorderColorCurve(borderColorResult)
+	else
+		primaryNode:SetBorderColor(runicPowerBarColors.border)
+	end
+
+	if overcapCurves.bar then
+		local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+		primaryNode:SetColorCurve(barColorResult)
+	else
+		TRB.Functions.Color:ApplyFillColor(primaryNode, runicPowerBarColors.bar)
+	end
+
+	if overcapCurves.background then
+		local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+		primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+	else
+		primaryNode:SetBackgroundColorFromString(runicPowerBarColors.background)
+	end
+end
+
 ---Updates the rune display
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateRunes(specSettings, specCacheSettings)
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local cpBackgroundColor = specSettings.colors.comboPoints.background.color
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
+	local cpBorderColor = specSettings.colors.comboPoints.border.color
+	local cpBaseColor = specSettings.colors.comboPoints.base
+	local cpCooldownColor = specSettings.colors.comboPoints.cooldown
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
+	local runeRegenIndicator = indicatorColors and indicatorColors.runeRegenOvercap
+	local runeTargets = runeRegenIndicator and runeRegenIndicator.enabled and conditionMap.runeRegenOvercap
+		and runeRegenIndicator.targets and runeRegenIndicator.targets.runesBar or nil
+	local runeBarColors = {
+		bar = cpBaseColor,
+		border = cpBorderColor,
+		background = cpBackgroundColor,
+	}
 
-	-- Count runes on cooldown for overcap detection
-	local runesOnCooldown = 0
-	for i = 1, TRB.Data.character.maxResource2 do
-		if not runes[i].ready then
-			runesOnCooldown = runesOnCooldown + 1
-		end
+	ApplyFlatIndicatorColors({ runesBar = runeBarColors }, indicatorColors, nodeOrder, conditionMap)
+	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
+	local runeGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeBarColors, gradientIndicator)
+	local runeGradientResults = {}
+	if runeGradientCurves.border then
+		runeGradientResults.border = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.border)
 	end
-
-	-- Check if we should show overcap warning (fewer than 3 runes on cooldown while in combat)
-	local overcapSettings = specSettings.colors.comboPoints.overcap
-	local showOvercap = overcapSettings and overcapSettings.enabled and TRB.Data.character.inCombat and runesOnCooldown < 3
+	if runeGradientCurves.bar then
+		runeGradientResults.bar = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.bar)
+	end
+	if runeGradientCurves.background then
+		runeGradientResults.background = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.background)
+	end
 	
 	for x = 1, TRB.Data.character.maxResource2 do
 		local rune = runes[x]
-		local cpBorderColor = specSettings.colors.comboPoints.border.color
-		local cpColor = specSettings.colors.comboPoints.base.color
-		local cpBR = cpBackgroundRed
-		local cpBG = cpBackgroundGreen
-		local cpBB = cpBackgroundBlue
+		local runeBorderColor = runeBarColors.border
+		local runeColor = runeBarColors.bar
+		local runeBackgroundColor = runeBarColors.background
 
-		if not rune.ready then
-			cpColor = specSettings.colors.comboPoints.cooldown.color
-		elseif showOvercap then
-			-- Rune is ready and we're overcapping - use overcap color
-			cpColor = overcapSettings.color
+		if not rune.ready and not (runeTargets and runeTargets.bar) then
+			runeColor = cpCooldownColor
 		end
 		
 
@@ -690,38 +817,166 @@ local function UpdateRunes(specSettings, specCacheSettings)
 			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
 				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, rune.percentage, 1)
-				runeNode:SetBorderColor(cpBorderColor)
-				runeNode:SetColor(cpColor)
-				runeNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				if runeGradientResults.border then
+					runeNode:SetBorderColorCurve(runeGradientResults.border)
+				else
+					runeNode:SetBorderColor(runeBorderColor)
+				end
+				if runeGradientResults.bar then
+					runeNode:SetColorCurve(runeGradientResults.bar)
+				else
+					TRB.Functions.Color:ApplyFillColor(runeNode, runeColor)
+				end
+				if runeGradientResults.background then
+					runeNode:SetBackgroundColorCurve(runeGradientResults.background)
+				elseif runeBackgroundColor == cpBackgroundColor then
+					runeNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+				else
+					runeNode:SetBackgroundColorFromString(runeBackgroundColor)
+				end
 			end
 		end
 	end
 end
 
----Updates the Bone Shield bar display (Blood only)
+---Updates the Bone Shield bar display (Blood only).
+---Follows the same pattern as VDH Soul Fragments: secret value from GetSpellCastCount
+---is passed to SetBarNodeValue (stepped min/max handles fill), and Ossuary uses
+---positional coloring (node index >= threshold) since the stack count is a secret value
+---that cannot be compared directly.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateBoneShield(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
 	local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
 	local maxBoneShield = TRB.Data.character.maxBoneShield or 10
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
-	if barGroups and barGroups.boneShield then
-		local boneShieldColors = specSettings.colors.bars.boneShield
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(boneShieldColors.background.color, true)
-		local cpBorderColor = boneShieldColors.border.color
-		local cpFillColor = boneShieldColors.bar.color
+	if not (barGroups and barGroups.boneShield) then
+		return
+	end
 
-		for x = 1, maxBoneShield do
-			local boneShieldNode = barGroups.boneShield:GetNode(x)
-			if boneShieldNode then
-				-- All nodes get the same raw value; each node's stepped
-				-- SetMinMax(x-1, x) handles fill via StatusBar clamping
-				Bar:SetBarNodeValue(specCacheSettings, "boneShield" .. x, boneShieldNode, boneShieldStacks)
-				boneShieldNode:SetBorderColor(cpBorderColor)
-				boneShieldNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
-				boneShieldNode:SetColor(cpFillColor)
+	local defaultBoneShieldColors = TRB.Functions.Settings:DefaultBoneShieldBarColors()
+	local storedBoneShieldColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.boneShield or {}
+	local boneShieldColors = {
+		bar = storedBoneShieldColors.bar or defaultBoneShieldColors.bar,
+		border = storedBoneShieldColors.border or defaultBoneShieldColors.border,
+		background = storedBoneShieldColors.background or defaultBoneShieldColors.background,
+		ossuary = storedBoneShieldColors.ossuary or defaultBoneShieldColors.ossuary,
+		ossuaryThreshold = storedBoneShieldColors.ossuaryThreshold or defaultBoneShieldColors.ossuaryThreshold,
+	}
+
+	local cpBackgroundColor = boneShieldColors.background.color
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
+	local cpBorderColor = boneShieldColors.border.color
+
+	-- Ossuary positional coloring: stack count is a secret value and cannot be compared
+	-- directly — positional coloring is the only approach (same as VDH penultimate/final).
+	-- ossuaryBuildingEnabled: nodes 1 through (threshold-1) get the ossuary building range color
+	-- ossuaryThresholdEnabled: the node at exactly the threshold gets the ossuary threshold color
+	local ossuaryStackThreshold = nil
+	local ossuaryBuildingEnabled = false
+	local ossuaryThresholdEnabled = false
+	if talents and talents:IsTalentActive(spells.ossuary) then
+		ossuaryStackThreshold = spells.ossuary.attributes and spells.ossuary.attributes.stackThreshold or 5
+		ossuaryBuildingEnabled = boneShieldColors.ossuary and boneShieldColors.ossuary.enabled or false
+		ossuaryThresholdEnabled = boneShieldColors.ossuaryThreshold and boneShieldColors.ossuaryThreshold.enabled or false
+	end
+
+	-- Compute indicator overrides for bone shield elements (nil = use default)
+	local bsBarOverride, bsBorderOverride, bsBackgroundOverride = nil, nil, nil
+	local sharedColors = specSettings.colors.shared
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+	if nodeOrder and indicatorColors then
+		local _, _, _, conditionMap = GetDeathKnightIndicatorState(specSettings)
+
+		-- Apply flat indicators to bone shield targets (reverse iteration, last writer wins)
+		for i = #nodeOrder, 1, -1 do
+			local key = nodeOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] then
+				local bsTargets = indicator.targets and indicator.targets.boneShield
+				if bsTargets then
+					if bsTargets.bar then bsBarOverride = indicator end
+					if bsTargets.border then bsBorderOverride = indicator.color end
+					if bsTargets.background then bsBackgroundOverride = indicator.color end
+				end
+			end
+		end
+	end
+
+	-- Build gradient curves for bone shield targets (border/background, uses runic power scale)
+	local bsOvercapCurves = {}
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+	if gradientOrder and indicatorColors then
+		local _, _, _, conditionMap = GetDeathKnightIndicatorState(specSettings)
+		for i = #gradientOrder, 1, -1 do
+			local key = gradientOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+				local bsTargets = indicator.targets and indicator.targets.boneShield
+				if bsTargets then
+					if bsTargets.border then
+						bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, indicator.color)
+					end
+					if bsTargets.background then
+						bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, indicator.color)
+					end
+				end
+				break
+			end
+		end
+	end
+
+	-- Update all Bone Shield nodes with positional coloring + indicator overrides
+	for x = 1, maxBoneShield do
+		local boneShieldNode = barGroups.boneShield:GetNode(x)
+		if boneShieldNode then
+			-- All nodes get the same raw secret value; each node's stepped
+			-- SetMinMax(x-1, x) handles fill via StatusBar clamping
+			Bar:SetBarNodeValue(specCacheSettings, "boneShield" .. x, boneShieldNode, boneShieldStacks)
+
+			-- Positional coloring:
+			-- Nodes 1 through threshold: ossuary color (if enabled)
+			-- Node at exact threshold: ossuaryThreshold color overrides ossuary (if enabled)
+			-- Nodes above threshold: base color
+			local boneShieldColor = boneShieldColors.bar
+			if ossuaryStackThreshold then
+				if ossuaryBuildingEnabled and x <= ossuaryStackThreshold then
+					boneShieldColor = boneShieldColors.ossuary
+				end
+				if ossuaryThresholdEnabled and x == ossuaryStackThreshold then
+					boneShieldColor = boneShieldColors.ossuaryThreshold
+				end
+			end
+
+			-- Flat indicator override (overrides positional coloring)
+			if bsBarOverride then
+				boneShieldColor = bsBarOverride
+			end
+			TRB.Functions.Color:ApplyFillColor(boneShieldNode, boneShieldColor)
+
+			-- Border: gradient > flat indicator > default
+			if bsOvercapCurves.border then
+				local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, bsOvercapCurves.border)
+				boneShieldNode:SetBorderColorCurve(borderResult)
+			else
+				boneShieldNode:SetBorderColor(bsBorderOverride or cpBorderColor)
+			end
+
+			-- Background: gradient > flat indicator > default
+			if bsOvercapCurves.background then
+				local bgResult = UnitPowerPercent("player", TRB.Data.resource, true, bsOvercapCurves.background)
+				boneShieldNode:SetBackgroundColorCurve(bgResult)
+			else
+				if bsBackgroundOverride then
+					boneShieldNode:SetBackgroundColorFromString(bsBackgroundOverride)
+				else
+					boneShieldNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+				end
 			end
 		end
 	end
@@ -763,20 +1018,9 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Blood()
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
-
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-					primaryNode:SetBorderColorCurve(borderColorResult)
-				else
-					primaryNode:SetBorderColor(barBorderColor)
-				end
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -784,8 +1028,6 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -873,20 +1115,9 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
-
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-					primaryNode:SetBorderColorCurve(borderColorResult)
-				else
-					primaryNode:SetBorderColor(barBorderColor)
-				end
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -894,8 +1125,6 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -978,20 +1207,9 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Unholy()
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				local barColor = specSettings.colors.bar.base.color
-				local barBorderColor = specSettings.colors.bar.border.color
-
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
-					primaryNode:SetBorderColorCurve(borderColorResult)
-				else
-					primaryNode:SetBorderColor(barBorderColor)
-				end
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -999,8 +1217,6 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0

@@ -294,7 +294,7 @@ local function ConstructResourceBar(settings)
 					)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1104,7 +1104,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1149,7 +1149,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1210,7 +1210,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1315,7 +1315,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1360,7 +1360,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1421,7 +1421,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1481,7 +1481,7 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and conditionMap[key] then
 							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
 							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator.color end
+								if sfTargets.bar then sfBarOverride = indicator end
 								if sfTargets.border then sfBorderOverride = indicator.color end
 								if sfTargets.background then sfBackgroundOverride = indicator.color end
 							end
@@ -1527,18 +1527,18 @@ local function UpdateResourceBar()
 							Bar:SetBarNodeValue(specCacheSettings, "soulFragment" .. x, cpNode, soulFragments)
 
 							-- Positional coloring: base for 1-4, penultimate for 5, final for 6
-							local cpColor = specSettings.colors.comboPoints.base.color
+							local cpColor = specSettings.colors.comboPoints.base
 							if x == maxSoulFragments then
-								cpColor = specSettings.colors.comboPoints.final.color
+								cpColor = specSettings.colors.comboPoints.final
 							elseif x == (maxSoulFragments - 1) then
-								cpColor = specSettings.colors.comboPoints.penultimate.color
+								cpColor = specSettings.colors.comboPoints.penultimate
 							end
 
 							-- Flat indicator override for soul fragment fill (overrides positional coloring)
 							if sfBarOverride then
 								cpColor = sfBarOverride
 							end
-							cpNode:SetColor(cpColor)
+							TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 
 							-- Border: gradient > flat indicator > default
 							if sfOvercapCurves.border then
@@ -1667,7 +1667,7 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
 					local barBackgroundColor = specSettings.colors.bar.background.color
 
@@ -1702,7 +1702,7 @@ local function UpdateResourceBar()
 										if targetColors and elements then
 											for elemKey, isTargeted in pairs(elements) do
 												if isTargeted then
-													targetColors[elemKey] = indicator.color
+													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 												end
 											end
 										end
@@ -1763,7 +1763,7 @@ local function UpdateResourceBar()
 						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
 						primaryNode:SetColorCurve(barColorResult)
 					else
-						primaryNode:SetColor(barColor)
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 					end
 
 					-- Apply background
@@ -1791,11 +1791,11 @@ local function UpdateResourceBar()
 				
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
-				local cpColor = specSettings.colors.comboPoints.base.color
+				local cpColor = specSettings.colors.comboPoints.base
 
 				-- Collapsing Star contextual base color (not an indicator)
 				if metaActive then
-					cpColor = specSettings.colors.comboPoints.collapsingStar.color
+					cpColor = specSettings.colors.comboPoints.collapsingStar
 				end
 
 				-- Compute indicator overrides for soul fragment elements
@@ -1818,7 +1818,7 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and sfConditionMap[key] then
 							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
 							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator.color end
+								if sfTargets.bar then sfBarOverride = indicator end
 								if sfTargets.border then sfBorderOverride = indicator.color end
 								if sfTargets.background then sfBackgroundOverride = indicator.color end
 							end
@@ -1874,7 +1874,7 @@ local function UpdateResourceBar()
 							sfNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 						end
 
-						sfNode:SetColor(cpColor)
+						TRB.Functions.Color:ApplyFillColor(sfNode, cpColor)
 
 						-- Background: gradient > flat indicator > default
 						if sfOvercapCurves.background then
@@ -2282,7 +2282,7 @@ function TRB.Functions.Class:CheckCharacter()
 								)
 								node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 								node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
-								node:SetColor(sharedSettings.colors.comboPoints.base.color)
+								TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
 								node:SetFrameLevel(frameLevels.comboPoint)
 							end
 						end
@@ -2546,7 +2546,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-				node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end

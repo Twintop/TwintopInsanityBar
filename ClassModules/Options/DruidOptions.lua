@@ -374,17 +374,42 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				border = { color = "FFC16920" },
 				borderOvercap = { color = "FFFF0000", enabled = true },
 				background = { color = "66000000" },
-				base = { color = "FFFF7C0A" },
-				lunar = { color = "FF144D72", enabled = true },
-				solar = { color = "FFFFEE00", enabled = true },
-				celestial = { color = "FF4A95CE", enabled = true },
-				eclipseEnd = { color = "FFFF0000" },
+				base = {
+					color = "FFFF7C0A",
+					color2 = "FFFF7C0A",
+					gradientDirection = "disabled"
+				},
+				lunar = {
+					color = "FF144D72",
+					color2 = "FF144D72",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				solar = {
+					color = "FFFFEE00",
+					color2 = "FFFFEE00",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				celestial = {
+					color = "FF4A95CE",
+					color2 = "FF4A95CE",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				eclipseEnd = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				flashSsEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -421,6 +446,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					eclipseEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							astralPowerBar = { bar = true, border = false, background = false },
@@ -428,6 +455,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 					},
 					celestial = {
 						color = "FF4A95CE",
+						color2 = "FF4A95CE",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							astralPowerBar = { bar = true, border = false, background = false },
@@ -435,6 +464,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 					},
 					solar = {
 						color = "FFFFEE00",
+						color2 = "FFFFEE00",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							astralPowerBar = { bar = true, border = false, background = false },
@@ -442,6 +473,8 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 					},
 					lunar = {
 						color = "FF144D72",
+						color2 = "FF144D72",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							astralPowerBar = { bar = true, border = false, background = false },
@@ -784,12 +817,33 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				borderOvercap = { color = "FFFF0000", enabled = true },
 				borderStealth = { color = "FF000000", enabled = true },
 				background = { color = "66000000" },
-				base = { color = "FFFFFF00" },
-				clearcasting = { color = "FF4A95CE", enabled = true },
-				maxBite = { color = "FF009900", enabled = true },
-				apexPredator = { color = "FFE75480", enabled = true },
+				base = {
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
+				},
+				clearcasting = {
+					color = "FF4A95CE",
+					color2 = "FF4A95CE",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				maxBite = {
+					color = "FF009900",
+					color2 = "FF009900",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				apexPredator = {
+					color = "FFE75480",
+					color2 = "FFE75480",
+					gradientDirection = "disabled",
+					enabled = true
+				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -797,11 +851,22 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 			comboPoints = {
 				border = { color = "FFFF7C0A" },
 				background = { color = "66000000" },
-				base = { color = "FFFFFF00" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor=false,
-				consistentUnfilledColor = false,
 				generation = true
 			},
 			threshold = {
@@ -833,6 +898,8 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					apexPredator = {
 						color = "FFE75480",
+						color2 = "FFE75480",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = true, border = false, background = false },
@@ -840,6 +907,8 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					},
 					ravage = {
 						color = "FFF4B183",
+						color2 = "FFF4B183",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							comboPoints = { bar = true, border = false, background = false },
@@ -1034,16 +1103,26 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				border = { color = "FFC21807" },
 				borderOvercap = { color = "FF800000", enabled = true },
 				background = { color = "66000000" },
-				base = { color = "FFFF0000" },
+				base = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				berserk = {
 					color = "FFFFCC55",
+					color2 = "FFFFCC55",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				berserkEnd = {
-					color = "FFFF5555"
+					color = "FFFF5555",
+					color2 = "FFFF5555",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -1075,6 +1154,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					berserkEnd = {
 						color = "FFFF5555",
+						color2 = "FFFF5555",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							rageBar = { bar = true, border = false, background = false },
@@ -1082,6 +1163,8 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 					},
 					berserk = {
 						color = "FFFFCC55",
+						color2 = "FFFFCC55",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							rageBar = { bar = true, border = false, background = false },
@@ -1185,13 +1268,38 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			bar = {
 				border = { color = "FF000099" },
 				background = { color = "66000000" },
-				base = { color = "FF0000FF" },
-				noEfflorescence = { color = "FFFF0000", enabled = true },
-				clearcasting = { color = "FF4A95CE", enabled = true },
-				incarnation = { color = "FF005500", enabled = true },
-				incarnationEnd = { color = "FFDD5500" },
+				base = {
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
+				},
+				noEfflorescence = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				clearcasting = {
+					color = "FF4A95CE",
+					color2 = "FF4A95CE",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				incarnation = {
+					color = "FF005500",
+					color2 = "FF005500",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				incarnationEnd = {
+					color = "FFDD5500",
+					color2 = "FFDD5500",
+					gradientDirection = "disabled"
+				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -1214,6 +1322,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					incarnationEnd = {
 						color = "FFDD5500",
+						color2 = "FFDD5500",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -1221,6 +1331,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					},
 					incarnation = {
 						color = "FF005500",
+						color2 = "FF005500",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -1228,6 +1340,8 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					},
 					noEfflorescence = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
@@ -2050,24 +2164,23 @@ local function FeralConstructComboPointsBarPanel(parent)
 		spec.colors.comboPoints.generation = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
-
-	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.border
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -2081,23 +2194,23 @@ local function FeralConstructComboPointsBarPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
 
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["DruidFeralCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)

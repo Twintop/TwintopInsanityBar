@@ -57,6 +57,7 @@ end
 
 
 ---@class TRB.Classes.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
+---@field flashOfLight TRB.Classes.SpellBase
 TRB.Classes.Paladin.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Paladin.ProtectionSpells.__index = TRB.Classes.Paladin.ProtectionSpells
 
@@ -64,6 +65,11 @@ function TRB.Classes.Paladin.ProtectionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Paladin.ProtectionSpells) --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+
+	self.flashOfLight = TRB.Classes.SpellBase:New({
+		id = 19750,
+		baseline = true
+	})
     
     return self
 end

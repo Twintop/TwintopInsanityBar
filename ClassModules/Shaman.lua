@@ -740,7 +740,7 @@ local function UpdateResourceBar()
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -817,12 +817,85 @@ local function UpdateResourceBar()
 					or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
 				local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
 					or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local nodeOrder = sharedColors and sharedColors.nodeOrder
+				local gradientOrder = sharedColors and sharedColors.gradientOrder
+				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+				local ascendanceEndMet = false
 
-				-- Bar color priority: Earth Shock/EB > Earthquake > base
-				if earthShockUsable and specSettings.colors.bar.earthShock.enabled then
-					barColor = specSettings.colors.bar.earthShock.color
-				elseif earthquakeUsable and specSettings.colors.bar.earthquake.enabled then
-					barColor = specSettings.colors.bar.earthquake.color
+				if ascendanceActive then
+					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+					local timeThreshold = 0
+					if specSettings.endOf.ascendance.mode == "gcd" then
+						local gcd = Character:GetCurrentGCDTime()
+						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+					elseif specSettings.endOf.ascendance.mode == "time" then
+						timeThreshold = specSettings.endOf.ascendance.timeMax
+					end
+					ascendanceEndMet = timeLeft <= timeThreshold
+				end
+
+				local conditionMap = {
+					ascendanceEnd = ascendanceActive and ascendanceEndMet,
+					earthShock = earthShockUsable,
+					earthquake = earthquakeUsable,
+					ascendance = ascendanceActive,
+					borderOvercap = affectingCombat,
+				}
+				local maelstromBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local barColorMap = { maelstromBar = maelstromBarColors }
+
+				if nodeOrder and indicatorColors then
+					for i = #nodeOrder, 1, -1 do
+						local key = nodeOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				local overcapIndicator = nil
+				if gradientOrder and indicatorColors then
+					for i = #gradientOrder, 1, -1 do
+						local key = gradientOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+							overcapIndicator = indicator
+							break
+						end
+					end
+				end
+
+				barColor = maelstromBarColors.bar
+				barBorderColor = maelstromBarColors.border
+				barBackgroundColor = maelstromBarColors.background
+
+				local overcapCurves = {}
+				if overcapIndicator and overcapIndicator.targets then
+					local maelstromTargets = overcapIndicator.targets.maelstromBar
+					if maelstromTargets then
+						if maelstromTargets.border then
+							overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+						end
+						if maelstromTargets.bar then
+							overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+						end
+						if maelstromTargets.background then
+							overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+						end
+					end
 				end
 
 				-- Flash and audio cue are tied to Earth Shock / Elemental Blast only
@@ -842,43 +915,26 @@ local function UpdateResourceBar()
 					snapshotData.audio.playedEsCue = false
 				end
 
-				if snapshots[spells.ascendance.id].buff.isActive then
-					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-					local timeThreshold = 0
-					local useEndOfAscendanceColor = false
-
-					if specSettings.endOf.ascendance.enabled then
-						useEndOfAscendanceColor = true
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
-					end
-
-					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.ascendanceEnd.color
-					elseif earthShockUsable and specSettings.colors.bar.earthShock.enabled then
-						barColor = specSettings.colors.bar.earthShock.color
-					elseif earthquakeUsable and specSettings.colors.bar.earthquake.enabled then
-						barColor = specSettings.colors.bar.earthquake.color
-					elseif specSettings.colors.bar.ascendance.enabled then
-						barColor = specSettings.colors.bar.ascendance.color
-					end
-				end
-
-				-- Apply overcap border color if enabled
-				if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+				if overcapCurves.border then
+					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
 					primaryNode:SetBorderColorCurve(borderColorResult)
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
 
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				if overcapCurves.bar then
+					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+					primaryNode:SetColorCurve(barColorResult)
+				else
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
+				end
+
+				if overcapCurves.background then
+					local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+					primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+				else
+					primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -895,18 +951,122 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
 			end
 
-			-- Mana bar update (Balance only)
+			-- Mana bar update (Elemental only)
 			if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
 					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
+					local affectingCombat = TRB.Data.character.inCombat
+					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+					local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
+						or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
+					local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
+						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+					local gradientOrder = sharedColors and sharedColors.gradientOrder
+					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+					local ascendanceEndMet = false
+
+					if ascendanceActive then
+						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+						local timeThreshold = 0
+						if specSettings.endOf.ascendance.mode == "gcd" then
+							local gcd = Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+						elseif specSettings.endOf.ascendance.mode == "time" then
+							timeThreshold = specSettings.endOf.ascendance.timeMax
+						end
+						ascendanceEndMet = timeLeft <= timeThreshold
+					end
+
+					local conditionMap = {
+						ascendanceEnd = ascendanceActive and ascendanceEndMet,
+						earthShock = earthShockUsable,
+						earthquake = earthquakeUsable,
+						ascendance = ascendanceActive,
+						borderOvercap = affectingCombat,
+					}
+					local manaBarColors = {
+						bar = specSettings.colors.bars.mana.bar.color,
+						border = specSettings.colors.bars.mana.border.color,
+						background = specSettings.colors.bars.mana.background.color,
+					}
+					local barColorMap = { manaBar = manaBarColors }
+
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+								for barKey, elements in pairs(indicator.targets) do
+									local targetColors = barColorMap[barKey]
+									if targetColors and elements then
+										for elemKey, isTargeted in pairs(elements) do
+											if isTargeted then
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+
+					local overcapIndicator = nil
+					if gradientOrder and indicatorColors then
+						for i = #gradientOrder, 1, -1 do
+							local key = gradientOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+								overcapIndicator = indicator
+								break
+							end
+						end
+					end
+
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
-					manaNode:SetColor(specSettings.colors.bars.mana.bar.color)
-					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
-					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
+
+					local manaOvercapCurves = {}
+					if overcapIndicator and overcapIndicator.targets then
+						local manaTargets = overcapIndicator.targets.manaBar
+						if manaTargets then
+							if manaTargets.border then
+								manaOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.border, overcapIndicator.color)
+							end
+							if manaTargets.bar then
+								manaOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.bar, overcapIndicator.color)
+							end
+							if manaTargets.background then
+								manaOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.background, overcapIndicator.color)
+							end
+						end
+					end
+
+					if manaOvercapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.border)
+						manaNode:SetBorderColorCurve(borderColorResult)
+					else
+						manaNode:SetBorderColor(manaBarColors.border)
+					end
+
+					if manaOvercapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.bar)
+						manaNode:SetColorCurve(barColorResult)
+					else
+						TRB.Functions.Color:ApplyFillColor(manaNode, manaBarColors.bar)
+					end
+
+					if manaOvercapCurves.background then
+						local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.background)
+						manaNode:SetBackgroundColorCurve(backgroundColorResult)
+					else
+						manaNode:SetBackgroundColorFromString(manaBarColors.background)
+					end
 				end
 			end
 		end
@@ -928,38 +1088,61 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				
-				if snapshots[spells.ascendance.id].buff.isActive then
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local nodeOrder = sharedColors and sharedColors.nodeOrder
+				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+				local ascendanceEndMet = false
+
+				if ascendanceActive then
 					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 					local timeThreshold = 0
-					local useEndOfAscendanceColor = false
-
-					if specSettings.endOf.ascendance.enabled then
-						useEndOfAscendanceColor = true
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
+					if specSettings.endOf.ascendance.mode == "gcd" then
+						local gcd = Character:GetCurrentGCDTime()
+						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+					elseif specSettings.endOf.ascendance.mode == "time" then
+						timeThreshold = specSettings.endOf.ascendance.timeMax
 					end
+					ascendanceEndMet = timeLeft <= timeThreshold
+				end
 
-					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.ascendanceEnd.color
-					elseif specSettings.colors.bar.ascendance.enabled then
-						barColor = specSettings.colors.bar.ascendance.color
+				local conditionMap = {
+					ascendanceEnd = ascendanceActive and ascendanceEndMet,
+					ascendance = ascendanceActive,
+				}
+				local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local barColorMap = { manaBar = manaBarColors }
+
+				if nodeOrder and indicatorColors then
+					for i = #nodeOrder, 1, -1 do
+						local key = nodeOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
 					end
 				end
 
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 			
@@ -967,13 +1150,55 @@ local function UpdateResourceBar()
 				refreshText = true
 				-- Update Maelstrom Weapon stacks using BarNodes
 				if barGroups.secondary then
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 					local maxStacks = spells.maelstromWeapon.maxStacks
 					local currentStacks = snapshots[spells.maelstromWeapon.id].buff.applications
 					local compressedView = specSettings.colors.comboPoints.compressedView
 					local displayNodes = compressedView and math.ceil(maxStacks / 2) or maxStacks
-					
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+					local ascendanceEndMet = false
+
+					if ascendanceActive then
+						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+						local timeThreshold = 0
+						if specSettings.endOf.ascendance.mode == "gcd" then
+							local gcd = Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+						elseif specSettings.endOf.ascendance.mode == "time" then
+							timeThreshold = specSettings.endOf.ascendance.timeMax
+						end
+						ascendanceEndMet = timeLeft <= timeThreshold
+					end
+
+					local conditionMap = {
+						ascendanceEnd = ascendanceActive and ascendanceEndMet,
+						ascendance = ascendanceActive,
+					}
+					local mwBarOverride = nil
+					local mwBorderOverride = nil
+					local mwBackgroundOverride = nil
+
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] then
+								local mwTargets = indicator.targets and indicator.targets.maelstromWeaponBar
+								if mwTargets then
+									if mwTargets.bar then mwBarOverride = indicator end
+									if mwTargets.border then mwBorderOverride = indicator.color end
+									if mwTargets.background then mwBackgroundOverride = indicator.color end
+								end
+							end
+						end
+					end
+
+					local cpBackgroundColor = mwBackgroundOverride or specSettings.colors.comboPoints.background.color
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
+					local cpBorderColor = mwBorderOverride or specSettings.colors.comboPoints.border.color
+					local barOverrideActive = mwBarOverride ~= nil
 					
 					if compressedView then
 						-- Compressed view: 5 nodes representing 10 stacks
@@ -985,7 +1210,7 @@ local function UpdateResourceBar()
 						for nodeIndex = 1, displayNodes do
 							local stackNode = barGroups.secondary:GetNode(nodeIndex)
 							if stackNode then
-								local cpColor = specSettings.colors.comboPoints.base.color
+								local cpColor = mwBarOverride or specSettings.colors.comboPoints.base
 								local isFilled = false
 								local isOverflow = false
 								
@@ -994,34 +1219,38 @@ local function UpdateResourceBar()
 									-- This node is in the overflow range (stacks 6-10)
 									isFilled = true
 									isOverflow = true
-									cpColor = specSettings.colors.comboPoints.overflowBase.color
+									if not barOverrideActive then
+										cpColor = specSettings.colors.comboPoints.overflowBase
+									end
 								elseif nodeIndex <= firstHalf then
 									-- This node is in the base range (stacks 1-5)
 									isFilled = true
 									isOverflow = false
-									cpColor = specSettings.colors.comboPoints.base.color
+									if not barOverrideActive then
+										cpColor = specSettings.colors.comboPoints.base
+									end
 								end
 								
 								-- Apply special colors at specific stack counts
-								if isFilled and isOverflow then
+								if isFilled and isOverflow and not barOverrideActive then
 									-- Check for penultimate (9 stacks) or final (10 stacks)
 									if currentStacks == maxStacks then
 										-- At max stacks (10): sameColor makes all overflow nodes final, otherwise only node 5
 										if specSettings.comboPoints.sameColor or nodeIndex == displayNodes then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif nodeIndex == displayNodes - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										end
 									elseif currentStacks == maxStacks - 1 then
 										-- At penultimate stacks (9): sameColor makes all overflow nodes penultimate
 										if specSettings.comboPoints.sameColor or nodeIndex == secondHalf then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										end
 									end
-								elseif isFilled and not isOverflow then
+								elseif isFilled and not isOverflow and not barOverrideActive then
 									-- Use fiveStack color for the 5th node, or all base nodes when overflow is present
 									if secondHalf > 0 or nodeIndex == displayNodes then
-										cpColor = specSettings.colors.comboPoints.fiveStack.color
+										cpColor = specSettings.colors.comboPoints.fiveStack
 									end
 								end
 								
@@ -1032,7 +1261,7 @@ local function UpdateResourceBar()
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
-								stackNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
@@ -1042,7 +1271,7 @@ local function UpdateResourceBar()
 						local halfPoint = math.ceil(maxStacks / 2) -- 5 for 10 stacks
 						
 						for x = 1, maxStacks do
-							local cpColor = specSettings.colors.comboPoints.base.color
+							local cpColor = mwBarOverride or specSettings.colors.comboPoints.base
 							local isFilled = currentStacks >= x
 
 							local stackNode = barGroups.secondary:GetNode(x)
@@ -1051,31 +1280,31 @@ local function UpdateResourceBar()
 									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
 									
 									-- Determine color based on position and sameColor setting
-									if specSettings.comboPoints.sameColor then
+									if not barOverrideActive and specSettings.comboPoints.sameColor then
 										-- sameColor: all filled nodes share the highest applicable color
 										if currentStacks == maxStacks then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif currentStacks == maxStacks - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif currentStacks > halfPoint then
-											cpColor = specSettings.colors.comboPoints.overflowBase.color
+											cpColor = specSettings.colors.comboPoints.overflowBase
 										elseif currentStacks == halfPoint then
-											cpColor = specSettings.colors.comboPoints.fiveStack.color
+											cpColor = specSettings.colors.comboPoints.fiveStack
 										else
-											cpColor = specSettings.colors.comboPoints.base.color
+											cpColor = specSettings.colors.comboPoints.base
 										end
-									else
+									elseif not barOverrideActive then
 										-- Per-node coloring
 										if x == maxStacks then
-											cpColor = specSettings.colors.comboPoints.final.color
+											cpColor = specSettings.colors.comboPoints.final
 										elseif x == maxStacks - 1 then
-											cpColor = specSettings.colors.comboPoints.penultimate.color
+											cpColor = specSettings.colors.comboPoints.penultimate
 										elseif x > halfPoint then
-											cpColor = specSettings.colors.comboPoints.overflowBase.color
+											cpColor = specSettings.colors.comboPoints.overflowBase
 										elseif x == halfPoint then
-											cpColor = specSettings.colors.comboPoints.fiveStack.color
+											cpColor = specSettings.colors.comboPoints.fiveStack
 										else
-											cpColor = specSettings.colors.comboPoints.base.color
+											cpColor = specSettings.colors.comboPoints.base
 										end
 									end
 								else
@@ -1083,7 +1312,7 @@ local function UpdateResourceBar()
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
-								stackNode:SetColor(cpColor)
+								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
@@ -1158,33 +1387,56 @@ local function UpdateResourceBar()
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 
-				if snapshots[spells.ascendance.id].buff.isActive then
+				local barBackgroundColor = specSettings.colors.bar.background.color
+				local sharedColors = specSettings.colors.shared
+				local indicatorColors = sharedColors and sharedColors.indicatorColors
+				local nodeOrder = sharedColors and sharedColors.nodeOrder
+				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+				local ascendanceEndMet = false
+
+				if ascendanceActive then
 					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 					local timeThreshold = 0
-					local useEndOfAscendanceColor = false
-
-					if specSettings.endOf.ascendance.enabled then
-						useEndOfAscendanceColor = true
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
+					if specSettings.endOf.ascendance.mode == "gcd" then
+						local gcd = Character:GetCurrentGCDTime()
+						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+					elseif specSettings.endOf.ascendance.mode == "time" then
+						timeThreshold = specSettings.endOf.ascendance.timeMax
 					end
+					ascendanceEndMet = timeLeft <= timeThreshold
+				end
 
-					if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-						barColor = specSettings.colors.bar.ascendanceEnd.color
-					elseif specSettings.colors.bar.ascendance.enabled then
-						barColor = specSettings.colors.bar.ascendance.color
+				local conditionMap = {
+					ascendanceEnd = ascendanceActive and ascendanceEndMet,
+					ascendance = ascendanceActive,
+				}
+				local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+				local barColorMap = { manaBar = manaBarColors }
+
+				if nodeOrder and indicatorColors then
+					for i = #nodeOrder, 1, -1 do
+						local key = nodeOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
 					end
 				end
 
-				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 

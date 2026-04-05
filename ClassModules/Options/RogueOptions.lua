@@ -166,10 +166,14 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -181,19 +185,26 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				echoingReprimand = {
-					color = "FF68CCEF"
+					color = "FF68CCEF",
+					color2 = "FF68CCEF",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false,
 			},
 			threshold = {
 				under = {
@@ -220,6 +231,33 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"borderStealth"
+				},
+				gradientOrder = {
+					"borderOvercap"
+				},
+				indicatorColors = {
+					borderStealth = {
+						color = "FF000000",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							comboPointsBar = { bar = false, border = false, background = false }
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							comboPointsBar = { bar = false, border = false, background = false }
+						}
+					}
+				}
+			},
 		},
 		displayText={
 			default = {
@@ -435,10 +473,14 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -450,19 +492,26 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				echoingReprimand = {
-					color = "FF68CCEF"
+					color = "FF68CCEF",
+					color2 = "FF68CCEF",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false
 			},
 			threshold = {
 				under = {
@@ -493,6 +542,33 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				shared = {
+					nodeOrder = {
+						"borderStealth"
+					},
+					gradientOrder = {
+						"borderOvercap"
+					},
+					indicatorColors = {
+						borderStealth = {
+							color = "FF000000",
+							enabled = true,
+							targets = {
+								energyBar = { bar = false, border = true, background = false },
+								comboPointsBar = { bar = false, border = false, background = false }
+							}
+						},
+						borderOvercap = {
+							color = "FFFF0000",
+							enabled = true,
+							isGradient = true,
+							targets = {
+								energyBar = { bar = false, border = true, background = false },
+								comboPointsBar = { bar = false, border = false, background = false }
+							}
+						}
+					}
+				},
 		},
 		displayText={
 			default = {
@@ -701,18 +777,18 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					color = "FF000000",
 					enabled = true
 				},
-				borderShadowcraft = {
-					color = "FF431863",
-					enabled = true
-				},
 				background = {
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -724,22 +800,31 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFFFF00"
+					color = "FFFFFF00",
+					color2 = "FFFFFF00",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				echoingReprimand = {
-					color = "FF68CCEF"
+					color = "FF68CCEF",
+					color2 = "FF68CCEF",
+					gradientDirection = "disabled"
 				},
 				shadowTechniques = {
-					color = "FF431863"
+					color = "FF431863",
+					color2 = "FF431863",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false
 			},
 			threshold = {
 				under = {
@@ -766,6 +851,33 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {
+					"borderStealth"
+				},
+				gradientOrder = {
+					"borderOvercap"
+				},
+				indicatorColors = {
+					borderStealth = {
+						color = "FF000000",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							comboPointsBar = { bar = false, border = false, background = false }
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							comboPointsBar = { bar = false, border = false, background = false }
+						}
+					}
+				}
+			},
 		},
 		displayText={
 			default = {
@@ -959,37 +1071,7 @@ local function AssassinationConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], true, false)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.borderStealth
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
-	f.tooltip = L["RogueCheckboxStealthTooltip"]
-	f:SetChecked(spec.colors.bar.borderStealth.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.borderStealth.enabled = self:GetChecked()
-	end)
-
-	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderStealth
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], ASSASSINATION_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], 1, ASSASSINATION_MAX_ENERGY)
@@ -1015,10 +1097,13 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1028,23 +1113,32 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+	end)
 
-	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.echoingReprimand
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.echoingReprimand, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1062,17 +1156,6 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["ComboPointsCheckboxAlwaysDefaultBackground"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 end
 
@@ -1540,6 +1623,40 @@ local function AssassinationConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 4, 1, yCoord, cache)
 end
 
+local function AssassinationConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 4
+	local specId = 1
+	local spec = TRB.Data.settings.rogue.assassination
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.rogue_assassination
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["RogueIndicatorBorderOvercap"], tooltip = L["RogueIndicatorOvercapTooltip"], colorLabel = L["RogueIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "comboPointsBar", label = L["ResourceComboPoints"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Rogue_Assassination",
+		overcapConfig = {
+			primaryResourceString = L["ResourceEnergy"],
+			primaryResourceMax = ASSASSINATION_MAX_ENERGY,
+		},
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function AssassinationConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(4, 1)
 	local namePrefix = className .. "_" .. specName
@@ -1573,6 +1690,7 @@ local function AssassinationConstructOptionsPanel(cache)
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, AssassinationConstructEnergyBarPanel },
 		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, AssassinationConstructComboPointsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AssassinationConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AssassinationConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AssassinationConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AssassinationConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, AssassinationConstructThresholdPanel },
@@ -1718,17 +1836,7 @@ local function OutlawConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
 
 	--[[
 	yCoord = yCoord - 30
@@ -1744,26 +1852,6 @@ local function OutlawConstructEnergyBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderRtbBad")
 	end)]]
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.borderStealth
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
-	f.tooltip = L["RogueCheckboxStealthTooltip"]
-	f:SetChecked(spec.colors.bar.borderStealth.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.borderStealth.enabled = self:GetChecked()
-	end)
-
-	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderStealth
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], OUTLAW_MAX_ENERGY)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], 1, OUTLAW_MAX_ENERGY)
@@ -1789,10 +1877,13 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1802,28 +1893,32 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+	end)
 
-	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.echoingReprimand
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.echoingReprimand, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1837,15 +1932,10 @@ local function OutlawConstructComboPointsBarPanel(parent)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -2315,6 +2405,40 @@ local function OutlawConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 4, 2, yCoord, cache)
 end
 
+local function OutlawConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 4
+	local specId = 2
+	local spec = TRB.Data.settings.rogue.outlaw
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.rogue_outlaw
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["RogueIndicatorBorderOvercap"], tooltip = L["RogueIndicatorOvercapTooltip"], colorLabel = L["RogueIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "comboPointsBar", label = L["ResourceComboPoints"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Rogue_Outlaw",
+		overcapConfig = {
+			primaryResourceString = L["ResourceEnergy"],
+			primaryResourceMax = OUTLAW_MAX_ENERGY,
+		},
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function OutlawConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(4, 2)
 	local namePrefix = className .. "_" .. specName
@@ -2348,6 +2472,7 @@ local function OutlawConstructOptionsPanel(cache)
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, OutlawConstructEnergyBarPanel },
 		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, OutlawConstructComboPointsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, OutlawConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, OutlawConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, OutlawConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, OutlawConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, OutlawConstructThresholdPanel },
@@ -2492,44 +2617,7 @@ local function SubtletyConstructEnergyBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, false)
-
-	--[[yCoord = yCoord - 30
-	controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowcraft"], spec.colors.bar.borderShadowcraft, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderShadowcraft
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderShadowcraft")
-	end)]]
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.borderStealth = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Bar_Option_borderStealthColorChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.borderStealth
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["RogueCheckboxStealth"])
-	f.tooltip = L["RogueCheckboxStealthTooltip"]
-	f:SetChecked(spec.colors.bar.borderStealth.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.borderStealth.enabled = self:GetChecked()
-	end)
-
-	controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerStealth"], spec.colors.bar.borderStealth.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.borderStealth
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderStealth")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], SUBTLETY_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], 1, SUBTLETY_MAX_ENERGY)
@@ -2555,10 +2643,13 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceComboPoints"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -2568,23 +2659,32 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30		
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+	end)
 
-	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.echoingReprimand
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.echoingReprimand, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ComboPointColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	--[[controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowTechniques"], spec.colors.comboPoints.shadowTechniques, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -2608,17 +2708,6 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
-	end)
-
-	yCoord = yCoord - 20
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
 	end)
 end
 
@@ -3079,6 +3168,40 @@ local function SubtletyConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 4, 3, yCoord, cache)
 end
 
+local function SubtletyConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 4
+	local specId = 3
+	local spec = TRB.Data.settings.rogue.subtlety
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.rogue_subtlety
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["RogueIndicatorBorderOvercap"], tooltip = L["RogueIndicatorOvercapTooltip"], colorLabel = L["RogueIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "comboPointsBar", label = L["ResourceComboPoints"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Rogue_Subtlety",
+		overcapConfig = {
+			primaryResourceString = L["ResourceEnergy"],
+			primaryResourceMax = SUBTLETY_MAX_ENERGY,
+		},
+	})
+
+	yCoord = yCoord - 40
+end
+
 local function SubtletyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(4, 3)
 	local namePrefix = className .. "_" .. specName
@@ -3112,6 +3235,7 @@ local function SubtletyConstructOptionsPanel(cache)
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, SubtletyConstructEnergyBarPanel },
 		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, SubtletyConstructComboPointsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SubtletyConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, SubtletyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SubtletyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SubtletyConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SubtletyConstructThresholdPanel },

@@ -63,10 +63,14 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -78,24 +82,38 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FF9100D8"
+					color = "FF9100D8",
+					color2 = "FF9100D8",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
-				consistentUnfilledColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -201,10 +219,14 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -216,23 +238,38 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FF9100D8"
+					color = "FF9100D8",
+					color2 = "FF9100D8",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
 			},
-			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				shared = {
+					nodeOrder = {},
+					gradientOrder = {},
+					indicatorColors = {},
+				},
 		},
 		displayText={
 			default = {
@@ -339,10 +376,14 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -354,23 +395,38 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				second = {
-					color = "FF8788EE"
+					color = "FF8788EE",
+					color2 = "FF8788EE",
+					gradientDirection = "disabled"
 				},
 				third = {
-					color = "FF9100D8"
+					color = "FF9100D8",
+					color2 = "FF9100D8",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				shared = {
+					nodeOrder = {},
+					gradientOrder = {},
+					indicatorColors = {},
+				},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -562,22 +618,11 @@ local function AfflictionConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 9, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 end
 
 local function AfflictionConstructSoulShardsBarPanel(parent)
@@ -599,10 +644,13 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -612,10 +660,13 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -625,10 +676,13 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -642,32 +696,27 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
-	end)
 end
 
 local function AfflictionConstructHealthBarPanel(parent)
@@ -824,6 +873,9 @@ local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 1, yCoord, cache)
 end
 
+--local function AfflictionConstructIndicatorColorsPanel(parent)
+--end
+
 local function AfflictionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 1)
 	local namePrefix = className .. "_" .. specName
@@ -857,6 +909,7 @@ local function AfflictionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel },
+		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AfflictionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AfflictionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AfflictionConstructFontAndTextPanel },
@@ -883,22 +936,11 @@ local function DemonologyConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 9, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"])
 end
 
 local function DemonologyConstructSoulShardsBarPanel(parent)
@@ -920,10 +962,13 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -933,10 +978,13 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -946,10 +994,13 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Demonology_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -963,32 +1014,27 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Demonology_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
-	end)
 end
 
 local function DemonologyConstructHealthBarPanel(parent)
@@ -1238,6 +1284,9 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+--local function DemonologyConstructIndicatorColorsPanel(parent)
+--end
+
 local function DemonologyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1271,6 +1320,7 @@ local function DemonologyConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel },
+		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DemonologyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DemonologyConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DemonologyConstructFontAndTextPanel },
@@ -1389,22 +1439,11 @@ local function DestructionConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 9, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"])
 end
 
 local function DestructionConstructSoulShardsBarPanel(parent)
@@ -1426,10 +1465,13 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1439,10 +1481,13 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.second = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerSecond"], spec.colors.comboPoints.second, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.second
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "second")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.second, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1452,10 +1497,13 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.third = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerThird"], spec.colors.comboPoints.third, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.third
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "third")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.third, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1469,32 +1517,27 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsBorderColorsHeader"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Destruction_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.consistentUnfilledColorComboPoint
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxAlwaysDefaultBackground"])
-	f.tooltip = L["WarlockSoulShardsCheckboxAlwaysDefaultBackgroundTooltip"]
-	f:SetChecked(spec.colors.comboPoints.consistentUnfilledColor)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.comboPoints.consistentUnfilledColor = self:GetChecked()
-	end)
 end
 
 local function DestructionConstructHealthBarPanel(parent)
@@ -1652,6 +1695,9 @@ local function DestructionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 3, yCoord, cache)
 end
 
+--local function DestructionConstructIndicatorColorsPanel(parent)
+--end
+
 local function DestructionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 3)
 	local namePrefix = className .. "_" .. specName
@@ -1685,6 +1731,7 @@ local function DestructionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel },
+		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DestructionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DestructionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DestructionConstructFontAndTextPanel },

@@ -132,25 +132,51 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
-				beastCleave = {
-					color = "FF77FF77",
-					enabled = true
-				},
-				bestialWrath = {
-					color = "FF005500",
-					enabled = true
-				},
-				bestialWrathEnd = {
-					color = "FFFF0000"
-				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
+				},
+			},
+			shared = {
+				nodeOrder = { "bestialWrathEnd", "beastCleave", "bestialWrath" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					bestialWrath = {
+						color = "FF005500",
+						color2 = "FF005500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { focusBar = { bar = true, border = false, background = false } }
+					},
+					bestialWrathEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { focusBar = { bar = true, border = false, background = false } }
+					},
+					beastCleave = {
+						color = "FF77FF77",
+						color2 = "FF77FF77",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { focusBar = { bar = false, border = true, background = false } }
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = { focusBar = { bar = false, border = true, background = false } }
+					},
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -327,25 +353,50 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
-				},
-				trueshot = {
-					color = "FF00B60E",
-					enabled = true
-				},
-				trueshotEnd = {
-					color = "FFFF0000"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				spending = {
 					color = "FFAAAAAA",
+					color2 = "FFAAAAAA",
+					gradientDirection = "disabled",
 					enabled = true
+				},
+			},
+			shared = {
+				nodeOrder = { "trueshotEnd", "trueshot" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					trueshot = {
+						color = "FF00B60E",
+						color2 = "FF00B60E",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { focusBar = { bar = true, border = false, background = false } }
+					},
+					trueshotEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { focusBar = { bar = true, border = false, background = false } }
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = { focusBar = { bar = false, border = true, background = false } }
+					},
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -508,21 +559,53 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFFF8040"
-				},
-				takedown = {
-					color = "FF005500",
-					enabled = true
-				},
-				takedownEnd = {
-					color = "FFFF0000"
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
 				},
 				flashAlpha=0.70,
 				flashPeriod=0.5,
 				flashEnabled=true,
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
+				},
+			},
+			shared = {
+				nodeOrder = { "takedownEnd", "takedown" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					takedown = {
+						color = "FF005500",
+						color2 = "FF005500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							focusBar = { bar = true, border = false, background = false },
+							tipOfTheSpearBar = { bar = false, border = false, background = false },
+						}
+					},
+					takedownEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							focusBar = { bar = true, border = false, background = false },
+							tipOfTheSpearBar = { bar = false, border = false, background = false },
+						}
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							focusBar = { bar = false, border = true, background = false },
+							tipOfTheSpearBar = { bar = false, border = false, background = false },
+						}
+					},
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
@@ -545,9 +628,21 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			comboPoints = {
 				border = { color = "FFAB5124" },
 				background = { color = "66000000" },
-				base = { color = "FFFF8040" },
-				penultimate = { color = "FFFF9900" },
-				final = { color = "FFFF0000" },
+				base = {
+					color = "FFFF8040",
+					color2 = "FFFF8040",
+					gradientDirection = "disabled"
+				},
+				penultimate = {
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
+				},
+				final = {
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
+				},
 				sameColor = false,
 			},
 		},
@@ -722,60 +817,7 @@ local function BeastMasteryConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 1, yCoord, {
-		endOfKey = "bestialWrath",
-		activeColorKey = "bestialWrath",
-		endColorKey = "bestialWrathEnd",
-		checkboxLabel = L["HunterBeastMasteryCheckboxBestialWrath"],
-		checkboxTooltip = L["HunterBeastMasteryCheckboxBestialWrathTooltip"],
-		activeColorLabel = L["HunterBeastMasteryColorPickerBestialWrath"],
-		endCheckboxLabel = L["HunterBeastMasteryCheckboxBestialWrathEnd"],
-		endCheckboxTooltip = L["HunterBeastMasteryCheckboxBestialWrathEndTooltip"],
-		endColorLabel = L["HunterBeastMasteryColorPickerBestialWrathEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, false)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.beastCleaveBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_beastCleaveChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.beastCleaveBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBeastCleave"])
-	f.tooltip = L["HunterBeastMasteryCheckboxBeastCleaveTooltip"]
-	f:SetChecked(spec.colors.bar.beastCleave.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.beastCleave.enabled = self:GetChecked()
-	end)
-
-	controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBeastCleave"], spec.colors.bar.beastCleave.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.beastCleave
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 1, yCoord, {
-		endOfKey = "bestialWrath",
-		sectionHeader = L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"],
-		gcdRadioLabel = L["HunterBeastMasteryCheckboxBestialWrathGcds"],
-		gcdSliderLabel = L["HunterBeastMasteryBestialWrathGcds"],
-		timeRadioLabel = L["HunterBeastMasteryCheckboxBestialWrathTime"],
-		timeSliderLabel = L["HunterBeastMasteryBestialWrathTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], BEAST_MASTERY_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
@@ -800,6 +842,51 @@ local function BeastMasteryConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
+end
+
+local function BeastMasteryConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 3
+	local specId = 1
+	local spec = TRB.Data.settings.hunter.beastMastery
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "bestialWrathEnd", label = L["HunterBeastMasteryCheckboxBestialWrathEnd"], tooltip = L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"], colorLabel = L["HunterBeastMasteryIndicatorBestialWrathEndColor"] },
+			{ key = "bestialWrath", label = L["HunterBeastMasteryCheckboxBestialWrath"], tooltip = L["HunterBeastMasteryIndicatorBestialWrathTooltip"], colorLabel = L["HunterBeastMasteryIndicatorBestialWrathColor"] },
+			{ key = "beastCleave", label = L["HunterBeastMasteryCheckboxBeastCleave"], tooltip = L["HunterBeastMasteryIndicatorBeastCleaveTooltip"], colorLabel = L["HunterBeastMasteryIndicatorBeastCleaveColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["HunterIndicatorBorderOvercap"], tooltip = L["HunterIndicatorOvercapTooltip"], colorLabel = L["HunterIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "focusBar", label = L["BarNameFocusBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Hunter_BeastMastery",
+		endOfConfigs = {
+			{
+				endOfKey = "bestialWrath",
+				sectionHeader = L["HunterBeastMasteryHeaderEndOfBestialWrathConfiguration"],
+				gcdRadioLabel = L["HunterBeastMasteryCheckboxBestialWrathGcds"],
+				gcdSliderLabel = L["HunterBeastMasteryBestialWrathGcds"],
+				timeRadioLabel = L["HunterBeastMasteryCheckboxBestialWrathTime"],
+				timeSliderLabel = L["HunterBeastMasteryBestialWrathTime"],
+			},
+		},
+		overcapConfig = {
+			primaryResourceString = L["ResourceFocus"],
+			primaryResourceMax = BEAST_MASTERY_MAX_FOCUS,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function BeastMasteryConstructBarTexturesPanel(parent)
@@ -1118,6 +1205,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, BeastMasteryConstructFocusBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BeastMasteryConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BeastMasteryConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BeastMasteryConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BeastMasteryConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BeastMasteryConstructThresholdPanel },
@@ -1248,43 +1336,7 @@ local function MarksmanshipConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 2, yCoord, {
-		endOfKey = "trueshot",
-		activeColorKey = "trueshot",
-		endColorKey = "trueshotEnd",
-		checkboxLabel = L["HunterMarksmanshipCheckboxTrueshot"],
-		checkboxTooltip = L["HunterMarksmanshipCheckboxTrueshotTooltip"],
-		activeColorLabel = L["HunterMarksmanshipColorPickerTrueshot"],
-		endCheckboxLabel = L["HunterMarksmanshipCheckboxEndOfTrueshot"],
-		endCheckboxTooltip = L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"],
-		endColorLabel = L["HunterMarksmanshipColorPickerTrueshotEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 2, yCoord, {
-		endOfKey = "trueshot",
-		sectionHeader = L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"],
-		gcdRadioLabel = L["HunterMarksmanshipCheckboxTrueshotGcds"],
-		gcdSliderLabel = L["HunterMarksmanshipTrueshotGcds"],
-		timeRadioLabel = L["HunterMarksmanshipCheckboxTrueshotTime"],
-		timeSliderLabel = L["HunterMarksmanshipTrueshotTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], MARKSMANSHIP_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
@@ -1306,6 +1358,50 @@ local function MarksmanshipConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
+end
+
+local function MarksmanshipConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 3
+	local specId = 2
+	local spec = TRB.Data.settings.hunter.marksmanship
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "trueshotEnd", label = L["HunterMarksmanshipCheckboxEndOfTrueshot"], tooltip = L["HunterMarksmanshipIndicatorTrueshotEndTooltip"], colorLabel = L["HunterMarksmanshipIndicatorTrueshotEndColor"] },
+			{ key = "trueshot", label = L["HunterMarksmanshipCheckboxTrueshot"], tooltip = L["HunterMarksmanshipIndicatorTrueshotTooltip"], colorLabel = L["HunterMarksmanshipIndicatorTrueshotColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["HunterIndicatorBorderOvercap"], tooltip = L["HunterIndicatorOvercapTooltip"], colorLabel = L["HunterIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "focusBar", label = L["BarNameFocusBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Hunter_Marksmanship",
+		endOfConfigs = {
+			{
+				endOfKey = "trueshot",
+				sectionHeader = L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"],
+				gcdRadioLabel = L["HunterMarksmanshipCheckboxTrueshotGcds"],
+				gcdSliderLabel = L["HunterMarksmanshipTrueshotGcds"],
+				timeRadioLabel = L["HunterMarksmanshipCheckboxTrueshotTime"],
+				timeSliderLabel = L["HunterMarksmanshipTrueshotTime"],
+			},
+		},
+		overcapConfig = {
+			primaryResourceString = L["ResourceFocus"],
+			primaryResourceMax = MARKSMANSHIP_MAX_FOCUS,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function MarksmanshipConstructBarTexturesPanel(parent)
@@ -1682,6 +1778,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, MarksmanshipConstructFocusBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MarksmanshipConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MarksmanshipConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MarksmanshipConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MarksmanshipConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, MarksmanshipConstructThresholdPanel },
@@ -1812,43 +1909,7 @@ local function SurvivalConstructFocusBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
-
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfColorOptions(parent, controls, spec, 3, 3, yCoord, {
-		endOfKey = "takedown",
-		activeColorKey = "takedown",
-		endColorKey = "takedownEnd",
-		checkboxLabel = L["HunterSurvivalCheckboxTakedown"],
-		checkboxTooltip = L["HunterSurvivalCheckboxTakedownTooltip"],
-		activeColorLabel = L["HunterSurvivalColorPickerTakedown"],
-		endCheckboxLabel = L["HunterSurvivalCheckboxTakedownEnd"],
-		endCheckboxTooltip = L["HunterSurvivalCheckboxTakedownEndTooltip"],
-		endColorLabel = L["HunterSurvivalColorPickerTakedownEnd"],
-	})
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, 3, 3, yCoord, {
-		endOfKey = "takedown",
-		sectionHeader = L["HunterSurvivalHeaderEndOfTakedownConfiguration"],
-		gcdRadioLabel = L["HunterSurvivalCheckboxTakedownGcds"],
-		gcdSliderLabel = L["HunterSurvivalTakedownGcds"],
-		timeRadioLabel = L["HunterSurvivalCheckboxTakedownTime"],
-		timeSliderLabel = L["HunterSurvivalTakedownTime"],
-	})
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], SURVIVAL_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
@@ -1873,10 +1934,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1886,10 +1950,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1899,10 +1966,13 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1933,6 +2003,51 @@ local function SurvivalConstructHealthBarPanel(parent)
 
 	yCoord = yCoord - 60
 	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
+end
+
+local function SurvivalConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local classId = 3
+	local specId = 3
+	local spec = TRB.Data.settings.hunter.survival
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.hunter_survival
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+		indicatorDefs = {
+			{ key = "takedownEnd", label = L["HunterSurvivalCheckboxTakedownEnd"], tooltip = L["HunterSurvivalIndicatorTakedownEndTooltip"], colorLabel = L["HunterSurvivalIndicatorTakedownEndColor"] },
+			{ key = "takedown", label = L["HunterSurvivalCheckboxTakedown"], tooltip = L["HunterSurvivalIndicatorTakedownTooltip"], colorLabel = L["HunterSurvivalIndicatorTakedownColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["HunterIndicatorBorderOvercap"], tooltip = L["HunterIndicatorOvercapTooltip"], colorLabel = L["HunterIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "focusBar", label = L["BarNameFocusBar"] },
+			{ key = "tipOfTheSpearBar", label = L["ResourceTipOfTheSpear"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Hunter_Survival",
+		endOfConfigs = {
+			{
+				endOfKey = "takedown",
+				sectionHeader = L["HunterSurvivalHeaderEndOfTakedownConfiguration"],
+				gcdRadioLabel = L["HunterSurvivalCheckboxTakedownGcds"],
+				gcdSliderLabel = L["HunterSurvivalTakedownGcds"],
+				timeRadioLabel = L["HunterSurvivalCheckboxTakedownTime"],
+				timeSliderLabel = L["HunterSurvivalTakedownTime"],
+			},
+		},
+		overcapConfig = {
+			primaryResourceString = L["ResourceFocus"],
+			primaryResourceMax = SURVIVAL_MAX_FOCUS,
+		},
+	})
+
+	yCoord = yCoord - 40
 end
 
 local function SurvivalConstructBarTexturesPanel(parent)
@@ -2228,6 +2343,7 @@ local function SurvivalConstructOptionsPanel(cache)
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, SurvivalConstructFocusBarPanel },
 		{ "tipOfTheSpearBar", L["TabTipOfTheSpear"], oUi.tabWidth.small, SurvivalConstructTipOfTheSpearBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SurvivalConstructHealthBarPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, SurvivalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SurvivalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SurvivalConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SurvivalConstructThresholdPanel },

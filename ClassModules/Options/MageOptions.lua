@@ -67,10 +67,14 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -82,17 +86,28 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF1A1AFA"
+					color = "FF1A1AFA",
+					color2 = "FF1A1AFA",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor=true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -199,14 +214,23 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -295,10 +319,14 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF0000FF"
+					color = "FF0000FF",
+					color2 = "FF0000FF",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -310,17 +338,28 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF55E2FF"
+					color = "FF55E2FF",
+					color2 = "FF55E2FF",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -488,22 +527,11 @@ local function ArcaneConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], false, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
 end
 
 local function ArcaneConstructArcaneChargesPanel(parent)
@@ -524,10 +552,13 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceArcaneCharges"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceArcaneCharges"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerArcaneChargesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -537,10 +568,13 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageArcaneChargesColorPickerPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageArcaneChargesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -550,10 +584,13 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageArcaneChargesColorPickerFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -719,6 +756,9 @@ local function ArcaneConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 1, yCoord, cache)
 end
 
+--local function ArcaneConstructIndicatorColorsPanel(parent)
+--end
+
 local function ArcaneConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 1)
 	local namePrefix = className .. "_" .. specName
@@ -755,6 +795,7 @@ local function ArcaneConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel },
 		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel },
+		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ArcaneConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ArcaneConstructFontAndTextPanel },
@@ -869,22 +910,11 @@ local function FireConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], false, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
 end
 
 local function FireConstructHealthBarPanel(parent)
@@ -1014,6 +1044,9 @@ local function FireConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 2, yCoord, cache)
 end
 
+--local function FireConstructIndicatorColorsPanel(parent)
+--end
+
 local function FireConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1049,6 +1082,7 @@ local function FireConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel },
+		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FireConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FireConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FireConstructFontAndTextPanel },
@@ -1161,22 +1195,11 @@ local function FrostConstructManaBarPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
-	local f = nil
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
-
-	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.background
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
-	end)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], false, false)
+	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
 end
 
 local function FrostConstructIciclesBarPanel(parent)
@@ -1197,10 +1220,13 @@ local function FrostConstructIciclesBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBase"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1210,10 +1236,13 @@ local function FrostConstructIciclesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1223,10 +1252,13 @@ local function FrostConstructIciclesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -1381,6 +1413,9 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 3, yCoord, cache)
 end
 
+--local function FrostConstructIndicatorColorsPanel(parent)
+--end
+
 local function FrostConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 3)
 	local namePrefix = className .. "_" .. specName
@@ -1417,6 +1452,7 @@ local function FrostConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
 		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
+		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },

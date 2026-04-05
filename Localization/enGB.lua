@@ -119,7 +119,6 @@ if locale == "enGB" then
     L["RogueOutlawThresholdKillingSpreeTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Killing Spree. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdSliceAndDiceTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueOutlawThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
-    L["RogueSubtletyColorPickerShadowcraft"] = "Border colour when Shadowcraft will grant full Combo Points after using a finisher"
     L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' colour above for their background. Borders will still change colour depending on Supercharger settings."
     L["RogueSubtletyThresholdBlackPowderTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Black Powder. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueSubtletyThresholdEviscerateTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Eviscerate. If you do not have any combo points, will be coloured as 'unusable'."
@@ -305,7 +304,6 @@ if locale == "enGB" then
     -- Shadow Priest Indicator Colors (bar-agnostic)
     L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this colour when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
     L["PriestShadowIndicatorVoidformEndTooltip"] = "Changes to this colour when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"] = "Changes to this colour when Shadow Word: Madness is usable and you are casting."
     L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"] = "Changes to this colour when you have enough Insanity to cast Shadow Word: Madness."
     L["PriestShadowIndicatorVoidformTooltip"] = "Changes to this colour when Voidform is active."
     L["PriestShadowIndicatorMindDevourerTooltip"] = "Changes to this colour when you are able to cast Shadow Word: Madness for 0 Insanity cost via a Mind Devourer proc."
@@ -375,4 +373,68 @@ if locale == "enGB" then
     L["DruidRestorationIndicatorIncarnationEndTooltip"] = "Changes to this colour when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["DruidFeralCheckboxRavage"] = "Change colour when Ravage proc is active"
     L["DruidFeralIndicatorRavageTooltip"] = "Changes to this colour when a Ravage proc is active."
+    -- Hunter Beast Mastery Indicator Colors (British English)
+    L["HunterBeastMasteryIndicatorBestialWrathTooltip"] = "Changes to this colour when Bestial Wrath is active."
+    L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"] = "Changes to this colour when Bestial Wrath is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["HunterBeastMasteryIndicatorBeastCleaveTooltip"] = "Changes to this colour when Beast Cleave is active."
+    -- Hunter Marksmanship Indicator Colors (British English)
+    L["HunterMarksmanshipIndicatorTrueshotTooltip"] = "Changes to this colour when Trueshot is active."
+    L["HunterMarksmanshipIndicatorTrueshotEndTooltip"] = "Changes to this colour when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Hunter Survival Indicator Colors (British English)
+    L["HunterSurvivalIndicatorTakedownTooltip"] = "Changes to this colour when Takedown is active."
+    L["HunterSurvivalIndicatorTakedownEndTooltip"] = "Changes to this colour when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Monk Brewmaster Indicator Colors (British English)
+    L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "Changes to this colour when Invoke Niuzao is active."
+    L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "Changes to this colour when Invoke Niuzao is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Monk Mistweaver Indicator Colors (British English)
+    L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this colour when Vivacious Vivification is active."
+    L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this colour when Heart of the Jade Serpent is ready to use."
+    L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this colour when Heart of the Jade Serpent is active."
+    -- Monk Windwalker Indicator Colors (British English)
+    L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this colour when Heart of the Jade Serpent is ready to use."
+    L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this colour when Heart of the Jade Serpent is active."
+    L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"] = "Changes to this colour when Dance of Chi-Ji is active."
+    -- Paladin Holy Indicator Colors (British English)
+    L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "Changes to this colour when Infusion of Light is active (Flash of Light becomes instant cast)."
+    -- Rogue Indicator Colors (British English)
+    L["RogueIndicatorStealthTooltip"] = "Changes to this colour when you are stealthed."
+    -- Shaman Elemental Indicator Colors (British English)
+    L["ShamanElementalIndicatorEarthShockTooltip"] = "Changes to this colour when Earth Shock or Elemental Blast is usable."
+    L["ShamanElementalIndicatorEarthquakeTooltip"] = "Changes to this colour when Earthquake is usable."
+    L["ShamanElementalIndicatorAscendanceTooltip"] = "Changes to this colour when Ascendance is active."
+    L["ShamanElementalIndicatorAscendanceEndTooltip"] = "Changes to this colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Shaman Enhancement Indicator Colors (British English)
+    L["ShamanEnhancementIndicatorAscendanceTooltip"] = "Changes to this colour when Ascendance is active."
+    L["ShamanEnhancementIndicatorAscendanceEndTooltip"] = "Changes to this colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Shaman Restoration Indicator Colors (British English)
+    L["ShamanRestorationIndicatorAscendanceTooltip"] = "Changes to this colour when Ascendance is active."
+    L["ShamanRestorationIndicatorAscendanceEndTooltip"] = "Changes to this colour when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    -- Warrior Indicator Colors (British English)
+    L["WarriorIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Rage approaches the overcap threshold."
+    -- Death Knight Indicator Colors (British English)
+    L["DeathKnightIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Runic Power approaches the overcap threshold."
+    -- Paladin Protection Indicator Colors (British English)
+    L["PaladinProtectionIndicatorInfusionOfLightTooltip"] = "Changes to this colour when Infusion of Light is active (Flash of Light becomes instant cast)."
+    -- Warrior Fury Indicator Colors (British English)
+    L["WarriorFuryIndicatorZeroStackBackgroundTooltip"] = "Changes to this colour when you have 0 Whirlwind Charges."
+    -- Hunter Indicator Colors (British English)
+    L["HunterIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Focus approaches the overcap threshold."
+    -- Monk Indicator Colors (British English)
+    L["MonkIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Energy approaches the overcap threshold."
+    -- Rogue Indicator Colors (British English)
+    L["RogueIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Energy approaches the overcap threshold."
+    -- Shaman Elemental Indicator Colors (British English)
+    L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this colour as your Maelstrom approaches the overcap threshold."
+    -- Death Knight Indicator Colors (British English)
+    L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this colour when fewer than 3 runes are on cooldown while in combat."
+    -- Gradient Color System (British English)
+    L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first colour."
+    L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
+    -- Blood Death Knight Bone Shield Ossuary (British English)
+    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
+    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield colour for Ossuary building range"
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill colour for nodes 1 through 5 when Ossuary is talented."
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield colour at Ossuary threshold"
+    L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill colour at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range colour."
 end

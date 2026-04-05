@@ -163,17 +163,25 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFC942FD"
+					color = "FFC942FD",
+					color2 = "FFC942FD",
+					gradientDirection = "disabled"
 				},
 				metamorphosis = {
 					color = "FF67F100",
+					color2 = "FF67F100",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				metamorphosisEnd = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -209,6 +217,8 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					metamorphosisEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -216,6 +226,8 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					},
 					metamorphosis = {
 						color = "FF67F100",
+						color2 = "FF67F100",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -360,10 +372,14 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFC942FD"
+					color = "FFC942FD",
+					color2 = "FFC942FD",
+					gradientDirection = "disabled"
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -375,13 +391,19 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF9800D4"
+					color = "FF9800D4",
+					color2 = "FF9800D4",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor=false
 			},
@@ -417,6 +439,8 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					metamorphosisEnd = {
 						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -425,6 +449,8 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					},
 					metamorphosis = {
 						color = "FF67F100",
+						color2 = "FF67F100",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -596,14 +622,20 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FFC942FD"
+					color = "FFC942FD",
+					color2 = "FFC942FD",
+					gradientDirection = "disabled"
 				},
 				voidMetamorphosis = {
 					color = "FF431863",
+					color2 = "FF431863",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				casting = {
 					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -615,24 +647,36 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					color = "66000000"
 				},
 				base = {
-					color = "FF9800FF"
+					color = "FF9800FF",
+					color2 = "FF9800FF",
+					gradientDirection = "disabled"
 				},
 				penultimate = {
-					color = "FFFF9900"
+					color = "FFFF9900",
+					color2 = "FFFF9900",
+					gradientDirection = "disabled"
 				},
 				final = {
-					color = "FFFF0000"
+					color = "FFFF0000",
+					color2 = "FFFF0000",
+					gradientDirection = "disabled"
 				},
 				sameColor=false,
 				voidMetamorphosisReady = {
 					color = "FF431863",
+					color2 = "FF431863",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 				collapsingStar = {
 					color = "FF443FAD",
+					color2 = "FF443FAD",
+					gradientDirection = "disabled"
 				},
 				collapsingStarReady = {
 					color = "FF431863",
+					color2 = "FF431863",
+					gradientDirection = "disabled",
 					enabled = true
 				},
 			},
@@ -670,6 +714,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				indicatorColors = {
 					voidMetamorphosisReady = {
 						color = "FF431863",
+						color2 = "FF431863",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = false, border = false, background = false },
@@ -678,6 +724,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					},
 					collapsingStarReady = {
 						color = "FF431863",
+						color2 = "FF431863",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = false, border = false, background = false },
@@ -686,6 +734,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					},
 					voidMetamorphosis = {
 						color = "FF431863",
+						color2 = "FF431863",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -694,6 +744,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					},
 					voidRayReady = {
 						color = "FF008B8B",
+						color2 = "FF008B8B",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							furyBar = { bar = true, border = false, background = false },
@@ -1359,10 +1411,13 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1372,23 +1427,29 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
-
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.final
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
-	yCoord = yCoord - 30
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.final
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
@@ -1823,17 +1884,23 @@ local function DevourerConstructSoulFragmentsBarPanel(parent)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceSoulFragments"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.collapsingStar = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceCollapsingStar"], spec.colors.comboPoints.collapsingStar, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.collapsingStar
-	f:SetScript("OnMouseDown", function(self, button, ...)
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "collapsingStar")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.collapsingStar, self)
 	end)
 
 	yCoord = yCoord - 30

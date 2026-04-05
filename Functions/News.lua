@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.5.0-beta02 (2026-04-05)
+## General
+
+- Merge `midnight` back in to account for features and improvements.
+
+---
+
 # 12.0.5.0-beta01 (2026-04-01)
 ## General
 
@@ -19,11 +26,94 @@ local content = [====[
 
 ---
 
-# 12.0.1.47-release (2026-04-01)
+# 12.0.1.50-release (2026-04-05)
+## General
+
+- [#625](#625) Add optional gradient color support for bar fills and casting overlays.
+
+### Localization
+
+- [#733](#733) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Death Knight
+### Blood
+
+- Add optional new color indicators for Bone Shield when talented into Ossuary: one for the building range (1-5 stacks) and one for the threshold stack (5 stacks).
+
+## Priest
+
+- Add some new detection methods for tracking the M+5 affix Voidbinding debuff (CDR). This should even out tracking of Holy Words and Power Words for Holy and Discipline, respectively.
+
+### Shadow
+
+- Fix the base passive Insanity generation of Mind Flay (2 -> 3 per tick).
+
+---
+
+# 12.0.1.49-release (2026-04-02)
+## General
+
+- Ensure all specs have the defaults/placeholder values for the new color indications options so there are no Lua errors when opening options.
+
+### Localization
+
+- [#731](#731) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
+# 12.0.1.48-release (2026-04-02)
+## General
+
+- [#152](#152) Fix some issues with settings migration that could result in resets and Lua errors.
+
+## Death Knight
+
+- [#152](#152) Migrated Blood, Frost, and Unholy to the new bar color change system.
+
+## Shaman
+
+- [#152](#152) Migrated Elemental, Enhancement, and Restoration to the new bar color change system.
+
+## Warrior
+
+- [#152](#152) Migrated Arms, Fury, and Protection to the new bar color change system.
+
+---
+
+# 12.0.1.47-release (2026-04-02)
+## General
+### Localization
+
+- [#727](#727) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Druid
 ### Feral
 
 - [#568](#568) Restore Ravage proc tracking, add a new Ravage color indicator, and add the logic-only bar text variable `$ravageActive` for conditional bar text logic.
+
+## Hunter
+
+- [#152](#152) Migrated Beast Mastery, Marksmanship, and Survival to the new bar color change system.
+
+## Mage
+
+- [#152](#152) Migrated Arcane, Fire, and Frost to the new bar color change system.
+
+## Monk
+
+- [#152](#152) Migrated Brewmaster, Mistweaver, and Windwalker to the new bar color change system.
+
+## Paladin
+
+- [#152](#152) Migrated Holy, Protection, and Retribution to the new bar color change system.
+
+## Rogue
+
+- [#152](#152) Migrated Assassination, Outlaw, and Subtlety to the new bar color change system.
+
+## Warlock
+
+- [#152](#152) Migrated Affliction, Demonology, and Destruction to the new bar color change system.
 
 ---
 

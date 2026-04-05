@@ -16,6 +16,10 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
 
+-- Voidbinding detection state: tooltip-based healing comparison
+local previousDescriptionHealing = nil  ---@type number|nil # Prayer of Mending healing from last frame's tooltip
+local lastKnownVersOffensive = nil      ---@type number|nil # Last non-secret GetCombatRatingBonus(29) reading
+
 -- Pre-allocated Holy Word definitions table, populated once by FillSpellData_Holy().
 -- Only the mutable fields (color, enabled) are refreshed per-tick in UpdateResourceBar.
 -- This avoids creating 4 tables (1 array + 3 elements) every 50ms tick.
@@ -232,6 +236,8 @@ local function FillSpecializationCache()
 	specCache.priest_discipline.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.masterTheDarkness.id] = TRB.Classes.Snapshot:New(spells.masterTheDarkness)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -297,6 +303,8 @@ local function FillSpecializationCache()
 	specCache.priest_holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_holy.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
 
 	-- Shadow
 	specCache.priest_shadow.Global_TwintopResourceBar = {
@@ -491,7 +499,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.powerWordRadiance.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.powerWordRadiance)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -586,8 +594,8 @@ local function ConstructResourceBar(settings)
 				node:SetMinMax(0, 1)
 				-- Per-node charge color (sameColor uses highest filled charge's color)
 				local chargeKey = "charge" .. i
-				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey] and lightweaverColors.nodeColors[chargeKey].color
-				node:SetColor(nodeColor)
+				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey]
+				TRB.Functions.Color:ApplyFillColor(node, nodeColor)
 				node:SetFrameLevel(frameLevels.comboPoint)
 			end
 		end
@@ -611,6 +619,14 @@ local function CalculateHolyWordDuration(holyWordSpell)
 	if talents:IsTalentActive(spells.prophetsInsight) then
 		duration = duration + spells.prophetsInsight.attributes.durationMod
 	end
+
+	-- Voidbinding CDR: cooldowns recover cdrPercent faster (rate model, not flat reduction)
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+	if snapshots[spells.voidbinding.id].buff.isActive then
+		duration = duration / (1 + spells.voidbinding.attributes.cdrPercent)
+	end
+
 	return duration
 end
 
@@ -638,6 +654,98 @@ local function CalculateResourceGain(resource)
 	local modifier = 1.0
 
 	return resource * modifier
+end
+
+---Parses the first number from a localized string, handling international thousands
+---separators: comma (1,234), period (1.234), space/NBSP/thin-space (1 234).
+---@param str string|nil
+---@return number|nil
+local function ParseFirstNumberFromString(str)
+	if not str then return nil end
+	-- Match: a digit, then any mix of digits and common thousands separators, ending with a digit.
+	-- Handles: 1234, 1,234 (en), 1.234 (de/es), 1 234 / NBSP (fr/ru)
+	local match = str:match("(%d[%d,%.%s\194\160]*%d)")
+	if match then
+		local digits = match:gsub("[^%d]", "")
+		return tonumber(digits)
+	end
+	-- Single-digit fallback
+	match = str:match("(%d+)")
+	return match and tonumber(match) or nil
+end
+
+---Returns true if the player is currently inside an active M+ dungeon in the Voidbinding key range (2-11).
+---@return boolean
+local function IsInVoidbindingKeyRange()
+	if C_ChallengeMode.GetActiveChallengeMapID() == nil then
+		return false
+	end
+	local activeKeystoneLevel = C_ChallengeMode.GetActiveKeystoneInfo()
+	return activeKeystoneLevel ~= nil and activeKeystoneLevel >= 2 and activeKeystoneLevel <= 11
+end
+
+---Applies or reverses Voidbinding CDR on a single manual-tracked cooldown.
+---@param cooldown TRB.Classes.SnapshotCooldown
+---@param cdrPercent number # e.g. 0.3 for 30% CDR
+---@param apply boolean # true = apply CDR (gain), false = reverse CDR (loss)
+local function AdjustCooldownForVoidbinding(cooldown, cdrPercent, apply)
+	if not cooldown.onCooldown or cooldown.manualCooldownExpires == nil then
+		return
+	end
+	local now = GetTime()
+	local remaining = cooldown.manualCooldownExpires - now
+	if remaining <= 0 then
+		return
+	end
+	if apply then
+		-- CDR recovery rate: cooldowns tick (1+cdr) times faster
+		cooldown.manualCooldownExpires = now + remaining / (1 + cdrPercent)
+	else
+		-- Reverse: stretch remaining back to normal rate
+		cooldown.manualCooldownExpires = now + remaining * (1 + cdrPercent)
+	end
+end
+
+---Applies or reverses Voidbinding CDR on all affected cooldowns for the current spec.
+---@param apply boolean # true = gained Voidbinding, false = lost Voidbinding
+local function ApplyVoidbindingCDR(apply)
+	local spells = TRB.Data.spellsData.spells
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local cdrPercent = spells.voidbinding.attributes.cdrPercent
+	local specId = TRB.Data.character.specId
+
+	if specId == 1 then
+		---@cast spells TRB.Classes.Priest.DisciplineSpells
+		AdjustCooldownForVoidbinding(snapshots[spells.powerWordRadiance.id].cooldown, cdrPercent, apply)
+	elseif specId == 2 then
+		---@cast spells TRB.Classes.Priest.HolySpells
+		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSerenity.id].cooldown, cdrPercent, apply)
+		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSanctify.id].cooldown, cdrPercent, apply)
+		AdjustCooldownForVoidbinding(snapshots[spells.holyWordChastise.id].cooldown, cdrPercent, apply)
+	end
+end
+
+---Calculates the predicted actual remaining time for a cooldown, accounting for
+---Voidbinding CDR expiring mid-cooldown.
+---@param cooldownRemaining number # Current remaining time (already CDR'd if VB active)
+---@param voidbindingRemaining number # Remaining Voidbinding buff time (0 if inactive)
+---@param cdrPercent number # e.g. 0.3 for 30% CDR
+---@return number # Predicted wall-clock remaining time
+local function CalculatePredictedCooldownRemaining(cooldownRemaining, voidbindingRemaining, cdrPercent)
+	if voidbindingRemaining <= 0 or cooldownRemaining <= 0 then
+		return cooldownRemaining
+	end
+
+	if voidbindingRemaining >= cooldownRemaining then
+		-- Entire cooldown benefits from CDR, already reflected in remaining
+		return cooldownRemaining
+	end
+
+	-- CDR expires mid-cooldown: portion after VB drops runs at normal speed
+	-- cooldownRemaining is the CDR'd total, VB covers the first voidbindingRemaining seconds (real time)
+	-- After VB drops, the leftover CDR'd time must be stretched back to normal rate
+	local afterVoidbinding = cooldownRemaining - voidbindingRemaining
+	return voidbindingRemaining + afterVoidbinding * (1 + cdrPercent)
 end
 
 local function RefreshLookupData_Discipline()
@@ -694,7 +802,11 @@ local function RefreshLookupData_Discipline()
 	-- Block B: PW Radiance ($pwRadianceTime, $radianceTime, $powerWordRadianceTime, $pwRadianceCharges, $radianceCharges, $powerWordRadianceCharges)
 	if not activeVars or activeVars["$pwRadianceTime"] or activeVars["$radianceTime"] or activeVars["$powerWordRadianceTime"]
 		or activeVars["$pwRadianceCharges"] or activeVars["$radianceCharges"] or activeVars["$powerWordRadianceCharges"] then
-		local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
+		local vbBuff = snapshots[spells.voidbinding.id].buff
+		local vbRemaining = vbBuff.isActive and vbBuff.remaining or 0
+		local cdrPercent = spells.voidbinding.attributes.cdrPercent
+		local _pwRadianceTime = CalculatePredictedCooldownRemaining(
+			snapshots[spells.powerWordRadiance.id].cooldown.remaining, vbRemaining, cdrPercent)
 		local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
 
 		lookupLogic["$pwRadianceTime"] = _pwRadianceTime
@@ -834,9 +946,15 @@ local function RefreshLookupData_Holy()
 		or activeVars["$hwSerenityTime"] or activeVars["$serenityTime"] or activeVars["$holyWordSerenityTime"]
 		or activeVars["$hwSanctifyCharges"] or activeVars["$sanctifyCharges"] or activeVars["$holyWordSanctifyCharges"]
 		or activeVars["$hwSerenityCharges"] or activeVars["$serenityCharges"] or activeVars["$holyWordSerenityCharges"] then
-		local _hwChastiseTime = snapshots[spells.holyWordChastise.id].cooldown.remaining
-		local _hwSanctifyTime = snapshots[spells.holyWordSanctify.id].cooldown.remaining
-		local _hwSerenityTime = snapshots[spells.holyWordSerenity.id].cooldown.remaining
+		local vbBuff = snapshots[spells.voidbinding.id].buff
+		local vbRemaining = vbBuff.isActive and vbBuff.remaining or 0
+		local cdrPercent = spells.voidbinding.attributes.cdrPercent
+		local _hwChastiseTime = CalculatePredictedCooldownRemaining(
+			snapshots[spells.holyWordChastise.id].cooldown.remaining, vbRemaining, cdrPercent)
+		local _hwSanctifyTime = CalculatePredictedCooldownRemaining(
+			snapshots[spells.holyWordSanctify.id].cooldown.remaining, vbRemaining, cdrPercent)
+		local _hwSerenityTime = CalculatePredictedCooldownRemaining(
+			snapshots[spells.holyWordSerenity.id].cooldown.remaining, vbRemaining, cdrPercent)
 		local _hwSanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges
 		local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
 
@@ -1211,6 +1329,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						local duration = spells.powerWordRadiance.duration
 						if talents:IsTalentActive(spells.brightPupil) then
 							duration = duration + spells.brightPupil.attributes.durationMod
+						end
+						-- Voidbinding CDR: cooldowns recover cdrPercent faster (rate model)
+						if snapshots[spells.voidbinding.id].buff.isActive then
+							duration = duration / (1 + spells.voidbinding.attributes.cdrPercent)
 						end
 						snapshots[spells.powerWordRadiance.id].cooldown:SpendCharge(duration)
 					end
@@ -1692,6 +1814,48 @@ local function UpdateSnapshot_Healers()
 			spells.flashHeal.attributes.baseManaCost = currentFlashHealCost
 		end
 	end
+
+	if IsInVoidbindingKeyRange() then
+		-- 1. Capture last known good offensive vers (before it becomes secret).
+		local liveVers = GetCombatRatingBonus(29)
+		if not issecretvalue(liveVers) and type(liveVers) == "number" and liveVers > 0 then
+			lastKnownVersOffensive = liveVers
+		end
+
+		-- 2. Parse the healing value from Prayer of Mending's spell description.
+		local desc = C_Spell.GetSpellDescription(33076)
+		local currentHealing = ParseFirstNumberFromString(desc)
+
+		if currentHealing and previousDescriptionHealing
+			and currentHealing ~= previousDescriptionHealing
+			and lastKnownVersOffensive and lastKnownVersOffensive > 0
+			and not snapshots[spells.voidbinding.id].buff.isActive then
+			-- 3. Normalize both values by dividing out the known vers, then compute
+			--    the percentage increase. If it matches the Voidbinding vers within
+			--    +/- 1%, flag the buff as gained.
+			local versDivisor = 1 + lastKnownVersOffensive / 100
+			local prevNorm = previousDescriptionHealing / versDivisor
+			local currNorm = currentHealing / versDivisor
+			local diffPercent = (currNorm - prevNorm) / prevNorm * 100
+			local expectedPercent = spells.voidbinding.attributes.versPercent * 100
+
+			--[[print("VB Detection: prev=" .. previousDescriptionHealing .. " curr=" .. currentHealing
+				.. " vers=" .. string.format("%.2f", lastKnownVersOffensive)
+				.. " diffPct=" .. string.format("%.2f", diffPercent)
+				.. " expected=" .. expectedPercent)]]
+
+			if math.abs(diffPercent - expectedPercent) <= 1 then
+				snapshots[spells.voidbinding.id].buff:InitializeCustom(spells.voidbinding.duration, GetTime())
+				ApplyVoidbindingCDR(true)
+				--print("Voidbinding DETECTED via tooltip: +" .. string.format("%.2f", diffPercent) .. "% vers")
+			end
+			-- Don't detect loss -- let the buff timer expire naturally.
+		end
+
+		if currentHealing then
+			previousDescriptionHealing = currentHealing
+		end
+	end
 end
 
 local function UpdateSnapshot_Voidweaver()
@@ -1723,6 +1887,13 @@ local function UpdateSnapshot_Discipline()
 
 	snapshots[spells.masterTheDarkness.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
+
+	-- Voidbinding buff natural expiry
+	local wasVoidbindingActive = snapshots[spells.voidbinding.id].buff.isActive
+	snapshots[spells.voidbinding.id].buff:GetRemainingTime(currentTime)
+	if wasVoidbindingActive and not snapshots[spells.voidbinding.id].buff.isActive then
+		ApplyVoidbindingCDR(false)
+	end
 end
 
 local function UpdateSnapshot_Holy()
@@ -1750,6 +1921,13 @@ local function UpdateSnapshot_Holy()
 	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
+
+	-- Voidbinding buff natural expiry
+	local wasVoidbindingActive = snapshots[spells.voidbinding.id].buff.isActive
+	snapshots[spells.voidbinding.id].buff:GetRemainingTime(currentTime)
+	if wasVoidbindingActive and not snapshots[spells.voidbinding.id].buff.isActive then
+		ApplyVoidbindingCDR(false)
+	end
 end
 
 local function UpdateSnapshot_Shadow()
@@ -1817,8 +1995,8 @@ local function UpdateResourceBar()
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base.color, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance.color, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
 			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
@@ -1833,7 +2011,7 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										if isTargeted then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -1851,7 +2029,7 @@ local function UpdateResourceBar()
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(manaBarColors.border)
-				primaryNode:SetColor(manaBarColors.bar)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1870,7 +2048,7 @@ local function UpdateResourceBar()
 						if barGroups and barGroups.secondary then
 							local cpNode = barGroups.secondary:GetNode(currentCp)
 							if cpNode then
-								local cpColor = specSettings.colors.comboPoints.powerWordRadiance.color
+								local cpColor = specSettings.colors.comboPoints.powerWordRadiance
 								local cpKey = "comboPoint" .. currentCp
 								if chargeIndex <= charges then
 									-- Available charge: full bar
@@ -1888,7 +2066,7 @@ local function UpdateResourceBar()
 									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 								end
-								cpNode:SetColor(powerWordsBarColors.bar)
+								TRB.Functions.Color:ApplyFillColor(cpNode, powerWordsBarColors.bar)
 								cpNode:SetBorderColor(powerWordsBarColors.border)
 								cpNode:SetBackgroundColorFromString(powerWordsBarColors.background)
 								currentCp = currentCp + 1
@@ -1926,11 +2104,11 @@ local function UpdateResourceBar()
 						if utilNode then
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
-							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 								local highestKey = "angelicFeather" .. charges
-								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
@@ -1945,7 +2123,7 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
-							utilNode:SetColor(nodeColor)
+							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 							utilNode:SetBorderColor(utilityColors.border.color)
 							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 						end
@@ -2027,7 +2205,7 @@ local function UpdateResourceBar()
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base.color, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
 			local holyWordsBarColors = { bar = nil, border = nil, background = nil }
 			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
 			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
@@ -2048,7 +2226,7 @@ local function UpdateResourceBar()
 										if isTargeted
 											and not (key == "benediction" and barKey == "lightweaverBar" and elemKey == "background")
 											and not ((key == "holyWordSerenity" or key == "holyWordSanctify" or key == "holyWordChastise") and barKey == "holyWordsBar") then
-											targetColors[elemKey] = indicator.color
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
 								end
@@ -2071,7 +2249,7 @@ local function UpdateResourceBar()
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
-				primaryNode:SetColor(barColor)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -2135,11 +2313,11 @@ local function UpdateResourceBar()
 										end
 										-- Per-HW indicator: node-specific coloring on the recharging node only
 										if hwIndTargets and chargeIndex == charges + 1 then
-											if hwIndTargets.bar then cpColor = hwIndicator.color end
+											if hwIndTargets.bar then cpColor = hwIndicator end
 											if hwIndTargets.border then nodeBorderColor = hwIndicator.color end
 											if hwIndTargets.background then nodeBgR, nodeBgG, nodeBgB, nodeBgA = Color:GetRGBAFromString(hwIndicator.color, true) end
 										end
-										cpNode:SetColor(cpColor)
+										TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 										cpNode:SetBorderColor(nodeBorderColor)
 										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
 									end
@@ -2179,11 +2357,11 @@ local function UpdateResourceBar()
 						if utilNode then
 							local nodeKey = "utility" .. chargeIndex
 							local nodeColorKey = "angelicFeather" .. chargeIndex
-							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 								local highestKey = "angelicFeather" .. charges
-								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
 								utilNode:ClearTimerDuration()
@@ -2198,7 +2376,7 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
-							utilNode:SetColor(nodeColor)
+							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 							utilNode:SetBorderColor(utilityColors.border.color)
 							utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 						end
@@ -2224,7 +2402,7 @@ local function UpdateResourceBar()
 							if lightweaverColors.sameColor and lwStacks > 0 and chargeIndex <= lwStacks then
 								colorKey = "charge" .. lwStacks
 							end
-							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey] and lightweaverColors.nodeColors[colorKey].color
+							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey]
 							if chargeIndex <= lwStacks then
 								lwNode:ClearTimerDuration()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
@@ -2233,7 +2411,7 @@ local function UpdateResourceBar()
 								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 0, 1)
 							end
-							lwNode:SetColor(lightweaverBarColors.bar or nodeColor)
+							TRB.Functions.Color:ApplyFillColor(lwNode, lightweaverBarColors.bar or nodeColor)
 							lwNode:SetBorderColor(lightweaverBarColors.border or lightweaverColors.border.color)
 							local lwBgColor = lightweaverBarColors.background or lightweaverColors.background.color
 							-- Benediction on lightweaver background is node-specific: only the next empty node
@@ -2363,7 +2541,7 @@ local function UpdateResourceBar()
 				end
 
 				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base.color
+				local barColor = specSettings.colors.bar.base
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
 				-- Build indicator condition map
@@ -2395,7 +2573,6 @@ local function UpdateResourceBar()
 					mindDevourer = spells.shadowWordMadness:IsFree(),
 					entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
 					borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-					shadowWordMadnessUsableCasting = swmUsable and isCasting,
 					shadowWordMadnessUsable = swmUsable,
 					voidform = voidformActive,
 					borderOvercap = affectingCombat,
@@ -2420,7 +2597,7 @@ local function UpdateResourceBar()
 									if targetColors and elements then
 										for elemKey, isTargeted in pairs(elements) do
 											if isTargeted then
-												targetColors[elemKey] = indicator.color
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 											end
 										end
 									end
@@ -2639,7 +2816,7 @@ local function UpdateResourceBar()
 					local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.bar)
 					primaryNode:SetColorCurve(barColorResult)
 				else
-					primaryNode:SetColor(barColor)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
 				if overcapCurvesInsanity.background then
 					local bgColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.background)
@@ -2678,7 +2855,7 @@ local function UpdateResourceBar()
 					local manaBarResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.bar)
 					manaNode:SetColorCurve(manaBarResult)
 				else
-					manaNode:SetColor(manaBarColor)
+					TRB.Functions.Color:ApplyFillColor(manaNode, manaBarColor)
 				end
 				if overcapCurvesMana.border then
 					local manaBorderResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.border)
@@ -2709,11 +2886,11 @@ local function UpdateResourceBar()
 					if utilNode then
 						local nodeKey = "utility" .. chargeIndex
 						local nodeColorKey = "angelicFeather" .. chargeIndex
-						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] and utilityColors.nodeColors[nodeColorKey].color or "FFFFD700"
+						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 						-- sameColor: use highest filled charge's color for all filled nodes
 						if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
 							local highestKey = "angelicFeather" .. charges
-							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] and utilityColors.nodeColors[highestKey].color or nodeColor
+							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 						end
 						if chargeIndex <= charges then
 							utilNode:ClearTimerDuration()
@@ -2728,7 +2905,7 @@ local function UpdateResourceBar()
 							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 						end
-						utilNode:SetColor(nodeColor)
+						TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
 						utilNode:SetBorderColor(utilityColors.border.color)
 						utilNode:SetBackgroundColorFromString(utilityColors.background.color)
 					end

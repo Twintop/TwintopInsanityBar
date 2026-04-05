@@ -771,7 +771,6 @@ if locale == "deDE" then
     L["RogueOutlawThresholdSapTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Kopfnuss zu nutzen. Nur sichtbar in Tarnung oder nutzbar via Sepsis oder Erdrosseln."
     L["RogueOutlawThresholdDeathFromAbove"] = "Tod von oben"
     L["RogueOutlawThresholdDeathFromAboveTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Tod von oben zu nutzen. Wenn auf Abklingzeit oder ohne Combopunkte, wird es als 'nicht benutzbar' gefärbt."
-    L["RogueSubtletyColorPickerShadowcraft"] = "Rahmenfarbe, wenn Schattenhandwerk nach dem Verbraucher volle Combopunkte gewähren wird"
     L["RogueSubtletyColorPickerShadowTechniques"] = "Combopunkt, der durch Schattentechniken generiert wird"
     L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "Wenn aktiviert, nutzen ungefüllte Combopunkte immer die Farbe 'Hintergrund für ungefüllten Combopunkt' oben. Rahmen ändern weiterhin ihre Farbe abhängig von 'Aufgeladen' Einstellungen."
     L["RogueSubtletyThresholdBackstab"] = "Meucheln / Düsterklinge"

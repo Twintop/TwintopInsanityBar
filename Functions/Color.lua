@@ -401,6 +401,16 @@ end
 ---@param aboveColor string The color hex string for at/above threshold
 ---@return table? colorCurve A ColorCurve object ready for UnitPowerPercent
 function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColor, aboveColor)
+	if type(belowColor) == "table" then
+		belowColor = belowColor.color
+	end
+	if type(aboveColor) == "table" then
+		aboveColor = aboveColor.color
+	end
+	if type(belowColor) ~= "string" or type(aboveColor) ~= "string" then
+		return nil
+	end
+
 	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
 	local thresholdValue = maxResource
 
@@ -582,4 +592,59 @@ function TRB.Functions.Color:SetIconVertexColorFromCurve(frame, colorResult)
 	end
 	local r, g, b, a = colorResult:GetRGBA()
 	frame.icon.texture:SetVertexColor(r, g, b, a)
+end
+
+---Applies a fill color to a BarNode, handling gradient entries automatically.
+---If colorEntry is a string, applies as a flat color (backwards compat).
+---If colorEntry is a table with gradientDirection ~= "disabled" and color2, applies as gradient.
+---Otherwise applies colorEntry.color as a flat color.
+---@param node TRB.Classes.BarNode # The BarNode to color
+---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
+function TRB.Functions.Color:ApplyFillColor(node, colorEntry)
+	if type(colorEntry) == "string" then
+		node:SetColor(colorEntry)
+	elseif type(colorEntry) == "table" then
+		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
+			node:SetColorGradient(colorEntry.color, colorEntry.color2, colorEntry.gradientDirection)
+		else
+			node:SetColor(colorEntry.color)
+		end
+	end
+end
+
+---Applies a fill color to an OverlaySlot's main overlay, handling gradient entries.
+---@param slot TRB.Classes.OverlaySlot # The OverlaySlot to color
+---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
+---@param overlayType string? # "appended", "inset", or nil for main overlay
+function TRB.Functions.Color:ApplyOverlayFillColor(slot, colorEntry, overlayType)
+	local colorString, color2String, direction
+	if type(colorEntry) == "string" then
+		colorString = colorEntry
+	elseif type(colorEntry) == "table" then
+		colorString = colorEntry.color
+		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
+			color2String = colorEntry.color2
+			direction = colorEntry.gradientDirection
+		end
+	end
+
+	if overlayType == "appended" then
+		if color2String then
+			slot:SetAppendedOverlayColorGradient(colorString, color2String, direction)
+		else
+			slot:SetAppendedOverlayColor(colorString)
+		end
+	elseif overlayType == "inset" then
+		if color2String then
+			slot:SetInsetOverlayColorGradient(colorString, color2String, direction)
+		else
+			slot:SetInsetOverlayColor(colorString)
+		end
+	else
+		if color2String then
+			slot:SetOverlayColorGradient(colorString, color2String, direction)
+		else
+			slot:SetOverlayColor(colorString)
+		end
+	end
 end

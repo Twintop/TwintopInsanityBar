@@ -798,7 +798,6 @@ L["RogueOutlawThresholdSap"] = "Sap (stealth)"
 L["RogueOutlawThresholdSapTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via Sepsis or Subterfuge."
 L["RogueOutlawThresholdDeathFromAbove"] = "Death from Above"
 L["RogueOutlawThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
-L["RogueSubtletyColorPickerShadowcraft"] = "Border color when Shadowcraft will grant full Combo Points after using a finisher"
 L["RogueSubtletyColorPickerShadowTechniques"] = "Combo Point that will generate from Shadow Techniques"
 L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Supercharger settings."
 L["RogueSubtletyThresholdBackstab"] = "Backstab / Gloomblade"
@@ -2415,9 +2414,6 @@ L["BarNameInsanityBar"] = "Insanity"
 L["BarElementBar"] = "Bar"
 L["BarElementBorder"] = "Border"
 L["BarElementBackground"] = "Background"
-L["PriestShadowCheckboxShadowWordMadnessUsableCasting"] = "Shadow Word: Madness usable (casting)"
-L["PriestShadowCheckboxShadowWordMadnessUsableCastingTooltip"] = "Changes the bar color when Shadow Word: Madness is usable and you are casting."
-L["PriestShadowColorPickerShadowWordMadnessUsableCasting"] = "Shadow Word: Madness usable (casting)"
 L["PriestShadowCheckboxBorderOvercap"] = "Overcap (gradient)"
 L["PriestShadowCheckboxBorderOvercapTooltip"] = "Changes the border color as your Insanity approaches the overcap threshold."
 L["PriestShadowColorPickerBorderOvercap"] = "Overcap border color"
@@ -2431,8 +2427,7 @@ L["PriestShadowIndicatorInstantMindBlastTooltip"] = "Changes to this color when 
 L["PriestShadowIndicatorInstantMindBlastColor"] = "Mind Blast is instant cast"
 L["PriestShadowIndicatorVoidformEndTooltip"] = "Changes to this color when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 L["PriestShadowIndicatorVoidformEndColor"] = "Voidform is ending (as configured)"
-L["PriestShadowIndicatorShadowWordMadnessUsableCastingTooltip"] = "Changes to this color when Shadow Word: Madness is usable and you are casting."
-L["PriestShadowIndicatorShadowWordMadnessUsableCastingColor"] = "Shadow Word: Madness usable (casting)"
+
 L["PriestShadowIndicatorShadowWordMadnessUsableTooltip"] = "Changes to this color when you have enough Insanity to cast Shadow Word: Madness."
 L["PriestShadowIndicatorShadowWordMadnessUsableColor"] = "Shadow Word: Madness is usable"
 L["PriestShadowIndicatorVoidformTooltip"] = "Changes to this color when Voidform is active."
@@ -2609,3 +2604,163 @@ L["DruidRestorationIndicatorIncarnationEndColor"] = "Incarnation is ending (as c
 L["DruidFeralCheckboxRavage"] = "Change color when Ravage proc is active"
 L["DruidFeralIndicatorRavageTooltip"] = "Changes to this color when a Ravage proc is active."
 L["DruidFeralIndicatorRavageColor"] = "Ravage proc is active"
+
+-- Focus bar name for Hunter Indicator Color targets
+L["BarNameFocusBar"] = "Focus"
+
+-- Hunter Beast Mastery Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterBeastMasteryIndicatorBestialWrathTooltip"] = "Changes to this color when Bestial Wrath is active."
+L["HunterBeastMasteryIndicatorBestialWrathColor"] = "Bestial Wrath is active"
+L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"] = "Changes to this color when Bestial Wrath is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterBeastMasteryIndicatorBestialWrathEndColor"] = "Bestial Wrath is ending (as configured)"
+L["HunterBeastMasteryIndicatorBeastCleaveTooltip"] = "Changes to this color when Beast Cleave is active."
+L["HunterBeastMasteryIndicatorBeastCleaveColor"] = "Beast Cleave is active"
+
+-- Hunter Marksmanship Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterMarksmanshipIndicatorTrueshotTooltip"] = "Changes to this color when Trueshot is active."
+L["HunterMarksmanshipIndicatorTrueshotColor"] = "Trueshot is active"
+L["HunterMarksmanshipIndicatorTrueshotEndTooltip"] = "Changes to this color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterMarksmanshipIndicatorTrueshotEndColor"] = "Trueshot is ending (as configured)"
+
+-- Hunter Survival Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["HunterSurvivalIndicatorTakedownTooltip"] = "Changes to this color when Takedown is active."
+L["HunterSurvivalIndicatorTakedownColor"] = "Takedown is active"
+L["HunterSurvivalIndicatorTakedownEndTooltip"] = "Changes to this color when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["HunterSurvivalIndicatorTakedownEndColor"] = "Takedown is ending (as configured)"
+-- Shaman Indicator Colors: BarName key
+L["BarNameMaelstromBar"] = "Maelstrom"
+
+-- Monk Brewmaster Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "Changes to this color when Invoke Niuzao is active."
+L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] = "Invoke Niuzao is active"
+L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "Changes to this color when Invoke Niuzao is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "Invoke Niuzao is ending (as configured)"
+
+-- Monk Mistweaver Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivacious Vivification is active."
+L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivacious Vivification is active"
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this color when Heart of the Jade Serpent is ready to use."
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "Heart of the Jade Serpent is ready"
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this color when Heart of the Jade Serpent is active."
+L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] = "Heart of the Jade Serpent is active"
+
+-- Monk Windwalker Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this color when Heart of the Jade Serpent is ready to use."
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] = "Heart of the Jade Serpent is ready"
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this color when Heart of the Jade Serpent is active."
+L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] = "Heart of the Jade Serpent is active"
+L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"] = "Changes to this color when Dance of Chi-Ji is active."
+L["MonkWindwalkerIndicatorDanceOfChiJiColor"] = "Dance of Chi-Ji is active"
+
+-- Paladin Holy Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "Changes to this color when Infusion of Light is active (Flash of Light becomes instant cast)."
+L["PaladinHolyIndicatorInfusionOfLightColor"] = "Infusion of Light is active"
+
+-- Rogue Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["RogueIndicatorStealthTooltip"] = "Changes to this color when you are stealthed."
+L["RogueIndicatorStealthColor"] = "Stealthed"
+
+-- Shaman Elemental Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanElementalIndicatorEarthShockTooltip"] = "Changes to this color when Earth Shock or Elemental Blast is usable."
+L["ShamanElementalIndicatorEarthShockColor"] = "Earth Shock or Elemental Blast is usable"
+L["ShamanElementalIndicatorEarthquakeTooltip"] = "Changes to this color when Earthquake is usable."
+L["ShamanElementalIndicatorEarthquakeColor"] = "Earthquake is usable"
+L["ShamanElementalIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanElementalIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanElementalIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanElementalIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Shaman Enhancement Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanEnhancementIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanEnhancementIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanEnhancementIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanEnhancementIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Shaman Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["ShamanRestorationIndicatorAscendanceTooltip"] = "Changes to this color when Ascendance is active."
+L["ShamanRestorationIndicatorAscendanceColor"] = "Ascendance is active"
+L["ShamanRestorationIndicatorAscendanceEndTooltip"] = "Changes to this color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanRestorationIndicatorAscendanceEndColor"] = "Ascendance is ending (as configured)"
+
+-- Warrior Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["WarriorIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["WarriorIndicatorOvercapTooltip"] = "Gradually changes to this color as your Rage approaches the overcap threshold."
+L["WarriorIndicatorOvercapColor"] = "Overcapping Rage"
+
+-- Death Knight Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["BarNameRunicPowerBar"] = "Runic Power"
+L["DeathKnightIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["DeathKnightIndicatorOvercapTooltip"] = "Gradually changes to this color as your Runic Power approaches the overcap threshold."
+L["DeathKnightIndicatorOvercapColor"] = "Overcapping Runic Power"
+
+-- Paladin Protection Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["PaladinProtectionCheckboxInfusionOfLight"] = "Infusion of Light"
+L["PaladinProtectionIndicatorInfusionOfLightTooltip"] = "Changes to this color when Infusion of Light is active (Flash of Light becomes instant cast)."
+L["PaladinProtectionIndicatorInfusionOfLightColor"] = "Infusion of Light is active"
+
+-- Monk Brewmaster Indicator Colors
+L["BarNameStaggerBar"] = "Stagger"
+
+-- Shaman Enhancement Indicator Colors
+L["BarNameMaelstromWeaponBar"] = "Maelstrom Weapon"
+
+-- Warrior Fury Indicator Colors
+L["BarNameWhirlwindBar"] = "Whirlwind"
+L["WarriorFuryCheckboxZeroStackBackground"] = "0 Whirlwind Charges"
+L["WarriorFuryIndicatorZeroStackBackgroundTooltip"] = "Changes to this color when you have 0 Whirlwind Charges."
+L["WarriorFuryIndicatorZeroStackBackgroundColor"] = "0 Whirlwind Charges"
+
+-- Warrior Protection Indicator Colors
+L["BarNameDefensivesIgnorePainTimeBar"] = "Ignore Pain (Time)"
+L["BarNameDefensivesIgnorePainAbsorbBar"] = "Ignore Pain (Absorb)"
+L["BarNameDefensivesShieldBlockBar"] = "Shield Block"
+
+-- Hunter Indicator Colors
+L["HunterIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["HunterIndicatorOvercapTooltip"] = "Gradually changes to this color as your Focus approaches the overcap threshold."
+L["HunterIndicatorOvercapColor"] = "Overcapping Focus"
+
+-- Monk Indicator Colors
+L["MonkIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["MonkIndicatorOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["MonkIndicatorOvercapColor"] = "Overcapping Energy"
+
+-- Rogue Indicator Colors
+L["RogueIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["RogueIndicatorOvercapTooltip"] = "Gradually changes to this color as your Energy approaches the overcap threshold."
+L["RogueIndicatorOvercapColor"] = "Overcapping Energy"
+
+-- Shaman Elemental Indicator Colors
+L["ShamanElementalIndicatorBorderOvercap"] = "Overcap (gradient)"
+L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this color as your Maelstrom approaches the overcap threshold."
+L["ShamanElementalIndicatorOvercapColor"] = "Overcapping Maelstrom"
+
+-- Death Knight Indicator Colors
+L["BarNameRunesBar"] = "Runes"
+L["DeathKnightIndicatorOvercap"] = "Overcap (gradient)"
+L["DeathKnightIndicatorRuneRegenOvercap"] = "Rune Regen Overcap"
+L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this color when fewer than 3 runes are on cooldown while in combat."
+L["DeathKnightIndicatorRuneRegenOvercapColor"] = "Rune Regen is Overcapping"
+
+-- Gradient Color System
+L["GradientDirectionDisabled"] = "Disabled"
+L["GradientDirectionHorizontal"] = "Horizontal"
+L["GradientDirectionVertical"] = "Vertical"
+L["GradientDirectionDisabledAbbrev"] = "|cFFFF0000D|r"
+L["GradientDirectionHorizontalAbbrev"] = "H"
+L["GradientDirectionVerticalAbbrev"] = "V"
+L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first color."
+L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
+L["GradientDirectionButtonTooltip"] = "Left-click to cycle the gradient direction between Disabled, Horizontal, and Vertical."
+
+-- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
+-- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
+-- REMOVED: L["DeathKnightBloodColorPickerBoneShieldOssuary"] - replaced by DeathKnightBloodColorPickerBoneShieldOssuaryRange
+
+-- Blood Death Knight Bone Shield Ossuary
+L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield color for Ossuary building range"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill color for nodes 1 through 5 when Ossuary is talented."
+L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"] = "Ossuary building range"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield color at Ossuary threshold"
+L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill color at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range color."
+L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"] = "Ossuary threshold"

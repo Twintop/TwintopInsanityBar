@@ -25,6 +25,7 @@ local barNodeCounter = 0
 ---@field public isVisible boolean
 ---@field public smooth boolean?
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
+---@field public _gradientActive boolean? # Whether a gradient is currently applied to the fill texture
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -133,23 +134,75 @@ function TRB.Classes.BarNode:GetMinMax()
 	return self.frame:GetMinMaxValues()
 end
 
----Sets the color of the resource bar
+---Sets the color of the resource bar (flat color). Clears any active gradient.
 ---@param colorString string # ARGB hex color string (e.g., "FFFF0000" for red)
 function TRB.Classes.BarNode:SetColor(colorString)
+	self:ClearGradient()
 	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.name .. "_resource", colorString)
 end
 
----Sets the color of the resource bar
+---Sets the color of the resource bar from a ColorCurve result. Clears any active gradient.
 ---@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
+	self:ClearGradient()
+	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
 	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		texture:SetVertexColor(colorResult:GetRGBA())
 	end
+end
+
+---Applies a two-color gradient to the bar fill texture.
+---Sets vertex color to white so the gradient colors render faithfully.
+---@param color1String string # ARGB hex color string for the start color
+---@param color2String string # ARGB hex color string for the end color
+---@param direction string # "horizontal" or "vertical"
+function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direction)
+	local cacheKey = self.name .. "_gradient"
+	local cache = TRB.Data.cache.colors.gradient
+	local cached = cache[cacheKey]
+	if cached and cached.color1 == color1String and cached.color2 == color2String and cached.direction == direction then
+		return
+	end
+
+	local Color = TRB.Functions.Color
+	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
+	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
+
+	-- Set vertex color to white so gradient colors are not tinted
+	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
+	self.frame:SetStatusBarColor(1, 1, 1, 1)
+
+	local texture = self.frame:GetStatusBarTexture()
+	if texture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		-- VERTICAL: min=bottom, max=top. Swap so color1 appears at top and color2 at bottom.
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		texture:SetGradient(apiDirection, minColor, maxColor)
+	end
+
+	self._gradientActive = true
+	cache[cacheKey] = { color1 = color1String, color2 = color2String, direction = direction }
+end
+
+---Clears any active gradient on the bar fill texture, resetting it to a neutral white-to-white gradient.
+function TRB.Classes.BarNode:ClearGradient()
+	if not self._gradientActive then return end
+	local texture = self.frame:GetStatusBarTexture()
+	if texture then
+		local white = CreateColor(1, 1, 1, 1)
+		texture:SetGradient("HORIZONTAL", white, white)
+	end
+	self._gradientActive = false
+	TRB.Data.cache.colors.gradient[self.name .. "_gradient"] = nil
 end
 
 ---Sets the border color
@@ -294,6 +347,8 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
 	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
 	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
+	TRB.Data.cache.colors.gradient[self.name .. "_gradient"] = nil
+	self._gradientActive = false
 
 	-- Re-anchor all overlay slots (border insets and fill texture reference may have changed)
 	for _, slot in pairs(self.overlaySlots) do
@@ -1032,6 +1087,7 @@ end
 ---@field public getNodeCountForKey (fun(key: string, colorSettings: table): integer)? # Optional callback returning node count per key (for multi-charge nodes like Holy Words). When nil, each enabled key counts as 1 node.
 ---@field public hasSameColor boolean # True if the "use highest color" checkbox should be shown for this bar's node colors. Defaults to true; set false to hide.
 ---@field public sameColorNodeKey string? # Key of the nodeColor entry that the sameColor checkbox should be placed next to. Defaults to the last nodeColor entry.
+---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1057,6 +1113,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	-- Threshold color options (required when colorCurveType is "step" or "linear")
 	self.thresholdLevels = config.thresholdLevels
 	self.maxThresholdPercent = config.maxThresholdPercent -- Max percentage for threshold sliders (default 100 if nil)
+	self.gradientTooltipNote = config.gradientTooltipNote
 	self.colorTypeLabel = config.colorTypeLabel
 	self.colorTypeStepLabel = config.colorTypeStepLabel
 	self.colorTypeLinearLabel = config.colorTypeLinearLabel
@@ -1424,6 +1481,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			{ key = "heavy", colorLabel = L["StaggerBarColorHeavy"], sliderLabel = L["StaggerBarThresholdHeavy"], sliderTooltip = L["StaggerBarThresholdHeavyTooltip"] },
 			{ key = "extreme", colorLabel = L["StaggerBarColorExtreme"], sliderLabel = L["StaggerBarThresholdExtreme"], sliderTooltip = L["StaggerBarThresholdExtremeTooltip"] }
 		},
+		gradientTooltipNote = L["GradientStaggerTooltip"],
 		colorTypeLabel = L["StaggerBarColorType"],
 		colorTypeStepLabel = L["StaggerBarColorTypeStep"],
 		colorTypeLinearLabel = L["StaggerBarColorTypeLinear"],
@@ -1560,6 +1618,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		nodeColors = {
 			{ key = "charge1", displayName = L["WhirlwindCharge1"], colorLabel = L["WhirlwindColorPickerBase"] },
@@ -1581,6 +1640,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		visibilityKey = "utility",
 		defaultDimensionsFunc = function(classic)
@@ -1602,6 +1662,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		minMaxMode = "discrete",
 		hasSpacing = true,
 		hasThresholds = false,
+		hasSameColor = false,
 		colorCurveType = nil,
 		visibilityKey = "lightweaver",
 		nodeColors = {

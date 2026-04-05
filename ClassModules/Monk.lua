@@ -339,7 +339,7 @@ local function ConstructResourceBar(settings)
 					node:SetMinMax(0, 1)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
-					node:SetColor(settings.colors.comboPoints.base.color)
+					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
@@ -1063,42 +1063,110 @@ local function UpdateResourceBar()
 					end
 
 					local barBorderColor = specSettings.colors.bar.border.color
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
+					local barBackgroundColor = specSettings.colors.bar.background.color
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+					local gradientOrder = sharedColors and sharedColors.gradientOrder
+					local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
+					local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
+					local invokeNiuzaoEndMet = false
 
-					-- Invoke Niuzao bar color change
-					if specSettings.colors.bar.invokeNiuzao.enabled and snapshots[spells.invokeNiuzao.id].buff.isActive then
+					if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
 						local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 						local timeThreshold = 0
-						local useEndOfNiuzaoColor = false
+						if specSettings.endOf.invokeNiuzao.mode == "gcd" then
+							local gcd = Character:GetCurrentGCDTime()
+							timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
+						elseif specSettings.endOf.invokeNiuzao.mode == "time" then
+							timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
+						end
+						invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
+					end
 
-						if specSettings.endOf.invokeNiuzao.enabled then
-							useEndOfNiuzaoColor = true
-							if specSettings.endOf.invokeNiuzao.mode == "gcd" then
-								local gcd = Character:GetCurrentGCDTime()
-								timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
-							elseif specSettings.endOf.invokeNiuzao.mode == "time" then
-								timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
+					local conditionMap = {
+						invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
+						invokeNiuzao = invokeNiuzaoActive,
+						borderOvercap = affectingCombat,
+					}
+					local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+					local barColorMap = { energyBar = energyBarColors }
+
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+								for barKey, elements in pairs(indicator.targets) do
+									local targetColors = barColorMap[barKey]
+									if targetColors and elements then
+										for elemKey, isTargeted in pairs(elements) do
+											if isTargeted then
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+											end
+										end
+									end
+								end
 							end
 						end
+					end
 
-						if useEndOfNiuzaoColor and niuzaoTimeLeft <= timeThreshold then
-							barColor = specSettings.colors.bar.invokeNiuzaoEnd.color
-						else
-							barColor = specSettings.colors.bar.invokeNiuzao.color
+					local overcapIndicator = nil
+					if gradientOrder and indicatorColors then
+						for i = #gradientOrder, 1, -1 do
+							local key = gradientOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+								overcapIndicator = indicator
+								break
+							end
+						end
+					end
+
+					barColor = energyBarColors.bar
+					barBorderColor = energyBarColors.border
+					barBackgroundColor = energyBarColors.background
+
+					local energyOvercapCurves = {}
+					if overcapIndicator and overcapIndicator.targets then
+						local energyTargets = overcapIndicator.targets.energyBar
+						if energyTargets then
+							if energyTargets.border then
+								energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
+							end
+							if energyTargets.bar then
+								energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
+							end
+							if energyTargets.background then
+								energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
+							end
 						end
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+
+					if energyOvercapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+
+					if energyOvercapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
+						primaryNode:SetColorCurve(barColorResult)
+					else
+						TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
+					end
+
+					if energyOvercapCurves.background then
+						local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.background)
+						primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+					else
+						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
+					end
+
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1133,15 +1201,99 @@ local function UpdateResourceBar()
 						
 						local cpBackgroundColor = staggerColors.background
 						if type(cpBackgroundColor) == "table" then cpBackgroundColor = cpBackgroundColor.color end
-						local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
 						local cpBorderColor = staggerColors.border
 						if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
-						cpBorderColor = cpBorderColor
+
+						-- Compute indicator overrides for stagger border/background
+						local stBorderOverride, stBackgroundOverride = nil, nil
+						local stSharedColors = specSettings.colors.shared
+						local stIndicatorColors = stSharedColors and stSharedColors.indicatorColors
+						local stNodeOrder = stSharedColors and stSharedColors.nodeOrder
+
+						if stNodeOrder and stIndicatorColors then
+							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
+							local stInvokeNiuzaoEndIndicator = stIndicatorColors.invokeNiuzaoEnd
+							local invokeNiuzaoEndMet = false
+							if invokeNiuzaoActive and stInvokeNiuzaoEndIndicator and stInvokeNiuzaoEndIndicator.enabled then
+								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
+								local timeThreshold = 0
+								if specSettings.endOf.invokeNiuzao.mode == "gcd" then
+									local gcd = Character:GetCurrentGCDTime()
+									timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
+								elseif specSettings.endOf.invokeNiuzao.mode == "time" then
+									timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
+								end
+								invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
+							end
+
+							local stConditionMap = {
+								invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
+								invokeNiuzao = invokeNiuzaoActive,
+							}
+
+							for i = #stNodeOrder, 1, -1 do
+								local key = stNodeOrder[i]
+								local indicator = stIndicatorColors[key]
+								if indicator and indicator.enabled and stConditionMap[key] then
+									local stTargets = indicator.targets and indicator.targets.staggerBar
+									if stTargets then
+										if stTargets.border then stBorderOverride = indicator.color end
+										if stTargets.background then stBackgroundOverride = indicator.color end
+									end
+								end
+							end
+						end
+
+						-- Build gradient curves for stagger targets (border/background only, uses energy scale)
+						local stOvercapCurves = {}
+						local stGradientOrder = stSharedColors and stSharedColors.gradientOrder
+						local stAffectingCombat = TRB.Data.character.inCombat
+						if stGradientOrder and stIndicatorColors then
+							local stGradientConditionMap = {
+								borderOvercap = stAffectingCombat,
+							}
+							for i = #stGradientOrder, 1, -1 do
+								local key = stGradientOrder[i]
+								local indicator = stIndicatorColors[key]
+								if indicator and indicator.enabled and stGradientConditionMap[key] and indicator.isGradient then
+									local stTargets = indicator.targets and indicator.targets.staggerBar
+									if stTargets then
+										if stTargets.border then
+											stOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, stBorderOverride or cpBorderColor, indicator.color)
+										end
+										if stTargets.background then
+											stOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, stBackgroundOverride or cpBackgroundColor, indicator.color)
+										end
+									end
+									break
+								end
+							end
+						end
 
 						-- Use ColorCurve for stagger bar fill color
 						staggerNode:SetColorCurve(snapshotData.attributes.staggerColor)
-						staggerNode:SetBorderColor(cpBorderColor)
-						staggerNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+
+						-- Border: gradient > flat indicator > default
+						if stOvercapCurves.border then
+							local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, stOvercapCurves.border)
+							staggerNode:SetBorderColorCurve(borderResult)
+						else
+							staggerNode:SetBorderColor(stBorderOverride or cpBorderColor)
+						end
+
+						-- Background: gradient > flat indicator > default
+						if stOvercapCurves.background then
+							local bgResult = UnitPowerPercent("player", TRB.Data.resource, true, stOvercapCurves.background)
+							staggerNode:SetBackgroundColorCurve(bgResult)
+						else
+							if stBackgroundOverride then
+								staggerNode:SetBackgroundColorFromString(stBackgroundOverride)
+							else
+								local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
+								staggerNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+							end
+						end
 
 						-- Update Stagger thresholds on the BarNode (use discrete colors, configurable positions)
 						local staggerThresholds = staggerNode:GetThresholds()
@@ -1208,17 +1360,43 @@ local function UpdateResourceBar()
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 
-					local barColor = specSettings.colors.bar.base.color
+					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border.color
+					local barBackgroundColor = specSettings.colors.bar.background.color
+					local sharedColors = specSettings.colors.shared
+					local indicatorColors = sharedColors and sharedColors.indicatorColors
+					local nodeOrder = sharedColors and sharedColors.nodeOrder
+					local conditionMap = {
+						vivaciousVivification = affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive,
+						heartOfTheJadeSerpent = false,
+						heartOfTheJadeSerpentReady = false,
+					}
+					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+					local barColorMap = { manaBar = manaBarColors }
 
-					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive then
-						barColor = specSettings.colors.bar.vivaciousVivification.color
+					if nodeOrder and indicatorColors then
+						for i = #nodeOrder, 1, -1 do
+							local key = nodeOrder[i]
+							local indicator = indicatorColors[key]
+							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+								for barKey, elements in pairs(indicator.targets) do
+									local targetColors = barColorMap[barKey]
+									if targetColors and elements then
+										for elemKey, isTargeted in pairs(elements) do
+											if isTargeted then
+												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+											end
+										end
+									end
+								end
+							end
+						end
 					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					primaryNode:SetBorderColor(barBorderColor)
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+					primaryNode:SetBorderColor(manaBarColors.border)
+					TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+					primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1244,12 +1422,105 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.windwalker
 		local specCacheSettings = TRB.Data.specCache.monk_windwalker.settings
 		UpdateSnapshot_Windwalker()
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+		local affectingCombat = TRB.Data.character.inCombat
+		local heartOfTheJadeSerpentReady = affectingCombat and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and
+			((talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable()) or (talents:IsTalentActive(spells.whirlingDragonPunch) and snapshots[spells.whirlingDragonPunch.id].cooldown:IsUsable()))
+		local heartOfTheJadeSerpentActive = snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive
+		local danceOfChiJiActive = snapshotData.attributes.danceOfChiJiActive == true
+		local sharedColors = specSettings.colors.shared
+		local indicatorColors = sharedColors and sharedColors.indicatorColors
+		local nodeOrder = sharedColors and sharedColors.nodeOrder
+		local gradientOrder = sharedColors and sharedColors.gradientOrder
+		local conditionMap = {
+			heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady,
+			heartOfTheJadeSerpent = heartOfTheJadeSerpentActive,
+			danceOfChiJi = danceOfChiJiActive,
+			borderOvercap = affectingCombat,
+		}
+		local energyBarColors = {
+			bar = specSettings.colors.bar.base,
+			border = specSettings.colors.bar.border.color,
+			background = specSettings.colors.bar.background.color,
+		}
+		local chiBarColors = {
+			bar = specSettings.colors.comboPoints.base,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		local chiBarOverrides = { bar = false, border = false, background = false }
+		local barColorMap = {
+			energyBar = energyBarColors,
+			chiBar = chiBarColors,
+		}
+
+		if nodeOrder and indicatorColors then
+			for i = #nodeOrder, 1, -1 do
+				local key = nodeOrder[i]
+				local indicator = indicatorColors[key]
+				if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+					for barKey, elements in pairs(indicator.targets) do
+						local targetColors = barColorMap[barKey]
+						if targetColors and elements then
+							for elemKey, isTargeted in pairs(elements) do
+								if isTargeted then
+									targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+									if barKey == "chiBar" then
+										chiBarOverrides[elemKey] = true
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		local overcapIndicator = nil
+		if gradientOrder and indicatorColors then
+			for i = #gradientOrder, 1, -1 do
+				local key = gradientOrder[i]
+				local indicator = indicatorColors[key]
+				if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+					overcapIndicator = indicator
+					break
+				end
+			end
+		end
+
+		local energyOvercapCurves = {}
+		local chiOvercapCurves = {}
+		if overcapIndicator and overcapIndicator.targets then
+			local energyTargets = overcapIndicator.targets.energyBar
+			if energyTargets then
+				if energyTargets.border then
+					energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.border, overcapIndicator.color)
+				end
+				if energyTargets.bar then
+					energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.bar, overcapIndicator.color)
+				end
+				if energyTargets.background then
+					energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.background, overcapIndicator.color)
+				end
+			end
+
+			local chiTargets = overcapIndicator.targets.chiBar
+			if chiTargets then
+				if chiTargets.border then
+					chiOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.border, overcapIndicator.color)
+				end
+				if chiTargets.bar then
+					chiOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.bar, overcapIndicator.color)
+				end
+				if chiTargets.background then
+					chiOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.background, overcapIndicator.color)
+				end
+			end
+		end
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1334,29 +1605,29 @@ local function UpdateResourceBar()
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					end
 
-					local barColor = specSettings.colors.bar.base.color
-					local barBorderColor = specSettings.colors.bar.border.color
-
-					if TRB.Data.character.inCombat and specSettings.colors.bar.heartOfTheJadeSerpentReady.enabled and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and
-						((talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable()) or (talents:IsTalentActive(spells.whirlingDragonPunch) and snapshots[spells.whirlingDragonPunch.id].cooldown:IsUsable()))  then
-							barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpentReady.color
-					elseif specSettings.colors.bar.heartOfTheJadeSerpent.enabled and snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive then
-						barBorderColor = specSettings.colors.bar.heartOfTheJadeSerpent.color
-					elseif specSettings.colors.bar.danceOfChiJi.enabled and snapshotData.attributes.danceOfChiJiActive then
-						barBorderColor = specSettings.colors.bar.danceOfChiJi.color
-					end
-
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					-- Apply overcap border color if enabled
-					if specSettings.colors.bar.borderOvercap.enabled and affectingCombat then
-						local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, specSettings.colors.bar.borderOvercap.color)
-						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
+
+					if energyOvercapCurves.border then
+						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
 						primaryNode:SetBorderColorCurve(borderColorResult)
 					else
-						primaryNode:SetBorderColor(barBorderColor)
+						primaryNode:SetBorderColor(energyBarColors.border)
 					end
-					primaryNode:SetColor(barColor)
-					primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+
+					if energyOvercapCurves.bar then
+						local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.bar)
+						primaryNode:SetColorCurve(barColorResult)
+					else
+						TRB.Functions.Color:ApplyFillColor(primaryNode, energyBarColors.bar)
+					end
+
+					if energyOvercapCurves.background then
+						local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.background)
+						primaryNode:SetBackgroundColorCurve(backgroundColorResult)
+					else
+						primaryNode:SetBackgroundColorFromString(energyBarColors.background)
+					end
+
 					Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				end
 			end
@@ -1364,32 +1635,46 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				-- Update Chi using BarNodes
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
-					local cpColor = specSettings.colors.comboPoints.base.color
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
+					local cpBorderColor = chiBarColors.border
+					local cpColor = chiBarColors.bar
+					local cpBackgroundColor = chiBarColors.background
 
 					if barGroups and barGroups.secondary then
 						local chiNode = barGroups.secondary:GetNode(x)
 						if chiNode then
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
-								if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-									cpColor = specSettings.colors.comboPoints.penultimate.color
-								elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-									cpColor = specSettings.colors.comboPoints.final.color
+								if not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2) then
+									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
 							end
-							
-							chiNode:SetBorderColor(cpBorderColor)
-							chiNode:SetColor(cpColor)
-							chiNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+							if chiOvercapCurves.border then
+								local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.border)
+								chiNode:SetBorderColorCurve(borderColorResult)
+							else
+								chiNode:SetBorderColor(cpBorderColor)
+							end
+
+							if chiOvercapCurves.bar then
+								local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.bar)
+								chiNode:SetColorCurve(barColorResult)
+							else
+								TRB.Functions.Color:ApplyFillColor(chiNode, cpColor)
+							end
+
+							if chiOvercapCurves.background then
+								local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.background)
+								chiNode:SetBackgroundColorCurve(backgroundColorResult)
+							else
+								chiNode:SetBackgroundColorFromString(cpBackgroundColor)
+							end
 						end
 					end
 				end
@@ -1835,7 +2120,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetMinMax(0, 1)
 							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
-							node:SetColor(sharedSettings.colors.comboPoints.base.color)
+							TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
 							node:SetFrameLevel(frameLevels.comboPoint)
 						end
 					end

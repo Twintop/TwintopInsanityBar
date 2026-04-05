@@ -567,7 +567,6 @@ end
 ---@field public finalityBlackPowder TRB.Classes.SpellBase
 ---@field public finalityEviscerate TRB.Classes.SpellBase
 ---@field public finalityRupture TRB.Classes.SpellBase
----@field public shadowcraft TRB.Classes.SpellBase
 ---@field public inevitability TRB.Classes.SpellBase
 ---@field public shadowDance TRB.Classes.SpellBase
 ---@field public gloomblade TRB.Classes.SpellThreshold
@@ -699,10 +698,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.finalityRupture = TRB.Classes.SpellBase:New({
         id = 385951,
-    })
-    self.shadowcraft = TRB.Classes.SpellBase:New({
-        id = 426594,
-        isTalent = true
     })
     self.inevitability = TRB.Classes.SpellBase:New({
         id = 382512,
