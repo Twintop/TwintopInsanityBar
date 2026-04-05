@@ -17,6 +17,10 @@ local content = [====[
 
 - [#625](#625) Add optional gradient color support for bar fills and casting overlays.
 
+### Localization
+
+- [#733](#733) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Death Knight
 ### Blood
 
