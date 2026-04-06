@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.52-release (2026-04-06)
+## Priest
+### Holy
+
+- Fix an issue where Power Surge + Halo cooldown reduction completing a Holy Word charge would prevent the next charge from starting its recharge timer.
+
+---
+
 # 12.0.1.51-release (2026-04-06)
 ## Demon Hunter
 ### Devourer

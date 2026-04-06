@@ -1375,15 +1375,17 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							end
 
 							if talents:IsTalentActive(spells.voiceOfHarmony) then
-								local cooldown = snapshots[spells.holyWordSanctify.id].cooldown
+								local targetSpell = spells.holyWordSanctify
+								local cooldown = snapshots[targetSpell.id].cooldown
 
 								if talents:IsTalentActive(spells.ultimateSerenity) then
-									cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+									targetSpell = spells.holyWordSerenity
+									cooldown = snapshots[targetSpell.id].cooldown
 								end
 
 								if cooldown.onCooldown then
 									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction)
-									cooldown:ReduceCooldown(cdrAmount)
+									cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
 								end
 							end
 						end
