@@ -7175,33 +7175,48 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 				if not currentIndicator then return end
 				currentIndicator.targets = currentIndicator.targets or {}
 
+				local firstBar = true
 				for barIdx, barDef in ipairs(barTargetDefs) do
-					if barIdx > 1 then
-						rootDescription:CreateDivider()
-					end
-					rootDescription:CreateTitle(barDef.label)
-					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
-
 					local excluded = excludedElements[barDef.key]
-					for _, elemDef in ipairs(elementDefs) do
-						if not (excluded and excluded[elemDef.key]) then
-							rootDescription:CreateCheckbox(
-								elemDef.label,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-								end,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									if not ci then return end
-									ci.targets = ci.targets or {}
-									ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-									ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-									SyncEnabled(ck, capturedRowIdx)
-								end
-							)
+					local allExcluded = true
+					if excluded then
+						for _, elemDef in ipairs(elementDefs) do
+							if not excluded[elemDef.key] then
+								allExcluded = false
+								break
+							end
+						end
+					else
+						allExcluded = false
+					end
+					if not allExcluded then
+						if not firstBar then
+							rootDescription:CreateDivider()
+						end
+						firstBar = false
+						rootDescription:CreateTitle(barDef.label)
+						currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+
+						for _, elemDef in ipairs(elementDefs) do
+							if not (excluded and excluded[elemDef.key]) then
+								rootDescription:CreateCheckbox(
+									elemDef.label,
+									function()
+										local ck = orderedKeys[capturedRowIdx]
+										local ci = indicatorColors[ck]
+										return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+									end,
+									function()
+										local ck = orderedKeys[capturedRowIdx]
+										local ci = indicatorColors[ck]
+										if not ci then return end
+										ci.targets = ci.targets or {}
+										ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+										ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+										SyncEnabled(ck, capturedRowIdx)
+									end
+								)
+							end
 						end
 					end
 				end
@@ -7383,50 +7398,61 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 					if not ci then return end
 					ci.targets = ci.targets or {}
 
+					local firstBar = true
 					for barIdx, barDef in ipairs(barTargetDefs) do
-						if barIdx > 1 then
-							rootDescription:CreateDivider()
-						end
-						rootDescription:CreateTitle(barDef.label)
-						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-
 						local globalExcluded = excludedElements[barDef.key]
 						local gradExcluded = gradientExcludedElements[barDef.key]
+						local allExcluded = true
 						for _, elemDef in ipairs(elementDefs) do
 							if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
-								rootDescription:CreateCheckbox(
-									elemDef.label,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
-									end,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										if not indicator then return end
-										indicator.targets = indicator.targets or {}
-										indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
-										indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
-										-- Sync enabled state
-										local anyEnabled = false
-										if indicator.targets then
-											for _, bd in ipairs(barTargetDefs) do
-												local bt = indicator.targets[bd.key]
-												if bt then
-													for _, ed in ipairs(elementDefs) do
-														if bt[ed.key] then anyEnabled = true; break end
+								allExcluded = false
+								break
+							end
+						end
+						if not allExcluded then
+							if not firstBar then
+								rootDescription:CreateDivider()
+							end
+							firstBar = false
+							rootDescription:CreateTitle(barDef.label)
+							ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+
+							for _, elemDef in ipairs(elementDefs) do
+								if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
+									rootDescription:CreateCheckbox(
+										elemDef.label,
+										function()
+											local gk = orderedGradientKeys[capturedGradIdx]
+											local indicator = indicatorColors[gk]
+											return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
+										end,
+										function()
+											local gk = orderedGradientKeys[capturedGradIdx]
+											local indicator = indicatorColors[gk]
+											if not indicator then return end
+											indicator.targets = indicator.targets or {}
+											indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
+											indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
+											-- Sync enabled state
+											local anyEnabled = false
+											if indicator.targets then
+												for _, bd in ipairs(barTargetDefs) do
+													local bt = indicator.targets[bd.key]
+													if bt then
+														for _, ed in ipairs(elementDefs) do
+															if bt[ed.key] then anyEnabled = true; break end
+														end
 													end
+													if anyEnabled then break end
 												end
-												if anyEnabled then break end
+											end
+											indicator.enabled = anyEnabled
+											if gradRow.colorPicker then
+												TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
 											end
 										end
-										indicator.enabled = anyEnabled
-										if gradRow.colorPicker then
-											TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
-										end
-									end
-								)
+									)
+								end
 							end
 						end
 					end

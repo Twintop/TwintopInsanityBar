@@ -2404,6 +2404,9 @@ local function UpdateResourceBar()
 							local mbTargets = maxBiteEnergyTargets and maxBiteEnergyTargets[elem]
 							local ocTargets = overcapEnergyTargets and overcapEnergyTargets[elem]
 							local baseColor = energyBarColors[elem]
+							if type(baseColor) == "table" then
+								baseColor = baseColor.color
+							end
 							if baseColor then
 								if mbTargets and ocTargets then
 									-- Combined 3-point curve
@@ -2450,14 +2453,18 @@ local function UpdateResourceBar()
 						for _, elem in ipairs({"bar", "border", "background"}) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
+							local cpBase = cpBaseColors[elem]
+							if type(cpBase) == "table" then
+								cpBase = cpBase.color
+							end
 							if mbTargets and ocTargets then
-								local curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBaseColors[elem], maxBiteInd.color, overcapInd.color)
+								local curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
 								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
 							elseif mbTargets then
-								local curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBaseColors[elem], maxBiteInd.color, maxBitePercent)
+								local curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
 								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
 							elseif ocTargets then
-								local curve = Color:BuildResourceThresholdCurve(specSettings, cpBaseColors[elem], overcapInd.color)
+								local curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
 								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
 							end
 						end

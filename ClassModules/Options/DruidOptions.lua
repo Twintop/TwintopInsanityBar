@@ -2263,6 +2263,10 @@ local function FeralConstructIndicatorColorsPanel(parent)
 			{ key = "rageBar",      label = L["BarNameRageBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Druid_Feral",
+		gradientExcludedElements = {
+			manaBar = { bar = true, border = true, background = true },
+			rageBar = { bar = true, border = true, background = true },
+		},
 		overcapConfig = { primaryResourceString = L["ResourceEnergy"], primaryResourceMax = FERAL_MAX_ENERGY },
 	}))
 

@@ -19,6 +19,12 @@ local content = [====[
 - Fix an issue where sometimes the Collapsing Star threshold line would continue to be shown even after exiting Void Metamorphosis.
 - Fix an issue where sometimes the Void Ray threshold line would not be shown even after exiting Void Metamorphosis.
 
+## Druid
+### Feral
+
+- Fix Lua errors when the "Max Bite" coloring was supposed to be applied to the Energy Bar.
+- Exclude Mana and Rage bars from being color indicator targets for Ferocious Bite max damage.
+
 ---
 
 # 12.0.1.50-release (2026-04-05)
