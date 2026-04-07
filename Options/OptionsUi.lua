@@ -6440,6 +6440,307 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	return yCoord
 end
 
+---Generates a threshold list panel with a scrolling table showing all thresholds and a detail panel below for enabling/disabling them.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing threshold configuration
+---@param classId integer The class ID
+---@param specId integer The spec ID
+---@param yCoord number The current Y coordinate for layout positioning
+---@param thresholdConfig table Configuration for threshold list display
+---@return number yCoord The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, classId, specId, yCoord, thresholdConfig)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+
+	-- Category display names
+	local categoryLabels = {
+		offensive = L["ThresholdCategoryOffensive"],
+		defensive = L["ThresholdCategoryDefensive"],
+		utility = L["ThresholdCategoryUtility"],
+		execute = L["ThresholdCategoryExecute"],
+		custom = L["ThresholdCategoryCustom"],
+	}
+
+	-- Bar target display names (caller provides friendly resource names)
+	local barTargetLabels = thresholdConfig.barTargetLabels or {
+		primary = L["ThresholdBarTargetPrimary"],
+		secondary = L["ThresholdBarTargetSecondary"],
+	}
+
+	-- Build the threshold entry list from cached threshold spells
+	local thresholdEntries = {}
+	local thresholdSpells = TRB.Data.cache.thresholdSpells or {}
+	local configLabels = thresholdConfig.labels
+	for _, spell in ipairs(thresholdSpells) do
+		local settingKey = spell.settingKey
+		if settingKey ~= nil and spec.thresholds.thresholdDictionary[settingKey] ~= nil then
+			-- Check for linked thresholds (e.g., cleave/whirlwind in Arms)
+			local linkedKeys = nil
+			if thresholdConfig.linkedThresholds and thresholdConfig.linkedThresholds[settingKey] then
+				linkedKeys = thresholdConfig.linkedThresholds[settingKey]
+			end
+
+			-- Use config label if provided, otherwise fall back to spell name
+			local displayName = (configLabels and configLabels[settingKey]) or spell.name or settingKey
+
+			table.insert(thresholdEntries, {
+				settingKey = settingKey,
+				name = displayName,
+				icon = spell.icon or "",
+				category = spell.category or "offensive",
+				barTarget = spell.barTarget or "primary",
+				tooltip = thresholdConfig.tooltips and thresholdConfig.tooltips[settingKey] or nil,
+				linkedKeys = linkedKeys,
+			})
+		end
+	end
+
+	-- Also add custom thresholds if configured
+	if spec.thresholds.customThresholds then
+		for key, custom in pairs(spec.thresholds.customThresholds) do
+			table.insert(thresholdEntries, {
+				settingKey = key,
+				name = custom.name or key,
+				icon = "",
+				category = "custom",
+				barTarget = custom.barTarget or "primary",
+				tooltip = custom.tooltip or nil,
+				linkedKeys = nil,
+			})
+		end
+	end
+
+	-- Table columns
+	local columns = {
+		{
+			["name"] = "Key",
+			["width"] = 1,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = L["ThresholdTableHeaderName"],
+			["width"] = 175,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["ThresholdTableHeaderCategory"],
+			["width"] = 85,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["ThresholdTableHeaderBar"],
+			["width"] = 70,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["ThresholdTableHeaderEnabled"],
+			["width"] = 60,
+			["align"] = "CENTER",
+		},
+	}
+
+	-- Create table container
+	controls.thresholdListContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	local tlc = controls.thresholdListContainer
+	tlc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord - 10)
+	tlc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	local tableRowCount = math.max(#thresholdEntries, 4)
+	tableRowCount = math.min(tableRowCount, 12)
+	tlc:SetHeight(35 + (tableRowCount * 15))
+
+	local thresholdTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, tlc, false, false)
+
+	-- Dynamically resize the Name column to fill available width
+	tlc:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width
+		local newNameWidth = math.max(100, w - fixedWidth - 30)
+		columns[2].width = newNameWidth
+		thresholdTable:SetDisplayCols(columns)
+	end)
+
+	local selectedSettingKey = nil
+
+	---Refreshes the scrolling table data from the current threshold settings.
+	local function SetTableValues()
+		local dataTable = {}
+		for _, entry in ipairs(thresholdEntries) do
+			local dictEntry = spec.thresholds.thresholdDictionary[entry.settingKey]
+			local isEnabled = dictEntry and dictEntry.enabled or false
+
+			-- For linked thresholds, check if any linked key is enabled
+			if entry.linkedKeys then
+				for _, lk in ipairs(entry.linkedKeys) do
+					local lkEntry = spec.thresholds.thresholdDictionary[lk]
+					if lkEntry and lkEntry.enabled then
+						isEnabled = true
+						break
+					end
+				end
+			end
+
+			local categoryLabel = categoryLabels[entry.category] or entry.category
+			local barTargetLabel = barTargetLabels[entry.barTarget] or entry.barTarget
+
+			local enabledText = isEnabled and "|cFF00FF00Yes|r" or "|cFFFF0000No|r"
+
+			local rowData = {
+				cols = {
+					{ value = entry.settingKey },
+					{ value = entry.icon .. " " .. entry.name },
+					{ value = categoryLabel },
+					{ value = barTargetLabel },
+					{ value = enabledText },
+				}
+			}
+			table.insert(dataTable, rowData)
+		end
+		thresholdTable:SetData(dataTable)
+		thresholdTable:EnableSelection(true)
+	end
+
+	-- Detail panel below the table
+	local detailHeight = 60
+	controls.thresholdListDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_ThresholdListDetail", parent, "BackdropTemplate")
+	local detailFrame = controls.thresholdListDetail
+	detailFrame:SetPoint("TOPLEFT", tlc, "BOTTOMLEFT", 0, 0)
+	detailFrame:SetPoint("TOPRIGHT", tlc, "BOTTOMRIGHT", 0, 0)
+	detailFrame:SetHeight(detailHeight)
+	detailFrame:Hide()
+
+	local detailYCoord = 0
+
+	-- Detail panel contents: header + enabled checkbox
+	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
+
+	detailYCoord = detailYCoord - 30
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.thresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdEnabled", detailFrame, "ChatConfigCheckButtonTemplate")
+	local enabledCheckbox = controls.checkBoxes.thresholdEnabled
+	enabledCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, false, true)
+	enabledCheckbox:Hide()
+
+	---Populates the detail panel for the selected threshold.
+	---@param settingKey string The settingKey of the threshold to show details for
+	local function FillDetailPanel(settingKey)
+		selectedSettingKey = settingKey
+		local entry = nil
+		for _, e in ipairs(thresholdEntries) do
+			if e.settingKey == settingKey then
+				entry = e
+				break
+			end
+		end
+		if entry == nil then
+			detailFrame:Hide()
+			return
+		end
+
+		-- Update header
+		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
+
+		-- Get the dictionary entry
+		local dictEntry = spec.thresholds.thresholdDictionary[settingKey]
+		if dictEntry == nil then
+			-- Create it if it doesn't exist
+			spec.thresholds.thresholdDictionary[settingKey] = { enabled = false }
+			dictEntry = spec.thresholds.thresholdDictionary[settingKey]
+		end
+
+		local isEnabled = dictEntry.enabled or false
+
+		-- For linked thresholds, check if any linked key is enabled
+		if entry.linkedKeys then
+			for _, lk in ipairs(entry.linkedKeys) do
+				local lkEntry = spec.thresholds.thresholdDictionary[lk]
+				if lkEntry and lkEntry.enabled then
+					isEnabled = true
+					break
+				end
+			end
+		end
+
+		enabledCheckbox:SetChecked(isEnabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, isEnabled, true)
+		enabledCheckbox:SetScript("OnClick", function(self, ...)
+			local checked = self:GetChecked()
+			dictEntry.enabled = checked
+			-- Also update linked keys
+			if entry.linkedKeys then
+				for _, lk in ipairs(entry.linkedKeys) do
+					if spec.thresholds.thresholdDictionary[lk] then
+						spec.thresholds.thresholdDictionary[lk].enabled = checked
+					end
+				end
+			end
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, checked, true)
+			SetTableValues()
+			-- Re-select the current row
+			for i, e in ipairs(thresholdEntries) do
+				if e.settingKey == settingKey then
+					thresholdTable:SetSelection(i)
+					break
+				end
+			end
+		end)
+		if entry.tooltip then
+			enabledCheckbox.tooltip = entry.tooltip
+		end
+		enabledCheckbox:Show()
+
+		detailFrame:Show()
+	end
+
+	-- Table click handler
+	thresholdTable:RegisterEvents({
+		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" then
+				if realrow ~= nil and realrow > 0 then
+					local settingKey = data[realrow].cols[1].value
+					local currentSelection = scrollingTable:GetSelection()
+					FillDetailPanel(settingKey)
+					C_Timer.After(0, function()
+						C_Timer.After(0.05, function()
+							local newSelection = scrollingTable:GetSelection()
+							if newSelection == nil then
+								thresholdTable:SetSelection(currentSelection)
+							end
+						end)
+					end)
+				end
+			end
+		end
+	})
+
+	-- Row tooltip handler
+	thresholdTable:RegisterEvents({
+		OnEnter = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow ~= nil and realrow > 0 then
+				local settingKey = data[realrow].cols[1].value
+				for _, entry in ipairs(thresholdEntries) do
+					if entry.settingKey == settingKey and entry.tooltip then
+						GameTooltip:SetOwner(rowFrame, "ANCHOR_CURSOR")
+						GameTooltip:SetText(entry.tooltip, 1, 1, 1, 1, true)
+						GameTooltip:Show()
+						break
+					end
+				end
+			end
+		end,
+		OnLeave = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			GameTooltip:Hide()
+		end
+	})
+
+	-- Initial table population
+	SetTableValues()
+
+	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10 - detailHeight
+
+	return yCoord
+end
+
 ---Generates the threshold line icon position and dimension options panel, including icon size, border, position, threshold line width, and overlap settings.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements

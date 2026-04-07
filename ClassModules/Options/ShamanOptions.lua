@@ -137,27 +137,18 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 			},
-				threshold = {
+			threshold = {
 				under = {
 					color = "FFFFFFFF",
-					color2 = "FFFFFFFF",
-					gradientDirection = "disabled"
 				},
 				over = {
 					color = "FF00FF00",
-					color2 = "FF00FF00",
-					gradientDirection = "disabled"
 				},
 				special = {
 					color = "FFFF00FF",
-					color2 = "FFFF00FF",
-					gradientDirection = "disabled",
-					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
-					color2 = "FF440000",
-					gradientDirection = "disabled",
 					enabled = true,
 					show = true
 				}

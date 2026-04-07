@@ -88,7 +88,8 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				ignorePain = {
 					enabled = false,
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = ARMS_MAX_RAGE,
@@ -398,7 +399,8 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				rampage = {
 					enabled = true,
 				},
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = FURY_MAX_RAGE,
@@ -706,7 +708,8 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				whirlwind = {
 					enabled = false,
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = PROTECTION_MAX_RAGE,
@@ -1064,7 +1067,7 @@ local function ArmsConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false, nil, true)
 end
 
-local function ArmsConstructThresholdPanel(parent)
+local function ArmsConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1074,141 +1077,54 @@ local function ArmsConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
-	local f = nil
+
+	controls.colors.threshold = {}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 1, 1, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceRage"],
+		},
+		labels = {
+			executeMinimum = L["WarriorArmsThresholdExecuteMinimum"],
+			executeMaximum = L["WarriorArmsThresholdExecuteMaximum"],
+			cleave = L["WarriorArmsThresholdWhirlwindCleave"],
+			whirlwind = L["WarriorArmsThresholdWhirlwindCleave"],
+		},
+		tooltips = {
+			cleave = L["WarriorArmsThresholdWhirlwindCleaveTooltip"],
+			whirlwind = L["WarriorArmsThresholdWhirlwindCleaveTooltip"],
+			executeMinimum = L["WarriorArmsThresholdExecuteMinimumTooltip"],
+			executeMaximum = L["WarriorArmsThresholdExecuteMaximumTooltip"],
+			hamstring = L["WarriorArmsThresholdHamstringTooltip"],
+			ignorePain = L["WarriorArmsThresholdIgnorePainTooltip"],
+			impendingVictory = L["WarriorArmsThresholdImpendingVictoryTooltip"],
+			mortalStrike = L["WarriorArmsThresholdMortalStrikeTooltip"],
+			rend = L["WarriorArmsThresholdRendTooltip"],
+			shieldBlock = L["WarriorArmsThresholdShieldBlockTooltip"],
+			slam = L["WarriorArmsThresholdSlamTooltip"],
+			thunderClap = L["WarriorArmsThresholdThunderClapTooltip"],
+		},
+		linkedThresholds = {
+			cleave = { "whirlwind" },
+			whirlwind = { "cleave" },
+		},
+	})
+end
+
+local function ArmsConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.arms
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_arms
+	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Arms_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Warrior_Arms_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 1, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-
-	controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.cleaveThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdWhirlwindCleave"])
-	f.tooltip = L["WarriorArmsThresholdWhirlwindCleaveTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.cleave.enabled or spec.thresholds.thresholdDictionary.whirlwind.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cleave.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.whirlwind.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorArmsThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMinimumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMinimum"])
-	f.tooltip = L["WarriorArmsThresholdExecuteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMinimum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMinimum.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMaximumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMaximum"])
-	f.tooltip = L["WarriorArmsThresholdExecuteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMaximum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMaximum.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.hamstringThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdHamstring"])
-	f.tooltip = L["WarriorArmsThresholdHamstringTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.hamstring.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.hamstring.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ignorePainThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdIgnorePain"])
-	f.tooltip = L["WarriorArmsThresholdIgnorePainTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.ignorePain.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.ignorePain.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.impendingVictoryThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdImpendingVictory"])
-	f.tooltip = L["WarriorArmsThresholdImpendingVictoryTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.impendingVictory.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.impendingVictory.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.mortalStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_mortalStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.mortalStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdMortalStrike"])
-	f.tooltip = L["WarriorArmsThresholdMortalStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.mortalStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.mortalStrike.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.rendThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdRend"])
-	f.tooltip = L["WarriorArmsThresholdRendTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rend.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rend.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shieldBlockThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdShieldBlock"])
-	f.tooltip = L["WarriorArmsThresholdShieldBlockTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shieldBlock.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shieldBlock.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.slamThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdSlam"])
-	f.tooltip = L["WarriorArmsThresholdSlamTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.slam.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slam.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.thunderClapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_thunderClap", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thunderClapThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdThunderClap"])
-	f.tooltip = L["WarriorArmsThresholdThunderClapTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.thunderClap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.thunderClap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, true, true, true, nil)
@@ -1368,7 +1284,8 @@ local function ArmsConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ArmsConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ArmsConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ArmsConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ArmsConstructThresholdPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ArmsConstructThresholdListPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ArmsConstructThresholdSettingsPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ArmsConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ArmsConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ArmsConstructResetDefaultsPanel },
@@ -1611,7 +1528,7 @@ local function FuryConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", true, L["ResourceWarriorWhirlwind"], true)
 end
 
-local function FuryConstructThresholdPanel(parent)
+local function FuryConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1621,106 +1538,44 @@ local function FuryConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
-	local f = nil
+
+	controls.colors.threshold = {}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 1, 2, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceRage"],
+		},
+		labels = {
+			executeMinimum = L["WarriorFuryThresholdExecuteMinimum"],
+			executeMaximum = L["WarriorFuryThresholdExecuteMaximum"],
+		},
+		tooltips = {
+			executeMinimum = L["WarriorFuryThresholdExecuteMinimumTooltip"],
+			executeMaximum = L["WarriorFuryThresholdExecuteMaximumTooltip"],
+			hamstring = L["WarriorFuryThresholdHamstringTooltip"],
+			impendingVictory = L["WarriorFuryThresholdImpendingVictoryTooltip"],
+			rampage = L["WarriorFuryThresholdRampageTooltip"],
+			shieldBlock = L["WarriorFuryThresholdShieldBlockTooltip"],
+			slam = L["WarriorFuryThresholdSlamTooltip"],
+			thunderClap = L["WarriorFuryThresholdThunderClapTooltip"],
+		},
+	})
+end
+
+local function FuryConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_fury
+	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Fury_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Warrior_Fury_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 2, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorFuryThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMinimumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMinimum"])
-	f.tooltip = L["WarriorFuryThresholdExecuteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMinimum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMinimum.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMaximumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMaximum"])
-	f.tooltip = L["WarriorFuryThresholdExecuteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMaximum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMaximum.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.hamstringThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdHamstring"])
-	f.tooltip = L["WarriorFuryThresholdHamstringTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.hamstring.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.hamstring.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.impendingVictoryThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdImpendingVictory"])
-	f.tooltip = L["WarriorFuryThresholdImpendingVictoryTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.impendingVictory.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.impendingVictory.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.rampageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_rampage", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.rampageThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdRampage"])
-	f.tooltip = L["WarriorFuryThresholdRampageTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rampage.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rampage.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shieldBlockThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdShieldBlock"])
-	f.tooltip = L["WarriorFuryThresholdShieldBlockTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shieldBlock.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shieldBlock.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.slamThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdSlam"])
-	f.tooltip = L["WarriorFuryThresholdSlamTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.slam.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slam.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.thunderClapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_thunderClap", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.thunderClapThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdThunderClap"])
-	f.tooltip = L["WarriorFuryThresholdThunderClapTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.thunderClap.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.thunderClap.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, true, true, true, nil)
@@ -1879,7 +1734,8 @@ local function FuryConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, FuryConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, FuryConstructThresholdPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, FuryConstructThresholdListPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, FuryConstructThresholdSettingsPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, FuryConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) FuryConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, FuryConstructResetDefaultsPanel },
@@ -2129,7 +1985,7 @@ local function ProtectionConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], "notEmpty", false, nil, true, nil, customBars)
 end
 
-local function ProtectionConstructThresholdPanel(parent)
+local function ProtectionConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2139,128 +1995,46 @@ local function ProtectionConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
-	local f = nil
+
+	controls.colors.threshold = {}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 1, 3, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceRage"],
+		},
+		labels = {
+			executeMinimum = L["WarriorProtectionThresholdExecuteMinimum"],
+			executeMaximum = L["WarriorProtectionThresholdExecuteMaximum"],
+		},
+		tooltips = {
+			executeMinimum = L["WarriorProtectionThresholdExecuteMinimumTooltip"],
+			executeMaximum = L["WarriorProtectionThresholdExecuteMaximumTooltip"],
+			hamstring = L["WarriorProtectionThresholdHamstringTooltip"],
+			ignorePain = L["WarriorProtectionThresholdIgnorePainTooltip"],
+			impendingVictory = L["WarriorProtectionThresholdImpendingVictoryTooltip"],
+			rend = L["WarriorProtectionThresholdRendTooltip"],
+			revenge = L["WarriorProtectionThresholdRevengeTooltip"],
+			shieldBlock = L["WarriorProtectionThresholdShieldBlockTooltip"],
+			slam = L["WarriorProtectionThresholdSlamTooltip"],
+			whirlwind = L["WarriorProtectionThresholdWhirlwindTooltip"],
+		},
+	})
+end
+
+local function ProtectionConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.protection
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_protection
+	local yCoord = 5
 
 	controls.buttons.exportButton_Warrior_Protection_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Warrior_Protection_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 3, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.execute = TRB.Functions.OptionsUi:BuildLabel(parent, L["WarriorProtectionThresholdExecute"], 5, yCoord, 350, 20, GameFontWhite)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMinimumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdExecuteMinimum"])
-	f.tooltip = L["WarriorProtectionThresholdExecuteMinimumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMinimum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMinimum.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.executeMaximumThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdExecuteMaximum"])
-	f.tooltip = L["WarriorProtectionThresholdExecuteMaximumTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.executeMaximum.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.executeMaximum.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.hamstringThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdHamstring"])
-	f.tooltip = L["WarriorProtectionThresholdHamstringTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.hamstring.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.hamstring.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.ignorePainThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdIgnorePain"])
-	f.tooltip = L["WarriorProtectionThresholdIgnorePainTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.ignorePain.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.ignorePain.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.impendingVictoryThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdImpendingVictory"])
-	f.tooltip = L["WarriorProtectionThresholdImpendingVictoryTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.impendingVictory.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.impendingVictory.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.rendThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdRend"])
-	f.tooltip = L["WarriorProtectionThresholdRendTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.rend.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.rend.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.revengeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_revenge", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.revengeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdRevenge"])
-	f.tooltip = L["WarriorProtectionThresholdRevengeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.revenge.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.revenge.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.shieldBlockThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdShieldBlock"])
-	f.tooltip = L["WarriorProtectionThresholdShieldBlockTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shieldBlock.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shieldBlock.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.slamThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdSlam"])
-	f.tooltip = L["WarriorProtectionThresholdSlamTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.slam.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.slam.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 25
-	controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Protection_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.whirlwindThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["WarriorProtectionThresholdWhirlwind"])
-	f.tooltip = L["WarriorProtectionThresholdWhirlwindTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.whirlwind.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.whirlwind.enabled = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -2423,7 +2197,8 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ProtectionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ProtectionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdListPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ProtectionConstructThresholdSettingsPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ProtectionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ProtectionConstructResetDefaultsPanel },

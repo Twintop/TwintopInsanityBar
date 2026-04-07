@@ -2764,3 +2764,18 @@ L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"] = "Ossuary building range
 L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield color at Ossuary threshold"
 L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill color at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range color."
 L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"] = "Ossuary threshold"
+
+-- Threshold List Tab
+L["TabThresholdSettings"] = "Threshold Settings"
+L["ThresholdTableHeaderName"] = "Threshold"
+L["ThresholdTableHeaderCategory"] = "Category"
+L["ThresholdTableHeaderBar"] = "Bar"
+L["ThresholdTableHeaderEnabled"] = "Enabled"
+L["ThresholdCategoryOffensive"] = "Offensive"
+L["ThresholdCategoryDefensive"] = "Defensive"
+L["ThresholdCategoryUtility"] = "Utility"
+L["ThresholdCategoryExecute"] = "Execute"
+L["ThresholdCategoryCustom"] = "Custom"
+L["ThresholdDetailHeader"] = "%s Settings"
+L["ThresholdBarTargetPrimary"] = "Primary"
+L["ThresholdBarTargetSecondary"] = "Secondary"
