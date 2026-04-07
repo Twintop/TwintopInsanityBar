@@ -858,9 +858,17 @@ local function ElementalConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceMaelstrom"],
 		},
-		linkedThresholds = {
-			earthShock = { "elementalBlast" },
-			earthquake = { "earthquakeTargeted" },
+		labels = {
+			earthShock = L["ShamanElementalThresholdCheckboxEarthShock"],
+			elementalBlast = L["ShamanElementalThresholdElementalBlast"],
+			earthquake = L["ShamanElementalThresholdEarthquake"],
+			earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargeted"],
+		},
+		tooltips = {
+			earthShock = L["ShamanElementalThresholdCheckboxEarthShockTooltip"],
+			elementalBlast = L["ShamanElementalThresholdElementalBlastTooltip"],
+			earthquake = L["ShamanElementalThresholdEarthquakeTooltip"],
+			earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargetedTooltip"],
 		},
 	})
 end

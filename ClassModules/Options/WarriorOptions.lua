@@ -1087,12 +1087,20 @@ local function ArmsConstructThresholdListPanel(parent)
 		labels = {
 			executeMinimum = L["WarriorArmsThresholdExecuteMinimum"],
 			executeMaximum = L["WarriorArmsThresholdExecuteMaximum"],
-			cleave = L["WarriorArmsThresholdWhirlwindCleave"],
-			whirlwind = L["WarriorArmsThresholdWhirlwindCleave"],
+			cleave = L["WarriorArmsThresholdCleave"],
+			whirlwind = L["WarriorArmsThresholdWhirlwind"],
+			hamstring = L["WarriorArmsThresholdHamstring"],
+			ignorePain = L["WarriorArmsThresholdIgnorePain"],
+			impendingVictory = L["WarriorArmsThresholdImpendingVictory"],
+			mortalStrike = L["WarriorArmsThresholdMortalStrike"],
+			rend = L["WarriorArmsThresholdRend"],
+			shieldBlock = L["WarriorArmsThresholdShieldBlock"],
+			slam = L["WarriorArmsThresholdSlam"],
+			thunderClap = L["WarriorArmsThresholdThunderClap"],
 		},
 		tooltips = {
-			cleave = L["WarriorArmsThresholdWhirlwindCleaveTooltip"],
-			whirlwind = L["WarriorArmsThresholdWhirlwindCleaveTooltip"],
+			cleave = L["WarriorArmsThresholdCleaveTooltip"],
+			whirlwind = L["WarriorArmsThresholdWhirlwindTooltip"],
 			executeMinimum = L["WarriorArmsThresholdExecuteMinimumTooltip"],
 			executeMaximum = L["WarriorArmsThresholdExecuteMaximumTooltip"],
 			hamstring = L["WarriorArmsThresholdHamstringTooltip"],
@@ -1103,10 +1111,6 @@ local function ArmsConstructThresholdListPanel(parent)
 			shieldBlock = L["WarriorArmsThresholdShieldBlockTooltip"],
 			slam = L["WarriorArmsThresholdSlamTooltip"],
 			thunderClap = L["WarriorArmsThresholdThunderClapTooltip"],
-		},
-		linkedThresholds = {
-			cleave = { "whirlwind" },
-			whirlwind = { "cleave" },
 		},
 	})
 end
@@ -1548,6 +1552,13 @@ local function FuryConstructThresholdListPanel(parent)
 		labels = {
 			executeMinimum = L["WarriorFuryThresholdExecuteMinimum"],
 			executeMaximum = L["WarriorFuryThresholdExecuteMaximum"],
+			execute = L["WarriorFuryThresholdExecute"],
+			hamstring = L["WarriorFuryThresholdHamstring"],
+			impendingVictory = L["WarriorFuryThresholdImpendingVictory"],
+			rampage = L["WarriorFuryThresholdRampage"],
+			shieldBlock = L["WarriorFuryThresholdShieldBlock"],
+			slam = L["WarriorFuryThresholdSlam"],
+			thunderClap = L["WarriorFuryThresholdThunderClap"],
 		},
 		tooltips = {
 			executeMinimum = L["WarriorFuryThresholdExecuteMinimumTooltip"],
@@ -2005,6 +2016,14 @@ local function ProtectionConstructThresholdListPanel(parent)
 		labels = {
 			executeMinimum = L["WarriorProtectionThresholdExecuteMinimum"],
 			executeMaximum = L["WarriorProtectionThresholdExecuteMaximum"],
+			hamstring = L["WarriorProtectionThresholdHamstring"],
+			ignorePain = L["WarriorProtectionThresholdIgnorePain"],
+			impendingVictory = L["WarriorProtectionThresholdImpendingVictory"],
+			rend = L["WarriorProtectionThresholdRend"],
+			revenge = L["WarriorProtectionThresholdRevenge"],
+			shieldBlock = L["WarriorProtectionThresholdShieldBlock"],
+			slam = L["WarriorProtectionThresholdSlam"],
+			whirlwind = L["WarriorProtectionThresholdWhirlwind"],
 		},
 		tooltips = {
 			executeMinimum = L["WarriorProtectionThresholdExecuteMinimumTooltip"],

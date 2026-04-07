@@ -1040,6 +1040,18 @@ local function BrewmasterConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
+		labels = {
+			cracklingJadeLightning = L["MonkBrewmasterThresholdCheckboxCracklingJadeLightning"],
+			expelHarm = L["MonkBrewmasterThresholdCheckboxExpelHarm"],
+			spinningCraneKick = L["MonkBrewmasterThresholdCheckboxSpinningCraneKick"],
+			tigerPalm = L["MonkBrewmasterThresholdCheckboxTigerPalm"],
+			vivify = L["MonkBrewmasterThresholdCheckboxVivify"],
+			detox = L["MonkBrewmasterThresholdCheckboxDetox"],
+			disable = L["MonkBrewmasterThresholdCheckboxDisable"],
+			paralysis = L["MonkBrewmasterThresholdCheckboxParalysis"],
+			soothingMist = L["MonkBrewmasterThresholdCheckboxSoothingMist"],
+			kegSmash = L["MonkBrewmasterThresholdCheckboxKegSmash"],
+		},
 		tooltips = {
 			expelHarm = L["MonkBrewmasterThresholdCheckboxExpelHarmTooltip"],
 			kegSmash = L["MonkBrewmasterThresholdCheckboxKegSmashTooltip"],
@@ -1953,6 +1965,16 @@ local function WindwalkerConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 10, 3, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
+		},
+		labels = {
+			cracklingJadeLightning = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightning"],
+			expelHarm = L["MonkWindwalkerThresholdCheckboxExpelHarm"],
+			tigerPalm = L["MonkWindwalkerThresholdCheckboxTigerPalm"],
+			vivify = L["MonkWindwalkerThresholdCheckboxVivify"],
+			detox = L["MonkWindwalkerThresholdCheckboxDetox"],
+			disable = L["MonkWindwalkerThresholdCheckboxDisable"],
+			paralysis = L["MonkWindwalkerThresholdCheckboxParalysis"],
+			soothingMist = L["MonkWindwalkerThresholdCheckboxSoothingMist"],
 		},
 		tooltips = {
 			expelHarm = L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"],

@@ -1192,6 +1192,11 @@ local function BloodConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+		},
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
@@ -1635,6 +1640,13 @@ local function FrostConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrike"],
+			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvance"],
+		},
 		tooltips = {
 			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosaTooltip"],
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
@@ -2074,6 +2086,12 @@ local function UnholyConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+		},
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],

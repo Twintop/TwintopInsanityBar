@@ -2519,14 +2519,17 @@ local function ShadowConstructThresholdListPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 5, 3, yCoord, {
 		labels = {
-			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2x"],
-			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3x"],
+			shadowWordMadness = L["PriestShadowThresholdShadowWordMadness"],
+			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2Times"],
+			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3Times"],
+		},
+		tooltips = {
+			shadowWordMadness = L["PriestShadowThresholdShadowWordMadnessTooltip"],
+			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2TimesTooltip"],
+			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3TimesTooltip"],
 		},
 		barTargetLabels = {
 			primary = L["ResourceInsanity"],
-		},
-		linkedThresholds = {
-			shadowWordMadness = { "shadowWordMadness2", "shadowWordMadness3" },
 		},
 	})
 end

@@ -1726,11 +1726,17 @@ local function BalanceConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 11, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceAstralPower"] },
+		labels = {
+			starsurge = L["DruidBalanceThresholdCheckboxStarsurge"],
+			starsurge2 = L["DruidBalanceThresholdCheckboxStarsurge2Times"],
+			starsurge3 = L["DruidBalanceThresholdCheckboxStarsurge3Times"],
+			starfall = L["DruidBalanceThresholdCheckboxStarfall"],
+		},
 		tooltips = {
 			starfall = L["DruidBalanceThresholdCheckboxStarfallTooltip"],
 			starsurge = L["DruidBalanceThresholdCheckboxStarsurgeTooltip"],
-			starsurge2 = L["DruidBalanceThresholdCheckboxStarsurge2xTooltip"],
-			starsurge3 = L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"],
+			starsurge2 = L["DruidBalanceThresholdCheckboxStarsurge2TimesTooltip"],
+			starsurge3 = L["DruidBalanceThresholdCheckboxStarsurge3TimesTooltip"],
 		},
 	})
 end
@@ -2321,16 +2327,24 @@ local function FeralConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 11, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceEnergy"] },
 		labels = {
-			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzy"],
-			franticFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzy"],
+			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzy"],
+			franticFrenzy = L["DruidFeralThresholdCheckboxFranticFrenzy"],
 			ferociousBiteMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimum"],
 			ferociousBiteMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximum"],
-			ravageMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimum"],
-			ravageMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximum"],
+			ravageMinimum = L["DruidFeralThresholdCheckboxRavageMinimum"],
+			ravageMaximum = L["DruidFeralThresholdCheckboxRavageMaximum"],
+			frenziedRegeneration = L["DruidFeralThresholdCheckboxFrenziedRegeneration"],
+			maim = L["DruidFeralThresholdCheckboxMaim"],
+			moonfire = L["DruidFeralThresholdCheckboxMoonfire"],
+			primalWrath = L["DruidFeralThresholdCheckboxPrimalWrath"],
+			rake = L["DruidFeralThresholdCheckboxRake"],
+			rip = L["DruidFeralThresholdCheckboxRip"],
+			shred = L["DruidFeralThresholdCheckboxShred"],
+			swipe = L["DruidFeralThresholdCheckboxSwipe"],
 		},
 		tooltips = {
-			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzyTooltip"],
-			franticFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyFranticFrenzyTooltip"],
+			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyTooltip"],
+			franticFrenzy = L["DruidFeralThresholdCheckboxFranticFrenzyTooltip"],
 			ferociousBiteMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimumTooltip"],
 			ferociousBiteMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximumTooltip"],
 			frenziedRegeneration = L["DruidFeralThresholdCheckboxFrenziedRegenerationTooltip"],
@@ -2338,16 +2352,11 @@ local function FeralConstructThresholdListPanel(parent)
 			moonfire = L["DruidFeralThresholdCheckboxMoonfireTooltip"],
 			primalWrath = L["DruidFeralThresholdCheckboxPrimalWrathTooltip"],
 			rake = L["DruidFeralThresholdCheckboxRakeTooltip"],
-			ravageMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimumTooltip"],
-			ravageMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximumTooltip"],
+			ravageMinimum = L["DruidFeralThresholdCheckboxRavageMinimumTooltip"],
+			ravageMaximum = L["DruidFeralThresholdCheckboxRavageMaximumTooltip"],
 			rip = L["DruidFeralThresholdCheckboxRipTooltip"],
 			shred = L["DruidFeralThresholdCheckboxShredTooltip"],
 			swipe = L["DruidFeralThresholdCheckboxSwipeTooltip"],
-		},
-		linkedThresholds = {
-			feralFrenzy = { "franticFrenzy" },
-			ferociousBiteMinimum = { "ravageMinimum" },
-			ferociousBiteMaximum = { "ravageMaximum" },
 		},
 	})
 end
@@ -2855,27 +2864,24 @@ local function GuardianConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 11, 3, yCoord, {
 		barTargetLabels = { primary = L["ResourceRage"] },
 		labels = {
-			maul = L["DruidGuardianThresholdCheckboxMaulRaze"],
-			raze = L["DruidGuardianThresholdCheckboxMaulRaze"],
-			maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"],
-			razeKillingBlow = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlow"],
-			maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"],
-			razeHarnessedRage = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRage"],
+			maul = L["DruidGuardianThresholdCheckboxMaul"],
+			raze = L["DruidGuardianThresholdCheckboxRaze"],
+			maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulKillingBlow"],
+			razeKillingBlow = L["DruidGuardianThresholdCheckboxRazeKillingBlow"],
+			maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulHarnessedRage"],
+			razeHarnessedRage = L["DruidGuardianThresholdCheckboxRazeHarnessedRage"],
+			ironfur = L["DruidGuardianThresholdCheckboxIronfur"],
+			frenziedRegeneration = L["DruidGuardianThresholdCheckboxFrenziedRegeneration"],
 		},
 		tooltips = {
 			frenziedRegeneration = L["DruidGuardianThresholdCheckboxFrenziedRegenerationTooltip"],
 			ironfur = L["DruidGuardianThresholdCheckboxIronfurTooltip"],
-			maul = L["DruidGuardianThresholdCheckboxMaulRazeTooltip"],
-			raze = L["DruidGuardianThresholdCheckboxMaulRazeTooltip"],
-			maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"],
-			razeKillingBlow = L["DruidGuardianThresholdCheckboxMaulRazeKillingBlowTooltip"],
-			maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"],
-			razeHarnessedRage = L["DruidGuardianThresholdCheckboxMaulRazeHarnessedRageTooltip"],
-		},
-		linkedThresholds = {
-			maul = { "raze" },
-			maulKillingBlow = { "razeKillingBlow" },
-			maulHarnessedRage = { "razeHarnessedRage" },
+			maul = L["DruidGuardianThresholdCheckboxMaulTooltip"],
+			raze = L["DruidGuardianThresholdCheckboxRazeTooltip"],
+			maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulKillingBlowTooltip"],
+			razeKillingBlow = L["DruidGuardianThresholdCheckboxRazeKillingBlowTooltip"],
+			maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulHarnessedRageTooltip"],
+			razeHarnessedRage = L["DruidGuardianThresholdCheckboxRazeHarnessedRageTooltip"],
 		},
 	})
 end

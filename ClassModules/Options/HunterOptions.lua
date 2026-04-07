@@ -937,6 +937,17 @@ local function BeastMasteryConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
+		labels = {
+			revivePet = L["HunterThresholdCheckboxRevivePet"],
+			wingClip = L["HunterThresholdCheckboxWingClip"],
+			scareBeast = L["HunterThresholdCheckboxScareBeast"],
+			killCommand = L["HunterBeastMasteryThresholdCheckboxKillCommand"],
+			cobraShot = L["HunterBeastMasteryThresholdCheckboxCobraShot"],
+			blackArrow = L["HunterBeastMasteryThresholdCheckboxBlackArrow"],
+			wildThrash = L["HunterBeastMasteryThresholdCheckboxWildThrash"],
+			wailingArrow = L["HunterBeastMasteryThresholdCheckboxWailingArrow"],
+			direBeastHawk = L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"],
+		},
 		tooltips = {
 			blackArrow = L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"],
 			cobraShot = L["HunterBeastMasteryThresholdCheckboxCobraShotTooltip"],
@@ -1367,6 +1378,14 @@ local function MarksmanshipConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 3, 2, yCoord, {
 		labels = {
 			arcaneShot = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"],
+			revivePet = L["HunterThresholdCheckboxRevivePet"],
+			wingClip = L["HunterThresholdCheckboxWingClip"],
+			scareBeast = L["HunterThresholdCheckboxScareBeast"],
+			killShot = L["HunterMarksmanshipThresholdCheckboxKillShot"],
+			aimedShot = L["HunterMarksmanshipThresholdCheckboxAimedShot"],
+			multiShot = L["HunterMarksmanshipThresholdCheckboxMultiShot"],
+			blackArrow = L["HunterMarksmanshipThresholdCheckboxBlackArrow"],
+			wailingArrow = L["HunterMarksmanshipThresholdCheckboxWailingArrow"],
 		},
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
@@ -1935,6 +1954,14 @@ local function SurvivalConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 3, 3, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
+		},
+		labels = {
+			revivePet = L["HunterThresholdCheckboxRevivePet"],
+			wingClip = L["HunterThresholdCheckboxWingClip"],
+			scareBeast = L["HunterThresholdCheckboxScareBeast"],
+			boomstick = L["HunterSurvivalThresholdCheckboxBoomstick"],
+			hatchetToss = L["HunterSurvivalThresholdCheckboxHatchetToss"],
+			raptorStrike = L["HunterSurvivalThresholdCheckboxRaptorStrike"],
 		},
 		tooltips = {
 			boomstick = L["HunterSurvivalThresholdCheckboxBoomstickTooltip"],

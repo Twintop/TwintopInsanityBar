@@ -1038,30 +1038,24 @@ local function HavocConstructThresholdListPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 12, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceFury"] },
 		labels = {
-			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"],
-			deathSweep = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"],
-			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"],
-			annihilation = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"],
-			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"],
-			abyssalGaze = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"],
+			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDance"],
+			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweep"],
+			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrike"],
+			annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilation"],
+			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeam"],
+			abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGaze"],
+			chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNova"],
+			throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaive"],
 		},
 		tooltips = {
-			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"],
-			deathSweep = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"],
+			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDanceTooltip"],
+			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweepTooltip"],
 			chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"],
-			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"],
-			annihilation = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"],
-			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"],
-			abyssalGaze = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"],
+			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrikeTooltip"],
+			annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilationTooltip"],
+			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"],
+			abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGazeTooltip"],
 			throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"],
-		},
-		linkedThresholds = {
-			bladeDance = { "deathSweep" },
-			deathSweep = { "bladeDance" },
-			chaosStrike = { "annihilation" },
-			annihilation = { "chaosStrike" },
-			eyeBeam = { "abyssalGaze" },
-			abyssalGaze = { "eyeBeam" },
 		},
 	})
 end
@@ -1541,6 +1535,12 @@ local function VengeanceConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 12, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceFury"] },
+		labels = {
+			soulCleave = L["DemonHunterVengeanceThresholdCheckboxSoulCleave"],
+			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNova"],
+			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastation"],
+			spiritBomb = L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"],
+		},
 		tooltips = {
 			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"],
 			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"],
@@ -1964,6 +1964,10 @@ local function DevourerConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceFury"],
 			secondary = L["ResourceCollapsingStar"],
+		},
+		labels = {
+			voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRay"],
+			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStar"],
 		},
 		tooltips = {
 			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"],

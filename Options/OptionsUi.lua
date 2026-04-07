@@ -6460,6 +6460,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		utility = L["ThresholdCategoryUtility"],
 		execute = L["ThresholdCategoryExecute"],
 		custom = L["ThresholdCategoryCustom"],
+		-- Spec specific categories (e.g., Druid shapeshift forms)
+		metamorphosis = L["ThresholdCategoryMetamorphosis"],
 	}
 
 	-- Bar target display names (caller provides friendly resource names)
@@ -6468,31 +6470,39 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		secondary = L["ThresholdBarTargetSecondary"],
 	}
 
-	-- Build the threshold entry list from cached threshold spells
+	-- Build the threshold entry list from the spec's cached spell data (not the runtime threshold cache,
+	-- which only holds spells for the currently active spec and filters by talents).
 	local thresholdEntries = {}
-	local thresholdSpells = TRB.Data.cache.thresholdSpells or {}
+	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local specCacheEntry = compositeKey and TRB.Data.specCache[compositeKey] or nil
+	local specSpells = specCacheEntry and specCacheEntry.spellsData and specCacheEntry.spellsData.spells or nil
 	local configLabels = thresholdConfig.labels
-	for _, spell in ipairs(thresholdSpells) do
-		local settingKey = spell.settingKey
-		if settingKey ~= nil and spec.thresholds.thresholdDictionary[settingKey] ~= nil then
-			-- Check for linked thresholds (e.g., cleave/whirlwind in Arms)
-			local linkedKeys = nil
-			if thresholdConfig.linkedThresholds and thresholdConfig.linkedThresholds[settingKey] then
-				linkedKeys = thresholdConfig.linkedThresholds[settingKey]
+	if specSpells ~= nil then
+		for _, v in pairs(specSpells) do
+			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() then
+				local spell = v --[[@as TRB.Classes.SpellThreshold]]
+				local settingKey = spell.settingKey
+				if settingKey ~= nil and spec.thresholds.thresholdDictionary[settingKey] ~= nil then
+					-- Check for linked thresholds (e.g., cleave/whirlwind in Arms)
+					local linkedKeys = nil
+					if thresholdConfig.linkedThresholds and thresholdConfig.linkedThresholds[settingKey] then
+						linkedKeys = thresholdConfig.linkedThresholds[settingKey]
+					end
+
+					-- Use config label if provided, otherwise fall back to spell name
+					local displayName = (configLabels and configLabels[settingKey]) or spell.name or settingKey
+
+					table.insert(thresholdEntries, {
+						settingKey = settingKey,
+						name = displayName,
+						icon = spell.icon or "",
+						category = spell.category or "offensive",
+						barTarget = spell.barTarget or "primary",
+						tooltip = thresholdConfig.tooltips and thresholdConfig.tooltips[settingKey] or nil,
+						linkedKeys = linkedKeys,
+					})
+				end
 			end
-
-			-- Use config label if provided, otherwise fall back to spell name
-			local displayName = (configLabels and configLabels[settingKey]) or spell.name or settingKey
-
-			table.insert(thresholdEntries, {
-				settingKey = settingKey,
-				name = displayName,
-				icon = spell.icon or "",
-				category = spell.category or "offensive",
-				barTarget = spell.barTarget or "primary",
-				tooltip = thresholdConfig.tooltips and thresholdConfig.tooltips[settingKey] or nil,
-				linkedKeys = linkedKeys,
-			})
 		end
 	end
 
@@ -6519,18 +6529,37 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			["align"] = "CENTER",
 		},
 		{
+			["name"] = "",
+			["width"] = 22,
+			["align"] = "CENTER",
+			["defaultsort"] = 1,
+			["comparesort"] = function(st, rowa, rowb, sortbycol)
+				-- Sort by name (column 3) value, using the icon column's sort direction
+				local cella = st:GetCell(rowa, 3)
+				local cellb = st:GetCell(rowb, 3)
+				local a1 = type(cella) == "table" and cella.value or cella
+				local b1 = type(cellb) == "table" and cellb.value or cellb
+				if a1 == b1 then return false end
+				local column = st.cols[sortbycol]
+				local direction = column.sort or column.defaultsort or 2
+				if direction == 1 then return a1 < b1 else return a1 > b1 end
+			end,
+		},
+		{
 			["name"] = L["ThresholdTableHeaderName"],
-			["width"] = 175,
+			["width"] = 130,
 			["align"] = "LEFT",
+			["sort"] = 1,
+			["defaultsort"] = 1,
 		},
 		{
 			["name"] = L["ThresholdTableHeaderCategory"],
-			["width"] = 85,
+			["width"] = 100,
 			["align"] = "LEFT",
 		},
 		{
 			["name"] = L["ThresholdTableHeaderBar"],
-			["width"] = 70,
+			["width"] = 100,
 			["align"] = "LEFT",
 		},
 		{
@@ -6553,9 +6582,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 	-- Dynamically resize the Name column to fill available width
 	tlc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width
+		local fixedWidth = columns[1].width + columns[2].width + columns[4].width + columns[5].width + columns[6].width
 		local newNameWidth = math.max(100, w - fixedWidth - 30)
-		columns[2].width = newNameWidth
+		columns[3].width = newNameWidth
 		thresholdTable:SetDisplayCols(columns)
 	end)
 
@@ -6579,15 +6608,16 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 				end
 			end
 
-			local categoryLabel = categoryLabels[entry.category] or entry.category
-			local barTargetLabel = barTargetLabels[entry.barTarget] or entry.barTarget
+			local categoryLabel = categoryLabels[entry.category]
+			local barTargetLabel = barTargetLabels[entry.barTarget]
 
 			local enabledText = isEnabled and "|cFF00FF00Yes|r" or "|cFFFF0000No|r"
 
 			local rowData = {
 				cols = {
 					{ value = entry.settingKey },
-					{ value = entry.icon .. " " .. entry.name },
+					{ value = entry.icon },
+					{ value = entry.name },
 					{ value = categoryLabel },
 					{ value = barTargetLabel },
 					{ value = enabledText },
