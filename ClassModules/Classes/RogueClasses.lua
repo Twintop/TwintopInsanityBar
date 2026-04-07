@@ -36,7 +36,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         stealth = true,
         settingKey = "cheapShot",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.crimsonVial = TRB.Classes.SpellThreshold:New({
         id = 185311,
@@ -45,7 +46,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         hasCooldown = true,
         cooldown = 30,
         baseline = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "defensive"
     })
     self.distract = TRB.Classes.SpellThreshold:New({
         id = 1725,
@@ -55,7 +57,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         hasCooldown = true,
         cooldown = 30,
         baseline = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "utility"
     })
     self.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 408,
@@ -64,7 +67,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "kidneyShot",
         hasCooldown = true,
         cooldown = 20,
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.sliceAndDice = TRB.Classes.SpellComboPointThreshold:New({
         id = 315496,
@@ -74,7 +78,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         hasCooldown = false,
         isSnowflake = true,
         baseline = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     self.feint = TRB.Classes.SpellThreshold:New({
         id = 1966,
@@ -85,7 +90,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         hasCharges = true,
         isTalent = false,
         baseline = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "defensive"
     })
 
     --Rogue Talent Abilities
@@ -95,14 +101,16 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         comboPointsGenerated = 1,
         settingKey = "shiv",
         hasCooldown = true,
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.sap = TRB.Classes.SpellThreshold:New({ -- Baseline
         id = 6770,
         primaryResourceType = Enum.PowerType.Energy,
         stealth = true,
         settingKey = "sap",
-        baseline = true
+        baseline = true,
+        category = "utility"
     })
     self.gouge = TRB.Classes.SpellComboPointThreshold:New({
         id = 1776,
@@ -111,7 +119,8 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "gouge",
         hasCooldown = true,
         cooldown = 15,
-        isTalent = true
+        isTalent = true,
+        category = "utility"
     })
     self.subterfuge = TRB.Classes.SpellBase:New({
         id = 115192,
@@ -129,14 +138,16 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "deathFromAbove",
         comboPoints = true,
         hasCooldown = true,
-        isPvp = true
+        isPvp = true,
+        category = "offensive"
     })
     self.dismantle = TRB.Classes.SpellThreshold:New({
         id = 207777,
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "dismantle",
         hasCooldown = true,
-        isPvp = true
+        isPvp = true,
+        category = "utility"
     })
     self.echoingReprimand = TRB.Classes.SpellBase:New({
         id = 470671
@@ -173,7 +184,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         comboPointsGenerated = 2,
         stealth = true,
         settingKey = "ambush",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.shiv.baseline = true
     self.shiv.hasCharges = true
@@ -184,7 +196,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "envenom",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.fanOfKnives = TRB.Classes.SpellComboPointThreshold:New({
         id = 51723,
@@ -192,7 +205,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         comboPointsGenerated = 1,
         settingKey = "fanOfKnives",
         baseline = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     self.garrote = TRB.Classes.SpellComboPointThreshold:New({
         id = 703,
@@ -204,7 +218,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         baseDuration = 18,
         baseline = true,
         isSnowflake = true,
-        pandemic = true
+        pandemic = true,
+        category = "offensive"
     })
     self.mutilate = TRB.Classes.SpellComboPointThreshold:New({
         id = 1329,
@@ -212,21 +227,24 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         comboPointsGenerated = 2,
         settingKey = "mutilate",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.poisonedKnife = TRB.Classes.SpellComboPointThreshold:New({
         id = 185565,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         settingKey = "poisonedKnife",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.rupture = TRB.Classes.SpellComboPointThreshold:New({
         id = 1943,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         settingKey = "rupture",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
 
     self.crimsonTempest = TRB.Classes.SpellComboPointThreshold:New({
@@ -235,7 +253,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         comboPointsGenerated = 1,
         settingKey = "crimsonTempest",
         isTalent = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     self.improvedGarrote = TRB.Classes.SpellBase:New({
         id = 381632,
@@ -256,7 +275,8 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         settingKey = "kingsbane",
         hasCooldown = true,
         cooldown = 60,
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
 
     return self
@@ -339,7 +359,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         comboPointsGenerated = 2,
         stealth = true,
         settingKey = "ambush",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     
     -- Outlaw Baseline Abilities
@@ -352,7 +373,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isSnowflake = true,
         cooldown = 45,
         restlessBlades = true,
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.dispatch = TRB.Classes.SpellComboPointThreshold:New({
         id = 2098,
@@ -360,7 +382,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         comboPoints = true,
         settingKey = "dispatch",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.pistolShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 185763,
@@ -369,7 +392,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         settingKey = "pistolShot",
         hasCooldown = false,
         isSnowflake = true,
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.sinisterStrike = TRB.Classes.SpellComboPointThreshold:New({
         id = 193315,
@@ -378,7 +402,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         settingKey = "sinisterStrike",
         hasCooldown = false,
         isSnowflake = true,
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.opportunity = TRB.Classes.SpellBase:New({
         id = 195627,
@@ -394,7 +419,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         restlessBlades = true,
         baseline = true,
         isTalent = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
 
     -- Outlaw Spec Abilities
@@ -412,7 +438,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         hasCooldown = true,
         cooldown = 45,
         restlessBlades = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "utility"
     })
 
     -- Roll the Bones
@@ -462,7 +489,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true,
         cooldown = 90,
         restlessBlades = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     self.floatLikeAButterfly = TRB.Classes.SpellBase:New({
         id = 354897,
@@ -479,7 +507,8 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         comboPoints = true,
         settingKey = "coupDeGrace",
         isTalent = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
 
     return self
@@ -593,7 +622,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPoints = true,
         settingKey = "eviscerate",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
 
     -- Subtlety Baseline Abilities
@@ -603,7 +633,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 1,
         settingKey = "backstab",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.blackPowder = TRB.Classes.SpellComboPointThreshold:New({
         id = 319175,
@@ -611,7 +642,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPoints = true,
         settingKey = "blackPowder",
         baseline = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.shadowstrike = TRB.Classes.SpellComboPointThreshold:New({
         id = 185438,
@@ -619,7 +651,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 2,
         stealth = true,
         settingKey = "shadowstrike",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.shurikenStorm = TRB.Classes.SpellComboPointThreshold:New({
         id = 197835,
@@ -628,14 +661,16 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         settingKey = "shurikenStorm",
         baseline = true,
         isSnowflake = true,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     self.shurikenToss = TRB.Classes.SpellComboPointThreshold:New({
         id = 114014,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         settingKey = "shurikenToss",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.shadowTechniques = TRB.Classes.SpellBase:New({
         id = 196911
@@ -660,7 +695,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "gloomblade",
         isTalent = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.secretTechnique = TRB.Classes.SpellComboPointThreshold:New({
         id = 280719,
@@ -668,7 +704,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPoints = true,
         settingKey = "secretTechnique",
         hasCooldown = true,
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.goremawsBite = TRB.Classes.SpellComboPointThreshold:New({
         id = 426593,
@@ -677,7 +714,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPointsGenerated = 3,
         settingKey = "goremawsBite",
         hasCooldown = true,
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.shotInTheDark = TRB.Classes.SpellBase:New({
         id = 257506,
@@ -711,7 +749,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         comboPoints = true,
         settingKey = "coupDeGrace",
         isTalent = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
        
     return self

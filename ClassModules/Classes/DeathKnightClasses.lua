@@ -18,6 +18,7 @@ function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
         id = 47541,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "deathCoil",
+        category = "offensive",
         isTalent = false,
         baseline = true
     })
@@ -27,6 +28,7 @@ function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
         id = 49998,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "deathStrike",
+        category = "defensive",
         isTalent = true
     })
 
@@ -51,6 +53,7 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
         id = 61999,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "raiseAlly",
+        category = "utility",
         isTalent = false,
         baseline = true
     })
@@ -138,6 +141,7 @@ function TRB.Classes.DeathKnight.FrostSpells:New()
         castId = 1249658,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "breathOfSindragosa",
+        category = "offensive",
         isTalent = true,
         rangeCheck = false,
         hasCooldown = true,
@@ -147,12 +151,14 @@ function TRB.Classes.DeathKnight.FrostSpells:New()
         id = 49143,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "frostStrike",
+        category = "offensive",
         isTalent = true
     })
     self.glacialAdvance = TRB.Classes.SpellThreshold:New({
         id = 194913,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "glacialAdvance",
+        category = "offensive",
         baseline = true
     })
 
@@ -210,6 +216,7 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
         id = 207317,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "epidemic",
+        category = "offensive",
         baseline = true
     })
 
@@ -217,6 +224,7 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
         id = 61999,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "raiseAlly",
+        category = "utility",
         isTalent = false,
         baseline = true
     })
