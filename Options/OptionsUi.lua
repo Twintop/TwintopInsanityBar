@@ -1763,6 +1763,13 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 		lastTab:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
 		lastTab.bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 	end
+
+	-- Lazy construction: build the tab content on first visit
+	if parent.tabConstructors and parent.tabConstructors[tabId] then
+		parent.tabConstructors[tabId](parent.tabsheets[tabId].scrollFrame.scrollChild)
+		parent.tabConstructors[tabId] = nil
+	end
+
 	parent.tabsheets[tabId]:Show()
 	local activeTab = parent.tabs[tabId]
 	activeTab.Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
@@ -2004,13 +2011,22 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 ---@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
 
-	-- Call each tab's constructor to populate its content
+	-- Store constructors for lazy tab construction.
+	-- Only the first (visible) tab is built eagerly; the rest are deferred until first shown.
+	---@diagnostic disable-next-line: inject-field
+	parent.tabConstructors = {}
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]
 		local constructor = def[4]
 		if constructor then
-			constructor(tabsheets[key].scrollFrame.scrollChild)
+			parent.tabConstructors[key] = constructor
 		end
+	end
+
+	-- Eagerly construct only the first tab (it's already visible)
+	if firstKey and parent.tabConstructors[firstKey] then
+		parent.tabConstructors[firstKey](tabsheets[firstKey].scrollFrame.scrollChild)
+		parent.tabConstructors[firstKey] = nil
 	end
 
 	return yCoord
