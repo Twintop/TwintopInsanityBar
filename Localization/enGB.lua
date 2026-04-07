@@ -437,4 +437,10 @@ if locale == "enGB" then
     L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill colour for nodes 1 through 5 when Ossuary is talented."
     L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield colour at Ossuary threshold"
     L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill colour at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range colour."
+    -- Per-Threshold Settings (Phase 2) - British English overrides
+    L["ThresholdDetailColorsHeader"] = "Colour Override"
+    L["ThresholdDetailColorsModeTooltip"] = "Controls how this threshold's colours are determined. 'Use Global' inherits the global threshold colour settings. 'Override' uses custom colours defined below. 'Hidden' hides the threshold line entirely."
+    L["ThresholdDetailColorsUnder"] = "Under Threshold"
+    L["ThresholdDetailColorsOver"] = "Over Threshold"
+    L["ThresholdDetailColorsOutOfRange"] = "Out of Range"
 end

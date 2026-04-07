@@ -1059,7 +1059,7 @@ local function ElementalConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ElementalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ElementalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ElementalConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdListPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdListPanel, true },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ElementalConstructThresholdSettingsPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ElementalConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, ElementalConstructAudioAndTrackingPanel },

@@ -86,30 +86,14 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				abyssalGaze = {
-					enabled = true,
-				},
-				annihilation = {
-					enabled = true,
-				},
-				bladeDance = {
-					enabled = true,
-				},
-				chaosNova = {
-					enabled = false,
-				},
-				chaosStrike = {
-					enabled = true,
-				},
-				deathSweep = {
-					enabled = true,
-				},
-				eyeBeam = {
-					enabled = true,
-				},
-				throwGlaive = {
-					enabled = false,
-				}
+				abyssalGaze = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				annihilation = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				bladeDance = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				chaosNova = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(false),
+				chaosStrike = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				deathSweep = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				eyeBeam = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				throwGlaive = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(false),
 			},
 			customThresholds = {}
 		},
@@ -310,19 +294,11 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				soulCleave = {
-					enabled = true,
-				},
-				chaosNova = {
-					enabled = true,
-				},
+				soulCleave = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				chaosNova = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 				-- Talents
-				felDevastation = {
-					enabled = true,
-				},
-				spiritBomb = {
-					enabled = true,
-				},
+				felDevastation = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				spiritBomb = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 			},
 			customThresholds = {}
 		},
@@ -564,12 +540,8 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				voidRay = {
-					enabled = true,
-				},
-				collapsingStarThreshold = {
-					enabled = true,
-				},
+				voidRay = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				collapsingStarThreshold = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 			},
 			customThresholds = {}
 		},
@@ -1237,7 +1209,7 @@ local function HavocConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HavocConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HavocConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HavocConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdListPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdSettingsPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HavocConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
@@ -1728,7 +1700,7 @@ local function VengeanceConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = VengeanceConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdListPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdSettingsPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = VengeanceConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
@@ -2154,7 +2126,7 @@ local function DevourerConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DevourerConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevourerConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevourerConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdListPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdSettingsPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevourerConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },

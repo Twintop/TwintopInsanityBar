@@ -1099,8 +1099,22 @@ local function UpdateResourceBar()
 						end
 
 						if thresholds[thresholdId] then
-							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+
+							-- Per-threshold audio cue (independent of line visibility)
+							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+								if isUsable then
+									if not snapshotData.audio.thresholdCues[spell.settingKey] then
+										snapshotData.audio.thresholdCues[spell.settingKey] = true
+										PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									snapshotData.audio.thresholdCues[spell.settingKey] = false
+								end
+							end
 						end
 					end
 					
@@ -1310,8 +1324,22 @@ local function UpdateResourceBar()
 						end
 
 						if thresholds[thresholdId] then
-							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+
+							-- Per-threshold audio cue (independent of line visibility)
+							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+								if isUsable then
+									if not snapshotData.audio.thresholdCues[spell.settingKey] then
+										snapshotData.audio.thresholdCues[spell.settingKey] = true
+										PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									snapshotData.audio.thresholdCues[spell.settingKey] = false
+								end
+							end
 						end
 					end
 					
@@ -1663,8 +1691,22 @@ local function UpdateResourceBar()
 						end
 
 						if thresholds[thresholdId] then
-							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+
+							-- Per-threshold audio cue (independent of line visibility)
+							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+								if isUsable then
+									if not snapshotData.audio.thresholdCues[spell.settingKey] then
+										snapshotData.audio.thresholdCues[spell.settingKey] = true
+										PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									snapshotData.audio.thresholdCues[spell.settingKey] = false
+								end
+							end
 						end
 					end
 					
@@ -1893,7 +1935,8 @@ local function UpdateResourceBar()
 						local thresholds = sfNode:GetThresholds()
 						local sfResourceFrame = sfNode:GetFrame()
 						local spell = spells.collapsingStarThreshold
-						if thresholds[1] and specCacheSettings.thresholds.thresholdDictionary[spell.settingKey].enabled then
+						local csDictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+						if thresholds[1] and csDictEntry and csDictEntry.enabled then
 							local showThreshold = false
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
 							local frameLevel = frameLevels.thresholdOver
@@ -1911,6 +1954,20 @@ local function UpdateResourceBar()
 									thresholdColor = specCacheSettings.colors.threshold.under.color
 									frameLevel = frameLevels.thresholdUnder
 								end
+
+								-- Per-threshold color override (per-color enabled flags)
+								if csDictEntry.colors then
+									if frameLevel >= frameLevels.thresholdOver and csDictEntry.colors.over and csDictEntry.colors.over.enabled and csDictEntry.colors.over.color then
+										thresholdColor = csDictEntry.colors.over.color
+									elseif csDictEntry.colors.under and csDictEntry.colors.under.enabled and csDictEntry.colors.under.color then
+										thresholdColor = csDictEntry.colors.under.color
+									end
+								end
+
+								-- Per-threshold line width override
+								if csDictEntry.line and csDictEntry.line.width then
+									thresholds[1]:SetWidth(csDictEntry.line.width)
+								end
 								
 								thresholds[1]:SetFrameLevel(frameLevel)
 								thresholds[1]:Show()
@@ -1919,6 +1976,19 @@ local function UpdateResourceBar()
 								Color:SetThresholdColor(thresholds[1], thresholdColor, true)
 								
 								Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
+
+								-- Per-threshold audio cue
+								if csDictEntry.audio and csDictEntry.audio.enabled and csDictEntry.audio.sound then
+									snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+									if collapsingStarSnapshot.buff.applications >= resourceAmount then
+										if not snapshotData.audio.thresholdCues[spell.settingKey] then
+											snapshotData.audio.thresholdCues[spell.settingKey] = true
+											PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+										end
+									else
+										snapshotData.audio.thresholdCues[spell.settingKey] = false
+									end
+								end
 							else
 								thresholds[1]:Hide()
 							end

@@ -2743,7 +2743,7 @@ local function ShadowConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ShadowConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdListPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = ShadowConstructThresholdSettingsPanel },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ShadowConstructFontAndTextPanel },
 		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = ShadowConstructAudioAndTrackingPanel },

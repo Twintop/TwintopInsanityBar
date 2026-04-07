@@ -49,7 +49,41 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public properties TRB.Classes.Settings.ThresholdProperties
 ---@field public icons TRB.Classes.Settings.ThresholdIcons
 ---@field public specProperties table?
----@field public thresholdDictionary { string: table }
+---@field public thresholdDictionary { [string]: TRB.Classes.Settings.ThresholdDictionaryEntry }
+
+---@class TRB.Classes.Settings.ThresholdDictionaryEntry
+---@field public enabled boolean
+---@field public audio TRB.Classes.Settings.ThresholdDictionaryAudio
+---@field public colors TRB.Classes.Settings.ThresholdDictionaryColors
+---@field public icon TRB.Classes.Settings.ThresholdDictionaryIcon
+---@field public line TRB.Classes.Settings.ThresholdDictionaryLine
+
+---@class TRB.Classes.Settings.ThresholdDictionaryAudio
+---@field public enabled boolean
+---@field public sound string
+---@field public soundName string
+
+---@class TRB.Classes.Settings.ThresholdDictionaryColors
+---@field public under TRB.Classes.Settings.ColorEnabledEntry
+---@field public over TRB.Classes.Settings.ColorEnabledEntry
+---@field public unusable TRB.Classes.Settings.ColorEnabledEntry
+---@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
+
+---@class TRB.Classes.Settings.ThresholdDictionaryIcon
+---@field public enabled boolean
+---@field public show boolean
+---@field public width number
+---@field public height number
+---@field public xPos number
+---@field public yPos number
+---@field public relativeTo string?
+---@field public desaturated boolean?
+---@field public border number?
+
+---@class TRB.Classes.Settings.ThresholdDictionaryLine
+---@field public enabled boolean
+---@field public width number
+---@field public overlapBorder boolean?
 
 ---@class TRB.Classes.Settings.ThresholdProperties
 ---@field public width number

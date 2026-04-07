@@ -86,7 +86,8 @@ end
 ---@param key string
 ---@param threshold frame
 ---@param settings table
-function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
+---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
+function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
 	if threshold == nil or threshold.icon == nil then
 		return
 	end
@@ -98,17 +99,103 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		threshold.icon.texture:SetTexture(spell.texture)
 		cache.texture = spell.texture
 	end
-	
-	if settings.thresholds.icons.enabled then
+
+	-- Determine icon visibility: per-threshold override > global setting
+	local showIcon = settings.thresholds.icons.enabled
+	if thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled then
+		showIcon = thresholdOverrides.icon.show
+	end
+
+	if showIcon then
 		if cache.iconShown ~= true then
 			threshold.icon:Show()
 			cache.iconShown = true
 		end
+
+		-- Determine effective icon size/position: per-threshold override > global
+		local hasOverride = thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled and thresholdOverrides.icon.show
+		local width, height, xPos, yPos
+		if hasOverride then
+			local iconSettings = thresholdOverrides.icon
+			width = iconSettings.width ~= nil and iconSettings.width or settings.thresholds.icons.width
+			height = iconSettings.height ~= nil and iconSettings.height or settings.thresholds.icons.height
+			xPos = iconSettings.xPos ~= nil and iconSettings.xPos or settings.thresholds.icons.xPos
+			yPos = iconSettings.yPos ~= nil and iconSettings.yPos or settings.thresholds.icons.yPos
+		else
+			width = settings.thresholds.icons.width
+			height = settings.thresholds.icons.height
+			xPos = settings.thresholds.icons.xPos
+			yPos = settings.thresholds.icons.yPos
+		end
+
+		-- Determine effective relativeTo: per-threshold override > global
+		local effectiveRelativeTo = settings.thresholds.icons.relativeTo
+		if hasOverride and thresholdOverrides.icon.relativeTo ~= nil then
+			effectiveRelativeTo = thresholdOverrides.icon.relativeTo
+		end
+
+		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo then
+
+			local setPoint = "TOP"
+			local setPointRelativeTo = "BOTTOM"
+			if effectiveRelativeTo == "TOP" then
+				setPoint = "BOTTOM"
+				setPointRelativeTo = "TOP"
+			elseif effectiveRelativeTo == "CENTER" then
+				setPoint = "CENTER"
+				setPointRelativeTo = "CENTER"
+			elseif effectiveRelativeTo == "BOTTOM" then
+				setPoint = "TOP"
+				setPointRelativeTo = "BOTTOM"
+			end
+			threshold.icon:ClearAllPoints()
+			threshold.icon:SetPoint(setPoint, threshold, setPointRelativeTo, xPos, yPos)
+			threshold.icon:SetSize(width, height)
+			cache.iconWidth = width
+			cache.iconHeight = height
+			cache.iconXPos = xPos
+			cache.iconYPos = yPos
+			cache.iconRelativeTo = effectiveRelativeTo
+		end
+
+		-- Determine effective icon border: per-threshold override > global
+		local effectiveBorder = settings.thresholds.icons.border
+		if hasOverride and thresholdOverrides.icon.border ~= nil then
+			effectiveBorder = thresholdOverrides.icon.border
+		end
+
+		if cache.iconBorder ~= effectiveBorder then
+			if effectiveBorder < 1 then
+---@diagnostic disable-next-line: missing-fields
+				threshold.icon:SetBackdrop({
+---@diagnostic disable-next-line: missing-fields
+					insets = {0, 0, 0, 0}
+				})
+			else
+---@diagnostic disable-next-line: missing-fields
+				threshold.icon:SetBackdrop({
+					edgeFile = "Interface\\Buttons\\WHITE8X8",
+					tile = true,
+					tileSize = 4,
+					edgeSize = effectiveBorder,
+---@diagnostic disable-next-line: missing-fields
+					insets = {0, 0, 0, 0}
+				})
+			end
+			threshold.icon:SetBackdropColor(0, 0, 0, 0)
+			threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+			cache.iconBorder = effectiveBorder
+		end
+
+		-- Mark that this icon has been fully configured, so RepositionThreshold doesn't reset it
+		cache.icon = threshold.icon
 	else
 		if cache.iconShown ~= false then
 			threshold.icon:Hide()
 			cache.iconShown = false
 		end
+		-- Still mark the icon reference so RepositionThreshold doesn't reconfigure a hidden icon
+		cache.icon = threshold.icon
 	end
 end
 
@@ -447,6 +534,10 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	end
 
 	TRB.Data.cache.values.threshold = {}
+
+	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
 end
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -575,20 +666,50 @@ end
 ---@param thresholdColor string
 ---@param snapshot TRB.Classes.Snapshot
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@return boolean
-function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
+function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides)
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
+
 	if spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey] and settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 
-		-- Check is we're out of range
+		-- Per-threshold color overrides: each color type has its own enabled flag
+		if thresholdOverrides and thresholdOverrides.colors then
+			if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable and thresholdOverrides.colors.unusable and thresholdOverrides.colors.unusable.enabled and thresholdOverrides.colors.unusable.color then
+				thresholdColor = thresholdOverrides.colors.unusable.color
+			elseif frameLevel >= TRB.Data.constants.frameLevels.thresholdOver and thresholdOverrides.colors.over and thresholdOverrides.colors.over.enabled and thresholdOverrides.colors.over.color then
+				thresholdColor = thresholdOverrides.colors.over.color
+			elseif thresholdOverrides.colors.under and thresholdOverrides.colors.under.enabled and thresholdOverrides.colors.under.color then
+				thresholdColor = thresholdOverrides.colors.under.color
+			end
+		end
+
+		-- Check if we're out of range
+		-- Per-threshold out-of-range overrides take precedence over global settings
+		local oorShow = settings.colors.threshold.outOfRange.show
+		local oorChangeColor = settings.colors.threshold.outOfRange.enabled
+		if thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.outOfRange then
+			if thresholdOverrides.colors.outOfRange.show ~= nil then
+				oorShow = thresholdOverrides.colors.outOfRange.show
+			end
+			if thresholdOverrides.colors.outOfRange.enabled ~= nil then
+				oorChangeColor = thresholdOverrides.colors.outOfRange.enabled
+			end
+		end
+
 		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
-			if settings.colors.threshold.outOfRange.show then
-				if outOfRange and settings.colors.threshold.outOfRange.enabled then
-					thresholdColor = settings.colors.threshold.outOfRange.color
+			if oorShow then
+				if outOfRange and oorChangeColor then
+					-- Per-threshold out-of-range color override
+					if thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.outOfRange and thresholdOverrides.colors.outOfRange.enabled and thresholdOverrides.colors.outOfRange.color then
+						thresholdColor = thresholdOverrides.colors.outOfRange.color
+					else
+						thresholdColor = settings.colors.threshold.outOfRange.color
+					end
 					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
 				end
 			else
@@ -616,7 +737,36 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
 			end
 
-			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
+
+			-- Per-threshold line width override
+			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.width then
+				if cache.overrideLineWidth ~= thresholdOverrides.line.width then
+					threshold:SetWidth(thresholdOverrides.line.width)
+					cache.overrideLineWidth = thresholdOverrides.line.width
+				end
+			elseif cache.overrideLineWidth ~= nil then
+				-- Reset to global width
+				threshold:SetWidth(settings.thresholds.properties.width)
+				cache.overrideLineWidth = nil
+			end
+
+			-- Per-threshold overlap border override
+			local effectiveOverlapBorder = settings.thresholds.properties.overlapBorder
+			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.overlapBorder ~= nil then
+				effectiveOverlapBorder = thresholdOverrides.line.overlapBorder
+			end
+
+			local borderSubtraction = 0
+			if not effectiveOverlapBorder then
+				borderSubtraction = settings.bar.border * 2
+			end
+			local effectiveHeight = settings.bar.height - borderSubtraction
+
+			if cache.overrideLineHeight ~= effectiveHeight then
+				threshold:SetHeight(effectiveHeight)
+				cache.overrideLineHeight = effectiveHeight
+			end
 
 			local thresholdUsable = false
 
@@ -652,7 +802,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			
 			-- Only apply desaturation if thresholdColor is provided (nil means desaturation is handled externally via curve)
 			if thresholdColor ~= nil then
-				if settings.thresholds.icons.desaturated == true then
+				-- Determine effective desaturated: per-threshold override > global
+				local effectiveDesaturated = settings.thresholds.icons.desaturated
+				if thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled and thresholdOverrides.icon.desaturated ~= nil then
+					effectiveDesaturated = thresholdOverrides.icon.desaturated
+				end
+
+				if effectiveDesaturated == true then
 					if cache.desaturated ~= (not thresholdUsable or outOfRange) then
 						threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 						cache.desaturated = not thresholdUsable or outOfRange
