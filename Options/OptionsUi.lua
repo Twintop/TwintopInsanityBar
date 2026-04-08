@@ -6551,25 +6551,31 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		},
 		{
 			["name"] = L["ThresholdTableHeaderName"],
-			["width"] = 130,
+			["width"] = 100,
 			["align"] = "LEFT",
 			["sort"] = 1,
 			["defaultsort"] = 1,
 		},
 		{
 			["name"] = L["ThresholdTableHeaderCategory"],
-			["width"] = 100,
+			["width"] = 115,
 			["align"] = "LEFT",
 		},
 		{
 			["name"] = L["ThresholdTableHeaderBar"],
-			["width"] = 100,
+			["width"] = 115,
 			["align"] = "LEFT",
+		},
+		{
+			["name"] = "",
+			["width"] = 16,
+			["align"] = "CENTER",
+			["sortnext"] = 3,
 		},
 		{
 			["name"] = L["ThresholdTableHeaderEnabled"],
 			["width"] = 60,
-			["align"] = "CENTER",
+			["align"] = "LEFT",
 		},
 	}
 
@@ -6583,20 +6589,22 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	tlc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord - 10)
 	tlc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	local tableRowCount = math.max(#thresholdEntries, 4)
-	tableRowCount = math.min(tableRowCount, 12)
+	tableRowCount = math.min(tableRowCount, 6)
 	tlc:SetHeight(35 + (tableRowCount * 15))
 
 	local thresholdTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, tlc, false, false)
 
 	-- Dynamically resize the Name column to fill available width
 	tlc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[2].width + columns[4].width + columns[5].width + columns[6].width
+		local fixedWidth = columns[1].width + columns[2].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width
 		local newNameWidth = math.max(100, w - fixedWidth - 30)
 		columns[3].width = newNameWidth
 		thresholdTable:SetDisplayCols(columns)
 	end)
 
 	local selectedSettingKey = nil
+	local detailHasUnusable = false
+	local detailHasOutOfRange = false
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -6621,6 +6629,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 			local enabledText = isEnabled and "|cFF00FF00Yes|r" or "|cFFFF0000No|r"
 
+			local hasAudio = dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= ""
+			local audioIcon = hasAudio and "|TInterface\\Common\\VoiceChat-Speaker:12|t" or ""
+
 			local rowData = {
 				cols = {
 					{ value = entry.settingKey },
@@ -6628,6 +6639,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 					{ value = entry.name },
 					{ value = categoryLabel },
 					{ value = barTargetLabel },
+					{ value = audioIcon },
 					{ value = enabledText },
 				}
 			}
@@ -6894,9 +6906,41 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 				controls.colors.thresholdStatic:Hide()
 				colorUnderModeDropdown:Show()
 				colorOverModeDropdown:Show()
+				-- Restore color swatch visibility based on each color entry's current mode
+				local dictEntry = selectedSettingKey and spec.thresholds.thresholdDictionary[selectedSettingKey]
+				if dictEntry and dictEntry.colors then
+					if GetColorMode(dictEntry.colors.under) == "override" then
+						controls.colors.thresholdUnder:Show()
+					else
+						controls.colors.thresholdUnder:Hide()
+					end
+					if GetColorMode(dictEntry.colors.over) == "override" then
+						controls.colors.thresholdOver:Show()
+					else
+						controls.colors.thresholdOver:Hide()
+					end
+				else
+					controls.colors.thresholdUnder:Hide()
+					controls.colors.thresholdOver:Hide()
+				end
+				-- Restore unusable/OOR dropdown+swatch visibility based on spell capabilities
+				if detailHasUnusable then
+					colorUnusableModeDropdown:Show()
+					if dictEntry and dictEntry.colors and GetColorMode(dictEntry.colors.unusable) == "override" then
+						controls.colors.thresholdUnusable:Show()
+					else
+						controls.colors.thresholdUnusable:Hide()
+					end
+				end
+				if detailHasOutOfRange then
+					colorOorModeDropdown:Show()
+					if dictEntry and dictEntry.colors and GetOorColorMode(dictEntry.colors.outOfRange) == "override" then
+						controls.colors.thresholdOutOfRange:Show()
+					else
+						controls.colors.thresholdOutOfRange:Hide()
+					end
+				end
 			end
-			-- Unusable and OOR visibility is managed by FillDetailPanel based on spell capabilities;
-			-- only restore them here if they were shown (IsShown check happens in positioning below)
 		else
 			colorsHeader:Hide()
 			colorModeDropdown:Hide()
@@ -7123,6 +7167,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 		local hasUnusable = spellObj ~= nil and spellObj.hasCooldown == true
 		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
+		detailHasUnusable = hasUnusable
+		detailHasOutOfRange = hasOutOfRange
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -7586,6 +7632,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
 				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
+			SetTableValues()
 		end)
 		audioCheckbox:Show()
 
@@ -7602,6 +7649,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			local newSoundName = dictEntry.audio.soundName
 			audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
 			PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+			SetTableValues()
 		end
 		audioDropdown:SetupMenu(function(dropdown, rootDescription)
 			for k, v in pairs(soundPairs) do

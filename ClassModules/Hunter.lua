@@ -879,9 +879,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					if thresholds[thresholdId] then
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					end
+					-- Per-threshold audio cue (independent of line visibility)
+					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
 					end
 				end
 
@@ -1114,9 +1127,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					if thresholds[thresholdId] then
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					end
+					-- Per-threshold audio cue (independent of line visibility)
+					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
 					end
 				end
 
@@ -1386,9 +1412,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					if thresholds[thresholdId] then
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					end
+					-- Per-threshold audio cue (independent of line visibility)
+					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
 					end
 				end
 

@@ -1696,7 +1696,8 @@ local function UpdateResourceBar()
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 
 							-- Per-threshold audio cue (independent of line visibility)
-							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+							-- Skip secondary-bar thresholds; they have dedicated audio handling in their own sections
+							if spell.barTarget ~= "secondary" and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 								if isUsable then
 									if not snapshotData.audio.thresholdCues[spell.settingKey] then

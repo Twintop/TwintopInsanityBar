@@ -1612,9 +1612,22 @@ local function UpdateResourceBar()
 					showThreshold = false
 				end
 
+				local dictEntry = formSpecCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 				if thresholds[thresholdId] then
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, formSpecCacheSettings)
+					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, formSpecCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(formSpecCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
+				end
+				-- Per-threshold audio cue (independent of line visibility)
+				if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+					snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+					if isUsable then
+						if not snapshotData.audio.thresholdCues[spell.settingKey] then
+							snapshotData.audio.thresholdCues[spell.settingKey] = true
+							PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						snapshotData.audio.thresholdCues[spell.settingKey] = false
+					end
 				end
 			end
 		end
@@ -1805,11 +1818,12 @@ local function UpdateResourceBar()
 									else
 										-- Use ColorCurve to dynamically change threshold color based on resource
 										local baseCost = resourceAmount / spell.primaryResourceTypeMod
+										local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 										local thresholdCurve = Color:BuildThresholdCurve(
 											spell.primaryResourceTypeMod,
 											baseCost,
-											specCacheSettings.colors.threshold.under.color,
-											specCacheSettings.colors.threshold.over.color
+											curveUnderColor,
+											curveOverColor
 										)
 										local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 										frameLevel = isUsable and frameLevels.thresholdOver or frameLevels.thresholdUnder
@@ -1819,8 +1833,7 @@ local function UpdateResourceBar()
 										if curveApplied then
 											thresholdColor = nil -- Skip normal color application
 										else
-											-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
-											thresholdColor = specCacheSettings.colors.threshold.under.color
+											thresholdColor = curveUnderColor
 										end
 									end
 								elseif spell.settingKey == spells.starsurge3.settingKey then
@@ -1829,11 +1842,12 @@ local function UpdateResourceBar()
 									else
 										-- Use ColorCurve to dynamically change threshold color based on resource
 										local baseCost = resourceAmount / spell.primaryResourceTypeMod
+										local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 										local thresholdCurve = Color:BuildThresholdCurve(
 											spell.primaryResourceTypeMod,
 											baseCost,
-											specCacheSettings.colors.threshold.under.color,
-											specCacheSettings.colors.threshold.over.color
+											curveUnderColor,
+											curveOverColor
 										)
 										local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 										frameLevel = isUsable and frameLevels.thresholdOver or frameLevels.thresholdUnder
@@ -1843,8 +1857,7 @@ local function UpdateResourceBar()
 										if curveApplied then
 											thresholdColor = nil -- Skip normal color application
 										else
-											-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
-											thresholdColor = specCacheSettings.colors.threshold.under.color
+											thresholdColor = curveUnderColor
 										end
 									end
 								elseif spell.id == spells.starfall.id then
@@ -1905,8 +1918,21 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 
-							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
+							-- Per-threshold audio cue (independent of line visibility)
+							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+								if isUsable then
+									if not snapshotData.audio.thresholdCues[spell.settingKey] then
+										snapshotData.audio.thresholdCues[spell.settingKey] = true
+										PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									snapshotData.audio.thresholdCues[spell.settingKey] = false
+								end
+							end
 						end -- shouldProcessThreshold
 					end
 					
@@ -2150,11 +2176,12 @@ local function UpdateResourceBar()
 										elseif isUsable then
 											-- Use ColorCurve to correctly evaluate max cost against secret Energy
 											local baseCost = resourceAmount / spell.primaryResourceTypeMod
+											local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 											local thresholdCurve = Color:BuildThresholdCurve(
 												spell.primaryResourceTypeMod,
 												baseCost,
-												specCacheSettings.colors.threshold.under.color,
-												specCacheSettings.colors.threshold.over.color
+												curveUnderColor,
+												curveOverColor
 											)
 											local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 											frameLevel = frameLevels.thresholdOver
@@ -2164,7 +2191,7 @@ local function UpdateResourceBar()
 											if curveApplied then
 												thresholdColor = nil -- Skip normal color application
 											else
-												thresholdColor = specCacheSettings.colors.threshold.under.color
+												thresholdColor = curveUnderColor
 											end
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2187,11 +2214,12 @@ local function UpdateResourceBar()
 										elseif isUsable then
 											-- Use ColorCurve to correctly evaluate max cost against secret Energy
 											local baseCost = resourceAmount / spell.primaryResourceTypeMod
+											local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 											local thresholdCurve = Color:BuildThresholdCurve(
 												spell.primaryResourceTypeMod,
 												baseCost,
-												specCacheSettings.colors.threshold.under.color,
-												specCacheSettings.colors.threshold.over.color
+												curveUnderColor,
+												curveOverColor
 											)
 											local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 											frameLevel = frameLevels.thresholdOver
@@ -2201,7 +2229,7 @@ local function UpdateResourceBar()
 											if curveApplied then
 												thresholdColor = nil -- Skip normal color application
 											else
-												thresholdColor = specCacheSettings.colors.threshold.under.color
+												thresholdColor = curveUnderColor
 											end
 										else
 											thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -2292,8 +2320,21 @@ local function UpdateResourceBar()
 							showThreshold = false
 						end
 
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+						-- Per-threshold audio cue (independent of line visibility)
+						if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+							snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+							if isUsable then
+								if not snapshotData.audio.thresholdCues[spell.settingKey] then
+									snapshotData.audio.thresholdCues[spell.settingKey] = true
+									PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+								end
+							else
+								snapshotData.audio.thresholdCues[spell.settingKey] = false
+							end
+						end
 						end
 					end
 
@@ -2721,11 +2762,12 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
+												local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 												local thresholdCurve = Color:BuildThresholdCurve(
 													1,
 													resourceAmount,
-													specCacheSettings.colors.threshold.under.color,
-													specCacheSettings.colors.threshold.over.color
+													curveUnderColor,
+													curveOverColor
 												)
 												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 												frameLevel = frameLevels.thresholdOver
@@ -2735,7 +2777,7 @@ local function UpdateResourceBar()
 												if curveApplied then
 													thresholdColor = nil -- Skip normal color application
 												else
-													thresholdColor = specCacheSettings.colors.threshold.under.color
+													thresholdColor = curveUnderColor
 												end
 											end
 										elseif spell.settingKey == spells.maulHarnessedRage.settingKey then
@@ -2743,11 +2785,12 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
+												local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 												local thresholdCurve = Color:BuildThresholdCurve(
 													1,
 													resourceAmount,
-													specCacheSettings.colors.threshold.under.color,
-													specCacheSettings.colors.threshold.over.color
+													curveUnderColor,
+													curveOverColor
 												)
 												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 												frameLevel = frameLevels.thresholdOver
@@ -2757,7 +2800,7 @@ local function UpdateResourceBar()
 												if curveApplied then
 													thresholdColor = nil -- Skip normal color application
 												else
-													thresholdColor = specCacheSettings.colors.threshold.under.color
+													thresholdColor = curveUnderColor
 												end
 											end
 										else
@@ -2780,11 +2823,12 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount + spells.killingBlow.attributes.resourceMod
+												local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 												local thresholdCurve = Color:BuildThresholdCurve(
 													1,
 													resourceAmount,
-													specCacheSettings.colors.threshold.under.color,
-													specCacheSettings.colors.threshold.over.color
+													curveUnderColor,
+													curveOverColor
 												)
 												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 												frameLevel = frameLevels.thresholdOver
@@ -2794,7 +2838,7 @@ local function UpdateResourceBar()
 												if curveApplied then
 													thresholdColor = nil -- Skip normal color application
 												else
-													thresholdColor = specCacheSettings.colors.threshold.under.color
+													thresholdColor = curveUnderColor
 												end
 											end
 										elseif spell.settingKey == spells.razeHarnessedRage.settingKey then
@@ -2802,11 +2846,12 @@ local function UpdateResourceBar()
 												showThreshold = false
 											else
 												resourceAmount = resourceAmount * spells.harnessedRage.attributes.resourceMod
+												local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 												local thresholdCurve = Color:BuildThresholdCurve(
 													1,
 													resourceAmount,
-													specCacheSettings.colors.threshold.under.color,
-													specCacheSettings.colors.threshold.over.color
+													curveUnderColor,
+													curveOverColor
 												)
 												local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 												frameLevel = frameLevels.thresholdOver
@@ -2816,7 +2861,7 @@ local function UpdateResourceBar()
 												if curveApplied then
 													thresholdColor = nil -- Skip normal color application
 												else
-													thresholdColor = specCacheSettings.colors.threshold.under.color
+													thresholdColor = curveUnderColor
 												end
 											end
 										else
@@ -2853,8 +2898,21 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 
-							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+							local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
+							-- Per-threshold audio cue (independent of line visibility)
+							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+								if isUsable then
+									if not snapshotData.audio.thresholdCues[spell.settingKey] then
+										snapshotData.audio.thresholdCues[spell.settingKey] = true
+										PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									end
+								else
+									snapshotData.audio.thresholdCues[spell.settingKey] = false
+								end
+							end
 						end
 					end
 				

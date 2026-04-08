@@ -563,6 +563,47 @@ function TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings)
 	)
 end
 
+---Resolves the effective under/over threshold colors for a ColorCurve, accounting for per-threshold overrides.
+---Call this BEFORE BuildThresholdCurve to bake override colors into the curve.
+---For static mode, returns the static color for both under and over (curve becomes a flat line).
+---For dynamic mode with overrides, returns the override color for the overridden state(s).
+---@param spell TRB.Classes.SpellThreshold # The spell threshold being processed
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase # The spec settings
+---@return string underColor # Effective under color (ARGB hex)
+---@return string overColor # Effective over color (ARGB hex)
+function TRB.Functions.Threshold:ResolveThresholdCurveColors(spell, settings)
+	local underColor = settings.colors.threshold.under.color
+	local overColor = settings.colors.threshold.over.color
+
+	local dictEntry = settings.thresholds and settings.thresholds.thresholdDictionary
+		and settings.thresholds.thresholdDictionary[spell.settingKey]
+
+	if dictEntry and dictEntry.colors then
+		if dictEntry.colors.colorMode == "static" and dictEntry.colors.staticColor and dictEntry.colors.staticColor.color then
+			return dictEntry.colors.staticColor.color, dictEntry.colors.staticColor.color
+		end
+
+		local function GetMode(colorEntry)
+			if colorEntry == nil then return "shared" end
+			if colorEntry.mode ~= nil then return colorEntry.mode end
+			if colorEntry.enabled then return "override" end
+			return "shared"
+		end
+
+		local underMode = GetMode(dictEntry.colors.under)
+		if underMode == "override" and dictEntry.colors.under and dictEntry.colors.under.color then
+			underColor = dictEntry.colors.under.color
+		end
+
+		local overMode = GetMode(dictEntry.colors.over)
+		if overMode == "override" and dictEntry.colors.over and dictEntry.colors.over.color then
+			overColor = dictEntry.colors.over.color
+		end
+	end
+
+	return underColor, overColor
+end
+
 ---Applies a ColorCurve-based color to a threshold (e.g., 2x/3x multicast or split-cost min/max).
 ---This method checks for valid target and range before applying the curve color.
 ---If no valid target or out of range, it returns false so the caller can fall back to normal color handling.
@@ -672,6 +713,16 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
 
+	-- When thresholdColor is nil, a ColorCurve is managing the visual color externally
+	-- (e.g., Shadow Word: Madness x2/x3, Druid form thresholds). The override colors are
+	-- already baked into the curve via ResolveThresholdCurveColors, so skip the dynamic
+	-- under/over/unusable color override block (which relies on frameLevel, and frameLevel
+	-- is unreliable for curve thresholds since isUsable checks the shared base spell ID).
+	local curveManagesColor = (thresholdColor == nil)
+	if curveManagesColor then
+		cache.color = nil
+	end
+
 	if spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey] and settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
@@ -684,7 +735,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			if thresholdOverrides.colors.staticColor and thresholdOverrides.colors.staticColor.color then
 				thresholdColor = thresholdOverrides.colors.staticColor.color
 			end
-		elseif thresholdOverrides and thresholdOverrides.colors then
+		elseif thresholdOverrides and thresholdOverrides.colors and not curveManagesColor then
 			local function GetMode(colorEntry)
 				if colorEntry == nil then return "shared" end
 				if colorEntry.mode ~= nil then return colorEntry.mode end
