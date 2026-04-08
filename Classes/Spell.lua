@@ -538,6 +538,7 @@ end
 ---@field public rangeCheck boolean # Should this threshold perform range checks?
 ---@field public category string? # Category for grouping in the threshold list UI (e.g., "offensive", "defensive", "utility", "execute")
 ---@field public barTarget string # Which bar this threshold targets (e.g., "primary", "secondary", "custom:<key>")
+---@field public canHaveAudioCue boolean? # Whether this threshold can have audio cues. Defaults to true. Set to false for ColorCurve thresholds.
 TRB.Classes.SpellThreshold = setmetatable({}, {__index = TRB.Classes.SpellBase})
 TRB.Classes.SpellThreshold.__index = TRB.Classes.SpellThreshold
 
@@ -557,6 +558,7 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
 			(key == "isSnowflake"   and type(value) == "boolean") or
+			(key == "canHaveAudioCue" and type(value) == "boolean") or
 			(key == "category") or
 			(key == "barTarget") then
 			self[key] = value
@@ -574,6 +576,10 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 
 	if self.barTarget == nil then
 		self.barTarget = "primary"
+	end
+
+	if self.canHaveAudioCue == nil then
+		self.canHaveAudioCue = true
 	end
 
 	return self
@@ -632,6 +638,7 @@ end
 ---@field public rangeCheck boolean # Should this threshold perform range checks?
 ---@field public category string? # Category for grouping in the threshold list UI (e.g., "offensive", "defensive", "utility", "execute")
 ---@field public barTarget string # Which bar this threshold targets (e.g., "primary", "secondary", "custom:<key>")
+---@field public canHaveAudioCue boolean? # Whether this threshold can have audio cues. Defaults to true. Set to false for ColorCurve thresholds.
 TRB.Classes.SpellComboPointThreshold = setmetatable({}, {__index = TRB.Classes.SpellComboPoint})
 TRB.Classes.SpellComboPointThreshold.__index = TRB.Classes.SpellComboPointThreshold
 
@@ -652,6 +659,7 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
 			(key == "isSnowflake"   and type(value) == "boolean") or
+			(key == "canHaveAudioCue" and type(value) == "boolean") or
 			(key == "category") or
 			(key == "barTarget") then
 			self[key] = value
@@ -669,6 +677,10 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 
 	if self.barTarget == nil then
 		self.barTarget = "primary"
+	end
+
+	if self.canHaveAudioCue == nil then
+		self.canHaveAudioCue = true
 	end
 
 	return self

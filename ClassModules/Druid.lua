@@ -1618,7 +1618,7 @@ local function UpdateResourceBar()
 					Threshold:RepositionThreshold(formSpecCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResource)
 				end
 				-- Per-threshold audio cue (independent of line visibility)
-				if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+				if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 					snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 					if isUsable then
 						if not snapshotData.audio.thresholdCues[spell.settingKey] then
@@ -1922,7 +1922,7 @@ local function UpdateResourceBar()
 							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
 							-- Per-threshold audio cue (independent of line visibility)
-							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+							if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 								if isUsable then
 									if not snapshotData.audio.thresholdCues[spell.settingKey] then
@@ -2324,7 +2324,7 @@ local function UpdateResourceBar()
 						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 						-- Per-threshold audio cue (independent of line visibility)
-						if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 							snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 							if isUsable then
 								if not snapshotData.audio.thresholdCues[spell.settingKey] then
@@ -2902,7 +2902,7 @@ local function UpdateResourceBar()
 							local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 							Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeResourceFrame, resourceAmount, maxPrimaryBarResource)
 							-- Per-threshold audio cue (independent of line visibility)
-							if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+							if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 								snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 								if isUsable then
 									if not snapshotData.audio.thresholdCues[spell.settingKey] then

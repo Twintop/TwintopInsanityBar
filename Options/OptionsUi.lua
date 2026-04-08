@@ -6605,6 +6605,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	local selectedSettingKey = nil
 	local detailHasUnusable = false
 	local detailHasOutOfRange = false
+	local detailCanHaveAudio = true
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -7123,16 +7124,22 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			end
 		end
 
-		-- Audio section (always visible when a threshold is selected)
-		audioHeader:ClearAllPoints()
-		audioHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
-		y = y - 30
+		-- Audio section (only visible when threshold supports audio cues)
+		if detailCanHaveAudio then
+			audioHeader:ClearAllPoints()
+			audioHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
 
-		audioCheckbox:ClearAllPoints()
-		audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
-		audioDropdown:ClearAllPoints()
-		audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, y - 20)
-		y = y - 60
+			audioCheckbox:ClearAllPoints()
+			audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+			audioDropdown:ClearAllPoints()
+			audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, y - 20)
+			y = y - 60
+		else
+			audioHeader:Hide()
+			audioCheckbox:Hide()
+			audioDropdown:Hide()
+		end
 
 		detailScrollChild:SetHeight(math.abs(y) + 20)
 	end
@@ -7169,6 +7176,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
 		detailHasUnusable = hasUnusable
 		detailHasOutOfRange = hasOutOfRange
+		detailCanHaveAudio = spellObj == nil or spellObj.canHaveAudioCue ~= false
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -7624,40 +7632,47 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		UpdateIconControlsVisibility()
 
 		-- ===== AUDIO CUE SECTION =====
-		audioCheckbox:SetChecked(dictEntry.audio.enabled or false)
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
-		audioCheckbox:SetScript("OnClick", function(self, ...)
-			dictEntry.audio.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
-			if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
-				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-			SetTableValues()
-		end)
-		audioCheckbox:Show()
+		if detailCanHaveAudio then
+			audioHeader:Show()
+			audioCheckbox:SetChecked(dictEntry.audio.enabled or false)
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
+			audioCheckbox:SetScript("OnClick", function(self, ...)
+				dictEntry.audio.enabled = self:GetChecked()
+				TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
+				if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
+					PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				end
+				SetTableValues()
+			end)
+			audioCheckbox:Show()
 
-		-- Audio sound dropdown
-		FillSoundCache()
-		local soundDisplayName = dictEntry.audio.soundName
-		audioDropdown:SetDefaultText((soundDisplayName and soundDisplayName ~= "") and soundDisplayName or L["ThresholdDetailAudioNone"])
-		local function AudioIsSelected(value)
-			return value == dictEntry.audio.sound
-		end
-		local function AudioSetSelected(newValue)
-			dictEntry.audio.sound = newValue
-			dictEntry.audio.soundName = soundPairsByName[newValue]
-			local newSoundName = dictEntry.audio.soundName
-			audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
-			PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-			SetTableValues()
-		end
-		audioDropdown:SetupMenu(function(dropdown, rootDescription)
-			for k, v in pairs(soundPairs) do
-				rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v[2])
+			-- Audio sound dropdown
+			FillSoundCache()
+			local soundDisplayName = dictEntry.audio.soundName
+			audioDropdown:SetDefaultText((soundDisplayName and soundDisplayName ~= "") and soundDisplayName or L["ThresholdDetailAudioNone"])
+			local function AudioIsSelected(value)
+				return value == dictEntry.audio.sound
 			end
-			rootDescription:SetScrollMode(400)
-		end)
-		audioDropdown:Show()
+			local function AudioSetSelected(newValue)
+				dictEntry.audio.sound = newValue
+				dictEntry.audio.soundName = soundPairsByName[newValue]
+				local newSoundName = dictEntry.audio.soundName
+				audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
+				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				SetTableValues()
+			end
+			audioDropdown:SetupMenu(function(dropdown, rootDescription)
+				for k, v in pairs(soundPairs) do
+					rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v[2])
+				end
+				rootDescription:SetScrollMode(400)
+			end)
+			audioDropdown:Show()
+		else
+			audioHeader:Hide()
+			audioCheckbox:Hide()
+			audioDropdown:Hide()
+		end
 
 		RepositionDetailControls()
 		detailHeader:Show()

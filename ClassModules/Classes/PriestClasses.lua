@@ -638,7 +638,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		settingKey = "shadowWordMadness2",
 		isTalent = true,
 		isSnowflake = true,
-		category = "offensive"
+		category = "offensive",
+		canHaveAudioCue = false
 	})
 	self.shadowWordMadness3 = TRB.Classes.SpellThreshold:New({
 		id = 335467,
@@ -647,7 +648,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		settingKey = "shadowWordMadness3",
 		isTalent = true,
 		isSnowflake = true,
-		category = "offensive"
+		category = "offensive",
+		canHaveAudioCue = false
 	})
 	self.mindDevourer = TRB.Classes.SpellBase:New({
 		id = 373204,

@@ -92,7 +92,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		isTalent = false,
 		baseline = true,
 		hasCooldown = false,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 	self.slam = TRB.Classes.SpellThreshold:New({
 		id = 1464,
@@ -262,7 +263,8 @@ function TRB.Classes.Warrior.FurySpells:New()
 		isTalent = false,
 		baseline = true,
 		hasCooldown = true,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 	self.slam = TRB.Classes.SpellThreshold:New({
 		id = 1464,
@@ -441,7 +443,8 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		category = "execute",
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 
 	self.shieldBlock.hasCharges = true

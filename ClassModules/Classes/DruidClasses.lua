@@ -55,7 +55,8 @@ function TRB.Classes.Druid.DruidBaseSpells:New()
         comboPoints = true,
         settingKey = "ferociousBiteMaximum",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.shred = TRB.Classes.SpellComboPointThreshold:New({
         id = 5221,
@@ -175,7 +176,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true,
         baseline = true,
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.starsurge3 = TRB.Classes.SpellThreshold:New({
         id = 78674,
@@ -185,7 +187,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true,
         baseline = true,
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.sunfire = TRB.Classes.SpellBase:New({
         id = 164815,
@@ -511,7 +514,8 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         settingKey = "ravageMaximum",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
         id = 22842,
@@ -617,7 +621,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "maulKillingBlow",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.maulHarnessedRage = TRB.Classes.SpellThreshold:New({
         id = 6807,
@@ -627,7 +632,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "maulHarnessedRage",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.raze = TRB.Classes.SpellThreshold:New({
         id = 400254,
@@ -644,7 +650,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "razeKillingBlow",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.razeHarnessedRage = TRB.Classes.SpellThreshold:New({
         id = 400254,
@@ -654,7 +661,8 @@ function TRB.Classes.Druid.GuardianSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "razeHarnessedRage",
         isSnowflake = true,
-        category = "offensive"
+        category = "offensive",
+        canHaveAudioCue = false
     })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 50334,

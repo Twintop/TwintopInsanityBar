@@ -1284,7 +1284,7 @@ local function UpdateResourceBar()
 					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					-- Per-threshold audio cue (independent of line visibility)
-					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 						if isUsable then
 							if not snapshotData.audio.thresholdCues[spell.settingKey] then
@@ -1477,7 +1477,7 @@ local function UpdateResourceBar()
 					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					-- Per-threshold audio cue (independent of line visibility)
-					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 						if isUsable then
 							if not snapshotData.audio.thresholdCues[spell.settingKey] then
@@ -1690,7 +1690,7 @@ local function UpdateResourceBar()
 					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
 					-- Per-threshold audio cue (independent of line visibility)
-					if dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
 						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
 						if isUsable then
 							if not snapshotData.audio.thresholdCues[spell.settingKey] then
