@@ -1955,38 +1955,60 @@ local function UpdateResourceBar()
 									frameLevel = frameLevels.thresholdUnder
 								end
 
-								-- Per-threshold color override (per-color enabled flags)
+								-- Per-threshold color override (mode-based: shared/override/hidden)
+								local hideThreshold = false
 								if csDictEntry.colors then
-									if frameLevel >= frameLevels.thresholdOver and csDictEntry.colors.over and csDictEntry.colors.over.enabled and csDictEntry.colors.over.color then
-										thresholdColor = csDictEntry.colors.over.color
-									elseif csDictEntry.colors.under and csDictEntry.colors.under.enabled and csDictEntry.colors.under.color then
-										thresholdColor = csDictEntry.colors.under.color
+									local function GetMode(colorEntry)
+										if colorEntry == nil then return "shared" end
+										if colorEntry.mode ~= nil then return colorEntry.mode end
+										if colorEntry.enabled then return "override" end
+										return "shared"
+									end
+
+									if frameLevel >= frameLevels.thresholdOver then
+										local mode = GetMode(csDictEntry.colors.over)
+										if mode == "hidden" then
+											hideThreshold = true
+										elseif mode == "override" and csDictEntry.colors.over and csDictEntry.colors.over.color then
+											thresholdColor = csDictEntry.colors.over.color
+										end
+									else
+										local mode = GetMode(csDictEntry.colors.under)
+										if mode == "hidden" then
+											hideThreshold = true
+										elseif mode == "override" and csDictEntry.colors.under and csDictEntry.colors.under.color then
+											thresholdColor = csDictEntry.colors.under.color
+										end
 									end
 								end
 
-								-- Per-threshold line width override
-								if csDictEntry.line and csDictEntry.line.width then
-									thresholds[1]:SetWidth(csDictEntry.line.width)
-								end
-								
-								thresholds[1]:SetFrameLevel(frameLevel)
-								thresholds[1]:Show()
-								
-								-- Set the threshold color using the proper method
-								Color:SetThresholdColor(thresholds[1], thresholdColor, true)
-								
-								Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
+								if hideThreshold then
+									thresholds[1]:Hide()
+								else
+									-- Per-threshold line width override
+									if csDictEntry.line and csDictEntry.line.width then
+										thresholds[1]:SetWidth(csDictEntry.line.width)
+									end
+									
+									thresholds[1]:SetFrameLevel(frameLevel)
+									thresholds[1]:Show()
+									
+									-- Set the threshold color using the proper method
+									Color:SetThresholdColor(thresholds[1], thresholdColor, true)
+									
+									Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
 
-								-- Per-threshold audio cue
-								if csDictEntry.audio and csDictEntry.audio.enabled and csDictEntry.audio.sound then
-									snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-									if collapsingStarSnapshot.buff.applications >= resourceAmount then
-										if not snapshotData.audio.thresholdCues[spell.settingKey] then
-											snapshotData.audio.thresholdCues[spell.settingKey] = true
-											PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+									-- Per-threshold audio cue
+									if csDictEntry.audio and csDictEntry.audio.enabled and csDictEntry.audio.sound then
+										snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+										if collapsingStarSnapshot.buff.applications >= resourceAmount then
+											if not snapshotData.audio.thresholdCues[spell.settingKey] then
+												snapshotData.audio.thresholdCues[spell.settingKey] = true
+												PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+											end
+										else
+											snapshotData.audio.thresholdCues[spell.settingKey] = false
 										end
-									else
-										snapshotData.audio.thresholdCues[spell.settingKey] = false
 									end
 								end
 							else

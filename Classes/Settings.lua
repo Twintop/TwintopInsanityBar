@@ -64,9 +64,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public soundName string
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryColors
----@field public under TRB.Classes.Settings.ColorEnabledEntry
----@field public over TRB.Classes.Settings.ColorEnabledEntry
----@field public unusable TRB.Classes.Settings.ColorEnabledEntry
+---@field public under TRB.Classes.Settings.ColorModeEntry
+---@field public over TRB.Classes.Settings.ColorModeEntry
+---@field public unusable TRB.Classes.Settings.ColorModeEntry
 ---@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryIcon
@@ -113,6 +113,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorGradientEntry : TRB.Classes.Settings.ColorEntry
 ---@field public color2 string
 ---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
+
+---@class TRB.Classes.Settings.ColorModeEntry : TRB.Classes.Settings.ColorEntry
+---@field public mode string -- "shared", "override", or "hidden"
+---@field public enabled boolean? -- Deprecated: backward compat only
 
 ---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean

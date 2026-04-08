@@ -6573,6 +6573,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		},
 	}
 
+	yCoord = yCoord - 3
 	controls.thresholdOverridesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdOverridesHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 20
 
@@ -6675,56 +6676,80 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	-- ===== COLOR OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 30
 	local colorsHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailColorsHeader"], oUi.xCoord, detailYCoord)
+	colorsHeader.font:SetFontObject(GameFontNormalLarge)
+	colorsHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
 
-	-- Under color: override checkbox + color picker
-	controls.checkBoxes.thresholdColorUnderOverride = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnderOverride", detailScrollChild, "ChatConfigCheckButtonTemplate")
-	local colorUnderOverrideCheckbox = controls.checkBoxes.thresholdColorUnderOverride
-	colorUnderOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
-	getglobal(colorUnderOverrideCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailColorsOverrideUnder"])
-	colorUnderOverrideCheckbox:Hide()
+	-- Helper to get effective mode from a color entry (backward compat with old boolean enabled field)
+	local function GetColorMode(colorEntry)
+		if colorEntry == nil then return "shared" end
+		if colorEntry.mode ~= nil then return colorEntry.mode end
+		if colorEntry.enabled then return "override" end
+		return "shared"
+	end
+
+	-- Helper for OOR backward compat: old data used show/enabled booleans instead of mode
+	local function GetOorColorMode(colorEntry)
+		if colorEntry == nil then return "shared" end
+		if colorEntry.mode ~= nil then return colorEntry.mode end
+		-- Legacy: show=false means hidden, show=true+enabled=true means override, else shared
+		if colorEntry.show == false then return "hidden" end
+		if colorEntry.enabled then return "override" end
+		return "shared"
+	end
+
+	controls.dropDown = controls.dropDown or {}
+
+	-- Color Mode: Static / Dynamic dropdown
+	controls.dropDown.thresholdColorMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorModeDropdown = controls.dropDown.thresholdColorMode
+	colorModeDropdown:SetWidth(oUi.sliderWidth)
+	colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorModeDropdown:Hide()
+
+	controls.colors.thresholdStatic = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorModeStaticColor"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdStatic:Hide()
+
+	-- Under color: mode dropdown + color picker
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdColorUnderMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnderMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorUnderModeDropdown = controls.dropDown.thresholdColorUnderMode
+	colorUnderModeDropdown:SetWidth(oUi.sliderWidth)
+	colorUnderModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorUnderModeDropdown:Hide()
 
 	controls.colors.thresholdUnder = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnder"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdUnder:Hide()
 
-	-- Over color: override checkbox + color picker
+	-- Over color: mode dropdown + color picker
 	detailYCoord = detailYCoord - 30
-	controls.checkBoxes.thresholdColorOverOverride = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOverOverride", detailScrollChild, "ChatConfigCheckButtonTemplate")
-	local colorOverOverrideCheckbox = controls.checkBoxes.thresholdColorOverOverride
-	colorOverOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
-	getglobal(colorOverOverrideCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailColorsOverrideOver"])
-	colorOverOverrideCheckbox:Hide()
+	controls.dropDown.thresholdColorOverMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOverMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorOverModeDropdown = controls.dropDown.thresholdColorOverMode
+	colorOverModeDropdown:SetWidth(oUi.sliderWidth)
+	colorOverModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorOverModeDropdown:Hide()
 
 	controls.colors.thresholdOver = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOver"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdOver:Hide()
 
-	-- Unusable color: override checkbox + color picker
+	-- Unusable color: mode dropdown + color picker
 	detailYCoord = detailYCoord - 30
-	controls.checkBoxes.thresholdColorUnusableOverride = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnusableOverride", detailScrollChild, "ChatConfigCheckButtonTemplate")
-	local colorUnusableOverrideCheckbox = controls.checkBoxes.thresholdColorUnusableOverride
-	colorUnusableOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
-	getglobal(colorUnusableOverrideCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailColorsOverrideUnusable"])
-	colorUnusableOverrideCheckbox:Hide()
+	controls.dropDown.thresholdColorUnusableMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnusableMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorUnusableModeDropdown = controls.dropDown.thresholdColorUnusableMode
+	colorUnusableModeDropdown:SetWidth(oUi.sliderWidth)
+	colorUnusableModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorUnusableModeDropdown:Hide()
 
 	controls.colors.thresholdUnusable = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnusable"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdUnusable:Hide()
 
-	-- Out of Range: show checkbox + change color checkbox + override color picker
+	-- Out of Range: mode dropdown + override color picker
 	detailYCoord = detailYCoord - 30
-	controls.checkBoxes.thresholdColorOorShow = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOorShow", detailScrollChild, "ChatConfigCheckButtonTemplate")
-	local colorOorShowCheckbox = controls.checkBoxes.thresholdColorOorShow
-	colorOorShowCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
-	getglobal(colorOorShowCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailOutOfRangeShowCheckbox"])
-	colorOorShowCheckbox.tooltip = L["ThresholdOutOfRangeShowCheckboxTooltip"]
-	colorOorShowCheckbox:Hide()
-
-	detailYCoord = detailYCoord - 20
-	controls.checkBoxes.thresholdColorOorChangeColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOorChangeColor", detailScrollChild, "ChatConfigCheckButtonTemplate")
-	local colorOorChangeColorCheckbox = controls.checkBoxes.thresholdColorOorChangeColor
-	colorOorChangeColorCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 20, detailYCoord)
-	getglobal(colorOorChangeColorCheckbox:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
-	colorOorChangeColorCheckbox.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
-	colorOorChangeColorCheckbox:Hide()
+	controls.dropDown.thresholdColorOorMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOorMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorOorModeDropdown = controls.dropDown.thresholdColorOorMode
+	colorOorModeDropdown:SetWidth(oUi.sliderWidth)
+	colorOorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorOorModeDropdown:Hide()
 
 	controls.colors.thresholdOutOfRange = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOutOfRange"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdOutOfRange:Hide()
@@ -6732,6 +6757,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	-- ===== LINE OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
 	local lineHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
+	lineHeader.font:SetFontObject(GameFontNormalLarge)
+	lineHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
 
 	controls.checkBoxes.thresholdLineUseSpecific = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdLineUseSpecific", detailScrollChild, "ChatConfigCheckButtonTemplate")
@@ -6756,6 +6783,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	-- ===== ICON OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 50
 	local iconHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconHeader"], oUi.xCoord, detailYCoord)
+	iconHeader.font:SetFontObject(GameFontNormalLarge)
+	iconHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
 
 	controls.dropDown = controls.dropDown or {}
@@ -6810,6 +6839,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	-- ===== AUDIO CUE SECTION =====
 	detailYCoord = detailYCoord - 50
 	local audioHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailAudioHeader"], oUi.xCoord, detailYCoord)
+	audioHeader.font:SetFontObject(GameFontNormalLarge)
+	audioHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
 
 	controls.checkBoxes.thresholdAudioEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdAudioEnabled", detailScrollChild, "ChatConfigCheckButtonTemplate")
@@ -6837,46 +6868,95 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		enabledCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
 		y = y - 30
 
-		-- Color override section (always visible)
-		do
+		-- Color override section (hidden when threshold disabled)
+		local isStaticMode = false
+		if isEnabled then
+			colorsHeader:Show()
+			colorModeDropdown:Show()
+			-- Determine if we're in static or dynamic mode
+			if selectedSettingKey then
+				local dictEntry = spec.thresholds.thresholdDictionary[selectedSettingKey]
+				if dictEntry and dictEntry.colors and dictEntry.colors.colorMode == "static" then
+					isStaticMode = true
+				end
+			end
+			if isStaticMode then
+				controls.colors.thresholdStatic:Show()
+				colorUnderModeDropdown:Hide()
+				controls.colors.thresholdUnder:Hide()
+				colorOverModeDropdown:Hide()
+				controls.colors.thresholdOver:Hide()
+				colorUnusableModeDropdown:Hide()
+				controls.colors.thresholdUnusable:Hide()
+				colorOorModeDropdown:Hide()
+				controls.colors.thresholdOutOfRange:Hide()
+			else
+				controls.colors.thresholdStatic:Hide()
+				colorUnderModeDropdown:Show()
+				colorOverModeDropdown:Show()
+			end
+			-- Unusable and OOR visibility is managed by FillDetailPanel based on spell capabilities;
+			-- only restore them here if they were shown (IsShown check happens in positioning below)
+		else
+			colorsHeader:Hide()
+			colorModeDropdown:Hide()
+			controls.colors.thresholdStatic:Hide()
+			colorUnderModeDropdown:Hide()
+			controls.colors.thresholdUnder:Hide()
+			colorOverModeDropdown:Hide()
+			controls.colors.thresholdOver:Hide()
+			colorUnusableModeDropdown:Hide()
+			controls.colors.thresholdUnusable:Hide()
+			colorOorModeDropdown:Hide()
+			controls.colors.thresholdOutOfRange:Hide()
+		end
+
+		if colorsHeader:IsShown() then
 			colorsHeader:ClearAllPoints()
 			colorsHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
 			y = y - 30
 
-			-- Under row
-			colorUnderOverrideCheckbox:ClearAllPoints()
-			colorUnderOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
-			controls.colors.thresholdUnder:ClearAllPoints()
-			controls.colors.thresholdUnder:SetPoint("TOPLEFT", oUi.xCoord2, y)
-			y = y - 30
-
-			-- Over row
-			colorOverOverrideCheckbox:ClearAllPoints()
-			colorOverOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
-			controls.colors.thresholdOver:ClearAllPoints()
-			controls.colors.thresholdOver:SetPoint("TOPLEFT", oUi.xCoord2, y)
-			y = y - 30
-
-			-- Unusable row (only for spells with cooldown)
-			if colorUnusableOverrideCheckbox:IsShown() then
-				colorUnusableOverrideCheckbox:ClearAllPoints()
-				colorUnusableOverrideCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
-				controls.colors.thresholdUnusable:ClearAllPoints()
-				controls.colors.thresholdUnusable:SetPoint("TOPLEFT", oUi.xCoord2, y)
-				y = y - 30
+			-- Color Mode row (Static / Dynamic)
+			colorModeDropdown:ClearAllPoints()
+			colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+			if isStaticMode then
+				controls.colors.thresholdStatic:ClearAllPoints()
+				controls.colors.thresholdStatic:SetPoint("TOPLEFT", oUi.xCoord2, y)
 			end
+			y = y - 30
 
-			-- Out of Range rows (only for spells with range check)
-			if colorOorShowCheckbox:IsShown() then
-				colorOorShowCheckbox:ClearAllPoints()
-				colorOorShowCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
-				y = y - 20
-
-				colorOorChangeColorCheckbox:ClearAllPoints()
-				colorOorChangeColorCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 20, y)
-				controls.colors.thresholdOutOfRange:ClearAllPoints()
-				controls.colors.thresholdOutOfRange:SetPoint("TOPLEFT", oUi.xCoord2, y)
+			if not isStaticMode then
+				-- Under row
+				colorUnderModeDropdown:ClearAllPoints()
+				colorUnderModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+				controls.colors.thresholdUnder:ClearAllPoints()
+				controls.colors.thresholdUnder:SetPoint("TOPLEFT", oUi.xCoord2, y)
 				y = y - 30
+
+				-- Over row
+				colorOverModeDropdown:ClearAllPoints()
+				colorOverModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+				controls.colors.thresholdOver:ClearAllPoints()
+				controls.colors.thresholdOver:SetPoint("TOPLEFT", oUi.xCoord2, y)
+				y = y - 30
+
+				-- Unusable row (only for spells with cooldown)
+				if colorUnusableModeDropdown:IsShown() then
+					colorUnusableModeDropdown:ClearAllPoints()
+					colorUnusableModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+					controls.colors.thresholdUnusable:ClearAllPoints()
+					controls.colors.thresholdUnusable:SetPoint("TOPLEFT", oUi.xCoord2, y)
+					y = y - 30
+				end
+
+				-- Out of Range row (only for spells with range check)
+				if colorOorModeDropdown:IsShown() then
+					colorOorModeDropdown:ClearAllPoints()
+					colorOorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+					controls.colors.thresholdOutOfRange:ClearAllPoints()
+					controls.colors.thresholdOutOfRange:SetPoint("TOPLEFT", oUi.xCoord2, y)
+					y = y - 30
+				end
 			end
 		end
 
@@ -7106,112 +7186,175 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		enabledCheckbox:Show()
 
 		-- ===== COLOR OVERRIDE SECTION =====
-		-- Under color: checkbox + swatch
-		local underColor = dictEntry.colors.under.color or spec.colors.threshold.under.color or "FFFFFFFF"
-		colorUnderOverrideCheckbox:SetChecked(dictEntry.colors.under.enabled or false)
-		colorUnderOverrideCheckbox:SetScript("OnClick", function(self, ...)
-			dictEntry.colors.under.enabled = self:GetChecked()
-			TRB.Functions.Threshold:RedrawThresholdLines()
-		end)
-		colorUnderOverrideCheckbox:Show()
-		controls.colors.thresholdUnder.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(underColor, true))
-		controls.colors.thresholdUnder:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.under.color or spec.colors.threshold.under.color or "FFFFFFFF", true)
-				TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-					local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-					dictEntry.colors.under.color = newColor
-					controls.colors.thresholdUnder.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
-				end)
-			end
-		end)
-		controls.colors.thresholdUnder:Show()
+		-- Helper to set up a color mode dropdown for a given color type
+		local function SetupColorModeDropdown(dropdown, colorPicker, colorEntry, fallbackColor, modeLabels, prefix, getModeFn)
+			local resolveMode = getModeFn or GetColorMode
+			local mode = resolveMode(colorEntry)
+			local color = colorEntry.color or fallbackColor
 
-		-- Over color: checkbox + swatch
-		local overColor = dictEntry.colors.over.color or spec.colors.threshold.over.color or "FFFFFFFF"
-		colorOverOverrideCheckbox:SetChecked(dictEntry.colors.over.enabled or false)
-		colorOverOverrideCheckbox:SetScript("OnClick", function(self, ...)
-			dictEntry.colors.over.enabled = self:GetChecked()
-			TRB.Functions.Threshold:RedrawThresholdLines()
-		end)
-		colorOverOverrideCheckbox:Show()
-		controls.colors.thresholdOver.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(overColor, true))
-		controls.colors.thresholdOver:SetScript("OnMouseDown", function(self, button, ...)
-			if button == "LeftButton" then
-				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.over.color or spec.colors.threshold.over.color or "FFFFFFFF", true)
-				TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-					local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-					dictEntry.colors.over.color = newColor
-					controls.colors.thresholdOver.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
-				end)
+			-- Hook SetText to always prepend the prefix to the displayed selection
+			if not dropdown._originalSetText then
+				dropdown._originalSetText = dropdown.SetText
+				dropdown.SetText = function(self, text)
+					dropdown._originalSetText(self, prefix .. ": " .. (text or ""))
+				end
 			end
-		end)
-		controls.colors.thresholdOver:Show()
 
-		-- Unusable color: checkbox + swatch (only for spells with cooldown)
-		if hasUnusable then
-			local unusableColor = dictEntry.colors.unusable.color or spec.colors.threshold.unusable.color or "FFFFFFFF"
-			colorUnusableOverrideCheckbox:SetChecked(dictEntry.colors.unusable.enabled or false)
-			colorUnusableOverrideCheckbox:SetScript("OnClick", function(self, ...)
-				dictEntry.colors.unusable.enabled = self:GetChecked()
+			dropdown:SetDefaultText(prefix .. ": " .. (modeLabels[mode] or modeLabels["shared"]))
+
+			-- Show/hide color picker based on mode
+			if mode == "override" then
+				colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(color, true))
+				colorPicker:Show()
+			else
+				colorPicker:Hide()
+			end
+
+			-- Set up dropdown menu
+			local function IsSelected(value)
+				return value == resolveMode(colorEntry)
+			end
+
+			local function SetSelected(newValue)
+				colorEntry.mode = newValue
+				colorEntry.enabled = nil -- Remove old field
+				colorEntry.show = nil -- Remove old OOR field
+				if newValue == "override" then
+					colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(colorEntry.color or fallbackColor, true))
+					colorPicker:Show()
+				else
+					colorPicker:Hide()
+				end
+				RepositionDetailControls()
 				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+
+			dropdown:SetupMenu(function(dd, rootDescription)
+				for _, key in ipairs({"shared", "override", "hidden"}) do
+					rootDescription:CreateRadio(modeLabels[key], IsSelected, SetSelected, key)
+				end
 			end)
-			colorUnusableOverrideCheckbox:Show()
-			controls.colors.thresholdUnusable.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(unusableColor, true))
-			controls.colors.thresholdUnusable:SetScript("OnMouseDown", function(self, button, ...)
+			dropdown:Show()
+		end
+
+		-- Helper to wire up color picker OnMouseDown
+		local function WireColorPicker(colorPicker, colorEntry, fallbackColor)
+			colorPicker:SetScript("OnMouseDown", function(self, button, ...)
 				if button == "LeftButton" then
-					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.unusable.color or spec.colors.threshold.unusable.color or "FFFFFFFF", true)
+					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorEntry.color or fallbackColor, true)
 					TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
 						local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 						local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-						dictEntry.colors.unusable.color = newColor
-						controls.colors.thresholdUnusable.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
+						colorEntry.color = newColor
+						colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
 					end)
 				end
 			end)
-			controls.colors.thresholdUnusable:Show()
+		end
+
+		-- ===== COLOR MODE (Static / Dynamic) =====
+		dictEntry.colors.staticColor = dictEntry.colors.staticColor or {}
+		local colorMode = dictEntry.colors.colorMode or "dynamic"
+		local colorModeLabels = {
+			static = L["ThresholdDetailColorModeStatic"],
+			dynamic = L["ThresholdDetailColorModeDynamic"],
+		}
+
+		local colorModePrefix = L["ThresholdDetailColorModePrefix"]
+		colorModeDropdown:SetDefaultText(colorModePrefix .. ": " .. (colorModeLabels[colorMode] or colorModeLabels["dynamic"]))
+		if not colorModeDropdown._originalSetText then
+			colorModeDropdown._originalSetText = colorModeDropdown.SetText
+			colorModeDropdown.SetText = function(self, text)
+				colorModeDropdown._originalSetText(self, colorModePrefix .. ": " .. (text or ""))
+			end
+		end
+		colorModeDropdown:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(L["ThresholdDetailColorModeTooltip"], 1, 1, 1, 1, true)
+			GameTooltip:Show()
+		end)
+		colorModeDropdown:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+		-- Static color swatch
+		local staticColor = dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF"
+		if colorMode == "static" then
+			controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(staticColor, true))
+			controls.colors.thresholdStatic:Show()
 		else
-			colorUnusableOverrideCheckbox:Hide()
+			controls.colors.thresholdStatic:Hide()
+		end
+
+		local function ColorModeIsSelected(value)
+			return value == (dictEntry.colors.colorMode or "dynamic")
+		end
+
+		local function ColorModeSetSelected(newValue)
+			dictEntry.colors.colorMode = newValue
+			if newValue == "static" then
+				local sc = dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF"
+				controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(sc, true))
+			end
+			RepositionDetailControls()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end
+
+		colorModeDropdown:SetupMenu(function(dd, rootDescription)
+			for _, key in ipairs({"static", "dynamic"}) do
+				rootDescription:CreateRadio(colorModeLabels[key], ColorModeIsSelected, ColorModeSetSelected, key)
+			end
+		end)
+		colorModeDropdown:Show()
+
+		-- Wire static color picker
+		controls.colors.thresholdStatic:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF", true)
+				TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+					local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+					dictEntry.colors.staticColor.color = newColor
+					controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
+					TRB.Functions.Threshold:RedrawThresholdLines()
+				end)
+			end
+		end)
+
+		-- Under color: dropdown + swatch
+		SetupColorModeDropdown(colorUnderModeDropdown, controls.colors.thresholdUnder, dictEntry.colors.under,
+			spec.colors.threshold.under.color or "FFFFFFFF",
+			{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenUnder"] },
+			L["ThresholdDetailColorsPrefixUnder"])
+		WireColorPicker(controls.colors.thresholdUnder, dictEntry.colors.under, spec.colors.threshold.under.color or "FFFFFFFF")
+
+		-- Over color: dropdown + swatch
+		SetupColorModeDropdown(colorOverModeDropdown, controls.colors.thresholdOver, dictEntry.colors.over,
+			spec.colors.threshold.over.color or "FFFFFFFF",
+			{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenOver"] },
+			L["ThresholdDetailColorsPrefixOver"])
+		WireColorPicker(controls.colors.thresholdOver, dictEntry.colors.over, spec.colors.threshold.over.color or "FFFFFFFF")
+
+		-- Unusable color: dropdown + swatch (only for spells with cooldown)
+		if hasUnusable then
+			SetupColorModeDropdown(colorUnusableModeDropdown, controls.colors.thresholdUnusable, dictEntry.colors.unusable,
+				spec.colors.threshold.unusable.color or "FFFFFFFF",
+				{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenUnusable"] },
+				L["ThresholdDetailColorsPrefixUnusable"])
+			WireColorPicker(controls.colors.thresholdUnusable, dictEntry.colors.unusable, spec.colors.threshold.unusable.color or "FFFFFFFF")
+		else
+			colorUnusableModeDropdown:Hide()
 			controls.colors.thresholdUnusable:Hide()
 		end
 
-		-- Out of Range: show checkbox + change color checkbox + swatch (only for spells with range check)
+		-- Out of Range: dropdown + swatch (only for spells with range check)
 		if hasOutOfRange then
-			colorOorShowCheckbox:SetChecked(dictEntry.colors.outOfRange.show ~= false)
-			colorOorShowCheckbox:SetScript("OnClick", function(self, ...)
-				dictEntry.colors.outOfRange.show = self:GetChecked()
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(colorOorChangeColorCheckbox, dictEntry.colors.outOfRange.show)
-				TRB.Functions.Threshold:RedrawThresholdLines()
-			end)
-			colorOorShowCheckbox:Show()
-
-			colorOorChangeColorCheckbox:SetChecked(dictEntry.colors.outOfRange.enabled or false)
-			colorOorChangeColorCheckbox:SetScript("OnClick", function(self, ...)
-				dictEntry.colors.outOfRange.enabled = self:GetChecked()
-				TRB.Functions.Threshold:RedrawThresholdLines()
-			end)
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(colorOorChangeColorCheckbox, dictEntry.colors.outOfRange.show ~= false)
-			colorOorChangeColorCheckbox:Show()
-
-			local oorColor = dictEntry.colors.outOfRange.color or spec.colors.threshold.outOfRange.color or "FFFFFFFF"
-			controls.colors.thresholdOutOfRange.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(oorColor, true))
-			controls.colors.thresholdOutOfRange:SetScript("OnMouseDown", function(self, button, ...)
-				if button == "LeftButton" then
-					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.outOfRange.color or spec.colors.threshold.outOfRange.color or "FFFFFFFF", true)
-					TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-						local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-						local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-						dictEntry.colors.outOfRange.color = newColor
-						controls.colors.thresholdOutOfRange.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
-					end)
-				end
-			end)
-			controls.colors.thresholdOutOfRange:Show()
+			SetupColorModeDropdown(colorOorModeDropdown, controls.colors.thresholdOutOfRange, dictEntry.colors.outOfRange,
+				spec.colors.threshold.outOfRange.color or "FFFFFFFF",
+				{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenOutOfRange"] },
+				L["ThresholdDetailColorsPrefixOutOfRange"],
+				GetOorColorMode)
+			WireColorPicker(controls.colors.thresholdOutOfRange, dictEntry.colors.outOfRange, spec.colors.threshold.outOfRange.color or "FFFFFFFF")
 		else
-			colorOorShowCheckbox:Hide()
-			colorOorChangeColorCheckbox:Hide()
+			colorOorModeDropdown:Hide()
 			controls.colors.thresholdOutOfRange:Hide()
 		end
 
@@ -7240,6 +7383,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		local lineWidth = dictEntry.line.width or spec.thresholds.properties.width or 2
 		controls.sliders.thresholdLineWidth:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdLineWidth:SetValue(lineWidth)
+		controls.sliders.thresholdLineWidth.EditBox:SetText(lineWidth)
 		controls.sliders.thresholdLineWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -7358,6 +7502,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 		controls.sliders.thresholdIconWidth:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdIconWidth:SetValue(iconWidth)
+		controls.sliders.thresholdIconWidth.EditBox:SetText(iconWidth)
 		controls.sliders.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -7376,6 +7521,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 		controls.sliders.thresholdIconHeight:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdIconHeight:SetValue(iconHeight)
+		controls.sliders.thresholdIconHeight.EditBox:SetText(iconHeight)
 		controls.sliders.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -7394,6 +7540,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 		controls.sliders.thresholdIconXPos:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdIconXPos:SetValue(iconXPos)
+		controls.sliders.thresholdIconXPos.EditBox:SetText(iconXPos)
 		controls.sliders.thresholdIconXPos:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -7404,6 +7551,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 
 		controls.sliders.thresholdIconYPos:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdIconYPos:SetValue(iconYPos)
+		controls.sliders.thresholdIconYPos.EditBox:SetText(iconYPos)
 		controls.sliders.thresholdIconYPos:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -7418,6 +7566,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		controls.sliders.thresholdIconBorderWidth.MaxLabel:SetText(maxIconBorder)
 		controls.sliders.thresholdIconBorderWidth:SetScript("OnValueChanged", nil)
 		controls.sliders.thresholdIconBorderWidth:SetValue(iconBorder)
+		controls.sliders.thresholdIconBorderWidth.EditBox:SetText(iconBorder)
 		controls.sliders.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)

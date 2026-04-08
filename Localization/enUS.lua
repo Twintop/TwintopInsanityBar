@@ -2751,21 +2751,13 @@ L["GradientDirectionVerticalAbbrev"] = "V"
 L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first color."
 L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
 L["GradientDirectionButtonTooltip"] = "Left-click to cycle the gradient direction between Disabled, Horizontal, and Vertical."
-
--- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
--- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
--- REMOVED: L["DeathKnightBloodColorPickerBoneShieldOssuary"] - replaced by DeathKnightBloodColorPickerBoneShieldOssuaryRange
-
--- Blood Death Knight Bone Shield Ossuary
 L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield color for Ossuary building range"
 L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill color for nodes 1 through 5 when Ossuary is talented."
 L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"] = "Ossuary building range"
 L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield color at Ossuary threshold"
 L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"] = "Changes the Bone Shield fill color at the Ossuary threshold node (5) when Ossuary is talented. Overrides the building range color."
 L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"] = "Ossuary threshold"
-
--- Threshold List Tab
-L["TabThresholdSettings"] = "Threshold Settings"
+L["TabThresholdSettings"] = "Threshold Shared Settings"
 L["ThresholdTableHeaderName"] = "Threshold"
 L["ThresholdTableHeaderCategory"] = "Category"
 L["ThresholdTableHeaderBar"] = "Bar"
@@ -2778,7 +2770,6 @@ L["ThresholdCategoryCustom"] = "Custom"
 L["ThresholdDetailHeader"] = "%s Settings"
 L["ThresholdBarTargetPrimary"] = "Primary"
 L["ThresholdBarTargetSecondary"] = "Secondary"
-
 L["RogueOutlawThresholdDismantle"] = "Dismantle"
 L["RogueOutlawThresholdCoupDeGrace"] = "Coup de Grace"
 L["RogueSubtletyThresholdCoupDeGrace"] = "Coup de Grace"
@@ -2836,8 +2827,6 @@ L["ShamanElementalThresholdCheckboxEarthShockTooltip"] = "This will show the ver
 L["ShamanElementalThresholdElementalBlastTooltip"] = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Elemental Blast."
 L["ShamanElementalThresholdEarthquakeTargetedTooltip"] = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earthquake (Targeted)."
 L["ThresholdCategoryMetamorphosis"] = "Metamorphosis"
-
--- Per-Threshold Settings (Phase 2)
 L["ThresholdDetailAudioHeader"] = "Audio Cue"
 L["ThresholdDetailAudioCheckbox"] = "Play audio cue when threshold is usable"
 L["ThresholdDetailAudioCheckboxTooltip"] = "Play a sound when this threshold transitions from not usable to usable."
@@ -2863,8 +2852,6 @@ L["ThresholdDetailLineHeader"] = "Line Override"
 L["ThresholdDetailLineWidth"] = "Line Width"
 L["ThresholdDetailLineWidthTooltip"] = "Override the width of this threshold line. Set to 0 to use the global setting."
 L["ThresholdDetailAudioNone"] = "None"
-
--- Per-Threshold Icon/Line Override UI (Phase 2 redesign)
 L["ThresholdDetailIconUseSpecific"] = "Use specific icon settings for this threshold"
 L["ThresholdDetailIconUseSpecificTooltip"] = "When checked, this threshold will use its own icon display and dimension settings instead of the global settings."
 L["ThresholdDetailIconShowCheckbox"] = "Show ability icon?"
@@ -2882,3 +2869,20 @@ L["ThresholdDetailColorsOverrideUnder"] = "Override Under Threshold"
 L["ThresholdDetailColorsOverrideOver"] = "Override Over Threshold"
 L["ThresholdDetailColorsOverrideUnusable"] = "Override On Cooldown"
 L["ThresholdDetailOutOfRangeShowCheckbox"] = "Show out of range threshold line?"
+L["ThresholdDetailColorsModeShared"] = "Use Shared Color"
+L["ThresholdDetailColorsModeOverride"] = "Override Color"
+L["ThresholdDetailColorsModeHiddenUnder"] = "Hide When Under Threshold"
+L["ThresholdDetailColorsModeHiddenOver"] = "Hide When Over Threshold"
+L["ThresholdDetailColorsModeHiddenUnusable"] = "Hide When Unusable"
+L["ThresholdDetailColorsPrefixUnder"] = "Under Threshold"
+L["ThresholdDetailColorsPrefixOver"] = "Over Threshold"
+L["ThresholdDetailColorsPrefixUnusable"] = "Unusable"
+L["ThresholdDetailColorsModeHiddenOutOfRange"] = "Hide When Out of Range"
+L["ThresholdDetailColorsPrefixOutOfRange"] = "Out of Range"
+
+-- Threshold Detail: Color Mode (Static/Dynamic)
+L["ThresholdDetailColorModeStatic"] = "Static"
+L["ThresholdDetailColorModeDynamic"] = "Dynamic"
+L["ThresholdDetailColorModeTooltip"] = "Static: The threshold line is always shown with a single fixed color, ignoring all conditional color rules.\n\nDynamic: The threshold line color changes based on conditions (under/over threshold, unusable, out of range) using the settings below."
+L["ThresholdDetailColorModeStaticColor"] = "Static Color"
+L["ThresholdDetailColorModePrefix"] = "Color Mode"

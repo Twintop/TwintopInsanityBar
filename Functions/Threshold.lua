@@ -677,45 +677,93 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 
-		-- Per-threshold color overrides: each color type has its own enabled flag
-		if thresholdOverrides and thresholdOverrides.colors then
-			if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable and thresholdOverrides.colors.unusable and thresholdOverrides.colors.unusable.enabled and thresholdOverrides.colors.unusable.color then
-				thresholdColor = thresholdOverrides.colors.unusable.color
-			elseif frameLevel >= TRB.Data.constants.frameLevels.thresholdOver and thresholdOverrides.colors.over and thresholdOverrides.colors.over.enabled and thresholdOverrides.colors.over.color then
-				thresholdColor = thresholdOverrides.colors.over.color
-			elseif thresholdOverrides.colors.under and thresholdOverrides.colors.under.enabled and thresholdOverrides.colors.under.color then
-				thresholdColor = thresholdOverrides.colors.under.color
+		-- Per-threshold color overrides: each color type has a mode (shared/override/hidden)
+		-- Static color mode: always show with a fixed color, bypass all dynamic color logic
+		local isStaticColorMode = thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.colorMode == "static"
+		if isStaticColorMode then
+			if thresholdOverrides.colors.staticColor and thresholdOverrides.colors.staticColor.color then
+				thresholdColor = thresholdOverrides.colors.staticColor.color
+			end
+		elseif thresholdOverrides and thresholdOverrides.colors then
+			local function GetMode(colorEntry)
+				if colorEntry == nil then return "shared" end
+				if colorEntry.mode ~= nil then return colorEntry.mode end
+				if colorEntry.enabled then return "override" end
+				return "shared"
+			end
+
+			local hideThreshold = false
+
+			if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
+				local mode = GetMode(thresholdOverrides.colors.unusable)
+				if mode == "hidden" then
+					hideThreshold = true
+				elseif mode == "override" and thresholdOverrides.colors.unusable and thresholdOverrides.colors.unusable.color then
+					thresholdColor = thresholdOverrides.colors.unusable.color
+				end
+			elseif frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
+				local mode = GetMode(thresholdOverrides.colors.over)
+				if mode == "hidden" then
+					hideThreshold = true
+				elseif mode == "override" and thresholdOverrides.colors.over and thresholdOverrides.colors.over.color then
+					thresholdColor = thresholdOverrides.colors.over.color
+				end
+			else
+				local mode = GetMode(thresholdOverrides.colors.under)
+				if mode == "hidden" then
+					hideThreshold = true
+				elseif mode == "override" and thresholdOverrides.colors.under and thresholdOverrides.colors.under.color then
+					thresholdColor = thresholdOverrides.colors.under.color
+				end
+			end
+
+			if hideThreshold then
+				TRB.Functions.Threshold:Hide(key, threshold)
+				return false
 			end
 		end
+
+		-- Dynamic-only checks: OOR and unusable can hide the threshold
+		if not isStaticColorMode then
 
 		-- Check if we're out of range
 		-- Per-threshold out-of-range overrides take precedence over global settings
-		local oorShow = settings.colors.threshold.outOfRange.show
-		local oorChangeColor = settings.colors.threshold.outOfRange.enabled
+		local function GetOorMode(colorEntry)
+			if colorEntry == nil then return "shared" end
+			if colorEntry.mode ~= nil then return colorEntry.mode end
+			if colorEntry.show == false then return "hidden" end
+			if colorEntry.enabled then return "override" end
+			return "shared"
+		end
+
+		local oorMode = "shared"
 		if thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.outOfRange then
-			if thresholdOverrides.colors.outOfRange.show ~= nil then
-				oorShow = thresholdOverrides.colors.outOfRange.show
-			end
-			if thresholdOverrides.colors.outOfRange.enabled ~= nil then
-				oorChangeColor = thresholdOverrides.colors.outOfRange.enabled
-			end
+			oorMode = GetOorMode(thresholdOverrides.colors.outOfRange)
 		end
 
 		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
-			if oorShow then
-				if outOfRange and oorChangeColor then
-					-- Per-threshold out-of-range color override
-					if thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.outOfRange and thresholdOverrides.colors.outOfRange.enabled and thresholdOverrides.colors.outOfRange.color then
-						thresholdColor = thresholdOverrides.colors.outOfRange.color
-					else
-						thresholdColor = settings.colors.threshold.outOfRange.color
-					end
-					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
-				end
-			else
+			if oorMode == "hidden" then
 				if outOfRange and threshold then
 					TRB.Functions.Threshold:Hide(key, threshold)
 					return false
+				end
+			elseif oorMode == "override" then
+				if outOfRange then
+					thresholdColor = thresholdOverrides.colors.outOfRange.color or settings.colors.threshold.outOfRange.color
+					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
+				end
+			else
+				-- "shared": use global OOR settings
+				if settings.colors.threshold.outOfRange.show then
+					if outOfRange and settings.colors.threshold.outOfRange.enabled then
+						thresholdColor = settings.colors.threshold.outOfRange.color
+						frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
+					end
+				else
+					if outOfRange and threshold then
+						TRB.Functions.Threshold:Hide(key, threshold)
+						return false
+					end
 				end
 			end
 		else
@@ -731,6 +779,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				return false
 			end
 		end
+
+		end -- not isStaticColorMode
 		
 		if threshold ~= nil then
 			if threshold.texture == nil or threshold.icon == nil then

@@ -443,4 +443,8 @@ if locale == "enGB" then
     L["ThresholdDetailColorsUnder"] = "Under Threshold"
     L["ThresholdDetailColorsOver"] = "Over Threshold"
     L["ThresholdDetailColorsOutOfRange"] = "Out of Range"
+    L["ThresholdDetailColorsModeShared"] = "Use Shared Colour"
+    L["ThresholdDetailColorsModeOverride"] = "Override Colour"
+    L["ThresholdDetailColorModeTooltip"] = "Static: The threshold line is always shown with a single fixed colour, ignoring all conditional colour rules.\n\nDynamic: The threshold line colour changes based on conditions (under/over threshold, unusable, out of range) using the settings below."
+    L["ThresholdDetailColorModeStaticColor"] = "Static Colour"
 end

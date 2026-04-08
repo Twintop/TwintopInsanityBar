@@ -8524,15 +8524,15 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 		colors = {
 			under = {
 				color = "FFFFFFFF",
-				enabled = false,
+				mode = "shared",
 			},
 			over = {
 				color = "FF00FF00",
-				enabled = false,
+				mode = "shared",
 			},
 			unusable = {
 				color = "FFFF0000",
-				enabled = false,
+				mode = "shared",
 			},
 			outOfRange = {
 				color = "FF440000",

@@ -107,5 +107,21 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 			end
 		end
 	end
+
+	-- Threshold Dictionary Audio
+	if settings.thresholds ~= nil and settings.thresholds.thresholdDictionary ~= nil then
+		for k, dictEntry in pairs(settings.thresholds.thresholdDictionary) do
+			if dictEntry.audio ~= nil and dictEntry.audio.soundName ~= nil and dictEntry.audio.soundName ~= "" then
+				if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, dictEntry.audio.soundName) then
+					print(string.format(L["LSMInvalidSoundNameOnlySoundName"], specName, dictEntry.audio.soundName))
+					dictEntry.audio.sound = TRB.Data.constants.defaultSettings.sounds.sound
+					dictEntry.audio.soundName = TRB.Data.constants.defaultSettings.sounds.soundName
+				else
+					dictEntry.audio.sound = TRB.Details.addonData.libs.SharedMedia.MediaTable.sound[dictEntry.audio.soundName]
+				end
+			end
+		end
+	end
+
 	return settings
 end
