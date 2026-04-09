@@ -8536,8 +8536,7 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 			},
 			outOfRange = {
 				color = "FF440000",
-				enabled = true,
-				show = true
+				mode = "shared",
 			},
 		},
 		icon = {

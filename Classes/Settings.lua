@@ -67,7 +67,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public under TRB.Classes.Settings.ColorModeEntry
 ---@field public over TRB.Classes.Settings.ColorModeEntry
 ---@field public unusable TRB.Classes.Settings.ColorModeEntry
----@field public outOfRange TRB.Classes.Settings.ColorEnabledEntry
+---@field public outOfRange TRB.Classes.Settings.ColorOutOfRangeModeEntry
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryIcon
 ---@field public enabled boolean
@@ -117,6 +117,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorModeEntry : TRB.Classes.Settings.ColorEntry
 ---@field public mode string -- "shared", "override", or "hidden"
 ---@field public enabled boolean? -- Deprecated: backward compat only
+
+---@class TRB.Classes.Settings.ColorOutOfRangeModeEntry : TRB.Classes.Settings.ColorModeEntry
+---@field public show boolean? -- Deprecated: legacy backward-compat; replaced by mode="hidden"
 
 ---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean

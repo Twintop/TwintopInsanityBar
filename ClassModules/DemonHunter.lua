@@ -1986,9 +1986,11 @@ local function UpdateResourceBar()
 								if hideThreshold then
 									thresholds[1]:Hide()
 								else
-									-- Per-threshold line width override
-									if csDictEntry.line and csDictEntry.line.width then
+									-- Per-threshold line width override (only when line override is enabled)
+									if csDictEntry.line and csDictEntry.line.enabled and csDictEntry.line.width then
 										thresholds[1]:SetWidth(csDictEntry.line.width)
+									else
+										thresholds[1]:SetWidth(specCacheSettings.thresholds.properties.width)
 									end
 									
 									thresholds[1]:SetFrameLevel(frameLevel)
