@@ -37,7 +37,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		settingKey = "cracklingJadeLightning",
 		isTalent = false,
 		baseline = true,
-		hasCooldown = true
+		hasCooldown = true,
+		category = "offensive"
 	})
 	self.expelHarm = TRB.Classes.SpellComboPointThreshold:New({
 		id = 322101,
@@ -48,14 +49,16 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		cooldown = 5,
 		isTalent = false,
 		baseline = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "defensive"
 	})
 	self.spinningCraneKick = TRB.Classes.SpellThreshold:New({
 		id = 322729,
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "spinningCraneKick",
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		category = "offensive"
 	})
 	self.tigerPalm = TRB.Classes.SpellComboPointThreshold:New({
 		id = 100780,
@@ -63,7 +66,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		settingKey = "tigerPalm",
 		isTalent = false,
 		baseline = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "offensive"
 	})
 	self.vivify = TRB.Classes.SpellThreshold:New({
 		id = 116670,
@@ -71,7 +75,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		settingKey = "vivify",
 		isTalent = false,
 		baseline = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "utility"
 	})
 
 	-- Monk Class Talents
@@ -83,14 +88,16 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		hasCooldown = true,
 		cooldown = 8,
 		isTalent = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "utility"
 	})
 	self.disable = TRB.Classes.SpellThreshold:New({
 		id = 116095,
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "disable",
 		hasCooldown = false,
-		isTalent = true
+		isTalent = true,
+		category = "utility"
 	})
 	self.paralysis = TRB.Classes.SpellThreshold:New({
 		id = 115078,
@@ -100,6 +107,7 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		hasCooldown = true,
 		cooldown = 45,
 		isTalent = true,
+		category = "utility"
 	})
 	self.ancientArts = TRB.Classes.SpellBase:New({
 		id = 344359,
@@ -112,7 +120,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		primaryResourceTypeProperty = "costPerSec",
 		settingKey = "soothingMist",
 		isTalent = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "utility"
 	})
 
 	-- Brewmaster Spec Talents
@@ -128,6 +137,7 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "kegSmash",
 		isTalent = true,
+		category = "offensive"
 	})
 	self.jadeFlash = TRB.Classes.SpellBase:New({
 		id = 1262334,
@@ -284,7 +294,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "cracklingJadeLightning",
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		category = "offensive"
 	})
 	self.expelHarm = TRB.Classes.SpellComboPointThreshold:New({
 		id = 322101,
@@ -296,7 +307,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		isTalent = false,
 		baseline = true,
 		isSnowflake = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "defensive"
 	})
 	self.spinningCraneKick = TRB.Classes.SpellComboPoint:New({
 		id = 101546,
@@ -310,7 +322,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		comboPointsGenerated = 2,
 		settingKey = "tigerPalm",
 		isTalent = false,
-		baseline = true
+		baseline = true,
+		category = "offensive"
 	})
 	self.vivify = TRB.Classes.SpellThreshold:New({
 		id = 116670,
@@ -318,7 +331,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		settingKey = "vivify",
 		isTalent = false,
 		baseline = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "utility"
 	})
 
 	-- Windwalker Spec Baseline Abilities
@@ -341,13 +355,15 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		hasCooldown = true,
 		cooldown = 8,
 		isTalent = true,
+		category = "utility"
 	})
 	self.disable = TRB.Classes.SpellThreshold:New({
 		id = 116095,
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "disable",
 		hasCooldown = false,
-		isTalent = true
+		isTalent = true,
+		category = "utility"
 	})
 	self.paralysis = TRB.Classes.SpellThreshold:New({
 		id = 115078,
@@ -356,6 +372,7 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		hasCooldown = true,
 		cooldown = 45,
 		isTalent = true,
+		category = "utility"
 	})
 	self.ancientArts = TRB.Classes.SpellBase:New({
 		id = 344359,
@@ -368,7 +385,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		primaryResourceTypeProperty = "costPerSec",
 		settingKey = "soothingMist",
 		isTalent = true,
-		rangeCheck = false
+		rangeCheck = false,
+		category = "utility"
 	})
 
 	-- Windwalker Spec Talent Abilities

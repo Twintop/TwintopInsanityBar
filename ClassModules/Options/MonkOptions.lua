@@ -139,6 +139,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					enabled = true,
 				}
 			},
+			customThresholds = {},
 			stagger = {
 				medium = {
 					enabled = true,
@@ -527,7 +528,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				soothingMist = {
 					enabled = false,
 				},
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = WINDWALKER_MAX_ENERGY,
@@ -1021,7 +1023,51 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
 end
 
-local function BrewmasterConstructThresholdPanel(parent)
+local function BrewmasterConstructThresholdListPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
+	local yCoord = 5
+
+	controls.colors.threshold = {}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 10, 1, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceEnergy"],
+		},
+		labels = {
+			cracklingJadeLightning = L["MonkBrewmasterThresholdCheckboxCracklingJadeLightning"],
+			expelHarm = L["MonkBrewmasterThresholdCheckboxExpelHarm"],
+			spinningCraneKick = L["MonkBrewmasterThresholdCheckboxSpinningCraneKick"],
+			tigerPalm = L["MonkBrewmasterThresholdCheckboxTigerPalm"],
+			vivify = L["MonkBrewmasterThresholdCheckboxVivify"],
+			detox = L["MonkBrewmasterThresholdCheckboxDetox"],
+			disable = L["MonkBrewmasterThresholdCheckboxDisable"],
+			paralysis = L["MonkBrewmasterThresholdCheckboxParalysis"],
+			soothingMist = L["MonkBrewmasterThresholdCheckboxSoothingMist"],
+			kegSmash = L["MonkBrewmasterThresholdCheckboxKegSmash"],
+		},
+		tooltips = {
+			expelHarm = L["MonkBrewmasterThresholdCheckboxExpelHarmTooltip"],
+			kegSmash = L["MonkBrewmasterThresholdCheckboxKegSmashTooltip"],
+			spinningCraneKick = L["MonkBrewmasterThresholdCheckboxSpinningCraneKickTooltip"],
+			tigerPalm = L["MonkBrewmasterThresholdCheckboxTigerPalmTooltip"],
+			cracklingJadeLightning = L["MonkBrewmasterThresholdCheckboxCracklingJadeLightningTooltip"],
+			detox = L["MonkBrewmasterThresholdCheckboxDetoxTooltip"],
+			disable = L["MonkBrewmasterThresholdCheckboxDisableTooltip"],
+			paralysis = L["MonkBrewmasterThresholdCheckboxParalysisTooltip"],
+			soothingMist = L["MonkBrewmasterThresholdCheckboxSoothingMistTooltip"],
+			vivify = L["MonkBrewmasterThresholdCheckboxVivifyTooltip"],
+		},
+	})
+end
+
+local function BrewmasterConstructThresholdSettingsPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -1038,131 +1084,7 @@ local function BrewmasterConstructThresholdPanel(parent)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 1, false, true, false, false, false, false)
 	end)
 
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord
-
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-	controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.expelHarmThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxExpelHarm"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxExpelHarmTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.expelHarm.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.expelHarm.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.kegSmashThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_kegSmash", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.kegSmashThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxKegSmash"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxKegSmashTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.kegSmash.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.kegSmash.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.spinningCraneKickThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_spinningCraneKick", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.spinningCraneKickThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxSpinningCraneKick"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxSpinningCraneKickTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.spinningCraneKick.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.spinningCraneKick.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.tigerPalmThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxTigerPalm"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxTigerPalmTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.tigerPalm.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.tigerPalm.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
-	yCoord2 = yCoord2 - 20
-
-	controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.cracklingJadeLightningThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxCracklingJadeLightning"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxCracklingJadeLightningTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.detoxThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxDetox"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxDetoxTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.detox.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.detox.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.disableThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxDisable"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxDisableTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.disable.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.disable.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.paralysisThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxParalysis"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxParalysisTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.paralysis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.paralysis.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.soothingMistThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_soothingMist", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.soothingMistThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxSoothingMist"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxSoothingMistTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.soothingMist.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.soothingMist.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vivifyThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkBrewmasterThresholdCheckboxVivify"])
-	f.tooltip = L["MonkBrewmasterThresholdCheckboxVivifyTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.vivify.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.vivify.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord2
-
 	-- Stagger Levels section
-	yCoord = yCoord - 40
 	controls.staggerLevelsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerLevelsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
@@ -1214,6 +1136,8 @@ local function BrewmasterConstructThresholdPanel(parent)
 			end
 		end
 	end)
+
+	yCoord = yCoord - 30
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
@@ -1374,7 +1298,8 @@ local function BrewmasterConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BrewmasterConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BrewmasterConstructThresholdPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, BrewmasterConstructThresholdSettingsPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BrewmasterConstructThresholdListPanel, true },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BrewmasterConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, BrewmasterConstructResetDefaultsPanel },
@@ -2026,7 +1951,7 @@ local function WindwalkerConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceChi"], true)
 end
 
-local function WindwalkerConstructThresholdPanel(parent)
+local function WindwalkerConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2036,113 +1961,51 @@ local function WindwalkerConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
-	local f = nil
+
+	controls.colors.threshold = {}
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 10, 3, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceEnergy"],
+		},
+		labels = {
+			cracklingJadeLightning = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightning"],
+			expelHarm = L["MonkWindwalkerThresholdCheckboxExpelHarm"],
+			tigerPalm = L["MonkWindwalkerThresholdCheckboxTigerPalm"],
+			vivify = L["MonkWindwalkerThresholdCheckboxVivify"],
+			detox = L["MonkWindwalkerThresholdCheckboxDetox"],
+			disable = L["MonkWindwalkerThresholdCheckboxDisable"],
+			paralysis = L["MonkWindwalkerThresholdCheckboxParalysis"],
+			soothingMist = L["MonkWindwalkerThresholdCheckboxSoothingMist"],
+		},
+		tooltips = {
+			expelHarm = L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"],
+			tigerPalm = L["MonkWindwalkerThresholdCheckboxTigerPalmTooltip"],
+			cracklingJadeLightning = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightningTooltip"],
+			detox = L["MonkWindwalkerThresholdCheckboxDetoxTooltip"],
+			disable = L["MonkWindwalkerThresholdCheckboxDisableTooltip"],
+			paralysis = L["MonkWindwalkerThresholdCheckboxParalysisTooltip"],
+			soothingMist = L["MonkWindwalkerThresholdCheckboxSoothingMistTooltip"],
+			vivify = L["MonkWindwalkerThresholdCheckboxVivifyTooltip"],
+		},
+	})
+end
+
+local function WindwalkerConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.windwalker
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_windwalker
+	local yCoord = 5
 
 	controls.buttons.exportButton_Monk_Windwalker_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_Monk_Windwalker_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 10, 3, false, true, false, false, false, false)
 	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord
-
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
-	yCoord = yCoord - 20
-	controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.expelHarmThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxExpelHarm"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.expelHarm.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.expelHarm.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.tigerPalmThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxTigerPalm"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxTigerPalmTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.tigerPalm.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.tigerPalm.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], oUi.xCoord2, yCoord2, 110, 20)
-	yCoord2 = yCoord2 - 20
-
-	controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.cracklingJadeLightningThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxCracklingJadeLightning"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightningTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.cracklingJadeLightning.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.detoxThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDetox"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxDetoxTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.detox.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.detox.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.disableThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDisable"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxDisableTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.disable.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.disable.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.paralysisThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxParalysis"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxParalysisTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.paralysis.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.paralysis.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.soothingMistThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_soothingMist", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.soothingMistThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxSoothingMist"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxSoothingMistTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.soothingMist.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.soothingMist.enabled = self:GetChecked()
-	end)
-
-	yCoord2 = yCoord2 - 25
-	controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.vivifyThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxVivify"])
-	f.tooltip = L["MonkWindwalkerThresholdCheckboxVivifyTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.vivify.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.vivify.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord2
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
@@ -2340,7 +2203,8 @@ local function WindwalkerConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, WindwalkerConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, WindwalkerConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, WindwalkerConstructThresholdSettingsPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdListPanel, true },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, WindwalkerConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, WindwalkerConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) WindwalkerConstructBarTextDisplayPanel(scrollChild, cache) end },

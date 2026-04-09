@@ -8508,6 +8508,56 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 	}
 end
 
+---Creates default per-threshold settings for a threshold dictionary entry.
+---When `enabled` is false on a sub-entry (audio, individual color, icon, line),
+---the global setting is used instead.
+---@param isEnabled boolean # Whether the threshold is enabled by default
+---@return TRB.Classes.Settings.ThresholdDictionaryEntry
+function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
+	return {
+		enabled = isEnabled,
+		audio = {
+			enabled = false,
+			sound = "",
+			soundName = "",
+		},
+		colors = {
+			under = {
+				color = "FFFFFFFF",
+				mode = "shared",
+			},
+			over = {
+				color = "FF00FF00",
+				mode = "shared",
+			},
+			unusable = {
+				color = "FFFF0000",
+				mode = "shared",
+			},
+			outOfRange = {
+				color = "FF440000",
+				mode = "shared",
+			},
+		},
+		icon = {
+			enabled = false,
+			show = true,
+			width = 24,
+			height = 24,
+			xPos = 0,
+			yPos = 12,
+			relativeTo = "BOTTOM",
+			desaturated = true,
+			border = 2,
+		},
+		line = {
+			enabled = false,
+			width = 2,
+			overlapBorder = true,
+		},
+	}
+end
+
 ---Returns default bar text for the health bar
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]

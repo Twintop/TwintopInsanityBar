@@ -104,7 +104,8 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 8042,
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "earthShock",
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.earthquake = TRB.Classes.SpellThreshold:New({
         id = 61882,
@@ -112,14 +113,16 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         settingKey = "earthquake",
         isTalent = true,
         isSnowflake = true,
-		rangeCheck = false
+		rangeCheck = false,
+        category = "offensive"
     })
     self.earthquakeTargeted = TRB.Classes.SpellThreshold:New({
         id = 462620,
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "earthquakeTargeted",
         isTalent = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
         id = 462818,
@@ -139,7 +142,8 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 117014,
         primaryResourceType = Enum.PowerType.Maelstrom,
         settingKey = "elementalBlast",
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.echoesOfGreatSundering = TRB.Classes.SpellBase:New({
         id = 384088,

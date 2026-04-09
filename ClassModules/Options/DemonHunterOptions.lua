@@ -86,31 +86,16 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				abyssalGaze = {
-					enabled = true,
-				},
-				annihilation = {
-					enabled = true,
-				},
-				bladeDance = {
-					enabled = true,
-				},
-				chaosNova = {
-					enabled = false,
-				},
-				chaosStrike = {
-					enabled = true,
-				},
-				deathSweep = {
-					enabled = true,
-				},
-				eyeBeam = {
-					enabled = true,
-				},
-				throwGlaive = {
-					enabled = false,
-				}
-			}
+				abyssalGaze = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				annihilation = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				bladeDance = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				chaosNova = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(false),
+				chaosStrike = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				deathSweep = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				eyeBeam = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				throwGlaive = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(false),
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = HAVOC_MAX_FURY,
@@ -309,20 +294,13 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				soulCleave = {
-					enabled = true,
-				},
-				chaosNova = {
-					enabled = true,
-				},
+				soulCleave = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				chaosNova = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 				-- Talents
-				felDevastation = {
-					enabled = true,
-				},
-				spiritBomb = {
-					enabled = true,
-				},
-			}
+				felDevastation = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				spiritBomb = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = VENGEANCE_MAX_FURY,
@@ -562,13 +540,10 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
-				voidRay = {
-					enabled = true,
-				},
-				collapsingStarThreshold = {
-					enabled = true,
-				},
-			}
+				voidRay = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+				collapsingStarThreshold = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = DEVOURER_MAX_FURY,
@@ -1022,83 +997,54 @@ local function HavocConstructBarVisibilityPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
-local function HavocConstructThresholdPanel(parent)
+local function HavocConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.havoc
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 12, 1, yCoord, {
+		barTargetLabels = { primary = L["ResourceFury"] },
+		labels = {
+			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDance"],
+			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweep"],
+			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrike"],
+			annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilation"],
+			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeam"],
+			abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGaze"],
+			chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNova"],
+			throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaive"],
+		},
+		tooltips = {
+			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDanceTooltip"],
+			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweepTooltip"],
+			chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"],
+			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrikeTooltip"],
+			annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilationTooltip"],
+			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"],
+			abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGazeTooltip"],
+			throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"],
+		},
+	})
+end
+
+local function HavocConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.havoc
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
+	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 1, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.bladeDanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_bladeDance", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.bladeDanceThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.bladeDance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.bladeDance.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.deathSweep.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.chaosNovaThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosNova"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.chaosNova.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.chaosNova.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.chaosStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.chaosStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.chaosStrike.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.annihilation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.eyeBeamThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGaze"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxEyeBeamAbyssalGazeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.eyeBeam.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.abyssalGaze.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.eyeBeam.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.throwGlaiveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_throwGlaive", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.throwGlaiveThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxThrowGlaive"])
-	f.tooltip = L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.throwGlaive.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.throwGlaive.enabled = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -1263,7 +1209,8 @@ local function HavocConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HavocConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HavocConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HavocConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HavocConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = HavocConstructResetDefaultsPanel },
@@ -1548,69 +1495,46 @@ local function VengeanceConstructBarVisibilityPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
-local function VengeanceConstructThresholdPanel(parent)
+local function VengeanceConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.vengeance
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 12, 2, yCoord, {
+		barTargetLabels = { primary = L["ResourceFury"] },
+		labels = {
+			soulCleave = L["DemonHunterVengeanceThresholdCheckboxSoulCleave"],
+			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNova"],
+			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastation"],
+			spiritBomb = L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"],
+		},
+		tooltips = {
+			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"],
+			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"],
+			soulCleave = L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"],
+			spiritBomb = L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"],
+		},
+	})
+end
+
+local function VengeanceConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.vengeance
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
+	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Havoc_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 2, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.chaosNovaThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxChaosNova"])
-	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.chaosNova.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.chaosNova.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.felDevastationThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_felDevastation", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.felDevastationThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxFelDevastation"])
-	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.felDevastation.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.felDevastation.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.soulCleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_soulCleave", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.soulCleaveThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSoulCleave"])
-	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.soulCleave.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.soulCleave.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.spiritBombThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_spiritBomb", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.spiritBombThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"])
-	f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.spiritBomb.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.spiritBomb.enabled = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -1776,7 +1700,8 @@ local function VengeanceConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = VengeanceConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = VengeanceConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = VengeanceConstructResetDefaultsPanel },
@@ -1997,47 +1922,45 @@ local function DevourerConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 12, 3, yCoord, L["ResourceFury"], "notEmpty", true, L["ResourceSoulFragments"], true)
 end
 
-local function DevourerConstructThresholdPanel(parent)
+local function DevourerConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.demonhunter.devourer
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 12, 3, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceFury"],
+			secondary = L["ResourceCollapsingStar"],
+		},
+		labels = {
+			voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRay"],
+			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStar"],
+		},
+		tooltips = {
+			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"],
+			voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRayTooltip"],
+		},
+	})
+end
+
+local function DevourerConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.demonhunter.devourer
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
+	local yCoord = 5
 
 	controls.buttons.exportButton_DemonHunter_Devourer_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DemonHunter_Devourer_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 12, 3, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.collapsingStarThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Threshold_Option_collapsingStar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.collapsingStarThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerThresholdCheckboxCollapsingStar"])
-	f.tooltip = L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.collapsingStarThreshold.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.collapsingStarThreshold.enabled = self:GetChecked()
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.voidRayThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Devourer_Threshold_Option_voidRay", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.voidRayThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterDevourerThresholdCheckboxVoidRay"])
-	f.tooltip = L["DemonHunterDevourerThresholdCheckboxVoidRayTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.voidRay.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.voidRay.enabled = self:GetChecked()
 	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
@@ -2203,7 +2126,8 @@ local function DevourerConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DevourerConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevourerConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevourerConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevourerConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DevourerConstructResetDefaultsPanel },

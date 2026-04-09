@@ -49,7 +49,41 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public properties TRB.Classes.Settings.ThresholdProperties
 ---@field public icons TRB.Classes.Settings.ThresholdIcons
 ---@field public specProperties table?
----@field public thresholdDictionary { string: table }
+---@field public thresholdDictionary { [string]: TRB.Classes.Settings.ThresholdDictionaryEntry }
+
+---@class TRB.Classes.Settings.ThresholdDictionaryEntry
+---@field public enabled boolean
+---@field public audio TRB.Classes.Settings.ThresholdDictionaryAudio
+---@field public colors TRB.Classes.Settings.ThresholdDictionaryColors
+---@field public icon TRB.Classes.Settings.ThresholdDictionaryIcon
+---@field public line TRB.Classes.Settings.ThresholdDictionaryLine
+
+---@class TRB.Classes.Settings.ThresholdDictionaryAudio
+---@field public enabled boolean
+---@field public sound string
+---@field public soundName string
+
+---@class TRB.Classes.Settings.ThresholdDictionaryColors
+---@field public under TRB.Classes.Settings.ColorModeEntry
+---@field public over TRB.Classes.Settings.ColorModeEntry
+---@field public unusable TRB.Classes.Settings.ColorModeEntry
+---@field public outOfRange TRB.Classes.Settings.ColorOutOfRangeModeEntry
+
+---@class TRB.Classes.Settings.ThresholdDictionaryIcon
+---@field public enabled boolean
+---@field public show boolean
+---@field public width number
+---@field public height number
+---@field public xPos number
+---@field public yPos number
+---@field public relativeTo string?
+---@field public desaturated boolean?
+---@field public border number?
+
+---@class TRB.Classes.Settings.ThresholdDictionaryLine
+---@field public enabled boolean
+---@field public width number
+---@field public overlapBorder boolean?
 
 ---@class TRB.Classes.Settings.ThresholdProperties
 ---@field public width number
@@ -79,6 +113,13 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorGradientEntry : TRB.Classes.Settings.ColorEntry
 ---@field public color2 string
 ---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
+
+---@class TRB.Classes.Settings.ColorModeEntry : TRB.Classes.Settings.ColorEntry
+---@field public mode string -- "shared", "override", or "hidden"
+---@field public enabled boolean? -- Deprecated: backward compat only
+
+---@class TRB.Classes.Settings.ColorOutOfRangeModeEntry : TRB.Classes.Settings.ColorModeEntry
+---@field public show boolean? -- Deprecated: legacy backward-compat; replaced by mode="hidden"
 
 ---@class TRB.Classes.Settings.ColorEnabledEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean

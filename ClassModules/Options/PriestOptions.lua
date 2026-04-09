@@ -1005,7 +1005,8 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				shadowWordMadness3 = {
 					enabled = true,
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = SHADOW_MAX_INSANITY,
@@ -2505,7 +2506,35 @@ local function ShadowConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", false, nil, true, true, customBars)
 end
 
-local function ShadowConstructThresholdPanel(parent)
+local function ShadowConstructThresholdListPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.shadow
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_shadow
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 5, 3, yCoord, {
+		labels = {
+			shadowWordMadness = L["PriestShadowThresholdShadowWordMadness"],
+			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2Times"],
+			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3Times"],
+		},
+		tooltips = {
+			shadowWordMadness = L["PriestShadowThresholdShadowWordMadnessTooltip"],
+			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2TimesTooltip"],
+			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3TimesTooltip"],
+		},
+		barTargetLabels = {
+			primary = L["ResourceInsanity"],
+		},
+	})
+end
+
+local function ShadowConstructThresholdSettingsPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -2517,58 +2546,22 @@ local function ShadowConstructThresholdPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Priest_Shadow_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Priest_Shadow_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 5, 3, false, true, false, false, false, false)
-	end)
-
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
-
 	controls.colors.threshold = {}
 
+	controls.swmThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowSWMThresholdsHeader"], oUi.xCoord, yCoord)
+
 	yCoord = yCoord - 30
-	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness"])
-	f.tooltip = L["PriestShadowThresholdShadowWordMadnessTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shadowWordMadness.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness2", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold2Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness2x"])
-	f.tooltip = L["PriestShadowThresholdShadowWordMadness2xTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shadowWordMadness2.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadness3", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.dpThreshold3Show
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdShadowWordMadness3x"])
-	f.tooltip = L["PriestShadowThresholdShadowWordMadness3xTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.shadowWordMadness3.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadnessOnlyOver", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThresholdOnlyOverShow
-	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowThresholdCheckboxOnlyCurrentNext"])
 	f.tooltip = L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"]
 	f:SetChecked(spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 30
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
@@ -2754,7 +2747,8 @@ local function ShadowConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ShadowConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = ShadowConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ShadowConstructFontAndTextPanel },
 		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = ShadowConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) ShadowConstructBarTextDisplayPanel(scrollChild, cache) end },

@@ -67,7 +67,8 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				elementalBlast = {
 					enabled = true,
 				},
-			}
+			},
+			customThresholds = {},
 		},
 		maxResource = {
 			value = ELEMENTAL_MAX_MAELSTROM,
@@ -137,27 +138,18 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 			},
-				threshold = {
+			threshold = {
 				under = {
 					color = "FFFFFFFF",
-					color2 = "FFFFFFFF",
-					gradientDirection = "disabled"
 				},
 				over = {
 					color = "FF00FF00",
-					color2 = "FF00FF00",
-					gradientDirection = "disabled"
 				},
 				special = {
 					color = "FFFF00FF",
-					color2 = "FFFF00FF",
-					gradientDirection = "disabled",
-					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
-					color2 = "FF440000",
-					gradientDirection = "disabled",
 					enabled = true,
 					show = true
 				}
@@ -851,7 +843,7 @@ local function ElementalConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true)
 end
 
-local function ElementalConstructThresholdPanel(parent)
+local function ElementalConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
@@ -861,41 +853,38 @@ local function ElementalConstructThresholdPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
-	local f = nil
 
-	controls.buttons.exportButton_Priest_Shadow_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Priest_Shadow_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 7, 1, false, true, false, false, false, false)
-	end)
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 7, 1, yCoord, {
+		barTargetLabels = {
+			primary = L["ResourceMaelstrom"],
+		},
+		labels = {
+			earthShock = L["ShamanElementalThresholdCheckboxEarthShock"],
+			elementalBlast = L["ShamanElementalThresholdElementalBlast"],
+			earthquake = L["ShamanElementalThresholdEarthquake"],
+			earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargeted"],
+		},
+		tooltips = {
+			earthShock = L["ShamanElementalThresholdCheckboxEarthShockTooltip"],
+			elementalBlast = L["ShamanElementalThresholdElementalBlastTooltip"],
+			earthquake = L["ShamanElementalThresholdEarthquakeTooltip"],
+			earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargetedTooltip"],
+		},
+	})
+end
 
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+local function ElementalConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.shaman.elemental
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
+	local yCoord = 5
 
 	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-
-	controls.checkBoxes.earthShockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.earthShockThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthShock"])
-	f.tooltip = L["ShamanElementalThresholdEarthShockTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.earthShock.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.earthShock.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.elementalBlast.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.earthquakeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthquake", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.earthquakeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthquake"])
-	f.tooltip = L["ShamanElementalThresholdEarthquakeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.earthquake.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.earthquake.enabled = self:GetChecked()
-		spec.thresholds.thresholdDictionary.earthquakeTargeted.enabled = self:GetChecked()
-	end)
 
 	local custom = {
 		--[[{
@@ -1070,7 +1059,8 @@ local function ElementalConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ElementalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ElementalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ElementalConstructBarVisibilityPanel },
-		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ElementalConstructThresholdSettingsPanel },
+		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdListPanel, true },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ElementalConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, ElementalConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ElementalConstructBarTextDisplayPanel(scrollChild, cache) end },

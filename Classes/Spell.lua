@@ -536,6 +536,10 @@ end
 ---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
 ---@field public targetUnit string # The target that will be used when doing castable and range calculations
 ---@field public rangeCheck boolean # Should this threshold perform range checks?
+---@field public category string? # Category for grouping in the threshold list UI (e.g., "offensive", "defensive", "utility", "execute")
+---@field public barTarget string # Which bar this threshold targets (e.g., "primary", "secondary", "custom:<key>")
+---@field public canHaveAudioCue boolean? # Whether this threshold can have audio cues. Defaults to true. Set to false for ColorCurve thresholds.
+---@field public hasThresholdIcon boolean? # Whether this threshold supports icon display. Defaults to true.
 TRB.Classes.SpellThreshold = setmetatable({}, {__index = TRB.Classes.SpellBase})
 TRB.Classes.SpellThreshold.__index = TRB.Classes.SpellThreshold
 
@@ -554,7 +558,11 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 	
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
-			(key == "isSnowflake"   and type(value) == "boolean") then
+			(key == "isSnowflake"   and type(value) == "boolean") or
+			(key == "canHaveAudioCue" and type(value) == "boolean") or
+			(key == "hasThresholdIcon" and type(value) == "boolean") or
+			(key == "category") or
+			(key == "barTarget") then
 			self[key] = value
 			self.attributes[key] = nil
 		end
@@ -566,6 +574,18 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 
 	if self.rangeCheck == nil then
 		self.rangeCheck = true
+	end
+
+	if self.barTarget == nil then
+		self.barTarget = "primary"
+	end
+
+	if self.canHaveAudioCue == nil then
+		self.canHaveAudioCue = true
+	end
+
+	if self.hasThresholdIcon == nil then
+		self.hasThresholdIcon = true
 	end
 
 	return self
@@ -622,6 +642,10 @@ end
 ---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
 ---@field public targetUnit string # The target that will be used when doing castable and range calculations
 ---@field public rangeCheck boolean # Should this threshold perform range checks?
+---@field public category string? # Category for grouping in the threshold list UI (e.g., "offensive", "defensive", "utility", "execute")
+---@field public barTarget string # Which bar this threshold targets (e.g., "primary", "secondary", "custom:<key>")
+---@field public canHaveAudioCue boolean? # Whether this threshold can have audio cues. Defaults to true. Set to false for ColorCurve thresholds.
+---@field public hasThresholdIcon boolean? # Whether this threshold supports icon display. Defaults to true.
 TRB.Classes.SpellComboPointThreshold = setmetatable({}, {__index = TRB.Classes.SpellComboPoint})
 TRB.Classes.SpellComboPointThreshold.__index = TRB.Classes.SpellComboPointThreshold
 
@@ -641,7 +665,11 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 	
 	for key, value in pairs(spellAttributes) do
 		if  (key == "settingKey") or
-			(key == "isSnowflake"   and type(value) == "boolean") then
+			(key == "isSnowflake"   and type(value) == "boolean") or
+			(key == "canHaveAudioCue" and type(value) == "boolean") or
+			(key == "hasThresholdIcon" and type(value) == "boolean") or
+			(key == "category") or
+			(key == "barTarget") then
 			self[key] = value
 			self.attributes[key] = nil
 		end
@@ -653,6 +681,18 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 
 	if self.rangeCheck == nil then
 		self.rangeCheck = true
+	end
+
+	if self.barTarget == nil then
+		self.barTarget = "primary"
+	end
+
+	if self.canHaveAudioCue == nil then
+		self.canHaveAudioCue = true
+	end
+
+	if self.hasThresholdIcon == nil then
+		self.hasThresholdIcon = true
 	end
 
 	return self
