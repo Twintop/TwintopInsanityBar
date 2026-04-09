@@ -7190,15 +7190,29 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			dictEntry = spec.thresholds.thresholdDictionary[settingKey]
 		end
 
-		-- Ensure sub-tables exist on demand
+		-- Ensure sub-tables exist on demand with concrete defaults from global settings
 		dictEntry.audio = dictEntry.audio or {}
 		dictEntry.colors = dictEntry.colors or {}
 		dictEntry.colors.under = dictEntry.colors.under or {}
 		dictEntry.colors.over = dictEntry.colors.over or {}
 		dictEntry.colors.unusable = dictEntry.colors.unusable or {}
 		dictEntry.colors.outOfRange = dictEntry.colors.outOfRange or {}
-		dictEntry.icon = dictEntry.icon or {}
-		dictEntry.line = dictEntry.line or {}
+		dictEntry.icon = dictEntry.icon or {
+			enabled = false,
+			show = true,
+			desaturated = true,
+			relativeTo = spec.thresholds.icons.relativeTo or "BOTTOM",
+			width = spec.thresholds.icons.width or 32,
+			height = spec.thresholds.icons.height or 32,
+			xPos = spec.thresholds.icons.xPos or 0,
+			yPos = spec.thresholds.icons.yPos or 0,
+			border = spec.thresholds.icons.border or 2,
+		}
+		dictEntry.line = dictEntry.line or {
+			enabled = false,
+			width = spec.thresholds.properties.width or 2,
+			overlapBorder = spec.thresholds.properties.overlapBorder,
+		}
 
 		local isEnabled = dictEntry.enabled or false
 

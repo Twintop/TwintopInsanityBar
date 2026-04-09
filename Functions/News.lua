@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.1.54-release (2026-04-09)
+## General
+
+- [#279](#279) Fix ColorCurve-based thresholds (e.g., Shadow Word: Madness x2) not respecting per-threshold "Hide" visibility overrides. Hidden states now use a fully transparent color baked into the curve.
+- [#735](#735) Fix various default values for individual thresholds not being displayed accurately.
+
+---
+
 # 12.0.1.53-release (2026-04-09)
 ## General
 

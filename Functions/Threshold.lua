@@ -103,7 +103,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 	-- Determine icon visibility: per-threshold override > global setting
 	local showIcon = settings.thresholds.icons.enabled
 	if thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled then
-		showIcon = thresholdOverrides.icon.show
+		showIcon = thresholdOverrides.icon.show ~= false
 	end
 
 	if showIcon then
@@ -113,7 +113,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		end
 
 		-- Determine effective icon size/position: per-threshold override > global
-		local hasOverride = thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled and thresholdOverrides.icon.show
+		local hasOverride = thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled and thresholdOverrides.icon.show ~= false
 		local width, height, xPos, yPos
 		if hasOverride then
 			local iconSettings = thresholdOverrides.icon
@@ -591,12 +591,16 @@ function TRB.Functions.Threshold:ResolveThresholdCurveColors(spell, settings)
 		end
 
 		local underMode = GetMode(dictEntry.colors.under)
-		if underMode == "override" and dictEntry.colors.under and dictEntry.colors.under.color then
+		if underMode == "hidden" then
+			underColor = "00000000"
+		elseif underMode == "override" and dictEntry.colors.under and dictEntry.colors.under.color then
 			underColor = dictEntry.colors.under.color
 		end
 
 		local overMode = GetMode(dictEntry.colors.over)
-		if overMode == "override" and dictEntry.colors.over and dictEntry.colors.over.color then
+		if overMode == "hidden" then
+			overColor = "00000000"
+		elseif overMode == "override" and dictEntry.colors.over and dictEntry.colors.over.color then
 			overColor = dictEntry.colors.over.color
 		end
 	end
@@ -685,6 +689,10 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 	-- If we have an out-of-range color, use that instead of the curve
 	if thresholdColor ~= nil then
 		TRB.Functions.Color:SetThresholdColor(threshold, thresholdColor, true)
+		-- Reset icon alpha in case the curve previously set it to 0 (hidden mode)
+		if threshold.icon and threshold.hasIcon then
+			threshold.icon:SetAlpha(1)
+		end
 		return true
 	end
 
