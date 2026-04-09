@@ -22,6 +22,11 @@ local content = [====[
 - Add per-threshold audio cue options. Select a sound to play when a threshold becomes usable. Thresholds tied to secret resource values (e.g., Execute at max Rage) do not support audio cues.
 - Add a new Threshold Shared Settings tab for configuring default threshold colors, line dimensions, and icon defaults that apply across all thresholds for a specialization.
 
+## Demon Hunter
+### Devourer
+
+- Revert v12.0.1.51 threshold fix. Collapsing Star and Void Ray threshold line visibility is now driven by Void Metamorphosis buff state again, as using the Collapsing Star buff caused the bar to flip modes prematurely when the application count reached zero.
+
 ---
 
 # 12.0.1.52-release (2026-04-06)

@@ -1612,7 +1612,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devourer()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
-		local collapsingStarActive = snapshots[spells.collapsingStar.id].buff.isActive
 		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= snapshotData.attributes.maxResource2
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
@@ -1649,7 +1648,7 @@ local function UpdateResourceBar()
 							showThreshold = false
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually						
 							if spell.id == spells.voidRay.id then
-								if collapsingStarActive then
+								if metaActive then
 									showThreshold = false
 								else
 									resourceAmount = spells.voidRay.resource
@@ -1720,12 +1719,12 @@ local function UpdateResourceBar()
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
-					local voidRayUsable = (not collapsingStarActive) and spells.voidRay:IsUsable()
+					local voidRayUsable = (not metaActive) and spells.voidRay:IsUsable()
 
 					local conditionMap = {
 						voidMetamorphosisReady = metaUsable,
 						collapsingStarReady = collapsingStarUsable,
-						voidMetamorphosis = collapsingStarActive,
+						voidMetamorphosis = metaActive,
 						voidRayReady = voidRayUsable,
 						borderOvercap = affectingCombat,
 					}
@@ -1838,7 +1837,7 @@ local function UpdateResourceBar()
 				local cpColor = specSettings.colors.comboPoints.base
 
 				-- Collapsing Star contextual base color (not an indicator)
-				if collapsingStarActive then
+				if metaActive then
 					cpColor = specSettings.colors.comboPoints.collapsingStar
 				end
 
@@ -1852,8 +1851,8 @@ local function UpdateResourceBar()
 					local sfConditionMap = {
 						voidMetamorphosisReady = metaUsable,
 						collapsingStarReady = collapsingStarUsable,
-						voidMetamorphosis = collapsingStarActive,
-						voidRayReady = (not collapsingStarActive) and spells.voidRay:IsUsable(),
+						voidMetamorphosis = metaActive,
+						voidRayReady = (not metaActive) and spells.voidRay:IsUsable(),
 					}
 
 					for i = #sfNodeOrder, 1, -1 do
@@ -1942,7 +1941,7 @@ local function UpdateResourceBar()
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
 							local frameLevel = frameLevels.thresholdOver
 							
-							if collapsingStarActive and talents:IsTalentActive(spells.collapsingStar) then
+							if metaActive and talents:IsTalentActive(spells.collapsingStar) then
 								showThreshold = true
 								local collapsingStarSnapshot = snapshots[spells.collapsingStar.id]
 								local resourceAmount = spells.collapsingStarThreshold.resource
