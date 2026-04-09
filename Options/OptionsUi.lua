@@ -6606,6 +6606,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 	local detailHasUnusable = false
 	local detailHasOutOfRange = false
 	local detailCanHaveAudio = true
+	local detailHasThresholdIcon = true
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -7044,8 +7045,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 			end
 		end
 
-		-- Icon override section (hidden when threshold disabled)
-		if isEnabled then
+		-- Icon override section (hidden when threshold disabled or has no icon)
+		if isEnabled and detailHasThresholdIcon then
 			iconHeader:Show()
 			iconUseSpecificCheckbox:Show()
 			-- Restore icon sub-controls based on the "Use specific" checkbox
@@ -7177,6 +7178,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		detailHasUnusable = hasUnusable
 		detailHasOutOfRange = hasOutOfRange
 		detailCanHaveAudio = spellObj == nil or spellObj.canHaveAudioCue ~= false
+		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -7456,6 +7458,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		UpdateLineControlsVisibility()
 
 		-- ===== ICON OVERRIDE SECTION =====
+		if detailHasThresholdIcon then
 		local function UpdateIconControlsVisibility()
 			if dictEntry.icon.enabled then
 				iconRelativeToDropdown.label:Show()
@@ -7630,6 +7633,19 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		end)
 
 		UpdateIconControlsVisibility()
+		else
+			iconHeader:Hide()
+			iconUseSpecificCheckbox:Hide()
+			iconRelativeToDropdown.label:Hide()
+			iconRelativeToDropdown:Hide()
+			iconShowCheckbox:Hide()
+			iconDesaturateCheckbox:Hide()
+			controls.sliders.thresholdIconWidth:Hide()
+			controls.sliders.thresholdIconHeight:Hide()
+			controls.sliders.thresholdIconXPos:Hide()
+			controls.sliders.thresholdIconYPos:Hide()
+			controls.sliders.thresholdIconBorderWidth:Hide()
+		end
 
 		-- ===== AUDIO CUE SECTION =====
 		if detailCanHaveAudio then

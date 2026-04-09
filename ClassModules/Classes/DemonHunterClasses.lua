@@ -407,6 +407,7 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		hasCooldown = false,
 		isTalent = true,
 		rangeCheck = false,
+		hasThresholdIcon = false,
 		resource = 30
 	})
 	self.rollingTorment = TRB.Classes.SpellBase:New({

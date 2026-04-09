@@ -1757,7 +1757,7 @@ local function BalanceConstructThresholdSettingsPanel(parent)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 1, false, true, false, false, false, false)
 	end)
 
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdDetailHeader"], oUi.xCoord, yCoord)
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceStarsurgeThresholdsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.ssThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurgeOnlyOver", parent, "ChatConfigCheckButtonTemplate")
@@ -1769,6 +1769,8 @@ local function BalanceConstructThresholdSettingsPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.specProperties.starsurgeThresholdOnlyOverShow = self:GetChecked()
 	end)
+
+	yCoord = yCoord - 30
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {

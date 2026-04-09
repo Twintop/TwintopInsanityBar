@@ -2548,6 +2548,9 @@ local function ShadowConstructThresholdSettingsPanel(parent)
 
 	controls.colors.threshold = {}
 
+	controls.swmThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowSWMThresholdsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
 	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_shadowWordMadnessOnlyOver", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.dpThresholdOnlyOverShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -2558,11 +2561,12 @@ local function ShadowConstructThresholdSettingsPanel(parent)
 		spec.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow = self:GetChecked()
 	end)
 
+	yCoord = yCoord - 30
+
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
 	}
 
-	yCoord = yCoord - 25
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, true, false, true, custom)
 
 	yCoord = yCoord - 40

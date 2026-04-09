@@ -2886,3 +2886,7 @@ L["ThresholdDetailColorModeDynamic"] = "Dynamic"
 L["ThresholdDetailColorModeTooltip"] = "Static: The threshold line is always shown with a single fixed color, ignoring all conditional color rules.\n\nDynamic: The threshold line color changes based on conditions (under/over threshold, unusable, out of range) using the settings below."
 L["ThresholdDetailColorModeStaticColor"] = "Static Color"
 L["ThresholdDetailColorModePrefix"] = "Color Mode"
+
+-- Spec-specific threshold shared settings headers
+L["DruidBalanceStarsurgeThresholdsHeader"] = "Starsurge Thresholds"
+L["PriestShadowSWMThresholdsHeader"] = "Shadow Word: Madness Thresholds"

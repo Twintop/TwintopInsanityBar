@@ -1137,6 +1137,8 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 		end
 	end)
 
+	yCoord = yCoord - 30
+
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
