@@ -1370,7 +1370,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								if snapshots[spells.apotheosis.id].buff.isActive then
 									snapshots[spells.apotheosis.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 								else
-									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.duration, currentTime, true)
 								end
 							end
 
@@ -1614,7 +1614,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						if snapshots[spells.voidform.id].buff.isActive then
 							snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 						else
-							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.duration, currentTime, true)
 						end
 					end
 				end

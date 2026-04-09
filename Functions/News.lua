@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.0.1.55-release (2026-04-10)
+## Priest
+### Holy
+
+- Fix an issue where banked Sustained Potency stacks would not increase the duration of Apotheosis.
+
+### Shadow
+
+- Fix an issue where banked Sustained Potency stacks would not increase the duration of Voidform.
+
+---
+
 # 12.0.1.54-release (2026-04-09)
 ## General
 
