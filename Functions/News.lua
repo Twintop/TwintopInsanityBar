@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.0.1.53-release (2026-04-09)
+## General
+
+- Overhaul the Thresholds options tab for all specializations. Thresholds are now displayed in a sortable, searchable table with columns for icon, name, category, bar target, audio cue, and enabled status.
+- Add a detail panel below the threshold table that appears when a threshold is selected, allowing per-threshold configuration without navigating away.
+- Add per-threshold color override options. Each threshold line can now use a static color or override the default over, under, and unusable colors individually.
+- Add per-threshold icon display override options including icon visibility, position relative to the threshold line, size, and border width.
+- Add per-threshold audio cue options. Select a sound to play when a threshold becomes usable. Thresholds tied to secret resource values (e.g., Execute at max Rage) do not support audio cues.
+- Add a new Threshold Shared Settings tab for configuring default threshold colors, line dimensions, and icon defaults that apply across all thresholds for a specialization.
+
+---
+
 # 12.0.1.52-release (2026-04-06)
 ## Priest
 ### Holy
