@@ -26,7 +26,7 @@ local content = [====[
 ## Demon Hunter
 ### Devourer
 
-- Revert v12.0.1.51 threshold fix. Collapsing Star and Void Ray threshold line visibility is now driven by Void Metamorphosis buff state again, as using the Collapsing Star buff caused the bar to flip modes prematurely when the application count reached zero.
+- Revert threshold fix from 12.0.1.51-release. Collapsing Star and Void Ray threshold line visibility is now driven by Void Metamorphosis buff state again, as using the Collapsing Star buff caused the bar to flip modes prematurely when the application count reached zero.
 
 ---
 
