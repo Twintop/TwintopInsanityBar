@@ -1582,7 +1582,7 @@ local function BalanceConstructIndicatorColorsPanel(parent)
 			{ key = "lunar",       label = L["DruidBalanceCheckboxLunar"],           tooltip = L["DruidBalanceIndicatorLunarTooltip"],       colorLabel = L["DruidBalanceColorPickerEclipseLunar"] },
 		},
 		gradientDefs = {
-			{ key = "borderOvercap", label = L["CheckboxOvercap"], tooltip = L["DruidBalanceIndicatorBorderOvercapTooltip"], colorLabel = L["DruidBalanceIndicatorBorderOvercapColor"] },
+			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"], tooltip = L["DruidBalanceIndicatorBorderOvercapTooltip"], colorLabel = L["DruidBalanceIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
 			{ key = "astralPowerBar", label = L["BarNameAstralPowerBar"] },
@@ -2207,7 +2207,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 		},
 		gradientDefs = {
 			{ key = "maxBite",       label = L["DruidFeralCheckboxMaxBite"],        tooltip = L["DruidFeralIndicatorMaxBiteTooltip"],         colorLabel = L["DruidFeralIndicatorMaxBiteColor"] },
-			{ key = "borderOvercap", label = L["CheckboxOvercap"],                  tooltip = L["DruidFeralIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidFeralIndicatorBorderOvercapColor"] },
+			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"],                  tooltip = L["DruidFeralIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidFeralIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
 			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
@@ -2736,7 +2736,7 @@ local function GuardianConstructIndicatorColorsPanel(parent)
 			{ key = "berserk",       label = L["DruidGuardianCheckboxBerserkActive"],  tooltip = L["DruidGuardianIndicatorBerserkTooltip"],         colorLabel = L["DruidGuardianIndicatorBerserkColor"] },
 		},
 		gradientDefs = {
-			{ key = "borderOvercap", label = L["CheckboxOvercap"],                     tooltip = L["DruidGuardianIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidGuardianIndicatorBorderOvercapColor"] },
+			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"],                     tooltip = L["DruidGuardianIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidGuardianIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
 			{ key = "rageBar",      label = L["BarNameRageBar"] },

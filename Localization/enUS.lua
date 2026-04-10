@@ -2576,3 +2576,4 @@ L["ThresholdDetailColorModePrefix"] = "Color Mode"
 -- Spec-specific threshold shared settings headers
 L["DruidBalanceStarsurgeThresholdsHeader"] = "Starsurge Thresholds"
 L["PriestShadowSWMThresholdsHeader"] = "Shadow Word: Madness Thresholds"
+L["DruidIndicatorOvercap"] = "Overcap (gradient)"

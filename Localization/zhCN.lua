@@ -2375,5 +2375,6 @@ if locale == "zhCN" then
 	
     L["DruidBalanceStarsurgeThresholdsHeader"] = "星涌术阈值"
     L["PriestShadowSWMThresholdsHeader"] = "暗言术：癫阈值"
+    L["DruidIndicatorOvercap"] = "溢出（渐变）"
 
 end
