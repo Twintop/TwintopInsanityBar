@@ -21,6 +21,17 @@ local content = [====[
 
 - Restore some missing localization strings that were incorrectly flagged as unused.
 
+## Priest
+### Holy
+
+- Fix an issue where the remaining duration of Apotheosis doesn't properly pause when exiting combat (with Sustained Potency).
+- Fix an issue where casting Halo while Apotheosis is in a paused (via Sustained Potency) state resets the duration of Apotheosis back to full instead of adding time to the remaining duration.
+
+### Shadow
+
+- Fix an issue where the remaining duration of Voidform doesn't properly pause when exiting combat (with Sustained Potency).
+- Fix an issue where casting Halo while Voidform is in a paused (via Sustained Potency) state resets the duration of Voidform back to full instead of adding time to the remaining duration.
+
 ---
 
 # 12.0.1.55-release (2026-04-10)
