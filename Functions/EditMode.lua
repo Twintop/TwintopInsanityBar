@@ -940,10 +940,21 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 	end
 
 	-- Build the 9-point anchor values list for dropdowns
+	local anchorPointNames = {
+		TOPLEFT     = L["AnchorPointTOPLEFT"],
+		TOP         = L["AnchorPointTOP"],
+		TOPRIGHT    = L["AnchorPointTOPRIGHT"],
+		LEFT        = L["AnchorPointLEFT"],
+		CENTER      = L["AnchorPointCENTER"],
+		RIGHT       = L["AnchorPointRIGHT"],
+		BOTTOMLEFT  = L["AnchorPointBOTTOMLEFT"],
+		BOTTOM      = L["AnchorPointBOTTOM"],
+		BOTTOMRIGHT = L["AnchorPointBOTTOMRIGHT"],
+	}
 	local anchorPointValues = {}
 	for _, point in ipairs(TRB.Data.constants.anchorPoints) do
 		table.insert(anchorPointValues, {
-			text = L["AnchorPoint" .. point],
+			text = anchorPointNames[point],
 			value = point,
 		})
 	end

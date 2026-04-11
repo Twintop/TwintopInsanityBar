@@ -70,11 +70,24 @@ local function DualWriteAnchorToLegacy(barSettings)
 	end
 end
 
+---Lookup table mapping 9-point anchor constants to their localized display names.
+local anchorPointDisplayNames = {
+	TOPLEFT     = L["AnchorPointTOPLEFT"],
+	TOP         = L["AnchorPointTOP"],
+	TOPRIGHT    = L["AnchorPointTOPRIGHT"],
+	LEFT        = L["AnchorPointLEFT"],
+	CENTER      = L["AnchorPointCENTER"],
+	RIGHT       = L["AnchorPointRIGHT"],
+	BOTTOMLEFT  = L["AnchorPointBOTTOMLEFT"],
+	BOTTOM      = L["AnchorPointBOTTOM"],
+	BOTTOMRIGHT = L["AnchorPointBOTTOMRIGHT"],
+}
+
 ---Returns the localized display name for a 9-point anchor constant.
 ---@param point string # One of TOPLEFT, TOP, TOPRIGHT, LEFT, CENTER, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT
 ---@return string
 local function GetAnchorPointDisplayName(point)
-	return L["AnchorPoint" .. (point or "TOP")] or point or "TOP"
+	return anchorPointDisplayNames[point or "TOP"] or point or "TOP"
 end
 
 ---Maps a settings key (used by GenerateAncillaryBarDimensionsOptions) to its bar key
@@ -1162,10 +1175,10 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 end
 
 local gradientDirectionCycle = { "disabled", "horizontal", "vertical" }
-local gradientDirectionAbbrevKeys = {
-	disabled = "GradientDirectionDisabledAbbrev",
-	horizontal = "GradientDirectionHorizontalAbbrev",
-	vertical = "GradientDirectionVerticalAbbrev",
+local gradientDirectionAbbrevLabels = {
+	disabled = L["GradientDirectionDisabledAbbrev"],
+	horizontal = L["GradientDirectionHorizontalAbbrev"],
+	vertical = L["GradientDirectionVerticalAbbrev"],
 }
 
 local function NormalizeGradientColorEntry(colorEntry)
@@ -1177,7 +1190,7 @@ local function NormalizeGradientColorEntry(colorEntry)
 		colorEntry.color2 = colorEntry.color
 	end
 
-	if gradientDirectionAbbrevKeys[colorEntry.gradientDirection] == nil then
+	if gradientDirectionAbbrevLabels[colorEntry.gradientDirection] == nil then
 		colorEntry.gradientDirection = "disabled"
 	end
 end
@@ -1254,7 +1267,7 @@ function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, c
 	btn.Font = btn:CreateFontString(nil)
 	btn.Font:SetPoint("CENTER", 0, 0)
 	btn.Font:SetFontObject(GameFontHighlightSmall)
-	btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+	btn.Font:SetText(gradientDirectionAbbrevLabels[colorEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 	btn:EnableMouse(true)
 
 	btn:SetScript("OnEnter", function(self)
@@ -1291,7 +1304,7 @@ function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, c
 			s2:SetAlpha(1.0)
 			s2:EnableMouse(true)
 		end
-		btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+		btn.Font:SetText(gradientDirectionAbbrevLabels[colorEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 	end
 	UpdateSwatch2State()
 
@@ -4285,7 +4298,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				end
 				if row.colorPicker.DirectionButton and type(ncs) == "table" then
 					local gradDir = ncs.gradientDirection or "disabled"
-					row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+					row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 				end
 				if row.colorPicker.Font then
 					row.colorPicker.Font:SetText(nc.colorLabel or nc.displayName)
@@ -4463,7 +4476,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 									swatch2:SetAlpha(1.0)
 									swatch2:EnableMouse(true)
 								end
-								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
 								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -4532,7 +4545,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 									swatch2:SetAlpha(1.0)
 									swatch2:EnableMouse(true)
 								end
-								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
 								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -8398,7 +8411,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 				end
 			end
 			if row.colorPicker.DirectionButton and indicator.gradientDirection then
-				row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[indicator.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+				row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[indicator.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 			end
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
@@ -8584,7 +8597,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 					else
 						cp.Swatch2:SetAlpha(1.0); cp.Swatch2:EnableMouse(true)
 					end
-					self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+					self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 					TRB.Data.cache.colors.gradient = {}
 					TRB.Data.cache.colors.bar = {}
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

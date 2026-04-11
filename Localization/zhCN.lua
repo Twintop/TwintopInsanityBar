@@ -2377,4 +2377,34 @@ if locale == "zhCN" then
     L["PriestShadowSWMThresholdsHeader"] = "暗言术：癫阈值"
     L["DruidIndicatorOvercap"] = "溢出（渐变）"
 
+    L["AnchorPointTOPLEFT"] = "左上"
+    L["AnchorPointTOP"] = "上中"
+    L["AnchorPointTOPRIGHT"] = "右上"
+    L["AnchorPointLEFT"] = "中左"
+    L["AnchorPointCENTER"] = "中心"
+    L["AnchorPointRIGHT"] = "中右"
+    L["AnchorPointBOTTOMLEFT"] = "左下"
+    L["AnchorPointBOTTOM"] = "下中"
+    L["AnchorPointBOTTOMRIGHT"] = "右下"
+
+    -- Container Anchor Labels (bar text system)
+    L["AngelicFeatherContainer"] = "天使之羽容器"
+    L["ArcaneChargesContainer"] = "奥术充能容器"
+    L["ChiContainer"] = "真气容器"
+    L["ComboPointsContainer"] = "连击点容器"
+    L["EssenceContainer"] = "精华容器"
+    L["HolyPowerContainer"] = "神圣能量容器"
+    L["IciclesContainer"] = "冰枪容器"
+    L["LightweaverContainer"] = "织光者容器"
+    L["MaelstromWeaponContainer"] = "漩涡武器容器"
+    L["RunesContainer"] = "符文容器"
+    L["SoulFragmentsContainer"] = "灵魂碎片容器"
+    L["SoulShardsContainer"] = "灵魂残片容器"
+    L["TipOfTheSpearContainer"] = "利矛之刃容器"
+    L["WhirlwindChargesContainer"] = "旋风斩充能容器"
+
+    -- Gradient Direction Abbreviations
+    L["GradientDirectionHorizontalAbbrev"] = "水"
+    L["GradientDirectionVerticalAbbrev"] = "垂"
+
 end

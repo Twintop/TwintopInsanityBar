@@ -17,6 +17,10 @@ local content = [====[
 
 - Guard against stale resource type caches when switching specializations.
 
+### Localization
+
+- Restore some missing localization strings that were incorrectly flagged as unused.
+
 ---
 
 # 12.0.1.55-release (2026-04-10)
