@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12/.0.1.56-release (2026-04-11)
+## General
+
+- Guard against stale resource type caches when switching specializations.
+
+---
+
 # 12.0.1.55-release (2026-04-10)
 ## General
 ### Localization
