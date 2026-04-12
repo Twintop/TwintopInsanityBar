@@ -17,6 +17,11 @@ local content = [====[
 
 - Merge `midnight` back in to account for features and improvements.
 
+## Hunter
+### Marksmanship
+
+- [#726](#726) Add Explosive Shot as a new threshold line.
+
 ---
 
 # 12.0.5.0-beta02 (2026-04-05)

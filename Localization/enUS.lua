@@ -2608,3 +2608,7 @@ L["WhirlwindChargesContainer"] = "Whirlwind Charges Container"
 -- Gradient Direction Abbreviations
 L["GradientDirectionHorizontalAbbrev"] = "H"
 L["GradientDirectionVerticalAbbrev"] = "V"
+
+-- Hunter Marksmanship Explosive Shot
+L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "Explosive Shot"
+L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
