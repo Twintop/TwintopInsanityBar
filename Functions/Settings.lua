@@ -7008,6 +7008,89 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Backfill Paladin Holy divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.holy then
+		local spec = TwintopInsanityBarSettings.paladin.holy
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.divinePurpose == nil then
+			spec.colors.shared.indicatorColors.divinePurpose = {
+				color = "FF44FF44",
+				color2 = "FF44FF44",
+				gradientDirection = "disabled",
+				enabled = true,
+				targets = {
+					manaBar = { bar = false, border = false, background = false },
+					holyPowerBar = { bar = false, border = true, background = true },
+				},
+			}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "divinePurpose" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "divinePurpose")
+			end
+		end
+	end
+
+	-- Backfill Paladin Protection divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.protection then
+		local spec = TwintopInsanityBarSettings.paladin.protection
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.divinePurpose == nil then
+			spec.colors.shared.indicatorColors.divinePurpose = {
+				color = "FF44FF44",
+				color2 = "FF44FF44",
+				gradientDirection = "disabled",
+				enabled = true,
+				targets = {
+					manaBar = { bar = false, border = false, background = false },
+					holyPowerBar = { bar = false, border = true, background = true },
+				},
+			}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "divinePurpose" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "divinePurpose")
+			end
+		end
+	end
+
+	-- Backfill Paladin Retribution divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.retribution then
+		local spec = TwintopInsanityBarSettings.paladin.retribution
+		if spec.colors then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			if spec.colors.shared.indicatorColors.divinePurpose == nil then
+				spec.colors.shared.indicatorColors.divinePurpose = {
+					color = "FF44FF44",
+					color2 = "FF44FF44",
+					gradientDirection = "disabled",
+					enabled = true,
+					targets = {
+						manaBar = { bar = false, border = false, background = false },
+						holyPowerBar = { bar = false, border = true, background = true },
+					},
+				}
+				local nodeOrder = spec.colors.shared.nodeOrder
+				local found = false
+				for _, v in ipairs(nodeOrder) do
+					if v == "divinePurpose" then found = true break end
+				end
+				if not found then
+					table.insert(nodeOrder, "divinePurpose")
+				end
+			end
+		end
+	end
+
 	-- Migrate Rogue Assassination to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.rogue and TwintopInsanityBarSettings.rogue.assassination then
 		local spec = TwintopInsanityBarSettings.rogue.assassination

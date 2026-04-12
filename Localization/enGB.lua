@@ -305,4 +305,6 @@ if locale == "enGB" then
     L["ThresholdDetailColorsModeOverride"] = "Override Colour"
     L["ThresholdDetailColorModeTooltip"] = "Static: The threshold line is always shown with a single fixed colour, ignoring all conditional colour rules.\n\nDynamic: The threshold line colour changes based on conditions (under/over threshold, unusable, out of range) using the settings below."
     L["ThresholdDetailColorModeStaticColor"] = "Static Colour"
+    -- Paladin Divine Purpose Indicator Colors
+    L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this colour when you have Divine Purpose."
 end

@@ -2608,3 +2608,14 @@ L["WhirlwindChargesContainer"] = "Whirlwind Charges Container"
 -- Gradient Direction Abbreviations
 L["GradientDirectionHorizontalAbbrev"] = "H"
 L["GradientDirectionVerticalAbbrev"] = "V"
+
+-- Paladin Divine Purpose Indicator Colors
+L["PaladinBarTextVariable_divinePurposeActive"] = "Is Divine Purpose currently active? LOGIC VARIABLE ONLY!"
+L["PaladinIndicatorDivinePurpose"] = "Divine Purpose"
+L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this color when you have Divine Purpose."
+L["PaladinIndicatorDivinePurposeColor"] = "Divine Purpose is active"
+
+-- Paladin Divine Purpose Audio
+L["PaladinAudioDivinePurpose"] = "Divine Purpose"
+L["PaladinAudioCheckboxDivinePurpose"] = "Play audio cue when Divine Purpose procs"
+L["PaladinAudioCheckboxDivinePurposeTooltip"] = "Play an audio cue when a Divine Purpose proc occurs. This will only play once per proc."

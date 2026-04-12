@@ -54,12 +54,14 @@ local function FillSpecializationCache()
 	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
 	specCache.paladin_holy.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_holy.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_holy.snapshotData.audio = {
 		innervateCue = false,
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
 		infusionOfLightPlayed = false,
+		divinePurposePlayed = false,
 	}
 
 	specCache.paladin_holy.barTextVariables = {
@@ -89,10 +91,12 @@ local function FillSpecializationCache()
 	specCache.paladin_protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
 
 	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_protection.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_protection.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
+		divinePurposePlayed = false,
 	}
 
 	specCache.paladin_protection.barTextVariables = {
@@ -122,10 +126,12 @@ local function FillSpecializationCache()
 	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_retribution.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_retribution.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
+		divinePurposePlayed = false,
 	}
 
 	specCache.paladin_retribution.barTextVariables = {
@@ -371,6 +377,12 @@ local function RefreshLookupData_Holy()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Boolean state ($divinePurposeActive)
+	if not activeVars or activeVars["$divinePurposeActive"] then
+		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+		lookup["$divinePurposeActive"] = ""
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -442,6 +454,12 @@ local function RefreshLookupData_Protection()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Boolean state ($divinePurposeActive)
+	if not activeVars or activeVars["$divinePurposeActive"] then
+		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+		lookup["$divinePurposeActive"] = ""
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -511,6 +529,12 @@ local function RefreshLookupData_Retribution()
 		lookup["$comboPoints"] = snapshotData.formatted.resource2 or ""
 		lookup["$holyPowerMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	-- Block C: Boolean state ($divinePurposeActive)
+	if not activeVars or activeVars["$divinePurposeActive"] then
+		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+		lookup["$divinePurposeActive"] = ""
 	end
 
 	TRB.Data.lookup = lookup
@@ -644,6 +668,49 @@ local function ProcessHolyPowerAudioCues(specSettings)
 	end
 end
 
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
+			if spellId == spells.divinePurpose.id then
+				if snapshotData.attributes.divinePurposeActive ~= true then
+					local specSettings = TRB.Data.settings.paladin[TRB.Data.character.specName]
+					if specSettings.audio.divinePurpose.enabled and not snapshotData.audio.divinePurposePlayed then
+						PlaySoundFile(specSettings.audio.divinePurpose.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.divinePurposePlayed = true
+					end
+				end
+				snapshotData.attributes.divinePurposeActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
+			if spellId == spells.divinePurpose.id then
+				snapshotData.attributes.divinePurposeActive = false
+				snapshotData.audio.divinePurposePlayed = false
+			end
+		end
+	end
+end
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.paladin
@@ -740,6 +807,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Holy()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
+		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
 		local manaBarColors = {
 			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
@@ -750,7 +818,7 @@ local function UpdateResourceBar()
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive }, {
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
 		})
@@ -808,6 +876,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Protection()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
+		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
 		local manaBarColors = {
 			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
@@ -818,7 +887,7 @@ local function UpdateResourceBar()
 			border = specSettings.colors.comboPoints.border.color,
 			background = specSettings.colors.comboPoints.background.color,
 		}
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive }, {
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
 		})
@@ -864,23 +933,36 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.retribution
 		local specCacheSettings = TRB.Data.specCache.paladin_retribution.settings
 		UpdateSnapshot_Retribution()
+		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
+		local manaBarColors = {
+			bar = specSettings.colors.bar.base,
+			border = specSettings.colors.bar.border.color,
+			background = specSettings.colors.bar.background.color,
+		}
+		local holyPowerColors = {
+			bar = specSettings.colors.comboPoints.base,
+			border = specSettings.colors.comboPoints.border.color,
+			background = specSettings.colors.comboPoints.background.color,
+		}
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive }, {
+			manaBar = manaBarColors,
+			holyPowerBar = holyPowerColors,
+		})
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateHolyPower(specSettings, specCacheSettings)
+				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1196,18 +1278,21 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.paladin.holy then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.HolyPower
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.paladin.protection then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.HolyPower
 		TRB.Data.resource2Factor = 1
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.paladin.retribution then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -1215,6 +1300,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 	else -- This should never happen
 		TRB.Data.specSupported = false
+		TRB.Functions.Class:DisableEvents()
 	end
 
 	Character:EventRegistration()
@@ -1266,6 +1352,9 @@ do
 		["$comboPointsMax"] = true, ["$holyPowerMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$divinePurposeActive"] = function()
+			return TRB.Data.snapshotData.attributes.divinePurposeActive == true
+		end,
 	}
 	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
 end

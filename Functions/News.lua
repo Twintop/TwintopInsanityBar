@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.57-release (2026-04-13)
+## Paladin
+
+- Add new color indicator, audio cue, and bar text variable for when you have a Divine Purpose proc active.
+
+---
+
 # 12.0.1.56-release (2026-04-11)
 ## General
 
