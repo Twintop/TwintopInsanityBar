@@ -534,6 +534,12 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
 		if frame.icon ~= nil and frame.hasIcon == true then
 			frame.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+			-- When the curve resolves to transparent (hidden mode), also hide the icon;
+			-- when visible, ensure the icon alpha is restored.
+			local _, _, _, a = colorResult:GetRGBA()
+			if a ~= nil then
+				frame.icon:SetAlpha(a)
+			end
 		end
 	end
 end

@@ -1213,11 +1213,12 @@ local function UpdateResourceBar()
 							elseif spell.settingKey == "executeMaximum" then
 								if isUsable then
 									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 									local thresholdCurve = Color:BuildThresholdCurve(
 										1,
 										resourceAmount,
-										specCacheSettings.colors.threshold.under.color,
-										specCacheSettings.colors.threshold.over.color
+										curveUnderColor,
+										curveOverColor
 									)
 									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 									frameLevel = frameLevels.thresholdOver
@@ -1227,7 +1228,7 @@ local function UpdateResourceBar()
 									if curveApplied then
 										thresholdColor = nil -- Skip normal color application
 									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
+										thresholdColor = curveUnderColor
 									end
 								else
 									showThreshold = false
@@ -1279,9 +1280,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					-- Per-threshold audio cue (independent of line visibility)
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
+					end
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -1394,11 +1408,12 @@ local function UpdateResourceBar()
 							elseif spell.settingKey == "executeMaximum" then
 								if isUsable then
 									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 									local thresholdCurve = Color:BuildThresholdCurve(
 										1,
 										resourceAmount,
-										specCacheSettings.colors.threshold.under.color,
-										specCacheSettings.colors.threshold.over.color
+										curveUnderColor,
+										curveOverColor
 									)
 									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 									frameLevel = frameLevels.thresholdOver
@@ -1408,7 +1423,7 @@ local function UpdateResourceBar()
 									if curveApplied then
 										thresholdColor = nil -- Skip normal color application
 									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
+										thresholdColor = curveUnderColor
 									end
 								else
 									thresholdColor = specCacheSettings.colors.threshold.under.color
@@ -1458,9 +1473,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					-- Per-threshold audio cue (independent of line visibility)
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
+					end
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -1611,11 +1639,12 @@ local function UpdateResourceBar()
 							elseif spell.settingKey == "executeMaximum" then
 								if isUsable then
 									-- Use ColorCurve to correctly evaluate max cost against secret Rage
+									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 									local thresholdCurve = Color:BuildThresholdCurve(
 										1,
 										resourceAmount,
-										specCacheSettings.colors.threshold.under.color,
-										specCacheSettings.colors.threshold.over.color
+										curveUnderColor,
+										curveOverColor
 									)
 									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
 									frameLevel = frameLevels.thresholdOver
@@ -1625,7 +1654,7 @@ local function UpdateResourceBar()
 									if curveApplied then
 										thresholdColor = nil -- Skip normal color application
 									else
-										thresholdColor = specCacheSettings.colors.threshold.under.color
+										thresholdColor = curveUnderColor
 									end
 								else
 									showThreshold = false
@@ -1657,9 +1686,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					-- Per-threshold audio cue (independent of line visibility)
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
+					end
 				end
 				
 				local barColor = specSettings.colors.bar.base

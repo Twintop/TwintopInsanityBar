@@ -23,6 +23,7 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 		id = 1715,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "hamstring",
+		category = "utility",
 		isTalent = false,
 		baseline = true
 	})
@@ -30,6 +31,7 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 		id = 202168,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "impendingVictory",
+		category = "utility",
 		isTalent = true,
 		hasCooldown = true
 	})
@@ -38,6 +40,7 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
 		castId = 2565,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "shieldBlock",
+		category = "defensive",
 		buffId = 132404,
 		isTalent = false,
 		baseline = true,
@@ -73,6 +76,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
 		settingKey = "executeMinimum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = false,
@@ -84,15 +88,18 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "cost",
 		settingKey = "executeMaximum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = false,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 	self.slam = TRB.Classes.SpellThreshold:New({
 		id = 1464,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "slam",
+		category = "offensive",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = false
@@ -101,6 +108,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 1680,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "whirlwind",
+		category = "offensive",
 		isTalent = false,
 		baseline = true,
 		isSnowflake = true
@@ -113,6 +121,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 202168,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "impendingVictory",
+		category = "utility",
 		isTalent = true,
 		hasCooldown = true
 	})
@@ -120,6 +129,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 6343,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "thunderClap",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = true,
 		rangeCheck = false
@@ -130,6 +140,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 12294,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "mortalStrike",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = true
 	})
@@ -142,6 +153,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		debuffId = 388539,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "rend",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = false,
 		baseDuration = 15,
@@ -151,6 +163,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 845,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "cleave",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = true,
 		isSnowflake = true,
@@ -160,6 +173,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		id = 190456,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "ignorePain",
+		category = "defensive",
 		isTalent = true,
 		hasCooldown = true,
 		duration = 11,
@@ -221,6 +235,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
 		settingKey = "execute",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = true,
@@ -232,6 +247,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
 		settingKey = "executeMinimum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = true,
@@ -243,15 +259,18 @@ function TRB.Classes.Warrior.FurySpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "cost",
 		settingKey = "executeMaximum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = true,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 	self.slam = TRB.Classes.SpellThreshold:New({
 		id = 1464,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "slam",
+		category = "offensive",
 		isTalent = false,
 		baseline = true,
 		hasCooldown = false
@@ -289,6 +308,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 		id = 202168,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "impendingVictory",
+		category = "utility",
 		isTalent = true,
 		hasCooldown = true
 	})
@@ -296,6 +316,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 		id = 6343,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "thunderClap",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = true,
 		isSnowflake = true,
@@ -309,6 +330,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 		id = 184367,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "rampage",
+		category = "offensive",
 		isTalent = true,
 		hasCooldown = false
 	})
@@ -407,6 +429,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
 		settingKey = "executeMinimum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
 		isSnowflake = true
@@ -417,9 +440,11 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "cost",
 		settingKey = "executeMaximum",
+		category = "execute",
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		canHaveAudioCue = false
 	})
 
 	self.shieldBlock.hasCharges = true
@@ -428,6 +453,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		id = 1464,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "slam",
+		category = "offensive",
 		isTalent = false,
 		baseline = true
 	})
@@ -435,6 +461,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		id = 1680,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "whirlwind",
+		category = "offensive",
 		isTalent = false,
 		baseline = true,
 		rangeCheck = false
@@ -472,6 +499,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		castId = 190456,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "ignorePain",
+		category = "defensive",
 		isTalent = true,
 		hasCooldown = true,
 		duration = 12,
@@ -487,6 +515,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		debuffId = 388539,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "rend",
+		category = "offensive",
 		isTalent = true,
 		baseDuration = 15,
 		pandemic = true
@@ -495,6 +524,7 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		id = 6572,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "revenge",
+		category = "offensive",
 		isTalent = true,
 		rangeCheck = false
 	})

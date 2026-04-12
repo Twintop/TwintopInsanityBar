@@ -270,7 +270,8 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				raiseAlly = {
 					enabled = false
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = BLOOD_MAX_RUNIC_POWER,
@@ -492,7 +493,8 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				glacialAdvance = {
 					enabled = false
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = FROST_MAX_RUNIC_POWER,
@@ -692,7 +694,8 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				raiseAlly = {
 					enabled = false
 				}
-			}
+			},
+			customThresholds = {}
 		},
 		maxResource = {
 			value = UNHOLY_MAX_RUNIC_POWER,
@@ -1177,58 +1180,44 @@ local function BloodConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
 end
 
-local function BloodConstructThresholdPanel(parent)
+local function BloodConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.deathknight.blood
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+		},
+		tooltips = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+		},
+	})
+end
+
+local function BloodConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
 
 	controls.buttons.exportButton_DeathKnight_Blood_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Blood_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightBloodFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 1, false, true, false, false, false, false)
-	end)
-
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.deathCoilThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_Threshold_Option_deathCoil", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathCoilThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathCoil"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathCoilTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathCoil.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathCoil.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.deathStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_Threshold_Option_deathStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathStrike"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathStrike.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.raiseAllyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_Threshold_Option_raiseAlly", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.raiseAllyThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxRaiseAlly"])
-	f.tooltip = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.raiseAlly.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.raiseAlly.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
@@ -1407,7 +1396,8 @@ local function BloodConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = BloodConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BloodConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BloodConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = BloodConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BloodConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BloodConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BloodConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BloodConstructResetDefaultsPanel },
@@ -1638,82 +1628,49 @@ local function FrostConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
-local function FrostConstructThresholdPanel(parent)
+local function FrostConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.deathknight.frost
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrike"],
+			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvance"],
+		},
+		tooltips = {
+			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosaTooltip"],
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrikeTooltip"],
+			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvanceTooltip"],
+		},
+	})
+end
+
+local function FrostConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
 
 	controls.buttons.exportButton_DeathKnight_Frost_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Frost_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightFrostFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 2, false, true, false, false, false, false)
 	end)
-
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.breathOfSindragosaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Threshold_Option_breathOfSindragosa", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.breathOfSindragosaThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"])
-	f.tooltip = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosaTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.breathOfSindragosa.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.breathOfSindragosa.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.deathCoilThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Threshold_Option_deathCoil", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathCoilThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathCoil"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathCoilTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathCoil.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathCoil.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.deathStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Threshold_Option_deathStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathStrike"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathStrike.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.frostStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Threshold_Option_frostStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.frostStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightFrostThresholdCheckboxFrostStrike"])
-	f.tooltip = L["DeathKnightFrostThresholdCheckboxFrostStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.frostStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.frostStrike.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.glacialAdvanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_Threshold_Option_glacialAdvance", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.glacialAdvanceThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightFrostThresholdCheckboxGlacialAdvance"])
-	f.tooltip = L["DeathKnightFrostThresholdCheckboxGlacialAdvanceTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.glacialAdvance.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.glacialAdvance.enabled = self:GetChecked()
-	end)
-
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
@@ -1886,7 +1843,8 @@ local function FrostConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = FrostConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FrostConstructResetDefaultsPanel },
@@ -2116,70 +2074,46 @@ local function UnholyConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
-local function UnholyConstructThresholdPanel(parent)
+local function UnholyConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
 	end
 
 	local spec = TRB.Data.settings.deathknight.unholy
-
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
-	local f = nil
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+		},
+		tooltips = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+		},
+	})
+end
+
+local function UnholyConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
 
 	controls.buttons.exportButton_DeathKnight_Unholy_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
 	controls.buttons.exportButton_DeathKnight_Unholy_Thresholds:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DeathKnightUnholyFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 6, 3, false, true, false, false, false, false)
-	end)
-
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
-
-	controls.colors.threshold = {}
-
-	yCoord = yCoord - 30
-
-	controls.checkBoxes.deathCoilThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_Threshold_Option_deathCoil", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathCoilThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathCoil"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathCoilTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathCoil.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathCoil.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.deathStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_Threshold_Option_deathStrike", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathStrikeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxDeathStrike"])
-	f.tooltip = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.deathStrike.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.deathStrike.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.epidemicThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_Threshold_Option_epidemic", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.epidemicThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightUnholyThresholdCheckboxEpidemic"])
-	f.tooltip = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.epidemic.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.epidemic.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.raiseAllyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_Threshold_Option_raiseAlly", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.raiseAllyThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightThresholdCheckboxRaiseAlly"])
-	f.tooltip = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"]
-	f:SetChecked(spec.thresholds.thresholdDictionary.raiseAlly.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.thresholdDictionary.raiseAlly.enabled = self:GetChecked()
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
@@ -2353,7 +2287,8 @@ local function UnholyConstructOptionsPanel(cache)
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = UnholyConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = UnholyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = UnholyConstructBarVisibilityPanel },
-		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = UnholyConstructThresholdPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = UnholyConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = UnholyConstructThresholdListPanel, isManualScrollFrame = true },
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = UnholyConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) UnholyConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = UnholyConstructResetDefaultsPanel },

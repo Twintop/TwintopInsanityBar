@@ -995,19 +995,19 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 80.24)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 14.89)
+	local localeText2 = string.format(percentFormat, 62.82)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 13.60)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.93)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 9.20)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.31)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.27)
 
 	local localeText3 = "Triplehxh, SanTM, unfung"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
@@ -1084,74 +1084,74 @@ function TRB.Options:ConstructOptionsPanel()
 end
 
 --- Ordered list of all classes and their specs for nav registration.
---- Each entry maps to the correct localization keys for class headers and spec labels.
----@type {classKey: string, classLocKey: string, specs: {compositeKey: string, locFullKey: string}[]}[]
+--- Each entry stores the resolved localized string for class headers and spec labels.
+---@type {classKey: string, classLabel: string, specs: {compositeKey: string, specLabel: string}[]}[]
 local ALL_CLASS_SPECS = {
-	{ classKey = "warrior", classLocKey = "Warrior", specs = {
-		{ compositeKey = "warrior_arms", locFullKey = "WarriorArmsFull" },
-		{ compositeKey = "warrior_fury", locFullKey = "WarriorFuryFull" },
-		{ compositeKey = "warrior_protection", locFullKey = "WarriorProtectionFull" },
+	{ classKey = "warrior", classLabel = L["Warrior"], specs = {
+		{ compositeKey = "warrior_arms", specLabel = L["WarriorArmsFull"] },
+		{ compositeKey = "warrior_fury", specLabel = L["WarriorFuryFull"] },
+		{ compositeKey = "warrior_protection", specLabel = L["WarriorProtectionFull"] },
 	}},
-	{ classKey = "paladin", classLocKey = "Paladin", specs = {
-		{ compositeKey = "paladin_holy", locFullKey = "PaladinHolyFull" },
-		{ compositeKey = "paladin_protection", locFullKey = "PaladinProtectionFull" },
-		{ compositeKey = "paladin_retribution", locFullKey = "PaladinRetributionFull" },
+	{ classKey = "paladin", classLabel = L["Paladin"], specs = {
+		{ compositeKey = "paladin_holy", specLabel = L["PaladinHolyFull"] },
+		{ compositeKey = "paladin_protection", specLabel = L["PaladinProtectionFull"] },
+		{ compositeKey = "paladin_retribution", specLabel = L["PaladinRetributionFull"] },
 	}},
-	{ classKey = "hunter", classLocKey = "Hunter", specs = {
-		{ compositeKey = "hunter_beastMastery", locFullKey = "HunterBeastMasteryFull" },
-		{ compositeKey = "hunter_marksmanship", locFullKey = "HunterMarksmanshipFull" },
-		{ compositeKey = "hunter_survival", locFullKey = "HunterSurvivalFull" },
+	{ classKey = "hunter", classLabel = L["Hunter"], specs = {
+		{ compositeKey = "hunter_beastMastery", specLabel = L["HunterBeastMasteryFull"] },
+		{ compositeKey = "hunter_marksmanship", specLabel = L["HunterMarksmanshipFull"] },
+		{ compositeKey = "hunter_survival", specLabel = L["HunterSurvivalFull"] },
 	}},
-	{ classKey = "rogue", classLocKey = "Rogue", specs = {
-		{ compositeKey = "rogue_assassination", locFullKey = "RogueAssassinationFull" },
-		{ compositeKey = "rogue_outlaw", locFullKey = "RogueOutlawFull" },
-		{ compositeKey = "rogue_subtlety", locFullKey = "RogueSubtletyFull" },
+	{ classKey = "rogue", classLabel = L["Rogue"], specs = {
+		{ compositeKey = "rogue_assassination", specLabel = L["RogueAssassinationFull"] },
+		{ compositeKey = "rogue_outlaw", specLabel = L["RogueOutlawFull"] },
+		{ compositeKey = "rogue_subtlety", specLabel = L["RogueSubtletyFull"] },
 	}},
-	{ classKey = "priest", classLocKey = "Priest", specs = {
-		{ compositeKey = "priest_discipline", locFullKey = "PriestDisciplineFull" },
-		{ compositeKey = "priest_holy", locFullKey = "PriestHolyFull" },
-		{ compositeKey = "priest_shadow", locFullKey = "PriestShadowFull" },
+	{ classKey = "priest", classLabel = L["Priest"], specs = {
+		{ compositeKey = "priest_discipline", specLabel = L["PriestDisciplineFull"] },
+		{ compositeKey = "priest_holy", specLabel = L["PriestHolyFull"] },
+		{ compositeKey = "priest_shadow", specLabel = L["PriestShadowFull"] },
 	}},
-	{ classKey = "deathknight", classLocKey = "DeathKnight", specs = {
-		{ compositeKey = "deathknight_blood", locFullKey = "DeathKnightBloodFull" },
-		{ compositeKey = "deathknight_frost", locFullKey = "DeathKnightFrostFull" },
-		{ compositeKey = "deathknight_unholy", locFullKey = "DeathKnightUnholyFull" },
+	{ classKey = "deathknight", classLabel = L["DeathKnight"], specs = {
+		{ compositeKey = "deathknight_blood", specLabel = L["DeathKnightBloodFull"] },
+		{ compositeKey = "deathknight_frost", specLabel = L["DeathKnightFrostFull"] },
+		{ compositeKey = "deathknight_unholy", specLabel = L["DeathKnightUnholyFull"] },
 	}},
-	{ classKey = "shaman", classLocKey = "Shaman", specs = {
-		{ compositeKey = "shaman_elemental", locFullKey = "ShamanElementalFull" },
-		{ compositeKey = "shaman_enhancement", locFullKey = "ShamanEnhancementFull" },
-		{ compositeKey = "shaman_restoration", locFullKey = "ShamanRestorationFull" },
+	{ classKey = "shaman", classLabel = L["Shaman"], specs = {
+		{ compositeKey = "shaman_elemental", specLabel = L["ShamanElementalFull"] },
+		{ compositeKey = "shaman_enhancement", specLabel = L["ShamanEnhancementFull"] },
+		{ compositeKey = "shaman_restoration", specLabel = L["ShamanRestorationFull"] },
 	}},
-	{ classKey = "mage", classLocKey = "Mage", specs = {
-		{ compositeKey = "mage_arcane", locFullKey = "MageArcaneFull" },
-		{ compositeKey = "mage_fire", locFullKey = "MageFireFull" },
-		{ compositeKey = "mage_frost", locFullKey = "MageFrostFull" },
+	{ classKey = "mage", classLabel = L["Mage"], specs = {
+		{ compositeKey = "mage_arcane", specLabel = L["MageArcaneFull"] },
+		{ compositeKey = "mage_fire", specLabel = L["MageFireFull"] },
+		{ compositeKey = "mage_frost", specLabel = L["MageFrostFull"] },
 	}},
-	{ classKey = "warlock", classLocKey = "Warlock", specs = {
-		{ compositeKey = "warlock_affliction", locFullKey = "WarlockAfflictionFull" },
-		{ compositeKey = "warlock_demonology", locFullKey = "WarlockDemonologyFull" },
-		{ compositeKey = "warlock_destruction", locFullKey = "WarlockDestructionFull" },
+	{ classKey = "warlock", classLabel = L["Warlock"], specs = {
+		{ compositeKey = "warlock_affliction", specLabel = L["WarlockAfflictionFull"] },
+		{ compositeKey = "warlock_demonology", specLabel = L["WarlockDemonologyFull"] },
+		{ compositeKey = "warlock_destruction", specLabel = L["WarlockDestructionFull"] },
 	}},
-	{ classKey = "monk", classLocKey = "Monk", specs = {
-		{ compositeKey = "monk_brewmaster", locFullKey = "MonkBrewmasterFull" },
-		{ compositeKey = "monk_mistweaver", locFullKey = "MonkMistweaverFull" },
-		{ compositeKey = "monk_windwalker", locFullKey = "MonkWindwalkerFull" },
+	{ classKey = "monk", classLabel = L["Monk"], specs = {
+		{ compositeKey = "monk_brewmaster", specLabel = L["MonkBrewmasterFull"] },
+		{ compositeKey = "monk_mistweaver", specLabel = L["MonkMistweaverFull"] },
+		{ compositeKey = "monk_windwalker", specLabel = L["MonkWindwalkerFull"] },
 	}},
-	{ classKey = "druid", classLocKey = "Druid", specs = {
-		{ compositeKey = "druid_balance", locFullKey = "DruidBalanceFull" },
-		{ compositeKey = "druid_feral", locFullKey = "DruidFeralFull" },
-		{ compositeKey = "druid_guardian", locFullKey = "DruidGuardianFull" },
-		{ compositeKey = "druid_restoration", locFullKey = "DruidRestorationFull" },
+	{ classKey = "druid", classLabel = L["Druid"], specs = {
+		{ compositeKey = "druid_balance", specLabel = L["DruidBalanceFull"] },
+		{ compositeKey = "druid_feral", specLabel = L["DruidFeralFull"] },
+		{ compositeKey = "druid_guardian", specLabel = L["DruidGuardianFull"] },
+		{ compositeKey = "druid_restoration", specLabel = L["DruidRestorationFull"] },
 	}},
-	{ classKey = "demonhunter", classLocKey = "DemonHunter", specs = {
-		{ compositeKey = "demonhunter_havoc", locFullKey = "DemonHunterHavocFull" },
-		{ compositeKey = "demonhunter_vengeance", locFullKey = "DemonHunterVengeanceFull" },
-		{ compositeKey = "demonhunter_devourer", locFullKey = "DemonHunterDevourerFull" },
+	{ classKey = "demonhunter", classLabel = L["DemonHunter"], specs = {
+		{ compositeKey = "demonhunter_havoc", specLabel = L["DemonHunterHavocFull"] },
+		{ compositeKey = "demonhunter_vengeance", specLabel = L["DemonHunterVengeanceFull"] },
+		{ compositeKey = "demonhunter_devourer", specLabel = L["DemonHunterDevourerFull"] },
 	}},
-	{ classKey = "evoker", classLocKey = "Evoker", specs = {
-		{ compositeKey = "evoker_devastation", locFullKey = "EvokerDevastationFull" },
-		{ compositeKey = "evoker_preservation", locFullKey = "EvokerPreservationFull" },
-		{ compositeKey = "evoker_augmentation", locFullKey = "EvokerAugmentationFull" },
+	{ classKey = "evoker", classLabel = L["Evoker"], specs = {
+		{ compositeKey = "evoker_devastation", specLabel = L["EvokerDevastationFull"] },
+		{ compositeKey = "evoker_preservation", specLabel = L["EvokerPreservationFull"] },
+		{ compositeKey = "evoker_augmentation", specLabel = L["EvokerAugmentationFull"] },
 	}},
 }
 
@@ -1210,11 +1210,11 @@ function TRB.Options:RegisterAllClassSpecNavEntries()
 		sorted[i] = classDef
 	end
 	table.sort(sorted, function(a, b)
-		return L[a.classLocKey] < L[b.classLocKey]
+		return a.classLabel < b.classLabel
 	end)
 
 	for _, classDef in ipairs(sorted) do
-		TRB.Options.OptionsFrame:RegisterClassHeader(classDef.classKey, L[classDef.classLocKey])
+		TRB.Options.OptionsFrame:RegisterClassHeader(classDef.classKey, classDef.classLabel)
 
 		-- Create a builder that lazily constructs all spec panels for this class
 		local classKeyCapture = classDef.classKey
@@ -1223,7 +1223,7 @@ function TRB.Options:RegisterAllClassSpecNavEntries()
 		end
 
 		for _, specDef in ipairs(classDef.specs) do
-			TRB.Options.OptionsFrame:RegisterSpecPanel(classDef.classKey, specDef.compositeKey, L[specDef.locFullKey], nil, builder)
+			TRB.Options.OptionsFrame:RegisterSpecPanel(classDef.classKey, specDef.compositeKey, specDef.specLabel, nil, builder)
 		end
 	end
 end

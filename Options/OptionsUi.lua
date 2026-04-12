@@ -70,11 +70,24 @@ local function DualWriteAnchorToLegacy(barSettings)
 	end
 end
 
+---Lookup table mapping 9-point anchor constants to their localized display names.
+local anchorPointDisplayNames = {
+	TOPLEFT     = L["AnchorPointTOPLEFT"],
+	TOP         = L["AnchorPointTOP"],
+	TOPRIGHT    = L["AnchorPointTOPRIGHT"],
+	LEFT        = L["AnchorPointLEFT"],
+	CENTER      = L["AnchorPointCENTER"],
+	RIGHT       = L["AnchorPointRIGHT"],
+	BOTTOMLEFT  = L["AnchorPointBOTTOMLEFT"],
+	BOTTOM      = L["AnchorPointBOTTOM"],
+	BOTTOMRIGHT = L["AnchorPointBOTTOMRIGHT"],
+}
+
 ---Returns the localized display name for a 9-point anchor constant.
 ---@param point string # One of TOPLEFT, TOP, TOPRIGHT, LEFT, CENTER, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT
 ---@return string
 local function GetAnchorPointDisplayName(point)
-	return L["AnchorPoint" .. (point or "TOP")] or point or "TOP"
+	return anchorPointDisplayNames[point or "TOP"] or point or "TOP"
 end
 
 ---Maps a settings key (used by GenerateAncillaryBarDimensionsOptions) to its bar key
@@ -1162,10 +1175,10 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 end
 
 local gradientDirectionCycle = { "disabled", "horizontal", "vertical" }
-local gradientDirectionAbbrevKeys = {
-	disabled = "GradientDirectionDisabledAbbrev",
-	horizontal = "GradientDirectionHorizontalAbbrev",
-	vertical = "GradientDirectionVerticalAbbrev",
+local gradientDirectionAbbrevLabels = {
+	disabled = L["GradientDirectionDisabledAbbrev"],
+	horizontal = L["GradientDirectionHorizontalAbbrev"],
+	vertical = L["GradientDirectionVerticalAbbrev"],
 }
 
 local function NormalizeGradientColorEntry(colorEntry)
@@ -1177,7 +1190,7 @@ local function NormalizeGradientColorEntry(colorEntry)
 		colorEntry.color2 = colorEntry.color
 	end
 
-	if gradientDirectionAbbrevKeys[colorEntry.gradientDirection] == nil then
+	if gradientDirectionAbbrevLabels[colorEntry.gradientDirection] == nil then
 		colorEntry.gradientDirection = "disabled"
 	end
 end
@@ -1254,7 +1267,7 @@ function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, c
 	btn.Font = btn:CreateFontString(nil)
 	btn.Font:SetPoint("CENTER", 0, 0)
 	btn.Font:SetFontObject(GameFontHighlightSmall)
-	btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+	btn.Font:SetText(gradientDirectionAbbrevLabels[colorEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 	btn:EnableMouse(true)
 
 	btn:SetScript("OnEnter", function(self)
@@ -1291,7 +1304,7 @@ function TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, description, c
 			s2:SetAlpha(1.0)
 			s2:EnableMouse(true)
 		end
-		btn.Font:SetText(L[gradientDirectionAbbrevKeys[colorEntry.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+		btn.Font:SetText(gradientDirectionAbbrevLabels[colorEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 	end
 	UpdateSwatch2State()
 
@@ -1763,6 +1776,13 @@ function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
 		lastTab:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
 		lastTab.bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 	end
+
+	-- Lazy construction: build the tab content on first visit
+	if parent.tabConstructors and parent.tabConstructors[tabId] then
+		parent.tabConstructors[tabId](parent.tabsheets[tabId].constructorFrame)
+		parent.tabConstructors[tabId] = nil
+	end
+
 	parent.tabsheets[tabId]:Show()
 	local activeTab = parent.tabs[tabId]
 	activeTab.Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
@@ -1901,13 +1921,14 @@ TRB.Functions.OptionsUi.TabKeys = {
 function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 	local optionsUiFuncs = TRB.Functions.OptionsUi
 
-	-- Normalize: support both positional { key, label, width, constructor } and named { key=, label=, width=, constructor= }
+	-- Normalize: support both positional { key, label, width, constructor, isManualScrollFrame } and named
 	for i, def in ipairs(tabDefinitions) do
 		if def[1] == nil and def.key ~= nil then
 			def[1] = def.key
 			def[2] = def.label
 			def[3] = def.width
 			def[4] = def.constructor
+			def[5] = def.isManualScrollFrame
 		end
 	end
 
@@ -1980,9 +2001,12 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]
-		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent)
+		local isManual = def[5] or def.isManualScrollFrame
+		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent, nil, nil, isManual)
 		tabsheets[key]:Hide()
 		tabsheets[key]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		---@diagnostic disable-next-line: inject-field
+		tabsheets[key].constructorFrame = (not isManual and tabsheets[key].scrollFrame) and tabsheets[key].scrollFrame.scrollChild or tabsheets[key]
 	end
 
 	-- Show the first tab by default
@@ -2004,13 +2028,22 @@ function TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinition
 ---@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
 
-	-- Call each tab's constructor to populate its content
+	-- Store constructors for lazy tab construction.
+	-- Only the first (visible) tab is built eagerly; the rest are deferred until first shown.
+	---@diagnostic disable-next-line: inject-field
+	parent.tabConstructors = {}
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]
 		local constructor = def[4]
 		if constructor then
-			constructor(tabsheets[key].scrollFrame.scrollChild)
+			parent.tabConstructors[key] = constructor
 		end
+	end
+
+	-- Eagerly construct only the first tab (it's already visible)
+	if firstKey and parent.tabConstructors[firstKey] then
+		parent.tabConstructors[firstKey](tabsheets[firstKey].constructorFrame)
+		parent.tabConstructors[firstKey] = nil
 	end
 
 	return yCoord
@@ -4265,7 +4298,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 				end
 				if row.colorPicker.DirectionButton and type(ncs) == "table" then
 					local gradDir = ncs.gradientDirection or "disabled"
-					row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+					row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 				end
 				if row.colorPicker.Font then
 					row.colorPicker.Font:SetText(nc.colorLabel or nc.displayName)
@@ -4443,7 +4476,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 									swatch2:SetAlpha(1.0)
 									swatch2:EnableMouse(true)
 								end
-								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
 								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -4512,7 +4545,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 									swatch2:SetAlpha(1.0)
 									swatch2:EnableMouse(true)
 								end
-								self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
 								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -6424,6 +6457,1320 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	return yCoord
 end
 
+---Generates a threshold list panel with a scrolling table showing all thresholds and a detail panel below for enabling/disabling them.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing threshold configuration
+---@param classId integer The class ID
+---@param specId integer The spec ID
+---@param yCoord number The current Y coordinate for layout positioning
+---@param thresholdConfig table Configuration for threshold list display
+---@return number yCoord The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, classId, specId, yCoord, thresholdConfig)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+
+	-- Category display names
+	local categoryLabels = {
+		offensive = L["ThresholdCategoryOffensive"],
+		defensive = L["ThresholdCategoryDefensive"],
+		utility = L["ThresholdCategoryUtility"],
+		execute = L["ThresholdCategoryExecute"],
+		custom = L["ThresholdCategoryCustom"],
+		-- Spec specific categories (e.g., Druid shapeshift forms)
+		metamorphosis = L["ThresholdCategoryMetamorphosis"],
+	}
+
+	-- Bar target display names (caller provides friendly resource names)
+	local barTargetLabels = thresholdConfig.barTargetLabels or {
+		primary = L["ThresholdBarTargetPrimary"],
+		secondary = L["ThresholdBarTargetSecondary"],
+	}
+
+	-- Build the threshold entry list from the spec's cached spell data (not the runtime threshold cache,
+	-- which only holds spells for the currently active spec and filters by talents).
+	local thresholdEntries = {}
+	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local specCacheEntry = compositeKey and TRB.Data.specCache[compositeKey] or nil
+	local specSpells = specCacheEntry and specCacheEntry.spellsData and specCacheEntry.spellsData.spells or nil
+	local configLabels = thresholdConfig.labels
+	if specSpells ~= nil then
+		for _, v in pairs(specSpells) do
+			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() then
+				local spell = v --[[@as TRB.Classes.SpellThreshold]]
+				local settingKey = spell.settingKey
+				if settingKey ~= nil and spec.thresholds.thresholdDictionary[settingKey] ~= nil then
+					-- Check for linked thresholds (e.g., cleave/whirlwind in Arms)
+					local linkedKeys = nil
+					if thresholdConfig.linkedThresholds and thresholdConfig.linkedThresholds[settingKey] then
+						linkedKeys = thresholdConfig.linkedThresholds[settingKey]
+					end
+
+					-- Use config label if provided, otherwise fall back to spell name
+					local displayName = (configLabels and configLabels[settingKey]) or spell.name or settingKey
+
+					table.insert(thresholdEntries, {
+						settingKey = settingKey,
+						name = displayName,
+						icon = spell.icon or "",
+						category = spell.category or "offensive",
+						barTarget = spell.barTarget or "primary",
+						tooltip = thresholdConfig.tooltips and thresholdConfig.tooltips[settingKey] or nil,
+						linkedKeys = linkedKeys,
+					})
+				end
+			end
+		end
+	end
+
+	-- Also add custom thresholds if configured
+	if spec.thresholds.customThresholds then
+		for key, custom in pairs(spec.thresholds.customThresholds) do
+			table.insert(thresholdEntries, {
+				settingKey = key,
+				name = custom.name or key,
+				icon = "",
+				category = "custom",
+				barTarget = custom.barTarget or "primary",
+				tooltip = custom.tooltip or nil,
+				linkedKeys = nil,
+			})
+		end
+	end
+
+	-- Table columns
+	local columns = {
+		{
+			["name"] = "Key",
+			["width"] = 1,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = "",
+			["width"] = 22,
+			["align"] = "CENTER",
+			["defaultsort"] = 1,
+			["comparesort"] = function(st, rowa, rowb, sortbycol)
+				-- Sort by name (column 3) value, using the icon column's sort direction
+				local cella = st:GetCell(rowa, 3)
+				local cellb = st:GetCell(rowb, 3)
+				local a1 = type(cella) == "table" and cella.value or cella
+				local b1 = type(cellb) == "table" and cellb.value or cellb
+				if a1 == b1 then return false end
+				local column = st.cols[sortbycol]
+				local direction = column.sort or column.defaultsort or 2
+				if direction == 1 then return a1 < b1 else return a1 > b1 end
+			end,
+		},
+		{
+			["name"] = L["ThresholdTableHeaderName"],
+			["width"] = 100,
+			["align"] = "LEFT",
+			["sort"] = 1,
+			["defaultsort"] = 1,
+		},
+		{
+			["name"] = L["ThresholdTableHeaderCategory"],
+			["width"] = 115,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["ThresholdTableHeaderBar"],
+			["width"] = 115,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = "",
+			["width"] = 16,
+			["align"] = "CENTER",
+			["sortnext"] = 3,
+		},
+		{
+			["name"] = L["ThresholdTableHeaderEnabled"],
+			["width"] = 60,
+			["align"] = "LEFT",
+		},
+	}
+
+	yCoord = yCoord - 3
+	controls.thresholdOverridesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdOverridesHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 20
+
+	-- Create table container
+	controls.thresholdListContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	local tlc = controls.thresholdListContainer
+	tlc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord - 10)
+	tlc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	local tableRowCount = math.max(#thresholdEntries, 4)
+	tableRowCount = math.min(tableRowCount, 6)
+	tlc:SetHeight(35 + (tableRowCount * 15))
+
+	local thresholdTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, tlc, false, false)
+
+	-- Dynamically resize the Name column to fill available width
+	tlc:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = columns[1].width + columns[2].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width
+		local newNameWidth = math.max(100, w - fixedWidth - 30)
+		columns[3].width = newNameWidth
+		thresholdTable:SetDisplayCols(columns)
+	end)
+
+	local selectedSettingKey = nil
+	local detailHasUnusable = false
+	local detailHasOutOfRange = false
+	local detailCanHaveAudio = true
+	local detailHasThresholdIcon = true
+
+	---Refreshes the scrolling table data from the current threshold settings.
+	local function SetTableValues()
+		local dataTable = {}
+		for _, entry in ipairs(thresholdEntries) do
+			local dictEntry = spec.thresholds.thresholdDictionary[entry.settingKey]
+			local isEnabled = dictEntry and dictEntry.enabled or false
+
+			-- For linked thresholds, check if any linked key is enabled
+			if entry.linkedKeys then
+				for _, lk in ipairs(entry.linkedKeys) do
+					local lkEntry = spec.thresholds.thresholdDictionary[lk]
+					if lkEntry and lkEntry.enabled then
+						isEnabled = true
+						break
+					end
+				end
+			end
+
+			local categoryLabel = categoryLabels[entry.category]
+			local barTargetLabel = barTargetLabels[entry.barTarget]
+
+			local enabledText = isEnabled and "|cFF00FF00Yes|r" or "|cFFFF0000No|r"
+
+			local hasAudio = dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= ""
+			local audioIcon = hasAudio and "|TInterface\\Common\\VoiceChat-Speaker:12|t" or ""
+
+			local rowData = {
+				cols = {
+					{ value = entry.settingKey },
+					{ value = entry.icon },
+					{ value = entry.name },
+					{ value = categoryLabel },
+					{ value = barTargetLabel },
+					{ value = audioIcon },
+					{ value = enabledText },
+				}
+			}
+			table.insert(dataTable, rowData)
+		end
+		thresholdTable:SetData(dataTable)
+		thresholdTable:EnableSelection(true)
+	end
+
+	-- Detail header below the table (outside the scrolling detail panel)
+	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "", oUi.xCoord, 0)
+	detailHeader:SetPoint("TOPLEFT", tlc, "BOTTOMLEFT", oUi.xCoord, 0)
+	detailHeader:Hide()
+
+	-- Detail panel below the header, filling remaining space
+	controls.thresholdListDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_ThresholdListDetail", parent, "BackdropTemplate")
+	local detailFrame = controls.thresholdListDetail
+	detailFrame:SetPoint("TOPLEFT", detailHeader, "BOTTOMLEFT", -oUi.xCoord, 0)
+	detailFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -oUi.xCoord, 3)
+	detailFrame:Hide()
+
+	-- Scroll frame inside the detail panel for overflow
+	local detailScrollFrame = CreateFrame("ScrollFrame", "TwintopResourceBar_" .. namePrefix .. "_ThresholdDetailScroll", detailFrame, "UIPanelScrollFrameTemplate")
+	detailScrollFrame:SetPoint("TOPLEFT", detailFrame, "TOPLEFT", 0, 0)
+	detailScrollFrame:SetPoint("BOTTOMRIGHT", detailFrame, "BOTTOMRIGHT", -20, 0)
+	local detailScrollChild = CreateFrame("Frame", nil, detailScrollFrame)
+	detailScrollChild:SetSize(detailScrollFrame:GetWidth() or 600, 1)
+	detailScrollFrame:SetScrollChild(detailScrollChild)
+
+	-- Hook to keep scroll child width synchronized with the scroll frame
+	detailScrollFrame:HookScript("OnSizeChanged", function(self, w, h)
+		detailScrollChild:SetWidth(w)
+	end)
+
+	local detailYCoord = 0
+
+	-- Detail panel contents: enabled checkbox
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.thresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdEnabled", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local enabledCheckbox = controls.checkBoxes.thresholdEnabled
+	enabledCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	getglobal(enabledCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailEnabledCheckbox"])
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, false, false)
+	enabledCheckbox:Hide()
+
+	-- ===== COLOR OVERRIDE SECTION =====
+	detailYCoord = detailYCoord - 30
+	local colorsHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailColorsHeader"], oUi.xCoord, detailYCoord)
+	colorsHeader.font:SetFontObject(GameFontNormalLarge)
+	colorsHeader.font:SetTextColor(1, 1, 1)
+	detailYCoord = detailYCoord - 30
+
+	-- Helper to get effective mode from a color entry (backward compat with old boolean enabled field)
+	local function GetColorMode(colorEntry)
+		if colorEntry == nil then return "shared" end
+		if colorEntry.mode ~= nil then return colorEntry.mode end
+		if colorEntry.enabled then return "override" end
+		return "shared"
+	end
+
+	-- Helper for OOR backward compat: old data used show/enabled booleans instead of mode
+	local function GetOorColorMode(colorEntry)
+		if colorEntry == nil then return "shared" end
+		if colorEntry.mode ~= nil then return colorEntry.mode end
+		-- Legacy: show=false means hidden, show=true+enabled=true means override, else shared
+		if colorEntry.show == false then return "hidden" end
+		if colorEntry.enabled then return "override" end
+		return "shared"
+	end
+
+	controls.dropDown = controls.dropDown or {}
+
+	-- Color Mode: Static / Dynamic dropdown
+	controls.dropDown.thresholdColorMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorModeDropdown = controls.dropDown.thresholdColorMode
+	colorModeDropdown:SetWidth(oUi.sliderWidth)
+	colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorModeDropdown:Hide()
+
+	controls.colors.thresholdStatic = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorModeStaticColor"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdStatic:Hide()
+
+	-- Under color: mode dropdown + color picker
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdColorUnderMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnderMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorUnderModeDropdown = controls.dropDown.thresholdColorUnderMode
+	colorUnderModeDropdown:SetWidth(oUi.sliderWidth)
+	colorUnderModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorUnderModeDropdown:Hide()
+
+	controls.colors.thresholdUnder = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnder"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdUnder:Hide()
+
+	-- Over color: mode dropdown + color picker
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdColorOverMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOverMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorOverModeDropdown = controls.dropDown.thresholdColorOverMode
+	colorOverModeDropdown:SetWidth(oUi.sliderWidth)
+	colorOverModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorOverModeDropdown:Hide()
+
+	controls.colors.thresholdOver = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOver"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdOver:Hide()
+
+	-- Unusable color: mode dropdown + color picker
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdColorUnusableMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorUnusableMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorUnusableModeDropdown = controls.dropDown.thresholdColorUnusableMode
+	colorUnusableModeDropdown:SetWidth(oUi.sliderWidth)
+	colorUnusableModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorUnusableModeDropdown:Hide()
+
+	controls.colors.thresholdUnusable = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnusable"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdUnusable:Hide()
+
+	-- Out of Range: mode dropdown + override color picker
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdColorOorMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdColorOorMode", detailScrollChild, "WowStyle1DropdownTemplate")
+	local colorOorModeDropdown = controls.dropDown.thresholdColorOorMode
+	colorOorModeDropdown:SetWidth(oUi.sliderWidth)
+	colorOorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	colorOorModeDropdown:Hide()
+
+	controls.colors.thresholdOutOfRange = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOutOfRange"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdOutOfRange:Hide()
+
+	-- ===== LINE OVERRIDE SECTION =====
+	detailYCoord = detailYCoord - 40
+	local lineHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
+	lineHeader.font:SetFontObject(GameFontNormalLarge)
+	lineHeader.font:SetTextColor(1, 1, 1)
+	detailYCoord = detailYCoord - 30
+
+	controls.checkBoxes.thresholdLineUseSpecific = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdLineUseSpecific", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local lineUseSpecificCheckbox = controls.checkBoxes.thresholdLineUseSpecific
+	lineUseSpecificCheckbox:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, detailYCoord)
+	getglobal(lineUseSpecificCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailLineUseSpecific"])
+	lineUseSpecificCheckbox.tooltip = L["ThresholdDetailLineUseSpecificTooltip"]
+	lineUseSpecificCheckbox:Hide()
+
+	detailYCoord = detailYCoord - 40
+	controls.sliders = controls.sliders or {}
+	controls.sliders.thresholdLineWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailLineWidth"], 1, 10, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdLineWidth:Hide()
+
+	controls.checkBoxes.thresholdLineOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdLineOverlapBorder", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local lineOverlapBorderCheckbox = controls.checkBoxes.thresholdLineOverlapBorder
+	lineOverlapBorderCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	getglobal(lineOverlapBorderCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailLineOverlapBorder"])
+	lineOverlapBorderCheckbox.tooltip = L["ThresholdDetailLineOverlapBorderTooltip"]
+	lineOverlapBorderCheckbox:Hide()
+
+	-- ===== ICON OVERRIDE SECTION =====
+	detailYCoord = detailYCoord - 50
+	local iconHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconHeader"], oUi.xCoord, detailYCoord)
+	iconHeader.font:SetFontObject(GameFontNormalLarge)
+	iconHeader.font:SetTextColor(1, 1, 1)
+	detailYCoord = detailYCoord - 30
+
+	controls.dropDown = controls.dropDown or {}
+	controls.checkBoxes.thresholdIconUseSpecific = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdIconUseSpecific", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local iconUseSpecificCheckbox = controls.checkBoxes.thresholdIconUseSpecific
+	iconUseSpecificCheckbox:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, detailYCoord)
+	getglobal(iconUseSpecificCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailIconUseSpecific"])
+	iconUseSpecificCheckbox.tooltip = L["ThresholdDetailIconUseSpecificTooltip"]
+	iconUseSpecificCheckbox:Hide()
+
+	detailYCoord = detailYCoord - 20
+	controls.dropDown.thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdIconRelativeTo", detailScrollChild, "WowStyle1DropdownTemplate")
+	local iconRelativeToDropdown = controls.dropDown.thresholdIconRelativeTo
+	iconRelativeToDropdown:SetWidth(oUi.sliderWidth)
+	iconRelativeToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconRelativePosition"], oUi.xCoord, detailYCoord)
+	iconRelativeToDropdown.label.font:SetFontObject(GameFontNormal)
+	iconRelativeToDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 30)
+	iconRelativeToDropdown:Hide()
+
+	controls.checkBoxes.thresholdIconShow = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdIconShow", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local iconShowCheckbox = controls.checkBoxes.thresholdIconShow
+	iconShowCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, detailYCoord - 30)
+	getglobal(iconShowCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailIconShowCheckbox"])
+	iconShowCheckbox.tooltip = L["ThresholdDetailIconShowCheckboxTooltip"]
+	iconShowCheckbox:Hide()
+
+	controls.checkBoxes.thresholdIconDesaturated = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdIconDesaturated", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local iconDesaturateCheckbox = controls.checkBoxes.thresholdIconDesaturated
+	iconDesaturateCheckbox:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding * 2, detailYCoord - 50)
+	getglobal(iconDesaturateCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailIconDesaturate"])
+	iconDesaturateCheckbox.tooltip = L["ThresholdDetailIconDesaturateTooltip"]
+	iconDesaturateCheckbox:Hide()
+
+	detailYCoord = detailYCoord - 100
+	controls.sliders.thresholdIconWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconWidth"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconWidth:Hide()
+
+	controls.sliders.thresholdIconHeight = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconHeight"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.thresholdIconHeight:Hide()
+
+	detailYCoord = detailYCoord - 60
+	controls.sliders.thresholdIconXPos = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconXPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconXPos:Hide()
+
+	controls.sliders.thresholdIconYPos = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconYPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.thresholdIconYPos:Hide()
+
+	detailYCoord = detailYCoord - 60
+	controls.sliders.thresholdIconBorderWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconBorderWidth"], 0, 12, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconBorderWidth:Hide()
+
+	-- ===== AUDIO CUE SECTION =====
+	detailYCoord = detailYCoord - 50
+	local audioHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailAudioHeader"], oUi.xCoord, detailYCoord)
+	audioHeader.font:SetFontObject(GameFontNormalLarge)
+	audioHeader.font:SetTextColor(1, 1, 1)
+	detailYCoord = detailYCoord - 30
+
+	controls.checkBoxes.thresholdAudioEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdAudioEnabled", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local audioCheckbox = controls.checkBoxes.thresholdAudioEnabled
+	audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	getglobal(audioCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailAudioCheckbox"])
+	audioCheckbox.tooltip = L["ThresholdDetailAudioCheckboxTooltip"]
+	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, false, true)
+	audioCheckbox:Hide()
+
+	controls.dropDown.thresholdAudioSound = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdAudioSound", detailScrollChild, "WowStyle1DropdownTemplate")
+	local audioDropdown = controls.dropDown.thresholdAudioSound
+	audioDropdown:SetWidth(oUi.sliderWidth)
+	audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, detailYCoord - 20)
+	audioDropdown:Hide()
+
+	---Dynamically repositions all detail panel controls based on which sections
+	---are currently visible, eliminating empty gaps from hidden controls.
+	local function RepositionDetailControls()
+		local y = 0
+		local isEnabled = enabledCheckbox:GetChecked()
+
+		-- Enabled checkbox
+		enabledCheckbox:ClearAllPoints()
+		enabledCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+		y = y - 30
+
+		-- Color override section (hidden when threshold disabled)
+		local isStaticMode = false
+		if isEnabled then
+			colorsHeader:Show()
+			colorModeDropdown:Show()
+			-- Determine if we're in static or dynamic mode
+			if selectedSettingKey then
+				local dictEntry = spec.thresholds.thresholdDictionary[selectedSettingKey]
+				if dictEntry and dictEntry.colors and dictEntry.colors.colorMode == "static" then
+					isStaticMode = true
+				end
+			end
+			if isStaticMode then
+				controls.colors.thresholdStatic:Show()
+				colorUnderModeDropdown:Hide()
+				controls.colors.thresholdUnder:Hide()
+				colorOverModeDropdown:Hide()
+				controls.colors.thresholdOver:Hide()
+				colorUnusableModeDropdown:Hide()
+				controls.colors.thresholdUnusable:Hide()
+				colorOorModeDropdown:Hide()
+				controls.colors.thresholdOutOfRange:Hide()
+			else
+				controls.colors.thresholdStatic:Hide()
+				colorUnderModeDropdown:Show()
+				colorOverModeDropdown:Show()
+				-- Restore color swatch visibility based on each color entry's current mode
+				local dictEntry = selectedSettingKey and spec.thresholds.thresholdDictionary[selectedSettingKey]
+				if dictEntry and dictEntry.colors then
+					if GetColorMode(dictEntry.colors.under) == "override" then
+						controls.colors.thresholdUnder:Show()
+					else
+						controls.colors.thresholdUnder:Hide()
+					end
+					if GetColorMode(dictEntry.colors.over) == "override" then
+						controls.colors.thresholdOver:Show()
+					else
+						controls.colors.thresholdOver:Hide()
+					end
+				else
+					controls.colors.thresholdUnder:Hide()
+					controls.colors.thresholdOver:Hide()
+				end
+				-- Restore unusable/OOR dropdown+swatch visibility based on spell capabilities
+				if detailHasUnusable then
+					colorUnusableModeDropdown:Show()
+					if dictEntry and dictEntry.colors and GetColorMode(dictEntry.colors.unusable) == "override" then
+						controls.colors.thresholdUnusable:Show()
+					else
+						controls.colors.thresholdUnusable:Hide()
+					end
+				end
+				if detailHasOutOfRange then
+					colorOorModeDropdown:Show()
+					if dictEntry and dictEntry.colors and GetOorColorMode(dictEntry.colors.outOfRange) == "override" then
+						controls.colors.thresholdOutOfRange:Show()
+					else
+						controls.colors.thresholdOutOfRange:Hide()
+					end
+				end
+			end
+		else
+			colorsHeader:Hide()
+			colorModeDropdown:Hide()
+			controls.colors.thresholdStatic:Hide()
+			colorUnderModeDropdown:Hide()
+			controls.colors.thresholdUnder:Hide()
+			colorOverModeDropdown:Hide()
+			controls.colors.thresholdOver:Hide()
+			colorUnusableModeDropdown:Hide()
+			controls.colors.thresholdUnusable:Hide()
+			colorOorModeDropdown:Hide()
+			controls.colors.thresholdOutOfRange:Hide()
+		end
+
+		if colorsHeader:IsShown() then
+			colorsHeader:ClearAllPoints()
+			colorsHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			-- Color Mode row (Static / Dynamic)
+			colorModeDropdown:ClearAllPoints()
+			colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+			if isStaticMode then
+				controls.colors.thresholdStatic:ClearAllPoints()
+				controls.colors.thresholdStatic:SetPoint("TOPLEFT", oUi.xCoord2, y)
+			end
+			y = y - 30
+
+			if not isStaticMode then
+				-- Under row
+				colorUnderModeDropdown:ClearAllPoints()
+				colorUnderModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+				controls.colors.thresholdUnder:ClearAllPoints()
+				controls.colors.thresholdUnder:SetPoint("TOPLEFT", oUi.xCoord2, y)
+				y = y - 30
+
+				-- Over row
+				colorOverModeDropdown:ClearAllPoints()
+				colorOverModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+				controls.colors.thresholdOver:ClearAllPoints()
+				controls.colors.thresholdOver:SetPoint("TOPLEFT", oUi.xCoord2, y)
+				y = y - 30
+
+				-- Unusable row (only for spells with cooldown)
+				if colorUnusableModeDropdown:IsShown() then
+					colorUnusableModeDropdown:ClearAllPoints()
+					colorUnusableModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+					controls.colors.thresholdUnusable:ClearAllPoints()
+					controls.colors.thresholdUnusable:SetPoint("TOPLEFT", oUi.xCoord2, y)
+					y = y - 30
+				end
+
+				-- Out of Range row (only for spells with range check)
+				if colorOorModeDropdown:IsShown() then
+					colorOorModeDropdown:ClearAllPoints()
+					colorOorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+					controls.colors.thresholdOutOfRange:ClearAllPoints()
+					controls.colors.thresholdOutOfRange:SetPoint("TOPLEFT", oUi.xCoord2, y)
+					y = y - 30
+				end
+			end
+		end
+
+		-- Line override section (hidden when threshold disabled)
+		if isEnabled then
+			lineHeader:Show()
+			lineUseSpecificCheckbox:Show()
+			-- Restore line sub-controls based on the "Use specific" checkbox
+			if lineUseSpecificCheckbox:GetChecked() then
+				controls.sliders.thresholdLineWidth:Show()
+				lineOverlapBorderCheckbox:Show()
+			else
+				controls.sliders.thresholdLineWidth:Hide()
+				lineOverlapBorderCheckbox:Hide()
+			end
+		else
+			lineHeader:Hide()
+			lineUseSpecificCheckbox:Hide()
+			controls.sliders.thresholdLineWidth:Hide()
+			lineOverlapBorderCheckbox:Hide()
+		end
+
+		if lineHeader:IsShown() then
+			lineHeader:ClearAllPoints()
+			lineHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			lineUseSpecificCheckbox:ClearAllPoints()
+			lineUseSpecificCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			if controls.sliders.thresholdLineWidth:IsShown() then
+				controls.sliders.thresholdLineWidth:ClearAllPoints()
+				controls.sliders.thresholdLineWidth:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
+				y = y - 50
+
+				lineOverlapBorderCheckbox:ClearAllPoints()
+				lineOverlapBorderCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+				y = y - 30
+			end
+		end
+
+		-- Icon override section (hidden when threshold disabled or has no icon)
+		if isEnabled and detailHasThresholdIcon then
+			iconHeader:Show()
+			iconUseSpecificCheckbox:Show()
+			-- Restore icon sub-controls based on the "Use specific" checkbox
+			if iconUseSpecificCheckbox:GetChecked() then
+				iconRelativeToDropdown.label:Show()
+				iconRelativeToDropdown:Show()
+				iconShowCheckbox:Show()
+				iconDesaturateCheckbox:Show()
+				controls.sliders.thresholdIconWidth:Show()
+				controls.sliders.thresholdIconHeight:Show()
+				controls.sliders.thresholdIconXPos:Show()
+				controls.sliders.thresholdIconYPos:Show()
+				controls.sliders.thresholdIconBorderWidth:Show()
+			else
+				iconRelativeToDropdown.label:Hide()
+				iconRelativeToDropdown:Hide()
+				iconShowCheckbox:Hide()
+				iconDesaturateCheckbox:Hide()
+				controls.sliders.thresholdIconWidth:Hide()
+				controls.sliders.thresholdIconHeight:Hide()
+				controls.sliders.thresholdIconXPos:Hide()
+				controls.sliders.thresholdIconYPos:Hide()
+				controls.sliders.thresholdIconBorderWidth:Hide()
+			end
+		else
+			iconHeader:Hide()
+			iconUseSpecificCheckbox:Hide()
+			iconRelativeToDropdown.label:Hide()
+			iconRelativeToDropdown:Hide()
+			iconShowCheckbox:Hide()
+			iconDesaturateCheckbox:Hide()
+			controls.sliders.thresholdIconWidth:Hide()
+			controls.sliders.thresholdIconHeight:Hide()
+			controls.sliders.thresholdIconXPos:Hide()
+			controls.sliders.thresholdIconYPos:Hide()
+			controls.sliders.thresholdIconBorderWidth:Hide()
+		end
+
+		if iconHeader:IsShown() then
+			iconHeader:ClearAllPoints()
+			iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			iconUseSpecificCheckbox:ClearAllPoints()
+			iconUseSpecificCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			if iconRelativeToDropdown:IsShown() then
+				iconRelativeToDropdown.label:ClearAllPoints()
+				iconRelativeToDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+				iconRelativeToDropdown:ClearAllPoints()
+				iconRelativeToDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
+
+				iconShowCheckbox:ClearAllPoints()
+				iconShowCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 30)
+
+				iconDesaturateCheckbox:ClearAllPoints()
+				iconDesaturateCheckbox:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding * 2, y - 50)
+				y = y - 100
+
+				controls.sliders.thresholdIconWidth:ClearAllPoints()
+				controls.sliders.thresholdIconWidth:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
+				controls.sliders.thresholdIconHeight:ClearAllPoints()
+				controls.sliders.thresholdIconHeight:SetPoint("TOPLEFT", oUi.xCoord2 + 18, y)
+				y = y - 60
+
+				controls.sliders.thresholdIconXPos:ClearAllPoints()
+				controls.sliders.thresholdIconXPos:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
+				controls.sliders.thresholdIconYPos:ClearAllPoints()
+				controls.sliders.thresholdIconYPos:SetPoint("TOPLEFT", oUi.xCoord2 + 18, y)
+				y = y - 60
+
+				controls.sliders.thresholdIconBorderWidth:ClearAllPoints()
+				controls.sliders.thresholdIconBorderWidth:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
+				y = y - 50
+			end
+		end
+
+		-- Audio section (only visible when threshold supports audio cues)
+		if detailCanHaveAudio then
+			audioHeader:ClearAllPoints()
+			audioHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 30
+
+			audioCheckbox:ClearAllPoints()
+			audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+			audioDropdown:ClearAllPoints()
+			audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, y - 20)
+			y = y - 60
+		else
+			audioHeader:Hide()
+			audioCheckbox:Hide()
+			audioDropdown:Hide()
+		end
+
+		detailScrollChild:SetHeight(math.abs(y) + 20)
+	end
+
+	---Populates the detail panel for the selected threshold.
+	---@param settingKey string The settingKey of the threshold to show details for
+	local function FillDetailPanel(settingKey)
+		selectedSettingKey = settingKey
+		local entry = nil
+		for _, e in ipairs(thresholdEntries) do
+			if e.settingKey == settingKey then
+				entry = e
+				break
+			end
+		end
+		if entry == nil then
+			detailHeader:Hide()
+			detailFrame:Hide()
+			return
+		end
+
+		-- Look up the spell object for capability detection
+		local spellObj = nil
+		if specSpells ~= nil then
+			for _, v in pairs(specSpells) do
+				if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v.settingKey == settingKey then
+					spellObj = v --[[@as TRB.Classes.SpellThreshold]]
+					break
+				end
+			end
+		end
+
+		local hasUnusable = spellObj ~= nil and spellObj.hasCooldown == true
+		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
+		detailHasUnusable = hasUnusable
+		detailHasOutOfRange = hasOutOfRange
+		detailCanHaveAudio = spellObj == nil or spellObj.canHaveAudioCue ~= false
+		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
+
+		-- Update header
+		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
+
+		-- Get the dictionary entry
+		local dictEntry = spec.thresholds.thresholdDictionary[settingKey]
+		if dictEntry == nil then
+			spec.thresholds.thresholdDictionary[settingKey] = { enabled = false }
+			dictEntry = spec.thresholds.thresholdDictionary[settingKey]
+		end
+
+		-- Ensure sub-tables exist on demand with concrete defaults from global settings
+		dictEntry.audio = dictEntry.audio or {}
+		dictEntry.colors = dictEntry.colors or {}
+		dictEntry.colors.under = dictEntry.colors.under or {}
+		dictEntry.colors.over = dictEntry.colors.over or {}
+		dictEntry.colors.unusable = dictEntry.colors.unusable or {}
+		dictEntry.colors.outOfRange = dictEntry.colors.outOfRange or {}
+		dictEntry.icon = dictEntry.icon or {
+			enabled = false,
+			show = true,
+			desaturated = true,
+			relativeTo = spec.thresholds.icons.relativeTo or "BOTTOM",
+			width = spec.thresholds.icons.width or 32,
+			height = spec.thresholds.icons.height or 32,
+			xPos = spec.thresholds.icons.xPos or 0,
+			yPos = spec.thresholds.icons.yPos or 0,
+			border = spec.thresholds.icons.border or 2,
+		}
+		dictEntry.line = dictEntry.line or {
+			enabled = false,
+			width = spec.thresholds.properties.width or 2,
+			overlapBorder = spec.thresholds.properties.overlapBorder,
+		}
+
+		local isEnabled = dictEntry.enabled or false
+
+		-- For linked thresholds, check if any linked key is enabled
+		if entry.linkedKeys then
+			for _, lk in ipairs(entry.linkedKeys) do
+				local lkEntry = spec.thresholds.thresholdDictionary[lk]
+				if lkEntry and lkEntry.enabled then
+					isEnabled = true
+					break
+				end
+			end
+		end
+
+		-- ===== ENABLED CHECKBOX =====
+		enabledCheckbox:SetChecked(isEnabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, isEnabled, false)
+		enabledCheckbox:SetScript("OnClick", function(self, ...)
+			local checked = self:GetChecked()
+			dictEntry.enabled = checked
+			if entry.linkedKeys then
+				for _, lk in ipairs(entry.linkedKeys) do
+					if spec.thresholds.thresholdDictionary[lk] then
+						spec.thresholds.thresholdDictionary[lk].enabled = checked
+					end
+				end
+			end
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, checked, false)
+			RepositionDetailControls()
+			SetTableValues()
+			for i, e in ipairs(thresholdEntries) do
+				if e.settingKey == settingKey then
+					thresholdTable:SetSelection(i)
+					break
+				end
+			end
+		end)
+		if entry.tooltip then
+			enabledCheckbox.tooltip = entry.tooltip
+		end
+		enabledCheckbox:Show()
+
+		-- ===== COLOR OVERRIDE SECTION =====
+		-- Helper to set up a color mode dropdown for a given color type
+		local function SetupColorModeDropdown(dropdown, colorPicker, colorEntry, fallbackColor, modeLabels, prefix, getModeFn)
+			local resolveMode = getModeFn or GetColorMode
+			local mode = resolveMode(colorEntry)
+			local color = colorEntry.color or fallbackColor
+
+			-- Hook SetText to always prepend the prefix to the displayed selection
+			if not dropdown._originalSetText then
+				dropdown._originalSetText = dropdown.SetText
+				dropdown.SetText = function(self, text)
+					dropdown._originalSetText(self, prefix .. ": " .. (text or ""))
+				end
+			end
+
+			dropdown:SetDefaultText(prefix .. ": " .. (modeLabels[mode] or modeLabels["shared"]))
+
+			-- Show/hide color picker based on mode
+			if mode == "override" then
+				colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(color, true))
+				colorPicker:Show()
+			else
+				colorPicker:Hide()
+			end
+
+			-- Set up dropdown menu
+			local function IsSelected(value)
+				return value == resolveMode(colorEntry)
+			end
+
+			local function SetSelected(newValue)
+				colorEntry.mode = newValue
+				colorEntry.enabled = nil -- Remove old field
+				colorEntry.show = nil -- Remove old OOR field
+				if newValue == "override" then
+					colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(colorEntry.color or fallbackColor, true))
+					colorPicker:Show()
+				else
+					colorPicker:Hide()
+				end
+				RepositionDetailControls()
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+
+			dropdown:SetupMenu(function(dd, rootDescription)
+				for _, key in ipairs({"shared", "override", "hidden"}) do
+					rootDescription:CreateRadio(modeLabels[key], IsSelected, SetSelected, key)
+				end
+			end)
+			dropdown:Show()
+		end
+
+		-- Helper to wire up color picker OnMouseDown
+		local function WireColorPicker(colorPicker, colorEntry, fallbackColor)
+			colorPicker:SetScript("OnMouseDown", function(self, button, ...)
+				if button == "LeftButton" then
+					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorEntry.color or fallbackColor, true)
+					TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+						local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+						local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+						colorEntry.color = newColor
+						colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
+					end)
+				end
+			end)
+		end
+
+		-- ===== COLOR MODE (Static / Dynamic) =====
+		dictEntry.colors.staticColor = dictEntry.colors.staticColor or {}
+		local colorMode = dictEntry.colors.colorMode or "dynamic"
+		local colorModeLabels = {
+			static = L["ThresholdDetailColorModeStatic"],
+			dynamic = L["ThresholdDetailColorModeDynamic"],
+		}
+
+		local colorModePrefix = L["ThresholdDetailColorModePrefix"]
+		colorModeDropdown:SetDefaultText(colorModePrefix .. ": " .. (colorModeLabels[colorMode] or colorModeLabels["dynamic"]))
+		if not colorModeDropdown._originalSetText then
+			colorModeDropdown._originalSetText = colorModeDropdown.SetText
+			colorModeDropdown.SetText = function(self, text)
+				colorModeDropdown._originalSetText(self, colorModePrefix .. ": " .. (text or ""))
+			end
+		end
+		colorModeDropdown:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(L["ThresholdDetailColorModeTooltip"], 1, 1, 1, 1, true)
+			GameTooltip:Show()
+		end)
+		colorModeDropdown:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+		-- Static color swatch
+		local staticColor = dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF"
+		if colorMode == "static" then
+			controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(staticColor, true))
+			controls.colors.thresholdStatic:Show()
+		else
+			controls.colors.thresholdStatic:Hide()
+		end
+
+		local function ColorModeIsSelected(value)
+			return value == (dictEntry.colors.colorMode or "dynamic")
+		end
+
+		local function ColorModeSetSelected(newValue)
+			dictEntry.colors.colorMode = newValue
+			if newValue == "static" then
+				local sc = dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF"
+				controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(sc, true))
+			end
+			RepositionDetailControls()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end
+
+		colorModeDropdown:SetupMenu(function(dd, rootDescription)
+			for _, key in ipairs({"static", "dynamic"}) do
+				rootDescription:CreateRadio(colorModeLabels[key], ColorModeIsSelected, ColorModeSetSelected, key)
+			end
+		end)
+		colorModeDropdown:Show()
+
+		-- Wire static color picker
+		controls.colors.thresholdStatic:SetScript("OnMouseDown", function(self, button, ...)
+			if button == "LeftButton" then
+				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF", true)
+				TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+					local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
+					dictEntry.colors.staticColor.color = newColor
+					controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
+					TRB.Functions.Threshold:RedrawThresholdLines()
+				end)
+			end
+		end)
+
+		-- Under color: dropdown + swatch
+		SetupColorModeDropdown(colorUnderModeDropdown, controls.colors.thresholdUnder, dictEntry.colors.under,
+			spec.colors.threshold.under.color or "FFFFFFFF",
+			{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenUnder"] },
+			L["ThresholdDetailColorsPrefixUnder"])
+		WireColorPicker(controls.colors.thresholdUnder, dictEntry.colors.under, spec.colors.threshold.under.color or "FFFFFFFF")
+
+		-- Over color: dropdown + swatch
+		SetupColorModeDropdown(colorOverModeDropdown, controls.colors.thresholdOver, dictEntry.colors.over,
+			spec.colors.threshold.over.color or "FFFFFFFF",
+			{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenOver"] },
+			L["ThresholdDetailColorsPrefixOver"])
+		WireColorPicker(controls.colors.thresholdOver, dictEntry.colors.over, spec.colors.threshold.over.color or "FFFFFFFF")
+
+		-- Unusable color: dropdown + swatch (only for spells with cooldown)
+		if hasUnusable then
+			SetupColorModeDropdown(colorUnusableModeDropdown, controls.colors.thresholdUnusable, dictEntry.colors.unusable,
+				spec.colors.threshold.unusable.color or "FFFFFFFF",
+				{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenUnusable"] },
+				L["ThresholdDetailColorsPrefixUnusable"])
+			WireColorPicker(controls.colors.thresholdUnusable, dictEntry.colors.unusable, spec.colors.threshold.unusable.color or "FFFFFFFF")
+		else
+			colorUnusableModeDropdown:Hide()
+			controls.colors.thresholdUnusable:Hide()
+		end
+
+		-- Out of Range: dropdown + swatch (only for spells with range check)
+		if hasOutOfRange then
+			SetupColorModeDropdown(colorOorModeDropdown, controls.colors.thresholdOutOfRange, dictEntry.colors.outOfRange,
+				spec.colors.threshold.outOfRange.color or "FFFFFFFF",
+				{ shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenOutOfRange"] },
+				L["ThresholdDetailColorsPrefixOutOfRange"],
+				GetOorColorMode)
+			WireColorPicker(controls.colors.thresholdOutOfRange, dictEntry.colors.outOfRange, spec.colors.threshold.outOfRange.color or "FFFFFFFF")
+		else
+			colorOorModeDropdown:Hide()
+			controls.colors.thresholdOutOfRange:Hide()
+		end
+
+		-- ===== LINE OVERRIDE SECTION =====
+		local function UpdateLineControlsVisibility()
+			if dictEntry.line.enabled then
+				controls.sliders.thresholdLineWidth:Show()
+				lineOverlapBorderCheckbox:Show()
+			else
+				controls.sliders.thresholdLineWidth:Hide()
+				lineOverlapBorderCheckbox:Hide()
+			end
+		end
+
+		lineUseSpecificCheckbox:SetChecked(dictEntry.line.enabled or false)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled or false, true)
+		lineUseSpecificCheckbox:SetScript("OnClick", function(self, ...)
+			dictEntry.line.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled, true)
+			UpdateLineControlsVisibility()
+			RepositionDetailControls()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+		lineUseSpecificCheckbox:Show()
+
+		local lineWidth = dictEntry.line.width or spec.thresholds.properties.width or 2
+		controls.sliders.thresholdLineWidth:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdLineWidth:SetValue(lineWidth)
+		controls.sliders.thresholdLineWidth.EditBox:SetText(lineWidth)
+		controls.sliders.thresholdLineWidth:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.line.width = value
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		-- Overlap Border checkbox
+		lineOverlapBorderCheckbox:SetChecked(dictEntry.line.overlapBorder or false)
+		lineOverlapBorderCheckbox:SetScript("OnClick", function(self, ...)
+			dictEntry.line.overlapBorder = self:GetChecked()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		UpdateLineControlsVisibility()
+
+		-- ===== ICON OVERRIDE SECTION =====
+		if detailHasThresholdIcon then
+		local function UpdateIconControlsVisibility()
+			if dictEntry.icon.enabled then
+				iconRelativeToDropdown.label:Show()
+				iconRelativeToDropdown:Show()
+				iconShowCheckbox:Show()
+				iconDesaturateCheckbox:Show()
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+				controls.sliders.thresholdIconWidth:Show()
+				controls.sliders.thresholdIconHeight:Show()
+				controls.sliders.thresholdIconXPos:Show()
+				controls.sliders.thresholdIconYPos:Show()
+				controls.sliders.thresholdIconBorderWidth:Show()
+			else
+				iconRelativeToDropdown.label:Hide()
+				iconRelativeToDropdown:Hide()
+				iconShowCheckbox:Hide()
+				iconDesaturateCheckbox:Hide()
+				controls.sliders.thresholdIconWidth:Hide()
+				controls.sliders.thresholdIconHeight:Hide()
+				controls.sliders.thresholdIconXPos:Hide()
+				controls.sliders.thresholdIconYPos:Hide()
+				controls.sliders.thresholdIconBorderWidth:Hide()
+			end
+		end
+
+		iconUseSpecificCheckbox:SetChecked(dictEntry.icon.enabled or false)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled or false, true)
+		iconUseSpecificCheckbox:SetScript("OnClick", function(self, ...)
+			dictEntry.icon.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled, true)
+			UpdateIconControlsVisibility()
+			RepositionDetailControls()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+		iconUseSpecificCheckbox:Show()
+
+		-- Relative Position dropdown
+		local iconRelativeTo = dictEntry.icon.relativeTo or spec.thresholds.icons.relativeTo or "BOTTOM"
+
+		local relativeToMap = {}
+		relativeToMap[L["PositionAbove"]] = "TOP"
+		relativeToMap[L["PositionMiddle"]] = "CENTER"
+		relativeToMap[L["PositionBelow"]] = "BOTTOM"
+		local relativeToList = { L["PositionAbove"], L["PositionMiddle"], L["PositionBelow"] }
+
+		-- Set initial display text
+		for k, v in pairs(relativeToMap) do
+			if v == iconRelativeTo then
+				iconRelativeToDropdown:SetDefaultText(k)
+				break
+			end
+		end
+
+		local function IconRelativeToIsSelected(value)
+			return value == (dictEntry.icon.relativeTo or spec.thresholds.icons.relativeTo or "BOTTOM")
+		end
+
+		local function IconRelativeToSetSelected(newValue)
+			dictEntry.icon.relativeTo = newValue
+			for k, v in pairs(relativeToMap) do
+				if v == newValue then
+					iconRelativeToDropdown:SetDefaultText(k)
+					break
+				end
+			end
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end
+
+		local function IconRelativeToGenerator(dropdown, rootDescription)
+			for _, label in pairs(relativeToList) do
+				rootDescription:CreateRadio(label, IconRelativeToIsSelected, IconRelativeToSetSelected, relativeToMap[label])
+			end
+		end
+		iconRelativeToDropdown:SetupMenu(IconRelativeToGenerator)
+
+		-- Show Icons checkbox
+		iconShowCheckbox:SetChecked(dictEntry.icon.show ~= false)
+		iconShowCheckbox:SetScript("OnClick", function(self, ...)
+			dictEntry.icon.show = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show)
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		-- Desaturate Icons checkbox
+		iconDesaturateCheckbox:SetChecked(dictEntry.icon.desaturated ~= false)
+		iconDesaturateCheckbox:SetScript("OnClick", function(self, ...)
+			dictEntry.icon.desaturated = self:GetChecked()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+
+		-- Icon size/position sliders
+		local iconWidth = dictEntry.icon.width or spec.thresholds.icons.width or 32
+		local iconHeight = dictEntry.icon.height or spec.thresholds.icons.height or 32
+		local iconXPos = dictEntry.icon.xPos or spec.thresholds.icons.xPos or 0
+		local iconYPos = dictEntry.icon.yPos or spec.thresholds.icons.yPos or 0
+		local iconBorder = dictEntry.icon.border or spec.thresholds.icons.border or 2
+
+		controls.sliders.thresholdIconWidth:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdIconWidth:SetValue(iconWidth)
+		controls.sliders.thresholdIconWidth.EditBox:SetText(iconWidth)
+		controls.sliders.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.icon.width = value
+
+			local currentHeight = dictEntry.icon.height or spec.thresholds.icons.height or 32
+			local maxBorderSize = math.min(math.floor(currentHeight / TRB.Data.constants.borderWidthFactor), math.floor(value / TRB.Data.constants.borderWidthFactor))
+			local borderSize = math.min(maxBorderSize, dictEntry.icon.border or spec.thresholds.icons.border or 2)
+			controls.sliders.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.sliders.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.sliders.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		controls.sliders.thresholdIconHeight:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdIconHeight:SetValue(iconHeight)
+		controls.sliders.thresholdIconHeight.EditBox:SetText(iconHeight)
+		controls.sliders.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.icon.height = value
+
+			local currentWidth = dictEntry.icon.width or spec.thresholds.icons.width or 32
+			local maxBorderSize = math.min(math.floor(value / TRB.Data.constants.borderWidthFactor), math.floor(currentWidth / TRB.Data.constants.borderWidthFactor))
+			local borderSize = math.min(maxBorderSize, dictEntry.icon.border or spec.thresholds.icons.border or 2)
+			controls.sliders.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
+			controls.sliders.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
+			controls.sliders.thresholdIconBorderWidth.EditBox:SetText(borderSize)
+
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		controls.sliders.thresholdIconXPos:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdIconXPos:SetValue(iconXPos)
+		controls.sliders.thresholdIconXPos.EditBox:SetText(iconXPos)
+		controls.sliders.thresholdIconXPos:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.icon.xPos = value
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		controls.sliders.thresholdIconYPos:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdIconYPos:SetValue(iconYPos)
+		controls.sliders.thresholdIconYPos.EditBox:SetText(iconYPos)
+		controls.sliders.thresholdIconYPos:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.icon.yPos = value
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		-- Icon Border Width slider
+		local maxIconBorder = math.min(math.floor(iconHeight / TRB.Data.constants.borderWidthFactor), math.floor(iconWidth / TRB.Data.constants.borderWidthFactor))
+		controls.sliders.thresholdIconBorderWidth:SetMinMaxValues(0, maxIconBorder)
+		controls.sliders.thresholdIconBorderWidth.MaxLabel:SetText(maxIconBorder)
+		controls.sliders.thresholdIconBorderWidth:SetScript("OnValueChanged", nil)
+		controls.sliders.thresholdIconBorderWidth:SetValue(iconBorder)
+		controls.sliders.thresholdIconBorderWidth.EditBox:SetText(iconBorder)
+		controls.sliders.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			dictEntry.icon.border = value
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+		UpdateIconControlsVisibility()
+		else
+			iconHeader:Hide()
+			iconUseSpecificCheckbox:Hide()
+			iconRelativeToDropdown.label:Hide()
+			iconRelativeToDropdown:Hide()
+			iconShowCheckbox:Hide()
+			iconDesaturateCheckbox:Hide()
+			controls.sliders.thresholdIconWidth:Hide()
+			controls.sliders.thresholdIconHeight:Hide()
+			controls.sliders.thresholdIconXPos:Hide()
+			controls.sliders.thresholdIconYPos:Hide()
+			controls.sliders.thresholdIconBorderWidth:Hide()
+		end
+
+		-- ===== AUDIO CUE SECTION =====
+		if detailCanHaveAudio then
+			audioHeader:Show()
+			audioCheckbox:SetChecked(dictEntry.audio.enabled or false)
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
+			audioCheckbox:SetScript("OnClick", function(self, ...)
+				dictEntry.audio.enabled = self:GetChecked()
+				TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
+				if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
+					PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				end
+				SetTableValues()
+			end)
+			audioCheckbox:Show()
+
+			-- Audio sound dropdown
+			FillSoundCache()
+			local soundDisplayName = dictEntry.audio.soundName
+			audioDropdown:SetDefaultText((soundDisplayName and soundDisplayName ~= "") and soundDisplayName or L["ThresholdDetailAudioNone"])
+			local function AudioIsSelected(value)
+				return value == dictEntry.audio.sound
+			end
+			local function AudioSetSelected(newValue)
+				dictEntry.audio.sound = newValue
+				dictEntry.audio.soundName = soundPairsByName[newValue]
+				local newSoundName = dictEntry.audio.soundName
+				audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
+				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				SetTableValues()
+			end
+			audioDropdown:SetupMenu(function(dropdown, rootDescription)
+				for k, v in pairs(soundPairs) do
+					rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v[2])
+				end
+				rootDescription:SetScrollMode(400)
+			end)
+			audioDropdown:Show()
+		else
+			audioHeader:Hide()
+			audioCheckbox:Hide()
+			audioDropdown:Hide()
+		end
+
+		RepositionDetailControls()
+		detailHeader:Show()
+		detailFrame:Show()
+	end
+
+	-- Table click handler
+	thresholdTable:RegisterEvents({
+		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" then
+				if realrow ~= nil and realrow > 0 then
+					local settingKey = data[realrow].cols[1].value
+					local currentSelection = scrollingTable:GetSelection()
+					FillDetailPanel(settingKey)
+					C_Timer.After(0, function()
+						C_Timer.After(0.05, function()
+							local newSelection = scrollingTable:GetSelection()
+							if newSelection == nil then
+								thresholdTable:SetSelection(currentSelection)
+							end
+						end)
+					end)
+				end
+			end
+		end
+	})
+
+	-- Row tooltip handler
+	thresholdTable:RegisterEvents({
+		OnEnter = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow ~= nil and realrow > 0 then
+				local settingKey = data[realrow].cols[1].value
+				for _, entry in ipairs(thresholdEntries) do
+					if entry.settingKey == settingKey and entry.tooltip then
+						GameTooltip:SetOwner(rowFrame, "ANCHOR_CURSOR")
+						GameTooltip:SetText(entry.tooltip, 1, 1, 1, 1, true)
+						GameTooltip:Show()
+						break
+					end
+				end
+			end
+		end,
+		OnLeave = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			GameTooltip:Hide()
+		end
+	})
+
+	-- Initial table population
+	SetTableValues()
+
+	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10
+
+	return yCoord
+end
+
 ---Generates the threshold line icon position and dimension options panel, including icon size, border, position, threshold line width, and overlap settings.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements
@@ -6703,7 +8050,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	if classId == nill then
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsForDpsAndTanksHeader"], oUi.xCoord, yCoord)
 	else
-		yCoord = yCoord - 30
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
 	end
 	
@@ -7065,7 +8411,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 				end
 			end
 			if row.colorPicker.DirectionButton and indicator.gradientDirection then
-				row.colorPicker.DirectionButton.Font:SetText(L[gradientDirectionAbbrevKeys[indicator.gradientDirection]] or L["GradientDirectionDisabledAbbrev"])
+				row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[indicator.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 			end
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
@@ -7175,33 +8521,48 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 				if not currentIndicator then return end
 				currentIndicator.targets = currentIndicator.targets or {}
 
+				local firstBar = true
 				for barIdx, barDef in ipairs(barTargetDefs) do
-					if barIdx > 1 then
-						rootDescription:CreateDivider()
-					end
-					rootDescription:CreateTitle(barDef.label)
-					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
-
 					local excluded = excludedElements[barDef.key]
-					for _, elemDef in ipairs(elementDefs) do
-						if not (excluded and excluded[elemDef.key]) then
-							rootDescription:CreateCheckbox(
-								elemDef.label,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-								end,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									if not ci then return end
-									ci.targets = ci.targets or {}
-									ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-									ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-									SyncEnabled(ck, capturedRowIdx)
-								end
-							)
+					local allExcluded = true
+					if excluded then
+						for _, elemDef in ipairs(elementDefs) do
+							if not excluded[elemDef.key] then
+								allExcluded = false
+								break
+							end
+						end
+					else
+						allExcluded = false
+					end
+					if not allExcluded then
+						if not firstBar then
+							rootDescription:CreateDivider()
+						end
+						firstBar = false
+						rootDescription:CreateTitle(barDef.label)
+						currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+
+						for _, elemDef in ipairs(elementDefs) do
+							if not (excluded and excluded[elemDef.key]) then
+								rootDescription:CreateCheckbox(
+									elemDef.label,
+									function()
+										local ck = orderedKeys[capturedRowIdx]
+										local ci = indicatorColors[ck]
+										return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+									end,
+									function()
+										local ck = orderedKeys[capturedRowIdx]
+										local ci = indicatorColors[ck]
+										if not ci then return end
+										ci.targets = ci.targets or {}
+										ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+										ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+										SyncEnabled(ck, capturedRowIdx)
+									end
+								)
+							end
 						end
 					end
 				end
@@ -7236,7 +8597,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 					else
 						cp.Swatch2:SetAlpha(1.0); cp.Swatch2:EnableMouse(true)
 					end
-					self.Font:SetText(L[gradientDirectionAbbrevKeys[gradDir]] or L["GradientDirectionDisabledAbbrev"])
+					self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 					TRB.Data.cache.colors.gradient = {}
 					TRB.Data.cache.colors.bar = {}
 					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -7383,50 +8744,61 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 					if not ci then return end
 					ci.targets = ci.targets or {}
 
+					local firstBar = true
 					for barIdx, barDef in ipairs(barTargetDefs) do
-						if barIdx > 1 then
-							rootDescription:CreateDivider()
-						end
-						rootDescription:CreateTitle(barDef.label)
-						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-
 						local globalExcluded = excludedElements[barDef.key]
 						local gradExcluded = gradientExcludedElements[barDef.key]
+						local allExcluded = true
 						for _, elemDef in ipairs(elementDefs) do
 							if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
-								rootDescription:CreateCheckbox(
-									elemDef.label,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
-									end,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										if not indicator then return end
-										indicator.targets = indicator.targets or {}
-										indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
-										indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
-										-- Sync enabled state
-										local anyEnabled = false
-										if indicator.targets then
-											for _, bd in ipairs(barTargetDefs) do
-												local bt = indicator.targets[bd.key]
-												if bt then
-													for _, ed in ipairs(elementDefs) do
-														if bt[ed.key] then anyEnabled = true; break end
+								allExcluded = false
+								break
+							end
+						end
+						if not allExcluded then
+							if not firstBar then
+								rootDescription:CreateDivider()
+							end
+							firstBar = false
+							rootDescription:CreateTitle(barDef.label)
+							ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+
+							for _, elemDef in ipairs(elementDefs) do
+								if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
+									rootDescription:CreateCheckbox(
+										elemDef.label,
+										function()
+											local gk = orderedGradientKeys[capturedGradIdx]
+											local indicator = indicatorColors[gk]
+											return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
+										end,
+										function()
+											local gk = orderedGradientKeys[capturedGradIdx]
+											local indicator = indicatorColors[gk]
+											if not indicator then return end
+											indicator.targets = indicator.targets or {}
+											indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
+											indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
+											-- Sync enabled state
+											local anyEnabled = false
+											if indicator.targets then
+												for _, bd in ipairs(barTargetDefs) do
+													local bt = indicator.targets[bd.key]
+													if bt then
+														for _, ed in ipairs(elementDefs) do
+															if bt[ed.key] then anyEnabled = true; break end
+														end
 													end
+													if anyEnabled then break end
 												end
-												if anyEnabled then break end
+											end
+											indicator.enabled = anyEnabled
+											if gradRow.colorPicker then
+												TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
 											end
 										end
-										indicator.enabled = anyEnabled
-										if gradRow.colorPicker then
-											TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
-										end
-									end
-								)
+									)
+								end
 							end
 						end
 					end

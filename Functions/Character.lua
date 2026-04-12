@@ -3,6 +3,27 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Character = {}
 
+-- Static mapping from Enum.PowerType values to their UNIT_POWER_UPDATE token strings.
+-- Used instead of UnitPowerType("player") to avoid stale results during spec transitions.
+local PowerTypeToToken = {
+	[Enum.PowerType.Mana] = "MANA",
+	[Enum.PowerType.Rage] = "RAGE",
+	[Enum.PowerType.Focus] = "FOCUS",
+	[Enum.PowerType.Energy] = "ENERGY",
+	[Enum.PowerType.ComboPoints] = "COMBO_POINTS",
+	[Enum.PowerType.Runes] = "RUNES",
+	[Enum.PowerType.RunicPower] = "RUNIC_POWER",
+	[Enum.PowerType.SoulShards] = "SOUL_SHARDS",
+	[Enum.PowerType.LunarPower] = "LUNAR_POWER",
+	[Enum.PowerType.HolyPower] = "HOLY_POWER",
+	[Enum.PowerType.Maelstrom] = "MAELSTROM",
+	[Enum.PowerType.Chi] = "CHI",
+	[Enum.PowerType.Insanity] = "INSANITY",
+	[Enum.PowerType.ArcaneCharges] = "ARCANE_CHARGES",
+	[Enum.PowerType.Fury] = "FURY",
+	[Enum.PowerType.Essence] = "ESSENCE",
+}
+
 -- Cached format strings for resource/health percent formatting.
 -- Rebuilt only when the precision setting changes (spec switch / options edit).
 local cachedResourcePercentFmt = nil
@@ -1579,27 +1600,21 @@ function TRB.Functions.Character:EventRegistration()
 	if TRB.Data.specSupported then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
+		-- Derive resourceToken from the PowerType enum set by the class module, not from
+		-- UnitPowerType("player"). During spec transitions, UnitPowerType can return the
+		-- OLD spec's power type, permanently breaking the UNIT_POWER_UPDATE event filter
+		-- and causing the resource bar to freeze.
 		if TRB.Data.resource ~= nil then
-			_, TRB.Data.resourceToken = UnitPowerType("player")
+			TRB.Data.resourceToken = PowerTypeToToken[TRB.Data.resource]
 		end
 		if TRB.Data.resource2 ~= nil then
 			snapshotData.attributes.resource2 = 0
 			if TRB.Data.resource2 ~= "SPELL" and TRB.Data.resource2 ~= "CUSTOM" then
-				if TRB.Data.resource2 == 4 then
-					TRB.Data.resource2Token = "COMBO_POINTS"
-				elseif TRB.Data.resource2 == 5 then
-					TRB.Data.resource2Token = "RUNES"
-				elseif TRB.Data.resource2 == 7 then
-					TRB.Data.resource2Token = "SOUL_SHARDS"
-				elseif TRB.Data.resource2 == 9 then
-					TRB.Data.resource2Token = "HOLY_POWER"
-				elseif TRB.Data.resource2 == 12 then
-					TRB.Data.resource2Token = "CHI"
-				elseif TRB.Data.resource2 == 16 then
-					TRB.Data.resource2Token = "ARCANE_CHARGES"
-				elseif TRB.Data.resource2 == 19 then
-					TRB.Data.resource2Token = "ESSENCE"
-				end
+				TRB.Data.resource2Token = PowerTypeToToken[TRB.Data.resource2]
+			else
+				-- Clear stale token from a previous spec so UNIT_POWER_UPDATE events
+				-- for an unrelated power type don't trigger unnecessary updates.
+				TRB.Data.resource2Token = nil
 			end
 		end
 		TRB.Functions.Character:UpdateResourceValues()

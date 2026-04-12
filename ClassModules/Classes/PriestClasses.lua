@@ -628,7 +628,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		primaryResourceType = Enum.PowerType.Insanity,
 		settingKey = "shadowWordMadness",
 		isTalent = true,
-		isSnowflake = true
+		isSnowflake = true,
+		category = "offensive"
 	})
 	self.shadowWordMadness2 = TRB.Classes.SpellThreshold:New({
 		id = 335467,
@@ -636,7 +637,9 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		primaryResourceTypeMod = 2,
 		settingKey = "shadowWordMadness2",
 		isTalent = true,
-		isSnowflake = true
+		isSnowflake = true,
+		category = "offensive",
+		canHaveAudioCue = false
 	})
 	self.shadowWordMadness3 = TRB.Classes.SpellThreshold:New({
 		id = 335467,
@@ -644,7 +647,9 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		primaryResourceTypeMod = 3,
 		settingKey = "shadowWordMadness3",
 		isTalent = true,
-		isSnowflake = true
+		isSnowflake = true,
+		category = "offensive",
+		canHaveAudioCue = false
 	})
 	self.mindDevourer = TRB.Classes.SpellBase:New({
 		id = 373204,

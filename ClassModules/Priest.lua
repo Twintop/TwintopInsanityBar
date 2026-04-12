@@ -1370,20 +1370,22 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								if snapshots[spells.apotheosis.id].buff.isActive then
 									snapshots[spells.apotheosis.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 								else
-									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+									snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.duration, currentTime, true)
 								end
 							end
 
 							if talents:IsTalentActive(spells.voiceOfHarmony) then
-								local cooldown = snapshots[spells.holyWordSanctify.id].cooldown
+								local targetSpell = spells.holyWordSanctify
+								local cooldown = snapshots[targetSpell.id].cooldown
 
 								if talents:IsTalentActive(spells.ultimateSerenity) then
-									cooldown = snapshots[spells.holyWordSerenity.id].cooldown
+									targetSpell = spells.holyWordSerenity
+									cooldown = snapshots[targetSpell.id].cooldown
 								end
 
 								if cooldown.onCooldown then
 									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction)
-									cooldown:ReduceCooldown(cdrAmount)
+									cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
 								end
 							end
 						end
@@ -1612,7 +1614,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						if snapshots[spells.voidform.id].buff.isActive then
 							snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 						else
-							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.attributes.durationMod, currentTime, true)
+							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.duration, currentTime, true)
 						end
 					end
 				end
@@ -2707,11 +2709,12 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
+								local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 								local thresholdCurve = Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
-									specCacheSettings.colors.threshold.under.color,
-									specCacheSettings.colors.threshold.over.color
+									curveUnderColor,
+									curveOverColor
 								)
 								local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and frameLevels.thresholdOver or frameLevels.thresholdUnder
@@ -2721,8 +2724,7 @@ local function UpdateResourceBar()
 								if curveApplied then
 									thresholdColor = nil -- Skip normal color application
 								else
-									-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
-									thresholdColor = specCacheSettings.colors.threshold.under.color
+									thresholdColor = curveUnderColor
 								end
 							end
 						elseif spell.settingKey == spells.shadowWordMadness3--[[@as TRB.Classes.SpellThreshold]].settingKey then
@@ -2735,11 +2737,12 @@ local function UpdateResourceBar()
 							else
 								-- Use ColorCurve to dynamically change threshold color based on resource
 								local baseCost = resourceAmount / spell.primaryResourceTypeMod
+								local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
 								local thresholdCurve = Color:BuildThresholdCurve(
 									spell.primaryResourceTypeMod,
 									baseCost,
-									specCacheSettings.colors.threshold.under.color,
-									specCacheSettings.colors.threshold.over.color
+									curveUnderColor,
+									curveOverColor
 								)
 								local iconCurve = Color:BuildIconVertexColorCurve(spell.primaryResourceTypeMod, baseCost)
 								frameLevel = isUsable and frameLevels.thresholdOver or frameLevels.thresholdUnder
@@ -2749,8 +2752,7 @@ local function UpdateResourceBar()
 								if curveApplied then
 									thresholdColor = nil -- Skip normal color application
 								else
-									-- No valid target or out of range - use under color (AdjustThresholdDisplay handles out-of-range override)
-									thresholdColor = specCacheSettings.colors.threshold.under.color
+									thresholdColor = curveUnderColor
 								end
 							end
 						end
@@ -2777,9 +2779,22 @@ local function UpdateResourceBar()
 						showThreshold = false
 					end
 
+					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
 					if thresholds[thresholdId] then
-						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings)
+						local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
 						Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, resourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
+					end
+					-- Per-threshold audio cue (independent of line visibility)
+					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+						if isUsable then
+							if not snapshotData.audio.thresholdCues[spell.settingKey] then
+								snapshotData.audio.thresholdCues[spell.settingKey] = true
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
+						else
+							snapshotData.audio.thresholdCues[spell.settingKey] = false
+						end
 					end
 				end
 

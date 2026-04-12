@@ -23,19 +23,22 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "revivePet",
         baseline = true,
-		rangeCheck = false
+		rangeCheck = false,
+        category = "utility"
     })
     self.wingClip = TRB.Classes.SpellThreshold:New({
         id = 195645,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "wingClip",
-        baseline = true
+        baseline = true,
+        category = "utility"
     })
     self.scareBeast = TRB.Classes.SpellThreshold:New({
         id = 1513,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "scareBeast",
-        isTalent = true
+        isTalent = true,
+        category = "utility"
     })
 
     return self
@@ -66,7 +69,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "cobraShot",
         killCommandCooldownReduction = 2,
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.bestialWrath = TRB.Classes.SpellBase:New({
         id = 19574,
@@ -88,7 +92,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         hasCooldown = true,
         isTalent = true,
         baseline = false,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "offensive"
     })
     self.wildThrash = TRB.Classes.SpellThreshold:New({
         id = 1264359,
@@ -97,7 +102,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         settingKey = "wildThrash",
         hasCooldown = true,
         isTalent = true,
-        cooldown = 8
+        cooldown = 8,
+        category = "offensive"
     })
 
     -- Dark Ranger
@@ -111,7 +117,8 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         hasCooldown = true,
         isTalent = true,
         isSnowflake = true,
-        baseline = false
+        baseline = false,
+        category = "offensive"
     })
     self.wailingDead = TRB.Classes.SpellBase:New({
         id = 1264290,
@@ -124,6 +131,7 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         settingKey = "wailingArrow",
         isTalent = true,
         isSnowflake = true,
+        category = "offensive"
     })
 
     -- PvP
@@ -134,6 +142,7 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         hasCooldown = true,
         cooldown = 30,
         isPvp = true,
+        category = "offensive"
     })
 
     return self
@@ -202,13 +211,15 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         iconName = "ability_impalingbolt",
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "arcaneShot",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.multiShot = TRB.Classes.SpellThreshold:New({
         id = 257620,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "multiShot",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
 
     -- Marksmanship Spec Talents
@@ -219,7 +230,8 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         hasCooldown = true,
         isSnowflake = true,
         isTalent = true,
-        hasCharges = true
+        hasCharges = true,
+        category = "offensive"
     })
     self.rapidFire = TRB.Classes.SpellBase:New({
         id = 257044,
@@ -241,7 +253,8 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "killShot",
         healthMinimum = 0.2,
         hasCooldown = true,
-        isSnowflake = true
+        isSnowflake = true,
+        category = "execute"
     })
 
     -- Dark Ranger
@@ -255,7 +268,8 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         hasCooldown = true,
         isTalent = true,
         isSnowflake = true,
-        baseline = false -- When subTreeActive = true
+        baseline = false, -- When subTreeActive = true
+        category = "offensive"
     })
     self.wailingDead = TRB.Classes.SpellBase:New({
         id = 1264290,
@@ -268,6 +282,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "wailingArrow",
         isTalent = true,
         isSnowflake = true,
+        category = "offensive"
     })
 
     -- Sentinel
@@ -350,20 +365,23 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         isTalent = true,
         hasCooldown = true,
         cooldown = 45,
-        rangeCheck = false
+        rangeCheck = false,
+        category = "offensive"
     })
     -- TODO: Implement Boomstick cooldown to also incorporate Lethal Calibration
     self.hatchetToss = TRB.Classes.SpellThreshold:New({
         id = 193265,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "hatchetToss",
-        baseline = true
+        baseline = true,
+        category = "offensive"
     })
     self.raptorStrike = TRB.Classes.SpellThreshold:New({
         id = 186270,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "raptorStrike",
-        isTalent = true
+        isTalent = true,
+        category = "offensive"
     })
     self.wildfireBomb = TRB.Classes.SpellThreshold:New({
         id = 259495,

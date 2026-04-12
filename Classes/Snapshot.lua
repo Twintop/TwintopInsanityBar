@@ -215,7 +215,8 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
-	self.pauseMaxDuration = nil
+	-- pauseMaxDuration is intentionally NOT cleared here; it's a talent-level configuration
+	-- set/cleared exclusively by SetPauseMaxDuration(). Reset() only clears per-instance state.
 	self.pauseElapsedTime = 0
 	self.pauseStartTime = nil
 	self.isPaused = false
@@ -459,6 +460,16 @@ function TRB.Classes.SnapshotBuff:AddTimeOrInitializeCustom(duration, startTime)
 	self:GetRemainingTime()
 	if not self.isActive then
 		self:InitializeCustom(duration, startTime)
+	elseif self.isPaused then
+		-- During pause, extend the frozen remaining time and endTime by the added duration.
+		-- Do NOT recalculate endTime from wall-clock time — that would destroy the original
+		-- timeline and produce wrong remaining values when ExitPauseMode adds pauseElapsed.
+		self.previousRemaining = self.previousRemaining + duration
+		self.remaining = self.previousRemaining
+		self.duration = self.duration + duration
+		if self.endTime ~= nil then
+			self.endTime = self.endTime + duration
+		end
 	else
 		self.duration = self.remaining + duration
 		self.endTime = startTime + self.duration

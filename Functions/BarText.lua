@@ -4,40 +4,40 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
 local containerAnchorPrefix = "Container::"
-local containerAnchorLabelKeyByResourceType = {
-	AngelicFeather = "AngelicFeatherContainer",
-	ArcaneCharges = "ArcaneChargesContainer",
-	BoneShield = "BoneShieldContainer",
-	Chi = "ChiContainer",
-	ComboPoints = "ComboPointsContainer",
-	Essence = "EssenceContainer",
-	Icicles = "IciclesContainer",
-	Lightweaver = "LightweaverContainer",
-	HolyPower = "HolyPowerContainer",
-	MaelstromWeapon = "MaelstromWeaponContainer",
-	Runes = "RunesContainer",
-	SoulFragments = "SoulFragmentsContainer",
-	SoulShards = "SoulShardsContainer",
-	TipOfTheSpear = "TipOfTheSpearContainer",
-	WhirlwindCharges = "WhirlwindChargesContainer",
+local containerAnchorLabelByResourceType = {
+	AngelicFeather = L["AngelicFeatherContainer"],
+	ArcaneCharges = L["ArcaneChargesContainer"],
+	BoneShield = L["BoneShieldContainer"],
+	Chi = L["ChiContainer"],
+	ComboPoints = L["ComboPointsContainer"],
+	Essence = L["EssenceContainer"],
+	Icicles = L["IciclesContainer"],
+	Lightweaver = L["LightweaverContainer"],
+	HolyPower = L["HolyPowerContainer"],
+	MaelstromWeapon = L["MaelstromWeaponContainer"],
+	Runes = L["RunesContainer"],
+	SoulFragments = L["SoulFragmentsContainer"],
+	SoulShards = L["SoulShardsContainer"],
+	TipOfTheSpear = L["TipOfTheSpearContainer"],
+	WhirlwindCharges = L["WhirlwindChargesContainer"],
 }
 
-local containerAnchorFirstNodeLabelKeyByResourceType = {
-	AngelicFeather = "AngelicFeatherCharge1",
-	ArcaneCharges = "ArcaneCharge1",
-	BoneShield = "BoneShield1",
-	Chi = "Chi1",
-	ComboPoints = "ComboPoint1",
-	Essence = "Essence1",
-	HolyPower = "HolyPower1",
-	Icicles = "Icicle1",
-	Lightweaver = "LightweaverCharge1",
-	MaelstromWeapon = "Maelstrom1",
-	Runes = "Rune1",
-	SoulFragments = "SoulFragment1",
-	SoulShards = "SoulShard1",
-	TipOfTheSpear = "TipOfTheSpear1",
-	WhirlwindCharges = "WhirlwindCharge1",
+local containerAnchorFirstNodeLabelByResourceType = {
+	AngelicFeather = L["AngelicFeatherCharge1"],
+	ArcaneCharges = L["ArcaneCharge1"],
+	BoneShield = L["BoneShield1"],
+	Chi = L["Chi1"],
+	ComboPoints = L["ComboPoint1"],
+	Essence = L["Essence1"],
+	HolyPower = L["HolyPower1"],
+	Icicles = L["Icicle1"],
+	Lightweaver = L["LightweaverCharge1"],
+	MaelstromWeapon = L["Maelstrom1"],
+	Runes = L["Rune1"],
+	SoulFragments = L["SoulFragment1"],
+	SoulShards = L["SoulShard1"],
+	TipOfTheSpear = L["TipOfTheSpear1"],
+	WhirlwindCharges = L["WhirlwindCharge1"],
 }
 
 local barTextClassNamesById = {
@@ -93,22 +93,16 @@ local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
 		return nil
 	end
 
-	local labelKey = barGroupConfig.containerAnchorLabelKey or containerAnchorLabelKeyByResourceType[barGroupConfig.resourceType]
-	if labelKey == nil or L[labelKey] == nil then
+	local label = containerAnchorLabelByResourceType[barGroupConfig.resourceType]
+	if label == nil then
 		return nil
 	end
 
 	return {
 		id = containerAnchorPrefix .. barGroupKey,
-		label = L[labelKey],
+		label = label,
 		barGroupKey = barGroupKey,
-		insertBeforeLabel = (function()
-			local firstNodeLabelKey = containerAnchorFirstNodeLabelKeyByResourceType[barGroupConfig.resourceType]
-			if firstNodeLabelKey ~= nil then
-				return L[firstNodeLabelKey]
-			end
-			return nil
-		end)(),
+		insertBeforeLabel = containerAnchorFirstNodeLabelByResourceType[barGroupConfig.resourceType],
 	}
 end
 

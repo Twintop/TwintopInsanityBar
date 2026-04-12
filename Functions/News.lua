@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.5.0-beta03 (2026-04-12)
+## General
+
+- Merge `midnight` back in to account for features and improvements.
+
+---
+
 # 12.0.5.0-beta02 (2026-04-05)
 ## General
 
@@ -23,6 +30,94 @@ local content = [====[
 ## General
 
 - [#726](#726) Fix issues with primary and secondary stats now being secret values and not directly accessible.
+
+---
+
+# 12.0.1.56-release (2026-04-11)
+## General
+
+- Guard against stale resource type caches when switching specializations.
+
+### Localization
+
+- Restore some missing localization strings that were incorrectly flagged as unused.
+
+## Priest
+### Holy
+
+- Fix an issue where the remaining duration of Apotheosis doesn't properly pause when exiting combat (with Sustained Potency).
+- Fix an issue where casting Halo while Apotheosis is in a paused (via Sustained Potency) state resets the duration of Apotheosis back to full instead of adding time to the remaining duration.
+
+### Shadow
+
+- Fix an issue where the remaining duration of Voidform doesn't properly pause when exiting combat (with Sustained Potency).
+- Fix an issue where casting Halo while Voidform is in a paused (via Sustained Potency) state resets the duration of Voidform back to full instead of adding time to the remaining duration.
+
+---
+
+# 12.0.1.55-release (2026-04-10)
+## General
+### Localization
+
+- [#736](#736) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Priest
+### Holy
+
+- Fix an issue where banked Sustained Potency stacks would not increase the duration of Apotheosis.
+
+### Shadow
+
+- Fix an issue where banked Sustained Potency stacks would not increase the duration of Voidform.
+
+---
+
+# 12.0.1.54-release (2026-04-09)
+## General
+
+- [#279](#279) Fix ColorCurve-based thresholds (e.g., Shadow Word: Madness x2) not respecting per-threshold "Hide" visibility overrides. Hidden states now use a fully transparent color baked into the curve.
+- [#735](#735) Fix various default values for individual thresholds not being displayed accurately.
+
+---
+
+# 12.0.1.53-release (2026-04-09)
+## General
+
+- [#734](#734) Overhaul the Thresholds options tab for all specializations. Thresholds are now displayed in a sortable, searchable table with columns for icon, name, category, bar target, audio cue, and enabled status.
+- [#734](#734) Add a detail panel below the threshold table that appears when a threshold is selected, allowing per-threshold configuration without navigating away.
+- [#603](#603) Add per-threshold color override options. Each threshold line can now use a static color or override the default over, under, and unusable colors individually.
+- [#279](#279) Add per-threshold color visibility overrides. This allows a threshold line to be hidden when the threshold is e.g. unusable.
+- [#734](#734) Add per-threshold icon display override options including icon visibility, position relative to the threshold line, size, and border width.
+- [#605](#605) Add per-threshold audio cue options. Select a sound to play when a threshold becomes usable. Thresholds tied to secret resource values (e.g., Execute at max Rage) do not support audio cues.
+- [#734](#734) Add a new Threshold Shared Settings tab for configuring default threshold colors, line dimensions, and icon defaults that apply across all thresholds for a specialization.
+
+## Demon Hunter
+### Devourer
+
+- Revert threshold fix from 12.0.1.51-release. Collapsing Star and Void Ray threshold line visibility is now driven by Void Metamorphosis buff state again, as using the Collapsing Star buff caused the bar to flip modes prematurely when the application count reached zero.
+
+---
+
+# 12.0.1.52-release (2026-04-06)
+## Priest
+### Holy
+
+- Fix an issue where Power Surge + Halo cooldown reduction completing a Holy Word charge would prevent the next charge from starting its recharge timer.
+
+---
+
+# 12.0.1.51-release (2026-04-06)
+## Demon Hunter
+### Devourer
+
+- Fix an issue where sometimes the Collapsing Star threshold line would continue to be shown even after exiting Void Metamorphosis.
+- Fix an issue where sometimes the Void Ray threshold line would not be shown even after exiting Void Metamorphosis.
+
+## Druid
+### Feral
+
+- Fix Lua errors when the "Max Bite" coloring was supposed to be applied to the Energy Bar.
+- Exclude Mana and Rage bars from being color indicator targets for Ferocious Bite max damage.
 
 ---
 
