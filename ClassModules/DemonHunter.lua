@@ -268,7 +268,7 @@ local function ConstructResourceBar(settings)
 
 			barGroups.secondary:SetMaxNodes(maxSoulFragments)
 			barGroups.secondary:SetNodeCount(maxSoulFragments)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
 			barGroups.secondary:Show()
 
 			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")

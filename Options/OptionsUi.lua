@@ -143,6 +143,117 @@ local function GetUseGlobalSettingsColor()
 	return 100/255, 225/255, 200/225
 end
 
+-- Rotation mapping: 90° CCW (horizontal → vertical / leftRight → bottomTop)
+local rotateAnchorCCW = {
+	LEFT = "BOTTOM", RIGHT = "TOP", TOP = "LEFT", BOTTOM = "RIGHT",
+	TOPLEFT = "BOTTOMLEFT", TOPRIGHT = "TOPLEFT", BOTTOMLEFT = "BOTTOMRIGHT", BOTTOMRIGHT = "TOPRIGHT",
+	CENTER = "CENTER",
+}
+
+-- Rotation mapping: 90° CW (vertical → horizontal / bottomTop → leftRight)
+local rotateAnchorCW = {
+	BOTTOM = "LEFT", TOP = "RIGHT", LEFT = "TOP", RIGHT = "BOTTOM",
+	BOTTOMLEFT = "TOPLEFT", TOPLEFT = "TOPRIGHT", BOTTOMRIGHT = "BOTTOMLEFT", TOPRIGHT = "BOTTOMRIGHT",
+	CENTER = "CENTER",
+}
+
+local anchorToLocalizedName = {
+	TOPLEFT = L["PositionTopLeft"], TOP = L["PositionTop"], TOPRIGHT = L["PositionTopRight"],
+	LEFT = L["PositionLeft"], CENTER = L["PositionCenter"], RIGHT = L["PositionRight"],
+	BOTTOMLEFT = L["PositionBottomLeft"], BOTTOM = L["PositionBottom"], BOTTOMRIGHT = L["PositionBottomRight"],
+}
+
+-- Rotation mapping for growth direction: 90° CCW (horizontal → vertical)
+local rotateGrowthCCW = {
+	leftRight = "bottomTop",
+	rightLeft = "topBottom",
+	bottomTop = "rightLeft",
+	topBottom = "leftRight",
+}
+
+-- Rotation mapping for growth direction: 90° CW (vertical → horizontal)
+local rotateGrowthCW = {
+	bottomTop = "leftRight",
+	topBottom = "rightLeft",
+	leftRight = "topBottom",
+	rightLeft = "bottomTop",
+}
+
+local growthDirectionToLabel
+do
+	-- Defer label resolution so L[] keys are only looked up once at init
+	growthDirectionToLabel = {
+		leftRight = L["GrowthDirectionLeftRight"],
+		rightLeft = L["GrowthDirectionRightLeft"],
+		bottomTop = L["GrowthDirectionBottomTop"],
+		topBottom = L["GrowthDirectionTopBottom"],
+	}
+end
+
+---Rotates per-threshold icon override X/Y offsets for a 90° rotation between horizontal and vertical orientations.
+---Global threshold icon offsets are always screen-space (horizontal/vertical) and are NOT rotated.
+---@param spec table The spec settings
+---@param toVertical boolean True if rotating horizontal→vertical (CCW), false for vertical→horizontal (CW)
+local function RotateThresholdIconOffsets(spec, toVertical)
+	if spec.thresholds and spec.thresholds.thresholdDictionary then
+		for _, entry in pairs(spec.thresholds.thresholdDictionary) do
+			if entry.icon then
+				local oldX, oldY = entry.icon.xPos or 0, entry.icon.yPos or 0
+				if toVertical then
+					-- 90° CCW: newX = -oldY, newY = oldX
+					entry.icon.xPos = -oldY
+					entry.icon.yPos = oldX
+				else
+					-- 90° CW: newX = oldY, newY = -oldX
+					entry.icon.xPos = oldY
+					entry.icon.yPos = -oldX
+				end
+			end
+		end
+	end
+end
+
+---Rotates bar text anchor positions for a 90° rotation between horizontal and vertical orientations.
+---@param spec table The spec settings
+---@param toVertical boolean True if rotating horizontal→vertical (CCW), false for vertical→horizontal (CW)
+local function RotateBarTextPositions(spec, toVertical)
+	if not spec.displayText or not spec.displayText.barText then return end
+	local rotateMap = toVertical and rotateAnchorCCW or rotateAnchorCW
+	for _, entry in pairs(spec.displayText.barText) do
+		if entry.position then
+			local oldX, oldY = entry.position.xPos or 0, entry.position.yPos or 0
+			if toVertical then
+				-- 90° CCW: newX = -oldY, newY = oldX
+				entry.position.xPos = -oldY
+				entry.position.yPos = oldX
+			else
+				-- 90° CW: newX = oldY, newY = -oldX
+				entry.position.xPos = oldY
+				entry.position.yPos = -oldX
+			end
+			local newAnchor = rotateMap[entry.position.relativeTo]
+			if newAnchor then
+				entry.position.relativeTo = newAnchor
+				entry.position.relativeToName = anchorToLocalizedName[newAnchor] or newAnchor
+			end
+		end
+	end
+end
+
+---Swaps the min/max bounds of two sliders (width ↔ height) when crossing orientation boundary.
+---@param widthSlider table The width slider control
+---@param heightSlider table The height slider control
+local function SwapSliderBounds(widthSlider, heightSlider)
+	local wMin, wMax = widthSlider:GetMinMaxValues()
+	local hMin, hMax = heightSlider:GetMinMaxValues()
+	widthSlider:SetMinMaxValues(hMin, hMax)
+	widthSlider.MinLabel:SetText(tostring(hMin))
+	widthSlider.MaxLabel:SetText(tostring(hMax))
+	heightSlider:SetMinMaxValues(wMin, wMax)
+	heightSlider.MinLabel:SetText(tostring(wMin))
+	heightSlider.MaxLabel:SetText(tostring(wMax))
+end
+
 -- Mapping of all class names to their spec names for bulk global toggle iteration
 local allClassSpecs = {
 	deathknight = { "blood", "frost", "unholy" },
@@ -3149,6 +3260,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 				controls.horizontal:SetValue(a.xOffset)
 				controls.vertical:SetValue(a.yOffset)
 				controls.checkBoxes.primaryMatchWidth:SetChecked(a.matchWidth)
+				controls.checkBoxes.primaryMatchHeight:SetChecked(a.matchHeight or false)
 				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
 				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
 				primaryAnchorPointDropdown:SetDefaultText(anchorPointText)
@@ -3160,6 +3272,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			end
 			controls.checkBoxes.primaryMatchWidth:SetEnabled(newValue ~= "screen")
 			getglobal(controls.checkBoxes.primaryMatchWidth:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			controls.checkBoxes.primaryMatchHeight:SetEnabled(newValue ~= "screen")
+			getglobal(controls.checkBoxes.primaryMatchHeight:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 			ApplyPrimaryAnchorLayout()
 		end)
 	end
@@ -3192,6 +3306,22 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.matchWidth = self:GetChecked()
 		DualWriteAnchorToLegacy(spec.bar)
+		ApplyPrimaryAnchorLayout()
+	end)
+
+	-- Match Height checkbox
+	controls.checkBoxes.primaryMatchHeight = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barMatchHeight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.primaryMatchHeight
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-50)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["MatchHeightTooltip"]
+	f:SetChecked(primaryAnchor.matchHeight or false)
+	f:SetEnabled(primaryAnchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(primaryAnchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
+	f:SetScript("OnClick", function(self, ...)
+		local a = EnsureAnchorBlock(spec.bar, "primary")
+		a.matchHeight = self:GetChecked()
 		ApplyPrimaryAnchorLayout()
 	end)
 
@@ -3272,6 +3402,112 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	primaryAttachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	primaryAttachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(primaryAnchor.attachPoint))
 
+	-- Fill Direction dropdown
+	yCoord = yCoord - 60
+	local fillDirectionOptions = {
+		{ value = "leftRight",  label = L["FillDirectionLeftRight"] },
+		{ value = "rightLeft",  label = L["FillDirectionRightLeft"] },
+		{ value = "bottomTop",  label = L["FillDirectionBottomTop"] },
+		{ value = "topBottom",  label = L["FillDirectionTopBottom"] },
+	}
+
+	local primaryFillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barFillDirection", parent, "WowStyle1DropdownTemplate")
+	primaryFillDirectionDropdown:SetWidth(oUi.sliderWidth)
+	primaryFillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	primaryFillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function GetFillDirectionLabel(value)
+		for _, opt in ipairs(fillDirectionOptions) do
+			if opt.value == value then return opt.label end
+		end
+		return L["FillDirectionLeftRight"]
+	end
+
+	local function PrimaryFillDirectionIsSelected(value)
+		return value == (spec.bar.fillDirection or "leftRight")
+	end
+
+	local function PrimaryFillDirectionSetSelected(newValue)
+		local oldValue = spec.bar.fillDirection or "leftRight"
+		spec.bar.fillDirection = newValue
+		C_Timer.After(0, function()
+			primaryFillDirectionDropdown:SetDefaultText(GetFillDirectionLabel(newValue))
+			local isVert = TRB.Functions.Bar:IsVerticalFill(newValue)
+			local wasVert = TRB.Functions.Bar:IsVerticalFill(oldValue)
+
+			-- Rotation: when crossing horizontal↔vertical boundary, swap dimensions/offsets/positions
+			if wasVert ~= isVert then
+				-- Swap bar width ↔ height; suppress OnValueChanged during bounds swap to prevent intermediate clamping
+				spec.bar.width, spec.bar.height = spec.bar.height, spec.bar.width
+				local wHandler = controls.width:GetScript("OnValueChanged")
+				local hHandler = controls.height:GetScript("OnValueChanged")
+				controls.width:SetScript("OnValueChanged", nil)
+				controls.height:SetScript("OnValueChanged", nil)
+				SwapSliderBounds(controls.width, controls.height)
+				controls.width:SetValue(spec.bar.width)
+				controls.width.EditBox:SetText(spec.bar.width)
+				controls.height:SetValue(spec.bar.height)
+				controls.height.EditBox:SetText(spec.bar.height)
+				controls.width:SetScript("OnValueChanged", wHandler)
+				controls.height:SetScript("OnValueChanged", hHandler)
+
+				-- Rotate per-threshold icon override X/Y offsets and redraw
+				RotateThresholdIconOffsets(spec, isVert)
+				TRB.Functions.Threshold:RedrawThresholdLines()
+
+				-- Refresh per-threshold icon override X/Y sliders if currently visible
+				if controls.sliders and controls.sliders.thresholdIconXPos and controls.sliders.thresholdIconXPos:IsVisible() then
+					local curX = controls.sliders.thresholdIconXPos:GetValue()
+					local curY = controls.sliders.thresholdIconYPos:GetValue()
+					local newX, newY
+					if isVert then
+						newX, newY = -(curY or 0), (curX or 0)
+					else
+						newX, newY = (curY or 0), -(curX or 0)
+					end
+					controls.sliders.thresholdIconXPos:SetValue(newX)
+					controls.sliders.thresholdIconXPos.EditBox:SetText(newX)
+					controls.sliders.thresholdIconYPos:SetValue(newY)
+					controls.sliders.thresholdIconYPos.EditBox:SetText(newY)
+				end
+
+				-- Rotate bar text positions and reposition
+				RotateBarTextPositions(spec, isVert)
+				TRB.Functions.BarText:CreateBarTextFrames()
+
+				-- Refresh bar text editor X/Y sliders if currently visible
+				if controls.barTextHorizontal and controls.barTextHorizontal:IsVisible() then
+					local curX = controls.barTextHorizontal:GetValue()
+					local curY = controls.barTextVertical:GetValue()
+					local newX, newY
+					if isVert then
+						newX, newY = -(curY or 0), (curX or 0)
+					else
+						newX, newY = (curY or 0), -(curX or 0)
+					end
+					controls.barTextHorizontal:SetValue(newX)
+					controls.barTextVertical:SetValue(newY)
+				end
+			end
+
+			ApplyPrimaryAnchorLayout()
+			TRB.Functions.Character:ResetCaches()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end)
+	end
+
+	local function PrimaryFillDirectionGenerator(dropdown, rootDescription)
+		for _, opt in ipairs(fillDirectionOptions) do
+			rootDescription:CreateRadio(opt.label, PrimaryFillDirectionIsSelected, PrimaryFillDirectionSetSelected, opt.value)
+		end
+	end
+	primaryFillDirectionDropdown:SetupMenu(PrimaryFillDirectionGenerator)
+	primaryFillDirectionDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	primaryFillDirectionDropdown:SetDefaultText(GetFillDirectionLabel(spec.bar.fillDirection or "leftRight"))
+
 	yCoord = yCoord - 30
 
 	return yCoord
@@ -3286,6 +3522,7 @@ end
 ---@field globalTooltip string? Localized string for global checkbox tooltip
 ---@field sectionHeader string? Localized string for section header (defaults to SecondaryPositionAndSize formatted)
 ---@field includeSpacing boolean? Whether to include spacing slider (default false)
+---@field includeGrowthDirection boolean? Whether to include growth direction dropdown (default false, for multi-node bars)
 ---@field widthDivisor number? Divisor for max width slider (default 1, use 6 for combo points)
 ---@field useSmallerSanityChecks boolean? Use comboPointsMaxHeight/Width instead of barMaxHeight/Width (default false)
 
@@ -3599,6 +3836,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
 				controls[settingKey .. "Vertical"]:SetValue(a.yOffset)
 				controls.checkBoxes[settingKey .. "MatchWidth"]:SetChecked(a.matchWidth)
+				controls.checkBoxes[settingKey .. "MatchHeight"]:SetChecked(a.matchHeight or false)
 				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
 				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
 				anchorPointDropdown:SetDefaultText(anchorPointText)
@@ -3611,6 +3849,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			local matchWidthCb = controls.checkBoxes[settingKey .. "MatchWidth"]
 			matchWidthCb:SetEnabled(newValue ~= "screen")
 			getglobal(matchWidthCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			local matchHeightCb = controls.checkBoxes[settingKey .. "MatchHeight"]
+			matchHeightCb:SetEnabled(newValue ~= "screen")
+			getglobal(matchHeightCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 			ApplyAnchorLayout()
 		end)
 	end
@@ -3647,13 +3888,48 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 
 		-- Update border max based on new effective width
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
-		local maxBorderSize = math.min(math.floor(spec[settingKey].height / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or spec[settingKey].height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
 		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
 		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
 		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
+			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
+			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.Bar:HideResourceBar()
+			end
+		end
+	end)
+
+	-- Match Height checkbox
+	controls.checkBoxes[settingKey .. "MatchHeight"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "MatchHeight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[settingKey .. "MatchHeight"]
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-50)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["MatchHeightTooltip"]
+	f:SetChecked(anchor.matchHeight or false)
+	f:SetEnabled(anchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
+	f:SetScript("OnClick", function(self, ...)
+		local a = EnsureAnchorBlock(spec[settingKey])
+		a.matchHeight = self:GetChecked()
+
+		-- Update border max based on new effective dimensions
+		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or spec[settingKey].height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local borderSize = math.min(maxBorderSize, spec[settingKey].border)
+		controls[settingKey .. "BorderWidth"]:SetValue(borderSize)
+		controls[settingKey .. "BorderWidth"]:SetMinMaxValues(0, maxBorderSize)
+		controls[settingKey .. "BorderWidth"].MaxLabel:SetText(tostring(maxBorderSize))
+
+		if TRB.Data.character.classId == 11 or
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			if TRB.Frames.barGroups ~= nil then
@@ -3742,6 +4018,139 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	attachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.attachPoint))
 
+	-- Fill Direction dropdown
+	yCoord = yCoord - 60
+	local ancFillDirectionOptions = {
+		{ value = "leftRight",  label = L["FillDirectionLeftRight"] },
+		{ value = "rightLeft",  label = L["FillDirectionRightLeft"] },
+		{ value = "bottomTop",  label = L["FillDirectionBottomTop"] },
+		{ value = "topBottom",  label = L["FillDirectionTopBottom"] },
+	}
+	local ancFillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "FillDirection", parent, "WowStyle1DropdownTemplate")
+	ancFillDirectionDropdown:SetWidth(oUi.sliderWidth)
+	ancFillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	ancFillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local function GetAncFillDirectionLabel(value)
+		for _, opt in ipairs(ancFillDirectionOptions) do
+			if opt.value == value then return opt.label end
+		end
+		return L["FillDirectionLeftRight"]
+	end
+
+	local function AncFillDirectionIsSelected(value)
+		return value == (spec[settingKey].fillDirection or "leftRight")
+	end
+
+	local function AncFillDirectionSetSelected(newValue)
+		local oldValue = spec[settingKey].fillDirection or "leftRight"
+		spec[settingKey].fillDirection = newValue
+		C_Timer.After(0, function()
+			ancFillDirectionDropdown:SetDefaultText(GetAncFillDirectionLabel(newValue))
+			local isVert = TRB.Functions.Bar:IsVerticalFill(newValue)
+			local wasVert = TRB.Functions.Bar:IsVerticalFill(oldValue)
+
+			-- Rotation: swap width ↔ height when crossing horizontal↔vertical boundary
+			if wasVert ~= isVert then
+				spec[settingKey].width, spec[settingKey].height = spec[settingKey].height, spec[settingKey].width
+				local wKey = settingKey .. "Width"
+				local hKey = settingKey .. "Height"
+				local wHandler = controls[wKey]:GetScript("OnValueChanged")
+				local hHandler = controls[hKey]:GetScript("OnValueChanged")
+				controls[wKey]:SetScript("OnValueChanged", nil)
+				controls[hKey]:SetScript("OnValueChanged", nil)
+				SwapSliderBounds(controls[wKey], controls[hKey])
+				controls[wKey]:SetValue(spec[settingKey].width)
+				controls[wKey].EditBox:SetText(spec[settingKey].width)
+				controls[hKey]:SetValue(spec[settingKey].height)
+				controls[hKey].EditBox:SetText(spec[settingKey].height)
+				controls[wKey]:SetScript("OnValueChanged", wHandler)
+				controls[hKey]:SetScript("OnValueChanged", hHandler)
+
+				-- Rotate growth direction for multi-node bars
+				local oldGrowth = spec[settingKey].growthDirection
+				if oldGrowth then
+					local rotateMap = isVert and rotateGrowthCCW or rotateGrowthCW
+					local newGrowth = rotateMap[oldGrowth]
+					if newGrowth then
+						spec[settingKey].growthDirection = newGrowth
+						local gdDropdown = controls[settingKey .. "GrowthDirectionDropdown"]
+						if gdDropdown then
+							gdDropdown:SetDefaultText(growthDirectionToLabel[newGrowth] or newGrowth)
+						end
+					end
+				end
+			end
+
+			ApplyAnchorLayout()
+			TRB.Functions.Character:ResetCaches()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end)
+	end
+
+	local function AncFillDirectionGenerator(dropdown, rootDescription)
+		for _, opt in ipairs(ancFillDirectionOptions) do
+			rootDescription:CreateRadio(opt.label, AncFillDirectionIsSelected, AncFillDirectionSetSelected, opt.value)
+		end
+	end
+	ancFillDirectionDropdown:SetupMenu(AncFillDirectionGenerator)
+	ancFillDirectionDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+	ancFillDirectionDropdown:SetDefaultText(GetAncFillDirectionLabel(spec[settingKey].fillDirection or "leftRight"))
+
+	-- Growth Direction dropdown (multi-node bars only)
+	local includeGrowthDirection = config.includeGrowthDirection or false
+	if includeGrowthDirection then
+		local ancGrowthDirectionOptions = {
+			{ value = "leftRight",  label = L["GrowthDirectionLeftRight"] },
+			{ value = "rightLeft",  label = L["GrowthDirectionRightLeft"] },
+			{ value = "bottomTop",  label = L["GrowthDirectionBottomTop"] },
+			{ value = "topBottom",  label = L["GrowthDirectionTopBottom"] },
+		}
+		local ancGrowthDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "GrowthDirection", parent, "WowStyle1DropdownTemplate")
+		controls[settingKey .. "GrowthDirectionDropdown"] = ancGrowthDirectionDropdown
+		ancGrowthDirectionDropdown:SetWidth(oUi.sliderWidth)
+		ancGrowthDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
+		ancGrowthDirectionDropdown.label.font:SetFontObject(GameFontNormal)
+
+		local function GetAncGrowthDirectionLabel(value)
+			for _, opt in ipairs(ancGrowthDirectionOptions) do
+				if opt.value == value then return opt.label end
+			end
+			return L["GrowthDirectionLeftRight"]
+		end
+
+		local function AncGrowthDirectionIsSelected(value)
+			return value == (spec[settingKey].growthDirection or "leftRight")
+		end
+
+		local function AncGrowthDirectionSetSelected(newValue)
+			spec[settingKey].growthDirection = newValue
+			C_Timer.After(0, function()
+				ancGrowthDirectionDropdown:SetDefaultText(GetAncGrowthDirectionLabel(newValue))
+				ApplyAnchorLayout()
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			end)
+		end
+
+		local function AncGrowthDirectionGenerator(dropdown, rootDescription)
+			for _, opt in ipairs(ancGrowthDirectionOptions) do
+				rootDescription:CreateRadio(opt.label, AncGrowthDirectionIsSelected, AncGrowthDirectionSetSelected, opt.value)
+			end
+		end
+		ancGrowthDirectionDropdown:SetupMenu(AncGrowthDirectionGenerator)
+		ancGrowthDirectionDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+		ancGrowthDirectionDropdown:SetDefaultText(GetAncGrowthDirectionLabel(spec[settingKey].growthDirection or "leftRight"))
+	end
+
+	yCoord = yCoord - 30
+
 	return yCoord
 end
 
@@ -3776,6 +4185,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		globalSettingKey = "comboPoints",
 		globalTooltip = L["CheckboxUseGlobalTooltip_ComboPoints"],
 		includeSpacing = includeSpacing,
+		includeGrowthDirection = true,
 		widthDivisor = 6,
 		useSmallerSanityChecks = true
 	})
@@ -4033,6 +4443,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
 				controls[barTypeDef.key .. "YPos"]:SetValue(a.yOffset)
 				controls[barTypeDef.key .. "MatchWidth"]:SetChecked(a.matchWidth)
+				controls[barTypeDef.key .. "MatchHeight"]:SetChecked(a.matchHeight or false)
 				local anchorPointText = GetAnchorPointDisplayName(a.anchorPoint)
 				local attachPointText = GetAnchorPointDisplayName(a.attachPoint)
 				anchorPointDropdown:SetDefaultText(anchorPointText)
@@ -4045,6 +4456,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			local matchWidthCb = controls[barTypeDef.key .. "MatchWidth"]
 			matchWidthCb:SetEnabled(newValue ~= "screen")
 			getglobal(matchWidthCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			local matchHeightCb = controls[barTypeDef.key .. "MatchHeight"]
+			matchHeightCb:SetEnabled(newValue ~= "screen")
+			getglobal(matchHeightCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -4083,7 +4497,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		
 		-- Update border max based on new effective width/height
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
-		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
@@ -4094,6 +4508,171 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
+
+	-- Match Height checkbox
+	controls[barTypeDef.key .. "MatchHeight"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchHeight", parent, "ChatConfigCheckButtonTemplate")
+	f = controls[barTypeDef.key .. "MatchHeight"]
+	f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord - 50)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["MatchHeightTooltip"]
+	f:SetChecked(anchor.matchHeight or false)
+	f:SetEnabled(anchor.barKey ~= "screen")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
+	f:SetScript("OnClick", function(self, ...)
+		local a = EnsureAnchorBlock(barSettings)
+		a.matchHeight = self:GetChecked()
+		
+		-- Update border max based on new effective dimensions
+		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
+		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
+		local borderSize = math.min(maxBorderSize, barSettings.border)
+		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
+		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
+		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
+		
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+		end
+	end)
+
+	-- Fill Direction dropdown
+	yCoord = yCoord - 60
+	local fillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_FillDirection", parent, "WowStyle1DropdownTemplate")
+	fillDirectionDropdown:SetWidth(oUi.sliderWidth)
+	fillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	fillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
+
+	local fillDirectionOptions = {
+		{ value = "leftRight", label = L["FillDirectionLeftRight"] },
+		{ value = "rightLeft", label = L["FillDirectionRightLeft"] },
+		{ value = "bottomTop", label = L["FillDirectionBottomTop"] },
+		{ value = "topBottom", label = L["FillDirectionTopBottom"] },
+	}
+
+	local function FillDirectionIsSelected(value)
+		return barSettings.fillDirection == value
+	end
+
+	local function FillDirectionSetSelected(newValue)
+		local oldValue = barSettings.fillDirection or "leftRight"
+		barSettings.fillDirection = newValue
+		C_Timer.After(0, function()
+			for _, opt in ipairs(fillDirectionOptions) do
+				if opt.value == newValue then
+					fillDirectionDropdown:SetDefaultText(opt.label)
+					break
+				end
+			end
+			local isVert = TRB.Functions.Bar:IsVerticalFill(newValue)
+			local wasVert = TRB.Functions.Bar:IsVerticalFill(oldValue)
+
+			-- Rotation: swap width ↔ height when crossing horizontal↔vertical boundary
+			if wasVert ~= isVert then
+				barSettings.width, barSettings.height = barSettings.height, barSettings.width
+				local wKey = barTypeDef.key .. "Width"
+				local hKey = barTypeDef.key .. "Height"
+				local wHandler = controls[wKey]:GetScript("OnValueChanged")
+				local hHandler = controls[hKey]:GetScript("OnValueChanged")
+				controls[wKey]:SetScript("OnValueChanged", nil)
+				controls[hKey]:SetScript("OnValueChanged", nil)
+				SwapSliderBounds(controls[wKey], controls[hKey])
+				controls[wKey]:SetValue(barSettings.width)
+				controls[wKey].EditBox:SetText(barSettings.width)
+				controls[hKey]:SetValue(barSettings.height)
+				controls[hKey].EditBox:SetText(barSettings.height)
+				controls[wKey]:SetScript("OnValueChanged", wHandler)
+				controls[hKey]:SetScript("OnValueChanged", hHandler)
+
+				-- Rotate growth direction for multi-node bars
+				if barTypeDef.isMultiNode and barSettings.growthDirection then
+					local rotateMap = isVert and rotateGrowthCCW or rotateGrowthCW
+					local newGrowth = rotateMap[barSettings.growthDirection]
+					if newGrowth then
+						barSettings.growthDirection = newGrowth
+						local gdDropdown = controls[barTypeDef.key .. "GrowthDirectionDropdown"]
+						if gdDropdown then
+							gdDropdown:SetDefaultText(growthDirectionToLabel[newGrowth] or newGrowth)
+						end
+					end
+				end
+			end
+
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+			end
+		end)
+	end
+
+	local function FillDirectionGenerator(dropdown, rootDescription)
+		for _, opt in ipairs(fillDirectionOptions) do
+			rootDescription:CreateRadio(opt.label, FillDirectionIsSelected, FillDirectionSetSelected, opt.value)
+		end
+	end
+	fillDirectionDropdown:SetupMenu(FillDirectionGenerator)
+	fillDirectionDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	local currentFillLabel = L["FillDirectionLeftRight"]
+	for _, opt in ipairs(fillDirectionOptions) do
+		if opt.value == (barSettings.fillDirection or "leftRight") then
+			currentFillLabel = opt.label
+			break
+		end
+	end
+	fillDirectionDropdown:SetDefaultText(currentFillLabel)
+
+	-- Growth Direction dropdown (only for multi-node bars)
+	if barTypeDef.isMultiNode then
+		local growthDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_GrowthDirection", parent, "WowStyle1DropdownTemplate")
+		controls[barTypeDef.key .. "GrowthDirectionDropdown"] = growthDirectionDropdown
+		growthDirectionDropdown:SetWidth(oUi.sliderWidth)
+		growthDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
+		growthDirectionDropdown.label.font:SetFontObject(GameFontNormal)
+
+		local growthDirectionOptions = {
+			{ value = "leftRight", label = L["GrowthDirectionLeftRight"] },
+			{ value = "rightLeft", label = L["GrowthDirectionRightLeft"] },
+			{ value = "bottomTop", label = L["GrowthDirectionBottomTop"] },
+			{ value = "topBottom", label = L["GrowthDirectionTopBottom"] },
+		}
+
+		local function GrowthDirectionIsSelected(value)
+			return barSettings.growthDirection == value
+		end
+
+		local function GrowthDirectionSetSelected(newValue)
+			barSettings.growthDirection = newValue
+			C_Timer.After(0, function()
+				for _, opt in ipairs(growthDirectionOptions) do
+					if opt.value == newValue then
+						growthDirectionDropdown:SetDefaultText(opt.label)
+						break
+					end
+				end
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				end
+			end)
+		end
+
+		local function GrowthDirectionGenerator(dropdown, rootDescription)
+			for _, opt in ipairs(growthDirectionOptions) do
+				rootDescription:CreateRadio(opt.label, GrowthDirectionIsSelected, GrowthDirectionSetSelected, opt.value)
+			end
+		end
+		growthDirectionDropdown:SetupMenu(GrowthDirectionGenerator)
+		growthDirectionDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
+
+		local currentGrowthLabel = L["GrowthDirectionLeftRight"]
+		for _, opt in ipairs(growthDirectionOptions) do
+			if opt.value == (barSettings.growthDirection or "leftRight") then
+				currentGrowthLabel = opt.label
+				break
+			end
+		end
+		growthDirectionDropdown:SetDefaultText(currentGrowthLabel)
+	end
 
 	-- Anchor Point dropdown (point on target bar)
 	yCoord = yCoord - 60
@@ -10388,6 +10967,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.position.xPos = value
 		RefreshBarTextEditorPreview(false)
 	end)
+	controls.barTextHorizontal = barTextHorizontal
 
 	title = L["VerticalOffset"]
 	local barTextVertical = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxHeight), math.floor(sanityCheckValues.barMaxHeight), 0, 1, 2,
@@ -10397,6 +10977,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		workingBarText.position.yPos = value
 		RefreshBarTextEditorPreview(false)
 	end)
+	controls.barTextVertical = barTextVertical
 
 	yCoord = yCoord - 40
 	local barTextRelativeToFrame = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barTextRelativeToFrame", barTextOptionsFrame, "WowStyle1DropdownTemplate")

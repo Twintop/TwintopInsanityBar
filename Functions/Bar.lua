@@ -153,9 +153,34 @@ function TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
 	return (barSettings and barSettings.spacing) or 0
 end
 
+---Derives the WoW StatusBar orientation string from a fillDirection setting.
+---@param fillDirection trbFillDirection? # The fill direction setting
+---@return string # "HORIZONTAL" or "VERTICAL"
+function TRB.Functions.Bar:GetOrientationFromFillDirection(fillDirection)
+	if fillDirection == "bottomTop" or fillDirection == "topBottom" then
+		return "VERTICAL"
+	end
+	return "HORIZONTAL"
+end
+
+---Derives whether the StatusBar fill should be reversed from a fillDirection setting.
+---@param fillDirection trbFillDirection? # The fill direction setting
+---@return boolean # true for rightLeft or topBottom
+function TRB.Functions.Bar:GetReverseFillFromFillDirection(fillDirection)
+	return fillDirection == "rightLeft" or fillDirection == "topBottom"
+end
+
+---Returns whether a fill direction is vertical.
+---@param fillDirection trbFillDirection? # The fill direction setting
+---@return boolean # true for bottomTop or topBottom
+function TRB.Functions.Bar:IsVerticalFill(fillDirection)
+	return fillDirection == "bottomTop" or fillDirection == "topBottom"
+end
+
 ---Calculates the total rendered width of a multi-node bar group (e.g., combo points).
----For multi-node bars, `barSettings.width` is per-node width, not total width.
----The total width is:  nodeCount * nodeWidth + (nodeCount - 1) * spacing
+---For horizontal-growth multi-node bars, `barSettings.width` is per-node width:
+---  totalWidth = nodeCount * nodeWidth + (nodeCount - 1) * spacing
+---For vertical-growth multi-node bars, width is just the per-node width (cross axis).
 ---@param barKey string # The bar key (e.g., "secondary")
 ---@param barSettings table? # The bar's settings (e.g., settings.comboPoints)
 ---@param barGroup TRB.Classes.BarGroup? # The bar group (for nodeCount)
@@ -187,6 +212,12 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 		return barSettings.width or 0
 	end
 
+	-- For vertical growth, the width is just the per-node width (cross axis)
+	local growthDirection = barSettings.growthDirection
+	if growthDirection == "topBottom" or growthDirection == "bottomTop" then
+		return barSettings.height or barSettings.width or 0
+	end
+
 	-- Resolve actual node count from the bar group if available
 	local nodeCount = maxNodes
 	if barGroup and barGroup.lastRebuildNodeCount then
@@ -199,6 +230,57 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
 end
 
+---Calculates the total rendered height of a multi-node bar group.
+---For vertical-growth multi-node bars: totalHeight = nodeCount * nodeHeight + (nodeCount - 1) * spacing
+---For horizontal-growth multi-node bars, height is just the per-node height (cross axis).
+---@param barKey string # The bar key (e.g., "secondary")
+---@param barSettings table? # The bar's settings (e.g., settings.comboPoints)
+---@param barGroup TRB.Classes.BarGroup? # The bar group (for nodeCount)
+---@return number # Total rendered height, or 0 if not applicable
+function TRB.Functions.Bar:GetMultiNodeBarTotalHeight(barKey, barSettings, barGroup)
+	if not barSettings then
+		return 0
+	end
+
+	-- Determine if this bar is multi-node
+	local isMultiNode = false
+	local maxNodes = 1
+	if barKey == "secondary" then
+		isMultiNode = true
+		maxNodes = TRB.Data.character.maxResource2 or 5
+	else
+		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		if registry then
+			local barTypeDef = registry:Get(barKey)
+			if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
+				isMultiNode = true
+				maxNodes = barTypeDef.maxNodes
+			end
+		end
+	end
+
+	if not isMultiNode then
+		return barSettings.height or 0
+	end
+
+	-- For horizontal growth, the height is just the per-node height (cross axis)
+	local growthDirection = barSettings.growthDirection
+	if growthDirection ~= "topBottom" and growthDirection ~= "bottomTop" then
+		return barSettings.height or 0
+	end
+
+	-- Vertical growth: totalHeight = nodeCount * nodeHeight + spacing
+	local nodeCount = maxNodes
+	if barGroup and barGroup.lastRebuildNodeCount then
+		nodeCount = barGroup.lastRebuildNodeCount
+	elseif barGroup and barGroup.nodeCount and barGroup.nodeCount > 0 then
+		nodeCount = barGroup.nodeCount
+	end
+	local nodeHeight = barSettings.height or 10
+	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
+	return (nodeHeight * nodeCount) + (nodeSpacing * (nodeCount - 1))
+end
+
 ---Computes the absolute min/max values for the bar
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return table
@@ -206,10 +288,19 @@ function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	local sc = {}
 	if settings ~= nil then
 		if settings.bar ~= nil then
+			local isVertical = self:IsVerticalFill(settings.bar.fillDirection)
+			local minBorder = math.ceil(settings.bar.border * 2)
 			sc.barMaxWidth = math.floor(GetScreenWidth())
-			sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
 			sc.barMaxHeight = math.floor(GetScreenHeight())
-			sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+			if isVertical then
+				-- Vertical: width is cross-axis (thin), height is main-axis (long)
+				sc.barMinWidth = math.max(minBorder, 1)
+				sc.barMinHeight = math.max(minBorder, 120)
+			else
+				-- Horizontal: width is main-axis (long), height is cross-axis (thin)
+				sc.barMinWidth = math.max(minBorder, 120)
+				sc.barMinHeight = math.max(minBorder, 1)
+			end
 		end
 
 		if settings.comboPoints ~= nil then
@@ -854,7 +945,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 					local att = primaryAnchor.attachPoint or "TOP"
 					local xo = primaryAnchor.xOffset or 0
 					local yo = primaryAnchor.yOffset or 0
-					-- Apply matchWidth center-alignment override
+					-- matchWidth: center horizontally
 					if primaryAnchor.matchWidth then
 						ap = string.gsub(ap, "LEFT", "")
 						ap = string.gsub(ap, "RIGHT", "")
@@ -863,6 +954,16 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 						if ap == "" then ap = "CENTER" end
 						if att == "" then att = "CENTER" end
 						xo = 0
+					end
+					-- matchHeight: center vertically
+					if primaryAnchor.matchHeight then
+						ap = string.gsub(ap, "TOP", "")
+						ap = string.gsub(ap, "BOTTOM", "")
+						att = string.gsub(att, "TOP", "")
+						att = string.gsub(att, "BOTTOM", "")
+						if ap == "" then ap = "CENTER" end
+						if att == "" then att = "CENTER" end
+						yo = 0
 					end
 					primary.containerFrame:ClearAllPoints()
 					primary.containerFrame:SetPoint(att, anchorGroup:GetAnchorFrame(), ap, xo, yo)
@@ -883,6 +984,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		primary.containerFrame:SetWidth(primaryWidth)
 		primary.containerFrame:SetHeight(primaryHeight)
 		primary.layoutHeight = primaryHeight -- Store layout height for collapse/expand by ProcessBars
+		primary.layoutWidth = primaryWidth -- Store layout width for collapse/expand by ProcessBars
 
 		if primaryNode then
 			-- Set frame strata
@@ -893,6 +995,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 			-- Set frame level
 			primaryNode:SetFrameLevel(frameLevels.bar)
+
+			-- Apply fill direction from settings
+			primaryNode:SetFillDirection(settings.bar.fillDirection)
 
 			-- Primary node should fill the primary group container
 			local primaryNodeFrame = primaryNode:GetFrame()
@@ -1034,10 +1139,12 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	end
 
 	-- ========================
-	-- Collapse settings-based hidden bars' container frames to 0 height.
+	-- Collapse settings-based hidden bars' container frames to 0 dimensions.
 	-- Hidden bars are still in the tree as positioning scaffolds (SetPoint anchors
-	-- remain valid), but with 0 height their TOP = BOTTOM, so children anchored
-	-- to them slide together instead of leaving a blank gap.
+	-- remain valid), but with 0 height/width their anchor points converge, so children
+	-- anchored to them slide together instead of leaving a blank gap.
+	-- Both dimensions are collapsed to support all stacking orientations:
+	-- height=0 for vertical stacking (TOP/BOTTOM anchors), width=0 for horizontal stacking.
 	-- Uses IsBarVisible (settings-only) rather than IsBarVisibleForLayout (form-aware)
 	-- because at construction time the Druid's current shapeshift form may not be
 	-- known yet. Runtime form-based collapse is handled by ProcessBars after
@@ -1048,6 +1155,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			local barGroup = barGroups[barKey]
 			if barGroup and barGroup.containerFrame then
 				barGroup.containerFrame:SetHeight(0.001)
+				barGroup.containerFrame:SetWidth(0.001)
 			end
 		end
 	end
@@ -1582,30 +1690,31 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	end
 
 	if absorbMode == "appended" or absorbMode == "appendedOverflow" then
-		-- Appended mode: absorb bar LEFT anchored to health fill's RIGHT, inside a clip frame
+		-- Appended mode: absorb bar anchored to health fill's leading edge, inside a clip frame
 		-- Overflow variant disables clipping and scales the overlay bar when absorb exceeds max health
 		absorbSlot:HideOverlay()
 		absorbSlot:HideInsetOverlay()
 		absorbSlot:CreateAppendedOverlay()
+
+		-- Compute the fill-axis inner dimension (width for horizontal fills, height for vertical fills)
+		local isVerticalFill = self:IsVerticalFill(healthNode.fillDirection)
+		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)) - 2 * (healthNode.border or 0))
 
 		if absorbMode == "appendedOverflow" then
 			absorbSlot:SetAppendedOverlayClipping(false)
 			local healthMaxNum = (not issecretvalue(healthMax)) and healthMax or 1
 			local absorbNum = (not issecretvalue(absorbAmount)) and absorbAmount or 0
 			if absorbNum > healthMaxNum and healthMaxNum > 0 then
-				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-				local overflowWidth = innerWidth * (absorbNum / healthMaxNum)
-				absorbSlot:SetAppendedOverlayWidth(overflowWidth)
+				local overflowDim = innerFillDim * (absorbNum / healthMaxNum)
+				absorbSlot:SetAppendedOverlayWidth(overflowDim)
 				absorbSlot:SetAppendedOverlayMinMax(0, absorbAmount)
 			else
-				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-				absorbSlot:SetAppendedOverlayWidth(innerWidth)
+				absorbSlot:SetAppendedOverlayWidth(innerFillDim)
 				absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
 			end
 		else
 			absorbSlot:SetAppendedOverlayClipping(true)
-			local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-			absorbSlot:SetAppendedOverlayWidth(innerWidth)
+			absorbSlot:SetAppendedOverlayWidth(innerFillDim)
 			absorbSlot:SetAppendedOverlayMinMax(0, healthMax)
 		end
 		absorbSlot:SetAppendedOverlayValue(absorbAmount)
@@ -1696,30 +1805,31 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	end
 
 	if incomingHealMode == "appended" or incomingHealMode == "appendedOverflow" then
-		-- Appended mode: incoming heal bar LEFT anchored to health fill's RIGHT, inside a clip frame
+		-- Appended mode: incoming heal bar anchored to health fill's leading edge, inside a clip frame
 		-- Overflow variant disables clipping and scales the overlay bar when incoming heals exceed max health
 		incomingHealSlot:HideOverlay()
 		incomingHealSlot:HideInsetOverlay()
 		incomingHealSlot:CreateAppendedOverlay()
+
+		-- Compute the fill-axis inner dimension (width for horizontal fills, height for vertical fills)
+		local isVerticalFill = self:IsVerticalFill(healthNode.fillDirection)
+		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)) - 2 * (healthNode.border or 0))
 
 		if incomingHealMode == "appendedOverflow" then
 			incomingHealSlot:SetAppendedOverlayClipping(false)
 			local healthMaxNum = (not issecretvalue(healthMax)) and healthMax or 1
 			local healNum = (not issecretvalue(incomingHealAmount)) and incomingHealAmount or 0
 			if healNum > healthMaxNum and healthMaxNum > 0 then
-				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-				local overflowWidth = innerWidth * (healNum / healthMaxNum)
-				incomingHealSlot:SetAppendedOverlayWidth(overflowWidth)
+				local overflowDim = innerFillDim * (healNum / healthMaxNum)
+				incomingHealSlot:SetAppendedOverlayWidth(overflowDim)
 				incomingHealSlot:SetAppendedOverlayMinMax(0, incomingHealAmount)
 			else
-				local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-				incomingHealSlot:SetAppendedOverlayWidth(innerWidth)
+				incomingHealSlot:SetAppendedOverlayWidth(innerFillDim)
 				incomingHealSlot:SetAppendedOverlayMinMax(0, healthMax)
 			end
 		else
 			incomingHealSlot:SetAppendedOverlayClipping(true)
-			local innerWidth = math.max(1, (healthNode.width or 1) - 2 * (healthNode.border or 0))
-			incomingHealSlot:SetAppendedOverlayWidth(innerWidth)
+			incomingHealSlot:SetAppendedOverlayWidth(innerFillDim)
 			incomingHealSlot:SetAppendedOverlayMinMax(0, healthMax)
 		end
 		incomingHealSlot:SetAppendedOverlayValue(incomingHealAmount)
@@ -1983,6 +2093,16 @@ function TRB.Functions.Bar:GetMatchWidth(barSettings)
 	return barSettings and barSettings.fullWidth or false
 end
 
+---Gets the effective matchHeight setting for a bar, reading from anchor.
+---@param barSettings table # The bar's settings table (e.g., settings.comboPoints)
+---@return boolean
+function TRB.Functions.Bar:GetMatchHeight(barSettings)
+	if barSettings and barSettings.anchor then
+		return barSettings.anchor.matchHeight or false
+	end
+	return false
+end
+
 ---Returns the effective width and CDM-forced fullWidth state for a bar group.
 ---Checks per-root effective widths first (which include CDM width matching when the bar
 ---is a forest root), then falls back to the primary bar's effective width.
@@ -2047,11 +2167,62 @@ function TRB.Functions.Bar:ResolveBarWidth(settings, barKey, visited)
 
 	local anchor = self:GetBarAnchor(settings, barKey)
 	if anchor and anchor.matchWidth and anchor.barKey ~= "screen" then
-		-- This bar matches its anchor's width, recursively resolve
+		-- matchWidth checked: match anchor's width, recursively resolve
 		return self:ResolveBarWidth(settings, anchor.barKey, visited)
 	end
 
 	return barSettings.width or settings.bar.width
+end
+
+---Resolves the actual height for a bar, following the matchHeight chain.
+---When a bar has matchHeight checked, it matches the anchor's height.
+---For multi-node bars with vertical growth, height = nodeCount * nodeHeight + spacing.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string # "primary", "secondary", "health", "screen", or a BarTypeRegistry key
+---@param visited table? # Internal: tracks visited bars to detect cycles
+---@return number # The resolved height for this bar
+function TRB.Functions.Bar:ResolveBarHeight(settings, barKey, visited)
+	visited = visited or {}
+	if visited[barKey] then
+		-- Cycle detected, fall back to primary bar height
+		return settings.bar.height
+	end
+	visited[barKey] = true
+
+	local barGroups = TRB.Frames.barGroups
+
+	if barKey == "primary" then
+		-- Primary bar uses effectiveHeight if available (accounts for anchor frame height matching)
+		if barGroups and barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights["primary"] then
+			return barGroups.rootEffectiveHeights["primary"]
+		end
+		return settings.bar.height
+	elseif barKey == "screen" then
+		-- Screen-anchored bars don't have a reference height to match
+		return settings.bar.height
+	end
+
+	-- Check if this barKey has a per-root effective height override
+	if barGroups and barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[barKey] then
+		local anchor = self:GetBarAnchor(settings, barKey)
+		if not anchor or not anchor.barKey or anchor.barKey == "screen" then
+			return barGroups.rootEffectiveHeights[barKey]
+		end
+	end
+
+	local barSettings = self:GetBarSettings(settings, barKey)
+	if not barSettings then
+		return settings.bar.height
+	end
+
+	local anchor = self:GetBarAnchor(settings, barKey)
+	if anchor and anchor.matchHeight and anchor.barKey ~= "screen" then
+		-- matchHeight checked: match anchor's height, recursively resolve
+		return self:ResolveBarHeight(settings, anchor.barKey, visited)
+	end
+
+	-- For multi-node bars with vertical growth, calculate total group height
+	return self:GetMultiNodeBarTotalHeight(barKey, barSettings, barGroups and barGroups[barKey]) or barSettings.height or settings.bar.height
 end
 
 ---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
@@ -2641,9 +2812,16 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	-- Set node count
 	targetGroup:SetNodeCount(nodes)
 
-	-- Set layout parameters (use anchor.matchWidth with fallback)
+	-- Set layout parameters
+	-- fullWidth stretches nodes to fill the growth axis. After dimension swap,
+	-- width = growth axis for both horizontal and vertical orientations, so
+	-- matchWidth controls fullWidth for horizontal growth and matchHeight for vertical.
 	local matchWidth = self:GetMatchWidth(groupSettings)
-	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), matchWidth, "HORIZONTAL")
+	local matchHeight = self:GetMatchHeight(groupSettings)
+	local growthDir = groupSettings.growthDirection or "leftRight"
+	local isVertGrowth = (growthDir == "topBottom" or growthDir == "bottomTop")
+	local fullWidth = isVertGrowth and matchHeight or matchWidth
+	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), fullWidth, "HORIZONTAL", groupSettings.growthDirection)
 
 	-- Set frame strata
 	targetGroup:SetFrameStrata(strata)
@@ -2722,12 +2900,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local xPos = anchor.xOffset or 0
 	local yPos = anchor.yOffset or 0
 
+	local isVerticalFill = self:IsVerticalFill(groupSettings.fillDirection)
+
+	-- Match Width: match the anchor's width, center horizontally
 	if anchor.matchWidth and anchor.barKey ~= "screen" then
-		-- Match width: resolve the anchor bar's width, following matchWidth chains if necessary.
-		-- This correctly handles anchoring to bars other than primary (e.g., health bar).
 		groupWidth = self:ResolveBarWidth(settings, anchor.barKey)
-		-- Force horizontal center alignment by stripping LEFT/RIGHT from anchor points
-		-- but preserve the user's chosen vertical relationship (TOP/BOTTOM/CENTER).
 		anchorPoint = string.gsub(anchorPoint, "LEFT", "")
 		anchorPoint = string.gsub(anchorPoint, "RIGHT", "")
 		attachPoint = string.gsub(attachPoint, "LEFT", "")
@@ -2735,7 +2912,21 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		if anchorPoint == "" then anchorPoint = "CENTER" end
 		if attachPoint == "" then attachPoint = "CENTER" end
 		xPos = 0
-	elseif anchor.barKey == "screen" and config.rootEffectiveWidth then
+	end
+
+	-- Match Height: match the anchor's height, center vertically
+	if anchor.matchHeight and anchor.barKey ~= "screen" then
+		groupHeight = self:ResolveBarHeight(settings, anchor.barKey)
+		anchorPoint = string.gsub(anchorPoint, "TOP", "")
+		anchorPoint = string.gsub(anchorPoint, "BOTTOM", "")
+		attachPoint = string.gsub(attachPoint, "TOP", "")
+		attachPoint = string.gsub(attachPoint, "BOTTOM", "")
+		if anchorPoint == "" then anchorPoint = "CENTER" end
+		if attachPoint == "" then attachPoint = "CENTER" end
+		yPos = 0
+	end
+
+	if not anchor.matchWidth and not anchor.matchHeight and anchor.barKey == "screen" and config.rootEffectiveWidth then
 		-- Screen-anchored root bar: use the root's effective width (accounts for CDM width matching)
 		groupWidth = config.rootEffectiveWidth
 	end
@@ -2772,20 +2963,35 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Use groupWidth for totalWidth: it has been resolved for matchWidth (parent's width),
 		-- screen-anchored root (rootEffectiveWidth/CDM), or per-node width (non-match case).
 
-		-- When CDM width matching is active for a multi-node root, force fullWidth
-		-- so ApplyLayout stretches nodes to fill the CDM width.
-		-- This is needed because anchor.matchWidth (which normally sets fullWidth via
-		-- SetLayout) doesn't account for CDM matching — they're separate mechanisms.
-		if config.cdmWidthMatched then
+		-- When CDM matching is active along the growth axis for a multi-node root,
+		-- force fullWidth so ApplyLayout stretches nodes to fill the matched dimension.
+		-- For horizontal growth the growth axis is width; for vertical it is height.
+		if (not isVertGrowth and config.cdmWidthMatched) or (isVertGrowth and config.cdmHeightMatched) then
 			targetGroup.fullWidth = true
 		end
 
-		targetGroup:ApplyLayout(
-			groupWidth,
-			groupSettings.width,
-			groupSettings.height,
-			groupSettings.border
-		)
+		-- ApplyLayout expects parameters pre-rotated for vertical growth:
+		--   totalWidth = extent along growth axis (height for vertical)
+		--   nodeWidth  = per-node extent along growth axis
+		--   nodeHeight = cross dimension (width for vertical)
+		if isVertGrowth then
+			targetGroup:ApplyLayout(
+				groupHeight,
+				groupSettings.height,
+				groupWidth,
+				groupSettings.border
+			)
+		else
+			targetGroup:ApplyLayout(
+				groupWidth,
+				groupSettings.width,
+				groupHeight,
+				groupSettings.border
+			)
+		end
+
+		-- Apply fill direction to all nodes in the group
+		targetGroup:SetAllNodeFillDirections(groupSettings.fillDirection)
 
 		-- Set min/max for multi-node bars.
 		-- ApplyLayout does not set min/max, and StatusBar frames default to (0,0),
@@ -2814,10 +3020,12 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		targetGroup.containerFrame:SetWidth(groupWidth)
 		targetGroup.containerFrame:SetHeight(groupHeight)
 		targetGroup.layoutHeight = groupHeight -- Store layout height for collapse/expand by ProcessBars
+		targetGroup.layoutWidth = groupWidth -- Store layout width for collapse/expand by ProcessBars
 
 		local singleNode = targetGroup:GetNode(1)
 		if singleNode then
 			singleNode:SetDimensions(groupWidth, groupHeight, groupBorder)
+			singleNode:SetFillDirection(groupSettings.fillDirection)
 			singleNode:SetFrameLevel(frameLevels.comboPoint)
 
 			-- Position node within container
@@ -3108,6 +3316,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 				barGroup:HideAllNodes()
 				if barGroup.containerFrame then
 					barGroup.containerFrame:SetHeight(0.001)
+					barGroup.containerFrame:SetWidth(0.001)
 				end
 			end
 		end

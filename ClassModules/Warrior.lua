@@ -340,7 +340,7 @@ local function ConstructResourceBar(settings)
 			else
 				barGroups.secondary:SetMaxNodes(maxWhirlwindNodes)
 				barGroups.secondary:SetNodeCount(maxWhirlwindNodes)
-				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
 				barGroups.secondary:Show()
 
 				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
@@ -2098,7 +2098,7 @@ function TRB.Functions.Class:CheckCharacter()
 						-- Talent became active: set up secondary bar layout and show it
 						barGroups.secondary:SetMaxNodes(whirlwindCharges)
 						barGroups.secondary:SetNodeCount(whirlwindCharges)
-						barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
+						barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL", sharedSettings.comboPoints.growthDirection)
 						barGroups.secondary:Show()
 						barGroups.secondary:ShowNodes(whirlwindCharges)
 

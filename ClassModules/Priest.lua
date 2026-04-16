@@ -472,7 +472,7 @@ local function ConstructResourceBar(settings)
 		else
 			barGroups.secondary:SetMaxNodes(maxPowerWordNodes)
 			barGroups.secondary:SetNodeCount(maxPowerWordNodes)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
 			barGroups.secondary:Show()
 
 			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
@@ -517,7 +517,7 @@ local function ConstructResourceBar(settings)
 			barGroups.holyWords:SetMaxNodes(maxHolyWordNodes)
 			barGroups.holyWords:SetNodeCount(maxHolyWordNodes)
 ---@diagnostic disable-next-line: undefined-field
-			barGroups.holyWords:SetLayout(Bar:GetEffectiveSpacing(settings.bars.holyWords), Bar:GetMatchWidth(settings.bars.holyWords), "HORIZONTAL")
+			barGroups.holyWords:SetLayout(Bar:GetEffectiveSpacing(settings.bars.holyWords), Bar:GetMatchWidth(settings.bars.holyWords), "HORIZONTAL", settings.bars.holyWords.growthDirection)
 			barGroups.holyWords:Show()
 
 			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "holyWords")

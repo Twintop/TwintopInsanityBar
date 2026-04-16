@@ -2081,6 +2081,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 										xOffset = 0,
 										yOffset = 0,
 										matchWidth = true,
+										matchHeight = false,
 									}
 								end
 							end
@@ -5201,6 +5202,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 						xOffset = barSettings.xPos or 0,
 						yOffset = barSettings.yPos or 0,
 						matchWidth = barSettings.fullWidth or false,
+						matchHeight = false,
 					}
 				end
 			elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
@@ -5212,6 +5214,7 @@ function TRB.Functions.Settings:PortForwardSettings()
 					xOffset = barSettings.xPos or 0,
 					yOffset = barSettings.yPos or -200,
 					matchWidth = false,
+					matchHeight = false,
 				}
 			end
 		end
@@ -7651,6 +7654,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		xPos = 0,
 		yPos = -200,
 		border = border,
+		fillDirection = "leftRight",
 		anchor = {
 			barKey = "screen",
 			anchorPoint = "CENTER",
@@ -7658,6 +7662,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 			xOffset = 0,
 			yOffset = -200,
 			matchWidth = false,
+			matchHeight = false,
 		},
 	}
 end
@@ -7685,6 +7690,7 @@ function TRB.Functions.Settings:DefaultHealthDimensions(classic)
 		yPos = yPos,
 		border = border,
 		spacing = 0,
+		fillDirection = "leftRight",
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
@@ -7695,6 +7701,7 @@ function TRB.Functions.Settings:DefaultHealthDimensions(classic)
 			xOffset = 0,
 			yOffset = yPos,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -7712,6 +7719,8 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7722,6 +7731,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -7734,6 +7744,8 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo ="TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7744,6 +7756,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -7776,6 +7789,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			border = 1,
 			spacing = 0,
 			collapseBorderWidth = true,
+			fillDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7786,6 +7800,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -7798,6 +7813,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7808,6 +7824,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -7863,6 +7880,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			border = 1,
 			spacing = 0,
 			collapseBorderWidth = true,
+			fillDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7873,6 +7891,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -7885,6 +7904,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7895,6 +7915,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -7978,6 +7999,8 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7988,6 +8011,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8000,6 +8024,8 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8010,6 +8036,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8042,6 +8069,8 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8052,6 +8081,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8064,6 +8094,8 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8074,6 +8106,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8106,6 +8139,8 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "BOTTOM",
 			relativeToName = L["PositionBelowMiddle"],
 			fullWidth = true,
@@ -8116,6 +8151,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8128,6 +8164,8 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
@@ -8138,6 +8176,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8189,6 +8228,8 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8199,6 +8240,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8211,6 +8253,8 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8221,6 +8265,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8254,6 +8299,8 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8264,6 +8311,7 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8276,6 +8324,8 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8286,6 +8336,7 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8327,6 +8378,7 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 					xOffset = barSettings.xPos or 0,
 					yOffset = barSettings.yPos or 0,
 					matchWidth = barSettings.fullWidth or false,
+					matchHeight = false,
 				}
 			end
 		elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
@@ -8338,6 +8390,7 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 				xOffset = barSettings.xPos or 0,
 				yOffset = barSettings.yPos or -200,
 				matchWidth = false,
+				matchHeight = false,
 			}
 		end
 	end

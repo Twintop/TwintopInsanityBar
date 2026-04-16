@@ -4,25 +4,78 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 
 
+---Returns the anchoring parameters for positioning a threshold line based on fill direction.
+---@param fillDirection trbFillDirection? # The fill direction of the bar
+---@param effectiveWidth number # The rendered width of the parent frame
+---@param effectiveHeight number # The rendered height of the parent frame
+---@param value number # The resource value at which to position the threshold
+---@param maxResource number # The maximum resource value
+---@return string anchorPoint # The anchor point on the threshold line
+---@return string parentAnchor # The anchor point on the parent frame
+---@return number xOffset # The x-axis offset
+---@return number yOffset # The y-axis offset
+---@return number effectiveSize # The effective dimension used for factor calculation
+local function GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
+	if fillDirection == "rightLeft" then
+		local factor = effectiveWidth / maxResource
+		return "RIGHT", "RIGHT", -math.floor(value * factor), 0, effectiveWidth
+	elseif fillDirection == "bottomTop" then
+		local factor = effectiveHeight / maxResource
+		return "BOTTOM", "BOTTOM", 0, math.floor(value * factor), effectiveHeight
+	elseif fillDirection == "topBottom" then
+		local factor = effectiveHeight / maxResource
+		return "TOP", "TOP", 0, -math.floor(value * factor), effectiveHeight
+	else -- "leftRight" or nil (default)
+		local factor = effectiveWidth / maxResource
+		return "LEFT", "LEFT", math.floor(value * factor), 0, effectiveWidth
+	end
+end
+
+---Returns true if the given fill direction is vertical (bottomTop or topBottom).
+---@param fillDirection trbFillDirection? # The fill direction
+---@return boolean
+local function IsVerticalFillDirection(fillDirection)
+	return fillDirection == "bottomTop" or fillDirection == "topBottom"
+end
+
+
 ---Configures a threshold icon's anchor point, position, and size based on the spec's threshold icon settings.
+---For vertical bars, "Above" (TOP) remaps to LEFT, "Below" (BOTTOM) remaps to RIGHT.
 ---@param settings table # The spec settings containing thresholds.icons configuration
 ---@param thresholdLine table # The threshold frame whose .icon child will be repositioned and resized
-local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
+---@param fillDirection trbFillDirection? # The fill direction of the parent bar (nil defaults to horizontal)
+local function SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
 	if thresholdLine.icon ~= nil then
-		local setPoint = "TOP"
-		local setPointRelativeTo = "BOTTOM"
-		
-		if settings.thresholds.icons.relativeTo == "TOP" then
-			setPoint = "BOTTOM"
-			setPointRelativeTo = "TOP"
-		elseif settings.thresholds.icons.relativeTo == "CENTER" then
-			setPoint = "CENTER"
-			setPointRelativeTo = "CENTER"
-		elseif settings.thresholds.icons.relativeTo == "BOTTOM" then
-			setPoint = "TOP"
-			setPointRelativeTo = "BOTTOM"
+		local isVertical = IsVerticalFillDirection(fillDirection)
+		local relativeTo = settings.thresholds.icons.relativeTo
+
+		local setPoint, setPointRelativeTo
+		if isVertical then
+			-- Vertical bar: remap Above(TOP)→LEFT, Below(BOTTOM)→RIGHT, Center→Center
+			if relativeTo == "TOP" then
+				setPoint = "RIGHT"
+				setPointRelativeTo = "LEFT"
+			elseif relativeTo == "CENTER" then
+				setPoint = "CENTER"
+				setPointRelativeTo = "CENTER"
+			else -- "BOTTOM" or default
+				setPoint = "LEFT"
+				setPointRelativeTo = "RIGHT"
+			end
+		else
+			-- Horizontal bar: original behavior
+			if relativeTo == "TOP" then
+				setPoint = "BOTTOM"
+				setPointRelativeTo = "TOP"
+			elseif relativeTo == "CENTER" then
+				setPoint = "CENTER"
+				setPointRelativeTo = "CENTER"
+			else -- "BOTTOM" or default
+				setPoint = "TOP"
+				setPointRelativeTo = "BOTTOM"
+			end
 		end
-	
+
 		thresholdLine.icon:ClearAllPoints()
 		thresholdLine.icon:SetPoint(setPoint, thresholdLine, setPointRelativeTo, settings.thresholds.icons.xPos, settings.thresholds.icons.yPos)
 		thresholdLine.icon:SetSize(settings.thresholds.icons.width, settings.thresholds.icons.height)
@@ -30,6 +83,7 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 end
 
 ---Repositions a primary resource bar threshold line at the correct pixel offset for the given resource value, using cached values to avoid redundant updates.
+---Supports both horizontal and vertical bar orientations via settings.bar.fillDirection.
 ---@param settings table # The spec settings containing bar and threshold configuration
 ---@param key string # Cache key identifying this threshold for deduplication
 ---@param thresholdLine Frame # The threshold frame to reposition
@@ -37,7 +91,7 @@ end
 ---@param parentFrame Frame # The parent bar frame used for width calculation and anchoring
 ---@param value number # The resource value at which to position the threshold
 ---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
----@param growRight boolean? # Whether the bar grows left-to-right (default true)
+---@param growRight boolean? # Whether the bar grows left-to-right (default true); ignored when fillDirection is present
 function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
 		return
@@ -54,29 +108,31 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		end
 	end
 
-	-- Derive effective width from the parent frame's actual rendered width.
-	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
-	-- The StatusBar fill also covers the full frame width, so threshold positions should
-	-- use the full width to stay aligned with the fill edge.
+	local fillDirection = settings.bar.fillDirection
+	if fillDirection == nil then
+		fillDirection = growRight and "leftRight" or "rightLeft"
+	end
+
+	-- Derive effective dimensions from the parent frame's actual rendered size.
 	local effectiveWidth = parentFrame:GetWidth()
+	local effectiveHeight = parentFrame:GetHeight()
+	-- Use the appropriate axis for the cache key
+	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	-- Include effectiveWidth in cache check so thresholds update when bar width changes
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = effectiveWidth / maxResource
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
-		if growRight then
-			thresholdLine:SetPoint("LEFT", parentFrame, "LEFT", math.floor(value * factor), 0)
-		else
-			thresholdLine:SetPoint("RIGHT", parentFrame, "LEFT", math.ceil(value * factor), 0)
-		end
+		thresholdLine:ClearAllPoints()
+		thresholdLine:SetPoint(anchorPoint, parentFrame, parentAnchor, xOffset, yOffset)
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveWidth = effectiveWidth
+		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
+		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
 	end
 
 	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
-		SetThresholdIconSizeAndPosition(settings, thresholdLine)
+		SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
 		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
 	end
 end
@@ -134,20 +190,36 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 			effectiveRelativeTo = thresholdOverrides.icon.relativeTo
 		end
 
-		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo then
+		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo or cache.iconFillDirection ~= settings.bar.fillDirection then
+			local isVertical = IsVerticalFillDirection(settings.bar.fillDirection)
 
-			local setPoint = "TOP"
-			local setPointRelativeTo = "BOTTOM"
-			if effectiveRelativeTo == "TOP" then
-				setPoint = "BOTTOM"
-				setPointRelativeTo = "TOP"
-			elseif effectiveRelativeTo == "CENTER" then
-				setPoint = "CENTER"
-				setPointRelativeTo = "CENTER"
-			elseif effectiveRelativeTo == "BOTTOM" then
-				setPoint = "TOP"
-				setPointRelativeTo = "BOTTOM"
+			local setPoint, setPointRelativeTo
+			if isVertical then
+				-- Vertical bar: remap Above(TOP)→LEFT, Below(BOTTOM)→RIGHT, Center→Center
+				if effectiveRelativeTo == "TOP" then
+					setPoint = "RIGHT"
+					setPointRelativeTo = "LEFT"
+				elseif effectiveRelativeTo == "CENTER" then
+					setPoint = "CENTER"
+					setPointRelativeTo = "CENTER"
+				else -- "BOTTOM" or default
+					setPoint = "LEFT"
+					setPointRelativeTo = "RIGHT"
+				end
+			else
+				-- Horizontal bar: original behavior
+				if effectiveRelativeTo == "TOP" then
+					setPoint = "BOTTOM"
+					setPointRelativeTo = "TOP"
+				elseif effectiveRelativeTo == "CENTER" then
+					setPoint = "CENTER"
+					setPointRelativeTo = "CENTER"
+				else -- "BOTTOM" or default
+					setPoint = "TOP"
+					setPointRelativeTo = "BOTTOM"
+				end
 			end
+
 			threshold.icon:ClearAllPoints()
 			threshold.icon:SetPoint(setPoint, threshold, setPointRelativeTo, xPos, yPos)
 			threshold.icon:SetSize(width, height)
@@ -156,6 +228,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 			cache.iconXPos = xPos
 			cache.iconYPos = yPos
 			cache.iconRelativeTo = effectiveRelativeTo
+			cache.iconFillDirection = settings.bar.fillDirection
 		end
 
 		-- Determine effective icon border: per-threshold override > global
@@ -225,8 +298,15 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		borderSubtraction = settings.bar.border * 2
 	end
 
-	threshold:SetWidth(settings.thresholds.properties.width)
-	threshold:SetHeight(settings.bar.height - borderSubtraction)
+	-- For vertical bars, the threshold is a horizontal stripe (swap width/height)
+	local isVertical = IsVerticalFillDirection(settings.bar.fillDirection)
+	if isVertical then
+		threshold:SetWidth(settings.bar.width - borderSubtraction)
+		threshold:SetHeight(settings.thresholds.properties.width)
+	else
+		threshold:SetWidth(settings.thresholds.properties.width)
+		threshold:SetHeight(settings.bar.height - borderSubtraction)
+	end
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -271,7 +351,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 
 		if settings.thresholds.icons.enabled then
 			threshold.icon:Show()
-			SetThresholdIconSizeAndPosition(settings, threshold)
+			SetThresholdIconSizeAndPosition(settings, threshold, settings.bar.fillDirection)
 		else
 			threshold.icon:Hide()
 		end
@@ -305,8 +385,15 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
 	]]
 	
-	threshold:SetWidth(settings.thresholds.properties.width)
-	threshold:SetHeight(settings.comboPoints.height)
+	-- For vertical growth, the threshold is a horizontal stripe (swap width/height)
+	local isVertical = IsVerticalFillDirection(settings.comboPoints.fillDirection)
+	if isVertical then
+		threshold:SetWidth(settings.comboPoints.width)
+		threshold:SetHeight(settings.thresholds.properties.width)
+	else
+		threshold:SetWidth(settings.thresholds.properties.width)
+		threshold:SetHeight(settings.comboPoints.height)
+	end
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -351,7 +438,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 
 		if settings.thresholds.icons.enabled then
 			threshold.icon:Show()
-			SetThresholdIconSizeAndPosition(settings, threshold)
+			SetThresholdIconSizeAndPosition(settings, threshold, settings.comboPoints.fillDirection)
 		else
 			threshold.icon:Hide()
 		end
@@ -380,6 +467,7 @@ function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, h
 end
 
 ---Repositions a combo point (secondary resource) bar threshold line at the correct pixel offset, showing or hiding it based on the showThreshold flag.
+---Supports both horizontal and vertical bar orientations via settings.comboPoints.fillDirection.
 ---@param settings table # The spec settings containing comboPoints configuration
 ---@param key string # Cache key identifying this threshold for deduplication
 ---@param thresholdLine Frame # The threshold frame to reposition
@@ -387,7 +475,7 @@ end
 ---@param parentFrame Frame # The parent combo point frame used for anchoring
 ---@param value number # The resource value at which to position the threshold
 ---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
----@param growRight boolean? # Whether the bar grows left-to-right (default true)
+---@param growRight boolean? # Whether the bar grows left-to-right (default true); ignored when fillDirection is present
 function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
 	if not showThreshold or settings == nil or settings.comboPoints == nil or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
@@ -411,36 +499,36 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		end
 	end
 
-	-- Derive effective width from the threshold's own parent frame.
-	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
-	-- The StatusBar fill covers the full frame width, so threshold positions use the full
-	-- width to stay aligned with the fill edge.
+	local fillDirection = settings.comboPoints.fillDirection
+	if fillDirection == nil then
+		fillDirection = growRight and "leftRight" or "rightLeft"
+	end
+
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
+	local effectiveHeight = renderFrame and renderFrame:GetHeight() or 0
+	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	-- Include effectiveWidth in cache check so thresholds update when bar width changes
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = effectiveWidth / maxResource
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
 		thresholdLine:ClearAllPoints()
-		if growRight then
-			thresholdLine:SetPoint("LEFT", renderFrame, "LEFT", math.floor(value * factor), 0)
-		else
-			thresholdLine:SetPoint("RIGHT", renderFrame, "LEFT", math.ceil(value * factor), 0)
-		end
+		thresholdLine:SetPoint(anchorPoint, renderFrame, parentAnchor, xOffset, yOffset)
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveWidth = effectiveWidth
+		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
+		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
 	end
 
 	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
-		SetThresholdIconSizeAndPosition(settings, thresholdLine)
+		SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
 		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
 	end
 end
 
 ---Repositions a threshold line for custom bar groups (stagger, defensives, etc.)
+---Supports both horizontal and vertical bar orientations via fillDirection parameter.
 ---@param key string # Cache key for the threshold
 ---@param thresholdLine Frame # The threshold frame to reposition
 ---@param showThreshold boolean # Whether to show the threshold
@@ -449,8 +537,9 @@ end
 ---@param maxResource number # The maximum resource value
 ---@param barWidth number # The width of the bar
 ---@param barBorder number # The border size of the bar
----@param growRight boolean? # Whether the bar grows right (default true)
-function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine, showThreshold, parentFrame, value, maxResource, barWidth, barBorder, growRight)
+---@param growRight boolean? # Whether the bar grows right (default true); ignored when fillDirection is present
+---@param fillDirection trbFillDirection? # The fill direction of the bar (nil defaults to leftRight/rightLeft based on growRight)
+function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine, showThreshold, parentFrame, value, maxResource, barWidth, barBorder, growRight, fillDirection)
 	if not showThreshold or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
 		if thresholdLine and not showThreshold then
@@ -466,30 +555,29 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 		growRight = true
 	end
 
+	if fillDirection == nil then
+		fillDirection = growRight and "leftRight" or "rightLeft"
+	end
+
 	if maxResource == nil or maxResource == 0 then
 		maxResource = 100
 	end
 
-	-- Derive effective width from the threshold's own parent frame.
-	-- In the consolidated single-frame system, the frame has outer dimensions (including border).
-	-- The StatusBar fill covers the full frame width, so threshold positions use the full
-	-- width to stay aligned with the fill edge — no border subtraction needed.
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
+	local effectiveHeight = renderFrame and renderFrame:GetHeight() or 0
+	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveWidth ~= effectiveWidth then
-		local factor = effectiveWidth / maxResource
+	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
 		thresholdLine:ClearAllPoints()
-		if growRight then
-			thresholdLine:SetPoint("LEFT", renderFrame, "LEFT", math.floor(value * factor), 0)
-		else
-			thresholdLine:SetPoint("RIGHT", renderFrame, "LEFT", math.ceil(value * factor), 0)
-		end
+		thresholdLine:SetPoint(anchorPoint, renderFrame, parentAnchor, xOffset, yOffset)
 		TRB.Data.cache.values.threshold[key].value = value
 		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveWidth = effectiveWidth
+		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
+		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
 	end
 end
 
@@ -848,19 +936,36 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
 
-			-- Per-threshold line width override
+			-- For vertical bars, the threshold line is a horizontal stripe:
+			-- "line width" (thickness) maps to SetHeight, cross-section maps to SetWidth
+			local isVerticalBar = IsVerticalFillDirection(settings.bar.fillDirection)
+
+			-- Per-threshold line width override (thickness of the line)
+			local lineThickness
 			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.width then
-				if cache.overrideLineWidth ~= thresholdOverrides.line.width then
-					threshold:SetWidth(thresholdOverrides.line.width)
-					cache.overrideLineWidth = thresholdOverrides.line.width
+				lineThickness = thresholdOverrides.line.width
+			end
+
+			if lineThickness then
+				if cache.overrideLineWidth ~= lineThickness then
+					if isVerticalBar then
+						threshold:SetHeight(lineThickness)
+					else
+						threshold:SetWidth(lineThickness)
+					end
+					cache.overrideLineWidth = lineThickness
 				end
 			elseif cache.overrideLineWidth ~= nil then
 				-- Reset to global width
-				threshold:SetWidth(settings.thresholds.properties.width)
+				if isVerticalBar then
+					threshold:SetHeight(settings.thresholds.properties.width)
+				else
+					threshold:SetWidth(settings.thresholds.properties.width)
+				end
 				cache.overrideLineWidth = nil
 			end
 
-			-- Per-threshold overlap border override
+			-- Per-threshold overlap border override (cross-section dimension)
 			local effectiveOverlapBorder = settings.thresholds.properties.overlapBorder
 			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.overlapBorder ~= nil then
 				effectiveOverlapBorder = thresholdOverrides.line.overlapBorder
@@ -870,11 +975,21 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			if not effectiveOverlapBorder then
 				borderSubtraction = settings.bar.border * 2
 			end
-			local effectiveHeight = settings.bar.height - borderSubtraction
 
-			if cache.overrideLineHeight ~= effectiveHeight then
-				threshold:SetHeight(effectiveHeight)
-				cache.overrideLineHeight = effectiveHeight
+			local effectiveCrossSection
+			if isVerticalBar then
+				effectiveCrossSection = settings.bar.width - borderSubtraction
+			else
+				effectiveCrossSection = settings.bar.height - borderSubtraction
+			end
+
+			if cache.overrideLineHeight ~= effectiveCrossSection then
+				if isVerticalBar then
+					threshold:SetWidth(effectiveCrossSection)
+				else
+					threshold:SetHeight(effectiveCrossSection)
+				end
+				cache.overrideLineHeight = effectiveCrossSection
 			end
 
 			local thresholdUsable = false
