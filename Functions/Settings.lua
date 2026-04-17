@@ -8317,6 +8317,9 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 	local function MigrateOne(barSettings)
 		if barSettings == nil then return end
 		if barSettings.anchor ~= nil and not forceResync then return end
+		-- When forceResync is true but the anchor block already has a valid barKey,
+		-- trust it over stale legacy fields (fixes export/import losing screen anchors).
+		if barSettings.anchor ~= nil and barSettings.anchor.barKey ~= nil then return end
 		if barSettings.relativeTo then
 			local mapping = anchorMap[barSettings.relativeTo]
 			if mapping then

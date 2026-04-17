@@ -12,7 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.1.57-release (2026-04-13)
+# 12.0.1.57-release (2026-04-18)
+## General
+
+- Fix an issue where importing settings would sometimes reset bar anchoring to defaults when the bar was anchored to "Screen".
+
+### Localization
+
+- [#737](#737) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Paladin
 
 - Add new color indicator, audio cue, and bar text variable for when you have a Divine Purpose proc active.
