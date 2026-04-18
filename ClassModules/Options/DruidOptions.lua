@@ -1286,12 +1286,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled",
 					enabled = true
 				},
-				clearcasting = {
-					color = "FF4A95CE",
-					color2 = "FF4A95CE",
-					gradientDirection = "disabled",
-					enabled = true
-				},
 				incarnation = {
 					color = "FF005500",
 					color2 = "FF005500",

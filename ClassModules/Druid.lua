@@ -376,12 +376,7 @@ local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 		local snapshotData = TRB.Data.snapshotData
 		local spellId = ...
-		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells
-			if spellId == spells.clearcasting.id then
-				snapshotData.attributes.clearcastingActive = true
-			end
-		elseif TRB.Data.character.specId == 4 then
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = true
@@ -390,12 +385,7 @@ local function HandleSpellEvents(self, event, ...)
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local snapshotData = TRB.Data.snapshotData
 		local spellId = ...
-		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells
-			if spellId == spells.clearcasting.id then
-				snapshotData.attributes.clearcastingActive = false
-			end
-		elseif TRB.Data.character.specId == 4 then
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = false

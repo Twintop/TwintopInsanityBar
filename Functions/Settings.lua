@@ -6582,7 +6582,19 @@ function TRB.Functions.Settings:PortForwardSettings()
 			and restoration.colors.shared.indicatorColors.clearcasting == nil
 			and restoration.colors.bar and restoration.colors.bar.clearcasting ~= nil then
 
-			table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+			restoration.colors.shared.nodeOrder = restoration.colors.shared.nodeOrder or {}
+
+			local hasClearcasting = false
+			for _, key in ipairs(restoration.colors.shared.nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				end
+			end
+
+			if not hasClearcasting then
+				table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+			end
 
 			restoration.colors.shared.indicatorColors.clearcasting = {
 				color = restoration.colors.bar.clearcasting.color or "FF4A95CE",
@@ -6606,16 +6618,24 @@ function TRB.Functions.Settings:PortForwardSettings()
 			and feral.colors.bar and feral.colors.bar.clearcasting ~= nil then
 
 			-- Insert clearcasting after ravage but before borderStealth in nodeOrder
-			local inserted = false
-			for i, key in ipairs(feral.colors.shared.nodeOrder) do
-				if key == "borderStealth" then
-					table.insert(feral.colors.shared.nodeOrder, i, "clearcasting")
-					inserted = true
+			feral.colors.shared.nodeOrder = feral.colors.shared.nodeOrder or {}
+			local nodeOrder = feral.colors.shared.nodeOrder
+			local hasClearcasting = false
+			local borderStealthIndex = nil
+			for i, key in ipairs(nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
 					break
+				elseif key == "borderStealth" and borderStealthIndex == nil then
+					borderStealthIndex = i
 				end
 			end
-			if not inserted then
-				table.insert(feral.colors.shared.nodeOrder, "clearcasting")
+			if not hasClearcasting then
+				if borderStealthIndex ~= nil then
+					table.insert(nodeOrder, borderStealthIndex, "clearcasting")
+				else
+					table.insert(nodeOrder, "clearcasting")
+				end
 			end
 
 			feral.colors.shared.indicatorColors.clearcasting = {
