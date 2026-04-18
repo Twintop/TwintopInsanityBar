@@ -6575,6 +6575,83 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate Restoration Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.shared and restoration.colors.shared.indicatorColors
+			and restoration.colors.shared.indicatorColors.clearcasting == nil
+			and restoration.colors.bar and restoration.colors.bar.clearcasting ~= nil then
+
+			restoration.colors.shared.nodeOrder = restoration.colors.shared.nodeOrder or {}
+
+			local hasClearcasting = false
+			for _, key in ipairs(restoration.colors.shared.nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				end
+			end
+
+			if not hasClearcasting then
+				table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+			end
+
+			restoration.colors.shared.indicatorColors.clearcasting = {
+				color = restoration.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = restoration.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = restoration.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = restoration.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					manaBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			restoration.colors.bar.clearcasting = nil
+		end
+	end
+
+	-- Migrate Feral Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
+		local feral = TwintopInsanityBarSettings.druid.feral
+		if feral.colors and feral.colors.shared and feral.colors.shared.indicatorColors
+			and feral.colors.shared.indicatorColors.clearcasting == nil
+			and feral.colors.bar and feral.colors.bar.clearcasting ~= nil then
+
+			-- Insert clearcasting after ravage but before borderStealth in nodeOrder
+			feral.colors.shared.nodeOrder = feral.colors.shared.nodeOrder or {}
+			local nodeOrder = feral.colors.shared.nodeOrder
+			local hasClearcasting = false
+			local borderStealthIndex = nil
+			for i, key in ipairs(nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				elseif key == "borderStealth" and borderStealthIndex == nil then
+					borderStealthIndex = i
+				end
+			end
+			if not hasClearcasting then
+				if borderStealthIndex ~= nil then
+					table.insert(nodeOrder, borderStealthIndex, "clearcasting")
+				else
+					table.insert(nodeOrder, "clearcasting")
+				end
+			end
+
+			feral.colors.shared.indicatorColors.clearcasting = {
+				color = feral.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = feral.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = feral.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = feral.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					energyBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			feral.colors.bar.clearcasting = nil
+		end
+	end
+
 	-- Migrate Hunter BeastMastery to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.beastMastery then
 		local spec = TwintopInsanityBarSettings.hunter.beastMastery
