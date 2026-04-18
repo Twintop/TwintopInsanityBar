@@ -1466,6 +1466,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.essenceBurstActive = false
+		snapshotData.attributes.extendsEbonMight = false
+	end
+end
+
 local specValidVars
 do
 	local castingFn = function()

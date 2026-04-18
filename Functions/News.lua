@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.1.58-release (2026-04-19)
+## General
+
+- Fix an issue where manually tracked buff timers (e.g., Voidform, Metamorphosis, Dragonrage, Apotheosis, Eclipse, Ascendance, etc.) would not reset when the player dies.
+
+---
+
 # 12.0.1.57-release (2026-04-18)
 ## General
 
