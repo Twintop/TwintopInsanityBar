@@ -2473,6 +2473,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.untetheredRageActive = false
+		snapshotData.attributes.eyeBeamOverride = false
+		snapshotData.attributes.shatteredDestinyFury = 0
+	end
+end
+
 local specValidVars
 do
 	local castingFn = function()
