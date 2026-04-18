@@ -813,6 +813,8 @@ function TRB.Classes.Druid.RestorationSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$incarnationTime", description = L["DruidRestorationBarTextVariable_incarnationTime"], printInSettings = true, color = false },
 
+		{ variable = "$clearcastingActive", description = L["DruidRestorationBarTextVariable_clearcastingActive"], printInSettings = true, color = false },
+
 		{ variable = "$efflorescenceTime", description = L["DruidRestorationBarTextVariable_efflorescenceTime"], printInSettings = true, color = false },
 	})
 end

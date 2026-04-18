@@ -21,6 +21,15 @@ local content = [====[
 
 - [#737](#737) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
+## Druid
+### Feral
+
+- [#738](#738) Re-enable the color indicator for when you have a Clearcasting proc active and add a new logic-only bar text variable `$clearcastingActive` for conditional bar text logic.
+
+### Restoration
+
+- [#738](#738) Re-enable the color indicator for when you have a Clearcasting proc active and add a new logic-only bar text variable `$clearcastingActive` for conditional bar text logic.
+
 ## Paladin
 
 - Add new color indicator, audio cue, and bar text variable for when you have a Divine Purpose proc active.

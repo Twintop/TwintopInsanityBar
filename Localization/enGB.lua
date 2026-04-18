@@ -307,4 +307,6 @@ if locale == "enGB" then
     L["ThresholdDetailColorModeStaticColor"] = "Static Colour"
     -- Paladin Divine Purpose Indicator Colors
     L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this colour when you have Divine Purpose."
+    -- Druid Restoration Clearcasting Indicator Colors
+    L["DruidRestorationIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
 end

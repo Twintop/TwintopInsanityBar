@@ -1320,6 +1320,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					"incarnationEnd",
 					"incarnation",
 					"noEfflorescence",
+					"clearcasting",
 				},
 				gradientOrder = {},
 				indicatorColors = {
@@ -1344,6 +1345,15 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					noEfflorescence = {
 						color = "FFFF0000",
 						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+					clearcasting = {
+						color = "FF4A95CE",
+						color2 = "FF4A95CE",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -3224,6 +3234,7 @@ local function RestorationConstructIndicatorColorsPanel(parent)
 			{ key = "incarnationEnd",    label = L["DruidRestorationCheckboxIncarnationEnding"],  tooltip = L["DruidRestorationIndicatorIncarnationEndTooltip"],      colorLabel = L["DruidRestorationIndicatorIncarnationEndColor"] },
 			{ key = "incarnation",       label = L["DruidRestorationCheckboxIncarnation"],        tooltip = L["DruidRestorationIndicatorIncarnationTooltip"],         colorLabel = L["DruidRestorationIndicatorIncarnationColor"] },
 			{ key = "noEfflorescence",   label = L["DruidRestorationCheckboxNoEfflorescence"],    tooltip = L["DruidRestorationIndicatorNoEfflorescenceTooltip"],     colorLabel = L["DruidRestorationIndicatorNoEfflorescenceColor"] },
+			{ key = "clearcasting",      label = L["DruidRestorationCheckboxClearcasting"],       tooltip = L["DruidRestorationIndicatorClearcastingTooltip"],        colorLabel = L["DruidRestorationIndicatorClearcastingColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar",      label = L["BarNameManaBar"] },

@@ -6575,6 +6575,29 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate Restoration Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.shared and restoration.colors.shared.indicatorColors
+			and restoration.colors.shared.indicatorColors.clearcasting == nil
+			and restoration.colors.bar and restoration.colors.bar.clearcasting ~= nil then
+
+			table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+
+			restoration.colors.shared.indicatorColors.clearcasting = {
+				color = restoration.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = restoration.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = restoration.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = restoration.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					manaBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			restoration.colors.bar.clearcasting = nil
+		end
+	end
+
 	-- Migrate Hunter BeastMastery to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.beastMastery then
 		local spec = TwintopInsanityBarSettings.hunter.beastMastery
