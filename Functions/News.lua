@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - Fix an issue where importing settings would sometimes reset bar anchoring to defaults when the bar was anchored to "Screen".
+- Fix an issue where bar text would incorrectly be tied to the primary resource bar's visibility even when the text was bound to another bar or "screen".
 
 ### Localization
 
