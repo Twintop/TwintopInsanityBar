@@ -2625,3 +2625,9 @@ L["DruidRestorationBarTextVariable_clearcastingActive"] = "Is Clearcasting curre
 L["DruidRestorationCheckboxClearcasting"] = "Clearcasting"
 L["DruidRestorationIndicatorClearcastingTooltip"] = "Changes to this color when you have a Clearcasting proc."
 L["DruidRestorationIndicatorClearcastingColor"] = "Clearcasting proc is active"
+
+-- Druid Feral Clearcasting Indicator Colors
+L["DruidFeralBarTextVariable_clearcastingActive"] = "Is Clearcasting currently active? LOGIC VARIABLE ONLY!"
+L["DruidFeralCheckboxClearcasting"] = "Clearcasting"
+L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this color when you have a Clearcasting proc."
+L["DruidFeralIndicatorClearcastingColor"] = "Clearcasting proc is active"

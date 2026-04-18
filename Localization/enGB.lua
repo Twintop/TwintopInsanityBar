@@ -309,4 +309,6 @@ if locale == "enGB" then
     L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this colour when you have Divine Purpose."
     -- Druid Restoration Clearcasting Indicator Colors
     L["DruidRestorationIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
+    -- Druid Feral Clearcasting Indicator Colors
+    L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
 end

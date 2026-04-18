@@ -824,12 +824,6 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
-				clearcasting = {
-					color = "FF4A95CE",
-					color2 = "FF4A95CE",
-					gradientDirection = "disabled",
-					enabled = true
-				},
 				maxBite = {
 					color = "FF009900",
 					color2 = "FF009900",
@@ -891,6 +885,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				nodeOrder = {
 					"apexPredator",
 					"ravage",
+					"clearcasting",
 					"borderStealth",
 				},
 				gradientOrder = {
@@ -914,6 +909,15 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							comboPoints = { bar = true, border = false, background = false },
+						},
+					},
+					clearcasting = {
+						color = "FF4A95CE",
+						color2 = "FF4A95CE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false },
 						},
 					},
 					borderStealth = {
@@ -2213,6 +2217,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "apexPredator",   label = L["DruidFeralCheckboxApexPredator"],  tooltip = L["DruidFeralIndicatorApexPredatorTooltip"],    colorLabel = L["DruidFeralIndicatorApexPredatorColor"] },
 			{ key = "ravage",        label = L["DruidFeralCheckboxRavage"],        tooltip = L["DruidFeralIndicatorRavageTooltip"],          colorLabel = L["DruidFeralIndicatorRavageColor"] },
+			{ key = "clearcasting",  label = L["DruidFeralCheckboxClearcasting"],  tooltip = L["DruidFeralIndicatorClearcastingTooltip"],    colorLabel = L["DruidFeralIndicatorClearcastingColor"] },
 			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
 		},
 		gradientDefs = {

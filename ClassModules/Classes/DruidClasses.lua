@@ -407,6 +407,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         isSnowflake = true,
         isTalent = false,
         baseline = true,
+        rangeCheck = false,
         category = "offensive"
     })
 
@@ -582,6 +583,8 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$incarnationTicks", description = L["DruidFeralBarTextVariable_incarnationTicks"], printInSettings = true, color = false },
 		{ variable = "$incarnationTickTime", description = L["DruidFeralBarTextVariable_incarnationTickTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationNextCp", description = L["DruidFeralBarTextVariable_incarnationNextCp"], printInSettings = true, color = false },
+
+		{ variable = "$clearcastingActive", description = L["DruidFeralBarTextVariable_clearcastingActive"], printInSettings = true, color = false },
 	})
 end
 

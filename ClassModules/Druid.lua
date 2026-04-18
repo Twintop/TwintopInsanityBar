@@ -118,6 +118,7 @@ local function FillSpecializationCache()
 
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
+	specCache.druid_feral.snapshotData.attributes.clearcastingActive = false
 	specCache.druid_feral.snapshotData.audio = {
 		apexPredatorsCravingCue = false,
 		comboPointThreshold1Played = false,
@@ -375,7 +376,12 @@ local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 		local snapshotData = TRB.Data.snapshotData
 		local spellId = ...
-		if TRB.Data.character.specId == 4 then
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = true
+			end
+		elseif TRB.Data.character.specId == 4 then
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = true
@@ -384,7 +390,12 @@ local function HandleSpellEvents(self, event, ...)
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local snapshotData = TRB.Data.snapshotData
 		local spellId = ...
-		if TRB.Data.character.specId == 4 then
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = false
+			end
+		elseif TRB.Data.character.specId == 4 then
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = false
@@ -930,6 +941,12 @@ local function RefreshLookupData_Feral()
 		if lookupChanged(prevState, "$incarnationTickTime", _incarnationTickTime) then
 			lookup["$incarnationTickTime"] = TRB.Functions.BarText:TimerPrecision(_incarnationTickTime)
 		end
+	end
+
+	-- Block D: Clearcasting ($clearcastingActive)
+	if not activeVars or activeVars["$clearcastingActive"] then
+		lookupLogic["$clearcastingActive"] = snapshotData.attributes.clearcastingActive or false
+		lookup["$clearcastingActive"] = ""
 	end
 
 	TRB.Data.lookup = lookup
@@ -2382,14 +2399,6 @@ local function UpdateResourceBar()
 						end
 					end
 
-					
-					-- Legacy clearcasting (not an indicator — stays in colors.bar)
-					if displaySpecId == TRB.Data.character.specId then
-						if specSettings.colors.bar.clearcasting.enabled and snapshots[spells.clearcasting.id].buff.remaining > 0 then
-							barColor = specSettings.colors.bar.clearcasting.color
-						end
-					end
-
 					-- Indicator color system
 					barBorderColor = specSettings.colors.bar.border.color
 					barBackgroundColor = specSettings.colors.bar.background.color
@@ -2402,6 +2411,7 @@ local function UpdateResourceBar()
 					local conditionMap = {
 						apexPredator = apcActive,
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
+						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
@@ -3737,6 +3747,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceMana = Enum.PowerType.Mana
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy -- Primary spec resource
 		TRB.Data.resourceFactor = ENERGY_RESOURCE_FACTOR
