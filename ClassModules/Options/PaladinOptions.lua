@@ -1047,10 +1047,7 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinHolyFull"],
 		TRB.Data.settings.core.enabled.paladin, "holy",
 		"TwintopResourceBar_Paladin_Holy_holyPaladinEnabled", "holyPaladinEnabled",
-		"exportButton_Paladin_Holy_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 1, true, true, true, true, true, false)
-		end)
+		"paladin", "holy")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, HolyConstructManaBarPanel },
@@ -1511,10 +1508,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinProtectionFull"],
 		TRB.Data.settings.core.enabled.paladin, "protection",
 		"TwintopResourceBar_Paladin_Protection_protectionPaladinEnabled", "protectionPaladinEnabled",
-		"exportButton_Paladin_Protection_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 2, true, true, true, true, true, false)
-		end)
+		"paladin", "protection")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ProtectionConstructManaBarPanel },
@@ -1973,10 +1967,7 @@ local function RetributionConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PaladinRetributionFull"],
 		TRB.Data.settings.core.enabled.paladin, "retribution",
 		"TwintopResourceBar_Paladin_Retribution_retributionPaladinEnabled", "retributionPaladinEnabled",
-		"exportButton_Paladin_Retribution_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinRetributionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 3, true, true, true, true, true, false)
-		end)
+		"paladin", "retribution")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RetributionConstructManaBarPanel },

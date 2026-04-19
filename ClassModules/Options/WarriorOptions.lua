@@ -1277,10 +1277,7 @@ local function ArmsConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorArmsFull"],
 		TRB.Data.settings.core.enabled.warrior, "arms",
 		"TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", "armsWarriorEnabled",
-		"exportButton_Warrior_Arms_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 1, true, true, true, true, true, false)
-		end)
+		"warrior", "arms")
 
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ArmsConstructRageBarPanel },
@@ -1733,10 +1730,7 @@ local function FuryConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorFuryFull"],
 		TRB.Data.settings.core.enabled.warrior, "fury",
 		"TwintopResourceBar_Warrior_Fury_furyWarriorEnabled", "furyWarriorEnabled",
-		"exportButton_Warrior_Fury_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 2, true, true, true, true, true, false)
-		end)
+		"warrior", "fury")
 
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel },
@@ -2204,10 +2198,7 @@ local function ProtectionConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarriorProtectionFull"],
 		TRB.Data.settings.core.enabled.warrior, "protection",
 		"TwintopResourceBar_Warrior_Protection_protectionWarriorEnabled", "protectionWarriorEnabled",
-		"exportButton_Warrior_Protection_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 3, true, true, true, true, true, false)
-		end)
+		"warrior", "protection")
 
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ProtectionConstructRageBarPanel },

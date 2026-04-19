@@ -1947,10 +1947,7 @@ local function BalanceConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidBalanceFull"],
 		TRB.Data.settings.core.enabled.druid, "balance",
 		"TwintopResourceBar_Druid_Balance_balanceDruidEnabled", "balanceDruidEnabled",
-		"exportButton_Druid_Balance_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 1, true, true, true, true, true, false)
-		end)
+		"druid", "balance")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = controls
@@ -2564,10 +2561,7 @@ local function FeralConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidFeralFull"],
 		TRB.Data.settings.core.enabled.druid, "feral",
 		"TwintopResourceBar_Druid_Feral_feralDruidEnabled", "feralDruidEnabled",
-		"exportButton_Druid_Feral_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 2, true, true, true, true, true, false)
-		end)
+		"druid", "feral")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
@@ -3060,10 +3054,7 @@ local function GuardianConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidGuardianFull"],
 		TRB.Data.settings.core.enabled.druid, "guardian",
 		"TwintopResourceBar_Druid_Guardian_guardianDruidEnabled", "guardianDruidEnabled",
-		"exportButton_Druid_Guardian_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 3, true, true, true, true, true, false)
-		end)
+		"druid", "guardian")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
@@ -3471,10 +3462,7 @@ local function RestorationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidRestorationFull"],
 		TRB.Data.settings.core.enabled.druid, "restoration",
 		"TwintopResourceBar_Druid_Restoration_restorationDruidEnabled", "restorationDruidEnabled",
-		"exportButton_Druid_Restoration_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 4, true, true, true, true, true, false)
-		end)
+		"druid", "restoration")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = controls

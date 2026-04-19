@@ -783,10 +783,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageArcaneFull"],
 		TRB.Data.settings.core.enabled.mage, "arcane",
 		"TwintopResourceBar_Mage_Arcane_arcaneMageEnabled", "arcaneMageEnabled",
-		"exportButton_Mage_Arcane_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageArcaneFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 1, true, true, true, true, true, false)
-		end)
+		"mage", "arcane")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = controls
@@ -1071,10 +1068,7 @@ local function FireConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFireFull"],
 		TRB.Data.settings.core.enabled.mage, "fire",
 		"TwintopResourceBar_Mage_Fire_fireMageEnabled", "fireMageEnabled",
-		"exportButton_Mage_Fire_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFireFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 2, true, true, true, true, true, false)
-		end)
+		"mage", "fire")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = controls
@@ -1440,10 +1434,7 @@ local function FrostConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFrostFull"],
 		TRB.Data.settings.core.enabled.mage, "frost",
 		"TwintopResourceBar_Mage_Frost_frostMageEnabled", "frostMageEnabled",
-		"exportButton_Mage_Frost_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MageFrostFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 8, 3, true, true, true, true, true, false)
-		end)
+		"mage", "frost")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = controls

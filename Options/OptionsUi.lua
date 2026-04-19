@@ -1564,7 +1564,638 @@ function TRB.Functions.OptionsUi:BuildExportButton(parent, text, yCoord, height)
 	return f
 end
 
----Builds the spec title row: header + enabled checkbox + import button + export button,
+-- ============================================================================
+-- Profile management dropdown (Phase 2B + 2C)
+-- ============================================================================
+
+-- Maps the lowercase `className` used throughout the addon (e.g. "deathknight")
+-- to the capitalized key under `TRB.Options` (e.g. "DeathKnight") that exposes
+-- each class module's `LoadDefaultSettings` factory. Needed to resolve the
+-- baseline-settings piece for a spec when the user picks "Use Baseline".
+local profileClassNameCapitalized = {
+	deathknight = "DeathKnight",
+	demonhunter = "DemonHunter",
+	druid = "Druid",
+	evoker = "Evoker",
+	hunter = "Hunter",
+	mage = "Mage",
+	monk = "Monk",
+	paladin = "Paladin",
+	priest = "Priest",
+	rogue = "Rogue",
+	shaman = "Shaman",
+	warlock = "Warlock",
+	warrior = "Warrior",
+}
+
+---Returns a deep-copied spec piece from the class's LoadDefaultSettings, so
+---"Use Baseline" gets a fresh default table not shared with runtime state.
+---@param className string # lowercase
+---@param specName string
+---@return table?
+local function GetBaselineSpecPiece(className, specName)
+	local capitalized = profileClassNameCapitalized[className]
+	if capitalized == nil then
+		return nil
+	end
+	local classOptions = TRB.Options and TRB.Options[capitalized]
+	if classOptions == nil or type(classOptions.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+	local full = classOptions.LoadDefaultSettings(true)
+	if type(full) ~= "table" then
+		return nil
+	end
+	local classBucket = full[className]
+	if type(classBucket) ~= "table" then
+		return nil
+	end
+	return classBucket[specName]
+end
+
+---Returns a fresh baseline core piece.
+---@return table?
+local function GetBaselineCorePiece()
+	if TRB.Functions.Settings == nil or type(TRB.Functions.Settings.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
+	return settings and settings.core
+end
+
+---Returns the live spec piece for the given class+spec, or nil if not loaded.
+---@param className string
+---@param specName string
+---@return table?
+local function GetCurrentSpecPiece(className, specName)
+	if TRB.Data.settings == nil then
+		return nil
+	end
+	local bucket = TRB.Data.settings[className]
+	if type(bucket) ~= "table" then
+		return nil
+	end
+	return bucket[specName]
+end
+
+---Returns the live core piece, or nil if not loaded.
+---@return table?
+local function GetCurrentCorePiece()
+	return TRB.Data.settings and TRB.Data.settings.core
+end
+
+---Returns the currently active profile name for the given scope.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string
+local function GetActiveProfileName(scope, className, specName)
+	local Profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		return Profiles:ResolveCoreProfileName() or Profiles.DEFAULT_NAME
+	end
+	return Profiles:ResolveSpecProfileName(className, specName) or Profiles.DEFAULT_NAME
+end
+
+---Returns the cached, sorted profile-name list for the given scope.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string[]
+local function GetProfileList(scope, className, specName)
+	local Profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		return Profiles:GetCoreListFromCache()
+	end
+	return Profiles:GetSpecListFromCache(className, specName)
+end
+
+---Writes a new profile piece and switches the character to it. Flow:
+---  - If `sourceMode == "baseline"`, copies baseline defaults.
+---  - If `sourceMode == "current"`, copies the live settings piece.
+---After writing, updates the character's active-profile ref and writes through.
+---If `reload` is true, prompts a UI reload.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@param profileName string
+---@param sourceMode "current"|"baseline"
+---@param reload boolean
+local function ApplyNewProfile(scope, className, specName, profileName, sourceMode, reload)
+	local Profiles = TRB.Functions.Profiles
+	local source
+	if scope == "core" then
+		source = sourceMode == "baseline" and GetBaselineCorePiece() or GetCurrentCorePiece()
+		if type(source) ~= "table" then
+			return
+		end
+		Profiles:CreateCoreProfile(profileName, source)
+		Profiles:SetActiveCoreProfile(profileName)
+	else
+		source = sourceMode == "baseline" and GetBaselineSpecPiece(className, specName) or GetCurrentSpecPiece(className, specName)
+		if type(source) ~= "table" then
+			return
+		end
+		Profiles:CreateSpecProfile(profileName, className, specName, source)
+		Profiles:SetActiveSpecProfile(specName, profileName)
+	end
+	-- Only "baseline" source requires a reload: the live in-memory settings
+	-- still hold the previous profile's values, so we need to reload to
+	-- re-resolve them from the freshly-created baseline piece. With "current",
+	-- the new profile is a copy of what's already loaded — just updating the
+	-- active-profile pointer is sufficient and no reload is needed.
+	if reload and sourceMode == "baseline" then
+		C_UI.Reload()
+	end
+end
+
+-- Lazy registration of all profile-management popup dialogs. Called on first
+-- `BuildProfileDropdown` invocation. Each popup's `data` field carries the
+-- scope/class/spec triplet plus operation-specific fields (attempted name,
+-- source mode, etc.) so the same popup can serve both core and spec scopes.
+local profilePopupsRegistered = false
+local function EnsureProfilePopupsRegistered()
+	if profilePopupsRegistered then
+		return
+	end
+	profilePopupsRegistered = true
+
+	-- Helper: build a human-friendly label for "this scope" used in popup text.
+	local function ScopeLabel(data)
+		if data == nil or data.scope == "core" then
+			return L["ProfileScopeLabelGlobal"]
+		end
+		return data.specLabel or ""
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_NewName"] = {
+		text = "",
+		button1 = L["ProfileButtonUseCurrent"],
+		button2 = L["ProfileButtonUseBaseline"],
+		button3 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupNewNameText"], ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and data.initialName or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+			data.attemptedName = name
+			data.sourceMode = "current"
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(data), name, data)
+			else
+				ApplyNewProfile(data.scope, data.className, data.specName, name, "current", true)
+				if data.refresh then data.refresh() end
+			end
+		end,
+		-- button2 = Use Baseline. OnCancel also fires when the user presses
+		-- Escape (hideOnEscape); guard on `reason == "clicked"` so Escape
+		-- doesn't accidentally create a baseline profile.
+		OnCancel = function(self, data, reason)
+			if reason ~= "clicked" then
+				return
+			end
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+			data.attemptedName = name
+			data.sourceMode = "baseline"
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(data), name, data)
+			else
+				ApplyNewProfile(data.scope, data.className, data.specName, name, "baseline", true)
+				if data.refresh then data.refresh() end
+			end
+		end,
+		-- button3 = Cancel. No handler needed; popup closes on click.
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			if parent.OnAccept then
+				parent.OnAccept(parent, parent.data)
+			end
+			parent:Hide()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_OverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupOverwriteText"], data and data.attemptedName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			-- Yes: proceed with overwrite using the chosen source mode.
+			ApplyNewProfile(data.scope, data.className, data.specName, data.attemptedName, data.sourceMode or "current", true)
+			if data.refresh then data.refresh() end
+		end,
+		OnCancel = function(self, data)
+			-- button2 = No: re-show the name prompt pre-filled with the attempted name.
+			if data ~= nil then
+				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, initialName = data.attemptedName, refresh = data.refresh }
+				StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, followup)
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_UseConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupUseConfirmText"], data and data.profileName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:SetActiveCoreProfile(data.profileName)
+			else
+				TRB.Functions.Profiles:SetActiveSpecProfile(data.specName, data.profileName)
+			end
+			if data.refresh then data.refresh() end
+			C_UI.Reload()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local fmt = (data and data.isActive) and L["ProfilePopupDeleteActiveText"] or L["ProfilePopupDeleteInactiveText"]
+			self:SetFormattedText(fmt, data and data.profileName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:DeleteCoreProfile(data.profileName)
+			else
+				TRB.Functions.Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
+			end
+			if data.refresh then data.refresh() end
+			if data.isActive then
+				C_UI.Reload()
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteReload"] = {
+		text = L["ProfilePopupDeleteReloadMessage"],
+		button1 = L["OK"],
+		OnAccept = function(self)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyName"] = {
+		text = "",
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupCopyText"], data and data.sourceName or "", ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and data.initialName or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" or name == data.sourceName then
+				return
+			end
+			data.attemptedName = name
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				-- Reuse overwrite popup; its OnAccept ApplyNewProfile path doesn't fit here,
+				-- so use a distinct copy-overwrite popup via a tailored flow.
+				StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", name, ScopeLabel(data), data)
+			else
+				if data.scope == "core" then
+					TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, name)
+				else
+					TRB.Functions.Profiles:CopySpecProfile(data.sourceName, name, data.className, data.specName)
+				end
+				if data.refresh then data.refresh() end
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			if parent.OnAccept then
+				parent.OnAccept(parent, parent.data)
+			end
+			parent:Hide()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyOverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupOverwriteText"], data and data.attemptedName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, data.attemptedName)
+			else
+				TRB.Functions.Profiles:CopySpecProfile(data.sourceName, data.attemptedName, data.className, data.specName)
+			end
+			if data.refresh then data.refresh() end
+		end,
+		OnCancel = function(self, data)
+			if data ~= nil then
+				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, sourceName = data.sourceName, initialName = data.attemptedName, refresh = data.refresh }
+				StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, followup)
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameName"] = {
+		text = "",
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupRenameText"], data and data.profileName or "", ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and (data.initialName or data.profileName) or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" or name == data.profileName then
+				return
+			end
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				StaticPopup_Show("TwintopResourceBar_Profile_RenameCollision", name)
+				return
+			end
+			local isActive = (name ~= data.profileName) and (GetActiveProfileName(data.scope, data.className, data.specName) == data.profileName)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:RenameCoreProfile(data.profileName, name)
+			else
+				TRB.Functions.Profiles:RenameSpecProfile(data.profileName, name, data.className, data.specName)
+			end
+			if isActive then
+				-- Rename of the active profile already updates character refs; no reload needed.
+			end
+			if data.refresh then data.refresh() end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			if parent.OnAccept then
+				parent.OnAccept(parent, parent.data)
+			end
+			parent:Hide()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameCollision"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupRenameCollisionText"], data or "")
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportExportStub"] = {
+		text = L["ProfilePopupImportExportStubText"],
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+end
+
+---Builds a profile-management dropdown anchored to the top-right of `parent`.
+---Used by both `BuildSpecTitleRow` (spec scope) and Global Options (core scope).
+---@param parent Frame
+---@param yCoord number # vertical offset from parent's top-right
+---@param scope "spec"|"core"
+---@param className string? # required when scope=="spec"
+---@param specName string? # required when scope=="spec"
+---@param specLabel string? # localized label used in popup text for spec scope
+---@return DropdownButton dropdown
+function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, className, specName, specLabel)
+	EnsureProfilePopupsRegistered()
+
+	local namePrefix = "TwintopResourceBar_ProfileDropdown"
+	if scope == "spec" then
+		namePrefix = namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
+	else
+		namePrefix = namePrefix .. "_Core"
+	end
+
+	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	dropdown:ClearAllPoints()
+	dropdown:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord)
+	dropdown:SetWidth(240)
+
+	local function RefreshDropdown()
+		if dropdown.UpdateButtonText then
+			dropdown:UpdateButtonText()
+		end
+		-- Re-register the generator so the next open rebuilds the menu with
+		-- the latest cached profile list.
+		if dropdown.SetupMenu and dropdown.GeneratorFunction then
+			dropdown:SetupMenu(dropdown.GeneratorFunction)
+		end
+	end
+
+	local function MakeBaseData()
+		return { scope = scope, className = className, specName = specName, specLabel = specLabel, refresh = RefreshDropdown }
+	end
+
+	local function OnNewClicked()
+		local data = MakeBaseData()
+		data.initialName = ""
+		StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, data)
+	end
+
+	local function OnImportClicked()
+		StaticPopup_Show("TwintopResourceBar_Profile_ImportExportStub")
+	end
+
+	local function OnUseClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		StaticPopup_Show("TwintopResourceBar_Profile_UseConfirm", nil, nil, data)
+	end
+
+	local function OnCopyClicked(profileName)
+		local data = MakeBaseData()
+		data.sourceName = profileName
+		data.initialName = profileName .. " " .. L["ProfileCopyNameSuffix"]
+		StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, data)
+	end
+
+	local function OnRenameClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		data.initialName = profileName
+		StaticPopup_Show("TwintopResourceBar_Profile_RenameName", nil, nil, data)
+	end
+
+	local function OnDeleteClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		data.isActive = (GetActiveProfileName(scope, className, specName) == profileName)
+		StaticPopup_Show("TwintopResourceBar_Profile_DeleteConfirm", nil, nil, data)
+	end
+
+	local function OnExportClicked(profileName)
+		StaticPopup_Show("TwintopResourceBar_Profile_ImportExportStub")
+	end
+
+	local function Generator(_, rootDescription)
+		rootDescription:CreateTitle(L["ProfileMenuHeaderManage"])
+		rootDescription:CreateButton(L["ProfileMenuNewProfile"], OnNewClicked)
+		rootDescription:CreateButton(L["ProfileMenuImportProfile"], OnImportClicked)
+		rootDescription:CreateDivider()
+		rootDescription:CreateTitle(L["ProfileMenuHeaderProfiles"])
+
+		local activeName = GetActiveProfileName(scope, className, specName)
+		local names = GetProfileList(scope, className, specName)
+		for _, profileName in ipairs(names) do
+			local displayName = profileName
+			if profileName == activeName then
+				displayName = "|cff00ff00" .. profileName .. "|r"
+			end
+			local submenu = rootDescription:CreateButton(displayName)
+			if type(submenu) == "table" and type(submenu.CreateButton) == "function" then
+				local useButton = submenu:CreateButton(L["ProfileActionUse"], function()
+					OnUseClicked(profileName)
+				end)
+				if profileName == activeName and type(useButton) == "table" and type(useButton.SetEnabled) == "function" then
+					useButton:SetEnabled(false)
+				end
+				submenu:CreateButton(L["ProfileActionCopy"], function() OnCopyClicked(profileName) end)
+				if profileName ~= TRB.Functions.Profiles.DEFAULT_NAME then
+					submenu:CreateButton(L["ProfileActionRename"], function() OnRenameClicked(profileName) end)
+					submenu:CreateButton(L["ProfileActionDelete"], function() OnDeleteClicked(profileName) end)
+				end
+				---@diagnostic disable-next-line: redundant-parameter
+				submenu:CreateButton(L["ProfileActionExport"], function() OnExportClicked(profileName) end)
+			end
+		end
+	end
+
+	dropdown.GeneratorFunction = Generator
+	dropdown:SetupMenu(Generator)
+
+	-- Apply the inline button label ("Profile: {name}") using the active name.
+	local function UpdateButtonText()
+		local activeName = GetActiveProfileName(scope, className, specName)
+		local text = string.format(L["ProfileDropdownButtonFormat"], activeName)
+		if type(dropdown.SetDefaultText) == "function" then
+			dropdown:SetDefaultText(text)
+		elseif dropdown.Text ~= nil and type(dropdown.Text.SetText) == "function" then
+			dropdown.Text:SetText(text)
+		end
+	end
+	dropdown.UpdateButtonText = UpdateButtonText
+	UpdateButtonText()
+
+	-- Refresh the button label whenever the menu closes (a CRUD op may have
+	-- changed the active profile name).
+	dropdown:HookScript("OnHide", UpdateButtonText)
+
+	return dropdown
+end
+
+---Builds the spec title row: header + enabled checkbox + profile dropdown,
 ---all anchored from the right side of the parent so they stay right-aligned on resize.
 ---@param parent Frame The spec display panel
 ---@param controls table The controls table for this spec
@@ -1573,33 +2204,20 @@ end
 ---@param enabledKey string Key into enabledSettingRef (e.g. "discipline")
 ---@param checkboxName string Global checkbox frame name (e.g. "TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled")
 ---@param checkboxControlKey string Key in controls.checkBoxes (e.g. "disciplinePriestEnabled")
----@param exportControlKey string Key in controls.buttons for the export button (e.g. "exportButton_Priest_Discipline_All")
----@param exportCallback function OnClick handler for export button
+---@param className string Lowercase class name (e.g. "priest")
+---@param specName string Lowercase spec name (e.g. "discipline")
 ---@return number yCoord The updated yCoord after the title row
-function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, exportControlKey, exportCallback)
+function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, className, specName)
 	local yCoord = 0
 
 	-- Section header (left-aligned)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
 
-	-- Export button (rightmost, anchored to parent's top-right)
-	controls.buttons[exportControlKey] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 0, 0, 150, 20)
-	local exportBtn = controls.buttons[exportControlKey]
-	exportBtn:ClearAllPoints()
-	exportBtn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord - 10)
-	exportBtn:SetScript("OnClick", exportCallback)
+	-- Profile dropdown (rightmost, anchored to parent's top-right)
+	controls.profileDropdown = TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord - 10, "spec", className, specName, specLabel)
+	local dropdown = controls.profileDropdown
 
-	-- Import button (anchored to left of export)
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 0, 0, 90, 20)
-	local importBtn = controls.buttons.importButton
-	importBtn:ClearAllPoints()
-	importBtn:SetPoint("RIGHT", exportBtn, "LEFT", -5, 0)
-	importBtn:SetFrameLevel(10000)
-	importBtn:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	-- Enabled checkbox (anchored to left of import, with gap for label text)
+	-- Enabled checkbox (anchored to left of dropdown, with gap for label text)
 	controls.checkBoxes[checkboxControlKey] = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
 	local cb = controls.checkBoxes[checkboxControlKey]
 	getglobal(cb:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1615,9 +2233,8 @@ function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, 
 	end)
 	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
 
-	-- Position checkbox: anchor its right edge left of import, leaving room for the label text
-	-- ChatConfigCheckButtonTemplate renders text to the RIGHT of the frame, so we offset enough for it
-	cb:SetPoint("RIGHT", importBtn, "LEFT", -75, 0)
+	-- Position checkbox: anchor its right edge left of the dropdown, leaving room for the label text.
+	cb:SetPoint("RIGHT", dropdown, "LEFT", -75, 0)
 
 	return yCoord - 37
 end

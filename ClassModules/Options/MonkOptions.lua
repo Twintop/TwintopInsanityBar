@@ -1286,10 +1286,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkBrewmasterFull"],
 		TRB.Data.settings.core.enabled.monk, "brewmaster",
 		"TwintopResourceBar_Monk_Brewmaster_brewmasterMonkEnabled", "brewmasterMonkEnabled",
-		"exportButton_Monk_Brewmaster_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkBrewmasterFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 1, true, true, true, true, true, false)
-		end)
+		"monk", "brewmaster")
 
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel },
@@ -1660,10 +1657,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkMistweaverFull"],
 		TRB.Data.settings.core.enabled.monk, "mistweaver",
 		"TwintopResourceBar_Monk_Mistweaver_mistweaverMonkEnabled", "mistweaverMonkEnabled",
-		"exportButton_Monk_Mistweaver_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 2, true, true, true, true, true, false)
-		end)
+		"monk", "mistweaver")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
@@ -2191,10 +2185,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkWindwalkerFull"],
 		TRB.Data.settings.core.enabled.monk, "windwalker",
 		"TwintopResourceBar_Monk_Windwalker_windwalkerMonkEnabled", "windwalkerMonkEnabled",
-		"exportButton_Monk_Windwalker_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 3, true, true, true, true, true, false)
-		end)
+		"monk", "windwalker")
 
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel },

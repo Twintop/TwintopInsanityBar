@@ -1717,10 +1717,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PriestDisciplineFull"],
 		TRB.Data.settings.core.enabled.priest, "discipline",
 		"TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled", "disciplinePriestEnabled",
-		"exportButton_Priest_Discipline_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDisciplineFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 1, true, true, true, true, true, false)
-		end)
+		"priest", "discipline")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_discipline = controls
@@ -2230,10 +2227,7 @@ local function HolyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PriestHolyFull"],
 		TRB.Data.settings.core.enabled.priest, "holy",
 		"TwintopResourceBar_Priest_Holy_holyPriestEnabled", "holyPriestEnabled",
-		"exportButton_Priest_Holy_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 2, true, true, true, true, true, false)
-		end)
+		"priest", "holy")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_holy = controls
@@ -2731,10 +2725,7 @@ local function ShadowConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["PriestShadowFull"],
 		TRB.Data.settings.core.enabled.priest, "shadow",
 		"TwintopResourceBar_Priest_Shadow_shadowPriestEnabled", "shadowPriestEnabled",
-		"exportButton_Priest_Shadow_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadowFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 5, 3, true, true, true, true, true, false)
-		end)
+		"priest", "shadow")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_shadow = controls

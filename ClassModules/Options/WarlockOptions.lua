@@ -900,10 +900,7 @@ local function AfflictionConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockAfflictionFull"],
 		TRB.Data.settings.core.enabled.warlock, "affliction",
 		"TwintopResourceBar_Warlock_Affliction_afflictionWarlockEnabled", "afflictionWarlockEnabled",
-		"exportButton_Warlock_Affliction_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, true, false)
-		end)
+		"warlock", "affliction")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel },
@@ -1311,10 +1308,7 @@ local function DemonologyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockDemonologyFull"],
 		TRB.Data.settings.core.enabled.warlock, "demonology",
 		"TwintopResourceBarWarlock_Demonology_demonologyWarlockEnabled", "demonologyWarlockEnabled",
-		"exportButton_Warlock_Demonology_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 2, true, true, true, true, true, false)
-		end)
+		"warlock", "demonology")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel },
@@ -1722,10 +1716,7 @@ local function DestructionConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["WarlockDestructionFull"],
 		TRB.Data.settings.core.enabled.warlock, "destruction",
 		"TwintopResourceBar_Warlock_Destruction_destructionWarlockEnabled", "destructionWarlockEnabled",
-		"exportButton_Warlock_Destruction_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 3, true, true, true, true, true, false)
-		end)
+		"warlock", "destruction")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel },

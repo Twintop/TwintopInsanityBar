@@ -1047,10 +1047,7 @@ local function ElementalConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanElementalFull"],
 		TRB.Data.settings.core.enabled.shaman, "elemental",
 		"TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", "elementalShamanEnabled",
-		"exportButton_Shaman_Elemental_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 1, true, true, true, true, true, false)
-		end)
+		"shaman", "elemental")
 
 	local tabDefinitions = {
 		{ "maelstromBar", L["TabMaelstrom"], oUi.tabWidth.small, ElementalConstructMaelstromBarPanel },
@@ -1522,10 +1519,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanEnhancementFull"],
 		TRB.Data.settings.core.enabled.shaman, "enhancement",
 		"TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", "enhancementShamanEnabled",
-		"exportButton_Shaman_Enhancement_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancementFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 2, true, true, true, true, true, false)
-		end)
+		"shaman", "enhancement")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, EnhancementConstructManaBarPanel },
@@ -1876,10 +1870,7 @@ local function RestorationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["ShamanRestorationFull"],
 		TRB.Data.settings.core.enabled.shaman, "restoration",
 		"TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", "restorationShamanEnabled",
-		"exportButton_Shaman_Restoration_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 3, true, true, true, true, true, false)
-		end)
+		"shaman", "restoration")
 
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RestorationConstructManaBarPanel },

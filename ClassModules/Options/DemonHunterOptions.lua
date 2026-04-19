@@ -1195,10 +1195,7 @@ local function HavocConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterHavocFull"],
 		TRB.Data.settings.core.enabled.demonhunter, "havoc",
 		"TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", "havocDemonHunterEnabled",
-		"exportButton_DemonHunter_Havoc_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavocFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, true, false)
-		end)
+		"demonhunter", "havoc")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
@@ -1685,10 +1682,7 @@ local function VengeanceConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterVengeanceFull"],
 		TRB.Data.settings.core.enabled.demonhunter, "vengeance",
 		"TwintopResourceBar_DemonHunter_Vengeance_vengeanceDemonHunterEnabled", "vengeanceDemonHunterEnabled",
-		"exportButton_DemonHunter_Vengeance_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, true, false)
-		end)
+		"demonhunter", "vengeance")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
@@ -2111,10 +2105,7 @@ local function DevourerConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DemonHunterDevourerFull"],
 		TRB.Data.settings.core.enabled.demonhunter, "devourer",
 		"TwintopResourceBar_DemonHunter_Devourer_devourerDemonHunterEnabled", "devourerDemonHunterEnabled",
-		"exportButton_DemonHunter_Devourer_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterDevourerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 3, true, true, true, true, true, false)
-		end)
+		"demonhunter", "devourer")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = controls

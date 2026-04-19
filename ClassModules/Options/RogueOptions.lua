@@ -1503,10 +1503,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["RogueAssassinationFull"],
 		TRB.Data.settings.core.enabled.rogue, "assassination",
 		"TwintopResourceBar_Rogue_Assassination_assassinationRogueEnabled", "assassinationRogueEnabled",
-		"exportButton_Rogue_Assassination_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassinationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 1, true, true, true, true, true, false)
-		end)
+		"rogue", "assassination")
 
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, AssassinationConstructEnergyBarPanel },
@@ -2111,10 +2108,7 @@ local function OutlawConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["RogueOutlawFull"],
 		TRB.Data.settings.core.enabled.rogue, "outlaw",
 		"TwintopResourceBar_Rogue_Outlaw_outlawRogueEnabled", "outlawRogueEnabled",
-		"exportButton_Rogue_Outlaw_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlawFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 2, true, true, true, true, true, false)
-		end)
+		"rogue", "outlaw")
 
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, OutlawConstructEnergyBarPanel },
@@ -2704,10 +2698,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["RogueSubtletyFull"],
 		TRB.Data.settings.core.enabled.rogue, "subtlety",
 		"TwintopResourceBar_Rogue_Subtlety_subtletyRogueEnabled", "subtletyRogueEnabled",
-		"exportButton_Rogue_Subtlety_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtletyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 3, true, true, true, true, true, false)
-		end)
+		"rogue", "subtlety")
 
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, SubtletyConstructEnergyBarPanel },

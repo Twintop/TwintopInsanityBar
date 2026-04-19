@@ -620,11 +620,8 @@ local function ConstructGlobalOptionsPanel()
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord - 5)
 
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 479, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
+	-- Profile dropdown for core-scope settings. Replaces the legacy Import button.
+	controls.profileDropdown = TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord - 10, "core", nil, nil, L["GlobalOptions"])
 
 	yCoord = yCoord - 37
 

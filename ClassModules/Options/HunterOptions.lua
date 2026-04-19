@@ -1126,10 +1126,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterBeastMasteryFull"],
 		TRB.Data.settings.core.enabled.hunter, "beastMastery",
 		"TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", "beastMasteryHunterEnabled",
-		"exportButton_Hunter_BeastMastery_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMasteryFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 1, true, true, true, true, true, false)
-		end)
+		"hunter", "beastMastery")
 
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, BeastMasteryConstructFocusBarPanel },
@@ -1629,10 +1626,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterMarksmanshipFull"],
 		TRB.Data.settings.core.enabled.hunter, "marksmanship",
 		"TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", "marksmanshipHunterEnabled",
-		"exportButton_Hunter_Marksmanship_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanshipFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 2, true, true, true, true, true, false)
-		end)
+		"hunter", "marksmanship")
 
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, MarksmanshipConstructFocusBarPanel },
@@ -2152,10 +2146,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterSurvivalFull"],
 		TRB.Data.settings.core.enabled.hunter, "survival",
 		"TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", "survivalHunterEnabled",
-		"exportButton_Hunter_Survival_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvivalFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 3, 3, true, true, true, true, true, false)
-		end)
+		"hunter", "survival")
 
 	local tabDefinitions = {
 		{ "focusBar", L["TabFocus"], oUi.tabWidth.small, SurvivalConstructFocusBarPanel },

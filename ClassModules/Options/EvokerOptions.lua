@@ -1288,10 +1288,7 @@ local function DevastationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerDevastationFull"],
 		TRB.Data.settings.core.enabled.evoker, "devastation",
 		"TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", "devastationEvokerEnabled",
-		"exportButton_Evoker_Devastation_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 1, true, true, true, true, true, false)
-		end)
+		"evoker", "devastation")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_devastation = controls
@@ -1709,10 +1706,7 @@ local function PreservationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerPreservationFull"],
 		TRB.Data.settings.core.enabled.evoker, "preservation",
 		"TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", "preservationEvokerEnabled",
-		"exportButton_Evoker_Preservation_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 2, true, true, true, true, true, false)
-		end)
+		"evoker", "preservation")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_preservation = controls
@@ -2155,10 +2149,7 @@ local function AugmentationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["EvokerAugmentationFull"],
 		TRB.Data.settings.core.enabled.evoker, "augmentation",
 		"TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", "augmentationEvokerEnabled",
-		"exportButton_Evoker_Augmentation_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 3, true, true, true, true, true, false)
-		end)
+		"evoker", "augmentation")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_augmentation = controls
