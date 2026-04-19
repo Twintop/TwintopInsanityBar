@@ -109,6 +109,7 @@ Functions\LibSharedMedia.lua
 Functions\MinimapButton.lua
 Functions\Number.lua
 Functions\Settings.lua
+Functions\Profiles.lua
 Functions\SpellCast.lua
 Functions\String.lua
 Functions\Talent.lua

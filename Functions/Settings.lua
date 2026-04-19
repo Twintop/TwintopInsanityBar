@@ -434,9 +434,35 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	return settings
 end
 
----Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs
-function TRB.Functions.Settings:PortForwardSettings()
-	
+---Per-profile port-forward hook. Calls PortForwardSettings against the given
+---profile subtable. Use for migrating individual profiles in the profiles.list
+---structure. The `profile` parameter should be shaped like a top-level settings
+---table (i.e. has optional `core` and class/spec keys), which is exactly how
+---profiles are stored.
+---@param profile table?
+function TRB.Functions.Settings:PortForwardProfile(profile)
+	if profile == nil then
+		return
+	end
+	self:PortForwardSettings(profile)
+end
+
+---Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs.
+---
+---Accepts any table shaped like the top-level saved-variables (i.e. with `core`,
+---`<className>.<specName>`, etc.). The global `TwintopInsanityBarSettings` is
+---used as the default when no argument is passed, so existing callers continue
+---to work. Inside this function, `TwintopInsanityBarSettings` is aliased to the
+---argument via lexical scoping — every `TwintopInsanityBarSettings.x` reference
+---in the body refers to the passed-in table, not the global.
+---@param settings table?
+function TRB.Functions.Settings:PortForwardSettings(settings)
+	---@diagnostic disable-next-line: unused-local
+	local TwintopInsanityBarSettings = settings or _G.TwintopInsanityBarSettings
+	if TwintopInsanityBarSettings == nil then
+		return
+	end
+
 	-- Forward port old Insanity Bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil and TwintopInsanityBarSettings.bar ~= nil then
 		local tempSettings = TwintopInsanityBarSettings
@@ -7688,6 +7714,7 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	if oldSettings ~= nil then
 		for k, v in pairs(oldSettings) do
 			if  k == "manualUpdateChecks" or
+				k == "profiles" or
 				k == "core" or
 				k == "deathknight" or
 				k == "demonhunter" or
