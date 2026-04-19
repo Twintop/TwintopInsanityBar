@@ -1042,9 +1042,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- because at construction time the Druid's current shapeshift form may not be
 	-- known yet. Runtime form-based collapse is handled by ProcessBars after
 	-- HideResourceBar determines the correct visibility per form.
+	-- Also consults IsBarTalentGatedHidden so talent-gated bars (e.g., Holy Priest's
+	-- Lightweaver) collapse at layout time — talents are known at construction time.
 	-- ========================
 	for barKey, _ in pairs(barKeyToRoot) do
-		if not self:IsBarVisible(layoutSettings, barKey, false) then
+		if not self:IsBarVisible(layoutSettings, barKey, false) or self:IsBarTalentGatedHidden(barKey) then
 			local barGroup = barGroups[barKey]
 			if barGroup and barGroup.containerFrame then
 				barGroup.containerFrame:SetHeight(0.001)
@@ -2090,6 +2092,14 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 		return false
 	end
 
+	-- Talent-gated bars are treated as hidden for layout purposes so that wrapper
+	-- bounding-box calculations (CalculateWrapperLayout) collapse their height to 0
+	-- and no gap is reserved when the gating talent is not selected.
+	-- includeHidden=true (Edit Mode) keeps talent-gated bars visible for previewing.
+	if not includeHidden and self:IsBarTalentGatedHidden(barKey) then
+		return false
+	end
+
 	-- Druid form-based visibility: secondary (combo points) and mana bar
 	-- visibility depends on current shapeshift form and spec options.
 	-- This mirrors the logic in HideResourceBar and CalculateWrapperLayout.
@@ -2150,6 +2160,53 @@ function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 		return not visibilitySetting.neverShow
 	end
 	return visibilitySetting.visibility ~= "never"
+end
+
+---Returns true when a bar is permanently hidden at layout time because a class/spec-specific
+---gate (e.g., a required talent) is not satisfied. This is consulted alongside IsBarVisible
+---by construction-time collapse code so that talent-gated bars (such as Holy Priest's
+---Lightweaver) do not keep their full height or leave their nodes visible after
+---ApplyBarGroupsLayout / ApplyCustomBarGroupsLayout rebuilds layout.
+---
+---Runtime visibility (ProcessBars) independently enforces the same gate via the entry's
+---enabled flag; this function exists so layout changes between ProcessBars passes do not
+---briefly resurface the bar.
+---@param barKey string
+---@return boolean
+function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
+	local character = TRB.Data.character
+	if not character then return false end
+
+	local compositeKey = character.compositeKey
+	local specCache = compositeKey and TRB.Data.specCache and TRB.Data.specCache[compositeKey]
+	local talents = specCache and specCache.talents
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not talents or not spells then return false end
+
+	-- Priest Holy: Lightweaver bar requires the Lightweaver talent
+	if character.classId == 5 and character.specId == 2 and barKey == "lightweaver" then
+		if spells.lightweaver and not talents:IsTalentActive(spells.lightweaver) then
+			return true
+		end
+	end
+
+	-- Priest (all specs): Utility bar (Angelic Feather) requires the Angelic Feather talent
+	if character.classId == 5 and barKey == "utility" then
+		if spells.angelicFeather and not talents:IsTalentActive(spells.angelicFeather) then
+			return true
+		end
+	end
+
+	-- Warrior Fury: Whirlwind stacks bar (rendered on the secondary bar) requires the
+	-- Improved Whirlwind talent. Uses barKey == "secondary" because Fury's Whirlwind
+	-- charges piggy-back on the legacy secondary/combo-points bar infrastructure.
+	if character.classId == 1 and character.specId == 2 and barKey == "secondary" then
+		if spells.improvedWhirlwind and not talents:IsTalentActive(spells.improvedWhirlwind) then
+			return true
+		end
+	end
+
+	return false
 end
 
 ---Enumerates all bar keys present for the current bar groups.
@@ -3083,7 +3140,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			}
 
 			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
-			local barIsVisible = self:IsBarVisible(settings, key, inEditMode)
+			local barIsVisible = self:IsBarVisible(settings, key, inEditMode) and not self:IsBarTalentGatedHidden(key)
 			config.shouldInitiallyShow = barIsVisible
 			
 			-- Resolve the correct anchor group from settings
