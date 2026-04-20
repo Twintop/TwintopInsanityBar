@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - Fix an issue where manually tracked buff timers (e.g., Voidform, Metamorphosis, Dragonrage, Apotheosis, Eclipse, Ascendance, etc.) would not reset when the player dies.
+- Adjust bar layout and visibility to be more aware of talent-gated bars (e.g., Holy Priest's Lightweaver) to prevent gaps in the layout when those bars are not active.
 
 ---
 
