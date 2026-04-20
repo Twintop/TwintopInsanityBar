@@ -8,10 +8,6 @@ TRB.Functions.Profiles = {}
 -- The hard-coded name of the profile created on first-load migration.
 TRB.Functions.Profiles.DEFAULT_NAME = "Default"
 
--- Per-profile schema version. Bumped by future migrations when
--- PortForwardCoreSettings / PortForwardSpecSettings semantics change.
-TRB.Functions.Profiles.CURRENT_VERSION = 1
-
 ---Returns the lowercase class token ("druid", "priest", etc.) for the current
 ---character, derived from WoW's UnitClassBase API. Matches the string stored
 ---in TRB.Data.character.className but doesn't require the class module's
@@ -190,9 +186,7 @@ function TRB.Functions.Profiles:SeedFromLegacy()
 
 	-- Create the Default profile if it doesn't exist.
 	if p.list[self.DEFAULT_NAME] == nil then
-		p.list[self.DEFAULT_NAME] = {
-			__version = self.CURRENT_VERSION,
-		}
+		p.list[self.DEFAULT_NAME] = {}
 	end
 	---@type table<string, any>
 	local profile = p.list[self.DEFAULT_NAME]
@@ -240,11 +234,10 @@ function TRB.Functions.Profiles:SeedFromLegacy()
 	end
 end
 
----Runs port-forward migrations against every stored profile, guarded by
----per-profile __version. Each profile is shaped like a top-level settings
----table (optional `core` + class/spec keys), so we call PortForwardSettings
----against the profile table directly and let the full migration pipeline
----run against it.
+---Runs port-forward migrations against every stored profile. Each profile is
+---shaped like a top-level settings table (optional `core` + class/spec keys),
+---so we call PortForwardSettings against the profile table directly and let
+---the full migration pipeline run against it.
 function TRB.Functions.Profiles:PortForwardAll()
 	self:EnsureStructure()
 	local Settings = TRB.Functions.Settings
@@ -252,12 +245,7 @@ function TRB.Functions.Profiles:PortForwardAll()
 		return
 	end
 	self:IterateAll(function(_, profile)
-		local version = profile.__version or 0
-		if version >= self.CURRENT_VERSION then
-			return
-		end
 		Settings:PortForwardSettings(profile)
-		profile.__version = self.CURRENT_VERSION
 	end)
 end
 
@@ -341,6 +329,16 @@ function TRB.Functions.Profiles:FlushActive()
 			end
 		end
 	end
+end
+
+---Flushes current runtime data to the currently-active profile, then
+---suppresses the automatic PLAYER_LOGOUT flush so the upcoming C_UI.Reload()
+---doesn't re-flush stale runtime data into the newly-selected profile.
+---Call this immediately BEFORE changing the active profile pointer when the
+---switch will be followed by a reload.
+function TRB.Functions.Profiles:FlushAndSuppressLogout()
+	self:FlushActive()
+	self.suppressLogoutFlush = true
 end
 
 ---Write-through stub used by Phase 2 UI. Persists the given spec or core piece
@@ -436,7 +434,7 @@ function TRB.Functions.Profiles:IsListEntryEmpty(profileName)
 		return false
 	end
 	for k, v in pairs(entry) do
-		if k ~= "__version" and k ~= "core" and type(v) == "table" then
+		if k ~= "core" and type(v) == "table" then
 			for _, _ in pairs(v) do
 				return false
 			end
@@ -491,7 +489,7 @@ end
 
 ---Creates or overwrites the spec piece of a profile with a deep copy of
 ---`sourcePiece`. Creates the `profiles.list[profileName]` entry and class
----bucket if needed. Sets `__version` on new entries.
+---bucket if needed.
 ---@param profileName string
 ---@param className string
 ---@param specName string
@@ -503,7 +501,7 @@ function TRB.Functions.Profiles:CreateSpecProfile(profileName, className, specNa
 		return
 	end
 	if p.list[profileName] == nil then
-		p.list[profileName] = { __version = self.CURRENT_VERSION }
+		p.list[profileName] = {}
 	end
 	local entry = p.list[profileName]
 	entry[className] = entry[className] or {}
@@ -522,7 +520,7 @@ function TRB.Functions.Profiles:CreateCoreProfile(profileName, sourcePiece)
 		return
 	end
 	if p.list[profileName] == nil then
-		p.list[profileName] = { __version = self.CURRENT_VERSION }
+		p.list[profileName] = {}
 	end
 	p.list[profileName].core = TRB.Functions.Table:DeepCopy(sourcePiece)
 	self:InvalidateCache()
@@ -539,13 +537,11 @@ function TRB.Functions.Profiles:CopySpecProfile(srcName, dstName, className, spe
 	if p == nil then
 		return false
 	end
-	if not self:ProfileExistsForSpec(srcName, className, specName) then
-		-- Source has no stored piece yet. If it's the currently-active profile
-		-- (typically the implicit Default), materialize it now by snapshotting
-		-- the live settings so the source becomes a real stored profile.
-		if (self:ResolveSpecProfileName(className, specName) or self.DEFAULT_NAME) == srcName
-			and TRB.Data.settings[className] ~= nil
-			and type(TRB.Data.settings[className][specName]) == "table" then
+	local exists = self:ProfileExistsForSpec(srcName, className, specName)
+	if not exists then
+		local resolved = self:ResolveSpecProfileName(className, specName) or self.DEFAULT_NAME
+		local hasLive = TRB.Data.settings[className] ~= nil and type(TRB.Data.settings[className][specName]) == "table"
+		if resolved == srcName and hasLive then
 			self:CreateSpecProfile(srcName, className, specName, TRB.Data.settings[className][specName])
 		else
 			return false
@@ -565,12 +561,11 @@ function TRB.Functions.Profiles:CopyCoreProfile(srcName, dstName)
 	if p == nil then
 		return false
 	end
-	if not self:ProfileExistsForCore(srcName) then
-		-- Source has no stored piece yet. If it's the currently-active profile
-		-- (typically the implicit Default), materialize it now by snapshotting
-		-- the live settings so the source becomes a real stored profile.
-		if (self:ResolveCoreProfileName() or self.DEFAULT_NAME) == srcName
-			and type(TRB.Data.settings.core) == "table" then
+	local exists = self:ProfileExistsForCore(srcName)
+	if not exists then
+		local resolved = self:ResolveCoreProfileName() or self.DEFAULT_NAME
+		local hasLive = type(TRB.Data.settings.core) == "table"
+		if resolved == srcName and hasLive then
 			self:CreateCoreProfile(srcName, TRB.Data.settings.core)
 		else
 			return false
@@ -599,7 +594,7 @@ function TRB.Functions.Profiles:RenameSpecProfile(oldName, newName, className, s
 	local p = TRB.Data.settings.profiles
 	local piece = p.list[oldName][className][specName]
 	-- Move the piece (not a copy — we're renaming, not duplicating).
-	p.list[newName] = p.list[newName] or { __version = self.CURRENT_VERSION }
+	p.list[newName] = p.list[newName] or {}
 	p.list[newName][className] = p.list[newName][className] or {}
 	p.list[newName][className][specName] = piece
 	p.list[oldName][className][specName] = nil
@@ -636,7 +631,7 @@ function TRB.Functions.Profiles:RenameCoreProfile(oldName, newName)
 		return false
 	end
 	local p = TRB.Data.settings.profiles
-	p.list[newName] = p.list[newName] or { __version = self.CURRENT_VERSION }
+	p.list[newName] = p.list[newName] or {}
 	p.list[newName].core = p.list[oldName].core
 	p.list[oldName].core = nil
 	for _, entry in pairs(p.character) do
@@ -760,10 +755,12 @@ function TRB.Functions.Profiles:GetSpecListFromCache(className, specName)
 	self.listCache = self.listCache or { spec = {}, core = nil }
 	self.listCache.spec = self.listCache.spec or {}
 	self.listCache.spec[className] = self.listCache.spec[className] or {}
+	local wasCached = self.listCache.spec[className][specName] ~= nil
 	if self.listCache.spec[className][specName] == nil then
 		self.listCache.spec[className][specName] = self:ListSpecProfileNames(className, specName)
 	end
-	return self.listCache.spec[className][specName]
+	local list = self.listCache.spec[className][specName]
+	return list
 end
 
 ---Returns the cached sorted list of profile names with a core piece,
@@ -771,6 +768,7 @@ end
 ---@return string[]
 function TRB.Functions.Profiles:GetCoreListFromCache()
 	self.listCache = self.listCache or { spec = {}, core = nil }
+	local wasCached = self.listCache.core ~= nil
 	if self.listCache.core == nil then
 		self.listCache.core = self:ListCoreProfileNames()
 	end
@@ -799,6 +797,8 @@ profilesFrame:SetScript("OnEvent", function(_, event)
 		if TRB.Data == nil or TRB.Data.settings == nil then
 			return
 		end
-		Profiles:FlushActive()
+		if not Profiles.suppressLogoutFlush then
+			Profiles:FlushActive()
+		end
 	end
 end)

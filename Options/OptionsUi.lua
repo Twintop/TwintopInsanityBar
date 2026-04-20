@@ -1705,6 +1705,10 @@ local function ApplyNewProfile(scope, className, specName, profileName, sourceMo
 	-- the new profile is a copy of what's already loaded — just updating the
 	-- active-profile pointer is sufficient and no reload is needed.
 	if reload and sourceMode == "baseline" then
+		-- Suppress the PLAYER_LOGOUT flush: we just wrote baseline defaults
+		-- into the new profile. Without this, FlushActive would overwrite
+		-- those defaults with the current (old) runtime data during reload.
+		TRB.Functions.Profiles.suppressLogoutFlush = true
 		C_UI.Reload()
 	end
 end
@@ -1763,7 +1767,10 @@ local function EnsureProfilePopupsRegistered()
 				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
 			end
 			if exists then
-				StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(data), name, data)
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(captured), name, captured)
+				end)
 			else
 				ApplyNewProfile(data.scope, data.className, data.specName, name, "current", true)
 				if data.refresh then data.refresh() end
@@ -1790,7 +1797,10 @@ local function EnsureProfilePopupsRegistered()
 				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
 			end
 			if exists then
-				StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(data), name, data)
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(captured), name, captured)
+				end)
 			else
 				ApplyNewProfile(data.scope, data.className, data.specName, name, "baseline", true)
 				if data.refresh then data.refresh() end
@@ -1801,11 +1811,7 @@ local function EnsureProfilePopupsRegistered()
 			self:GetParent():Hide()
 		end,
 		EditBoxOnEnterPressed = function(self)
-			local parent = self:GetParent()
-			if parent.OnAccept then
-				parent.OnAccept(parent, parent.data)
-			end
-			parent:Hide()
+			StaticPopup_OnClick(self:GetParent(), 1)
 		end,
 	}
 
@@ -1830,7 +1836,9 @@ local function EnsureProfilePopupsRegistered()
 			-- button2 = No: re-show the name prompt pre-filled with the attempted name.
 			if data ~= nil then
 				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, initialName = data.attemptedName, refresh = data.refresh }
-				StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, followup)
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, followup)
+				end)
 			end
 		end,
 	}
@@ -1847,6 +1855,7 @@ local function EnsureProfilePopupsRegistered()
 			self:SetFormattedText(L["ProfilePopupUseConfirmText"], data and data.profileName or "", ScopeLabel(data))
 		end,
 		OnAccept = function(self, data)
+			TRB.Functions.Profiles:FlushAndSuppressLogout()
 			if data.scope == "core" then
 				TRB.Functions.Profiles:SetActiveCoreProfile(data.profileName)
 			else
@@ -1929,12 +1938,16 @@ local function EnsureProfilePopupsRegistered()
 			if exists then
 				-- Reuse overwrite popup; its OnAccept ApplyNewProfile path doesn't fit here,
 				-- so use a distinct copy-overwrite popup via a tailored flow.
-				StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", name, ScopeLabel(data), data)
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", name, ScopeLabel(captured), captured)
+				end)
 			else
+				local ok
 				if data.scope == "core" then
-					TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, name)
+					ok = TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, name)
 				else
-					TRB.Functions.Profiles:CopySpecProfile(data.sourceName, name, data.className, data.specName)
+					ok = TRB.Functions.Profiles:CopySpecProfile(data.sourceName, name, data.className, data.specName)
 				end
 				if data.refresh then data.refresh() end
 			end
@@ -1943,11 +1956,7 @@ local function EnsureProfilePopupsRegistered()
 			self:GetParent():Hide()
 		end,
 		EditBoxOnEnterPressed = function(self)
-			local parent = self:GetParent()
-			if parent.OnAccept then
-				parent.OnAccept(parent, parent.data)
-			end
-			parent:Hide()
+			StaticPopup_OnClick(self:GetParent(), 1)
 		end,
 	}
 
@@ -1974,7 +1983,9 @@ local function EnsureProfilePopupsRegistered()
 		OnCancel = function(self, data)
 			if data ~= nil then
 				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, sourceName = data.sourceName, initialName = data.attemptedName, refresh = data.refresh }
-				StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, followup)
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, followup)
+				end)
 			end
 		end,
 	}
@@ -2011,7 +2022,9 @@ local function EnsureProfilePopupsRegistered()
 				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
 			end
 			if exists then
-				StaticPopup_Show("TwintopResourceBar_Profile_RenameCollision", name)
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_RenameCollision", name)
+				end)
 				return
 			end
 			local isActive = (name ~= data.profileName) and (GetActiveProfileName(data.scope, data.className, data.specName) == data.profileName)
@@ -2029,11 +2042,7 @@ local function EnsureProfilePopupsRegistered()
 			self:GetParent():Hide()
 		end,
 		EditBoxOnEnterPressed = function(self)
-			local parent = self:GetParent()
-			if parent.OnAccept then
-				parent.OnAccept(parent, parent.data)
-			end
-			parent:Hide()
+			StaticPopup_OnClick(self:GetParent(), 1)
 		end,
 	}
 
@@ -2056,6 +2065,294 @@ local function EnsureProfilePopupsRegistered()
 		whileDead = true,
 		hideOnEscape = true,
 		preferredIndex = 3,
+	}
+
+	-- ------------------------------------------------------------------
+	-- Phase 3: Profile Import/Export popups
+	-- ------------------------------------------------------------------
+	-- Applies a parsed import into profiles.list under the given name.
+	-- Writes every valid spec piece and (optionally) the core piece found in
+	-- the payload, then shows a success popup that lets the user choose
+	-- whether to activate the imported profile and reload.
+	local function ApplyImportedProfile(name, parsed)
+		if type(name) ~= "string" or name == "" or parsed == nil then
+			return
+		end
+		local writtenSpecs = {}
+		for _, slot in ipairs(parsed.validSpecs or {}) do
+			local piece = parsed.profileBody and parsed.profileBody[slot.className] and parsed.profileBody[slot.className][slot.specName]
+			if type(piece) == "table" then
+				TRB.Functions.Profiles:CreateSpecProfile(name, slot.className, slot.specName, piece)
+				table.insert(writtenSpecs, { className = slot.className, specName = slot.specName })
+			end
+		end
+		local wroteCore = false
+		if parsed.hasCore and type(parsed.profileBody.core) == "table" then
+			TRB.Functions.Profiles:CreateCoreProfile(name, parsed.profileBody.core)
+			wroteCore = true
+		end
+
+		-- Normalise the imported entry against the current settings schema so
+		-- cross-version imports land in a shape the rest of the addon expects.
+		local p = TRB.Data.settings and TRB.Data.settings.profiles
+		if p ~= nil and p.list ~= nil and p.list[name] ~= nil then
+			if TRB.Functions.Settings and TRB.Functions.Settings.PortForwardProfile then
+				TRB.Functions.Settings:PortForwardProfile(p.list[name])
+			end
+		end
+
+		TRB.Functions.Profiles:InvalidateCache()
+		C_Timer.After(0, function()
+			StaticPopup_Show("TwintopResourceBar_Profile_ImportSuccess", nil, nil, {
+				profileName = name,
+				writtenSpecs = writtenSpecs,
+				wroteCore = wroteCore,
+			})
+		end)
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportSuccess"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupImportSuccessText"], (data and data.profileName) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p == nil then
+				C_UI.Reload()
+				return
+			end
+			-- Activate the imported profile for every slot the payload covered.
+			-- Current character gets direct overrides (so the reload picks up
+			-- the new active profile immediately). Class/spec defaults are also
+			-- updated so other characters of those classes inherit the import.
+			TRB.Functions.Profiles:FlushAndSuppressLogout()
+			if data.wroteCore then
+				TRB.Functions.Profiles:SetActiveCoreProfile(data.profileName)
+				p.default.core = data.profileName
+			end
+			if data.writtenSpecs ~= nil then
+				for _, slot in ipairs(data.writtenSpecs) do
+					TRB.Functions.Profiles:SetActiveSpecProfile(slot.specName, data.profileName)
+					p.default[slot.className] = p.default[slot.className] or {}
+					p.default[slot.className][slot.specName] = data.profileName
+				end
+			end
+			C_UI.Reload()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ExportIncludeCore"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupExportIncludeCoreText"], (data and data.profileName) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			local output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, true)
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local exportData = {
+				message = string.format(L["ProfileExportMessageFormat"], data.profileName),
+				exportString = output,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Export", nil, nil, exportData)
+			end)
+		end,
+		OnCancel = function(self, data, reason)
+			-- button2 = No (OnCancel fires with reason=="clicked"). Escape also
+			-- triggers OnCancel; treat only explicit No as "export without core".
+			if reason ~= "clicked" then return end
+			if data == nil then return end
+			local output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, false)
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local exportData = {
+				message = string.format(L["ProfileExportMessageFormat"], data.profileName),
+				exportString = output,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Export", nil, nil, exportData)
+			end)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportPaste"] = {
+		text = L["ProfileImportPastePrompt"],
+		button1 = L["Import"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		hasWideEditBox = true,
+		editBoxWidth = 500,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnAccept = function(self)
+			local text = self:GetEditBox():GetText() or ""
+			local parsed, err = TRB.Functions.IO:ParseProfileImport(text)
+			if parsed == nil then
+				local msg
+				if err == -6 then
+					msg = L["ProfileImportErrorMultipleProfiles"]
+				elseif err == -7 then
+					msg = L["ProfileImportErrorEmptyWrapper"]
+				elseif err == -4 then
+					msg = L["ProfileImportErrorNoValid"]
+				elseif err == -1 or err == -2 or err == -3 then
+					msg = L["ProfileImportErrorDecode"]
+				else
+					msg = L["ProfileImportErrorGeneric"]
+				end
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local nameData = {
+				parsed = parsed,
+				initialName = parsed.suggestedName or "",
+			}
+			-- Explicitly hide the paste popup and defer the name popup so WoW's
+			-- StaticPopup slot is fully free. A 0-frame C_Timer.After was not
+			-- enough to avoid slot collisions; bump to a small positive delay.
+			StaticPopup_Hide("TwintopResourceBar_Profile_ImportPaste")
+			C_Timer.After(0.05, function()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportName", nil, nil, nameData)
+			end)
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportName"] = {
+		text = L["ProfileImportNamePrompt"],
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText((data and data.initialName) or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			if data == nil or data.parsed == nil then return end
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+
+			-- Detect per-slot collisions with existing stored pieces.
+			local collisions = {}
+			for _, slot in ipairs(data.parsed.validSpecs or {}) do
+				if TRB.Functions.Profiles:ProfileExistsForSpec(name, slot.className, slot.specName) then
+					collisions[#collisions + 1] = slot.className .. "/" .. slot.specName
+				end
+			end
+			if data.parsed.hasCore and TRB.Functions.Profiles:ProfileExistsForCore(name) then
+				collisions[#collisions + 1] = L["ProfileScopeLabelGlobal"]
+			end
+
+			if #collisions > 0 then
+				local confirmData = {
+					parsed = data.parsed,
+					attemptedName = name,
+					collisionList = table.concat(collisions, ", "),
+				}
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportOverwriteConfirm", nil, nil, confirmData)
+				end)
+			else
+				ApplyImportedProfile(name, data.parsed)
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			-- WoW's StaticPopup_OnClick(self, "accept") is the correct way to
+			-- trigger button1 from an edit box.  Calling parent.OnAccept directly
+			-- bypasses StaticPopup's data-passing and cleanup logic.
+			StaticPopup_OnClick(parent, 1)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportOverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileImportOverwriteConfirmPrompt"], (data and data.attemptedName) or "", (data and data.collisionList) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			ApplyImportedProfile(data.attemptedName, data.parsed)
+		end,
+		OnCancel = function(self, data, reason)
+			if reason ~= "clicked" then return end
+			if data == nil then return end
+			-- button2 = No: re-prompt for a new name with the previous name prefilled.
+			local nameData = {
+				parsed = data.parsed,
+				initialName = data.attemptedName,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportName", nil, nil, nameData)
+			end)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportError"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText("%s", (data and data.message) or L["ProfileImportErrorGeneric"])
+		end,
 	}
 end
 
@@ -2105,7 +2402,7 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 	end
 
 	local function OnImportClicked()
-		StaticPopup_Show("TwintopResourceBar_Profile_ImportExportStub")
+		StaticPopup_Show("TwintopResourceBar_Profile_ImportPaste")
 	end
 
 	local function OnUseClicked(profileName)
@@ -2136,7 +2433,29 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 	end
 
 	local function OnExportClicked(profileName)
-		StaticPopup_Show("TwintopResourceBar_Profile_ImportExportStub")
+		if scope == "core" then
+			local output, err = TRB.Functions.IO:ExportCoreProfile(profileName)
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				return
+			end
+			StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
+				message = string.format(L["ProfileExportMessageFormat"], profileName),
+				exportString = output,
+			})
+		else
+			local classId, specId = TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
+			if classId == nil or specId == nil then
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = L["ProfileImportErrorGeneric"] })
+				return
+			end
+			StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, {
+				profileName = profileName,
+				classId = classId,
+				specId = specId,
+			})
+		end
 	end
 
 	local function Generator(_, rootDescription)

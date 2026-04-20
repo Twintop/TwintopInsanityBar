@@ -2355,12 +2355,7 @@ StaticPopupDialogs["TRB_EDIT_MODE_CUSTOM_FRAME"] = {
 		end
 	end,
 	EditBoxOnEnterPressed = function(editBox)
-		local parent = editBox:GetParent()
-		local frameName = editBox:GetText()
-		if parent.data and parent.data.callback then
-			parent.data.callback(frameName)
-		end
-		parent:Hide()
+		StaticPopup_OnClick(editBox:GetParent(), 1)
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide()

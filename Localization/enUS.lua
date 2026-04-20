@@ -2657,3 +2657,17 @@ L["ProfilePopupRenameCollisionText"] = "A profile named '%s' already exists. Pic
 L["ProfilePopupImportExportStubText"] = "Profile import/export is coming in a future update."
 
 L["ProfilePopupDeleteReloadMessage"] = "The active profile was deleted. You must reload the UI to continue."
+
+-- Phase 3: Profile Import/Export
+L["ProfilePopupExportIncludeCoreText"] = "Include the current Global Options in the export of profile '%s'?"
+L["ProfileExportMessageFormat"] = "Export string for profile '%s':"
+L["ProfileImportPastePrompt"] = "Paste a TwintopInsanityBar profile or settings export string below:"
+L["ProfileImportNamePrompt"] = "Enter a name for the imported profile:"
+L["ProfileImportOverwriteConfirmPrompt"] = "A profile named '%s' already contains: %s. Overwrite these pieces?"
+L["ProfileImportErrorGeneric"] = "The profile could not be imported."
+L["ProfileImportErrorEmpty"] = "No profile data is available to export."
+L["ProfileImportErrorEmptyWrapper"] = "The import string did not contain any profile entries."
+L["ProfileImportErrorNoValid"] = "The import string did not contain any recognizable class, specialization, or Global Options data."
+L["ProfileImportErrorMultipleProfiles"] = "The import string contains more than one profile. Only single-profile imports are supported."
+L["ProfileImportErrorDecode"] = "The import string could not be decoded. It may be corrupted or incomplete."
+L["ProfilePopupImportSuccessText"] = "Profile '%s' was imported successfully. Switch this character's active profile to the imported one and reload the UI? Click No to keep the imported data without activating it."
