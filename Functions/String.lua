@@ -115,6 +115,15 @@ end
 ---@param isInteger boolean # Is `num` an integer?
 ---@return string # Short notation output
 function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces, mode, isInteger)
+	-- Secret values cannot be compared or used in arithmetic; delegate to Blizzard engine APIs
+	if issecretvalue(num) then
+		if TRB.Data.settings ~= nil and TRB.Data.settings.core ~= nil and TRB.Data.settings.core.numberAbbreviation == false then
+			return BreakUpLargeNumbers(num)
+		end
+---@diagnostic disable-next-line: redundant-parameter
+		return AbbreviateNumbers(num, abbrevData)
+	end
+
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 	isInteger = isInteger or false
 	local negative = ""

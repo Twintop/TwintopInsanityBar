@@ -45,11 +45,13 @@ function TRB.Classes.SnapshotData:RefreshAllBuffs()
 	end
 end
 
----Recalculates all hasted cooldowns when haste changes
----@param newHaste number # The new haste percentage
-function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(newHaste)
+---Recalculates all hasted cooldowns when the GCD duration changes
+---@param oldGcd number # The previous cached GCD value
+---@param newGcd number # The new cached GCD value
+---@param changeTimestamp number # GetTime() when the haste change was detected
+function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(oldGcd, newGcd, changeTimestamp)
 	for _, v in pairs(self.snapshots) do
-		v.cooldown:RecalculateForHaste(newHaste)
+		v.cooldown:RecalculateForGcdChange(oldGcd, newGcd, changeTimestamp)
 	end
 end
 
@@ -726,7 +728,7 @@ end
 ---@field public manualMaxCharges integer # Manually tracked max charge count
 ---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
 ---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
----@field public lastKnownHaste number? # The haste percentage used when the cooldown was last initialized or recalculated
+---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -759,7 +761,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.manualMaxCharges = 0
 	self.durationObject = nil
 	self.hastedCooldown = false
-	self.lastKnownHaste = nil
+	self.lastKnownGcd = nil
 end
 
 ---Computes the time remaining on the Snapshot
@@ -856,44 +858,49 @@ end
 ---@param duration number
 ---@param startTime? number
 ---@param hastedCooldown? boolean # When true, the cooldown remaining will be dynamically adjusted when haste changes
----@param currentHaste? number # The current haste percentage (from snapshotData.attributes.haste). Required when hastedCooldown is true.
-function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hastedCooldown, currentHaste)
+---@param currentGcd? number # The current cached GCD duration. Required when hastedCooldown is true.
+function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hastedCooldown, currentGcd)
 	self.startTime = startTime or GetTime()
 	self.duration = duration
 	self.isCustom = true
 	self.hastedCooldown = hastedCooldown or false
-	self.lastKnownHaste = self.hastedCooldown and currentHaste or nil
+	self.lastKnownGcd = self.hastedCooldown and currentGcd or nil
 	self:GetRemainingTime()
 end
 
----Recalculates the remaining cooldown time when haste changes, using the formula:
----  newRemaining = oldRemaining * (1 + oldHaste/100) / (1 + newHaste/100)
----@param newHaste number # The new haste percentage
-function TRB.Classes.SnapshotCooldown:RecalculateForHaste(newHaste)
-	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownHaste == nil then
+---Recalculates the remaining cooldown time when the GCD duration changes (indicating haste changed).
+---Uses the ratio of old/new GCD to scale the remaining time, retroactively accounting for
+---the time elapsed between when haste actually changed and when we observed the new GCD.
+---@param oldGcd number # The previous cached GCD value
+---@param newGcd number # The new cached GCD value
+---@param changeTimestamp number # GetTime() when the haste change was detected
+function TRB.Classes.SnapshotCooldown:RecalculateForGcdChange(oldGcd, newGcd, changeTimestamp)
+	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownGcd == nil then
 		return
 	end
 
-	local oldHaste = self.lastKnownHaste
-	if oldHaste == newHaste then
+	if oldGcd == newGcd then
 		return
 	end
 
 	local currentTime = GetTime()
-	local oldRemaining = self:GetRemainingTime(currentTime)
+	local currentRemaining = self:GetRemainingTime(currentTime)
 
-	if oldRemaining <= 0 then
+	if currentRemaining <= 0 then
 		return
 	end
 
-	local newRemaining = oldRemaining * (1 + oldHaste / 100) / (1 + newHaste / 100)
-	newRemaining = math.max(0, newRemaining)
+	-- Retroactive: how much was remaining at the moment haste actually changed
+	local dt = currentTime - changeTimestamp
+	local remainingAtChange = currentRemaining + dt
+	-- Scale by GCD ratio, then subtract time elapsed since the change
+	local newRemaining = math.max(0, remainingAtChange * (newGcd / oldGcd) - dt)
 
 	-- Reset duration and startTime from "now" so that GetRemainingTime computes newRemaining directly,
 	-- avoiding cumulative floating-point drift from back-calculating startTime through the old duration.
 	self.duration = newRemaining
 	self.startTime = currentTime
-	self.lastKnownHaste = newHaste
+	self.lastKnownGcd = newGcd
 	self:GetRemainingTime(currentTime)
 end
 
@@ -1264,6 +1271,11 @@ function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
 	startTime = spellCooldown.startTime
 	duration = spellCooldown.duration
+	if issecretvalue(startTime) or issecretvalue(duration) then
+		self.gcdLockRemaining = 0
+		self.gcdLockLastUpdate = currentTime
+		return 0
+	end
 	self.gcdLockRemaining = (startTime + duration - currentTime)
 	self.gcdLockLastUpdate = currentTime
 	return self.gcdLockRemaining

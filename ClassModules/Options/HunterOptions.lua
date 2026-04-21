@@ -298,6 +298,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 				wailingArrow = {
 					enabled = true,
 				},
+				explosiveShot = {
+					enabled = true,
+				},
 			},
 			customThresholds = {}
 		},
@@ -1367,6 +1370,7 @@ local function MarksmanshipConstructThresholdListPanel(parent)
 			multiShot = L["HunterMarksmanshipThresholdCheckboxMultiShot"],
 			blackArrow = L["HunterMarksmanshipThresholdCheckboxBlackArrow"],
 			wailingArrow = L["HunterMarksmanshipThresholdCheckboxWailingArrow"],
+			explosiveShot = L["HunterMarksmanshipThresholdCheckboxExplosiveShot"],
 		},
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
@@ -1375,6 +1379,7 @@ local function MarksmanshipConstructThresholdListPanel(parent)
 			aimedShot = L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"],
 			arcaneShot = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShotTooltip"],
 			blackArrow = L["HunterMarksmanshipThresholdCheckboxBlackArrowTooltip"],
+			explosiveShot = L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"],
 			killShot = L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"],
 			multiShot = L["HunterMarksmanshipThresholdCheckboxMultiShotTooltip"],
 			wailingArrow = L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"],

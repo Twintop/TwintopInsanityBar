@@ -2735,3 +2735,7 @@ L["ProfileActionCopyToNew"] = "Copy to New Profile..."
 L["ProfileDefaults"] = "Profile Defaults"
 L["ProfileDefaultsHeader"] = "Profile Defaults"
 L["ProfileDefaultsDescription"] = "Choose the default profile used for each spec (and for Global Options) the first time a new character logs in. Existing characters keep their own per-character profile selections."
+
+-- Hunter Marksmanship Explosive Shot
+L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "Explosive Shot"
+L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."

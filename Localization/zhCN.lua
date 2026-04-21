@@ -2416,4 +2416,16 @@ if locale == "zhCN" then
 	L["PaladinAudioCheckboxDivinePurpose"] = "神圣意志触发时播放音效"
 	L["PaladinAudioCheckboxDivinePurposeTooltip"] = "神圣意志触发时播放音效，每次触发仅播放一次。"
 
+	-- Druid Restoration Clearcasting Indicator Colors
+	L["DruidRestorationBarTextVariable_clearcastingActive"] = "节能施法当前是否生效？仅用于逻辑变量！"
+	L["DruidRestorationCheckboxClearcasting"] = "节能施法"
+	L["DruidRestorationIndicatorClearcastingTooltip"] = "触发节能施法效果时，指示器变为该颜色。"
+	L["DruidRestorationIndicatorClearcastingColor"] = "节能施法效果已触发"
+	
+	-- Druid Feral Clearcasting Indicator Colors
+	L["DruidFeralBarTextVariable_clearcastingActive"] = "节能施法当前是否生效？仅用于逻辑变量！"
+	L["DruidFeralCheckboxClearcasting"] = "节能施法"
+	L["DruidFeralIndicatorClearcastingTooltip"] = "触发节能施法效果时，指示器变为该颜色。"
+	L["DruidFeralIndicatorClearcastingColor"] = "节能施法效果已触发"
+
 end

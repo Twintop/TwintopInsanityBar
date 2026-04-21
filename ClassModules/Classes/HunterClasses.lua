@@ -190,6 +190,7 @@ end
 ---@field public blackArrow TRB.Classes.SpellThreshold
 ---@field public killShot TRB.Classes.SpellThreshold
 ---@field public wailingArrow TRB.Classes.SpellThreshold
+---@field public explosiveShot TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.MarksmanshipSpells.__index = TRB.Classes.Hunter.MarksmanshipSpells
 
@@ -256,6 +257,15 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         isSnowflake = true,
         category = "execute"
     })
+    self.explosiveShot = TRB.Classes.SpellThreshold:New({
+        id = 212431,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "explosiveShot",
+        hasCooldown = true,
+        cooldown = 30,
+        isTalent = true,
+        category = "offensive"
+    })
 
     -- Dark Ranger
     self.blackArrow = TRB.Classes.SpellThreshold:New({
@@ -308,6 +318,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
 		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
+		{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = spells.explosiveShot.name, printInSettings = true },
 		{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
 		{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
 		{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = spells.rapidFire.name, printInSettings = true },
