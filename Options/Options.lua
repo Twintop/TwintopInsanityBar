@@ -809,6 +809,7 @@ local function ConstructImportExportPanel()
 		},
 	}
 
+	local RefreshImportExportView
 	local profileTableContainer = CreateFrame("Frame", "TwintopResourceBar_IE_ProfileTableContainer", parent, "BackdropTemplate")
 	profileTableContainer:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
 	profileTableContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
@@ -848,7 +849,6 @@ local function ConstructImportExportPanel()
 	-- Forward declarations for mutual recursion
 	local RefreshProfileTable
 	local RefreshDetailGrid
-	local RefreshImportExportView
 	local detailContainer
 
 	-- ── Profile table refresh ──────────────────────────────────────────
