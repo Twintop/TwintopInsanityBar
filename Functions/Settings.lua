@@ -6575,6 +6575,83 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate Restoration Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.shared and restoration.colors.shared.indicatorColors
+			and restoration.colors.shared.indicatorColors.clearcasting == nil
+			and restoration.colors.bar and restoration.colors.bar.clearcasting ~= nil then
+
+			restoration.colors.shared.nodeOrder = restoration.colors.shared.nodeOrder or {}
+
+			local hasClearcasting = false
+			for _, key in ipairs(restoration.colors.shared.nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				end
+			end
+
+			if not hasClearcasting then
+				table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+			end
+
+			restoration.colors.shared.indicatorColors.clearcasting = {
+				color = restoration.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = restoration.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = restoration.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = restoration.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					manaBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			restoration.colors.bar.clearcasting = nil
+		end
+	end
+
+	-- Migrate Feral Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
+		local feral = TwintopInsanityBarSettings.druid.feral
+		if feral.colors and feral.colors.shared and feral.colors.shared.indicatorColors
+			and feral.colors.shared.indicatorColors.clearcasting == nil
+			and feral.colors.bar and feral.colors.bar.clearcasting ~= nil then
+
+			-- Insert clearcasting after ravage but before borderStealth in nodeOrder
+			feral.colors.shared.nodeOrder = feral.colors.shared.nodeOrder or {}
+			local nodeOrder = feral.colors.shared.nodeOrder
+			local hasClearcasting = false
+			local borderStealthIndex = nil
+			for i, key in ipairs(nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				elseif key == "borderStealth" and borderStealthIndex == nil then
+					borderStealthIndex = i
+				end
+			end
+			if not hasClearcasting then
+				if borderStealthIndex ~= nil then
+					table.insert(nodeOrder, borderStealthIndex, "clearcasting")
+				else
+					table.insert(nodeOrder, "clearcasting")
+				end
+			end
+
+			feral.colors.shared.indicatorColors.clearcasting = {
+				color = feral.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = feral.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = feral.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = feral.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					energyBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			feral.colors.bar.clearcasting = nil
+		end
+	end
+
 	-- Migrate Hunter BeastMastery to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.beastMastery then
 		local spec = TwintopInsanityBarSettings.hunter.beastMastery
@@ -7005,6 +7082,89 @@ function TRB.Functions.Settings:PortForwardSettings()
 			spec.colors.shared.indicatorColors.infusionOfLight.targets = targets
 			targets.manaBar = targets.manaBar or { bar = false, border = false, background = false }
 			targets.holyPowerBar = targets.holyPowerBar or { bar = false, border = false, background = false }
+		end
+	end
+
+	-- Backfill Paladin Holy divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.holy then
+		local spec = TwintopInsanityBarSettings.paladin.holy
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.divinePurpose == nil then
+			spec.colors.shared.indicatorColors.divinePurpose = {
+				color = "FF44FF44",
+				color2 = "FF44FF44",
+				gradientDirection = "disabled",
+				enabled = true,
+				targets = {
+					manaBar = { bar = false, border = false, background = false },
+					holyPowerBar = { bar = false, border = true, background = true },
+				},
+			}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "divinePurpose" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "divinePurpose")
+			end
+		end
+	end
+
+	-- Backfill Paladin Protection divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.protection then
+		local spec = TwintopInsanityBarSettings.paladin.protection
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.divinePurpose == nil then
+			spec.colors.shared.indicatorColors.divinePurpose = {
+				color = "FF44FF44",
+				color2 = "FF44FF44",
+				gradientDirection = "disabled",
+				enabled = true,
+				targets = {
+					manaBar = { bar = false, border = false, background = false },
+					holyPowerBar = { bar = false, border = true, background = true },
+				},
+			}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "divinePurpose" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "divinePurpose")
+			end
+		end
+	end
+
+	-- Backfill Paladin Retribution divinePurpose indicator
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.paladin and TwintopInsanityBarSettings.paladin.retribution then
+		local spec = TwintopInsanityBarSettings.paladin.retribution
+		if spec.colors then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+			if spec.colors.shared.indicatorColors.divinePurpose == nil then
+				spec.colors.shared.indicatorColors.divinePurpose = {
+					color = "FF44FF44",
+					color2 = "FF44FF44",
+					gradientDirection = "disabled",
+					enabled = true,
+					targets = {
+						manaBar = { bar = false, border = false, background = false },
+						holyPowerBar = { bar = false, border = true, background = true },
+					},
+				}
+				local nodeOrder = spec.colors.shared.nodeOrder
+				local found = false
+				for _, v in ipairs(nodeOrder) do
+					if v == "divinePurpose" then found = true break end
+				end
+				if not found then
+					table.insert(nodeOrder, "divinePurpose")
+				end
+			end
 		end
 	end
 
@@ -8234,6 +8394,9 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 	local function MigrateOne(barSettings)
 		if barSettings == nil then return end
 		if barSettings.anchor ~= nil and not forceResync then return end
+		-- When forceResync is true but the anchor block already has a valid barKey,
+		-- trust it over stale legacy fields (fixes export/import losing screen anchors).
+		if barSettings.anchor ~= nil and barSettings.anchor.barKey ~= nil then return end
 		if barSettings.relativeTo then
 			local mapping = anchorMap[barSettings.relativeTo]
 			if mapping then

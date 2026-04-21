@@ -12,29 +12,36 @@ local content = [====[
 
 ---
 
-# 12.0.5.0-beta03 (2026-04-12)
+# 12.0.1.58-release (2026-04-19)
 ## General
 
-- Merge `midnight` back in to account for features and improvements.
-
-## Hunter
-### Marksmanship
-
-- [#726](#726) Add Explosive Shot as a new threshold line.
+- Fix an issue where manually tracked buff timers (e.g., Voidform, Metamorphosis, Dragonrage, Apotheosis, Eclipse, Ascendance, etc.) would not reset when the player dies.
+- Adjust bar layout and visibility to be more aware of talent-gated bars (e.g., Holy Priest's Lightweaver) to prevent gaps in the layout when those bars are not active.
 
 ---
 
-# 12.0.5.0-beta02 (2026-04-05)
+# 12.0.1.57-release (2026-04-18)
 ## General
 
-- Merge `midnight` back in to account for features and improvements.
+- Fix an issue where importing settings would sometimes reset bar anchoring to defaults when the bar was anchored to "Screen".
+- Fix an issue where bar text would incorrectly be tied to the primary resource bar's visibility even when the text was bound to another bar or "screen".
 
----
+### Localization
 
-# 12.0.5.0-beta01 (2026-04-01)
-## General
+- [#737](#737) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
-- [#726](#726) Fix issues with primary and secondary stats now being secret values and not directly accessible.
+## Druid
+### Feral
+
+- [#738](#738) Re-enable the color indicator for when you have a Clearcasting proc active and add a new logic-only bar text variable `$clearcastingActive` for conditional bar text logic.
+
+### Restoration
+
+- [#738](#738) Re-enable the color indicator for when you have a Clearcasting proc active and add a new logic-only bar text variable `$clearcastingActive` for conditional bar text logic.
+
+## Paladin
+
+- Add new color indicator, audio cue, and bar text variable for when you have a Divine Purpose proc active.
 
 ---
 

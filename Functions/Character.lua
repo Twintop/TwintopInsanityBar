@@ -55,6 +55,11 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+---Resets class/spec-specific proc attributes on player death. Class modules override this to clear their own flags.
+function TRB.Functions.Class:ResetProcsOnDeath()
+	-- Base implementation does nothing; class modules override with spec-specific resets.
+end
+
 ---Initializes or refreshes a target entry in the snapshot target data by GUID.
 ---@param guid string The target's GUID
 ---@param selfInitializeAllowed boolean|nil If false or nil, skips initialization when guid matches the player's GUID
@@ -420,6 +425,24 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" then
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
+	elseif event == "PLAYER_DEAD" then
+		-- All buffs are lost on death. Reset any manually-tracked (isCustom) buff
+		-- snapshots so they don't show stale timers after the player dies.
+		local snapshotData = TRB.Data.snapshotData
+		if snapshotData and snapshotData.snapshots then
+			for _, snapshot in pairs(snapshotData.snapshots) do
+				if snapshot.buff and snapshot.buff.isCustom then
+					snapshot.buff:Reset(nil, true)
+				end
+			end
+		end
+		-- Reset audio "played" flags so cues can fire again after respawn.
+		if snapshotData and snapshotData.audio then
+			wipe(snapshotData.audio)
+		end
+		-- Let class modules clear their spec-specific proc attributes.
+		TRB.Functions.Class:ResetProcsOnDeath()
+		TRB.Data.lookupDirty = true
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
@@ -454,6 +477,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_FLAGS")
+	characterChangeFrame:RegisterEvent("PLAYER_DEAD")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -482,6 +506,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
+	characterChangeFrame:UnregisterEvent("PLAYER_DEAD")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")

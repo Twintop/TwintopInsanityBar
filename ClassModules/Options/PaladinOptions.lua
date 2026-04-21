@@ -114,7 +114,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
-				nodeOrder = { "infusionOfLight" },
+				nodeOrder = { "infusionOfLight", "divinePurpose" },
 				gradientOrder = {},
 				indicatorColors = {
 					infusionOfLight = {
@@ -125,6 +125,16 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
 							holyPowerBar = { bar = false, border = false, background = false },
+						},
+					},
+					divinePurpose = {
+						color = "FF44FF44",
+						color2 = "FF44FF44",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = true },
 						},
 					},
 				},
@@ -179,6 +189,12 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			},
 			infusionOfLight={
 				name = L["PaladinHolyInfusionOfLight"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			divinePurpose={
+				name = L["PaladinAudioDivinePurpose"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -296,7 +312,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
-				nodeOrder = { "infusionOfLight" },
+				nodeOrder = { "infusionOfLight", "divinePurpose" },
 				gradientOrder = {},
 				indicatorColors = {
 					infusionOfLight = {
@@ -307,6 +323,16 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
 							holyPowerBar = { bar = false, border = false, background = false },
+						},
+					},
+					divinePurpose = {
+						color = "FF44FF44",
+						color2 = "FF44FF44",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = true },
 						},
 					},
 				},
@@ -358,6 +384,12 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 5
 				}
+			},
+			divinePurpose={
+				name = L["PaladinAudioDivinePurpose"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -471,9 +503,20 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "divinePurpose" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					divinePurpose = {
+						color = "FF44FF44",
+						color2 = "FF44FF44",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = true },
+						},
+					},
+				},
 			},
 		},
 		displayText={
@@ -522,6 +565,12 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 5
 				}
+			},
+			divinePurpose={
+				name = L["PaladinAudioDivinePurpose"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -922,6 +971,8 @@ local function HolyConstructAudioAndTrackingPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "infusionOfLight", spec, classId, specId, yCoord, L["PaladinHolyAudioCheckboxInfusionOfLight"], L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"])
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "divinePurpose", spec, classId, specId, yCoord, L["PaladinAudioCheckboxDivinePurpose"], L["PaladinAudioCheckboxDivinePurposeTooltip"])
 end
 
 local function HolyConstructIndicatorColorsPanel(parent)
@@ -940,6 +991,7 @@ local function HolyConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "infusionOfLight", label = L["PaladinHolyInfusionOfLight"], tooltip = L["PaladinHolyIndicatorInfusionOfLightTooltip"], colorLabel = L["PaladinHolyIndicatorInfusionOfLightColor"] },
+			{ key = "divinePurpose", label = L["PaladinIndicatorDivinePurpose"], tooltip = L["PaladinIndicatorDivinePurposeTooltip"], colorLabel = L["PaladinIndicatorDivinePurposeColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
@@ -1385,6 +1437,8 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold3"].configuration.thresholdValue = value
 	end)
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "divinePurpose", spec, classId, specId, yCoord, L["PaladinAudioCheckboxDivinePurpose"], L["PaladinAudioCheckboxDivinePurposeTooltip"])
 end
 
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)
@@ -1421,6 +1475,7 @@ local function ProtectionConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 2, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "infusionOfLight", label = L["PaladinProtectionCheckboxInfusionOfLight"], tooltip = L["PaladinProtectionIndicatorInfusionOfLightTooltip"], colorLabel = L["PaladinProtectionIndicatorInfusionOfLightColor"] },
+			{ key = "divinePurpose", label = L["PaladinIndicatorDivinePurpose"], tooltip = L["PaladinIndicatorDivinePurposeTooltip"], colorLabel = L["PaladinIndicatorDivinePurposeColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
@@ -1845,6 +1900,8 @@ local function RetributionConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["holyPowerThreshold3"].configuration.thresholdValue = value
 	end)
+
+	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "divinePurpose", spec, classId, specId, yCoord, L["PaladinAudioCheckboxDivinePurpose"], L["PaladinAudioCheckboxDivinePurposeTooltip"])
 end
 
 local function RetributionConstructBarTextDisplayPanel(parent, cache)
@@ -1867,8 +1924,30 @@ local function RetributionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 2, 3, yCoord, cache)
 end
 
---local function RetributionConstructIndicatorColorsPanel(parent)
---end
+local function RetributionConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.paladin.retribution
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.paladin_retribution
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 2, 3, yCoord, {
+		indicatorDefs = {
+			{ key = "divinePurpose", label = L["PaladinIndicatorDivinePurpose"], tooltip = L["PaladinIndicatorDivinePurposeTooltip"], colorLabel = L["PaladinIndicatorDivinePurposeColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "holyPowerBar", label = L["ResourceHolyPower"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Paladin_Retribution",
+	})
+
+	yCoord = yCoord - 40
+end
 
 local function RetributionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(2, 3)
@@ -1903,7 +1982,7 @@ local function RetributionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RetributionConstructManaBarPanel },
 		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, RetributionConstructHolyPowerBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RetributionConstructHealthBarPanel },
-		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RetributionConstructIndicatorColorsPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RetributionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, RetributionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, RetributionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, RetributionConstructFontAndTextPanel },

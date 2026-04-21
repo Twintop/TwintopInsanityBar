@@ -67,6 +67,11 @@ local function DualWriteAnchorToLegacy(barSettings)
 			}
 			barSettings.relativeToName = nameMap[barSettings.relativeTo] or ""
 		end
+	else
+		-- Screen-anchored: clear stale legacy fields so MigrateBarAnchors
+		-- won't incorrectly re-derive a bar-relative anchor from them on import.
+		barSettings.relativeTo = nil
+		barSettings.relativeToName = nil
 	end
 end
 

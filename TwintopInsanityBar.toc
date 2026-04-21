@@ -14,8 +14,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.5.0
-## X-ReleaseType: beta03
-## X-ReleaseDate: 2026-04-12
+## X-ReleaseType: release
+## X-ReleaseDate: 2026-04-21
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled

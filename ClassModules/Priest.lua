@@ -3575,6 +3575,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.surgeOfLightActive = false
+		snapshotData.attributes.surgeOfLightActiveGrace = false
+		snapshotData.attributes.shadowyInsightActive = false
+		snapshotData.attributes.benedictionOverride = false
+	end
+end
+
 local specValidVars
 do
 	local healthVars = {

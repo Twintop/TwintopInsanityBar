@@ -118,6 +118,7 @@ local function FillSpecializationCache()
 
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
+	specCache.druid_feral.snapshotData.attributes.clearcastingActive = false
 	specCache.druid_feral.snapshotData.audio = {
 		apexPredatorsCravingCue = false,
 		comboPointThreshold1Played = false,
@@ -210,6 +211,7 @@ local function FillSpecializationCache()
 	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 
 	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
+	specCache.druid_restoration.snapshotData.attributes.clearcastingActive = false
 	specCache.druid_restoration.snapshotData.audio = {
 		innervateCue = false
 	}
@@ -221,6 +223,8 @@ local function FillSpecializationCache()
 	specCache.druid_restoration.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_restoration.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	---@type TRB.Classes.Snapshot
+	specCache.druid_restoration.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
 
 	specCache.druid_restoration.barTextVariables = {
 		icons = {},
@@ -367,6 +371,41 @@ local function DruidPowerEvent(self, event, ...)
 	end
 end
 local druidPowerFrame = CreateFrame("Frame")
+
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+		local snapshotData = TRB.Data.snapshotData
+		local spellId = ...
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local snapshotData = TRB.Data.snapshotData
+		local spellId = ...
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = false
+			end
+		end
+	end
+end
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
 
 ---@alias trbDruidForm
 ---| '"humanoid"'		# nil
@@ -894,6 +933,12 @@ local function RefreshLookupData_Feral()
 		end
 	end
 
+	-- Block D: Clearcasting ($clearcastingActive)
+	if not activeVars or activeVars["$clearcastingActive"] then
+		lookupLogic["$clearcastingActive"] = snapshotData.attributes.clearcastingActive or false
+		lookup["$clearcastingActive"] = ""
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1055,6 +1100,12 @@ local function RefreshLookupData_Restoration()
 		if lookupChanged(prevState, "$incarnationTime", _incarnationTime) then
 			lookup["$incarnationTime"] = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
 		end
+	end
+
+	-- Block D: Clearcasting ($clearcastingActive)
+	if not activeVars or activeVars["$clearcastingActive"] then
+		lookupLogic["$clearcastingActive"] = snapshotData.attributes.clearcastingActive or false
+		lookup["$clearcastingActive"] = ""
 	end
 
 	TRB.Data.lookup = lookup
@@ -2338,14 +2389,6 @@ local function UpdateResourceBar()
 						end
 					end
 
-					
-					-- Legacy clearcasting (not an indicator — stays in colors.bar)
-					if displaySpecId == TRB.Data.character.specId then
-						if specSettings.colors.bar.clearcasting.enabled and snapshots[spells.clearcasting.id].buff.remaining > 0 then
-							barColor = specSettings.colors.bar.clearcasting.color
-						end
-					end
-
 					-- Indicator color system
 					barBorderColor = specSettings.colors.bar.border.color
 					barBackgroundColor = specSettings.colors.bar.background.color
@@ -2358,6 +2401,7 @@ local function UpdateResourceBar()
 					local conditionMap = {
 						apexPredator = apcActive,
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
+						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
@@ -3093,10 +3137,13 @@ local function UpdateResourceBar()
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
+					local clearcastingActive = snapshotData.attributes.clearcastingActive
+
 					local conditionMap = {
 						incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet,
 						incarnation = isNativeForm and incarnationActive,
 						noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive,
+						clearcasting = isNativeForm and clearcastingActive,
 					}
 
 					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
@@ -3673,6 +3720,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:DisableEvents()
 	local primaryResourceToken
 	-- For Druids, we need to track ALL power types simultaneously for form-based switching
 	-- The actual displayed resource will be determined by current form in UpdateResourceBar
@@ -3689,6 +3737,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceMana = Enum.PowerType.Mana
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy -- Primary spec resource
 		TRB.Data.resourceFactor = ENERGY_RESOURCE_FACTOR
@@ -3712,6 +3761,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceAstralPower = Enum.PowerType.LunarPower
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana -- Primary spec resource
 		TRB.Data.resourceFactor = MANA_RESOURCE_FACTOR
@@ -3805,6 +3855,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.clearcastingActive = false
 	end
 end
 
