@@ -1126,10 +1126,6 @@ local function ArmsConstructThresholdSettingsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Arms_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Arms_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 1, false, true, false, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, true, true, true, nil)
 
@@ -1151,10 +1147,6 @@ local function ArmsConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 1, 1, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 1, 1, yCoord)
 
@@ -1221,10 +1213,6 @@ local function ArmsConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_arms
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -1243,10 +1231,6 @@ local function ArmsConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArmsFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 1, 1, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 1, 1, yCoord, cache)
@@ -1581,10 +1565,6 @@ local function FuryConstructThresholdSettingsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Fury_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Fury_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 2, false, true, false, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, true, true, true, nil)
 
@@ -1606,10 +1586,6 @@ local function FuryConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 1, 2, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 1, 2, yCoord)
 
@@ -1676,10 +1652,6 @@ local function FuryConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -1696,10 +1668,6 @@ local function FuryConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFuryFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 1, 2, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 1, 2, yCoord, cache)
@@ -2045,10 +2013,6 @@ local function ProtectionConstructThresholdSettingsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Protection_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Protection_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 1, 3, false, true, false, false, false, false)
-	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
@@ -2074,10 +2038,6 @@ local function ProtectionConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warrior_Protection_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Protection_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 1, 3, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 1, 3, yCoord)
 
@@ -2144,10 +2104,6 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_protection
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warrior_Protection_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Protection_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -2164,10 +2120,6 @@ local function ProtectionConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warrior_Protection_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warrior_Protection_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorProtectionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 1, 3, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 1, 3, yCoord, cache)

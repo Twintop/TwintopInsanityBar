@@ -574,10 +574,6 @@ local function ConstructGlobalBarTextPanel(parent)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Global_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Global_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportGlobalBarTextPopup(L["GlobalBarTextExportMessage"])
-	end)
 
 	yCoord = yCoord - 10
 

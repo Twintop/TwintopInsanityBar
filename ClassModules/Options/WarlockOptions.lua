@@ -778,10 +778,6 @@ local function AfflictionConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warlock_Affliction_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Affliction_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 1, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 1, yCoord)
 
@@ -819,10 +815,6 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_affliction
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 1, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -864,10 +856,6 @@ local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warlock_Affliction_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Affliction_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 1, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 1, yCoord, cache)
@@ -1093,10 +1081,6 @@ local function DemonologyConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warlock_Demonology_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Demonology_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 2, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 2, yCoord)
 
@@ -1134,10 +1118,6 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
-	controls.buttons.exportButton_Warlock_Demonology_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Demonology_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -1178,10 +1158,6 @@ local function DemonologyConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warlock_Demonology_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Demonology_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDemonologyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 2, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 2, yCoord, cache)
@@ -1593,10 +1569,6 @@ local function DestructionConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Warlock_Destruction_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Destruction_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 3, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 3, yCoord)
 
@@ -1636,10 +1608,6 @@ local function DestructionConstructAudioAndTrackingPanel(parent)
 	local classId = 9
 	local specId = 3
 
-	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Destruction_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 3, false, false, false, true, false, false)
-	end)
 
 	controls.textAudioSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -1680,10 +1648,6 @@ local function DestructionConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Warlock_Destruction_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Warlock_Destruction_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockDestructionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 3, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 9, 3, yCoord, cache)
