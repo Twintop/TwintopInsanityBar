@@ -8,6 +8,94 @@ TRB.Functions.Profiles = {}
 -- The hard-coded name of the profile created on first-load migration.
 TRB.Functions.Profiles.DEFAULT_NAME = "Default"
 
+---@type table<string, string>
+local PROFILE_CLASS_OPTIONS_KEY = {
+	deathknight = "DeathKnight",
+	demonhunter = "DemonHunter",
+	druid = "Druid",
+	evoker = "Evoker",
+	hunter = "Hunter",
+	mage = "Mage",
+	monk = "Monk",
+	paladin = "Paladin",
+	priest = "Priest",
+	rogue = "Rogue",
+	shaman = "Shaman",
+	warlock = "Warlock",
+	warrior = "Warrior",
+}
+
+---@return string[]
+local function GetSupportedClassNames()
+	local out = {}
+	local enabled = TRB.Data and TRB.Data.settings
+		and TRB.Data.settings.core and TRB.Data.settings.core.enabled
+	if type(enabled) == "table" then
+		for className, _ in pairs(enabled) do
+			out[#out + 1] = className
+		end
+		return out
+	end
+
+	for className, _ in pairs(PROFILE_CLASS_OPTIONS_KEY) do
+		out[#out + 1] = className
+	end
+	return out
+end
+
+---@param className string
+---@return table?
+local function GetDefaultClassSettings(className)
+	local optionsKey = PROFILE_CLASS_OPTIONS_KEY[className]
+	if optionsKey == nil or TRB.Options == nil then
+		return nil
+	end
+
+	local classOptions = TRB.Options[optionsKey]
+	if type(classOptions) ~= "table" or type(classOptions.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+
+	local defaults = classOptions.LoadDefaultSettings(true)
+	if type(defaults) ~= "table" or type(defaults[className]) ~= "table" then
+		return nil
+	end
+
+	return defaults[className]
+end
+
+---@return table?
+local function GetDefaultCoreSettings()
+	if TRB.Functions.Settings == nil or type(TRB.Functions.Settings.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+
+	local defaults = TRB.Functions.Settings:LoadDefaultSettings()
+	if type(defaults) ~= "table" or type(defaults.core) ~= "table" then
+		return nil
+	end
+
+	return defaults.core
+end
+
+---@return table<string, any>
+local function BuildDefaultProfileSeed()
+	local seed = {}
+	local coreDefaults = GetDefaultCoreSettings()
+	if type(coreDefaults) == "table" then
+		seed.core = TRB.Functions.Table:DeepCopy(coreDefaults)
+	end
+
+	for _, className in ipairs(GetSupportedClassNames()) do
+		local classDefaults = GetDefaultClassSettings(className)
+		if type(classDefaults) == "table" then
+			seed[className] = TRB.Functions.Table:DeepCopy(classDefaults)
+		end
+	end
+
+	return seed
+end
+
 ---Returns the lowercase class token ("druid", "priest", etc.) for the current
 ---character, derived from WoW's UnitClassBase API. Matches the string stored
 ---in TRB.Data.character.className but doesn't require the class module's
@@ -114,6 +202,83 @@ function TRB.Functions.Profiles:ResolveSpecProfileName(className, specName)
 	return nil
 end
 
+---Returns true if removing or resetting the current core profile should force
+---a reload for this character.
+---@param profileName string?
+---@return boolean
+function TRB.Functions.Profiles:ShouldReloadAfterCoreRemoval(profileName)
+	return profileName ~= nil and self:ResolveCoreProfileName() == profileName
+end
+
+---Returns true if removing or resetting the given spec piece should force a
+---reload for this character.
+---@param profileName string?
+---@param className string?
+---@param specName string?
+---@return boolean
+function TRB.Functions.Profiles:ShouldReloadAfterSpecRemoval(profileName, className, specName)
+	if profileName == nil or className == nil or specName == nil then
+		return false
+	end
+
+	if profileName == self.DEFAULT_NAME then
+		return self:GetCurrentClassName() == className
+			and self:ResolveSpecProfileName(className, specName) == profileName
+	end
+
+	return self:ResolveSpecProfileName(className, specName) == profileName
+end
+
+---Returns true if removing or resetting all spec pieces for `className`
+---should force a reload for this character.
+---@param profileName string?
+---@param className string?
+---@return boolean
+function TRB.Functions.Profiles:ShouldReloadAfterClassRemoval(profileName, className)
+	if profileName == nil or className == nil then
+		return false
+	end
+
+	if profileName == self.DEFAULT_NAME and self:GetCurrentClassName() ~= className then
+		return false
+	end
+
+	for _, specName in ipairs(self:GetSpecsForClass(className)) do
+		if self:ShouldReloadAfterSpecRemoval(profileName, className, specName) then
+			return true
+		end
+	end
+
+	return false
+end
+
+---Returns true if removing or resetting the entire profile should force a
+---reload for this character.
+---@param profileName string?
+---@return boolean
+function TRB.Functions.Profiles:ShouldReloadAfterProfileRemoval(profileName)
+	if profileName == nil then
+		return false
+	end
+
+	if self:ShouldReloadAfterCoreRemoval(profileName) then
+		return true
+	end
+
+	local currentClassName = self:GetCurrentClassName()
+	if currentClassName == nil then
+		return false
+	end
+
+	for _, specName in ipairs(self:GetSpecsForClass(currentClassName)) do
+		if self:ResolveSpecProfileName(currentClassName, specName) == profileName then
+			return true
+		end
+	end
+
+	return false
+end
+
 ---Returns the `core` subtable from the resolved profile for the current character,
 ---or nil if no profile resolves to a piece that contains `core`.
 ---@return table?
@@ -170,19 +335,21 @@ function TRB.Functions.Profiles:IterateAll(callback)
 end
 
 ---One-time seed per character: creates profiles.list["Default"] if missing,
----then augments it with the **current character's class** data only. Other
----classes' data will be merged in when those characters log in for the first
----time after this release ships.
+---then backfills it so it contains `core` plus all 13 classes / 40 specs.
+---The current class is seeded from live runtime settings to preserve legacy
+---customizations; all other classes are seeded from their canonical
+---`LoadDefaultSettings(true)` factories.
 ---
 ---Also wires profiles.default.core = "Default" (if unset) and
----profiles.default[currentClass][spec] = "Default" for the current class's
----specs (if unset), and ensures profiles.character[key] exists.
+---profiles.default[className][spec] = "Default" for every supported spec,
+---and ensures profiles.character[key] exists.
 ---
 ---Idempotent: safe to call on every login.
 function TRB.Functions.Profiles:SeedFromLegacy()
 	self:EnsureStructure()
 	local p = TRB.Data.settings.profiles
 	local className = self:GetCurrentClassName()
+	local defaultSeed = BuildDefaultProfileSeed()
 
 	-- Create the Default profile if it doesn't exist.
 	if p.list[self.DEFAULT_NAME] == nil then
@@ -194,17 +361,37 @@ function TRB.Functions.Profiles:SeedFromLegacy()
 	-- Copy `core` in once. `core` is class-agnostic so seeding from the first
 	-- character to log in is fine; later characters will see the profile already
 	-- has it and skip.
-	if profile.core == nil and TRB.Data.settings.core ~= nil then
-		profile.core = TRB.Functions.Table:DeepCopy(TRB.Data.settings.core)
+	if profile.core == nil then
+		if TRB.Data.settings.core ~= nil then
+			profile.core = TRB.Functions.Table:DeepCopy(TRB.Data.settings.core)
+		elseif type(defaultSeed.core) == "table" then
+			profile.core = TRB.Functions.Table:DeepCopy(defaultSeed.core)
+		end
 	end
 
-	-- Seed the current class's data if the profile doesn't already have it.
-	-- We don't touch other classes because TRB.Data.settings[otherClass] is
-	-- just empty stubs on this character — there's nothing meaningful to copy.
-	if className ~= nil and profile[className] == nil then
-		local classPiece = TRB.Data.settings[className]
-		if type(classPiece) == "table" then
-			profile[className] = TRB.Functions.Table:DeepCopy(classPiece)
+	-- Seed every class/spec into the Default profile. The current class comes
+	-- from live runtime settings so legacy customizations survive the migration;
+	-- other classes come from their canonical default factories.
+	for _, seededClassName in ipairs(GetSupportedClassNames()) do
+		local sourceClassPiece = defaultSeed[seededClassName]
+		local runtimeClassPiece = TRB.Data.settings and TRB.Data.settings[seededClassName]
+		if seededClassName == className and type(runtimeClassPiece) == "table" then
+			sourceClassPiece = runtimeClassPiece
+		end
+
+		if type(sourceClassPiece) == "table" then
+			profile[seededClassName] = profile[seededClassName] or {}
+			for _, specName in ipairs(self:GetSpecsForClass(seededClassName)) do
+				if profile[seededClassName][specName] == nil then
+					local specPiece = sourceClassPiece[specName]
+					if specPiece == nil and type(defaultSeed[seededClassName]) == "table" then
+						specPiece = defaultSeed[seededClassName][specName]
+					end
+					if type(specPiece) == "table" then
+						profile[seededClassName][specName] = TRB.Functions.Table:DeepCopy(specPiece)
+					end
+				end
+			end
 		end
 	end
 
@@ -213,14 +400,14 @@ function TRB.Functions.Profiles:SeedFromLegacy()
 		p.default.core = self.DEFAULT_NAME
 	end
 
-	-- Wire profiles.default[currentClass][spec] for the current class only.
-	-- Other classes will populate themselves on their own logins. Existing
-	-- entries are preserved so admin / future UI changes aren't stomped.
-	if className ~= nil then
-		p.default[className] = p.default[className] or {}
-		for _, specName in ipairs(self:GetSpecsForClass(className)) do
-			if p.default[className][specName] == nil then
-				p.default[className][specName] = self.DEFAULT_NAME
+	-- Wire profiles.default[class][spec] for every supported class/spec.
+	-- Existing entries are preserved so UI changes and admin overrides aren't
+	-- stomped during subsequent logins.
+	for _, seededClassName in ipairs(GetSupportedClassNames()) do
+		p.default[seededClassName] = p.default[seededClassName] or {}
+		for _, specName in ipairs(self:GetSpecsForClass(seededClassName)) do
+			if p.default[seededClassName][specName] == nil then
+				p.default[seededClassName][specName] = self.DEFAULT_NAME
 			end
 		end
 	end
@@ -250,8 +437,9 @@ function TRB.Functions.Profiles:PortForwardAll()
 end
 
 ---Drops the resolved profile pieces in place over `TRB.Data.settings.core` and
----`TRB.Data.settings[currentClass][spec]`, preserving the identity of those
----tables (and every nested sub-table that already exists). Other code may have
+---all resolved class/spec tables. The current class is still merged in place,
+---preserving the identity of those tables (and every nested sub-table that
+---already exists). Other code may have
 ---captured references into these tables before this point — most notably
 ---`FillSpecializationCacheSettings` does `specCache.settings.bars = spec.bars`
 ---and `colors = { bar = spec.colors.bar, bars = spec.colors.bars, ... }`, and
@@ -259,8 +447,9 @@ end
 ---the top-level reference would orphan all of those, which is exactly how the
 ---Holy Priest Lightweaver bar broke.
 ---
----Only the current character's class is touched — other classes' top-level
----settings entries are empty stubs on this character and irrelevant.
+---Non-current classes are first defaulted via `Character:EnsureSpecSettings`
+---so runtime tables still receive newly-added default fields before the
+---resolved profile overlays on top.
 ---Must be called AFTER legacy merge has populated TRB.Data.settings and
 ---AFTER SeedFromLegacy has populated profiles.
 function TRB.Functions.Profiles:ApplyToRuntime()
@@ -273,29 +462,37 @@ function TRB.Functions.Profiles:ApplyToRuntime()
 		TRB.Functions.Table:DeepMergeInto(TRB.Data.settings.core, corePiece)
 	end
 
-	local className = self:GetCurrentClassName()
-	if className == nil then
-		return
-	end
-	local classPiece = TRB.Data.settings[className]
-	if type(classPiece) ~= "table" then
-		return
-	end
-	for _, specName in ipairs(self:GetSpecsForClass(className)) do
-		if type(classPiece[specName]) == "table" then
-			local specPiece = self:GetResolvedSpecPiece(className, specName)
-			if specPiece ~= nil then
-				TRB.Functions.Table:DeepMergeInto(classPiece[specName], specPiece)
+	local currentClassName = self:GetCurrentClassName()
+	for _, className in ipairs(GetSupportedClassNames()) do
+		TRB.Data.settings[className] = TRB.Data.settings[className] or {}
+
+		local Character = TRB.Functions.Character
+		if Character ~= nil and type(Character.EnsureSpecSettings) == "function" then
+			Character:EnsureSpecSettings(className)
+		end
+
+		local classPiece = TRB.Data.settings[className]
+		if type(classPiece) == "table" then
+			for _, specName in ipairs(self:GetSpecsForClass(className)) do
+				local specPiece = self:GetResolvedSpecPiece(className, specName)
+				if type(specPiece) == "table" then
+					if className == currentClassName and type(classPiece[specName]) == "table" then
+						TRB.Functions.Table:DeepMergeInto(classPiece[specName], specPiece)
+					elseif type(classPiece[specName]) == "table" then
+						classPiece[specName] = TRB.Functions.Table:DeepMergeCopy(classPiece[specName], specPiece)
+					else
+						classPiece[specName] = TRB.Functions.Table:DeepCopy(specPiece)
+					end
+				end
 			end
 		end
 	end
 end
 
----Writes the live TRB.Data.settings.core and TRB.Data.settings[currentClass][spec]
----back to the resolved active profile pieces for this character. Called at
+---Writes the live TRB.Data.settings.core and all resolved class/spec pieces
+---back to the active profiles for this character. Called at
 ---PLAYER_LOGOUT so user edits (which today land in TRB.Data.settings) persist
----into the correct profile. Only the current character's class is flushed —
----other classes' entries are empty stubs on this character.
+---into the correct profile, including edits made to non-current-class specs.
 ---
 ---This is the Phase 1 persistence strategy ("Option A") - a deferred flush.
 ---Phase 2 will migrate the options UI to WriteThrough so the flush becomes
@@ -311,21 +508,18 @@ function TRB.Functions.Profiles:FlushActive()
 		p.list[coreName].core = TRB.Functions.Table:DeepCopy(TRB.Data.settings.core)
 	end
 
-	local className = self:GetCurrentClassName()
-	if className == nil then
-		return
-	end
-	local classPiece = TRB.Data.settings[className]
-	if type(classPiece) ~= "table" then
-		return
-	end
-	for _, specName in ipairs(self:GetSpecsForClass(className)) do
-		local specPiece = classPiece[specName]
-		if type(specPiece) == "table" then
-			local profileName = self:ResolveSpecProfileName(className, specName)
-			if profileName ~= nil and p.list[profileName] ~= nil then
-				p.list[profileName][className] = p.list[profileName][className] or {}
-				p.list[profileName][className][specName] = TRB.Functions.Table:DeepCopy(specPiece)
+	for _, className in ipairs(GetSupportedClassNames()) do
+		local classPiece = TRB.Data.settings[className]
+		if type(classPiece) == "table" then
+			for _, specName in ipairs(self:GetSpecsForClass(className)) do
+				local specPiece = classPiece[specName]
+				if type(specPiece) == "table" then
+					local profileName = self:ResolveSpecProfileName(className, specName)
+					if profileName ~= nil and p.list[profileName] ~= nil then
+						p.list[profileName][className] = p.list[profileName][className] or {}
+						p.list[profileName][className][specName] = TRB.Functions.Table:DeepCopy(specPiece)
+					end
+				end
 			end
 		end
 	end
@@ -338,6 +532,13 @@ end
 ---switch will be followed by a reload.
 function TRB.Functions.Profiles:FlushAndSuppressLogout()
 	self:FlushActive()
+	self:SuppressLogoutFlush()
+end
+
+---Suppresses the automatic PLAYER_LOGOUT flush for the next reload/logout.
+---Use this after destructive profile operations that should not write the
+---current runtime state into the fallback profile.
+function TRB.Functions.Profiles:SuppressLogoutFlush()
 	self.suppressLogoutFlush = true
 end
 
@@ -647,14 +848,25 @@ function TRB.Functions.Profiles:RenameCoreProfile(oldName, newName)
 	return true
 end
 
----Deletes the spec piece of a profile. Clears any character override that
----pointed at this profile for that spec. Prunes the list entry if empty.
----Returns true on success.
+---Deletes the spec piece of a profile. For non-Default profiles, clears any
+---character override that pointed at this profile for that spec and repoints
+---any affected profile default back to Default. For the Default profile, this
+---resets the spec to the built-in baseline config. Prunes the list entry if
+---empty. Returns true on success.
 ---@param profileName string
 ---@param className string
 ---@param specName string
 ---@return boolean
 function TRB.Functions.Profiles:DeleteSpecProfile(profileName, className, specName)
+	if profileName == self.DEFAULT_NAME then
+		local classDefaults = GetDefaultClassSettings(className)
+		if type(classDefaults) ~= "table" or type(classDefaults[specName]) ~= "table" then
+			return false
+		end
+		self:CreateSpecProfile(profileName, className, specName, classDefaults[specName])
+		return true
+	end
+
 	if not self:ProfileExistsForSpec(profileName, className, specName) then
 		return false
 	end
@@ -662,6 +874,9 @@ function TRB.Functions.Profiles:DeleteSpecProfile(profileName, className, specNa
 	p.list[profileName][className][specName] = nil
 	if next(p.list[profileName][className]) == nil then
 		p.list[profileName][className] = nil
+	end
+	if p.default[className] ~= nil and p.default[className][specName] == profileName then
+		p.default[className][specName] = self.DEFAULT_NAME
 	end
 	for _, entry in pairs(p.character) do
 		if type(entry) == "table" and entry[specName] == profileName then
@@ -673,17 +888,31 @@ function TRB.Functions.Profiles:DeleteSpecProfile(profileName, className, specNa
 	return true
 end
 
----Deletes the core piece of a profile. Clears any character override pointing
----at this profile for core. Prunes the list entry if empty. Returns true on
----success.
+---Deletes the core piece of a profile. For non-Default profiles, clears any
+---character override pointing at this profile for core and repoints any
+---affected profile default back to Default. For the Default profile, this
+---resets the core settings to the built-in baseline config. Prunes the list
+---entry if empty. Returns true on success.
 ---@param profileName string
 ---@return boolean
 function TRB.Functions.Profiles:DeleteCoreProfile(profileName)
+	if profileName == self.DEFAULT_NAME then
+		local coreDefaults = GetDefaultCoreSettings()
+		if type(coreDefaults) ~= "table" then
+			return false
+		end
+		self:CreateCoreProfile(profileName, coreDefaults)
+		return true
+	end
+
 	if not self:ProfileExistsForCore(profileName) then
 		return false
 	end
 	local p = TRB.Data.settings.profiles
 	p.list[profileName].core = nil
+	if p.default ~= nil and p.default.core == profileName then
+		p.default.core = self.DEFAULT_NAME
+	end
 	for _, entry in pairs(p.character) do
 		if type(entry) == "table" and entry.core == profileName then
 			entry.core = nil
@@ -831,21 +1060,22 @@ function TRB.Functions.Profiles:ProfileHasCore(profileName)
 	return type(entry) == "table" and type(entry.core) == "table" and next(entry.core) ~= nil
 end
 
----Deletes ALL scope pieces from the given profile and rewires every character
----and default reference that pointed at it back to nil (falling through to
----Default). If the profile IS "Default", delegates to ResetDefaultProfile.
+---Deletes ALL scope pieces from the given profile and clears every character
+---reference that pointed at it so resolution falls back to `profiles.default`.
+---Any affected profile defaults are repointed back to Default. If the profile
+---IS "Default", delegates to ResetDefaultProfile.
 ---@param profileName string
+---@return boolean
 function TRB.Functions.Profiles:DeleteProfile(profileName)
 	if profileName == self.DEFAULT_NAME then
-		self:ResetDefaultProfile()
-		return
+		return self:ResetDefaultProfile()
 	end
 	local p = TRB.Data.settings and TRB.Data.settings.profiles
-	if p == nil or p.list == nil or p.list[profileName] == nil then return end
+	if p == nil or p.list == nil or p.list[profileName] == nil then return false end
 
 	-- Clear profiles.default.core reference
 	if p.default ~= nil and p.default.core == profileName then
-		p.default.core = nil
+		p.default.core = self.DEFAULT_NAME
 	end
 	-- Clear profiles.default[className][specName] references
 	if p.default ~= nil then
@@ -853,7 +1083,7 @@ function TRB.Functions.Profiles:DeleteProfile(profileName)
 			if className ~= "core" and type(classEntry) == "table" then
 				for specName, resolvedName in pairs(classEntry) do
 					if resolvedName == profileName then
-						classEntry[specName] = nil
+						classEntry[specName] = self.DEFAULT_NAME
 					end
 				end
 			end
@@ -872,37 +1102,70 @@ function TRB.Functions.Profiles:DeleteProfile(profileName)
 	-- Remove the entire list entry
 	p.list[profileName] = nil
 	self:InvalidateCache()
+	return true
 end
 
 ---Deletes all spec pieces for a given class from a profile, rewiring
----references back to nil (falling through to Default). Does NOT touch
----the core piece. Prunes the profile entry if it becomes empty.
+---character references back to `profiles.default`. For the Default profile,
+---resets the entire class to the built-in baseline config. Does NOT touch the
+---core piece. Prunes the profile entry if it becomes empty.
 ---@param profileName string
 ---@param className string
+---@return boolean
 function TRB.Functions.Profiles:DeleteClassFromProfile(profileName, className)
+	if profileName == self.DEFAULT_NAME then
+		local classDefaults = GetDefaultClassSettings(className)
+		if type(classDefaults) ~= "table" then
+			return false
+		end
+		self:EnsureStructure()
+		local p = TRB.Data.settings.profiles
+		p.list[profileName] = p.list[profileName] or {}
+		p.list[profileName][className] = TRB.Functions.Table:DeepCopy(classDefaults)
+		self:InvalidateCache()
+		return true
+	end
+
 	local p = TRB.Data.settings and TRB.Data.settings.profiles
-	if p == nil or p.list == nil or p.list[profileName] == nil then return end
+	if p == nil or p.list == nil or p.list[profileName] == nil then return false end
 	local classPiece = p.list[profileName][className]
-	if type(classPiece) ~= "table" then return end
+	if type(classPiece) ~= "table" then return false end
 	local specNames = {}
 	for specName, _ in pairs(classPiece) do
 		specNames[#specNames + 1] = specName
 	end
+	local didDelete = false
 	for _, specName in ipairs(specNames) do
-		self:DeleteSpecProfile(profileName, className, specName)
+		didDelete = self:DeleteSpecProfile(profileName, className, specName) or didDelete
 	end
 	self:PruneEmptyEntry(profileName)
 	self:InvalidateCache()
+	return didDelete
 end
 
----Resets the Default profile by wiping its stored data and reseeding from
----the current character's live runtime settings (same as first-login seeding).
+---Resets the Default profile to the built-in baseline config.
+---@return boolean
 function TRB.Functions.Profiles:ResetDefaultProfile()
 	self:EnsureStructure()
 	local p = TRB.Data.settings.profiles
-	p.list[self.DEFAULT_NAME] = {}
-	self:SeedFromLegacy()
+	p.list[self.DEFAULT_NAME] = BuildDefaultProfileSeed()
+	if p.default.core == nil then
+		p.default.core = self.DEFAULT_NAME
+	end
+	for _, className in ipairs(GetSupportedClassNames()) do
+		p.default[className] = p.default[className] or {}
+		for _, specName in ipairs(self:GetSpecsForClass(className)) do
+			if p.default[className][specName] == nil then
+				p.default[className][specName] = self.DEFAULT_NAME
+			end
+		end
+	end
+	local key = self:GetCharacterKey()
+	if key ~= nil then
+		p.character[key] = p.character[key] or {}
+	end
 	self:InvalidateCache()
+	return true
 end
 
 ---Renames a profile bar-wide: renames the list key and updates every reference

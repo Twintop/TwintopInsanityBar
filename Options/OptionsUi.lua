@@ -1739,6 +1739,39 @@ local function EnsureProfilePopupsRegistered()
 		return ScopeLabel(data)
 	end
 
+	local function HumanizeInternalToken(token)
+		if type(token) ~= "string" or token == "" then
+			return ""
+		end
+
+		local spaced = token:gsub("(%l)(%u)", "%1 %2")
+		return (spaced:gsub("(%a)([%w']*)", function(first, rest)
+			return string.upper(first) .. string.lower(rest)
+		end))
+	end
+
+	local function GetImportSlotDisplayLabel(className, specName)
+		if className == nil or specName == nil then
+			return ""
+		end
+
+		local classId, specId = TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
+		local localizedClass = classId ~= nil and GetClassInfo and GetClassInfo(classId) or nil
+		local classLabel = localizedClass or HumanizeInternalToken(className)
+
+		local specLabel
+		if classId ~= nil and specId ~= nil and GetSpecializationInfoForClassID ~= nil then
+			local _, localizedSpec = GetSpecializationInfoForClassID(classId, specId)
+			specLabel = localizedSpec
+		end
+		specLabel = specLabel or HumanizeInternalToken(specName)
+
+		if specLabel ~= "" and classLabel ~= "" then
+			return string.format("%s %s", specLabel, classLabel)
+		end
+		return specLabel ~= "" and specLabel or classLabel
+	end
+
 	StaticPopupDialogs["TwintopResourceBar_Profile_NewName"] = {
 		text = "",
 		button1 = L["ProfileButtonUseCurrent"],
@@ -2081,7 +2114,7 @@ local function EnsureProfilePopupsRegistered()
 	-- Writes every valid spec piece and (optionally) the core piece found in
 	-- the payload, then shows a success popup that lets the user choose
 	-- whether to activate the imported profile and reload.
-	local function ApplyImportedProfile(name, parsed)
+	local function ApplyImportedProfile(name, parsed, onComplete)
 		if type(name) ~= "string" or name == "" or parsed == nil then
 			return
 		end
@@ -2110,6 +2143,36 @@ local function EnsureProfilePopupsRegistered()
 
 		TRB.Functions.Profiles:InvalidateCache()
 		C_Timer.After(0, function()
+			if type(onComplete) == "function" then
+				onComplete(name)
+			end
+			-- If any slot we just wrote is the currently-active profile for
+			-- this character, the runtime content has changed under us; a
+			-- reload is mandatory and the "do you want to start using this
+			-- profile" prompt would be misleading (they're already on it).
+			local reloadRequired = false
+			if wroteCore and TRB.Functions.Profiles:ResolveCoreProfileName() == name then
+				reloadRequired = true
+			end
+			if not reloadRequired then
+				for _, slot in ipairs(writtenSpecs) do
+					if TRB.Functions.Profiles:ResolveSpecProfileName(slot.className, slot.specName) == name then
+						reloadRequired = true
+						break
+					end
+				end
+			end
+			if reloadRequired then
+				-- The imported profile name matches the currently-active
+				-- profile for this character. Do NOT call FlushActive here:
+				-- the live runtime has not picked up the imported contents
+				-- yet, so flushing would DeepCopy stale runtime over the
+				-- freshly-written profile and destroy the import. Just
+				-- suppress the PLAYER_LOGOUT flush and reload.
+				TRB.Functions.Profiles:SuppressLogoutFlush()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportReload", nil, nil, name)
+				return
+			end
 			StaticPopup_Show("TwintopResourceBar_Profile_ImportSuccess", nil, nil, {
 				profileName = name,
 				writtenSpecs = writtenSpecs,
@@ -2152,6 +2215,27 @@ local function EnsureProfilePopupsRegistered()
 					p.default[slot.className][slot.specName] = data.profileName
 				end
 			end
+			C_UI.Reload()
+		end,
+	}
+
+	-- Shown when an imported profile's name matches the currently-active
+	-- profile for this character. The active profile's contents have just
+	-- changed under the runtime, so a reload is mandatory.
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportReload"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupImportReloadText"], data or "")
+		end,
+		OnAccept = function()
+			C_UI.Reload()
+		end,
+		OnCancel = function()
 			C_UI.Reload()
 		end,
 	}
@@ -2233,6 +2317,7 @@ local function EnsureProfilePopupsRegistered()
 		OnAccept = function(self)
 			local text = self:GetEditBox():GetText() or ""
 			local parsed, err = TRB.Functions.IO:ParseProfileImport(text)
+			local popupData = self.data
 			if parsed == nil then
 				local msg
 				if err == -6 then
@@ -2254,6 +2339,7 @@ local function EnsureProfilePopupsRegistered()
 			local nameData = {
 				parsed = parsed,
 				initialName = parsed.suggestedName or "",
+				onComplete = popupData and popupData.onComplete,
 			}
 			-- Explicitly hide the paste popup and defer the name popup so WoW's
 			-- StaticPopup slot is fully free. A 0-frame C_Timer.After was not
@@ -2298,7 +2384,7 @@ local function EnsureProfilePopupsRegistered()
 			local collisions = {}
 			for _, slot in ipairs(data.parsed.validSpecs or {}) do
 				if TRB.Functions.Profiles:ProfileExistsForSpec(name, slot.className, slot.specName) then
-					collisions[#collisions + 1] = slot.className .. "/" .. slot.specName
+					collisions[#collisions + 1] = GetImportSlotDisplayLabel(slot.className, slot.specName)
 				end
 			end
 			if data.parsed.hasCore and TRB.Functions.Profiles:ProfileExistsForCore(name) then
@@ -2310,12 +2396,13 @@ local function EnsureProfilePopupsRegistered()
 					parsed = data.parsed,
 					attemptedName = name,
 					collisionList = table.concat(collisions, ", "),
+					onComplete = data.onComplete,
 				}
 				C_Timer.After(0, function()
 					StaticPopup_Show("TwintopResourceBar_Profile_ImportOverwriteConfirm", nil, nil, confirmData)
 				end)
 			else
-				ApplyImportedProfile(name, data.parsed)
+				ApplyImportedProfile(name, data.parsed, data.onComplete)
 			end
 		end,
 		EditBoxOnEscapePressed = function(self)
@@ -2344,7 +2431,7 @@ local function EnsureProfilePopupsRegistered()
 		end,
 		OnAccept = function(self, data)
 			if data == nil then return end
-			ApplyImportedProfile(data.attemptedName, data.parsed)
+			ApplyImportedProfile(data.attemptedName, data.parsed, data.onComplete)
 		end,
 		OnCancel = function(self, data, reason)
 			if reason ~= "clicked" then return end
@@ -2353,6 +2440,7 @@ local function EnsureProfilePopupsRegistered()
 			local nameData = {
 				parsed = data.parsed,
 				initialName = data.attemptedName,
+				onComplete = data.onComplete,
 			}
 			C_Timer.After(0, function()
 				StaticPopup_Show("TwintopResourceBar_Profile_ImportName", nil, nil, nameData)
@@ -2384,17 +2472,25 @@ local function EnsureProfilePopupsRegistered()
 		preferredIndex = 3,
 		OnShow = function(self, data)
 			if data and data.profileName == TRB.Functions.Profiles.DEFAULT_NAME then
-				self:SetFormattedText("%s", L["ProfileMgrResetDefaultConfirm"])
+				self:SetFormattedText("%s", L["ProfileManagerResetDefaultConfirm"])
 			else
-				self:SetFormattedText(L["ProfileMgrDeleteProfileConfirm"], (data and data.profileName) or "")
+				self:SetFormattedText(L["ProfileManagerDeleteProfileConfirm"], (data and data.profileName) or "")
 			end
 		end,
 		OnAccept = function(self)
 			local data = self.data
 			if data and data.profileName then
-				TRB.Functions.Profiles:DeleteProfile(data.profileName)
-				TRB.Functions.Profiles:FlushAndSuppressLogout()
-				C_UI.Reload()
+				local Profiles = TRB.Functions.Profiles
+				local reloadRequired = Profiles:ShouldReloadAfterProfileRemoval(data.profileName)
+				local didDelete = Profiles:DeleteProfile(data.profileName)
+				if didDelete and reloadRequired then
+					Profiles:SuppressLogoutFlush()
+					C_UI.Reload()
+					return
+				end
+				if didDelete and data.onComplete then
+					data.onComplete()
+				end
 			end
 		end,
 	}
@@ -2409,26 +2505,50 @@ local function EnsureProfilePopupsRegistered()
 		preferredIndex = 3,
 		OnShow = function(self, data)
 			if data then
+				local isDefault = data.profileName == TRB.Functions.Profiles.DEFAULT_NAME
 				if data.specName then
-					self:SetFormattedText(L["ProfileMgrDeletePieceConfirm"], data.pieceLabel or data.specName, data.profileName or "")
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetPieceConfirm"], data.pieceLabel or data.specName)
+					else
+						self:SetFormattedText(L["ProfileManagerDeletePieceConfirm"], data.pieceLabel or data.specName, data.profileName or "")
+					end
 				elseif data.className then
-					self:SetFormattedText(L["ProfileMgrDeleteClassConfirm"], data.pieceLabel or data.className, data.profileName or "")
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetClassConfirm"], data.pieceLabel or data.className)
+					else
+						self:SetFormattedText(L["ProfileManagerDeleteClassConfirm"], data.pieceLabel or data.className, data.profileName or "")
+					end
 				elseif data.isCore then
-					self:SetFormattedText(L["ProfileMgrDeletePieceConfirm"], L["ProfileScopeLabelGlobal"], data.profileName or "")
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetPieceConfirm"], L["ProfileScopeLabelGlobal"])
+					else
+						self:SetFormattedText(L["ProfileManagerDeletePieceConfirm"], L["ProfileScopeLabelGlobal"], data.profileName or "")
+					end
 				end
 			end
 		end,
 		OnAccept = function(self)
 			local data = self.data
 			if data == nil then return end
+			local Profiles = TRB.Functions.Profiles
+			local reloadRequired = false
+			local didDelete = false
 			if data.specName then
-				TRB.Functions.Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
+				reloadRequired = Profiles:ShouldReloadAfterSpecRemoval(data.profileName, data.className, data.specName)
+				didDelete = Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
 			elseif data.className then
-				TRB.Functions.Profiles:DeleteClassFromProfile(data.profileName, data.className)
+				reloadRequired = Profiles:ShouldReloadAfterClassRemoval(data.profileName, data.className)
+				didDelete = Profiles:DeleteClassFromProfile(data.profileName, data.className)
 			elseif data.isCore then
-				TRB.Functions.Profiles:DeleteCoreProfile(data.profileName)
+				reloadRequired = Profiles:ShouldReloadAfterCoreRemoval(data.profileName)
+				didDelete = Profiles:DeleteCoreProfile(data.profileName)
 			end
-			if data.onComplete then
+			if didDelete and reloadRequired then
+				Profiles:SuppressLogoutFlush()
+				C_UI.Reload()
+				return
+			end
+			if didDelete and data.onComplete then
 				data.onComplete()
 			end
 		end,
@@ -2436,7 +2556,7 @@ local function EnsureProfilePopupsRegistered()
 
 	StaticPopupDialogs["TwintopResourceBar_Profile_RenameBarWide_Name"] = {
 		text = "",
-		button1 = L["ProfileMgrButtonRename"],
+		button1 = L["ProfileManagerButtonRename"],
 		button2 = L["Cancel"],
 		hasEditBox = true,
 		editBoxWidth = 260,
@@ -2448,13 +2568,13 @@ local function EnsureProfilePopupsRegistered()
 			self:GetEditBox():SetText((data and data.profileName) or "")
 			self:GetEditBox():SetAutoFocus(true)
 			self:GetEditBox():HighlightText()
-			self:SetFormattedText(L["ProfileMgrRenameBarWidePrompt"], (data and data.profileName) or "")
+			self:SetFormattedText(L["ProfileManagerRenameBarWidePrompt"], (data and data.profileName) or "")
 		end,
 		EditBoxOnEnterPressed = function(self)
 			local parent = self:GetParent()
 			local text = self:GetText()
 			if type(text) == "string" and text ~= "" then
-				parent.button1:Click()
+				StaticPopup_OnClick(parent, 1)
 			end
 		end,
 		EditBoxOnEscapePressed = function(self)
@@ -2485,7 +2605,7 @@ local function EnsureProfilePopupsRegistered()
 		hideOnEscape = true,
 		preferredIndex = 3,
 		OnShow = function(self, data)
-			self:SetFormattedText(L["ProfileMgrRenameBarWideCollision"], (data and data.collidingName) or "")
+			self:SetFormattedText(L["ProfileManagerRenameBarWideCollision"], (data and data.collidingName) or "")
 		end,
 		OnAccept = function(self)
 			local data = self.data
@@ -2496,7 +2616,7 @@ local function EnsureProfilePopupsRegistered()
 
 	StaticPopupDialogs["TwintopResourceBar_Profile_CopyBarWide_Name"] = {
 		text = "",
-		button1 = L["ProfileMgrButtonCopy"],
+		button1 = L["ProfileManagerButtonCopy"],
 		button2 = L["Cancel"],
 		hasEditBox = true,
 		editBoxWidth = 260,
@@ -2509,13 +2629,13 @@ local function EnsureProfilePopupsRegistered()
 			self:GetEditBox():SetText(((data and data.profileName) or "") .. " " .. suffix)
 			self:GetEditBox():SetAutoFocus(true)
 			self:GetEditBox():HighlightText()
-			self:SetFormattedText(L["ProfileMgrCopyBarWidePrompt"], (data and data.profileName) or "")
+			self:SetFormattedText(L["ProfileManagerCopyBarWidePrompt"], (data and data.profileName) or "")
 		end,
 		EditBoxOnEnterPressed = function(self)
 			local parent = self:GetParent()
 			local text = self:GetText()
 			if type(text) == "string" and text ~= "" then
-				parent.button1:Click()
+				StaticPopup_OnClick(parent, 1)
 			end
 		end,
 		EditBoxOnEscapePressed = function(self)
@@ -2555,7 +2675,7 @@ local function EnsureProfilePopupsRegistered()
 		hideOnEscape = true,
 		preferredIndex = 3,
 		OnShow = function(self, data)
-			self:SetFormattedText(L["ProfileMgrCopyBarWideOverwrite"], (data and data.dstName) or "")
+			self:SetFormattedText(L["ProfileManagerCopyBarWideOverwrite"], (data and data.dstName) or "")
 		end,
 		OnAccept = function(self)
 			local data = self.data
@@ -2568,6 +2688,14 @@ local function EnsureProfilePopupsRegistered()
 			if data.onComplete then data.onComplete(data.dstName) end
 		end,
 	}
+end
+
+---@param onComplete function? # Optional callback invoked after a profile import is written and caches are invalidated.
+function TRB.Functions.OptionsUi:ShowProfileImportPopup(onComplete)
+	EnsureProfilePopupsRegistered()
+	StaticPopup_Show("TwintopResourceBar_Profile_ImportPaste", nil, nil, {
+		onComplete = onComplete,
+	})
 end
 
 ---Builds a profile-management dropdown anchored to the top-right of `parent`.
@@ -2623,7 +2751,7 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 	end
 
 	local function OnImportClicked()
-		StaticPopup_Show("TwintopResourceBar_Profile_ImportPaste")
+		TRB.Functions.OptionsUi:ShowProfileImportPopup()
 	end
 
 	local function OnUseClicked(profileName)
@@ -9479,9 +9607,13 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	local indicatorColors = sharedSettings.indicatorColors
 
 	-- Working copy of the ordered keys (survives reordering within this panel's lifetime)
+	-- Filter out any keys that have no matching indicatorDef or no indicatorColors entry
+	-- to keep the row count and the up/down arrow bounds in sync.
 	local orderedKeys = {}
-	for i, k in ipairs(sharedSettings.nodeOrder) do
-		orderedKeys[i] = k
+	for _, k in ipairs(sharedSettings.nodeOrder) do
+		if indicatorDefByKey[k] and indicatorColors[k] then
+			orderedKeys[#orderedKeys + 1] = k
+		end
 	end
 
 	-- Per-row UI element references (indexed by row position, NOT by key)
@@ -9600,6 +9732,9 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	---@param indexB number
 	local function SwapNodes(indexA, indexB)
 		orderedKeys[indexA], orderedKeys[indexB] = orderedKeys[indexB], orderedKeys[indexA]
+		-- Rebuild the persisted nodeOrder from orderedKeys so any filtered-out
+		-- orphan trailing entries don't survive the write.
+		wipe(sharedSettings.nodeOrder)
 		for i, k in ipairs(orderedKeys) do
 			sharedSettings.nodeOrder[i] = k
 		end
@@ -9795,10 +9930,13 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 		controls.gradientNote = TRB.Functions.OptionsUi:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
 		yCoord = yCoord - 30
 
-		-- Working copy of gradient ordered keys
+		-- Working copy of gradient ordered keys. Filter out phantom entries so
+		-- the row count stays in sync with the up/down arrow bounds.
 		local orderedGradientKeys = {}
-		for i, k in ipairs(sharedSettings.gradientOrder) do
-			orderedGradientKeys[i] = k
+		for _, k in ipairs(sharedSettings.gradientOrder) do
+			if indicatorDefByKey[k] and indicatorColors[k] then
+				orderedGradientKeys[#orderedGradientKeys + 1] = k
+			end
 		end
 
 		local gradientRows = {}
@@ -9828,6 +9966,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 
 		local function SwapGradientNodes(indexA, indexB)
 			orderedGradientKeys[indexA], orderedGradientKeys[indexB] = orderedGradientKeys[indexB], orderedGradientKeys[indexA]
+			wipe(sharedSettings.gradientOrder)
 			for i, k in ipairs(orderedGradientKeys) do
 				sharedSettings.gradientOrder[i] = k
 			end

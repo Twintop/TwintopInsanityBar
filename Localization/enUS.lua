@@ -2673,50 +2673,58 @@ L["ProfileImportErrorDecode"] = "The import string could not be decoded. It may 
 L["ProfilePopupImportSuccessText"] = "Profile '%s' was imported successfully. Switch this character's active profile to the imported one and reload the UI? Click No to keep the imported data without activating it."
 
 -- Profile Manager (Import/Export tab redesign)
-L["ProfileMgrProfilesHeader"] = "Profiles"
-L["ProfileMgrActionRename"] = "Rename Profile"
-L["ProfileMgrActionCopyFull"] = "Copy Full Profile"
-L["ProfileMgrActionCopySelected"] = "Copy Selected"
-L["ProfileMgrColumnName"] = "Profile Name"
-L["ProfileMgrColumnSpecs"] = "Specs"
-L["ProfileMgrColumnGlobal"] = "Global"
-L["ProfileMgrNoProfileSelected"] = "Select a profile above to view its contents."
-L["ProfileMgrDeleteProfileConfirm"] = "Delete profile '%s' and all of its data? Any character using it will revert to Default."
-L["ProfileMgrResetDefaultConfirm"] = "Reset the Default profile to baseline settings? This cannot be undone."
-L["ProfileMgrDeletePieceConfirm"] = "Remove %s from profile '%s'?"
-L["ProfileMgrDeleteClassConfirm"] = "Remove all %s specs from profile '%s'?"
-L["ProfileMgrRenameBarWidePrompt"] = "Rename profile '%s'. Enter the new name:"
-L["ProfileMgrRenameBarWideCollision"] = "A profile named '%s' already exists. Pick a different name."
-L["ProfileMgrCopyBarWidePrompt"] = "Copy profile '%s' to a new profile. Enter the name:"
-L["ProfileMgrCopyBarWideOverwrite"] = "A profile named '%s' already exists. Overwrite it?"
-L["ProfileMgrResetDefaultTooltip"] = "Reset the Default profile to baseline settings."
-L["ProfileMgrButtonRename"] = "Rename"
-L["ProfileMgrButtonCopy"] = "Copy"
+L["ProfileManagerProfilesHeader"] = "Profiles"
+L["ProfileManagerActionRename"] = "Rename Profile"
+L["ProfileManagerActionCopyFull"] = "Copy Full Profile"
+L["ProfileManagerActionCopySelected"] = "Copy Selected"
+L["ProfileManagerColumnName"] = "Profile Name"
+L["ProfileManagerColumnSpecs"] = "Specs"
+L["ProfileManagerColumnGlobal"] = "Global"
+L["ProfileManagerNoProfileSelected"] = "Select a profile above to view its contents."
+L["ProfileManagerDeleteProfileConfirm"] = "Delete profile '%s' and all of its data? Any character using it will revert to Default."
+L["ProfileManagerResetDefaultConfirm"] = "Reset the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerDeletePieceConfirm"] = "Remove %s from profile '%s'?"
+L["ProfileManagerDeleteClassConfirm"] = "Remove all %s specs from profile '%s'?"
+L["ProfileManagerRenameBarWidePrompt"] = "Rename profile '%s'. Enter the new name:"
+L["ProfileManagerRenameBarWideCollision"] = "A profile named '%s' already exists. Pick a different name."
+L["ProfileManagerCopyBarWidePrompt"] = "Copy profile '%s' to a new profile. Enter the name:"
+L["ProfileManagerCopyBarWideOverwrite"] = "A profile named '%s' already exists. Overwrite it?"
+L["ProfileManagerResetDefaultTooltip"] = "Reset the Default profile to baseline settings."
+L["ProfileManagerButtonRename"] = "Rename"
+L["ProfileManagerButtonCopy"] = "Copy"
 
 -- Profile export popup target labels
 L["ProfilePopupExportIncludeCoreTargetText"] = "Include the current Global Options in the export of '%s' from profile '%s'?"
 L["ProfileExportMessageTargetFormat"] = "Export string for '%s' from profile '%s':"
 
 -- Profile Manager action button and icon tooltips
-L["ProfileMgrActionDelete"] = "Delete Profile"
--- REMOVED: L["ProfileMgrDeletePieceTooltip"] - replaced by ProfileMgrDeleteClassTooltipFormat / ProfileMgrDeleteSpecTooltipFormat / ProfileMgrDeleteGlobalTooltip
--- REMOVED: L["ProfileMgrExportPieceTooltip"] - replaced by ProfileMgrExportClassTooltipFormat / ProfileMgrExportSpecTooltipFormat / ProfileMgrExportGlobalTooltip
--- REMOVED: L["ProfileMgrSelectCheckboxTooltip"] - replaced by ProfileMgrSelectClassTooltipFormat / ProfileMgrSelectSpecTooltipFormat / ProfileMgrSelectGlobalTooltip
+L["ProfileManagerActionDelete"] = "Delete Profile"
 
 -- Profile Manager contents header (replaces ProfileMgrContentsHeader; uses string.format)
-L["ProfileMgrContentsHeaderFormat"] = "Profile: |cffffffff%s|r"
+L["ProfileManagerContentsHeaderFormat"] = "Profile: |cffffffff%s|r"
 
 -- Profile Manager per-row action tooltips (take the class/spec name so the message is specific)
-L["ProfileMgrDeleteClassTooltipFormat"] = "Remove all %s specializations from this profile."
-L["ProfileMgrDeleteSpecTooltipFormat"] = "Remove %s %s from this profile."
-L["ProfileMgrDeleteGlobalTooltip"] = "Remove the Global Options from this profile."
-L["ProfileMgrExportClassTooltipFormat"] = "Export all %s specializations as a sharable string."
-L["ProfileMgrExportSpecTooltipFormat"] = "Export %s %s as a sharable string."
-L["ProfileMgrExportGlobalTooltip"] = "Export the Global Options as a sharable string."
-L["ProfileMgrSelectClassTooltipFormat"] = "Include all %s specializations when using Copy Selected Specs."
-L["ProfileMgrSelectSpecTooltipFormat"] = "Include %s %s when using Copy Selected Specs."
-L["ProfileMgrSelectGlobalTooltip"] = "Include the Global Options when using Copy Selected Specs."
+L["ProfileManagerDeleteClassTooltipFormat"] = "Remove all %s specializations from this profile."
+L["ProfileManagerDeleteSpecTooltipFormat"] = "Remove %s %s from this profile."
+L["ProfileManagerDeleteGlobalTooltip"] = "Remove the Global Options from this profile."
+L["ProfileManagerExportClassTooltipFormat"] = "Export all %s specializations as a sharable string."
+L["ProfileManagerExportSpecTooltipFormat"] = "Export %s %s as a sharable string."
+L["ProfileManagerExportGlobalTooltip"] = "Export the Global Options as a sharable string."
+L["ProfileManagerSelectClassTooltipFormat"] = "Include all %s specializations when using Copy Selected or Export Selected."
+L["ProfileManagerSelectSpecTooltipFormat"] = "Include %s %s when using Copy Selected or Export Selected."
+L["ProfileManagerSelectGlobalTooltip"] = "Include the Global Options when using Copy Selected or Export Selected."
 
 -- Profile Manager: Export buttons below the profile table
-L["ProfileMgrActionExportFull"] = "Export Full Profile"
-L["ProfileMgrActionExportSelected"] = "Export Selected"
+L["ProfileManagerActionExportFull"] = "Export Full Profile"
+L["ProfileManagerActionExportSelected"] = "Export Selected"
+
+-- Profile Manager: Default-profile remove/reset messaging
+L["ProfileManagerResetPieceConfirm"] = "Reset %s in the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerResetClassConfirm"] = "Reset all %s specializations in the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerResetClassTooltipFormat"] = "Reset all %s specializations in the Default profile to baseline settings."
+L["ProfileManagerResetSpecTooltipFormat"] = "Reset %s %s in the Default profile to baseline settings."
+L["ProfileManagerResetGlobalTooltip"] = "Reset the Global Options in the Default profile to baseline settings."
+
+-- Profile Import Reload popup
+L["ProfilePopupImportReloadText"] = "The imported profile \"%s\" is currently active on this character. The UI must reload to apply the updated contents."
+L["ProfileManagerActionImport"] = "Import Profile"

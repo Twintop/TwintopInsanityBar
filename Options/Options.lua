@@ -670,7 +670,7 @@ local PROFILE_CLASSES_ALPHA = {
 	        {specId=2,specName="preservation", locKey="EvokerPreservation"},
 	        {specId=3,specName="augmentation", locKey="EvokerAugmentation"}}},
 	{classId=3,  className="hunter",       token="HUNTER",       locKey="Hunter",
-	 specs={{specId=1,specName="beastmastery", locKey="HunterBeastMastery"},
+	 specs={{specId=1,specName="beastMastery", locKey="HunterBeastMastery"},
 	        {specId=2,specName="marksmanship", locKey="HunterMarksmanship"},
 	        {specId=3,specName="survival",     locKey="HunterSurvival"}}},
 	{classId=8,  className="mage",         token="MAGE",         locKey="Mage",
@@ -747,48 +747,6 @@ local function ConstructImportExportPanel()
 	local parent = scrollChild
 	local yCoord = 5
 
-	-- ── Shared legacy popups (kept for bare-string import compatibility) ─
-	StaticPopupDialogs["TwintopResourceBar_ImportError"] = {
-		text = L["ImportErrorGenericMessage"],
-		button1 = L["OK"],
-		OnAccept = function(self)
-			StaticPopup_Show("TwintopResourceBar_Import")
-		end,
-		timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
-	}
-
-	StaticPopupDialogs["TwintopResourceBar_ImportReload"] = {
-		text = L["ImportReloadMessage"],
-		button1 = L["OK"],
-		OnAccept = function(self) C_UI.Reload() end,
-		timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
-	}
-
-	StaticPopupDialogs["TwintopResourceBar_Import"] = {
-		text = L["ImportMessage"],
-		button1 = L["Import"],
-		button2 = L["Cancel"],
-		hasEditBox = true,
-		hasWideEditBox = true,
-		editBoxWidth = 500,
-		OnAccept = function(self)
-			local result = TRB.Functions.IO:Import(self:GetEditBox():GetText())
-			if result then
-				StaticPopup_Show("TwintopResourceBar_ImportReload")
-			else
-				StaticPopup_Show("TwintopResourceBar_ImportError")
-			end
-		end,
-		EditBoxOnEnterPressed = function(self)
-			local text = self:GetText()
-			if type(text) == "string" and text ~= "" then
-				self:GetParent().button1:Click()
-			end
-		end,
-		EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
-		timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
-	}
-
 	StaticPopupDialogs["TwintopResourceBar_Export"] = {
 		text = "",
 		button1 = L["Close"],
@@ -809,21 +767,9 @@ local function ConstructImportExportPanel()
 		preferredIndex = 3,
 	}
 
-	-- ── Section: Import ────────────────────────────────────────────────
-	controls.importSection = TRB.Functions.OptionsUi:BuildSectionHeader(
-		parent, L["ImportSettingsConfiguration"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 40
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ImportExisting"], oUi.xCoord, yCoord, 300, 28)
-	controls.buttons.importButton:SetScript("OnClick", function()
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
 	-- ── Section: Profiles ──────────────────────────────────────────────
-	yCoord = yCoord - 45
 	controls.profileSection = TRB.Functions.OptionsUi:BuildSectionHeader(
-		parent, L["ProfileMgrProfilesHeader"], oUi.xCoord, yCoord)
+		parent, L["ProfileManagerProfilesHeader"], oUi.xCoord, yCoord)
 
 	-- ── Profile table ──────────────────────────────────────────────────
 	-- Layout: Name (dynamic) | Specs (46) | Global (46) | Delete (15)
@@ -831,7 +777,7 @@ local function ConstructImportExportPanel()
 	local tblGlobW  = 46
 	local tblDelW   = 15
 
-	yCoord = yCoord - 25
+	yCoord = yCoord - 33
 
 	-- LibScrollingTable-based profile table (matches Bar Text styling).
 	local profileTableColumns = {
@@ -841,17 +787,17 @@ local function ConstructImportExportPanel()
 			["align"] = "CENTER",
 		},
 		{
-			["name"] = L["ProfileMgrColumnName"],
+			["name"] = L["ProfileManagerColumnName"],
 			["width"] = 300,
 			["align"] = "LEFT",
 		},
 		{
-			["name"] = L["ProfileMgrColumnSpecs"],
+			["name"] = L["ProfileManagerColumnSpecs"],
 			["width"] = tblSpecW,
 			["align"] = "CENTER",
 		},
 		{
-			["name"] = L["ProfileMgrColumnGlobal"],
+			["name"] = L["ProfileManagerColumnGlobal"],
 			["width"] = tblGlobW,
 			["align"] = "CENTER",
 		},
@@ -873,6 +819,19 @@ local function ConstructImportExportPanel()
 	profileTableContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	profileTableContainer:SetHeight(35 + (IE_VISIBLE * 15))
 
+	controls.buttons.importProfile = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionImport"], 0, 0, 140, 22)
+	controls.buttons.importProfile:ClearAllPoints()
+	controls.buttons.importProfile:SetPoint("TOPRIGHT", profileTableContainer, "TOPRIGHT", 0, 30)
+	controls.buttons.importProfile:SetScript("OnClick", function()
+		TRB.Functions.OptionsUi:ShowProfileImportPopup(function()
+			if RefreshImportExportView ~= nil then
+				RefreshImportExportView()
+			end
+		end)
+	end)
+
+	local UpdateProfileActionButtons
 	local profileScrollingTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(
 		profileTableColumns, IE_VISIBLE, 15, nil, profileTableContainer, false, false)
 
@@ -894,8 +853,8 @@ local function ConstructImportExportPanel()
 	-- Forward declarations for mutual recursion
 	local RefreshProfileTable
 	local RefreshDetailGrid
+	local RefreshImportExportView
 	local detailContainer
-	local UpdateProfileActionButtons
 
 	-- ── Profile table refresh ──────────────────────────────────────────
 	RefreshProfileTable = function()
@@ -954,7 +913,14 @@ local function ConstructImportExportPanel()
 
 				if column == 5 and not isDefault then
 					StaticPopup_Show("TwintopResourceBar_Profile_DeleteProfile_Confirm", nil, nil,
-						{ profileName = profileName })
+						{
+							profileName = profileName,
+							onComplete = function()
+								if RefreshImportExportView ~= nil then
+									RefreshImportExportView()
+								end
+							end,
+						})
 				else
 					selectedProfile = profileName
 					if RefreshDetailGrid ~= nil then
@@ -968,7 +934,7 @@ local function ConstructImportExportPanel()
 		end,
 	})
 
-	yCoord = yCoord - profileTableContainer:GetHeight() - 8
+	yCoord = yCoord - profileTableContainer:GetHeight() + 10
 
 	-- ── Profile-level action buttons (below table) ─────────────────────
 	-- 5 buttons on one row, sized dynamically in UpdateProfileActionButtons
@@ -976,15 +942,15 @@ local function ConstructImportExportPanel()
 	-- width so first-layout sizing looks right before OnSizeChanged fires.
 	local btnW = 140
 	controls.buttons.renameProfile = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ProfileMgrActionRename"], 0, yCoord, btnW, 26)
+		parent, L["ProfileManagerActionRename"], 0, yCoord, btnW, 26)
 	controls.buttons.copyFull = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ProfileMgrActionCopyFull"], 0, yCoord, btnW, 26)
+		parent, L["ProfileManagerActionCopyFull"], 0, yCoord, btnW, 26)
 	controls.buttons.copySelected = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ProfileMgrActionCopySelected"], 0, yCoord, btnW, 26)
+		parent, L["ProfileManagerActionCopySelected"], 0, yCoord, btnW, 26)
 	controls.buttons.exportFull = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ProfileMgrActionExportFull"], 0, yCoord, btnW, 26)
+		parent, L["ProfileManagerActionExportFull"], 0, yCoord, btnW, 26)
 	controls.buttons.exportSelected = TRB.Functions.OptionsUi:BuildButton(
-		parent, L["ProfileMgrActionExportSelected"], 0, yCoord, btnW, 26)
+		parent, L["ProfileManagerActionExportSelected"], 0, yCoord, btnW, 26)
 
 	-- ── Action button handlers ─────────────────────────────────────
 	controls.buttons.renameProfile:SetScript("OnClick", function()
@@ -1062,7 +1028,7 @@ local function ConstructImportExportPanel()
 	local noSelFS = noSelLabel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	noSelFS:SetAllPoints()
 	noSelFS:SetJustifyH("CENTER")
-	noSelFS:SetText(L["ProfileMgrNoProfileSelected"])
+	noSelFS:SetText(L["ProfileManagerNoProfileSelected"])
 
 	-- Container for the actual class/spec grid (shown when a profile is selected)
 	detailContainer = CreateFrame("Frame", nil, parent)
@@ -1100,6 +1066,27 @@ local function ConstructImportExportPanel()
 			GameTooltip:Show()
 		end)
 		frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	end
+
+	local function GetDeleteClassTooltip(profileName, classLabel)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return string.format(L["ProfileManagerResetClassTooltipFormat"], classLabel)
+		end
+		return string.format(L["ProfileManagerDeleteClassTooltipFormat"], classLabel)
+	end
+
+	local function GetDeleteSpecTooltip(profileName, specLabel, classLabel)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return string.format(L["ProfileManagerResetSpecTooltipFormat"], specLabel, classLabel)
+		end
+		return string.format(L["ProfileManagerDeleteSpecTooltipFormat"], specLabel, classLabel)
+	end
+
+	local function GetDeleteGlobalTooltip(profileName)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return L["ProfileManagerResetGlobalTooltip"]
+		end
+		return L["ProfileManagerDeleteGlobalTooltip"]
 	end
 
 	local function BuildDeleteButton(parent, xOff, yOff)
@@ -1213,9 +1200,9 @@ local function ConstructImportExportPanel()
 		local delBtn = BuildDeleteButton(hRow, CLS_DEL_X, -2)
 		local expBtn = BuildExportButton(hRow, SPEC_EXP_X, -2)
 		local cb = BuildCheckbox(hRow, SPEC_CB_X, -2)
-		SetButtonTooltip(delBtn, string.format(L["ProfileMgrDeleteClassTooltipFormat"], classLabel))
-		SetButtonTooltip(expBtn, string.format(L["ProfileMgrExportClassTooltipFormat"], classLabel))
-		SetButtonTooltip(cb, string.format(L["ProfileMgrSelectClassTooltipFormat"], classLabel))
+		SetButtonTooltip(delBtn, string.format(L["ProfileManagerDeleteClassTooltipFormat"], classLabel))
+		SetButtonTooltip(expBtn, string.format(L["ProfileManagerExportClassTooltipFormat"], classLabel))
+		SetButtonTooltip(cb, string.format(L["ProfileManagerSelectClassTooltipFormat"], classLabel))
 		local clsIcon = BuildIcon(hRow, CLS_ICO_X, -2, 18)
 		clsIcon:SetAtlas("classicon-" .. className, false)
 		local lbl = BuildLabel(hRow, CLS_LBL_X, -1, IE_COL_W - CLS_LBL_X - 4,
@@ -1243,9 +1230,9 @@ local function ConstructImportExportPanel()
 			local sExpBtn = BuildExportButton(specRow, SPEC_EXP_X, -2)
 			local sCb = BuildCheckbox(specRow, SPEC_CB_X, -2)
 			local specLabel = L[spec.locKey]
-			SetButtonTooltip(sDelBtn, string.format(L["ProfileMgrDeleteSpecTooltipFormat"], specLabel, classLabel))
-			SetButtonTooltip(sExpBtn, string.format(L["ProfileMgrExportSpecTooltipFormat"], specLabel, classLabel))
-			SetButtonTooltip(sCb, string.format(L["ProfileMgrSelectSpecTooltipFormat"], specLabel, classLabel))
+			SetButtonTooltip(sDelBtn, string.format(L["ProfileManagerDeleteSpecTooltipFormat"], specLabel, classLabel))
+			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
+			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
 			local sIcon = BuildIcon(specRow, SPEC_ICO_X, -2, 18)
 			if GetSpecializationInfoForClassID then
 				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
@@ -1284,9 +1271,9 @@ local function ConstructImportExportPanel()
 		local delBtn = BuildDeleteButton(row, SPEC_DEL_X, -2)
 		local expBtn = BuildExportButton(row, SPEC_EXP_X, -2)
 		local cb = BuildCheckbox(row, SPEC_CB_X, -2)
-		SetButtonTooltip(delBtn, L["ProfileMgrDeleteGlobalTooltip"])
-		SetButtonTooltip(expBtn, L["ProfileMgrExportGlobalTooltip"])
-		SetButtonTooltip(cb, L["ProfileMgrSelectGlobalTooltip"])
+		SetButtonTooltip(delBtn, L["ProfileManagerDeleteGlobalTooltip"])
+		SetButtonTooltip(expBtn, L["ProfileManagerExportGlobalTooltip"])
+		SetButtonTooltip(cb, L["ProfileManagerSelectGlobalTooltip"])
 		local lbl = BuildLabel(row, GLOBAL_LBL_X, -1, (width or IE_COL_W) - GLOBAL_LBL_X - 4,
 			L["ProfileScopeLabelGlobal"], "GameFontNormal", 20)
 
@@ -1405,12 +1392,20 @@ local function ConstructImportExportPanel()
 		noSelLabel:Hide()
 		detailContainer:Show()
 
-		contentsHeader:SetText(string.format(L["ProfileMgrContentsHeaderFormat"], profileName))
+		contentsHeader:SetText(string.format(L["ProfileManagerContentsHeaderFormat"], profileName))
 
 		-- Reset checkbox state table
 		checkboxState = { core = false }
 
 		local Profiles = TRB.Functions.Profiles
+
+		local function GetClassLabel(className)
+			local classRow = classRowData[className]
+			if classRow ~= nil and classRow.label ~= nil then
+				return StripColorCodes(classRow.label:GetText() or className)
+			end
+			return className
+		end
 
 		local function GetExistingClassSpecs(className)
 			local cd = classRowData[className]
@@ -1425,13 +1420,18 @@ local function ConstructImportExportPanel()
 			return existingSpecs
 		end
 
+		local function IsClassComplete(className)
+			local cd = classRowData[className]
+			if cd == nil or cd.classDef == nil then
+				return false
+			end
+			local existingSpecs = GetExistingClassSpecs(className)
+			return #existingSpecs == #cd.classDef.specs
+		end
+
 		local function GetSpecPieceLabel(rowData)
 			local specLabel = StripColorCodes(rowData.label:GetText() or rowData.specName)
-			local classLabel = rowData.className
-			local classRow = classRowData[rowData.className]
-			if classRow ~= nil and classRow.label ~= nil then
-				classLabel = StripColorCodes(classRow.label:GetText() or rowData.className)
-			end
+			local classLabel = GetClassLabel(rowData.className)
 			if classLabel ~= nil and classLabel ~= "" then
 				return string.format("%s %s", specLabel, classLabel)
 			end
@@ -1446,17 +1446,25 @@ local function ConstructImportExportPanel()
 
 			local existingSpecs = GetExistingClassSpecs(className)
 			local hasAny = #existingSpecs > 0
-			local allSelected = hasAny
-			for _, specName in ipairs(existingSpecs) do
-				if not (checkboxState[className] and checkboxState[className][specName]) then
-					allSelected = false
-					break
+			local classIsComplete = hasAny and IsClassComplete(className)
+			local allSelected = classIsComplete
+			if allSelected then
+				for _, spec in ipairs(cd.classDef.specs) do
+					if not (checkboxState[className] and checkboxState[className][spec.specName]) then
+						allSelected = false
+						break
+					end
 				end
+			end
+			if not allSelected then
+				cd.checkbox:SetChecked(false)
+			else
+				cd.checkbox:SetChecked(true)
 			end
 
 			cd.frame:SetAlpha(hasAny and 1.0 or 0.55)
-			cd.checkbox:SetChecked(allSelected)
-			if hasAny then
+			cd.checkbox:SetAlpha(classIsComplete and 1.0 or 0.55)
+			if classIsComplete then
 				cd.checkbox:Enable()
 			else
 				cd.checkbox:Disable()
@@ -1469,6 +1477,9 @@ local function ConstructImportExportPanel()
 		for key, rd in pairs(specRowData) do
 			local exists = Profiles:ProfileExistsForSpec(profileName, rd.className, rd.specName)
 			local alpha  = exists and 1.0 or 0.55
+			local specLabel = StripColorCodes(rd.label:GetText() or rd.specName)
+			local classLabel = GetClassLabel(rd.className)
+			SetButtonTooltip(rd.delBtn, GetDeleteSpecTooltip(profileName, specLabel, classLabel))
 
 			rd.frame:SetAlpha(alpha)
 			rd.checkbox:SetChecked(exists)
@@ -1532,6 +1543,9 @@ local function ConstructImportExportPanel()
 		for className, cd in pairs(classRowData) do
 			local existingSpecs = GetExistingClassSpecs(className)
 			local classHasAny = #existingSpecs > 0
+			local classIsComplete = classHasAny and IsClassComplete(className)
+			local classLabel = StripColorCodes(cd.label:GetText() or className)
+			SetButtonTooltip(cd.delBtn, GetDeleteClassTooltip(profileName, classLabel))
 			if classHasAny then
 				SetActionButtonEnabled(cd.delBtn, true)
 				cd.delBtn:SetScript("OnClick", function()
@@ -1554,19 +1568,25 @@ local function ConstructImportExportPanel()
 						pieceLabel = pieceLabel,
 					})
 				end)
-				cd.checkbox:Enable()
-				cd.checkbox:SetScript("OnClick", function(self)
-					local checked = self:GetChecked() == true
-					checkboxState[className] = checkboxState[className] or {}
-					for _, specName in ipairs(existingSpecs) do
-						checkboxState[className][specName] = checked
-						local rd = specRowData[className .. "_" .. specName]
-						if rd ~= nil then
-							rd.checkbox:SetChecked(checked)
+				if classIsComplete then
+					cd.checkbox:Enable()
+					cd.checkbox:SetScript("OnClick", function(self)
+						local checked = self:GetChecked() == true
+						checkboxState[className] = checkboxState[className] or {}
+						for _, specName in ipairs(existingSpecs) do
+							checkboxState[className][specName] = checked
+							local rd = specRowData[className .. "_" .. specName]
+							if rd ~= nil then
+								rd.checkbox:SetChecked(checked)
+							end
 						end
-					end
-					UpdateClassCheckboxState(className)
-				end)
+						UpdateClassCheckboxState(className)
+					end)
+				else
+					cd.checkbox:SetChecked(false)
+					cd.checkbox:Disable()
+					cd.checkbox:SetScript("OnClick", nil)
+				end
 			else
 				SetActionButtonEnabled(cd.delBtn, false)
 				cd.delBtn:SetScript("OnClick", nil)
@@ -1582,6 +1602,7 @@ local function ConstructImportExportPanel()
 		-- Global Options row
 		local hasCore = Profiles:ProfileHasCore(profileName)
 		checkboxState.core = hasCore
+		SetButtonTooltip(globalRowData.delBtn, GetDeleteGlobalTooltip(profileName))
 		globalRowData.frame:SetAlpha(hasCore and 1.0 or 0.55)
 		globalRowData.checkbox:SetChecked(hasCore)
 		if hasCore then
@@ -1624,12 +1645,20 @@ local function ConstructImportExportPanel()
 		end
 	end
 
-	-- Initial state
-	RefreshProfileTable()
-	RefreshDetailGrid(nil)
-	if UpdateProfileActionButtons ~= nil then
-		UpdateProfileActionButtons()
+	RefreshImportExportView = function()
+		RefreshProfileTable()
+		RefreshDetailGrid(selectedProfile)
+		if UpdateProfileActionButtons ~= nil then
+			UpdateProfileActionButtons()
+		end
 	end
+
+	-- Initial state
+	RefreshImportExportView()
+
+	topPanel:HookScript("OnShow", function()
+		RefreshImportExportView()
+	end)
 
 	-- Update total scroll child height
 	local totalContentH = math.abs(yCoord) + math.abs(curY) + 60
