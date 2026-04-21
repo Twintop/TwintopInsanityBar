@@ -642,11 +642,6 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
----Constructs a single import/export row with label and export buttons for a class, spec, or all-specs group.
----@param parent Frame
----@param yCoord integer
----@param controls table
----@param classId integer?
 -- ─────────────────────────────────────────────────────────────────────
 -- Alphabetically-ordered class/spec table for the profile manager grid.
 -- classToken is the uppercase token used with GetClassColor().
