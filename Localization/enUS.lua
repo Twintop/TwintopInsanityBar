@@ -2661,7 +2661,7 @@ L["ProfilePopupDeleteReloadMessage"] = "The active profile was deleted. You must
 -- Phase 3: Profile Import/Export
 L["ProfilePopupExportIncludeCoreText"] = "Include the current Global Options in the export of profile '%s'?"
 L["ProfileExportMessageFormat"] = "Export string for profile '%s':"
-L["ProfileImportPastePrompt"] = "Paste a TwintopInsanityBar profile or settings export string below:"
+L["ProfileImportPastePrompt"] = "Paste a Twintop's Resource Bar profile or settings export string below:"
 L["ProfileImportNamePrompt"] = "Enter a name for the imported profile:"
 L["ProfileImportOverwriteConfirmPrompt"] = "A profile named '%s' already contains: %s. Overwrite these pieces?"
 L["ProfileImportErrorGeneric"] = "The profile could not be imported."
