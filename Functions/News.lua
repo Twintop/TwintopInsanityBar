@@ -15,8 +15,20 @@ local content = [====[
 # 12.0.5.0-release (2026-04-21)
 ## General
 
+- [#742](#742) Add support for profiles for individual specializations, groupable into named profiles for easier sharing. This is configurable on a per-specialization and per-character basis with a default fallback.
+- [#742](#742) Add support for profiles for Global Options. Only one is able to be used at a time and it continues to apply to all specializations that are using global settings.
+- [#726](#726) Fix issues with primary and secondary stats now being secret values and not directly accessible.
 - Fix an issue where manually tracked buff timers (e.g., Voidform, Metamorphosis, Dragonrage, Apotheosis, Eclipse, Ascendance, etc.) would not reset when the player dies.
 - Adjust bar layout and visibility to be more aware of talent-gated bars (e.g., Holy Priest's Lightweaver) to prevent gaps in the layout when those bars are not active.
+
+### Localization
+
+- [#741](#741) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Hunter
+### Marksmanship
+
+- [#726](#726) Add Explosive Shot as a new threshold line.
 
 ---
 
