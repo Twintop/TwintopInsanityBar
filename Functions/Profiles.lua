@@ -775,6 +775,231 @@ function TRB.Functions.Profiles:GetCoreListFromCache()
 	return self.listCache.core
 end
 
+-- ─────────────────────────────────────────────────────────────────────
+-- Bar-wide profile management helpers (used by the Import/Export panel)
+-- ─────────────────────────────────────────────────────────────────────
+
+---Returns a sorted array of all profile names present in profiles.list.
+---"Default" is always first; remaining names are sorted alphabetically.
+---@return string[]
+function TRB.Functions.Profiles:GetProfileNames()
+	local out = {}
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then
+		out[1] = self.DEFAULT_NAME
+		return out
+	end
+	for name, _ in pairs(p.list) do
+		if name ~= self.DEFAULT_NAME then
+			out[#out + 1] = name
+		end
+	end
+	table.sort(out, function(a, b) return a:lower() < b:lower() end)
+	table.insert(out, 1, self.DEFAULT_NAME)
+	return out
+end
+
+---Returns the total number of class/spec pieces stored in a profile.
+---The core ("Global Options") piece is not counted.
+---@param profileName string
+---@return integer
+function TRB.Functions.Profiles:GetProfileSpecCount(profileName)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then return 0 end
+	local entry = p.list[profileName]
+	if type(entry) ~= "table" then return 0 end
+	local count = 0
+	for k, v in pairs(entry) do
+		if k ~= "core" and type(v) == "table" then
+			for _, sv in pairs(v) do
+				if type(sv) == "table" then
+					count = count + 1
+				end
+			end
+		end
+	end
+	return count
+end
+
+---Returns true if the given profile has a core ("Global Options") piece.
+---@param profileName string
+---@return boolean
+function TRB.Functions.Profiles:ProfileHasCore(profileName)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then return false end
+	local entry = p.list[profileName]
+	return type(entry) == "table" and type(entry.core) == "table" and next(entry.core) ~= nil
+end
+
+---Deletes ALL scope pieces from the given profile and rewires every character
+---and default reference that pointed at it back to nil (falling through to
+---Default). If the profile IS "Default", delegates to ResetDefaultProfile.
+---@param profileName string
+function TRB.Functions.Profiles:DeleteProfile(profileName)
+	if profileName == self.DEFAULT_NAME then
+		self:ResetDefaultProfile()
+		return
+	end
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil or p.list[profileName] == nil then return end
+
+	-- Clear profiles.default.core reference
+	if p.default ~= nil and p.default.core == profileName then
+		p.default.core = nil
+	end
+	-- Clear profiles.default[className][specName] references
+	if p.default ~= nil then
+		for className, classEntry in pairs(p.default) do
+			if className ~= "core" and type(classEntry) == "table" then
+				for specName, resolvedName in pairs(classEntry) do
+					if resolvedName == profileName then
+						classEntry[specName] = nil
+					end
+				end
+			end
+		end
+	end
+	-- Clear profiles.character[key].* references
+	for _, charEntry in pairs(p.character) do
+		if type(charEntry) == "table" then
+			for k, v in pairs(charEntry) do
+				if v == profileName then
+					charEntry[k] = nil
+				end
+			end
+		end
+	end
+	-- Remove the entire list entry
+	p.list[profileName] = nil
+	self:InvalidateCache()
+end
+
+---Deletes all spec pieces for a given class from a profile, rewiring
+---references back to nil (falling through to Default). Does NOT touch
+---the core piece. Prunes the profile entry if it becomes empty.
+---@param profileName string
+---@param className string
+function TRB.Functions.Profiles:DeleteClassFromProfile(profileName, className)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil or p.list[profileName] == nil then return end
+	local classPiece = p.list[profileName][className]
+	if type(classPiece) ~= "table" then return end
+	local specNames = {}
+	for specName, _ in pairs(classPiece) do
+		specNames[#specNames + 1] = specName
+	end
+	for _, specName in ipairs(specNames) do
+		self:DeleteSpecProfile(profileName, className, specName)
+	end
+	self:PruneEmptyEntry(profileName)
+	self:InvalidateCache()
+end
+
+---Resets the Default profile by wiping its stored data and reseeding from
+---the current character's live runtime settings (same as first-login seeding).
+function TRB.Functions.Profiles:ResetDefaultProfile()
+	self:EnsureStructure()
+	local p = TRB.Data.settings.profiles
+	p.list[self.DEFAULT_NAME] = {}
+	self:SeedFromLegacy()
+	self:InvalidateCache()
+end
+
+---Renames a profile bar-wide: renames the list key and updates every reference
+---in profiles.default and profiles.character across all classes and specs.
+---Refuses to rename the "Default" profile. Returns true on success.
+---@param oldName string
+---@param newName string
+---@return boolean
+function TRB.Functions.Profiles:RenameProfileBarWide(oldName, newName)
+	if oldName == nil or newName == nil or oldName == newName then return false end
+	if oldName == self.DEFAULT_NAME then return false end
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then return false end
+	if p.list[oldName] == nil then return false end
+	if p.list[newName] ~= nil then return false end -- destination already exists
+
+	-- Move the list entry
+	p.list[newName] = p.list[oldName]
+	p.list[oldName] = nil
+
+	-- Update profiles.default.core
+	if p.default ~= nil and p.default.core == oldName then
+		p.default.core = newName
+	end
+	-- Update profiles.default[className][specName]
+	if p.default ~= nil then
+		for className, classEntry in pairs(p.default) do
+			if className ~= "core" and type(classEntry) == "table" then
+				for specName, resolvedName in pairs(classEntry) do
+					if resolvedName == oldName then
+						classEntry[specName] = newName
+					end
+				end
+			end
+		end
+	end
+	-- Update profiles.character[key].*
+	for _, charEntry in pairs(p.character) do
+		if type(charEntry) == "table" then
+			for k, v in pairs(charEntry) do
+				if v == oldName then
+					charEntry[k] = newName
+				end
+			end
+		end
+	end
+	self:InvalidateCache()
+	return true
+end
+
+---Creates a full copy of a profile. Deep-copies every piece (core + all
+---class/spec pieces) from srcName into dstName. If dstName already exists,
+---its pieces are completely overwritten. Returns true on success.
+---@param srcName string
+---@param dstName string
+---@return boolean
+function TRB.Functions.Profiles:CopyProfileFull(srcName, dstName)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then return false end
+	if p.list[srcName] == nil then return false end
+	p.list[dstName] = TRB.Functions.Table:DeepCopy(p.list[srcName])
+	self:InvalidateCache()
+	return true
+end
+
+---Creates a partial copy of a profile, including only the pieces indicated by
+---`selection`. `selection.core = true` copies the core piece;
+---`selection[className][specName] = true` copies that spec piece.
+---Returns true on success.
+---@param srcName string
+---@param dstName string
+---@param selection table # { core = bool, [className] = { [specName] = bool } }
+---@return boolean
+function TRB.Functions.Profiles:CopyProfileSelection(srcName, dstName, selection)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil then return false end
+	if p.list[srcName] == nil or selection == nil then return false end
+	p.list[dstName] = p.list[dstName] or {}
+	local src = p.list[srcName]
+	local dst = p.list[dstName]
+	if selection.core and type(src.core) == "table" then
+		dst.core = TRB.Functions.Table:DeepCopy(src.core)
+	end
+	for className, specSel in pairs(selection) do
+		if className ~= "core" and type(specSel) == "table" and type(src[className]) == "table" then
+			dst[className] = dst[className] or {}
+			for specName, include in pairs(specSel) do
+				if include and type(src[className][specName]) == "table" then
+					dst[className][specName] = TRB.Functions.Table:DeepCopy(src[className][specName])
+				end
+			end
+		end
+	end
+	self:InvalidateCache()
+	return true
+end
+
 -- Event plumbing. The profiles lifecycle is driven by PLAYER_LOGIN (init, after
 -- every class module's ADDON_LOADED has populated TRB.Data.settings via the
 -- legacy merge) and PLAYER_LOGOUT (flush, before class modules' existing

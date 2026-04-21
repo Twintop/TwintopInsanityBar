@@ -1732,6 +1732,13 @@ local function EnsureProfilePopupsRegistered()
 		return data.specLabel or ""
 	end
 
+	local function ExportPieceLabel(data)
+		if data ~= nil and type(data.pieceLabel) == "string" and data.pieceLabel ~= "" then
+			return data.pieceLabel
+		end
+		return ScopeLabel(data)
+	end
+
 	StaticPopupDialogs["TwintopResourceBar_Profile_NewName"] = {
 		text = "",
 		button1 = L["ProfileButtonUseCurrent"],
@@ -2159,11 +2166,16 @@ local function EnsureProfilePopupsRegistered()
 		hideOnEscape = true,
 		preferredIndex = 3,
 		OnShow = function(self, data)
-			self:SetFormattedText(L["ProfilePopupExportIncludeCoreText"], (data and data.profileName) or "")
+			self:SetFormattedText(L["ProfilePopupExportIncludeCoreTargetText"], ExportPieceLabel(data), (data and data.profileName) or "")
 		end,
 		OnAccept = function(self, data)
 			if data == nil then return end
-			local output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, true)
+			local output, err
+			if data.specId ~= nil then
+				output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, true)
+			else
+				output, err = TRB.Functions.IO:ExportClassProfile(data.profileName, data.classId, true)
+			end
 			if output == nil then
 				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
 				C_Timer.After(0, function()
@@ -2172,7 +2184,7 @@ local function EnsureProfilePopupsRegistered()
 				return
 			end
 			local exportData = {
-				message = string.format(L["ProfileExportMessageFormat"], data.profileName),
+				message = string.format(L["ProfileExportMessageTargetFormat"], ExportPieceLabel(data), data.profileName),
 				exportString = output,
 			}
 			C_Timer.After(0, function()
@@ -2184,7 +2196,12 @@ local function EnsureProfilePopupsRegistered()
 			-- triggers OnCancel; treat only explicit No as "export without core".
 			if reason ~= "clicked" then return end
 			if data == nil then return end
-			local output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, false)
+			local output, err
+			if data.specId ~= nil then
+				output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, false)
+			else
+				output, err = TRB.Functions.IO:ExportClassProfile(data.profileName, data.classId, false)
+			end
 			if output == nil then
 				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
 				C_Timer.After(0, function()
@@ -2193,7 +2210,7 @@ local function EnsureProfilePopupsRegistered()
 				return
 			end
 			local exportData = {
-				message = string.format(L["ProfileExportMessageFormat"], data.profileName),
+				message = string.format(L["ProfileExportMessageTargetFormat"], ExportPieceLabel(data), data.profileName),
 				exportString = output,
 			}
 			C_Timer.After(0, function()
@@ -2354,6 +2371,203 @@ local function EnsureProfilePopupsRegistered()
 			self:SetFormattedText("%s", (data and data.message) or L["ProfileImportErrorGeneric"])
 		end,
 	}
+
+	-- ── Bar-wide (whole-profile) management dialogs ────────────────────────
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteProfile_Confirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			if data and data.profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+				self:SetFormattedText("%s", L["ProfileMgrResetDefaultConfirm"])
+			else
+				self:SetFormattedText(L["ProfileMgrDeleteProfileConfirm"], (data and data.profileName) or "")
+			end
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data and data.profileName then
+				TRB.Functions.Profiles:DeleteProfile(data.profileName)
+				TRB.Functions.Profiles:FlushAndSuppressLogout()
+				C_UI.Reload()
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeletePiece_Confirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			if data then
+				if data.specName then
+					self:SetFormattedText(L["ProfileMgrDeletePieceConfirm"], data.pieceLabel or data.specName, data.profileName or "")
+				elseif data.className then
+					self:SetFormattedText(L["ProfileMgrDeleteClassConfirm"], data.pieceLabel or data.className, data.profileName or "")
+				elseif data.isCore then
+					self:SetFormattedText(L["ProfileMgrDeletePieceConfirm"], L["ProfileScopeLabelGlobal"], data.profileName or "")
+				end
+			end
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data == nil then return end
+			if data.specName then
+				TRB.Functions.Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
+			elseif data.className then
+				TRB.Functions.Profiles:DeleteClassFromProfile(data.profileName, data.className)
+			elseif data.isCore then
+				TRB.Functions.Profiles:DeleteCoreProfile(data.profileName)
+			end
+			if data.onComplete then
+				data.onComplete()
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameBarWide_Name"] = {
+		text = "",
+		button1 = L["ProfileMgrButtonRename"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:GetEditBox():SetText((data and data.profileName) or "")
+			self:GetEditBox():SetAutoFocus(true)
+			self:GetEditBox():HighlightText()
+			self:SetFormattedText(L["ProfileMgrRenameBarWidePrompt"], (data and data.profileName) or "")
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			local text = self:GetText()
+			if type(text) == "string" and text ~= "" then
+				parent.button1:Click()
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			local newName = self:GetEditBox():GetText()
+			if type(newName) ~= "string" or newName == "" then return end
+			newName = newName:match("^%s*(.-)%s*$")
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p and p.list and p.list[newName] ~= nil then
+				local d = StaticPopup_Show("TwintopResourceBar_Profile_RenameBarWide_Collision", nil, nil,
+					{ profileName = data and data.profileName, collidingName = newName, onComplete = data and data.onComplete })
+				-- d may be nil if max popups are showing; ignore
+			else
+				TRB.Functions.Profiles:RenameProfileBarWide(data and data.profileName, newName)
+				if data and data.onComplete then data.onComplete(newName) end
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameBarWide_Collision"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileMgrRenameBarWideCollision"], (data and data.collidingName) or "")
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			StaticPopup_Show("TwintopResourceBar_Profile_RenameBarWide_Name", nil, nil,
+				{ profileName = data and data.profileName, onComplete = data and data.onComplete })
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyBarWide_Name"] = {
+		text = "",
+		button1 = L["ProfileMgrButtonCopy"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local suffix = L["ProfileCopyNameSuffix"]
+			self:GetEditBox():SetText(((data and data.profileName) or "") .. " " .. suffix)
+			self:GetEditBox():SetAutoFocus(true)
+			self:GetEditBox():HighlightText()
+			self:SetFormattedText(L["ProfileMgrCopyBarWidePrompt"], (data and data.profileName) or "")
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			local text = self:GetText()
+			if type(text) == "string" and text ~= "" then
+				parent.button1:Click()
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			local newName = self:GetEditBox():GetText()
+			if type(newName) ~= "string" or newName == "" then return end
+			newName = newName:match("^%s*(.-)%s*$")
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p and p.list and p.list[newName] ~= nil then
+				StaticPopup_Show("TwintopResourceBar_Profile_CopyBarWide_OverwriteConfirm", nil, nil, {
+					srcName = data and data.profileName,
+					dstName = newName,
+					mode = data and data.mode,
+					selection = data and data.selection,
+					onComplete = data and data.onComplete,
+				})
+			else
+				if data and data.mode == "full" then
+					TRB.Functions.Profiles:CopyProfileFull(data.profileName, newName)
+				else
+					TRB.Functions.Profiles:CopyProfileSelection(data and data.profileName, newName, (data and data.selection) or {})
+				end
+				if data and data.onComplete then data.onComplete(newName) end
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyBarWide_OverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileMgrCopyBarWideOverwrite"], (data and data.dstName) or "")
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data == nil then return end
+			if data.mode == "full" then
+				TRB.Functions.Profiles:CopyProfileFull(data.srcName, data.dstName)
+			else
+				TRB.Functions.Profiles:CopyProfileSelection(data.srcName, data.dstName, data.selection or {})
+			end
+			if data.onComplete then data.onComplete(data.dstName) end
+		end,
+	}
 end
 
 ---Builds a profile-management dropdown anchored to the top-right of `parent`.
@@ -2392,7 +2606,14 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 	end
 
 	local function MakeBaseData()
-		return { scope = scope, className = className, specName = specName, specLabel = specLabel, refresh = RefreshDropdown }
+		return {
+			scope = scope,
+			className = className,
+			specName = specName,
+			specLabel = specLabel,
+			pieceLabel = (scope == "core") and L["ProfileScopeLabelGlobal"] or specLabel,
+			refresh = RefreshDropdown,
+		}
 	end
 
 	local function OnNewClicked()
@@ -2434,6 +2655,8 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 
 	local function OnExportClicked(profileName)
 		if scope == "core" then
+			local data = MakeBaseData()
+			data.profileName = profileName
 			local output, err = TRB.Functions.IO:ExportCoreProfile(profileName)
 			if output == nil then
 				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
@@ -2441,7 +2664,7 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 				return
 			end
 			StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
-				message = string.format(L["ProfileExportMessageFormat"], profileName),
+				message = string.format(L["ProfileExportMessageTargetFormat"], data.pieceLabel or L["ProfileScopeLabelGlobal"], profileName),
 				exportString = output,
 			})
 		else
@@ -2450,11 +2673,11 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 				StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = L["ProfileImportErrorGeneric"] })
 				return
 			end
-			StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, {
-				profileName = profileName,
-				classId = classId,
-				specId = specId,
-			})
+			local data = MakeBaseData()
+			data.profileName = profileName
+			data.classId = classId
+			data.specId = specId
+			StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, data)
 		end
 	end
 
@@ -2513,6 +2736,10 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 
 	return dropdown
 end
+
+-- Register all profile-related static popup dialogs at load time so they are
+-- available even before the first call to BuildProfileDropdown.
+EnsureProfilePopupsRegistered()
 
 ---Builds the spec title row: header + enabled checkbox + profile dropdown,
 ---all anchored from the right side of the parent so they stay right-aligned on resize.

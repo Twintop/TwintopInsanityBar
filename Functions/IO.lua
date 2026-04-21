@@ -1180,6 +1180,55 @@ function TRB.Functions.IO:BuildSpecProfileExportConfiguration(profileName, class
 	return configuration
 end
 
+---Builds the export configuration table for a class-level profile export.
+---Wraps every available spec piece for the class under
+---`profiles.list[profileName][className][specName]`, with optional `core`.
+---@param profileName string
+---@param classId integer
+---@param specPieces table<string, table> # Map of specName -> source settings table
+---@param corePiece table? # Optional source settings table for core
+---@return table? configuration # The wrapped export configuration, or nil on invalid inputs
+function TRB.Functions.IO:BuildClassProfileExportConfiguration(profileName, classId, specPieces, corePiece)
+	if type(profileName) ~= "string" or profileName == "" then
+		return nil
+	end
+
+	local entry = classEntryById[classId]
+	if entry == nil or type(specPieces) ~= "table" then
+		return nil
+	end
+
+	local classConfig = {}
+	local hasAnySpec = false
+	for specId, specName in pairs(entry.specs) do
+		local specPiece = specPieces[specName]
+		if type(specPiece) == "table" then
+			classConfig[specName] = ExportConfigurationSections(classId, specId, specPiece, true, true, true, true, true)
+			hasAnySpec = true
+		end
+	end
+
+	if not hasAnySpec then
+		return nil
+	end
+
+	local configuration = {
+		profiles = {
+			list = {
+				[profileName] = {
+					[entry.className] = classConfig,
+				},
+			},
+		},
+	}
+
+	if type(corePiece) == "table" then
+		configuration.profiles.list[profileName].core = TRB.Functions.Table:DeepCopy(corePiece)
+	end
+
+	return configuration
+end
+
 ---Resolves the "live vs stored" spec piece for an export. Returns the deep-
 ---copied live spec settings if the character is currently on that spec AND
 ---the requested profile matches the resolved active profile for that spec;
@@ -1277,6 +1326,46 @@ function TRB.Functions.IO:ExportSpecProfile(profileName, classId, specId, includ
 	return Export(configuration), nil
 end
 
+---Exports every available spec piece in a class profile (optionally with its
+---core piece) as an encoded export string.
+---@param profileName string
+---@param classId integer
+---@param includeCore boolean
+---@return string? exportString # Encoded export string, or nil on error
+---@return integer? errorCode # -1 invalid args, -2 no class data available
+function TRB.Functions.IO:ExportClassProfile(profileName, classId, includeCore)
+	local entry = classEntryById[classId]
+	if type(profileName) ~= "string" or profileName == "" or entry == nil then
+		return nil, -1
+	end
+
+	local specPieces = {}
+	local hasAnySpec = false
+	for _, specName in pairs(entry.specs) do
+		local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
+		if specPiece ~= nil then
+			specPieces[specName] = specPiece
+			hasAnySpec = true
+		end
+	end
+
+	if not hasAnySpec then
+		return nil, -2
+	end
+
+	local corePiece
+	if includeCore then
+		corePiece = ResolveLiveOrStoredCorePiece(profileName)
+	end
+
+	local configuration = self:BuildClassProfileExportConfiguration(profileName, classId, specPieces, corePiece)
+	if configuration == nil then
+		return nil, -1
+	end
+
+	return Export(configuration), nil
+end
+
 ---Exports a core-only profile as an encoded export string. Used by the core
 ---profile dropdown's Export action. The core piece is read live when the
 ---requested profile matches the currently-active core profile; otherwise the
@@ -1304,6 +1393,118 @@ function TRB.Functions.IO:ExportCoreProfile(profileName)
 		},
 	}
 
+	return Export(configuration), nil
+end
+
+---Exports an entire stored profile (all class/spec pieces and optionally the
+---core piece) as an encoded export string. Each spec piece is resolved
+---live-vs-stored using the same rules as ExportSpecProfile. Returns nil on
+---error.
+---@param profileName string
+---@return string? exportString # Encoded export string, or nil on error
+---@return integer? errorCode  # -1 invalid args, -2 no data found for that profile
+function TRB.Functions.IO:ExportFullProfile(profileName)
+	if type(profileName) ~= "string" or profileName == "" then
+		return nil, -1
+	end
+
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil or p.list[profileName] == nil then
+		return nil, -2
+	end
+
+	local profileBody = {}
+
+	-- Core piece
+	local corePiece = ResolveLiveOrStoredCorePiece(profileName)
+	if corePiece ~= nil then
+		profileBody.core = corePiece
+	end
+
+	-- All spec pieces
+	local hasAnySpec = false
+	for _, entry in ipairs(CLASS_SPEC_TABLE) do
+		for specId, specName in pairs(entry.specs) do
+			local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
+			if specPiece ~= nil then
+				profileBody[entry.className] = profileBody[entry.className] or {}
+				profileBody[entry.className][specName] = ExportConfigurationSections(
+					entry.classId, specId, specPiece, true, true, true, true, true)
+				hasAnySpec = true
+			end
+		end
+	end
+
+	if not hasAnySpec and profileBody.core == nil then
+		return nil, -2
+	end
+
+	local configuration = {
+		profiles = {
+			list = {
+				[profileName] = profileBody,
+			},
+		},
+	}
+	return Export(configuration), nil
+end
+
+---Exports only the pieces of a profile that are checked in `selection`
+---(mirrors `CopyProfileSelection`). `selection.core` includes the core piece;
+---`selection[className][specName] = true` includes that spec piece.
+---@param profileName string
+---@param selection table # { core = bool, [className] = { [specName] = bool } }
+---@return string? exportString
+---@return integer? errorCode # -1 invalid args, -2 no data selected
+function TRB.Functions.IO:ExportProfileSelection(profileName, selection)
+	if type(profileName) ~= "string" or profileName == "" or type(selection) ~= "table" then
+		return nil, -1
+	end
+
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.list == nil or p.list[profileName] == nil then
+		return nil, -2
+	end
+
+	local profileBody = {}
+	local hasAny = false
+
+	if selection.core then
+		local corePiece = ResolveLiveOrStoredCorePiece(profileName)
+		if corePiece ~= nil then
+			profileBody.core = corePiece
+			hasAny = true
+		end
+	end
+
+	for _, entry in ipairs(CLASS_SPEC_TABLE) do
+		local specSel = selection[entry.className]
+		if type(specSel) == "table" then
+			for specId, specName in pairs(entry.specs) do
+				if specSel[specName] then
+					local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
+					if specPiece ~= nil then
+						profileBody[entry.className] = profileBody[entry.className] or {}
+						profileBody[entry.className][specName] = ExportConfigurationSections(
+							entry.classId, specId, specPiece, true, true, true, true, true)
+						hasAny = true
+					end
+				end
+			end
+		end
+	end
+
+	if not hasAny then
+		return nil, -2
+	end
+
+	local configuration = {
+		profiles = {
+			list = {
+				[profileName] = profileBody,
+			},
+		},
+	}
 	return Export(configuration), nil
 end
 
