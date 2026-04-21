@@ -83,6 +83,78 @@ function TRB.Functions.Table:Merge(original, incoming)
 	return original
 end
 
+---Recursively deep-copies a table. Non-table values are returned as-is.
+---Returns nil if the input is nil. Does NOT preserve metatables.
+---@param t table? The table to copy
+---@return table? copy A new table with the same structure, or nil if input was nil
+function TRB.Functions.Table:DeepCopy(t)
+	if type(t) ~= "table" then
+		return t
+	end
+	local out = {}
+	for k, v in pairs(t) do
+		if type(v) == "table" then
+			out[k] = TRB.Functions.Table:DeepCopy(v)
+		else
+			out[k] = v
+		end
+	end
+	return out
+end
+
+---Deep-merges `overlay` on top of `base` into a fresh table. Unlike `Merge`,
+---this never mutates either argument: sub-tables are deep-copied and merged
+---recursively. Scalars from `overlay` win over scalars in `base`.
+---@param base table? The baseline table (not mutated)
+---@param overlay table? The overlay table whose values win (not mutated)
+---@return table merged A new table containing the deep-merged result
+function TRB.Functions.Table:DeepMergeCopy(base, overlay)
+	if base == nil and overlay == nil then
+		return {}
+	elseif base == nil then
+		return TRB.Functions.Table:DeepCopy(overlay) or {}
+	elseif overlay == nil then
+		return TRB.Functions.Table:DeepCopy(base) or {}
+	end
+
+	local out = TRB.Functions.Table:DeepCopy(base) or {}
+	for k, v in pairs(overlay) do
+		if type(v) == "table" and type(out[k]) == "table" then
+			out[k] = TRB.Functions.Table:DeepMergeCopy(out[k], v)
+		elseif type(v) == "table" then
+			out[k] = TRB.Functions.Table:DeepCopy(v)
+		else
+			out[k] = v
+		end
+	end
+	return out
+end
+
+---Deep-merges `overlay` on top of `target` IN PLACE, preserving the identity
+---of `target` and every nested table that already exists in `target`. Keys that
+---exist in `target` but not `overlay` are left untouched. Sub-tables from
+---`overlay` are deep-copied (so subsequent mutations of `target` don't leak
+---back into `overlay`). Use this when downstream code holds references to
+---`target` or its sub-tables and you can't safely replace those references.
+---@param target table The table to mutate (identity preserved)
+---@param overlay table? The overlay table whose values win (not mutated)
+function TRB.Functions.Table:DeepMergeInto(target, overlay)
+	if type(target) ~= "table" or type(overlay) ~= "table" then
+		return
+	end
+	for k, v in pairs(overlay) do
+		if type(v) == "table" then
+			if type(target[k]) == "table" then
+				TRB.Functions.Table:DeepMergeInto(target[k], v)
+			else
+				target[k] = TRB.Functions.Table:DeepCopy(v)
+			end
+		else
+			target[k] = v
+		end
+	end
+end
+
 ---Appends an element to a list stored at the given key in a dictionary, creating the list if it does not exist
 ---@param dictionary table<any, any[]> The dictionary of lists to add to
 ---@param id any The key under which to store the element (skipped if nil)

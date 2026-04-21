@@ -2631,6 +2631,110 @@ L["DruidFeralBarTextVariable_clearcastingActive"] = "Is Clearcasting currently a
 L["DruidFeralCheckboxClearcasting"] = "Clearcasting"
 L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this color when you have a Clearcasting proc."
 L["DruidFeralIndicatorClearcastingColor"] = "Clearcasting proc is active"
+-- Profiles (Phase 2)
+L["ProfileDropdownButtonFormat"] = "Profile: %s"
+L["ProfileMenuHeaderManage"] = "Manage"
+L["ProfileMenuHeaderProfiles"] = "Profiles"
+L["ProfileMenuNewProfile"] = "New Profile..."
+L["ProfileMenuImportProfile"] = "Import Profile..."
+L["ProfileActionUse"] = "Use Profile"
+L["ProfileActionCopy"] = "Copy Profile..."
+L["ProfileActionRename"] = "Rename Profile..."
+L["ProfileActionDelete"] = "Delete Profile..."
+L["ProfileActionExport"] = "Export Profile"
+L["ProfileButtonUseCurrent"] = "Use Current"
+L["ProfileButtonUseBaseline"] = "Use Baseline"
+L["ProfileCopyNameSuffix"] = "(Copy)"
+L["ProfileScopeLabelGlobal"] = "Global Options"
+L["ProfilePopupNewNameText"] = "Enter a name for the new profile for %s. Choose 'Use Current' to copy your current settings, or 'Use Baseline' to start from default settings."
+L["ProfilePopupOverwriteText"] = "A profile named '%s' already exists for %s. Overwrite it?"
+L["ProfilePopupUseConfirmText"] = "Switch to profile '%s' for %s? Your UI will reload."
+L["ProfilePopupDeleteActiveText"] = "Delete the active profile '%s' for %s? This character will revert to the Default profile and your UI will reload."
+L["ProfilePopupDeleteInactiveText"] = "Delete profile '%s' for %s?"
+L["ProfilePopupCopyText"] = "Copy profile '%s' for %s. Enter a name for the new profile:"
+L["ProfilePopupRenameText"] = "Rename profile '%s' for %s. Enter the new name:"
+L["ProfilePopupRenameCollisionText"] = "A profile named '%s' already exists. Pick a different name."
+L["ProfilePopupImportExportStubText"] = "Profile import/export is coming in a future update."
+
+L["ProfilePopupDeleteReloadMessage"] = "The active profile was deleted. You must reload the UI to continue."
+
+-- Phase 3: Profile Import/Export
+L["ProfilePopupExportIncludeCoreText"] = "Include the current Global Options in the export of profile '%s'?"
+L["ProfileExportMessageFormat"] = "Export string for profile '%s':"
+L["ProfileImportPastePrompt"] = "Paste a TwintopInsanityBar profile or settings export string below:"
+L["ProfileImportNamePrompt"] = "Enter a name for the imported profile:"
+L["ProfileImportOverwriteConfirmPrompt"] = "A profile named '%s' already contains: %s. Overwrite these pieces?"
+L["ProfileImportErrorGeneric"] = "The profile could not be imported."
+L["ProfileImportErrorEmpty"] = "No profile data is available to export."
+L["ProfileImportErrorEmptyWrapper"] = "The import string did not contain any profile entries."
+L["ProfileImportErrorNoValid"] = "The import string did not contain any recognizable class, specialization, or Global Options data."
+L["ProfileImportErrorMultipleProfiles"] = "The import string contains more than one profile. Only single-profile imports are supported."
+L["ProfileImportErrorDecode"] = "The import string could not be decoded. It may be corrupted or incomplete."
+L["ProfilePopupImportSuccessText"] = "Profile '%s' was imported successfully. Switch this character's active profile to the imported one and reload the UI? Click No to keep the imported data without activating it."
+
+-- Profile Manager (Import/Export tab redesign)
+L["ProfileManagerProfilesHeader"] = "Profiles"
+L["ProfileManagerActionRename"] = "Rename Profile"
+L["ProfileManagerActionCopyFull"] = "Copy Full Profile"
+L["ProfileManagerActionCopySelected"] = "Copy Selected"
+L["ProfileManagerColumnName"] = "Profile Name"
+L["ProfileManagerColumnSpecs"] = "Specs"
+L["ProfileManagerColumnGlobal"] = "Global"
+L["ProfileManagerNoProfileSelected"] = "Select a profile above to view its contents."
+L["ProfileManagerDeleteProfileConfirm"] = "Delete profile '%s' and all of its data? Any character using it will revert to Default."
+L["ProfileManagerResetDefaultConfirm"] = "Reset the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerDeletePieceConfirm"] = "Remove %s from profile '%s'?"
+L["ProfileManagerDeleteClassConfirm"] = "Remove all %s specs from profile '%s'?"
+L["ProfileManagerRenameBarWidePrompt"] = "Rename profile '%s'. Enter the new name:"
+L["ProfileManagerRenameBarWideCollision"] = "A profile named '%s' already exists. Pick a different name."
+L["ProfileManagerCopyBarWidePrompt"] = "Copy profile '%s' to a new profile. Enter the name:"
+L["ProfileManagerCopyBarWideOverwrite"] = "A profile named '%s' already exists. Overwrite it?"
+L["ProfileManagerResetDefaultTooltip"] = "Reset the Default profile to baseline settings."
+L["ProfileManagerButtonRename"] = "Rename"
+L["ProfileManagerButtonCopy"] = "Copy"
+
+-- Profile export popup target labels
+L["ProfilePopupExportIncludeCoreTargetText"] = "Include the current Global Options in the export of '%s' from profile '%s'?"
+L["ProfileExportMessageTargetFormat"] = "Export string for '%s' from profile '%s':"
+
+-- Profile Manager action button and icon tooltips
+L["ProfileManagerActionDelete"] = "Delete Profile"
+
+-- Profile Manager contents header (replaces ProfileMgrContentsHeader; uses string.format)
+L["ProfileManagerContentsHeaderFormat"] = "Profile: |cffffffff%s|r"
+
+-- Profile Manager per-row action tooltips (take the class/spec name so the message is specific)
+L["ProfileManagerDeleteClassTooltipFormat"] = "Remove all %s specializations from this profile."
+L["ProfileManagerDeleteSpecTooltipFormat"] = "Remove %s %s from this profile."
+L["ProfileManagerDeleteGlobalTooltip"] = "Remove the Global Options from this profile."
+L["ProfileManagerExportClassTooltipFormat"] = "Export all %s specializations as a shareable string."
+L["ProfileManagerExportSpecTooltipFormat"] = "Export %s %s as a shareable string."
+L["ProfileManagerExportGlobalTooltip"] = "Export the Global Options as a shareable string."
+L["ProfileManagerSelectClassTooltipFormat"] = "Include all %s specializations when using Copy Selected or Export Selected."
+L["ProfileManagerSelectSpecTooltipFormat"] = "Include %s %s when using Copy Selected or Export Selected."
+L["ProfileManagerSelectGlobalTooltip"] = "Include the Global Options when using Copy Selected or Export Selected."
+
+-- Profile Manager: Export buttons below the profile table
+L["ProfileManagerActionExportFull"] = "Export Full Profile"
+L["ProfileManagerActionExportSelected"] = "Export Selected"
+
+-- Profile Manager: Default-profile remove/reset messaging
+L["ProfileManagerResetPieceConfirm"] = "Reset %s in the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerResetClassConfirm"] = "Reset all %s specializations in the Default profile to baseline settings? This cannot be undone."
+L["ProfileManagerResetClassTooltipFormat"] = "Reset all %s specializations in the Default profile to baseline settings."
+L["ProfileManagerResetSpecTooltipFormat"] = "Reset %s %s in the Default profile to baseline settings."
+L["ProfileManagerResetGlobalTooltip"] = "Reset the Global Options in the Default profile to baseline settings."
+
+-- Profile Import Reload popup
+L["ProfilePopupImportReloadText"] = "The imported profile \"%s\" is currently active on this character. The UI must reload to apply the updated contents."
+L["ProfileManagerActionImport"] = "Import Profile"
+L["ProfileActionCopyMenu"] = "Copy"
+L["ProfileActionCopyToNew"] = "Copy to New Profile..."
+
+-- Profile Defaults panel
+L["ProfileDefaults"] = "Profile Defaults"
+L["ProfileDefaultsHeader"] = "Profile Defaults"
+L["ProfileDefaultsDescription"] = "Choose the default profile used for each spec (and for Global Options) the first time a new character logs in. Existing characters keep their own per-character profile selections."
 
 -- Hunter Marksmanship Explosive Shot
 L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "Explosive Shot"

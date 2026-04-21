@@ -574,10 +574,6 @@ local function ConstructGlobalBarTextPanel(parent)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Global_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Global_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportGlobalBarTextPopup(L["GlobalBarTextExportMessage"])
-	end)
 
 	yCoord = yCoord - 10
 
@@ -620,11 +616,8 @@ local function ConstructGlobalOptionsPanel()
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord - 5)
 
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 479, yCoord-10, 90, 20)
-	controls.buttons.importButton:SetFrameLevel(10000)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
+	-- Profile dropdown for core-scope settings. Replaces the legacy Import button.
+	controls.profileDropdown = TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord - 10, "core", nil, nil, L["GlobalOptions"])
 
 	yCoord = yCoord - 37
 
@@ -649,190 +642,105 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
----Constructs a single import/export row with label and export buttons for a class, spec, or all-specs group.
----@param parent Frame
----@param yCoord integer
----@param controls table
----@param classId integer?
----@param specId integer?
----@param labelLocalization string
----@param classOrSpecLocalization string
----@param includeThreshold boolean?
----@param includeAudioTracking boolean?
----@param includeButtons boolean?
----@return integer
-local function ConstructImportExportRow(parent, yCoord, controls, classId, specId, labelLocalization, classOrSpecLocalization, includeThreshold, includeAudioTracking, includeButtons)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-	local buttonOffset = 0
-	local buttonSpacing = 2
-	local exportInnerMessage = ""
+-- ─────────────────────────────────────────────────────────────────────
+-- Alphabetically-ordered class/spec table for the profile manager grid.
+-- classToken is the uppercase token used with GetClassColor().
+-- ─────────────────────────────────────────────────────────────────────
+local PROFILE_CLASSES_ALPHA = {
+	{classId=6,  className="deathknight", token="DEATHKNIGHT", locKey="DeathKnight",
+	 specs={{specId=1,specName="blood",       locKey="DeathKnightBlood"},
+	        {specId=2,specName="frost",       locKey="DeathKnightFrost"},
+	        {specId=3,specName="unholy",      locKey="DeathKnightUnholy"}}},
+	{classId=12, className="demonhunter",  token="DEMONHUNTER",  locKey="DemonHunter",
+	 specs={{specId=1,specName="havoc",       locKey="DemonHunterHavoc"},
+	        {specId=2,specName="vengeance",   locKey="DemonHunterVengeance"},
+	        {specId=3,specName="devourer",    locKey="DemonHunterDevourer"}}},
+	{classId=11, className="druid",        token="DRUID",        locKey="Druid",
+	 specs={{specId=1,specName="balance",     locKey="DruidBalance"},
+	        {specId=2,specName="feral",       locKey="DruidFeral"},
+	        {specId=3,specName="guardian",    locKey="DruidGuardian"},
+	        {specId=4,specName="restoration", locKey="DruidRestoration"}}},
+	{classId=13, className="evoker",       token="EVOKER",       locKey="Evoker",
+	 specs={{specId=1,specName="devastation",  locKey="EvokerDevastation"},
+	        {specId=2,specName="preservation", locKey="EvokerPreservation"},
+	        {specId=3,specName="augmentation", locKey="EvokerAugmentation"}}},
+	{classId=3,  className="hunter",       token="HUNTER",       locKey="Hunter",
+	 specs={{specId=1,specName="beastMastery", locKey="HunterBeastMastery"},
+	        {specId=2,specName="marksmanship", locKey="HunterMarksmanship"},
+	        {specId=3,specName="survival",     locKey="HunterSurvival"}}},
+	{classId=8,  className="mage",         token="MAGE",         locKey="Mage",
+	 specs={{specId=1,specName="arcane",      locKey="MageArcane"},
+	        {specId=2,specName="fire",        locKey="MageFire"},
+	        {specId=3,specName="frost",       locKey="MageFrost"}}},
+	{classId=10, className="monk",         token="MONK",         locKey="Monk",
+	 specs={{specId=1,specName="brewmaster",  locKey="MonkBrewmaster"},
+	        {specId=2,specName="mistweaver",  locKey="MonkMistweaver"},
+	        {specId=3,specName="windwalker",  locKey="MonkWindwalker"}}},
+	{classId=2,  className="paladin",      token="PALADIN",      locKey="Paladin",
+	 specs={{specId=1,specName="holy",        locKey="PaladinHoly"},
+	        {specId=2,specName="protection",  locKey="PaladinProtection"},
+	        {specId=3,specName="retribution", locKey="PaladinRetribution"}}},
+	{classId=5,  className="priest",       token="PRIEST",       locKey="Priest",
+	 specs={{specId=1,specName="discipline",  locKey="PriestDiscipline"},
+	        {specId=2,specName="holy",        locKey="PriestHoly"},
+	        {specId=3,specName="shadow",      locKey="PriestShadow"}}},
+	{classId=4,  className="rogue",        token="ROGUE",        locKey="Rogue",
+	 specs={{specId=1,specName="assassination",locKey="RogueAssassination"},
+	        {specId=2,specName="outlaw",      locKey="RogueOutlaw"},
+	        {specId=3,specName="subtlety",    locKey="RogueSubtlety"}}},
+	{classId=7,  className="shaman",       token="SHAMAN",       locKey="Shaman",
+	 specs={{specId=1,specName="elemental",   locKey="ShamanElemental"},
+	        {specId=2,specName="enhancement", locKey="ShamanEnhancement"},
+	        {specId=3,specName="restoration", locKey="ShamanRestoration"}}},
+	{classId=9,  className="warlock",      token="WARLOCK",      locKey="Warlock",
+	 specs={{specId=1,specName="affliction",  locKey="WarlockAffliction"},
+	        {specId=2,specName="demonology",  locKey="WarlockDemonology"},
+	        {specId=3,specName="destruction", locKey="WarlockDestruction"}}},
+	{classId=1,  className="warrior",      token="WARRIOR",      locKey="Warrior",
+	 specs={{specId=1,specName="arms",        locKey="WarriorArms"},
+	        {specId=2,specName="fury",        locKey="WarriorFury"},
+	        {specId=3,specName="protection",  locKey="WarriorProtection"}}},
+}
 
-	if includeThreshold == nil then
-		includeThreshold = true
-	end
+-- Row and layout constants for the profile manager grid.
+local IE_HEADER_H  = 22  -- column-header row height
+local IE_ROW_H     = 22  -- profile-table data row height
+local IE_VISIBLE   = 5   -- visible rows in the profile table
+local IE_COL_W     = 190 -- class/spec column width (three columns)
+local IE_COL_GAP   = 10  -- gap between class/spec columns
+local IE_GRID_COLS = 3   -- number of class/spec columns
+local IE_CLASS_H   = 24  -- class-header row height within the grid
+local IE_SPEC_H    = 22  -- spec row height within the grid
+local IE_PAIR_GAP  = 8   -- vertical gap between class blocks
 
-	if includeAudioTracking == nil then
-		includeAudioTracking = true
-	end
-
-	if includeButtons == nil then
-		includeButtons = true
-	end
-
-	if classId == nil then
-		exportInnerMessage = L["ExportMessagePrefixAll"] .. " " .. classOrSpecLocalization .. " " .. L["ExportMessagePostfixSpecializations"]
-		yCoord = yCoord - 35
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 130, 20)
-	elseif specId == nil then
-		exportInnerMessage = L["ExportMessagePrefixAll"] .. " " .. classOrSpecLocalization .. " " .. L["ExportMessagePostfixSpecializations"]
-		yCoord = yCoord - 35
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord, yCoord, 130, 20)
-	else
-		exportInnerMessage = L["ExportMessagePrefix"] .. " " .. classOrSpecLocalization
-		yCoord = yCoord - 25
-		controls.labels["export_" .. namePrefix] = TRB.Functions.OptionsUi:BuildLabel(parent, labelLocalization, oUi.xCoord+oUi.xPadding, yCoord, 110, 20, TRB.Options.fonts.options.exportSpec)
-	end
-
-	if includeButtons then
-		buttonOffset = oUi.xCoord + oUi.xPadding + 110
-		controls.buttons["export_" .. namePrefix .. "_All"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 60, 20)
-		controls.buttons["export_" .. namePrefix .. "_All"]:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAll"] .. ".", classId, specId, true, true, true, true, true, false)
-		end)
-
-		buttonOffset = buttonOffset + buttonSpacing + 60
-		controls["export_" .. namePrefix .. "_BarDisplay"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 90, 20)
-		controls["export_" .. namePrefix .. "_BarDisplay"]:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", classId, specId, true, false, false, false, false, false)
-		end)
-
-		buttonOffset = buttonOffset + buttonSpacing + 90
-		if includeThreshold then
-			controls["export_" .. namePrefix .. "_Thresholds"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageThresholds"], buttonOffset, yCoord, 90, 20)
-			controls["export_" .. namePrefix .. "_Thresholds"]:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixThresholds"] .. ".", classId, specId, false, true, false, false, false, false)
-			end)
-		end
-
-		buttonOffset = buttonOffset + buttonSpacing + 90
-		controls["export_" .. namePrefix .. "_FontAndText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 100, 20)
-		controls["export_" .. namePrefix .. "_FontAndText"]:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixFontText"] .. ".", classId, specId, false, false, true, false, false, false)
-		end)
-
-		buttonOffset = buttonOffset + buttonSpacing + 100
-		if includeAudioTracking then
-			controls["export_" .. namePrefix .. "_AudioAndTracking"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 130, 20)
-			controls["export_" .. namePrefix .. "_AudioAndTracking"]:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-			end)
-		end
-
-		buttonOffset = buttonOffset + buttonSpacing + 130
-		controls["export_" .. namePrefix .. "_BarText"] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 80, 20)
-		controls["export_" .. namePrefix .. "_BarText"]:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportInnerMessage .. " " .. L["ExportMessagePostfixBarText"] .. ".", classId, specId, false, false, false, false, true, false)
-		end)
-	end
-	return yCoord
-end
-
----Constructs the import/export panel with import dialogs and per-class/spec export buttons for all supported specializations.
+---Constructs the profile-centric Import/Export panel.
 local function ConstructImportExportPanel()
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames()
-	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.importExport or {}
-	local yCoord = -5
+	interfaceSettingsFrame.controls.importExport = controls
+	controls.labels   = controls.labels   or {}
+	controls.buttons  = controls.buttons  or {}
 
-	local specName = ""
-	local buttonOffset = 0
-	local buttonSpacing = 5
-
+	-- ── Top-level panel frame ──────────────────────────────────────────
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport")
-	TRB.Options.OptionsFrame:RegisterCategory("importExport", string.format("%s/%s", L["Import"], L["Export"]), interfaceSettingsFrame.importExportPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("importExport",
+		string.format("%s/%s", L["Import"], L["Export"]),
+		interfaceSettingsFrame.importExportPanel)
 
-	parent = interfaceSettingsFrame.importExportPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format("%s/%s", L["Import"], L["Export"]), oUi.xCoord, yCoord)
-	controls.labels = controls.labels or {}
-	controls.buttons = controls.buttons or {}
+	local topPanel = interfaceSettingsFrame.importExportPanel
 
-	yCoord = yCoord - 30
-	---@diagnostic disable-next-line: inject-field
-	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel", parent)
-	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	parent.panel:Show()
+	-- Outer scroll container
+	topPanel.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer(
+		"TwintopResourceBar_ImportExport_LayoutPanel", topPanel)
+	topPanel.panel:SetPoint("TOPLEFT", oUi.xCoord, -5)
+	topPanel.panel:Show()
 
-	parent = parent.panel.scrollFrame.scrollChild
+	local scrollChild = topPanel.panel.scrollFrame.scrollChild
+	-- Pre-allocate scroll child height large enough for all content.
+	scrollChild:SetHeight(1200)
 
-	yCoord = 5
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ImportSettingsConfiguration"], oUi.xCoord, yCoord)
-
-
-	StaticPopupDialogs["TwintopResourceBar_ImportError"] = {
-		text = L["ImportErrorGenericMessage"],
-		button1 = L["OK"],
-		OnAccept = function(self)
-			StaticPopup_Show("TwintopResourceBar_Import")
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	StaticPopupDialogs["TwintopResourceBar_ImportReload"] = {
-		text = L["ImportReloadMessage"],
-		button1 = L["OK"],
-		OnAccept = function(self)
-			C_UI.Reload()
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	StaticPopupDialogs["TwintopResourceBar_Import"] = {
-		text = L["ImportMessage"],
-		button1 = L["Import"],
-		button2 = L["Cancel"],
-		hasEditBox = true,
-		hasWideEditBox = true,
-		editBoxWidth = 500,
-		OnAccept = function(self)
-			local result = false
-			result = TRB.Functions.IO:Import(self:GetEditBox():GetText())
-
-			if result >= 0 then
-				StaticPopup_Show("TwintopResourceBar_ImportReload")
-			else
-				if result == -4 then
-					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = L["ImportErrorNoValidMessage"]
-				else
-					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = L["ImportErrorGenericMessage"]
-				end
-
-				StaticPopup_Show("TwintopResourceBar_ImportError")
-			end
-		end,
-		timeout = 0,
-		whileDead = true,
-		EditBoxOnEscapePressed = function(self)
-			self:GetParent():Hide()
-		end,
-		hideOnEscape = true,
-		preferredIndex = 3
-	}
-
-	yCoord = yCoord - 40
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ImportExisting"], oUi.xCoord, yCoord, 300, 30)
-	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
+	local parent = scrollChild
+	local yCoord = 5
 
 	StaticPopupDialogs["TwintopResourceBar_Export"] = {
 		text = "",
@@ -849,98 +757,1134 @@ local function ConstructImportExportPanel()
 			self:GetEditBox():SetAutoFocus(true)
 			self:GetEditBox():HighlightText()
 		end,
-		EditBoxOnEscapePressed = function(self)
-			self:GetParent():Hide()
-		end,
+		EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
 		hideOnEscape = true,
-		preferredIndex = 3
+		preferredIndex = 3,
 	}
 
-	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExportSettingsConfiguration"], oUi.xCoord, yCoord)
+	-- ── Section: Profiles ──────────────────────────────────────────────
+	controls.profileSection = TRB.Functions.OptionsUi:BuildSectionHeader(
+		parent, L["ProfileManagerProfilesHeader"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 35
+	-- ── Profile table ──────────────────────────────────────────────────
+	-- Layout: Name (dynamic) | Specs (46) | Global (46) | Delete (15)
+	local tblSpecW  = 46
+	local tblGlobW  = 46
+	local tblDelW   = 15
 
-	buttonOffset = oUi.xCoord + oUi.xPadding + 110
-	controls.buttons.exportButton_Everything = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"], buttonOffset, yCoord, 340, 20)
-	controls.buttons.exportButton_Everything:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"] .. ".", nil, nil, true, false, true, true, true, true)
+	yCoord = yCoord - 33
+
+	-- LibScrollingTable-based profile table (matches Bar Text styling).
+	local profileTableColumns = {
+		{
+			["name"] = "Key",
+			["width"] = 1,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = L["ProfileManagerColumnName"],
+			["width"] = 300,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["ProfileManagerColumnSpecs"],
+			["width"] = tblSpecW,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = L["ProfileManagerColumnGlobal"],
+			["width"] = tblGlobW,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = "",
+			["width"] = tblDelW,
+			["align"] = "CENTER",
+			["color"] = {
+				["r"] = 1,
+				["g"] = 0,
+				["b"] = 0,
+				["a"] = 1,
+			},
+		},
+	}
+
+	local profileTableContainer = CreateFrame("Frame", "TwintopResourceBar_IE_ProfileTableContainer", parent, "BackdropTemplate")
+	profileTableContainer:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	profileTableContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	profileTableContainer:SetHeight(35 + (IE_VISIBLE * 15))
+
+	controls.buttons.importProfile = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionImport"], 0, 0, 140, 22)
+	controls.buttons.importProfile:ClearAllPoints()
+	controls.buttons.importProfile:SetPoint("TOPRIGHT", profileTableContainer, "TOPRIGHT", 0, 30)
+	controls.buttons.importProfile:SetScript("OnClick", function()
+		TRB.Functions.OptionsUi:ShowProfileImportPopup(function()
+			if RefreshImportExportView ~= nil then
+				RefreshImportExportView()
+			end
+		end)
 	end)
 
-	buttonOffset = buttonOffset + buttonSpacing + 340
-	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageGlobalOptionsOnly"], buttonOffset, yCoord, 220, 20)
-	controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageGlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, false, true)
+	local UpdateProfileActionButtons
+	local profileScrollingTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(
+		profileTableColumns, IE_VISIBLE, 15, nil, profileTableContainer, false, false)
+
+	-- Dynamically resize "Name" column (index 2) to fill available width
+	profileTableContainer:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = profileTableColumns[1].width + profileTableColumns[3].width + profileTableColumns[4].width + profileTableColumns[5].width
+		local newNameWidth = math.max(200, w - fixedWidth - 30) -- 30 for internal padding/scrollbar
+		profileTableColumns[2].width = newNameWidth
+		profileScrollingTable:SetDisplayCols(profileTableColumns)
+		if UpdateProfileActionButtons ~= nil then
+			UpdateProfileActionButtons()
+		end
 	end)
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, nil, nil, L["ExportMessageAllClassesSpecs"], L["ExportMessageAllClassesSpecs"], true, true)
+	-- State for profile table and detail grid
+	local selectedProfile = nil
+	local checkboxState   = {}  -- { core=bool, [className]={ [specName]=bool } }
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, nil, L["DeathKnight"], L["DeathKnight"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 1, L["DeathKnightBlood"], L["DeathKnightBloodFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 2, L["DeathKnightFrost"], L["DeathKnightFrostFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 6, 3, L["DeathKnightUnholy"], L["DeathKnightUnholyFull"], true, false)
+	-- Forward declarations for mutual recursion
+	local RefreshProfileTable
+	local RefreshDetailGrid
+	local RefreshImportExportView
+	local detailContainer
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, nil, L["DemonHunter"], L["DemonHunter"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 1, L["DemonHunterHavoc"], L["DemonHunterHavocFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 2, L["DemonHunterVengeance"], L["DemonHunterVengeanceFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 12, 3, L["DemonHunterDevourer"], L["DemonHunterDevourerFull"], true, false)
+	-- ── Profile table refresh ──────────────────────────────────────────
+	RefreshProfileTable = function()
+		local names = TRB.Functions.Profiles:GetProfileNames()
+		local selectedProfileStillExists = (selectedProfile == nil)
+		if selectedProfile ~= nil then
+			for _, profileName in ipairs(names) do
+				if profileName == selectedProfile then
+					selectedProfileStillExists = true
+					break
+				end
+			end
+			if not selectedProfileStillExists then
+				selectedProfile = nil
+				if RefreshDetailGrid ~= nil then
+					RefreshDetailGrid(nil)
+				end
+			end
+		end
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, nil, L["Druid"], L["Druid"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 1, L["DruidBalance"], L["DruidBalanceFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 2, L["DruidFeral"], L["DruidFeralFull"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 3, L["DruidGuardian"], L["DruidGuardianFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 11, 4, L["DruidRestoration"], L["DruidRestorationFull"], false, false)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, nil, L["Evoker"], L["Evoker"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 1, L["EvokerDevastation"], L["EvokerDevastationFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 2, L["EvokerPreservation"], L["EvokerPreservationFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 13, 3, L["EvokerAugmentation"], L["EvokerAugmentationFull"], false)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, nil, L["Hunter"], L["Hunter"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 1, L["HunterBeastMastery"], L["HunterBeastMasteryFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 2, L["HunterMarksmanship"], L["HunterMarksmanshipFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 3, 3, L["HunterSurvival"], L["HunterSurvivalFull"], true, true)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, nil, L["Mage"], L["Mage"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 1, L["MageArcane"], L["MageArcaneFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 2, L["MageFire"], L["MageFireFull"], false, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 8, 3, L["MageFrost"], L["MageFrostFull"], false, true)
+		local dataTable = {}
+		local selectedRealRow = nil
+		for i, profileName in ipairs(names) do
+			local specCount = TRB.Functions.Profiles:GetProfileSpecCount(profileName)
+			local hasCore   = TRB.Functions.Profiles:ProfileHasCore(profileName)
+			local isDefault = (profileName == TRB.Functions.Profiles.DEFAULT_NAME)
+			dataTable[i] = {
+				cols = {
+					{ value = profileName },
+					{ value = profileName },
+					{ value = tostring(specCount) },
+					{ value = hasCore and CreateAtlasMarkup("common-icon-checkmark", 14, 14) or "" },
+					{ value = isDefault and "" or "X" },
+				},
+			}
+			if profileName == selectedProfile then
+				selectedRealRow = i
+			end
+		end
+		profileScrollingTable:SetData(dataTable)
+		profileScrollingTable:EnableSelection(true)
+		if selectedRealRow ~= nil then
+			profileScrollingTable:SetSelection(selectedRealRow)
+		end
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, nil, L["Monk"], L["Monk"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 1, L["MonkBrewmaster"], L["MonkBrewmasterFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 2, L["MonkMistweaver"], L["MonkMistweaverFull"], false, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 10, 3, L["MonkWindwalker"], L["MonkWindwalkerFull"], true, true)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, nil, L["Paladin"], L["Paladin"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 1, L["PaladinHoly"], L["PaladinHolyFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 2, L["PaladinProtection"], L["PaladinProtectionFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 2, 3, L["PaladinRetribution"], L["PaladinRetributionFull"], false, true)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, nil, L["Priest"], L["Priest"])
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 1, L["PriestDiscipline"], L["PriestDisciplineFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 2, L["PriestHoly"], L["PriestHolyFull"], false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 5, 3, L["PriestShadow"], L["PriestShadowFull"])
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, nil, L["Rogue"], L["Rogue"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 1, L["RogueAssassination"], L["RogueAssassinationFull"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 2, L["RogueOutlaw"], L["RogueOutlawFull"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 4, 3, L["RogueSubtlety"], L["RogueSubtletyFull"], true, true)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, nil, L["Shaman"], L["Shaman"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 1, L["ShamanElemental"], L["ShamanElementalFull"], true, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 2, L["ShamanEnhancement"], L["ShamanEnhancementFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 7, 3, L["ShamanRestoration"], L["ShamanRestorationFull"], false, false)
-	
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, nil, L["Warlock"], L["Warlock"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 1, L["WarlockAffliction"], L["WarlockAfflictionFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 2, L["WarlockDemonology"], L["WarlockDemonologyFull"], false, true)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 9, 3, L["WarlockDestruction"], L["WarlockDestructionFull"], false, true)
+		if UpdateProfileActionButtons ~= nil then
+			UpdateProfileActionButtons()
+		end
+	end
 
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, nil, L["Warrior"], L["Warrior"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 1, L["WarriorArms"], L["WarriorArmsFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 2, L["WarriorFury"], L["WarriorFuryFull"], true, false)
-	yCoord = ConstructImportExportRow(parent, yCoord, controls, 1, 3, L["WarriorProtection"], L["WarriorProtectionFull"], true, false)
+	profileScrollingTable:RegisterEvents({
+		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" and realrow ~= nil and realrow > 0 then
+				local profileName = data[realrow].cols[1].value
+				local isDefault = (profileName == TRB.Functions.Profiles.DEFAULT_NAME)
+
+				if column == 5 and not isDefault then
+					StaticPopup_Show("TwintopResourceBar_Profile_DeleteProfile_Confirm", nil, nil,
+						{
+							profileName = profileName,
+							onComplete = function()
+								if RefreshImportExportView ~= nil then
+									RefreshImportExportView()
+								end
+							end,
+						})
+				else
+					selectedProfile = profileName
+					if RefreshDetailGrid ~= nil then
+						RefreshDetailGrid(profileName)
+					end
+					if UpdateProfileActionButtons ~= nil then
+						UpdateProfileActionButtons()
+					end
+				end
+			end
+		end,
+	})
+
+	yCoord = yCoord - profileTableContainer:GetHeight() + 10
+
+	-- ── Profile-level action buttons (below table) ─────────────────────
+	-- 5 buttons on one row, sized dynamically in UpdateProfileActionButtons
+	-- to span the full table width with equal gaps. Seed with a reasonable
+	-- width so first-layout sizing looks right before OnSizeChanged fires.
+	local btnW = 140
+	controls.buttons.renameProfile = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionRename"], 0, yCoord, btnW, 26)
+	controls.buttons.copyFull = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionCopyFull"], 0, yCoord, btnW, 26)
+	controls.buttons.copySelected = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionCopySelected"], 0, yCoord, btnW, 26)
+	controls.buttons.exportFull = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionExportFull"], 0, yCoord, btnW, 26)
+	controls.buttons.exportSelected = TRB.Functions.OptionsUi:BuildButton(
+		parent, L["ProfileManagerActionExportSelected"], 0, yCoord, btnW, 26)
+
+	-- ── Action button handlers ─────────────────────────────────────
+	controls.buttons.renameProfile:SetScript("OnClick", function()
+		if selectedProfile == nil then return end
+		StaticPopup_Show("TwintopResourceBar_Profile_RenameBarWide_Name", nil, nil, {
+			profileName = selectedProfile,
+			onComplete  = function(newName)
+				selectedProfile = newName
+				RefreshProfileTable()
+				RefreshDetailGrid(newName)
+			end,
+		})
+	end)
+
+	controls.buttons.copyFull:SetScript("OnClick", function()
+		if selectedProfile == nil then return end
+		StaticPopup_Show("TwintopResourceBar_Profile_CopyBarWide_Name", nil, nil, {
+			profileName = selectedProfile,
+			mode        = "full",
+			onComplete  = function(newName)
+				RefreshProfileTable()
+			end,
+		})
+	end)
+
+	controls.buttons.copySelected:SetScript("OnClick", function()
+		if selectedProfile == nil then return end
+		StaticPopup_Show("TwintopResourceBar_Profile_CopyBarWide_Name", nil, nil, {
+			profileName = selectedProfile,
+			mode        = "selected",
+			selection   = checkboxState,
+			onComplete  = function(newName)
+				RefreshProfileTable()
+			end,
+		})
+	end)
+
+	controls.buttons.exportFull:SetScript("OnClick", function()
+		if selectedProfile == nil then return end
+		local output, err = TRB.Functions.IO:ExportFullProfile(selectedProfile)
+		if output == nil then
+			local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+			StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+			return
+		end
+		StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
+			message      = string.format(L["ProfileExportMessageFormat"], selectedProfile),
+			exportString = output,
+		})
+	end)
+
+	controls.buttons.exportSelected:SetScript("OnClick", function()
+		if selectedProfile == nil then return end
+		local output, err = TRB.Functions.IO:ExportProfileSelection(selectedProfile, checkboxState or {})
+		if output == nil then
+			local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+			StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+			return
+		end
+		StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
+			message      = string.format(L["ProfileExportMessageFormat"], selectedProfile),
+			exportString = output,
+		})
+	end)
+
+	local detailTopYWithButtons = yCoord - 34
+	local detailTopYWithoutButtons = yCoord
+
+	-- ── Detail grid container ──────────────────────────────────────────
+	-- "no profile selected" placeholder
+	local noSelLabel = CreateFrame("Frame", nil, parent)
+	noSelLabel:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, detailTopYWithoutButtons)
+	noSelLabel:SetWidth(590)
+	noSelLabel:SetHeight(28)
+	local noSelFS = noSelLabel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	noSelFS:SetAllPoints()
+	noSelFS:SetJustifyH("CENTER")
+	noSelFS:SetText(L["ProfileManagerNoProfileSelected"])
+
+	-- Container for the actual class/spec grid (shown when a profile is selected)
+	detailContainer = CreateFrame("Frame", nil, parent)
+	detailContainer:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, detailTopYWithoutButtons)
+	detailContainer:SetWidth(590)
+	detailContainer:SetHeight(900)
+	detailContainer:Hide()
+
+	-- "Profile Contents: NAME" header inside the container
+	local contentsHeader = detailContainer:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	contentsHeader:SetPoint("TOPLEFT", detailContainer, "TOPLEFT", 0, -2)
+	contentsHeader:SetWidth(590)
+	contentsHeader:SetHeight(24)
+	contentsHeader:SetJustifyH("LEFT")
+
+	-- ── Build class/spec rows (pre-built, state updated on profile change) ─
+	-- Each row stores: frame, deleteBtn, exportBtn, checkbox, icon, label
+	local classRowData = {}   -- [className] = { frame, delBtn, ... }
+	local specRowData  = {}   -- [className.."_"..specName] = { frame, delBtn, exportBtn, cb, icon }
+	local globalRowData
+
+	local gridYStart = -26  -- below the contents-header inside detailContainer
+	local colXOffsets = {}
+	for colIndex = 1, IE_GRID_COLS do
+		colXOffsets[colIndex] = (colIndex - 1) * (IE_COL_W + IE_COL_GAP)
+	end
+
+	local function SetButtonTooltip(frame, tooltipText)
+		if frame == nil or tooltipText == nil or tooltipText == "" then
+			return
+		end
+		frame:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(tooltipText, nil, nil, nil, nil, true)
+			GameTooltip:Show()
+		end)
+		frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	end
+
+	local function GetDeleteClassTooltip(profileName, classLabel)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return string.format(L["ProfileManagerResetClassTooltipFormat"], classLabel)
+		end
+		return string.format(L["ProfileManagerDeleteClassTooltipFormat"], classLabel)
+	end
+
+	local function GetDeleteSpecTooltip(profileName, specLabel, classLabel)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return string.format(L["ProfileManagerResetSpecTooltipFormat"], specLabel, classLabel)
+		end
+		return string.format(L["ProfileManagerDeleteSpecTooltipFormat"], specLabel, classLabel)
+	end
+
+	local function GetDeleteGlobalTooltip(profileName)
+		if profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+			return L["ProfileManagerResetGlobalTooltip"]
+		end
+		return L["ProfileManagerDeleteGlobalTooltip"]
+	end
+
+	local function BuildDeleteButton(parent, xOff, yOff)
+		local btn = CreateFrame("Button", nil, parent)
+		btn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOff, yOff)
+		btn:SetWidth(18)
+		btn:SetHeight(18)
+		btn:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+		btn:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+		btn:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+		btn:GetNormalTexture():SetVertexColor(1, 0.3, 0.3)
+		return btn
+	end
+
+	local function BuildExportButton(parent, xOff, yOff)
+		local btn = CreateFrame("Button", nil, parent)
+		btn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOff, yOff)
+		btn:SetWidth(18)
+		btn:SetHeight(18)
+		btn:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+		btn:SetPushedTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+		btn:SetHighlightTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+		local pushed = btn:GetPushedTexture()
+		if pushed then
+			pushed:SetVertexColor(0.7, 0.7, 0.7)
+		end
+		local hl = btn:GetHighlightTexture()
+		if hl then
+			hl:SetBlendMode("ADD")
+			hl:SetAlpha(0.4)
+		end
+		return btn
+	end
+
+	local function BuildCheckbox(parent, xOff, yOff)
+		local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+		cb:SetPoint("TOPLEFT", parent, "TOPLEFT", xOff, yOff + 1)
+		cb:SetWidth(18)
+		cb:SetHeight(18)
+		return cb
+	end
+
+	local function BuildIcon(parent, xOff, yOff, size)
+		local tex = parent:CreateTexture(nil, "OVERLAY")
+		tex:SetPoint("TOPLEFT", parent, "TOPLEFT", xOff, yOff)
+		tex:SetWidth(size or 18)
+		tex:SetHeight(size or 18)
+		return tex
+	end
+
+	local function BuildLabel(parentF, xOff, yOff, w, txt, fontObj, height)
+		local fs = parentF:CreateFontString(nil, "OVERLAY", fontObj or "GameFontHighlightSmall")
+		fs:SetPoint("TOPLEFT", parentF, "TOPLEFT", xOff, yOff)
+		fs:SetWidth(w)
+		fs:SetHeight(height or 18)
+		fs:SetJustifyH("LEFT")
+		fs:SetText(txt)
+		return fs
+	end
+
+	local function SetActionButtonEnabled(button, enabled)
+		if enabled then
+			button:Enable()
+			button:SetAlpha(1.0)
+		else
+			button:Disable()
+			button:SetAlpha(0.35)
+		end
+		if button.text then
+			button.text:SetAlpha(enabled and 1.0 or 0.45)
+		end
+	end
+
+	local function StripColorCodes(text)
+		if type(text) ~= "string" then
+			return ""
+		end
+		return text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+	end
+
+	-- SPEC row button x-offsets (relative to column frame)
+	local SPEC_INDENT = 8
+	local SPEC_DEL_X  = SPEC_INDENT
+	local SPEC_EXP_X  = SPEC_INDENT + 22
+	local SPEC_CB_X   = SPEC_INDENT + 44
+	local SPEC_ICO_X  = SPEC_INDENT + 64
+	local SPEC_LBL_X  = SPEC_INDENT + 86
+	local GLOBAL_LBL_X = SPEC_ICO_X
+
+	-- CLASS row button x-offsets (aligned with spec buttons; only icon+label are indented)
+	local CLS_DEL_X  = SPEC_DEL_X
+	local CLS_ICO_X  = SPEC_ICO_X
+	local CLS_LBL_X  = SPEC_LBL_X
+
+	local curY = gridYStart
+
+	local function BuildClassBlock(classDef, colX, baseY)
+		if classDef == nil then return 0 end
+		local className  = classDef.className
+		local classToken = classDef.token
+		local classLabel = L[classDef.locKey]
+
+		local _, _, _, classColorHex = GetClassColor(classToken)
+		local colStr = classColorHex and ("|c" .. classColorHex) or "|cffffffff"
+
+		local hRow = CreateFrame("Frame", nil, detailContainer)
+		hRow:SetPoint("TOPLEFT", detailContainer, "TOPLEFT", colX, baseY)
+		hRow:SetWidth(IE_COL_W)
+		hRow:SetHeight(IE_CLASS_H)
+
+		local delBtn = BuildDeleteButton(hRow, CLS_DEL_X, -2)
+		local expBtn = BuildExportButton(hRow, SPEC_EXP_X, -2)
+		local cb = BuildCheckbox(hRow, SPEC_CB_X, -2)
+		SetButtonTooltip(delBtn, string.format(L["ProfileManagerDeleteClassTooltipFormat"], classLabel))
+		SetButtonTooltip(expBtn, string.format(L["ProfileManagerExportClassTooltipFormat"], classLabel))
+		SetButtonTooltip(cb, string.format(L["ProfileManagerSelectClassTooltipFormat"], classLabel))
+		local clsIcon = BuildIcon(hRow, CLS_ICO_X, -2, 18)
+		clsIcon:SetAtlas("classicon-" .. className, false)
+		local lbl = BuildLabel(hRow, CLS_LBL_X, -1, IE_COL_W - CLS_LBL_X - 4,
+			colStr .. classLabel .. "|r", "GameFontNormal", 20)
+
+		classRowData[className] = {
+			frame = hRow,
+			delBtn = delBtn,
+			exportBtn = expBtn,
+			checkbox = cb,
+			iconTex = clsIcon,
+			label = lbl,
+			classId = classDef.classId,
+			classDef = classDef,
+		}
+
+		local blockH = IE_CLASS_H
+		for _, spec in ipairs(classDef.specs) do
+			local specRow = CreateFrame("Frame", nil, detailContainer)
+			specRow:SetPoint("TOPLEFT", detailContainer, "TOPLEFT", colX, baseY - blockH)
+			specRow:SetWidth(IE_COL_W)
+			specRow:SetHeight(IE_SPEC_H)
+
+			local sDelBtn = BuildDeleteButton(specRow, SPEC_DEL_X, -2)
+			local sExpBtn = BuildExportButton(specRow, SPEC_EXP_X, -2)
+			local sCb = BuildCheckbox(specRow, SPEC_CB_X, -2)
+			local specLabel = L[spec.locKey]
+			SetButtonTooltip(sDelBtn, string.format(L["ProfileManagerDeleteSpecTooltipFormat"], specLabel, classLabel))
+			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
+			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
+			local sIcon = BuildIcon(specRow, SPEC_ICO_X, -2, 18)
+			if GetSpecializationInfoForClassID then
+				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
+				if iconId then
+					sIcon:SetTexture(iconId)
+				end
+			end
+			local sLbl = BuildLabel(specRow, SPEC_LBL_X, -2,
+				IE_COL_W - SPEC_LBL_X - 4, L[spec.locKey])
+
+			local key = className .. "_" .. spec.specName
+			specRowData[key] = {
+				frame = specRow,
+				delBtn = sDelBtn,
+				exportBtn = sExpBtn,
+				checkbox = sCb,
+				iconTex = sIcon,
+				label = sLbl,
+				className = className,
+				specName = spec.specName,
+				classId = classDef.classId,
+				specId = spec.specId,
+			}
+			blockH = blockH + IE_SPEC_H
+		end
+
+		return blockH
+	end
+
+	local function BuildGlobalBlock(colX, baseY, width)
+		local row = CreateFrame("Frame", nil, detailContainer)
+		row:SetPoint("TOPLEFT", detailContainer, "TOPLEFT", colX, baseY)
+		row:SetWidth(width or IE_COL_W)
+		row:SetHeight(IE_CLASS_H)
+
+		local delBtn = BuildDeleteButton(row, SPEC_DEL_X, -2)
+		local expBtn = BuildExportButton(row, SPEC_EXP_X, -2)
+		local cb = BuildCheckbox(row, SPEC_CB_X, -2)
+		SetButtonTooltip(delBtn, L["ProfileManagerDeleteGlobalTooltip"])
+		SetButtonTooltip(expBtn, L["ProfileManagerExportGlobalTooltip"])
+		SetButtonTooltip(cb, L["ProfileManagerSelectGlobalTooltip"])
+		local lbl = BuildLabel(row, GLOBAL_LBL_X, -1, (width or IE_COL_W) - GLOBAL_LBL_X - 4,
+			L["ProfileScopeLabelGlobal"], "GameFontNormal", 20)
+
+		globalRowData = {
+			frame = row,
+			delBtn = delBtn,
+			exportBtn = expBtn,
+			checkbox = cb,
+			label = lbl,
+		}
+
+		return IE_CLASS_H
+	end
+
+	-- ── Global Default row (full-width, above the class grid) ──────────
+	local gridFullWidth = (IE_COL_W * IE_GRID_COLS) + (IE_COL_GAP * (IE_GRID_COLS - 1))
+	local globalBlockH = BuildGlobalBlock(0, curY, gridFullWidth)
+	curY = curY - globalBlockH - IE_PAIR_GAP
+
+	local layoutBlocks = {}
+	for _, classDef in ipairs(PROFILE_CLASSES_ALPHA) do
+		layoutBlocks[#layoutBlocks + 1] = {
+			kind = "class",
+			classDef = classDef,
+		}
+	end
+
+	for blockIndex = 1, #layoutBlocks, IE_GRID_COLS do
+		local rowH = 0
+		for colIndex = 1, IE_GRID_COLS do
+			local block = layoutBlocks[blockIndex + colIndex - 1]
+			if block ~= nil then
+				local blockH
+				if block.kind == "class" then
+					blockH = BuildClassBlock(block.classDef, colXOffsets[colIndex], curY)
+				end
+				if blockH > rowH then
+					rowH = blockH
+				end
+			end
+		end
+		curY = curY - rowH - IE_PAIR_GAP
+	end
+
+	-- Adjust container height to match actual content
+	detailContainer:SetHeight(math.abs(curY) + 20)
+
+	UpdateProfileActionButtons = function()
+		local hasSelection = selectedProfile ~= nil
+		local isDefault = hasSelection and (selectedProfile == TRB.Functions.Profiles.DEFAULT_NAME)
+		local canRename = hasSelection and not isDefault
+
+		local allButtons = {
+			controls.buttons.renameProfile,
+			controls.buttons.copyFull,
+			controls.buttons.copySelected,
+			controls.buttons.exportFull,
+			controls.buttons.exportSelected,
+		}
+		for _, btn in ipairs(allButtons) do
+			if hasSelection then
+				btn:Show()
+			else
+				btn:Hide()
+			end
+		end
+
+		controls.buttons.renameProfile:SetEnabled(canRename)
+		controls.buttons.copyFull:SetEnabled(hasSelection)
+		controls.buttons.copySelected:SetEnabled(hasSelection)
+		controls.buttons.exportFull:SetEnabled(hasSelection)
+		controls.buttons.exportSelected:SetEnabled(hasSelection)
+
+		-- Single row: 5 buttons sized to fill the table width with a small
+		-- fixed gap between each. Dynamic sizing keeps the layout clean at
+		-- any container width and gives room for longer localized labels.
+		local tableWidth = profileTableContainer:GetWidth()
+		local buttons = {
+			controls.buttons.renameProfile,
+			controls.buttons.copyFull,
+			controls.buttons.copySelected,
+			controls.buttons.exportFull,
+			controls.buttons.exportSelected,
+		}
+		local count = #buttons
+		local gap = 6
+		local bw = math.max(60, math.floor((tableWidth - gap * (count - 1)) / count))
+		for i, btn in ipairs(buttons) do
+			btn:SetWidth(bw)
+			local x = (i - 1) * (bw + gap)
+			btn:ClearAllPoints()
+			btn:SetPoint("TOPLEFT", profileTableContainer, "BOTTOMLEFT", x, -8)
+		end
+
+		noSelLabel:ClearAllPoints()
+		detailContainer:ClearAllPoints()
+		if hasSelection then
+			noSelLabel:SetPoint("TOPLEFT", controls.buttons.renameProfile, "BOTTOMLEFT", 0, -8)
+			detailContainer:SetPoint("TOPLEFT", controls.buttons.renameProfile, "BOTTOMLEFT", 0, -8)
+		else
+			noSelLabel:SetPoint("TOPLEFT", profileTableContainer, "BOTTOMLEFT", 0, -8)
+			detailContainer:SetPoint("TOPLEFT", profileTableContainer, "BOTTOMLEFT", 0, -8)
+		end
+	end
+
+	-- ── RefreshDetailGrid: update row states for a given profile ───────
+	RefreshDetailGrid = function(profileName)
+		if UpdateProfileActionButtons ~= nil then
+			UpdateProfileActionButtons()
+		end
+		if profileName == nil then
+			noSelLabel:Show()
+			detailContainer:Hide()
+			return
+		end
+		noSelLabel:Hide()
+		detailContainer:Show()
+
+		contentsHeader:SetText(string.format(L["ProfileManagerContentsHeaderFormat"], profileName))
+
+		-- Reset checkbox state table
+		checkboxState = { core = false }
+
+		local Profiles = TRB.Functions.Profiles
+
+		local function GetClassLabel(className)
+			local classRow = classRowData[className]
+			if classRow ~= nil and classRow.label ~= nil then
+				return StripColorCodes(classRow.label:GetText() or className)
+			end
+			return className
+		end
+
+		local function GetExistingClassSpecs(className)
+			local cd = classRowData[className]
+			local existingSpecs = {}
+			if cd and cd.classDef then
+				for _, spec in ipairs(cd.classDef.specs) do
+					if Profiles:ProfileExistsForSpec(profileName, className, spec.specName) then
+						existingSpecs[#existingSpecs + 1] = spec.specName
+					end
+				end
+			end
+			return existingSpecs
+		end
+
+		local function IsClassComplete(className)
+			local cd = classRowData[className]
+			if cd == nil or cd.classDef == nil then
+				return false
+			end
+			local existingSpecs = GetExistingClassSpecs(className)
+			return #existingSpecs == #cd.classDef.specs
+		end
+
+		local function GetSpecPieceLabel(rowData)
+			local specLabel = StripColorCodes(rowData.label:GetText() or rowData.specName)
+			local classLabel = GetClassLabel(rowData.className)
+			if classLabel ~= nil and classLabel ~= "" then
+				return string.format("%s %s", specLabel, classLabel)
+			end
+			return specLabel
+		end
+
+		local function UpdateClassCheckboxState(className)
+			local cd = classRowData[className]
+			if cd == nil then
+				return
+			end
+
+			local existingSpecs = GetExistingClassSpecs(className)
+			local hasAny = #existingSpecs > 0
+			local classIsComplete = hasAny and IsClassComplete(className)
+			local allSelected = classIsComplete
+			if allSelected then
+				for _, spec in ipairs(cd.classDef.specs) do
+					if not (checkboxState[className] and checkboxState[className][spec.specName]) then
+						allSelected = false
+						break
+					end
+				end
+			end
+			if not allSelected then
+				cd.checkbox:SetChecked(false)
+			else
+				cd.checkbox:SetChecked(true)
+			end
+
+			cd.frame:SetAlpha(hasAny and 1.0 or 0.55)
+			cd.checkbox:SetAlpha(classIsComplete and 1.0 or 0.55)
+			if classIsComplete then
+				cd.checkbox:Enable()
+			else
+				cd.checkbox:Disable()
+			end
+			SetActionButtonEnabled(cd.delBtn, hasAny)
+			SetActionButtonEnabled(cd.exportBtn, hasAny)
+		end
+
+		-- Update spec rows
+		for key, rd in pairs(specRowData) do
+			local exists = Profiles:ProfileExistsForSpec(profileName, rd.className, rd.specName)
+			local alpha  = exists and 1.0 or 0.55
+			local specLabel = StripColorCodes(rd.label:GetText() or rd.specName)
+			local classLabel = GetClassLabel(rd.className)
+			SetButtonTooltip(rd.delBtn, GetDeleteSpecTooltip(profileName, specLabel, classLabel))
+
+			rd.frame:SetAlpha(alpha)
+			rd.checkbox:SetChecked(exists)
+			if exists then
+				rd.checkbox:Enable()
+			else
+				rd.checkbox:Disable()
+			end
+			if not checkboxState[rd.className] then
+				checkboxState[rd.className] = {}
+			end
+			checkboxState[rd.className][rd.specName] = exists
+
+			-- Delete button
+			if exists then
+				SetActionButtonEnabled(rd.delBtn, true)
+				rd.delBtn:SetScript("OnClick", function()
+					StaticPopup_Show("TwintopResourceBar_Profile_DeletePiece_Confirm", nil, nil, {
+						profileName = profileName,
+						className   = rd.className,
+						specName    = rd.specName,
+						pieceLabel  = GetSpecPieceLabel(rd),
+						onComplete  = function()
+							RefreshDetailGrid(selectedProfile)
+						end,
+					})
+				end)
+			else
+				SetActionButtonEnabled(rd.delBtn, false)
+				rd.delBtn:SetScript("OnClick", nil)
+			end
+
+			-- Export button
+			if exists then
+				SetActionButtonEnabled(rd.exportBtn, true)
+				rd.exportBtn:SetScript("OnClick", function()
+					local classId, specId = rd.classId, rd.specId
+					StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, {
+						profileName = profileName,
+						classId     = classId,
+						specId      = specId,
+						pieceLabel  = GetSpecPieceLabel(rd),
+					})
+				end)
+			else
+				SetActionButtonEnabled(rd.exportBtn, false)
+				rd.exportBtn:SetScript("OnClick", nil)
+			end
+
+			-- Checkbox toggle updates checkboxState
+			rd.checkbox:SetScript("OnClick", function(self)
+				if not checkboxState[rd.className] then
+					checkboxState[rd.className] = {}
+				end
+				checkboxState[rd.className][rd.specName] = self:GetChecked()
+				UpdateClassCheckboxState(rd.className)
+			end)
+		end
+
+		-- Update class-header delete/export/selection controls
+		for className, cd in pairs(classRowData) do
+			local existingSpecs = GetExistingClassSpecs(className)
+			local classHasAny = #existingSpecs > 0
+			local classIsComplete = classHasAny and IsClassComplete(className)
+			local classLabel = StripColorCodes(cd.label:GetText() or className)
+			SetButtonTooltip(cd.delBtn, GetDeleteClassTooltip(profileName, classLabel))
+			if classHasAny then
+				SetActionButtonEnabled(cd.delBtn, true)
+				cd.delBtn:SetScript("OnClick", function()
+					local pieceLabel = StripColorCodes(cd.label:GetText() or className)
+					StaticPopup_Show("TwintopResourceBar_Profile_DeletePiece_Confirm", nil, nil, {
+						profileName = profileName,
+						className   = className,
+						pieceLabel  = pieceLabel,
+						onComplete  = function()
+							RefreshDetailGrid(selectedProfile)
+						end,
+					})
+				end)
+				SetActionButtonEnabled(cd.exportBtn, true)
+				cd.exportBtn:SetScript("OnClick", function()
+					local pieceLabel = StripColorCodes(cd.label:GetText() or className)
+					StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, {
+						profileName = profileName,
+						classId = cd.classId,
+						pieceLabel = pieceLabel,
+					})
+				end)
+				if classIsComplete then
+					cd.checkbox:Enable()
+					cd.checkbox:SetScript("OnClick", function(self)
+						local checked = self:GetChecked() == true
+						checkboxState[className] = checkboxState[className] or {}
+						for _, specName in ipairs(existingSpecs) do
+							checkboxState[className][specName] = checked
+							local rd = specRowData[className .. "_" .. specName]
+							if rd ~= nil then
+								rd.checkbox:SetChecked(checked)
+							end
+						end
+						UpdateClassCheckboxState(className)
+					end)
+				else
+					cd.checkbox:SetChecked(false)
+					cd.checkbox:Disable()
+					cd.checkbox:SetScript("OnClick", nil)
+				end
+			else
+				SetActionButtonEnabled(cd.delBtn, false)
+				cd.delBtn:SetScript("OnClick", nil)
+				SetActionButtonEnabled(cd.exportBtn, false)
+				cd.exportBtn:SetScript("OnClick", nil)
+				cd.checkbox:SetChecked(false)
+				cd.checkbox:Disable()
+				cd.checkbox:SetScript("OnClick", nil)
+			end
+			UpdateClassCheckboxState(className)
+		end
+
+		-- Global Options row
+		local hasCore = Profiles:ProfileHasCore(profileName)
+		checkboxState.core = hasCore
+		SetButtonTooltip(globalRowData.delBtn, GetDeleteGlobalTooltip(profileName))
+		globalRowData.frame:SetAlpha(hasCore and 1.0 or 0.55)
+		globalRowData.checkbox:SetChecked(hasCore)
+		if hasCore then
+			globalRowData.checkbox:Enable()
+		else
+			globalRowData.checkbox:Disable()
+		end
+		globalRowData.checkbox:SetScript("OnClick", function(self)
+			checkboxState.core = self:GetChecked()
+		end)
+		if hasCore then
+			SetActionButtonEnabled(globalRowData.delBtn, true)
+			globalRowData.delBtn:SetScript("OnClick", function()
+				StaticPopup_Show("TwintopResourceBar_Profile_DeletePiece_Confirm", nil, nil, {
+					profileName = profileName,
+					isCore      = true,
+					onComplete  = function()
+						RefreshDetailGrid(selectedProfile)
+					end,
+				})
+			end)
+			SetActionButtonEnabled(globalRowData.exportBtn, true)
+			globalRowData.exportBtn:SetScript("OnClick", function()
+				local output, err = TRB.Functions.IO:ExportCoreProfile(profileName)
+				if output == nil then
+					local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+					return
+				end
+				StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
+					message      = string.format(L["ProfileExportMessageTargetFormat"], L["ProfileScopeLabelGlobal"], profileName),
+					exportString = output,
+				})
+			end)
+		else
+			SetActionButtonEnabled(globalRowData.delBtn, false)
+			globalRowData.delBtn:SetScript("OnClick", nil)
+			SetActionButtonEnabled(globalRowData.exportBtn, false)
+			globalRowData.exportBtn:SetScript("OnClick", nil)
+		end
+	end
+
+	RefreshImportExportView = function()
+		RefreshProfileTable()
+		RefreshDetailGrid(selectedProfile)
+		if UpdateProfileActionButtons ~= nil then
+			UpdateProfileActionButtons()
+		end
+	end
+
+	-- Initial state
+	RefreshImportExportView()
+
+	topPanel:HookScript("OnShow", function()
+		RefreshImportExportView()
+	end)
+
+	-- Update total scroll child height
+	local totalContentH = math.abs(yCoord) + math.abs(curY) + 60
+	scrollChild:SetHeight(totalContentH)
 end
+
+---Builds a single "default profile" row: a label on the left and a dropdown
+---on the right that lets the user pick which profile to use as the default
+---for the given scope. Returns the dropdown and the next y offset.
+---@param parent Frame
+---@param yCoord number
+---@param rowLabel string
+---@param scope "core"|"spec"
+---@param className string?
+---@param specName string?
+---@param iconArg (string|number)? # atlas name (string) or texture file id (number)
+---@param iconIsAtlas boolean? # true if iconArg is an atlas name
+---@return DropdownButton dropdown, number nextY
+local function BuildProfileDefaultRow(parent, yCoord, rowLabel, scope, className, specName, iconArg, iconIsAtlas)
+	local labelFrame = CreateFrame("Frame", nil, parent)
+	labelFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord + oUi.xPadding * 2, yCoord)
+	labelFrame:SetSize(320, 22)
+
+	local iconOffset = 0
+	if iconArg ~= nil then
+		local iconTex = labelFrame:CreateTexture(nil, "ARTWORK")
+		iconTex:SetPoint("LEFT", labelFrame, "LEFT", 0, 0)
+		iconTex:SetSize(20, 20)
+		if iconIsAtlas then
+			iconTex:SetAtlas(iconArg, false)
+		else
+			iconTex:SetTexture(iconArg)
+		end
+		iconOffset = 24
+	end
+
+	local labelText = labelFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	labelText:SetPoint("LEFT", labelFrame, "LEFT", iconOffset, 0)
+	labelText:SetJustifyH("LEFT")
+	labelText:SetText(rowLabel)
+
+	local namePrefix = "TwintopResourceBar_ProfileDefaults_"
+	if scope == "core" then
+		namePrefix = namePrefix .. "Core"
+	else
+		namePrefix = namePrefix .. tostring(className) .. "_" .. tostring(specName)
+	end
+
+	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	dropdown:SetPoint("TOPLEFT", labelFrame, "TOPRIGHT", 0, 4)
+	dropdown:SetWidth(240)
+
+	local function GetCurrent()
+		if scope == "core" then
+			return TRB.Functions.Profiles:GetDefaultCoreProfileName() or TRB.Functions.Profiles.DEFAULT_NAME
+		end
+		return TRB.Functions.Profiles:GetDefaultSpecProfileName(className, specName) or TRB.Functions.Profiles.DEFAULT_NAME
+	end
+
+	local function IsSelected(value)
+		return value == GetCurrent()
+	end
+
+	local function SetSelected(value)
+		if scope == "core" then
+			TRB.Functions.Profiles:SetDefaultCoreProfileName(value)
+		else
+			TRB.Functions.Profiles:SetDefaultSpecProfileName(className, specName, value)
+		end
+		if dropdown.UpdateButtonText then
+			dropdown:UpdateButtonText()
+		end
+	end
+
+	local function Generator(_, rootDescription)
+		local names
+		if scope == "core" then
+			names = TRB.Functions.Profiles:ListCoreProfileNames()
+		else
+			names = TRB.Functions.Profiles:ListSpecProfileNames(className, specName)
+		end
+		for _, profileName in ipairs(names) do
+			rootDescription:CreateRadio(profileName, IsSelected, SetSelected, profileName)
+		end
+	end
+
+	dropdown.GeneratorFunction = Generator
+	dropdown:SetupMenu(Generator)
+
+	local function UpdateButtonText()
+		local activeName = GetCurrent()
+		local text = string.format(L["ProfileDropdownButtonFormat"], activeName)
+		if type(dropdown.SetDefaultText) == "function" then
+			dropdown:SetDefaultText(text)
+		elseif dropdown.Text ~= nil and type(dropdown.Text.SetText) == "function" then
+			dropdown.Text:SetText(text)
+		end
+	end
+	dropdown.UpdateButtonText = UpdateButtonText
+	UpdateButtonText()
+
+	dropdown:HookScript("OnHide", UpdateButtonText)
+	dropdown:HookScript("OnShow", function()
+		if dropdown.SetupMenu and dropdown.GeneratorFunction then
+			dropdown:SetupMenu(dropdown.GeneratorFunction)
+		end
+		UpdateButtonText()
+	end)
+
+	return dropdown, yCoord - 30
+end
+
+---Builds a class-section header for the Profile Defaults panel: a classicon
+---atlas plus a class-coloured label. Returns the frame and the next y offset.
+---@param parent Frame
+---@param yCoord number
+---@param classToken string # uppercase class token (e.g. "DEATHKNIGHT")
+---@param className string # lowercase class key used by `classicon-<name>` atlas
+---@param classLabel string
+---@return Frame headerFrame, number nextY
+local function BuildProfileDefaultsClassHeader(parent, yCoord, classToken, className, classLabel)
+	local headerFrame = CreateFrame("Frame", nil, parent)
+	headerFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	headerFrame:SetSize(500, 26)
+
+	local iconTex = headerFrame:CreateTexture(nil, "ARTWORK")
+	iconTex:SetPoint("LEFT", headerFrame, "LEFT", 0, 0)
+	iconTex:SetSize(22, 22)
+	iconTex:SetAtlas("classicon-" .. className, false)
+
+	local _, _, _, classColorHex = GetClassColor(classToken)
+	local colStr = classColorHex and ("|c" .. classColorHex) or "|cffffffff"
+
+	local headerText = headerFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	headerText:SetPoint("LEFT", iconTex, "RIGHT", 6, 0)
+	headerText:SetJustifyH("LEFT")
+	headerText:SetText(colStr .. classLabel .. "|r")
+
+	return headerFrame, yCoord - 28
+end
+
+---Constructs the Profile Defaults panel. Shows one dropdown per spec (plus one
+---for Global Options) to pick which profile a new character uses on first
+---login, before the user assigns a per-character profile.
+local function ConstructProfileDefaultsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.profileDefaults or {}
+	interfaceSettingsFrame.controls.profileDefaults = controls
+	controls.dropDowns = controls.dropDowns or {}
+
+	interfaceSettingsFrame.profileDefaultsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ProfileDefaults")
+	TRB.Options.OptionsFrame:RegisterCategory("profileDefaults",
+		L["ProfileDefaults"],
+		interfaceSettingsFrame.profileDefaultsPanel)
+
+	local topPanel = interfaceSettingsFrame.profileDefaultsPanel
+
+	topPanel.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer(
+		"TwintopResourceBar_ProfileDefaults_LayoutPanel", topPanel)
+	topPanel.panel:SetPoint("TOPLEFT", oUi.xCoord, -5)
+	topPanel.panel:Show()
+
+	local scrollChild = topPanel.panel.scrollFrame.scrollChild
+	local parent = scrollChild
+	local yCoord = 5
+
+	controls.header = TRB.Functions.OptionsUi:BuildSectionHeader(
+		parent, L["ProfileDefaultsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	local descriptionFrame = CreateFrame("Frame", nil, parent)
+	descriptionFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	descriptionFrame:SetSize(600, 40)
+	local descriptionText = descriptionFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	descriptionText:SetPoint("TOPLEFT", descriptionFrame, "TOPLEFT", 0, 0)
+	descriptionText:SetWidth(600)
+	descriptionText:SetJustifyH("LEFT")
+	descriptionText:SetText(L["ProfileDefaultsDescription"])
+	yCoord = yCoord - 45
+
+	-- Global Options row (uses the TRB addon icon).
+	controls.dropDowns.core, yCoord = BuildProfileDefaultRow(
+		parent, yCoord, L["GlobalOptions"], "core", nil, nil, 1386550, false)
+	yCoord = yCoord - 10
+
+	-- Per-class section with one row per spec, ordered alphabetically by class name.
+	for _, classDef in ipairs(PROFILE_CLASSES_ALPHA) do
+		controls["classHeader_" .. classDef.className] = BuildProfileDefaultsClassHeader(
+			parent, yCoord, classDef.token, classDef.className, L[classDef.locKey])
+		yCoord = yCoord - 28
+
+		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
+		for _, specDef in ipairs(classDef.specs) do
+			local specIconId
+			if GetSpecializationInfoForClassID then
+				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
+				specIconId = iconId
+			end
+			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
+				parent, yCoord, L[specDef.locKey .. "Full"],
+				"spec", classDef.className, specDef.specName,
+				specIconId, false)
+		end
+		yCoord = yCoord - 10
+	end
+
+	-- Re-read current defaults when the panel is shown so dropdowns reflect
+	-- any CRUD operations that happened while another panel was visible.
+	topPanel:HookScript("OnShow", function()
+		local function RefreshRow(dropdown)
+			if dropdown == nil then return end
+			if dropdown.SetupMenu and dropdown.GeneratorFunction then
+				dropdown:SetupMenu(dropdown.GeneratorFunction)
+			end
+			if dropdown.UpdateButtonText then
+				dropdown:UpdateButtonText()
+			end
+		end
+		RefreshRow(controls.dropDowns.core)
+		for classKey, specs in pairs(controls.dropDowns) do
+			if classKey ~= "core" and type(specs) == "table" then
+				for _, dd in pairs(specs) do
+					RefreshRow(dd)
+				end
+			end
+		end
+	end)
+
+	scrollChild:SetHeight(math.abs(yCoord) + 60)
+end
+
 
 ---Constructs the top-level addon options panel, registers it with Blizzard's settings UI, and builds the global options, import/export, and class/spec navigation entries. Idempotent: only executes once.
 function TRB.Options:ConstructOptionsPanel()
@@ -1074,6 +2018,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	ConstructGlobalOptionsPanel()
 	ConstructImportExportPanel()
+	ConstructProfileDefaultsPanel()
 
 	-- Register all class headers and spec nav entries (with nil panels).
 	-- The active class's ConstructOptionsPanel will update its specs with real panels via RegisterSpecPanel.

@@ -311,4 +311,7 @@ if locale == "enGB" then
     L["DruidRestorationIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
     -- Druid Feral Clearcasting Indicator Colors
     L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
+
+    -- Phase 3: Profile Import/Export
+    L["ProfileImportErrorNoValid"] = "The import string did not contain any recognisable class, specialisation, or Global Options data."
 end
