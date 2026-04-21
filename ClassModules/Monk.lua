@@ -727,8 +727,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
 				end
 
-				local currentHaste = snapshotData.attributes.haste or 0
-				cooldown = cooldown / (1 + currentHaste / 100)
+				local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+				cooldown = cooldown * (cachedGcd / 1.5)
 				snapshotData.snapshots[spells.strikeOfTheWindlord.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
@@ -740,8 +740,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
 				end
 
-				local currentHaste = snapshotData.attributes.haste or 0
-				cooldown = cooldown / (1 + currentHaste / 100)
+				local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+				cooldown = cooldown * (cachedGcd / 1.5)
 				snapshotData.snapshots[spells.whirlingDragonPunch.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then

@@ -112,6 +112,8 @@ local function FillSpecializationCache()
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.blackArrow.id] = TRB.Classes.Snapshot:New(spells.blackArrow)
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
+	---@type TRB.Classes.Snapshot
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
 
 	specCache.hunter_marksmanship.barTextVariables = {
 		icons = {},
@@ -666,6 +668,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					duration = duration + spells.cantMissWontMiss.duration
 				end
 				snapshotData.snapshots[spells.trueshot.id].buff:InitializeCustom(duration, currentTime)
+			elseif spellId == spells.explosiveShot.id then
+				snapshotData.snapshots[spells.explosiveShot.id].cooldown:InitializeCustom(spells.explosiveShot.cooldown, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -724,6 +728,9 @@ local function UpdateSnapshot_Marksmanship()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
+	local snapshots = snapshotData.snapshots
+
+	snapshots[spells.explosiveShot.id].cooldown:GetRemainingTime(currentTime)
 
 	if snapshotData.casting.spellId == spells.rapidFire.id then
 		local casting = snapshotData.casting
@@ -1633,6 +1640,7 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#aimedShot"] = spells.aimedShot.icon
 		lookup["#arcaneShot"] = spells.arcaneShot.icon
+		lookup["#explosiveShot"] = spells.explosiveShot.icon
 		lookup["#killShot"] = spells.killShot.icon
 		lookup["#multiShot"] = spells.multiShot.icon
 		lookup["#rapidFire"] = spells.rapidFire.icon

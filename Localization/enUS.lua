@@ -2631,3 +2631,7 @@ L["DruidFeralBarTextVariable_clearcastingActive"] = "Is Clearcasting currently a
 L["DruidFeralCheckboxClearcasting"] = "Clearcasting"
 L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this color when you have a Clearcasting proc."
 L["DruidFeralIndicatorClearcastingColor"] = "Clearcasting proc is active"
+
+-- Hunter Marksmanship Explosive Shot
+L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "Explosive Shot"
+L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
