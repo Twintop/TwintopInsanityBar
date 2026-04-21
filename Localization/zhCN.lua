@@ -2428,4 +2428,113 @@ if locale == "zhCN" then
 	L["DruidFeralIndicatorClearcastingTooltip"] = "触发节能施法效果时，指示器变为该颜色。"
 	L["DruidFeralIndicatorClearcastingColor"] = "节能施法效果已触发"
 
+	-- Profiles (Phase 2)
+	L["ProfileDropdownButtonFormat"] = "配置文件：%s"
+	L["ProfileMenuHeaderManage"] = "管理"
+	L["ProfileMenuHeaderProfiles"] = "配置文件"
+	L["ProfileMenuNewProfile"] = "新建配置文件..."
+	L["ProfileMenuImportProfile"] = "导入配置文件..."
+	L["ProfileActionUse"] = "应用配置文件"
+	L["ProfileActionCopy"] = "复制配置文件..."
+	L["ProfileActionRename"] = "重命名配置文件..."
+	L["ProfileActionDelete"] = "删除配置文件..."
+	L["ProfileActionExport"] = "导出配置文件"
+	L["ProfileButtonUseCurrent"] = "使用当前配置"
+	L["ProfileButtonUseBaseline"] = "使用默认配置"
+	L["ProfileCopyNameSuffix"] = "(复制)"
+	L["ProfileScopeLabelGlobal"] = "全局选项"
+	L["ProfilePopupNewNameText"] = "为 %s 输入新配置文件的名称。选择“使用当前配置”可复制现有设置，选择“使用默认配置”将恢复为初始设置。"
+	L["ProfilePopupOverwriteText"] = "%s 已存在名为“%s”的配置文件，是否覆盖？"
+	L["ProfilePopupUseConfirmText"] = "将 %s 切换至配置文件“%s”？你的界面将重新加载。"
+	L["ProfilePopupDeleteActiveText"] = "删除 %s 正在使用的配置文件“%s”？该角色将恢复为默认配置，界面将重新加载。"
+	L["ProfilePopupDeleteInactiveText"] = "删除 %s 的配置文件“%s”？"
+	L["ProfilePopupCopyText"] = "复制 %s 的配置文件“%s”，请为新配置文件输入名称："
+	L["ProfilePopupRenameText"] = "重命名 %s 的配置文件“%s”，请输入新名称："
+	L["ProfilePopupRenameCollisionText"] = "已存在名为“%s”的配置文件，请更换名称。"
+	L["ProfilePopupImportExportStubText"] = "配置文件导入/导出功能将在后续更新中推出。"
+	
+	L["ProfilePopupDeleteReloadMessage"] = "已删除当前使用的配置文件，必须重新加载界面才能继续。"
+	
+	-- Phase 3: Profile Import/Export
+	L["ProfilePopupExportIncludeCoreText"] = "导出配置文件“%s”时，包含当前全局选项吗？"
+	L["ProfileExportMessageFormat"] = "配置文件“%s”的导出字符串："
+	L["ProfileImportPastePrompt"] = "请在下方粘贴Twintop资源条的配置文件或设置导出字符串："
+	L["ProfileImportNamePrompt"] = "为导入的配置文件输入名称："
+	L["ProfileImportOverwriteConfirmPrompt"] = "已存在名为“%s”的配置文件，包含内容：%s。是否覆盖这些部分？"
+	L["ProfileImportErrorGeneric"] = "无法导入该配置文件。"
+	L["ProfileImportErrorEmpty"] = "无可用的配置数据可导出。"
+	L["ProfileImportErrorEmptyWrapper"] = "导入字符串不包含任何配置条目。"
+	L["ProfileImportErrorNoValid"] = "导入字符串不包含可识别的职业、专精或全局选项数据。"
+	L["ProfileImportErrorMultipleProfiles"] = "导入字符串包含多个配置文件，仅支持导入单个配置文件。"
+	L["ProfileImportErrorDecode"] = "无法解析导入字符串，数据可能已损坏或不完整。"
+	L["ProfilePopupImportSuccessText"] = "配置文件“%s”导入成功。是否将该角色切换为导入的配置并重新加载界面？点击“否”可保留数据但不启用。"
+	
+	-- Profile Manager (Import/Export tab redesign)
+	L["ProfileManagerProfilesHeader"] = "配置文件"
+	L["ProfileManagerActionRename"] = "重命名配置文件"
+	L["ProfileManagerActionCopyFull"] = "复制完整配置"
+	L["ProfileManagerActionCopySelected"] = "复制选中项"
+	L["ProfileManagerColumnName"] = "配置文件名称"
+	L["ProfileManagerColumnSpecs"] = "专精"
+	L["ProfileManagerColumnGlobal"] = "全局"
+	L["ProfileManagerNoProfileSelected"] = "请在上方选择一个配置文件以查看内容。"
+	L["ProfileManagerDeleteProfileConfirm"] = "删除配置文件“%s”及其所有数据？使用该配置的角色将恢复为默认配置。"
+	L["ProfileManagerResetDefaultConfirm"] = "将默认配置重置为初始设置？此操作无法撤销。"
+	L["ProfileManagerDeletePieceConfirm"] = "从配置文件“%s”中移除 %s ？"
+	L["ProfileManagerDeleteClassConfirm"] = "从配置文件“%s”中移除所有 %s 专精？"
+	L["ProfileManagerRenameBarWidePrompt"] = "重命名配置文件“%s”，请输入新名称："
+	L["ProfileManagerRenameBarWideCollision"] = "已存在名为“%s”的配置文件，请更换名称。"
+	L["ProfileManagerCopyBarWidePrompt"] = "将配置文件“%s”复制为新配置，请输入名称："
+	L["ProfileManagerCopyBarWideOverwrite"] = "已存在名为“%s”的配置文件，是否覆盖？"
+	L["ProfileManagerResetDefaultTooltip"] = "将默认配置重置为初始设置。"
+	L["ProfileManagerButtonRename"] = "重命名"
+	L["ProfileManagerButtonCopy"] = "复制"
+	
+	-- Profile export popup target labels
+	L["ProfilePopupExportIncludeCoreTargetText"] = "导出配置文件“%s”中的 %s 时，包含当前全局选项吗？"
+	L["ProfileExportMessageTargetFormat"] = "配置文件“%s”中的 %s 导出字符串："
+	
+	-- Profile Manager action button and icon tooltips
+	L["ProfileManagerActionDelete"] = "删除配置文件"
+	
+	-- Profile Manager contents header (replaces ProfileMgrContentsHeader; uses string.format)
+	L["ProfileManagerContentsHeaderFormat"] = "配置文件：|cffffffff%s|r"
+	
+	-- Profile Manager per-row action tooltips (take the class/spec name so the message is specific)
+	L["ProfileManagerDeleteClassTooltipFormat"] = "从该配置中移除所有 %s 专精。"
+	L["ProfileManagerDeleteSpecTooltipFormat"] = "从该配置中移除 %s %s。"
+	L["ProfileManagerDeleteGlobalTooltip"] = "从该配置中移除全局选项。"
+	L["ProfileManagerExportClassTooltipFormat"] = "将所有 %s 专精导出为可分享字符串。"
+	L["ProfileManagerExportSpecTooltipFormat"] = "将 %s %s 导出为可分享字符串。"
+	L["ProfileManagerExportGlobalTooltip"] = "将全局选项导出为可分享字符串。"
+	L["ProfileManagerSelectClassTooltipFormat"] = "使用“复制选中项/导出选中项”时，包含所有 %s 专精。"
+	L["ProfileManagerSelectSpecTooltipFormat"] = "使用“复制选中项/导出选中项”时，包含 %s %s。"
+	L["ProfileManagerSelectGlobalTooltip"] = "使用“复制选中项/导出选中项”时，包含全局选项。"
+	
+	-- Profile Manager: Export buttons below the profile table
+	L["ProfileManagerActionExportFull"] = "导出完整配置"
+	L["ProfileManagerActionExportSelected"] = "导出选中项"
+	
+	-- Profile Manager: Default-profile remove/reset messaging
+	L["ProfileManagerResetPieceConfirm"] = "将默认配置中的 %s 重置为初始设置？此操作无法撤销。"
+	L["ProfileManagerResetClassConfirm"] = "将默认配置中的所有 %s 专精重置为初始设置？此操作无法撤销。"
+	L["ProfileManagerResetClassTooltipFormat"] = "将默认配置中的所有 %s 专精重置为初始设置。"
+	L["ProfileManagerResetSpecTooltipFormat"] = "将默认配置中的 %s %s 重置为初始设置。"
+	L["ProfileManagerResetGlobalTooltip"] = "将默认配置中的全局选项重置为初始设置。"
+	
+	-- Profile Import Reload popup
+	L["ProfilePopupImportReloadText"] = "导入的配置文件“%s”当前正在该角色上使用，必须重新加载界面以应用更新内容。"
+	L["ProfileManagerActionImport"] = "导入配置文件"
+	L["ProfileActionCopyMenu"] = "复制"
+	L["ProfileActionCopyToNew"] = "复制为新配置文件..."
+	
+	-- Profile Defaults panel
+	L["ProfileDefaults"] = "配置默认项"
+	L["ProfileDefaultsHeader"] = "配置默认项"
+	L["ProfileDefaultsDescription"] = "为新角色首次登录时的各专精（及全局选项）选择默认配置文件。已有角色将保留各自的配置选择。"
+	
+	-- Hunter Marksmanship Explosive Shot
+	L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "爆炸射击"
+	L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "在资源条上显示竖线，标记使用爆炸射击所需的集中值。技能冷却中时，将显示为“不可用”颜色。"
+
 end
