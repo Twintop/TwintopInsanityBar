@@ -1043,7 +1043,6 @@ function TRB.Functions.Profiles:GetSpecListFromCache(className, specName)
 	self.listCache = self.listCache or { spec = {}, core = nil }
 	self.listCache.spec = self.listCache.spec or {}
 	self.listCache.spec[className] = self.listCache.spec[className] or {}
-	local wasCached = self.listCache.spec[className][specName] ~= nil
 	if self.listCache.spec[className][specName] == nil then
 		self.listCache.spec[className][specName] = self:ListSpecProfileNames(className, specName)
 	end
@@ -1056,7 +1055,6 @@ end
 ---@return string[]
 function TRB.Functions.Profiles:GetCoreListFromCache()
 	self.listCache = self.listCache or { spec = {}, core = nil }
-	local wasCached = self.listCache.core ~= nil
 	if self.listCache.core == nil then
 		self.listCache.core = self:ListCoreProfileNames()
 	end
