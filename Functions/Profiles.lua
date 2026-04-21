@@ -202,6 +202,65 @@ function TRB.Functions.Profiles:ResolveSpecProfileName(className, specName)
 	return nil
 end
 
+---Returns the profile name stored as the default for the `core` scope, or nil
+---if profile data hasn't been seeded yet. Does not consult character overrides.
+---@return string?
+function TRB.Functions.Profiles:GetDefaultCoreProfileName()
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.default == nil then
+		return nil
+	end
+	return p.default.core
+end
+
+---Returns the profile name stored as the default for the given spec, or nil if
+---profile data hasn't been seeded yet. Does not consult character overrides.
+---@param className string
+---@param specName string
+---@return string?
+function TRB.Functions.Profiles:GetDefaultSpecProfileName(className, specName)
+	local p = TRB.Data.settings and TRB.Data.settings.profiles
+	if p == nil or p.default == nil or p.default[className] == nil then
+		return nil
+	end
+	return p.default[className][specName]
+end
+
+---Writes the default `core` profile name. Used by the Profile Defaults options
+---panel. First-login characters without a character override read this value
+---from `ResolveCoreProfileName`.
+---@param profileName string
+---@return boolean
+function TRB.Functions.Profiles:SetDefaultCoreProfileName(profileName)
+	if profileName == nil or profileName == "" then
+		return false
+	end
+	self:EnsureStructure()
+	local p = TRB.Data.settings.profiles
+	p.default = p.default or {}
+	p.default.core = profileName
+	return true
+end
+
+---Writes the default profile name for the given spec. Used by the Profile
+---Defaults options panel. First-login characters without a character override
+---read this value from `ResolveSpecProfileName`.
+---@param className string
+---@param specName string
+---@param profileName string
+---@return boolean
+function TRB.Functions.Profiles:SetDefaultSpecProfileName(className, specName, profileName)
+	if className == nil or specName == nil or profileName == nil or profileName == "" then
+		return false
+	end
+	self:EnsureStructure()
+	local p = TRB.Data.settings.profiles
+	p.default = p.default or {}
+	p.default[className] = p.default[className] or {}
+	p.default[className][specName] = profileName
+	return true
+end
+
 ---Returns true if removing or resetting the current core profile should force
 ---a reload for this character.
 ---@param profileName string?

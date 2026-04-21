@@ -2728,3 +2728,10 @@ L["ProfileManagerResetGlobalTooltip"] = "Reset the Global Options in the Default
 -- Profile Import Reload popup
 L["ProfilePopupImportReloadText"] = "The imported profile \"%s\" is currently active on this character. The UI must reload to apply the updated contents."
 L["ProfileManagerActionImport"] = "Import Profile"
+L["ProfileActionCopyMenu"] = "Copy"
+L["ProfileActionCopyToNew"] = "Copy to New Profile..."
+
+-- Profile Defaults panel
+L["ProfileDefaults"] = "Profile Defaults"
+L["ProfileDefaultsHeader"] = "Profile Defaults"
+L["ProfileDefaultsDescription"] = "Choose the default profile used for each spec (and for Global Options) the first time a new character logs in. Existing characters keep their own per-character profile selections."

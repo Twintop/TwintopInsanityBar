@@ -2767,6 +2767,38 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 		StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, data)
 	end
 
+	local function OnCopyToProfileClicked(sourceName, destinationName)
+		if sourceName == nil or destinationName == nil or sourceName == destinationName then
+			return
+		end
+
+		local data = MakeBaseData()
+		data.sourceName = sourceName
+		data.attemptedName = destinationName
+
+		local exists
+		if data.scope == "core" then
+			exists = TRB.Functions.Profiles:ProfileExistsForCore(destinationName)
+		else
+			exists = TRB.Functions.Profiles:ProfileExistsForSpec(destinationName, data.className, data.specName)
+		end
+
+		if exists then
+			StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", destinationName, ScopeLabel(data), data)
+			return
+		end
+
+		local ok
+		if data.scope == "core" then
+			ok = TRB.Functions.Profiles:CopyCoreProfile(sourceName, destinationName)
+		else
+			ok = TRB.Functions.Profiles:CopySpecProfile(sourceName, destinationName, data.className, data.specName)
+		end
+		if ok and data.refresh then
+			data.refresh()
+		end
+	end
+
 	local function OnRenameClicked(profileName)
 		local data = MakeBaseData()
 		data.profileName = profileName
@@ -2831,7 +2863,29 @@ function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, cla
 				if profileName == activeName and type(useButton) == "table" and type(useButton.SetEnabled) == "function" then
 					useButton:SetEnabled(false)
 				end
-				submenu:CreateButton(L["ProfileActionCopy"], function() OnCopyClicked(profileName) end)
+				local copySubmenu = submenu:CreateButton(L["ProfileActionCopyMenu"])
+				if type(copySubmenu) == "table" and type(copySubmenu.CreateButton) == "function" then
+					copySubmenu:CreateButton(L["ProfileActionCopyToNew"], function()
+						OnCopyClicked(profileName)
+					end)
+					local allProfileNames = TRB.Functions.Profiles:GetProfileNames()
+					local addedAnyProfileTargets = false
+					for _, destinationName in ipairs(allProfileNames) do
+						if destinationName ~= profileName then
+							if not addedAnyProfileTargets and type(copySubmenu.CreateDivider) == "function" then
+								copySubmenu:CreateDivider()
+							end
+							addedAnyProfileTargets = true
+							copySubmenu:CreateButton(destinationName, function()
+								OnCopyToProfileClicked(profileName, destinationName)
+							end)
+						end
+					end
+				else
+					submenu:CreateButton(L["ProfileActionCopyToNew"], function()
+						OnCopyClicked(profileName)
+					end)
+				end
 				if profileName ~= TRB.Functions.Profiles.DEFAULT_NAME then
 					submenu:CreateButton(L["ProfileActionRename"], function() OnRenameClicked(profileName) end)
 					submenu:CreateButton(L["ProfileActionDelete"], function() OnDeleteClicked(profileName) end)

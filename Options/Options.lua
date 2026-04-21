@@ -1665,6 +1665,231 @@ local function ConstructImportExportPanel()
 	scrollChild:SetHeight(totalContentH)
 end
 
+---Builds a single "default profile" row: a label on the left and a dropdown
+---on the right that lets the user pick which profile to use as the default
+---for the given scope. Returns the dropdown and the next y offset.
+---@param parent Frame
+---@param yCoord number
+---@param rowLabel string
+---@param scope "core"|"spec"
+---@param className string?
+---@param specName string?
+---@param iconArg (string|number)? # atlas name (string) or texture file id (number)
+---@param iconIsAtlas boolean? # true if iconArg is an atlas name
+---@return DropdownButton dropdown, number nextY
+local function BuildProfileDefaultRow(parent, yCoord, rowLabel, scope, className, specName, iconArg, iconIsAtlas)
+	local labelFrame = CreateFrame("Frame", nil, parent)
+	labelFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord + oUi.xPadding * 2, yCoord)
+	labelFrame:SetSize(320, 22)
+
+	local iconOffset = 0
+	if iconArg ~= nil then
+		local iconTex = labelFrame:CreateTexture(nil, "ARTWORK")
+		iconTex:SetPoint("LEFT", labelFrame, "LEFT", 0, 0)
+		iconTex:SetSize(20, 20)
+		if iconIsAtlas then
+			iconTex:SetAtlas(iconArg, false)
+		else
+			iconTex:SetTexture(iconArg)
+		end
+		iconOffset = 24
+	end
+
+	local labelText = labelFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	labelText:SetPoint("LEFT", labelFrame, "LEFT", iconOffset, 0)
+	labelText:SetJustifyH("LEFT")
+	labelText:SetText(rowLabel)
+
+	local namePrefix = "TwintopResourceBar_ProfileDefaults_"
+	if scope == "core" then
+		namePrefix = namePrefix .. "Core"
+	else
+		namePrefix = namePrefix .. tostring(className) .. "_" .. tostring(specName)
+	end
+
+	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	dropdown:SetPoint("TOPLEFT", labelFrame, "TOPRIGHT", 0, 4)
+	dropdown:SetWidth(240)
+
+	local function GetCurrent()
+		if scope == "core" then
+			return TRB.Functions.Profiles:GetDefaultCoreProfileName() or TRB.Functions.Profiles.DEFAULT_NAME
+		end
+		return TRB.Functions.Profiles:GetDefaultSpecProfileName(className, specName) or TRB.Functions.Profiles.DEFAULT_NAME
+	end
+
+	local function IsSelected(value)
+		return value == GetCurrent()
+	end
+
+	local function SetSelected(value)
+		if scope == "core" then
+			TRB.Functions.Profiles:SetDefaultCoreProfileName(value)
+		else
+			TRB.Functions.Profiles:SetDefaultSpecProfileName(className, specName, value)
+		end
+		if dropdown.UpdateButtonText then
+			dropdown:UpdateButtonText()
+		end
+	end
+
+	local function Generator(_, rootDescription)
+		local names
+		if scope == "core" then
+			names = TRB.Functions.Profiles:ListCoreProfileNames()
+		else
+			names = TRB.Functions.Profiles:ListSpecProfileNames(className, specName)
+		end
+		for _, profileName in ipairs(names) do
+			rootDescription:CreateRadio(profileName, IsSelected, SetSelected, profileName)
+		end
+	end
+
+	dropdown.GeneratorFunction = Generator
+	dropdown:SetupMenu(Generator)
+
+	local function UpdateButtonText()
+		local activeName = GetCurrent()
+		local text = string.format(L["ProfileDropdownButtonFormat"], activeName)
+		if type(dropdown.SetDefaultText) == "function" then
+			dropdown:SetDefaultText(text)
+		elseif dropdown.Text ~= nil and type(dropdown.Text.SetText) == "function" then
+			dropdown.Text:SetText(text)
+		end
+	end
+	dropdown.UpdateButtonText = UpdateButtonText
+	UpdateButtonText()
+
+	dropdown:HookScript("OnHide", UpdateButtonText)
+	dropdown:HookScript("OnShow", function()
+		if dropdown.SetupMenu and dropdown.GeneratorFunction then
+			dropdown:SetupMenu(dropdown.GeneratorFunction)
+		end
+		UpdateButtonText()
+	end)
+
+	return dropdown, yCoord - 30
+end
+
+---Builds a class-section header for the Profile Defaults panel: a classicon
+---atlas plus a class-coloured label. Returns the frame and the next y offset.
+---@param parent Frame
+---@param yCoord number
+---@param classToken string # uppercase class token (e.g. "DEATHKNIGHT")
+---@param className string # lowercase class key used by `classicon-<name>` atlas
+---@param classLabel string
+---@return Frame headerFrame, number nextY
+local function BuildProfileDefaultsClassHeader(parent, yCoord, classToken, className, classLabel)
+	local headerFrame = CreateFrame("Frame", nil, parent)
+	headerFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	headerFrame:SetSize(500, 26)
+
+	local iconTex = headerFrame:CreateTexture(nil, "ARTWORK")
+	iconTex:SetPoint("LEFT", headerFrame, "LEFT", 0, 0)
+	iconTex:SetSize(22, 22)
+	iconTex:SetAtlas("classicon-" .. className, false)
+
+	local _, _, _, classColorHex = GetClassColor(classToken)
+	local colStr = classColorHex and ("|c" .. classColorHex) or "|cffffffff"
+
+	local headerText = headerFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	headerText:SetPoint("LEFT", iconTex, "RIGHT", 6, 0)
+	headerText:SetJustifyH("LEFT")
+	headerText:SetText(colStr .. classLabel .. "|r")
+
+	return headerFrame, yCoord - 28
+end
+
+---Constructs the Profile Defaults panel. Shows one dropdown per spec (plus one
+---for Global Options) to pick which profile a new character uses on first
+---login, before the user assigns a per-character profile.
+local function ConstructProfileDefaultsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.profileDefaults or {}
+	interfaceSettingsFrame.controls.profileDefaults = controls
+	controls.dropDowns = controls.dropDowns or {}
+
+	interfaceSettingsFrame.profileDefaultsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ProfileDefaults")
+	TRB.Options.OptionsFrame:RegisterCategory("profileDefaults",
+		L["ProfileDefaults"],
+		interfaceSettingsFrame.profileDefaultsPanel)
+
+	local topPanel = interfaceSettingsFrame.profileDefaultsPanel
+
+	topPanel.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer(
+		"TwintopResourceBar_ProfileDefaults_LayoutPanel", topPanel)
+	topPanel.panel:SetPoint("TOPLEFT", oUi.xCoord, -5)
+	topPanel.panel:Show()
+
+	local scrollChild = topPanel.panel.scrollFrame.scrollChild
+	local parent = scrollChild
+	local yCoord = 5
+
+	controls.header = TRB.Functions.OptionsUi:BuildSectionHeader(
+		parent, L["ProfileDefaultsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	local descriptionFrame = CreateFrame("Frame", nil, parent)
+	descriptionFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	descriptionFrame:SetSize(600, 40)
+	local descriptionText = descriptionFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	descriptionText:SetPoint("TOPLEFT", descriptionFrame, "TOPLEFT", 0, 0)
+	descriptionText:SetWidth(600)
+	descriptionText:SetJustifyH("LEFT")
+	descriptionText:SetText(L["ProfileDefaultsDescription"])
+	yCoord = yCoord - 45
+
+	-- Global Options row (uses the TRB addon icon).
+	controls.dropDowns.core, yCoord = BuildProfileDefaultRow(
+		parent, yCoord, L["GlobalOptions"], "core", nil, nil, 1386550, false)
+	yCoord = yCoord - 10
+
+	-- Per-class section with one row per spec, ordered alphabetically by class name.
+	for _, classDef in ipairs(PROFILE_CLASSES_ALPHA) do
+		controls["classHeader_" .. classDef.className] = BuildProfileDefaultsClassHeader(
+			parent, yCoord, classDef.token, classDef.className, L[classDef.locKey])
+		yCoord = yCoord - 28
+
+		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
+		for _, specDef in ipairs(classDef.specs) do
+			local specIconId
+			if GetSpecializationInfoForClassID then
+				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
+				specIconId = iconId
+			end
+			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
+				parent, yCoord, L[specDef.locKey .. "Full"],
+				"spec", classDef.className, specDef.specName,
+				specIconId, false)
+		end
+		yCoord = yCoord - 10
+	end
+
+	-- Re-read current defaults when the panel is shown so dropdowns reflect
+	-- any CRUD operations that happened while another panel was visible.
+	topPanel:HookScript("OnShow", function()
+		local function RefreshRow(dropdown)
+			if dropdown == nil then return end
+			if dropdown.SetupMenu and dropdown.GeneratorFunction then
+				dropdown:SetupMenu(dropdown.GeneratorFunction)
+			end
+			if dropdown.UpdateButtonText then
+				dropdown:UpdateButtonText()
+			end
+		end
+		RefreshRow(controls.dropDowns.core)
+		for classKey, specs in pairs(controls.dropDowns) do
+			if classKey ~= "core" and type(specs) == "table" then
+				for _, dd in pairs(specs) do
+					RefreshRow(dd)
+				end
+			end
+		end
+	end)
+
+	scrollChild:SetHeight(math.abs(yCoord) + 60)
+end
+
 if false then
 
 	if classId == nil then
@@ -2060,6 +2285,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	ConstructGlobalOptionsPanel()
 	ConstructImportExportPanel()
+	ConstructProfileDefaultsPanel()
 
 	-- Register all class headers and spec nav entries (with nil panels).
 	-- The active class's ConstructOptionsPanel will update its specs with real panels via RegisterSpecPanel.
