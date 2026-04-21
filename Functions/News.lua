@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - Fix an issue where bar profiles would reset to defaults for other classes.
+- Fix an issue where when LibSharedMedia assets go missing Lua errors would occur instead of graceful resetting to default values.
 
 ---
 
