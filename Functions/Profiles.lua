@@ -407,7 +407,6 @@ end
 function TRB.Functions.Profiles:SeedFromLegacy()
 	self:EnsureStructure()
 	local p = TRB.Data.settings.profiles
-	local className = self:GetCurrentClassName()
 	local defaultSeed = BuildDefaultProfileSeed()
 
 	-- Create the Default profile if it doesn't exist.
@@ -428,27 +427,30 @@ function TRB.Functions.Profiles:SeedFromLegacy()
 		end
 	end
 
-	-- Seed every class/spec into the Default profile. The current class comes
-	-- from live runtime settings so legacy customizations survive the migration;
-	-- other classes come from their canonical default factories.
+	-- Seed every class/spec into the Default profile. Prefer live runtime
+	-- settings (which were populated by the class module's ADDON_LOADED
+	-- handler merging legacy saved-vars data on top of factory defaults) so
+	-- legacy customizations for EVERY class — not just the current one —
+	-- survive the migration. Fall back to factory defaults only when runtime
+	-- has nothing for that class/spec (e.g. a spec the user has never played).
+	-- This is the one-shot migration path: once the profile entry exists, it
+	-- is preserved on subsequent logins and mutated only through the UI or
+	-- FlushActive.
 	for _, seededClassName in ipairs(GetSupportedClassNames()) do
-		local sourceClassPiece = defaultSeed[seededClassName]
 		local runtimeClassPiece = TRB.Data.settings and TRB.Data.settings[seededClassName]
-		if seededClassName == className and type(runtimeClassPiece) == "table" then
-			sourceClassPiece = runtimeClassPiece
-		end
+		local defaultClassPiece = defaultSeed[seededClassName]
 
-		if type(sourceClassPiece) == "table" then
-			profile[seededClassName] = profile[seededClassName] or {}
-			for _, specName in ipairs(self:GetSpecsForClass(seededClassName)) do
-				if profile[seededClassName][specName] == nil then
-					local specPiece = sourceClassPiece[specName]
-					if specPiece == nil and type(defaultSeed[seededClassName]) == "table" then
-						specPiece = defaultSeed[seededClassName][specName]
-					end
-					if type(specPiece) == "table" then
-						profile[seededClassName][specName] = TRB.Functions.Table:DeepCopy(specPiece)
-					end
+		profile[seededClassName] = profile[seededClassName] or {}
+		for _, specName in ipairs(self:GetSpecsForClass(seededClassName)) do
+			if profile[seededClassName][specName] == nil then
+				local specPiece
+				if type(runtimeClassPiece) == "table" and type(runtimeClassPiece[specName]) == "table" then
+					specPiece = runtimeClassPiece[specName]
+				elseif type(defaultClassPiece) == "table" and type(defaultClassPiece[specName]) == "table" then
+					specPiece = defaultClassPiece[specName]
+				end
+				if type(specPiece) == "table" then
+					profile[seededClassName][specName] = TRB.Functions.Table:DeepCopy(specPiece)
 				end
 			end
 		end

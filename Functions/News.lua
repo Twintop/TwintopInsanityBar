@@ -12,6 +12,21 @@ local content = [====[
 
 ---
 
+# 12.0.5.2-release (2026-04-22)
+## Evoker
+
+- Blizzard has made Essence regeneration timing values a `secret`. Add a workaround to calculate time remaining on Essence regeneration.
+
+---
+
+# 12.0.5.1-release (2026-04-22)
+## General
+
+- Fix an issue where bar profiles would reset to defaults for other classes.
+- Fix an issue where when LibSharedMedia assets go missing Lua errors would occur instead of graceful resetting to default values.
+
+---
+
 # 12.0.5.0-release (2026-04-21)
 ## General
 
