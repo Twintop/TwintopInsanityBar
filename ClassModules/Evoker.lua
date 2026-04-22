@@ -202,6 +202,97 @@ local function CalculateAbilityResourceValue(resource, threshold)
 	return resource * modifier
 end
 
+-- Essence regen tracking.
+-- As of 12.0.5, GetPowerRegenForPowerType(Enum.PowerType.Essence) returns a
+-- secret value. We approximate the rate ourselves by snapshotting the times at
+-- which the integer Essence count last ticked up.
+--
+-- Snapshots:
+--   oneEssenceAgo  : GetTime() when we reached (current - 1) Essence.
+--   mostRecent     : GetTime() when we reached the current Essence count.
+--   duration       : mostRecent - oneEssenceAgo (seconds per Essence).
+--                    Defaults to the unhasted 5s baseline until we have
+--                    observed at least one non-capped tick.
+--   previousEssence: the Essence count from the previous call. We only
+--                    recompute `duration` on a gain when previousEssence was
+--                    NOT capped, because sitting at cap inflates the measured
+--                    gap on the next tick after a spend.
+--   previousPartial: UnitPartialPower reading from the previous call. Used
+--                    to recover the pre-tick partial, because Blizzard now
+--                    resets partial power to 0 on an Essence level change.
+--   partialCarry   : the previousPartial value captured at the moment the
+--                    Essence level changed. Added to subsequent raw readings
+--                    (capped at 1000) to reconstruct a continuous 0-1000
+--                    progress value into the next Essence tick.
+local essenceTiming = {
+	oneEssenceAgo = nil,
+	mostRecent = nil,
+	duration = 5.0,
+	previousEssence = nil,
+	previousPartial = 0,
+	partialCarry = 0,
+}
+
+local function UpdateEssenceTiming()
+	local currentTime = GetTime()
+	local resource2 = TRB.Data.snapshotData.attributes.resource2 or 0
+	local maxResource2 = TRB.Data.character.maxResource2 or 5
+	local rawPartial = UnitPartialPower("player", Enum.PowerType.Essence) or 0
+
+	if essenceTiming.previousEssence == nil then
+		-- First observation. We can't seed a learned duration: haste is secret
+		-- and GetPowerRegenForPowerType for Essence is secret. Keep the 5s
+		-- baseline and wait for a real tick to learn from.
+		essenceTiming.previousEssence = resource2
+		essenceTiming.mostRecent = currentTime
+		essenceTiming.previousPartial = rawPartial
+		essenceTiming.partialCarry = 0
+		TRB.Data.snapshotData.attributes.essencePartial = rawPartial
+		return
+	end
+
+	if resource2 ~= essenceTiming.previousEssence then
+		-- Blizzard resets partial power to 0 on an Essence level change, so
+		-- the "real" partial progress into the next tick right now is actually
+		-- the partial we observed on the previous frame (just before the
+		-- reset). Capture it as a carry that we add to subsequent readings
+		-- until the next level change.
+		essenceTiming.partialCarry = essenceTiming.previousPartial
+
+		if resource2 < essenceTiming.previousEssence then
+			if essenceTiming.previousEssence == maxResource2 then
+				-- Spent some Essence after being capped. This means the most recent
+				-- tick was a real gain, so we can learn from it.
+				essenceTiming.oneEssenceAgo = nil
+				essenceTiming.mostRecent = currentTime
+			end
+		elseif resource2 == maxResource2 then
+			-- Gained to cap. Start tracking from here, but don't update the
+			-- duration until we see a real gain after this.
+			essenceTiming.oneEssenceAgo = essenceTiming.mostRecent
+			essenceTiming.mostRecent = currentTime
+			essenceTiming.duration = essenceTiming.mostRecent - essenceTiming.oneEssenceAgo
+			essenceTiming.partialCarry = 0
+		else
+			-- Gained some Essence but not to cap. This is a real gain, so update
+			-- the timestamps and duration.
+			essenceTiming.oneEssenceAgo = essenceTiming.mostRecent
+			essenceTiming.mostRecent = currentTime
+			essenceTiming.duration = essenceTiming.mostRecent - essenceTiming.oneEssenceAgo
+			essenceTiming.partialCarry = 0
+		end
+		essenceTiming.previousEssence = resource2
+	end
+
+	-- Reconstruct the effective partial by adding the carry, capping at 1000.
+	local effectivePartial = rawPartial + essenceTiming.partialCarry
+	if effectivePartial > 1000 then
+		effectivePartial = 1000
+	end
+	TRB.Data.snapshotData.attributes.essencePartial = effectivePartial
+	essenceTiming.previousPartial = rawPartial
+end
+
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	
@@ -262,16 +353,12 @@ local function RefreshLookupData_Devastation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_devastation"].settings
-	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-
-	if regen == nil or regen == 0 then
-		regen = 1
-	end
+	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / regen
-	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen = essenceTiming.duration
+	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -321,7 +408,9 @@ local function RefreshLookupData_Devastation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
+		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
@@ -360,16 +449,12 @@ end
 local function RefreshLookupData_Preservation()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_preservation"].settings
-	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-
-	if regen == nil or regen == 0 then
-		regen = 1
-	end
+	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / regen
-	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen = essenceTiming.duration
+	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -420,7 +505,9 @@ local function RefreshLookupData_Preservation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
+		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
@@ -448,16 +535,12 @@ local function RefreshLookupData_Augmentation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_augmentation"].settings
-	local regen, _ = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-
-	if regen == nil or regen == 0 then
-		regen = 1
-	end
+	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-	snapshotData.attributes.essenceRegen, _ = 1 / regen
-	snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
+	snapshotData.attributes.essenceRegen = essenceTiming.duration
+	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -507,7 +590,9 @@ local function RefreshLookupData_Augmentation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
+		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end

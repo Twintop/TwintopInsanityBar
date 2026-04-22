@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.5.2-release (2026-04-22)
+## Evoker
+
+- Blizzard has made Essence regeneration timing values a `secret`. Add a workaround to calculate time remaining on Essence regeneration.
+
+---
+
 # 12.0.5.1-release (2026-04-22)
 ## General
 
