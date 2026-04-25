@@ -177,7 +177,9 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		isTalent = true,
 		hasCooldown = true,
 		duration = 11,
-		rangeCheck = false
+		rangeCheck = false,
+		-- Preserve non-secret bar text timing so user expressions like `{$ignorePainTime>0}[...]` keep working.
+		disallowSecretTiming = true
 	})
 
 	return self
@@ -504,6 +506,8 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		hasCooldown = true,
 		duration = 12,
 		rangeCheck = false,
+		-- Preserve non-secret bar text timing so user expressions like `{$ignorePainTime>0}[...]` keep working.
+		disallowSecretTiming = true,
 		---@type TRB.Classes.BuffCustomProperty[]
 		customPropertyDefinitions = {
 			TRB.Classes.BuffCustomProperty:New(1, "number", "absorb", 1)

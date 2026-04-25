@@ -24,9 +24,22 @@ local content = [====[
 - Properly account for Celestial Echoes increasing the Fury gain of Consume.
 - Adjust how Soul Fragments and Collapsing Star are tracked when full aura updates occur.
 
+## Evoker
+
+- Add new bar text variables for Essence Burst, showing the remaining duration (`$essenceBurstTime`) and number of stacks (`$essenceBurstStacks`). As these are both secret values, when used in bar text logic they will return only TRUE or FALSE and not the current value.
+
+## Paladin
+
+- Add new bar text variable for Divine Insight, showing the remaining duration (`$divineInsightTime`). As this is a secret value, when used in bar text logic it will return only TRUE or FALSE and not the current value.
+
 ## Priest
+### Discipline
+
+- Add new bar text variables for Surge of Light, showing the remaining duration (`$surgeOfLightTime`) and number of stacks (`$surgeOfLightStacks`). As these are both secret values, when used in bar text logic they will return only TRUE or FALSE and not the current value.
+
 ### Holy
 
+- Add new bar text variables for Surge of Light, showing the remaining duration (`$surgeOfLightTime`) and number of stacks (`$surgeOfLightStacks`). As these are both secret values, when used in bar text logic they will return only TRUE or FALSE and not the current value.
 - Force Benediction procs to clear correctly if the buff expires.
 
 ---

@@ -1761,6 +1761,14 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 		positiveOnly = true
 	end
 
+	if issecretvalue(value) then
+		-- Secret values cannot be compared, but `string.format` is allowed on them
+		-- per the Secret Values rules and produces a secret string that still flows
+		-- through `FontString:SetText` for display. Skip the sign and threshold
+		-- checks (which would crash) and always render with low precision.
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+	end
+
 	if positiveOnly and value < 0 then
 		value = 0
 	end

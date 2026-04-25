@@ -2739,3 +2739,14 @@ L["ProfileDefaultsDescription"] = "Choose the default profile used for each spec
 -- Hunter Marksmanship Explosive Shot
 L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "Explosive Shot"
 L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
+
+L["EvokerDevastationBarTextVariable_essenceBurstTime"] = "Time remaining on your Essence Burst buff. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["EvokerDevastationBarTextVariable_essenceBurstStacks"] = "Number of Essence Burst charges currently available. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["EvokerPreservationBarTextVariable_essenceBurstTime"] = "Time remaining on your Essence Burst buff. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["EvokerPreservationBarTextVariable_essenceBurstStacks"] = "Number of Essence Burst charges currently available. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["EvokerAugmentationBarTextVariable_essenceBurstTime"] = "Time remaining on your Essence Burst buff. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["EvokerAugmentationBarTextVariable_essenceBurstStacks"] = "Number of Essence Burst charges currently available. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["PaladinBarTextVariable_divinePurposeStacks"] = "Number of Divine Purpose stacks currently available. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["PaladinBarTextVariable_divinePurposeTime"] = "Time remaining on your Divine Purpose buff. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["PriestBarTextVariable_surgeOfLightStacks"] = "Number of Surge of Light charges currently available. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["PriestBarTextVariable_surgeOfLightTime"] = "Time remaining on your Surge of Light buff. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."

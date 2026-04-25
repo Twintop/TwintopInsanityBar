@@ -62,7 +62,8 @@ function TRB.Classes.Priest.HealerSpells:New()
 		}
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
-		id = 114255
+		id = 114255,
+		isBuff = true
 	})
 
 	-- Priest Class Talent Abilities
@@ -217,7 +218,9 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 
-		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
+		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 
 		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
 		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
@@ -497,7 +500,9 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 
-		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
+		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
 end

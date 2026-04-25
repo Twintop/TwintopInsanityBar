@@ -62,6 +62,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
+	---@type TRB.Classes.Snapshot
+	specCache.evoker_devastation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.evoker_devastation.barTextVariables = {
 		icons = {},
@@ -99,6 +101,8 @@ local function FillSpecializationCache()
 		essenceBurstPlayed = false,
 		secondaryThresholdPlayed = false
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.evoker_preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.evoker_preservation.barTextVariables = {
 		icons = {},
@@ -141,6 +145,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
+	---@type TRB.Classes.Snapshot
+	specCache.evoker_augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.evoker_augmentation.barTextVariables = {
 		icons = {},
@@ -347,6 +353,11 @@ local function ConstructResourceBar(settings)
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
+
+	-- Enable the UNIT_AURA cache buffer so SPELL_ACTIVATION_OVERLAY_SHOW handlers can
+	-- match a freshly-applied (secret) Essence Burst aura back to its auraInstanceID,
+	-- mirroring the Protection Warrior Ignore Pain pattern.
+	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 local function RefreshLookupData_Devastation()
@@ -442,11 +453,30 @@ local function RefreshLookupData_Devastation()
 		end
 	end
 
+	-- Block D: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
+	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
+		local currentTime = GetTime()
+		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
+		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
+		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+
+		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+
+		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
+			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		end
+		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
+			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
 
 local function RefreshLookupData_Preservation()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_preservation"].settings
 	UpdateEssenceTiming()
@@ -525,6 +555,24 @@ local function RefreshLookupData_Preservation()
 		end
 		lookup["$essenceMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+	end
+
+	-- Block C: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
+	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
+		local currentTime = GetTime()
+		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
+		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
+		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+
+		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+
+		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
+			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		end
+		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
+			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -624,6 +672,24 @@ local function RefreshLookupData_Augmentation()
 		end
 	end
 
+	-- Block D: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
+	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
+		local currentTime = GetTime()
+		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
+		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
+		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+
+		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+
+		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
+			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		end
+		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
+			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -713,26 +779,54 @@ end
 
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]	
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local essenceBurstSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells|TRB.Classes.Evoker.PreservationSpells|TRB.Classes.Evoker.AugmentationSpells]]
-	local essenceBurstDetectionId = essenceBurstSpells.essenceBurst.id
+	local essenceBurstSpell = essenceBurstSpells.essenceBurst
+	local essenceBurstDetectionId = essenceBurstSpell.id
+	local essenceBurstSnapshot = snapshotData.snapshots[essenceBurstDetectionId]
 
 	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 		local spellId = ...
 		if spellId == essenceBurstDetectionId then -- Essence Burst
-			if snapshotData.attributes.essenceBurstActive ~= true then
+			local currentTime = GetTime()
+			local wasActive = essenceBurstSnapshot ~= nil and essenceBurstSnapshot.buff.isActive
+
+			if not wasActive then
 				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
 				if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstPlayed then
 					PlaySoundFile(specSettings.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
 					snapshotData.audio.essenceBurstPlayed = true
 				end
 			end
-			snapshotData.attributes.essenceBurstActive = true
+
+			-- Set up the buff snapshot to be driven entirely by live aura data via the
+			-- DurationObject API. We do NOT seed a placeholder duration from the spell
+			-- definition -- the live aura is the source of truth and refreshes/extensions
+			-- on stack gain are picked up automatically by RefreshWithSecretAuraData.
+			if essenceBurstSnapshot ~= nil then
+				local buff = essenceBurstSnapshot.buff
+				if not wasActive then
+					buff:InitializeCustomSimple(false)
+					buff.updateFromSecret = true
+				end
+
+				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
+				if bufferEntry ~= nil then
+					if buff.auraInstanceId == nil then
+						buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+					end
+					buff:RefreshWithSecretAuraData(bufferEntry)
+				elseif not wasActive then
+					TRB.Functions.Aura:InsertAuraRequest(currentTime, buff, "first")
+				end
+			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local spellId = ...
 		if spellId == essenceBurstDetectionId then -- Essence Burst
-			snapshotData.attributes.essenceBurstActive = false
+			if essenceBurstSnapshot ~= nil then
+				essenceBurstSnapshot.buff:Reset()
+			end
 			snapshotData.audio.essenceBurstPlayed = false
 		end
 	end
@@ -900,7 +994,7 @@ local function UpdateResourceBar()
 			local conditionMap = {
 				dragonrageEnd = dragonrageActive and dragonrageEndMet,
 				dragonrage = dragonrageActive,
-				essenceBurst = snapshotData.attributes.essenceBurstActive,
+				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
@@ -972,6 +1066,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
@@ -983,7 +1078,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = {
 				innervate = false,
-				essenceBurst = snapshotData.attributes.essenceBurstActive,
+				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
@@ -1106,7 +1201,7 @@ local function UpdateResourceBar()
 				ebonMightDropDuringCast = ebonMightActive and ebonMightDropDuringCastMet,
 				ebonMightEnd = ebonMightActive and ebonMightEndMet,
 				ebonMight = ebonMightActive,
-				essenceBurst = snapshotData.attributes.essenceBurstActive,
+				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
 			}
 
 			-- Color targets: barKey -> elementKey -> current color
@@ -1554,7 +1649,13 @@ end
 function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
-		snapshotData.attributes.essenceBurstActive = false
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells and spells.essenceBurst and snapshotData.snapshots then
+			local essenceBurstSnapshot = snapshotData.snapshots[spells.essenceBurst.id]
+			if essenceBurstSnapshot ~= nil then
+				essenceBurstSnapshot.buff:Reset()
+			end
+		end
 		snapshotData.attributes.extendsEbonMight = false
 	end
 end
@@ -1568,6 +1669,10 @@ do
 	local essenceRegenFn = function()
 		return TRB.Data.snapshotData.attributes.resource2 < TRB.Data.character.maxResource2
 	end
+	local essenceBurstFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return spells and spells.essenceBurst and TRB.Data.snapshotData.snapshots[spells.essenceBurst.id].buff.isActive
+	end
 	local common = {
 		["$casting"] = castingFn,
 		["$resource"] = false, ["$mana"] = false,
@@ -1578,6 +1683,8 @@ do
 		["$comboPointsMax"] = true, ["$essenceMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$essenceBurstTime"] = essenceBurstFn,
+		["$essenceBurstStacks"] = essenceBurstFn,
 	}
 	-- Devastation
 	local devastation = {}
@@ -1689,6 +1796,10 @@ function TRB.Functions.Class:HasActiveTimers()
 		if spells.ebonMight and snapshots[spells.ebonMight.id] and snapshots[spells.ebonMight.id].buff and snapshots[spells.ebonMight.id].buff.isActive then
 			return true
 		end
+	end
+	-- All 3 specs: Essence Burst is active
+	if spells.essenceBurst and snapshots[spells.essenceBurst.id] and snapshots[spells.essenceBurst.id].buff and snapshots[spells.essenceBurst.id].buff.isActive then
+		return true
 	end
 	return false
 end

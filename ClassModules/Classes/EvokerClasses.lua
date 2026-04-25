@@ -18,7 +18,8 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 359618
+        id = 359618,
+		isBuff = true
     })
 	
     -- Devastation Spec Talents
@@ -78,6 +79,9 @@ function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
 		{ variable = "$dragonrageTime", description = L["EvokerDevastationBarTextVariable_dragonrageTime"], printInSettings = true, color = false },
+
+		{ variable = "$essenceBurstTime", description = L["EvokerDevastationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstStacks", description = L["EvokerDevastationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
 	})
 end
 
@@ -92,7 +96,8 @@ function TRB.Classes.Evoker.PreservationSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 369299
+        id = 369299,
+		isBuff = true
     })
 	
     --[[self.eruption = TRB.Classes.SpellBase:New({
@@ -136,6 +141,9 @@ function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
 		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
 	})
 end
 
@@ -154,7 +162,8 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
-        id = 392268
+        id = 392268,
+		isBuff = true
     })
 
     self.ebonMight = TRB.Classes.SpellBase:New({
@@ -208,6 +217,9 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
 		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false },
+
+		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
 	})
 end
 
