@@ -12,6 +12,25 @@ local content = [====[
 
 ---
 
+# 12.0.5.3-release (2026-04-25)
+## General
+### Localization
+
+- [#744](#744) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Demon Hunter
+### Devourer
+
+- Properly account for Celestial Echoes increasing the Fury gain of Consume.
+- Adjust how Soul Fragments and Collapsing Star are tracked when full aura updates occur.
+
+## Priest
+### Holy
+
+- Force Benediction procs to clear correctly if the buff expires.
+
+---
+
 # 12.0.5.2-release (2026-04-22)
 ## Evoker
 

@@ -820,6 +820,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.consume.resource
 				casting.spellId = spells.consume.id
 				casting.icon = spells.consume.icon
+
+				if talents:IsTalentActive(spells.celestialEcoes) then
+					casting.resourceRaw = casting.resourceRaw + spells.celestialEcoes.attributes.resourceMod
+				end
 			end
 			UpdateCastingResourceFinal_Devourer()
 		end

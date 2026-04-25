@@ -81,12 +81,6 @@ local function AuraUpdateEvent(self, event, unit, info)
 		if TRB.Data.character and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 and TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
 			TRB.Data.snapshotData.attributes.devourerTransitionAt = GetTime()
 		end
-		if TRB.Data.character ~= nil and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 then
-			TRB.Data.lookupDirty = true
-			wipe(TRB.Data.cache.values.resource)
-			wipe(TRB.Data.cache.values.castTime)
-			return
-		end
 		-- Defer the full buff refresh by one frame so that the aura API has time to
 		-- stabilise.  When isFullUpdate fires (e.g. on combat entry or after a channel
 		-- ends), C_UnitAuras.GetPlayerAuraBySpellID() can transiently return nil for

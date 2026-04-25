@@ -338,6 +338,7 @@ end
 ---@field public collapsingStar TRB.Classes.SpellBase
 ---@field public surrenderToTheVoid TRB.Classes.SpellBase
 ---@field public rollingTorment TRB.Classes.SpellBase
+---@field public celestialEcoes TRB.Classes.SpellBase
 ---@field public collapsingStarThreshold TRB.Classes.SpellThreshold
 ---@field public voidRay TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -414,6 +415,11 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		id = 1244237,
 		isTalent = true,
 		resourceMod = 5
+	})
+	self.celestialEcoes = TRB.Classes.SpellBase:New({
+		id = 1253415,
+		isTalent = true,
+		resourceMod = 2
 	})
 
 	--PvP
