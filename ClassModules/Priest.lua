@@ -305,6 +305,8 @@ local function FillSpecializationCache()
 	specCache.priest_holy.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_holy.snapshotData.snapshots[spells.benediction.id] = TRB.Classes.Snapshot:New(spells.benediction)
 
 	-- Shadow
 	specCache.priest_shadow.Global_TwintopResourceBar = {
@@ -1071,7 +1073,7 @@ local function RefreshLookupData_Holy()
 	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$benediction"] then
 		lookupLogic["$surgeOfLight"] = snapshotData.attributes.surgeOfLightActive or false
 		lookup["$surgeOfLight"] = ""
-		lookupLogic["$benediction"] = snapshotData.attributes.benedictionOverride or false
+		lookupLogic["$benediction"] = snapshots[spells.benediction.id].buff.isActive or false
 		lookup["$benediction"] = ""
 	end
 
@@ -1758,11 +1760,13 @@ local function HandleSpellEvents(self, event, ...)
 		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 			if spellId == spells.flashHeal.id then
+				local benedictionBuff = snapshotData.snapshots[spells.benediction.id].buff
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
-					snapshotData.attributes.benedictionOverride = false
+					benedictionBuff:Reset()
+					benedictionBuff.isCustom = true
 					snapshotData.audio.benedictionCue = false
 				else
-					snapshotData.attributes.benedictionOverride = true
+					benedictionBuff:AddTimeOrInitializeCustom(spells.benediction.duration, GetTime())
 					local specSettings = TRB.Data.settings.priest.holy
 					if specSettings.audio.benediction ~= nil and specSettings.audio.benediction.enabled and not snapshotData.audio.benedictionCue then
 						PlaySoundFile(specSettings.audio.benediction.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1929,6 +1933,14 @@ local function UpdateSnapshot_Holy()
 	snapshots[spells.voidbinding.id].buff:GetRemainingTime(currentTime)
 	if wasVoidbindingActive and not snapshots[spells.voidbinding.id].buff.isActive then
 		ApplyVoidbindingCDR(false)
+	end
+
+	-- Benediction buff natural expiry (handled by the Snapshot's buff timer).
+	local wasBenedictionActive = snapshots[spells.benediction.id].buff.isActive
+	snapshots[spells.benediction.id].buff:GetRemainingTime(currentTime)
+	if wasBenedictionActive and not snapshots[spells.benediction.id].buff.isActive then
+		TRB.Data.snapshotData.audio.benedictionCue = false
+		TRB.Data.lookupDirty = true
 	end
 end
 
@@ -2196,7 +2208,7 @@ local function UpdateResourceBar()
 			end
 
 			local conditionMap = {
-				benediction = snapshotData.attributes.benedictionOverride,
+				benediction = snapshots[spells.benediction.id].buff.isActive,
 				holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity",
 				holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify",
 				holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise",
@@ -3581,7 +3593,16 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 		snapshotData.attributes.surgeOfLightActive = false
 		snapshotData.attributes.surgeOfLightActiveGrace = false
 		snapshotData.attributes.shadowyInsightActive = false
-		snapshotData.attributes.benedictionOverride = false
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			local benedictionSnapshot = spells and spells.benediction and snapshotData.snapshots and snapshotData.snapshots[spells.benediction.id]
+			if benedictionSnapshot then
+				benedictionSnapshot.buff:Reset()
+			end
+			if snapshotData.audio then
+				snapshotData.audio.benedictionCue = false
+			end
+		end
 	end
 end
 
@@ -3696,7 +3717,10 @@ do
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
 		["$surgeOfLight"] = function() return TRB.Data.snapshotData.attributes.surgeOfLightActive or false end,
-		["$benediction"] = function() return TRB.Data.snapshotData.attributes.benedictionOverride or false end,
+		["$benediction"] = function()
+			local spells = TRB.Data.spellsData.spells
+			return TRB.Data.snapshotData.snapshots[spells.benediction.id].buff.isActive or false
+		end,
 	}
 	for k, v in pairs(healthVars) do holy[k] = v end
 	-- Shadow

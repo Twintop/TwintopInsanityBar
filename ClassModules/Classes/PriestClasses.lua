@@ -344,6 +344,7 @@ function TRB.Classes.Priest.HolySpells:New()
 		isTalent = true,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
+		duration = 30,
 	})
 
 	-- Holy Baseline Abilities
