@@ -2537,4 +2537,15 @@ if locale == "zhCN" then
 	L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "爆炸射击"
 	L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "在资源条上显示竖线，标记使用爆炸射击所需的集中值。技能冷却中时，将显示为“不可用”颜色。"
 
+	L["EvokerDevastationBarTextVariable_essenceBurstTime"] = "精华迸发增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["EvokerDevastationBarTextVariable_essenceBurstStacks"] = "当前可用的精华迸发层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["EvokerPreservationBarTextVariable_essenceBurstTime"] = "精华迸发增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["EvokerPreservationBarTextVariable_essenceBurstStacks"] = "当前可用的精华迸发层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["EvokerAugmentationBarTextVariable_essenceBurstTime"] = "精华迸发增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["EvokerAugmentationBarTextVariable_essenceBurstStacks"] = "当前可用的精华迸发层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["PaladinBarTextVariable_divinePurposeStacks"] = "当前可用的神圣意志层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["PaladinBarTextVariable_divinePurposeTime"] = "神圣意志增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["PriestBarTextVariable_surgeOfLightStacks"] = "当前可用的圣光涌动层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+	L["PriestBarTextVariable_surgeOfLightTime"] = "圣光涌动增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
+
 end
