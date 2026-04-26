@@ -114,6 +114,7 @@ Functions\SpellCast.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
+Functions\WagoCreator.lua
 
 Options\OptionsUi.lua
 Options\OptionsFrame.lua

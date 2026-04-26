@@ -1415,8 +1415,21 @@ function TRB.Functions.IO:ExportFullProfile(profileName)
 
 	local profileBody = {}
 
-	-- Core piece
+	-- Core piece. A full profile export must always carry a core piece, even
+	-- if the named profile has no core stored. When missing, fall back to the
+	-- currently-active core profile so the recipient gets a complete bundle.
 	local corePiece = ResolveLiveOrStoredCorePiece(profileName)
+	if corePiece == nil and TRB.Functions.Profiles ~= nil then
+		local activeCoreName = TRB.Functions.Profiles:ResolveCoreProfileName()
+		if activeCoreName ~= nil then
+			local liveCore = TRB.Data.settings and TRB.Data.settings.core
+			if type(liveCore) == "table" then
+				corePiece = TRB.Functions.Table:DeepCopy(liveCore)
+			elseif p.list[activeCoreName] ~= nil and type(p.list[activeCoreName].core) == "table" then
+				corePiece = TRB.Functions.Table:DeepCopy(p.list[activeCoreName].core)
+			end
+		end
+	end
 	if corePiece ~= nil then
 		profileBody.core = corePiece
 	end
