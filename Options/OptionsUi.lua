@@ -582,6 +582,7 @@ local function GetCopyPieceForRead(scope, profileName, className, specName)
 	elseif scope == "spec" and className ~= nil and specName ~= nil then
 		local activeName = profiles:ResolveSpecProfileName(className, specName)
 		if profileName == nil or profileName == activeName then
+			TRB.Functions.Character:EnsureSpecSettings(className)
 			local cls = TRB.Data.settings[className]
 			return cls and cls[specName] or nil
 		end
@@ -614,6 +615,7 @@ local function GetCopyPieceForWrite(scope, profileName, className, specName)
 	elseif scope == "spec" and className ~= nil and specName ~= nil then
 		local activeName = profiles:ResolveSpecProfileName(className, specName)
 		if profileName == nil or profileName == activeName then
+			TRB.Functions.Character:EnsureSpecSettings(className)
 			local cls = TRB.Data.settings[className]
 			if cls == nil or cls[specName] == nil then
 				return nil, false
@@ -732,6 +734,7 @@ end
 
 -- Static popup registration (idempotent). All copy-confirm popups pass their
 -- operation parameters through `data`.
+local RefreshProfileDropdownForScope
 local copyPopupsRegistered = false
 local function EnsureCopyConfigPopupsRegistered()
 	if copyPopupsRegistered then
@@ -766,6 +769,8 @@ local function EnsureCopyConfigPopupsRegistered()
 			TRB.Functions.Profiles:FlushAndSuppressLogout()
 			C_UI.Reload()
 		else
+			TRB.Functions.Profiles:InvalidateCache()
+			RefreshProfileDropdownForScope(data.dstScope, data.dstClassName, data.dstSpecName)
 			-- Non-active destination - just persist the changes via a flush
 			-- so a subsequent /reload doesn't overwrite them.
 			TRB.Functions.Profiles:FlushActive()
@@ -845,6 +850,7 @@ local function ProfileHasSpec(profileName, className, specName)
 	end
 	local activeName = profiles:ResolveSpecProfileName(className, specName)
 	if profileName == activeName then
+		TRB.Functions.Character:EnsureSpecSettings(className)
 		local cls = TRB.Data.settings[className]
 		return cls ~= nil and cls[specName] ~= nil
 	end
@@ -860,23 +866,44 @@ end
 -- Only profiles/classes/specs that actually have stored data are included.
 -- `excludeKey` (string "<className>:<specName>") is omitted when present so
 -- the user can't pick the same spec they are operating on.
-local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey)
+local function IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+	if profileName == nil or className == nil or specName == nil or excludeKey == nil then
+		return false
+	end
+	if (className .. ":" .. specName) ~= excludeKey then
+		return false
+	end
+	local activeName = TRB.Functions.Profiles:ResolveSpecProfileName(className, specName)
+	return profileName == activeName
+end
+
+---@param label string
+---@return string
+local function GetCopyMenuNewTargetLabel(label)
+	return string.format(L["CopyMenuNewTargetFormat"], label)
+end
+
+-- Adds a source submenu under `parent` (a menu description). Only profiles /
+-- classes / specs that currently have readable data are included.
+local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
 	local profiles = TRB.Functions.Profiles
 	local profileNames = profiles:GetProfileNames()
 	local sortedClasses = GetSortedClassSpecs()
+	local activeCoreName = excludeCurrentCoreProfile and profiles:ResolveCoreProfileName() or nil
 	for _, profileName in ipairs(profileNames) do
 		-- Pre-compute which classes have any present spec in this profile so
 		-- empty profiles / empty class branches are not shown at all.
 		local classesWithSpecs = {}
-		local profileHasAnything = ProfileHasCore(profileName)
+		local hasCore = ProfileHasCore(profileName) and profileName ~= activeCoreName
+		local profileHasAnything = hasCore
 		for _, classDef in ipairs(sortedClasses) do
 			local className = classDef.classKey
 			local prefix = className .. "_"
 			local hasAny = false
 			for _, specDef in ipairs(classDef.specs) do
 				local specName = string.sub(specDef.compositeKey, #prefix + 1)
-				local key = className .. ":" .. specName
-				if key ~= excludeKey and ProfileHasSpec(profileName, className, specName) then
+				if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+					and ProfileHasSpec(profileName, className, specName) then
 					hasAny = true
 					break
 				end
@@ -890,7 +917,7 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey)
 			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 			local profileMenu = parent:CreateButton(profileName)
 			if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
-				if ProfileHasCore(profileName) then
+				if hasCore then
 					profileMenu:CreateButton(L["ProfileScopeLabelGlobal"], function()
 						onPicked(profileName, nil, nil)
 					end)
@@ -904,13 +931,59 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey)
 							local prefix = className .. "_"
 							for _, specDef in ipairs(classDef.specs) do
 								local specName = string.sub(specDef.compositeKey, #prefix + 1)
-								local key = className .. ":" .. specName
-								if key ~= excludeKey and ProfileHasSpec(profileName, className, specName) then
+								if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+									and ProfileHasSpec(profileName, className, specName) then
 									classMenu:CreateButton(specDef.specLabel, function()
 										onPicked(profileName, className, specName)
 									end)
 								end
 							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- Adds a destination submenu under `parent` (a menu description). All
+-- profiles, classes, and specs are included so Copy To can target any
+-- destination. Specs that do not yet exist in the destination profile are
+-- marked with a purple " {New}" suffix.
+local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
+	local profiles = TRB.Functions.Profiles
+	local profileNames = profiles:GetProfileNames()
+	local sortedClasses = GetSortedClassSpecs()
+	local activeCoreName = excludeCurrentCoreProfile and profiles:ResolveCoreProfileName() or nil
+	for _, profileName in ipairs(profileNames) do
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local profileMenu = parent:CreateButton(profileName)
+		if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
+			if profileName ~= activeCoreName then
+				local globalLabel = L["ProfileScopeLabelGlobal"]
+				if not ProfileHasCore(profileName) then
+					globalLabel = GetCopyMenuNewTargetLabel(globalLabel)
+				end
+				profileMenu:CreateButton(globalLabel, function()
+					onPicked(profileName, nil, nil)
+				end)
+			end
+			for _, classDef in ipairs(sortedClasses) do
+				local className = classDef.classKey
+				---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+				local classMenu = profileMenu:CreateButton(classDef.classLabel)
+				if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+					local prefix = className .. "_"
+					for _, specDef in ipairs(classDef.specs) do
+						local specName = string.sub(specDef.compositeKey, #prefix + 1)
+						if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey) then
+							local specLabel = specDef.specLabel
+							if not ProfileHasSpec(profileName, className, specName) then
+								specLabel = GetCopyMenuNewTargetLabel(specLabel)
+							end
+							classMenu:CreateButton(specLabel, function()
+								onPicked(profileName, className, specName)
+							end)
 						end
 					end
 				end
@@ -926,11 +999,13 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 	if className == nil or specName == nil then
 		return
 	end
+	local profiles = TRB.Functions.Profiles
 	local def = globalSettingKeyCopyDef[settingKey]
 	local sectionLabel = (def and def.sectionLabel) or settingKey
 	local excludeKey = className .. ":" .. specName
+	local currentCoreProfileName = profiles:ResolveCoreProfileName() or profiles.DEFAULT_NAME
 
-	local function MakeData(srcScope, srcProfileName, srcClassName, srcSpecName, dstScope, dstClassName, dstSpecName)
+	local function MakeData(srcScope, srcProfileName, srcClassName, srcSpecName, dstScope, dstProfileName, dstClassName, dstSpecName)
 		return {
 			settingKey      = settingKey,
 			srcScope        = srcScope,
@@ -938,7 +1013,7 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 			srcClassName    = srcClassName,
 			srcSpecName     = srcSpecName,
 			dstScope        = dstScope,
-			dstProfileName  = nil, -- destination is always the active profile
+			dstProfileName  = dstProfileName,
 			dstClassName    = dstClassName,
 			dstSpecName     = dstSpecName,
 		}
@@ -947,27 +1022,60 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
 
-		rootDescription:CreateButton(L["CopyMenuUseAsGlobal"], function()
-			PromptCopyConfirm(MakeData("spec", nil, className, specName, "core", nil, nil))
-		end)
-
-		rootDescription:CreateButton(L["CopyMenuUseGlobalHere"], function()
-			PromptCopyConfirm(MakeData("core", nil, nil, nil, "spec", className, specName))
-		end)
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+			copyTo:CreateTitle(L["CopyMenuCopyTo"])
+			copyTo:CreateDivider()
+			copyTo:CreateButton(string.format(L["CopyMenuUseAsCurrentGlobalProfileFormat"], currentCoreProfileName), function()
+				PromptCopyConfirm(MakeData("spec", nil, className, specName, "core", nil, nil, nil))
+			end)
+			copyTo:CreateDivider()
+			copyTo:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddDestinationProfileClassSpecSubmenu(copyTo, function(profileName, dstClass, dstSpec)
+				if dstClass == nil then
+					PromptCopyConfirm(MakeData("spec", nil, className, specName, "core", profileName, nil, nil))
+				else
+					PromptCopyConfirm(MakeData("spec", nil, className, specName, "spec", profileName, dstClass, dstSpec))
+				end
+			end, excludeKey, false)
+		end
 
 		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
-		local fromOther = rootDescription:CreateButton(L["CopyMenuUseOtherSpec"])
-		if type(fromOther) == "table" and type(fromOther.CreateButton) == "function" then
-			AddProfileClassSpecSubmenu(fromOther, function(profileName, srcClass, srcSpec)
+		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
+		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
+			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
+			copyFrom:CreateDivider()
+			copyFrom:CreateButton(string.format(L["CopyMenuUseFromCurrentGlobalProfileFormat"], currentCoreProfileName), function()
+				PromptCopyConfirm(MakeData("core", nil, nil, nil, "spec", nil, className, specName))
+			end)
+			copyFrom:CreateDivider()
+			copyFrom:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddProfileClassSpecSubmenu(copyFrom, function(profileName, srcClass, srcSpec)
 				if srcClass == nil then
 					-- "Global" pick: copy that profile's core into this spec
-					PromptCopyConfirm(MakeData("core", profileName, nil, nil, "spec", className, specName))
+					PromptCopyConfirm(MakeData("core", profileName, nil, nil, "spec", nil, className, specName))
 				else
-					PromptCopyConfirm(MakeData("spec", profileName, srcClass, srcSpec, "spec", className, specName))
+					PromptCopyConfirm(MakeData("spec", profileName, srcClass, srcSpec, "spec", nil, className, specName))
 				end
-			end, excludeKey)
+			end, excludeKey, true)
 		end
 	end)
+end
+
+---@param checkbox CheckButton
+---@param button Button
+local function PositionCopyButtonLeftOfCheckbox(checkbox, button)
+	local point, relativeTo, relativePoint, xOfs, yOfs = checkbox:GetPoint(1)
+	if point ~= nil then
+		checkbox:ClearAllPoints()
+		checkbox:SetPoint(point, relativeTo, relativePoint, (xOfs or 0) + 78, yOfs or 0)
+		button:SetPoint(point, relativeTo, relativePoint, xOfs or 0, yOfs or 0)
+	else
+		button:SetPoint("RIGHT", checkbox, "LEFT", -4, 0)
+	end
+	-- Final visual order:
+	--   [Copy...] [x] Use global settings
 end
 
 -- Builds the "Copy..." button next to a per-spec "Use Global" checkbox.
@@ -988,17 +1096,7 @@ function TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(checkbox, classId, spe
 	local button = CreateFrame("Button", nil, checkbox, "UIPanelButtonTemplate")
 	button:SetText(L["CopyMenuButton"])
 	button:SetSize(70, 20)
-	-- Re-anchor the checkbox so the Copy button can occupy the original
-	-- left-edge position. Final visual order:
-	--   [Copy...] [x] Use global settings [Open Global Settings]
-	local point, relativeTo, relativePoint, xOfs, yOfs = checkbox:GetPoint(1)
-	if point ~= nil then
-		checkbox:ClearAllPoints()
-		checkbox:SetPoint(point, relativeTo, relativePoint, (xOfs or 0) + 78, yOfs or 0)
-		button:SetPoint(point, relativeTo, relativePoint, xOfs or 0, yOfs or 0)
-	else
-		button:SetPoint("RIGHT", checkbox, "LEFT", -4, 0)
-	end
+	PositionCopyButtonLeftOfCheckbox(checkbox, button)
 	button.tooltip = L["CopyMenuButtonTooltip"]
 	button:SetScript("OnEnter", function(self)
 		if self.tooltip then
@@ -1026,9 +1124,12 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
 
 		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
-		local pushTo = rootDescription:CreateButton(L["CopyMenuPushToSpec"])
-		if type(pushTo) == "table" and type(pushTo.CreateButton) == "function" then
-			AddProfileClassSpecSubmenu(pushTo, function(profileName, dstClass, dstSpec)
+		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+			copyTo:CreateTitle(L["CopyMenuCopyTo"])
+			copyTo:CreateDivider()
+			copyTo:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddDestinationProfileClassSpecSubmenu(copyTo, function(profileName, dstClass, dstSpec)
 				PromptCopyConfirm({
 					settingKey      = settingKey,
 					srcScope        = "core",
@@ -1040,13 +1141,16 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 					dstClassName    = dstClass,
 					dstSpecName     = dstSpec,
 				})
-			end, nil)
+			end, nil, false)
 		end
 
 		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
-		local pullFrom = rootDescription:CreateButton(L["CopyMenuPullFromSpec"])
-		if type(pullFrom) == "table" and type(pullFrom.CreateButton) == "function" then
-			AddProfileClassSpecSubmenu(pullFrom, function(profileName, srcClass, srcSpec)
+		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
+		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
+			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
+			copyFrom:CreateDivider()
+			copyFrom:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddProfileClassSpecSubmenu(copyFrom, function(profileName, srcClass, srcSpec)
 				PromptCopyConfirm({
 					settingKey      = settingKey,
 					srcScope        = (srcClass == nil) and "core" or "spec",
@@ -1058,7 +1162,7 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 					dstClassName    = nil,
 					dstSpecName     = nil,
 				})
-			end, nil)
+			end, nil, true)
 		end
 	end)
 end
@@ -1077,7 +1181,7 @@ function TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(bulkCheckbox, setting
 	local button = CreateFrame("Button", nil, bulkCheckbox, "UIPanelButtonTemplate")
 	button:SetText(L["CopyMenuButton"])
 	button:SetSize(70, 20)
-	button:SetPoint("LEFT", bulkCheckbox, "RIGHT", 200, 0)
+	PositionCopyButtonLeftOfCheckbox(bulkCheckbox, button)
 	button.tooltip = L["CopyMenuButtonTooltip"]
 	button:SetScript("OnEnter", function(self)
 		if self.tooltip then
@@ -2283,6 +2387,37 @@ local function GetProfileList(scope, className, specName)
 		return Profiles:GetCoreListFromCache()
 	end
 	return Profiles:GetSpecListFromCache(className, specName)
+end
+
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string
+local function GetProfileDropdownFrameName(scope, className, specName)
+	local namePrefix = "TwintopResourceBar_ProfileDropdown"
+	if scope == "spec" then
+		return namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
+	end
+	return namePrefix .. "_Core"
+end
+
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+RefreshProfileDropdownForScope = function(scope, className, specName)
+	local dropdown = _G[GetProfileDropdownFrameName(scope, className, specName)]
+	if dropdown == nil then
+		return
+	end
+	if dropdown.UpdateButtonText then
+		dropdown:UpdateButtonText()
+	end
+	if dropdown.SetupMenu and dropdown.GeneratorFunction then
+		dropdown:SetupMenu(dropdown.GeneratorFunction)
+	end
+	if dropdown.RefreshLayout then
+		dropdown:RefreshLayout()
+	end
 end
 
 ---Writes a new profile piece and switches the character to it. Flow:
