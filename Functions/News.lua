@@ -20,7 +20,7 @@ local content = [====[
 # 12.0.5.3-release (2026-04-25)
 ## General
 
-- Add a way to copy shared settings between profiles, specializations, and global options. Settings sections that are supported have a new "Copy..." button next to the Global Options check box.
+- [#747](#747) Add a way to copy shared settings between profiles, specializations, and global options. Settings sections that are supported have a new "Copy..." button next to the Global Options check box.
 - Add support for Wago Profile Import/Export APIs.
 
 ### Localization
