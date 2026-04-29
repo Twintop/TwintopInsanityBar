@@ -12,11 +12,20 @@ local content = [====[
 
 ---
 
-# 12.0.5.3-release (2026-04-25)
+# 12.0.5.4-release (2026-04-29)
 ## General
+
 ### Localization
 
-- [#744](#744) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+# 12.0.5.3-release (2026-04-25)
+## General
+
+- Add a way to copy shared settings between profiles, specializations, and global options. Settings sections that are supported have a new "Copy..." button next to the Global Options check box.
+- Add support for Wago Profile Import/Export APIs.
+
+### Localization
+
+- [#746](#746) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Demon Hunter
 ### Devourer
