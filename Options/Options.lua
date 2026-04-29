@@ -2030,8 +2030,10 @@ end
 
 --- Ordered list of all classes and their specs for nav registration.
 --- Each entry stores the resolved localized string for class headers and spec labels.
+--- Exposed on TRB.Data so other modules (OptionsUi copy menus, etc.) can reuse it
+--- instead of duplicating class/spec metadata.
 ---@type {classKey: string, classLabel: string, specs: {compositeKey: string, specLabel: string}[]}[]
-local ALL_CLASS_SPECS = {
+TRB.Data.allClassSpecs = {
 	{ classKey = "warrior", classLabel = L["Warrior"], specs = {
 		{ compositeKey = "warrior_arms", specLabel = L["WarriorArmsFull"] },
 		{ compositeKey = "warrior_fury", specLabel = L["WarriorFuryFull"] },
@@ -2127,7 +2129,7 @@ function TRB.Options:BuildClassPanels(classKey)
 	end
 
 	-- Ensure specCache entries exist for all specs in this class
-	for _, classDef in ipairs(ALL_CLASS_SPECS) do
+	for _, classDef in ipairs(TRB.Data.allClassSpecs) do
 		if classDef.classKey == classKey then
 			for _, specDef in ipairs(classDef.specs) do
 				TRB.Functions.Character:EnsureSpecCache(specDef.compositeKey)
@@ -2151,7 +2153,7 @@ function TRB.Options:RegisterAllClassSpecNavEntries()
 
 	-- Build a sorted shallow copy so classes appear alphabetically by localized name
 	local sorted = {}
-	for i, classDef in ipairs(ALL_CLASS_SPECS) do
+	for i, classDef in ipairs(TRB.Data.allClassSpecs) do
 		sorted[i] = classDef
 	end
 	table.sort(sorted, function(a, b)

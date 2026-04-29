@@ -314,4 +314,13 @@ if locale == "enGB" then
 
     -- Phase 3: Profile Import/Export
     L["ProfileImportErrorNoValid"] = "The import string did not contain any recognisable class, specialisation, or Global Options data."
+
+    -- Use Global Copy menu
+    L["CopyMenuButtonTooltip"] = "Copy this section's configuration between profiles, classes, and specialisations."
+    L["CopyMenuUseOtherSpec"] = "Use other specialisation configuration"
+    L["CopyMenuPushToSpec"] = "Push Global to specialisation"
+    L["CopyMenuPullFromSpec"] = "Pull from specialisation to Global"
+    L["CopyMenuSection_healthBarColors"] = "Health Bar Colours"
+    L["CopyMenuSection_thresholdColors"] = "Threshold Line Colours"
+    L["CopyMenuSection_textColors"] = "Text Colours"
 end
