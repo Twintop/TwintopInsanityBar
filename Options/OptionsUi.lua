@@ -457,10 +457,6 @@ function TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(checkbox, globalTabK
 	link:SetHeight(16)
 	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
 	link.tooltip = L["OpenGlobalSettingsTooltip"]
-	-- Save reference so BuildUseGlobalCopyButton can re-anchor the link
-	-- to sit to the right of the Copy button.
-	---@diagnostic disable-next-line: inject-field
-	checkbox.useGlobalShortcutLink = link
 
 	link:SetScript("OnEnter", function(self)
 		self:GetFontString():SetTextColor(1, 1, 1)
@@ -1079,8 +1075,6 @@ local function PositionCopyButtonLeftOfCheckbox(checkbox, button)
 end
 
 -- Builds the "Copy..." button next to a per-spec "Use Global" checkbox.
--- Anchors LEFT of the checkbox's text region's RIGHT edge if a shortcut link
--- exists; otherwise to the immediate right of the checkbox text.
 ---@param checkbox CheckButton The "Use Global" checkbox to attach the button to
 ---@param classId integer The class ID of the destination spec
 ---@param specId integer The spec ID of the destination spec
@@ -12278,7 +12272,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("globalBarText")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "globalBarText")
 		yCoord = yCoord - 20
 	else
 		yCoord = yCoord + 10 -- Fix offset

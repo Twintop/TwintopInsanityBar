@@ -71,7 +71,7 @@ function TRB.Classes.Mage.FireSpells:New()
         id = 108853,
         talentId = 1246833,
         isTalent = true,
-        hasStacks = true
+        hasCharges = true
     })
 
     return self
