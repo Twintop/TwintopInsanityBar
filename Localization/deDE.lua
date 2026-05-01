@@ -450,7 +450,6 @@ if locale == "deDE" then
     L["ChiCheckboxUseHighestForAllTooltip"] = "Wenn aktiviert, wird die Farbe des höchsten Chi für alle Chi verwendet. Z.B., wenn du maximal 5 Chi hast und aktuell 4 hast, wird die Farbe des vorletzten für alle verwendet, anstatt nur für das zweite bis letzte."
     L["ChiColorPickerBackground"] = "Hintergrund für ungefülltes Chi"
     L["MonkWindwalkerAudioDanceOfChiJi"] = "Tanz von Chi-Ji"
-    L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Schaden umleiten"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Schaden umleiten zu nutzen."
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tigerklaue"
@@ -1457,4 +1456,6 @@ if locale == "deDE" then
     L["DemonHunterDevourerBarTextVariable_fury"] = "Aktueller Jähzorn"
     L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximaler Jähzorn"
     L["DemonHunterDevourerBarTextVariable_casting"] = "Aufbau-Jähzorn von hart gezauberten Zaubern"
+    
+    L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
 end

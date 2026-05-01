@@ -448,7 +448,6 @@ if locale == "zhCN" then
     L["ChiCheckboxUseHighestForAllTooltip"] = "勾选后所有真气使用最高阶颜色，例如上限5点当前4点时，全部显示倒数第二点颜色。"
     L["ChiColorPickerBackground"] = "真空气背景色"
     L["MonkWindwalkerAudioDanceOfChiJi"] = "赤精之舞触发"
-    L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "氤氲破"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "资源条显示施放氤氲破所需能量阈值线。"
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "猛虎掌"
@@ -2153,8 +2152,6 @@ if locale == "zhCN" then
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "玄牛下凡即将结束时变为该颜色。"
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "玄牛下凡即将结束（按设置）"
 	
-    L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "活力苏醒激活时变为该颜色。"
-    L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "活力苏醒已激活"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
@@ -2548,4 +2545,5 @@ if locale == "zhCN" then
 	L["PriestBarTextVariable_surgeOfLightStacks"] = "当前可用的圣光涌动层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
 	L["PriestBarTextVariable_surgeOfLightTime"] = "圣光涌动增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
 
+    L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
 end
