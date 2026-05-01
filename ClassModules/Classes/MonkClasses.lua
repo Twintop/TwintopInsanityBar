@@ -185,6 +185,7 @@ end
 ---@field public vivify TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public rushingWindKick TRB.Classes.SpellBase
+---@field public sheilunsGift TRB.Classes.SpellBase
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
 
@@ -236,6 +237,11 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 	self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
 		id = 443421,
 		talentId = 443294,
+		isTalent = true,
+	})
+
+	self.sheilunsGift = TRB.Classes.SpellBase:New({
+		id = 399491,
 		isTalent = true,
 	})
 

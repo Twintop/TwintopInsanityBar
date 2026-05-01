@@ -696,7 +696,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:InitializeCustom(spells.vivaciousVivification.duration, currentTime)
 			elseif talents:IsTalentActive(spells.sereneSurge) and spellId == spells.envelopingMist.id then
 				snapshotData.snapshots[spells.sereneSurge.id].buff:InitializeCustom(spells.sereneSurge.duration, currentTime)
-			elseif spellId == spells.vivify.id then
+			elseif spellId == spells.vivify.id or spellId == spells.sheilunsGift.id then
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:Reset()
 				snapshotData.snapshots[spells.sereneSurge.id].buff:Reset()
 			end

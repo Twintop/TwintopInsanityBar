@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.5.6-release (2026-05-02)
+## Monk
+### Mistweaver
+
+- Ensure that Sheilun's Gift also resets Vivify instant color change.
+
+---
+
 # 12.0.5.5-release (2026-05-01)
 ## General
 ### Localization
