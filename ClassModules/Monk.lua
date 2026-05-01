@@ -110,6 +110,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.monk_mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_mistweaver.snapshotData.snapshots[spells.sereneSurge.id] = TRB.Classes.Snapshot:New(spells.sereneSurge)
 
 	specCache.monk_mistweaver.barTextVariables = {
 		icons = {},
@@ -692,8 +694,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if talents:IsTalentActive(spells.vivaciousVivification) and (spellId == spells.risingSunKick.id or spellId == spells.rushingWindKick.id) then
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:InitializeCustom(spells.vivaciousVivification.duration, currentTime)
+			elseif talents:IsTalentActive(spells.sereneSurge) and spellId == spells.envelopingMist.id then
+				snapshotData.snapshots[spells.sereneSurge.id].buff:InitializeCustom(spells.sereneSurge.duration, currentTime)
 			elseif spellId == spells.vivify.id then
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:Reset()
+				snapshotData.snapshots[spells.sereneSurge.id].buff:Reset()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -952,6 +957,7 @@ local function UpdateSnapshot_Mistweaver()
 	local currentTime = GetTime()
 	
 	snapshots[spells.vivaciousVivification.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.sereneSurge.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Windwalker()
@@ -1380,7 +1386,7 @@ local function UpdateResourceBar()
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 					local conditionMap = {
-						vivaciousVivification = affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive,
+						vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive),
 						heartOfTheJadeSerpent = false,
 						heartOfTheJadeSerpentReady = false,
 					}

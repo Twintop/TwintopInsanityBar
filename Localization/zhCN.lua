@@ -448,7 +448,6 @@ if locale == "zhCN" then
     L["ChiCheckboxUseHighestForAllTooltip"] = "勾选后所有真气使用最高阶颜色，例如上限5点当前4点时，全部显示倒数第二点颜色。"
     L["ChiColorPickerBackground"] = "真空气背景色"
     L["MonkWindwalkerAudioDanceOfChiJi"] = "赤精之舞触发"
-    L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "氤氲破"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "资源条显示施放氤氲破所需能量阈值线。"
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "猛虎掌"
@@ -2153,8 +2152,6 @@ if locale == "zhCN" then
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "玄牛下凡即将结束时变为该颜色。"
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "玄牛下凡即将结束（按设置）"
 	
-    L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "活力苏醒激活时变为该颜色。"
-    L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "活力苏醒已激活"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
@@ -2578,4 +2575,5 @@ if locale == "zhCN" then
 	L["CopyMenuConfirmFormat"] = "复制 %s 配置？\n%s\n\n此操作将覆盖目标配置文件的设置。如有需要，你的界面可能会重新加载。"
 	L["CopyMenuConfirmCrossClassFormat"] = "复制 %s 配置？\n%s\n\n注意：源职业与目标职业不同，部分设置可能无法完整迁移。\n\n此操作将覆盖目标配置文件的设置。如有需要，你的界面可能会重新加载。"
 
+    L["MonkMistweaverCheckboxVivify"] = "瞬发抚慰时启用变色"
 end

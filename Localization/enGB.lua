@@ -54,7 +54,6 @@ if locale == "enGB" then
     L["ChiColorsHeader"] = "Chi Colours"
     L["ChiCheckboxUseHighestForAll"] = "Use highest Chi colour for all?"
     L["ChiCheckboxUseHighestForAllTooltip"] = "When checked, the highest Chi's colour will be used for all Chi. E.g., if you have maximum 5 Chi and currently have 4, the Penultimate colour will be used for all Chi instead of just the second to last."
-    L["MonkMistweaverCheckboxVivify"] = "Instant Vivify colour change enabled"
     L["PriestDisciplineCheckboxShadowCovenantTooltip"] = "This will change the bar border colour when you have Shadow Covenant."
     L["PriestDisciplinePowerWordColorsHeader"] = "Power Word Colours"
     L["PriestShadowCheckboxVoidformEnd"] = "VF colour change when ending enabled"
@@ -268,7 +267,6 @@ if locale == "enGB" then
     L["HunterSurvivalIndicatorTakedownEndTooltip"] = "Changes to this colour when Takedown is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "Changes to this colour when Invoke Niuzao is active."
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "Changes to this colour when Invoke Niuzao is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this colour when Vivacious Vivification is active."
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this colour when Heart of the Jade Serpent is ready to use."
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this colour when Heart of the Jade Serpent is active."
     L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this colour when Heart of the Jade Serpent is ready to use."
@@ -291,8 +289,6 @@ if locale == "enGB" then
     L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this colour when fewer than 3 runes are on cooldown while in combat."
     L["GradientBarFillOnlyTooltip"] = "Gradient applies to bar fills only. Borders and backgrounds will use the first colour."
     L["GradientStaggerTooltip"] = "Gradient applies to the stagger bar fill only and will not affect stagger threshold lines."
-    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuary"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRange
-    -- REMOVED: L["DeathKnightBloodCheckboxBoneShieldOssuaryTooltip"] - replaced by DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip
     L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"] = "Change Bone Shield colour for Ossuary building range"
     L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"] = "Changes the Bone Shield fill colour for nodes 1 through 5 when Ossuary is talented."
     L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"] = "Change Bone Shield colour at Ossuary threshold"
@@ -305,17 +301,10 @@ if locale == "enGB" then
     L["ThresholdDetailColorsModeOverride"] = "Override Colour"
     L["ThresholdDetailColorModeTooltip"] = "Static: The threshold line is always shown with a single fixed colour, ignoring all conditional colour rules.\n\nDynamic: The threshold line colour changes based on conditions (under/over threshold, unusable, out of range) using the settings below."
     L["ThresholdDetailColorModeStaticColor"] = "Static Colour"
-    -- Paladin Divine Purpose Indicator Colors
     L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this colour when you have Divine Purpose."
-    -- Druid Restoration Clearcasting Indicator Colors
     L["DruidRestorationIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
-    -- Druid Feral Clearcasting Indicator Colors
     L["DruidFeralIndicatorClearcastingTooltip"] = "Changes to this colour when you have a Clearcasting proc."
-
-    -- Phase 3: Profile Import/Export
     L["ProfileImportErrorNoValid"] = "The import string did not contain any recognisable class, specialisation, or Global Options data."
-
-    -- Use Global Copy menu
     L["CopyMenuButtonTooltip"] = "Copy this section's configuration between profiles, classes, and specialisations."
     L["CopyMenuUseOtherSpec"] = "Use other specialisation configuration"
     L["CopyMenuPushToSpec"] = "Push Global to specialisation"
@@ -323,4 +312,7 @@ if locale == "enGB" then
     L["CopyMenuSection_healthBarColors"] = "Health Bar Colours"
     L["CopyMenuSection_thresholdColors"] = "Threshold Line Colours"
     L["CopyMenuSection_textColors"] = "Text Colours"
+    
+    L["MonkMistweaverCheckboxVivify"] = "Instant Vivify colour change enabled"
+    L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this colour when Vivify is instant cast due to Vivacious Vivification or Serene Surge."
 end

@@ -477,7 +477,6 @@ L["ChiCheckboxUseHighestForAll"] = "Use highest Chi color for all?"
 L["ChiCheckboxUseHighestForAllTooltip"] = "When checked, the highest Chi's color will be used for all Chi. E.g., if you have maximum 5 Chi and currently have 4, the Penultimate color will be used for all Chi instead of just the second to last."
 L["ChiColorPickerBackground"] = "Unfilled Chi background"
 L["MonkWindwalkerAudioDanceOfChiJi"] = "Dance of Chi-Ji"
-L["MonkMistweaverCheckboxVivify"] = "Instant Vivify color change enabled"
 L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Expel Harm"
 L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm."
 L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tiger Palm"
@@ -2346,8 +2345,6 @@ L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "Changes to this color when
 L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "Invoke Niuzao is ending (as configured)"
 
 -- Monk Mistweaver Indicator Colors (bar-agnostic tooltips and color picker labels)
-L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivacious Vivification is active."
-L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivacious Vivification is active"
 L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "Changes to this color when Heart of the Jade Serpent is ready to use."
 L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "Heart of the Jade Serpent is ready"
 L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "Changes to this color when Heart of the Jade Serpent is active."
@@ -2780,3 +2777,7 @@ L["CopyMenuUseFromCurrentGlobalProfileFormat"] = "Current Global Options profile
 L["CopyMenuNewTargetFormat"] = "%s|cFFA335EE (New)|r"
 L["CopyMenuConfirmFormat"] = "Copy %s configuration?\n%s\n\nThis will overwrite the settings for the destination profile. Your UI may reload if needed."
 L["CopyMenuConfirmCrossClassFormat"] = "Copy %s configuration?\n%s\n\nNote: source and destination classes differ; some settings may not transfer cleanly.\n\nThis will overwrite the settings for the destination profile. Your UI may reload if needed."
+
+L["MonkMistweaverCheckboxVivify"] = "Instant Vivify color change enabled"
+L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivify is instant cast due to Vivacious Vivification or Serene Surge."
+L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivify is instant cast"

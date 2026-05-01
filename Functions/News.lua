@@ -12,6 +12,25 @@ local content = [====[
 
 ---
 
+# 12.0.5.5-release (2026-05-01)
+## General
+### Localization
+
+- [#748](#748) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Hunter
+### Marksmanship
+
+- Fix Font & Text settings menu options overlapping.
+
+## Monk
+### Mistweaver
+
+- Include Serene Surge procs in the optional instant Vivify color change.
+- Disable Heart of the Jade Serpent color changes until detection can be improved.
+
+---
+
 # 12.0.5.4-release (2026-04-29)
 ## General
 

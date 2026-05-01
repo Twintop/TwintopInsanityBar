@@ -180,6 +180,9 @@ end
 ---@field public risingSunKick TRB.Classes.SpellBase
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
+---@field public sereneSurge TRB.Classes.SpellBase
+---@field public envelopingMist TRB.Classes.SpellBase
+---@field public vivify TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public rushingWindKick TRB.Classes.SpellBase
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -212,8 +215,18 @@ function TRB.Classes.Monk.MistweaverSpells:New()
 		isTalent = true,
 		duration = 20
 	})
+	self.sereneSurge = TRB.Classes.SpellBase:New({
+		id = 1266735,
+		talentId = 1266734,
+		isTalent = true,
+		duration = 20
+	})
 
 	-- Mistweaver Spec Talents
+	self.envelopingMist = TRB.Classes.SpellBase:New({
+		id = 124682,
+		isTalent = true,
+	})
 	self.rushingWindKick = TRB.Classes.SpellBase:New({
 		id = 467307,
 		isTalent = true,

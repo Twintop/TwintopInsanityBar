@@ -1460,8 +1460,8 @@ local function MistweaverConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "vivaciousVivification", label = L["MonkMistweaverCheckboxVivify"], tooltip = L["MonkMistweaverIndicatorVivaciousVivificationTooltip"], colorLabel = L["MonkMistweaverIndicatorVivaciousVivificationColor"] },
-			{ key = "heartOfTheJadeSerpent", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] },
-			{ key = "heartOfTheJadeSerpentReady", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpentReady"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] },
+			--{ key = "heartOfTheJadeSerpent", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] },
+			--{ key = "heartOfTheJadeSerpentReady", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpentReady"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
