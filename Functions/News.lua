@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.5.5-release (2026-05-02)
+## Hunter
+### Marksmanship
+
+- Fix Font & Text settings menu options overlapping.
+
+---
+
 # 12.0.5.4-release (2026-04-29)
 ## General
 

@@ -1420,9 +1420,6 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	local title = ""
-
-
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
@@ -1443,6 +1440,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
+	yCoord = yCoord - 30
 	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
