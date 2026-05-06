@@ -2781,3 +2781,15 @@ L["CopyMenuConfirmCrossClassFormat"] = "Copy %s configuration?\n%s\n\nNote: sour
 L["MonkMistweaverCheckboxVivify"] = "Instant Vivify color change enabled"
 L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivify is instant cast due to Vivacious Vivification or Serene Surge."
 L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivify is instant cast"
+
+-- Mage Fire - Fire Blast Charges Bar
+L["MageFireBlastCharges"] = "Fire Blast Charges"
+L["MageFireFireBlastCharge1"] = "Fire Blast (1st Charge)"
+L["MageFireFireBlastCharge2"] = "Fire Blast (2nd Charge)"
+L["MageFireFireBlastCharge3"] = "Fire Blast (3rd Charge)"
+L["MageFireFireBlastColorPickerCharge1"] = "Fire Blast Charge (1)"
+L["MageFireFireBlastColorPickerCharge2"] = "Fire Blast Charge (2)"
+L["MageFireFireBlastColorPickerCharge3"] = "Fire Blast Charge (3)"
+L["TabFireBlastCharges"] = "Fire Blast"
+L["MageFireBarTextVariable_fireBlastCharges"] = "Number of Fire Blast charges currently available."
+L["MageFireBarTextVariable_fireBlastTime"] = "Remaining time until the next Fire Blast charge is restored."

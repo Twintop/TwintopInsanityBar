@@ -193,6 +193,7 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			health = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		colors={
 			text = {
@@ -226,6 +227,9 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				fireBlastCharges = TRB.Functions.Settings:DefaultFireBlastChargesBarColors(),
+			},
 			shared = {
 				nodeOrder = {},
 				gradientOrder = {},
@@ -255,7 +259,7 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
 
 	if includeBarText then
@@ -886,6 +890,25 @@ local function FireConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+local function FireConstructFireBlastChargesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.fire
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_fire
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], L["MageFireBlastCharges"])
+
+	yCoord = yCoord - 60
+	local fireBlastChargesDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("fireBlastCharges")
+	if fireBlastChargesDef then
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 8, 2, yCoord, fireBlastChargesDef)
+	end
+end
+
 local function FireConstructManaBarPanel(parent)
 	if parent == nil then
 		return
@@ -928,7 +951,7 @@ local function FireConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord, true, L["MageFireBlastCharges"])
 end
 
 local function FireConstructBarVisibilityPanel(parent)
@@ -941,7 +964,7 @@ local function FireConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", true, L["MageFireBlastCharges"], true)
 end
 
 local function FireConstructFontAndTextPanel(parent)
@@ -1051,6 +1074,7 @@ local function FireConstructOptionsPanel(cache)
 
 	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
+		{ key = "fireBlastCharges", label = L["TabFireBlastCharges"], width = oUi.tabWidth.medium, constructor = FireConstructFireBlastChargesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel },
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FireConstructBarTexturesPanel },

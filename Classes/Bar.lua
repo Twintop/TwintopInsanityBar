@@ -1631,6 +1631,27 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 	}))
 
+	-- Fire Blast Charges bar (Fire Mage)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "fireBlastCharges",
+		displayName = L["MageFireBlastCharges"],
+		isMultiNode = true,
+		maxNodes = 3,
+		minMaxMode = "discrete",
+		hasSpacing = true,
+		hasThresholds = false,
+		hasSameColor = false,
+		colorCurveType = nil,
+		nodeColors = {
+			{ key = "charge1", displayName = L["MageFireFireBlastCharge1"], colorLabel = L["MageFireFireBlastColorPickerCharge1"] },
+			{ key = "charge2", displayName = L["MageFireFireBlastCharge2"], colorLabel = L["MageFireFireBlastColorPickerCharge2"] },
+			{ key = "charge3", displayName = L["MageFireFireBlastCharge3"], colorLabel = L["MageFireFireBlastColorPickerCharge3"] },
+		},
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultFireBlastChargesBarColors()
+		end,
+	}))
+
 	-- Utility bar (generic multi-node discrete bar; class modules override displayName, nodeColors, and defaultColorsFunc)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "utility",

@@ -53,12 +53,8 @@ end
 
 ---@class TRB.Classes.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
 ---@field fireBlast TRB.Classes.SpellBase
---[[---@field ferventFlickering TRB.Classes.SpellBase
 ---@field flameOn TRB.Classes.SpellBase
----@field combustion TRB.Classes.SpellBase
----@field spontaneousCombustion TRB.Classes.SpellBase
----@field fromTheAshes TRB.Classes.SpellBase
----@field fieryRush TRB.Classes.SpellBase]]
+---@field ferventFlickering TRB.Classes.SpellBase
 TRB.Classes.Mage.FireSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FireSpells.__index = TRB.Classes.Mage.FireSpells
 
@@ -72,6 +68,20 @@ function TRB.Classes.Mage.FireSpells:New()
         talentId = 1246833,
         isTalent = true,
         hasCharges = true
+    })
+
+    -- Flame On: grants +1 Fire Blast charge
+    self.flameOn = TRB.Classes.SpellBase:New({
+        id = 205029,
+        talentId = 205029,
+        isTalent = true,
+    })
+
+    -- Fervent Flickering: grants +1 Fire Blast charge
+    self.ferventFlickering = TRB.Classes.SpellBase:New({
+        id = 387044,
+        talentId = 387044,
+        isTalent = true,
     })
 
     return self
@@ -96,6 +106,11 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
+
+		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false },
+		{ variable = "$fbCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false },
+		{ variable = "$fbTime", description = "", printInSettings = false, color = false },
 	})
 end
 
@@ -153,7 +168,7 @@ end
     Creates the appropriate BarGroup instances for each Mage specialization.
     
     Arcane: Primary bar (N=1) + Arcane Charges (N=4)
-    Fire: Primary bar (N=1) only
+    Fire: Primary bar (N=1) + Fire Blast Charges (N=3)
     Frost: Primary bar (N=1) + Icicles (N=5)
 ]]
 
@@ -195,12 +210,20 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
 
     elseif specId == 2 then -- Fire
-        -- Primary mana bar only (1 node)
+        -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
             UIParent,
             "TwintopResourceBarFrame",
             1,
             true -- isPrimary
+        )
+
+        -- Fire Blast Charges (up to 3 nodes: 1 base + 2 from talents)
+        barGroups.secondary = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ComboPoint",
+            3,
+            false -- not primary
         )
 
         -- Health bar (1 node)
@@ -266,6 +289,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true
+            },
+            secondary = {
+                maxNodes = 3,
+                isPrimary = false,
+                resourceType = "FireBlastCharges"
             },
             health = {
                 maxNodes = 1,

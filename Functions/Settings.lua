@@ -8308,6 +8308,21 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 	}
 end
 
+---Gets default Fire Blast Charges bar colors (Fire Mage)
+---@return table
+function TRB.Functions.Settings:DefaultFireBlastChargesBarColors()
+	return {
+		border = { color = "FFFF4400" },
+		background = { color = "66000000" },
+		sameColor = false,
+		nodeColors = {
+			charge1 = { color = "FFFF8800", color2 = "FFFF8800", gradientDirection = "disabled" },
+			charge2 = { color = "FFFF6600", color2 = "FFFF6600", gradientDirection = "disabled" },
+			charge3 = { color = "FFFF4400", color2 = "FFFF4400", gradientDirection = "disabled" },
+		},
+	}
+end
+
 ---Gets default Whirlwind stacks bar colors (Fury Warrior)
 ---@return table
 function TRB.Functions.Settings:DefaultWhirlwindBarColors()
