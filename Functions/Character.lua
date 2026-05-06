@@ -60,6 +60,27 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	-- Base implementation does nothing; class modules override with spec-specific resets.
 end
 
+---Returns the composite key whose settings should currently drive the bar's layout/appearance.
+---For most classes this is just the active spec (`TRB.Data.character.compositeKey`).
+---Druid overrides this when form-switching is enabled to return the form-resolved spec
+---(e.g., Cat Form on a Guardian Druid returns "druid_feral").
+---@return string|nil compositeKey
+function TRB.Functions.Class:GetActiveDisplayCompositeKey()
+	return TRB.Data.character.compositeKey
+end
+
+---Returns the settings table whose values should currently drive the bar's layout/appearance.
+---Built on top of `GetActiveDisplayCompositeKey`. Returns nil when the spec cache is not
+---populated yet (e.g., during early initialization).
+---@return TRB.Classes.Settings.SpecializationSettingsBase|nil settings
+function TRB.Functions.Class:GetActiveDisplaySettings()
+	local key = self:GetActiveDisplayCompositeKey()
+	if not key or not TRB.Data.specCache or not TRB.Data.specCache[key] then
+		return nil
+	end
+	return TRB.Data.specCache[key].settings
+end
+
 ---Initializes or refreshes a target entry in the snapshot target data by GUID.
 ---@param guid string The target's GUID
 ---@param selfInitializeAllowed boolean|nil If false or nil, skips initialization when guid matches the player's GUID

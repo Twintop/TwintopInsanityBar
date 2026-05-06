@@ -1220,9 +1220,14 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 		return
 	end
 
-	-- Get current spec settings
+	-- Get current spec settings. Use the class-resolved display settings so form-aware
+	-- classes (Druid) use the form-spec settings here. Falls back to the active
+	-- compositeKey for all other classes.
 	local settings
-	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+	if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
+		settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	end
+	if not settings and TRB.Data.specCache and TRB.Data.character.compositeKey then
 		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specCache then
 			settings = specCache.settings
@@ -2106,8 +2111,16 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 	if TRB.Data.character.classId == 11 then
 		local specId = TRB.Data.character.specId
 		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		-- Spec-only flags (enableFormSwitching, showComboPoints) live on the
+		-- ACTIVE spec's settings, not on the form-resolved layoutSettings passed
+		-- in here. When the active spec differs from the displayed spec (e.g.,
+		-- Guardian in travel form → layoutSettings is Restoration's), reading
+		-- these flags from `settings` would consult the wrong spec's checkboxes.
+		local activeSpecName = TRB.Data.character.specName
+		local activeSpecSettings = activeSpecName and TRB.Data.settings.druid and TRB.Data.settings.druid[activeSpecName]
+		local activeDisplayBar = activeSpecSettings and activeSpecSettings.displayBar
 		local enableFormSwitching = true
-		if settings.displayBar and settings.displayBar.enableFormSwitching == false then
+		if activeDisplayBar and activeDisplayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
 
@@ -2125,10 +2138,10 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 				return true -- Cat form: combo points are native, always eligible
 			elseif specId == 2 then
 				-- Feral non-cat: showComboPoints defaults ON (nil -> show)
-				return settings.displayBar and settings.displayBar.showComboPoints ~= false
+				return activeDisplayBar and activeDisplayBar.showComboPoints ~= false
 			else
 				-- Non-Feral non-cat: showComboPoints defaults OFF (nil -> hide)
-				return settings.displayBar and settings.displayBar.showComboPoints == true
+				return activeDisplayBar and activeDisplayBar.showComboPoints == true
 			end
 		end
 

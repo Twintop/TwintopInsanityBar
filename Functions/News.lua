@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.5.7-release (2026-05-06)
+## General
+### Localization
+
+- [#749](#749) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Druid
+
+- Fix some issues with bar dimensions and visibility settings not being respected when switching between shapeshift forms.
+- Ensure that the "Show Combo Points in all forms" option is respected when switching forms.
+
+---
+
 # 12.0.5.6-release (2026-05-02)
 ## Monk
 ### Mistweaver
