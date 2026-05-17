@@ -6980,18 +6980,16 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			spec.colors.shared.gradientOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.gradientOrder, "borderOvercap")
 		end
 
+		local createdRuneRegenOvercap = false
 		if indicatorColors.runeRegenOvercap == nil then
+			createdRuneRegenOvercap = true
 			local legacyEnabled = legacyRuneOvercap and legacyRuneOvercap.enabled == true or false
 			local defaultEnabled = legacyRuneOvercap == nil
 			local enabled = legacyRuneOvercap ~= nil and legacyEnabled or defaultEnabled
 			indicatorColors.runeRegenOvercap = {
 				color = legacyRuneOvercap and legacyRuneOvercap.color or "FFFF4500",
 				enabled = enabled,
-				targets = {
-					runicPowerBar = { bar = false, border = false, background = false },
-					runesBar = { bar = enabled, border = false, background = false },
-					boneShield = spec.bars and spec.bars.boneShield and { bar = false, border = false, background = false } or nil,
-				},
+				targets = {},
 			}
 		end
 
@@ -7001,24 +6999,11 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			else
 				EnsureDeathKnightIndicatorTargetTables(indicatorColors.runeRegenOvercap)
 			end
-			if legacyRuneOvercap == nil then
-				local runeTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runesBar
-				local runicPowerTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runicPowerBar
-				local boneShieldTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.boneShield
-				local hasAnyTarget = false
-				if runeTargets then
-					hasAnyTarget = runeTargets.bar or runeTargets.border or runeTargets.background or false
-				end
-				if not hasAnyTarget and runicPowerTargets then
-					hasAnyTarget = runicPowerTargets.bar or runicPowerTargets.border or runicPowerTargets.background or false
-				end
-				if not hasAnyTarget and boneShieldTargets then
-					hasAnyTarget = boneShieldTargets.bar or boneShieldTargets.border or boneShieldTargets.background or false
-				end
-				if indicatorColors.runeRegenOvercap.enabled == false and not hasAnyTarget then
-					indicatorColors.runeRegenOvercap.enabled = true
-					indicatorColors.runeRegenOvercap.targets.runesBar.bar = true
-				end
+			if createdRuneRegenOvercap then
+				-- Only the creation path should seed Death Knight's default target.
+				-- An existing all-false target table is valid saved state from the
+				-- indicator options UI and must survive port-forwarding unchanged.
+				indicatorColors.runeRegenOvercap.targets.runesBar.bar = indicatorColors.runeRegenOvercap.enabled == true
 			end
 			spec.colors.shared.nodeOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.nodeOrder, "runeRegenOvercap")
 		end
