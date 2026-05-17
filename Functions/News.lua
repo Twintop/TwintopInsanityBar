@@ -12,11 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.5.7-release (2026-05-06)
+# 12.0.5.7-release (2026-05-18)
 ## General
 ### Localization
 
 - [#749](#749) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Death Knight
+
+- [#752](#752) Fix an issue that would reset Rune Overcapping color settings to defaults when previously completely disabled.
 
 ## Druid
 
