@@ -1306,6 +1306,13 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		return
 	end
 
+	local function GetActiveCastingOverlayFullHeight(slot, castingSettings, spendingSettings)
+		if slot and slot.insetClipFrame and slot.insetClipFrame:IsShown() and spendingSettings and spendingSettings.enabled then
+			return spendingSettings.fullHeight == true
+		end
+		return castingSettings and castingSettings.fullHeight == true
+	end
+
 	self:TouchRenderTransition(0.35)
 
 	-- If render transition is active, force alpha 0 to prevent flicker
@@ -1337,13 +1344,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if castingSlot then
 				local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
 				local castingColor = settings.colors.bar.casting
+				local spendingSettings = settings.colors.bar.spending
 				castingSlot.texture = castingTexture
+				castingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(castingSlot, castingColor, spendingSettings))
 				if castingColor then
 					castingSlot.color = castingColor
 				end
 				-- Resolve spending color for inset overlay
 				local spendingColor = castingColor
-				local spendingSettings = settings.colors.bar.spending
 				if spendingSettings and spendingSettings.enabled and spendingSettings.color then
 					spendingColor = spendingSettings
 				end
@@ -1362,12 +1370,13 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				if secCastingSlot then
 					local secCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
 					local secCastingColor = settings.colors.bar.casting
+					local secSpendingSettings = settings.colors.bar.spending
 					secCastingSlot.texture = secCastingTexture
+					secCastingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(secCastingSlot, secCastingColor, secSpendingSettings))
 					if secCastingColor then
 						secCastingSlot.color = secCastingColor
 					end
 					local secSpendingColor = secCastingColor
-					local secSpendingSettings = settings.colors.bar.spending
 					if secSpendingSettings and secSpendingSettings.enabled and secSpendingSettings.color then
 						secSpendingColor = secSpendingSettings
 					end
@@ -1530,7 +1539,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if absorbSlot then
 				absorbSlot.texture = settings.textures.absorbBar
 				if settings.colors.healthBar.absorb then
-					absorbSlot.color = settings.colors.healthBar.absorb.color
+					absorbSlot.color = settings.colors.healthBar.absorb
+					absorbSlot:SetFullHeight(settings.colors.healthBar.absorb.fullHeight == true)
 				end
 				absorbSlot:RefreshAppearance()
 			end
@@ -1540,7 +1550,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if incomingHealSlot then
 				incomingHealSlot.texture = settings.textures.incomingHealBar
 				if settings.colors.healthBar.incomingHeal then
-					incomingHealSlot.color = settings.colors.healthBar.incomingHeal.color
+					incomingHealSlot.color = settings.colors.healthBar.incomingHeal
+					incomingHealSlot:SetFullHeight(settings.colors.healthBar.incomingHeal.fullHeight == true)
 				end
 				incomingHealSlot:RefreshAppearance()
 			end
@@ -1557,10 +1568,11 @@ end
 
 ---Updates the absorb shield overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----Supports three display modes:
+---Supports four display modes:
 ---  "overlay" (default): fills from the left edge of the bar up to the absorb amount.
 ---  "appended": visually appends the absorb region to the right of the current health fill,
 ---              using a clip frame so it never extends past the bar's right boundary.
+---  "appendedOverflow": appended mode that can scale beyond the bar width when the absorb exceeds max health.
 ---  "inset": reverse-fill absorb bar RIGHT-anchored to the health fill's RIGHT edge,
 ---           filling leftward to show absorb "eating into" visible health.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
@@ -1572,6 +1584,9 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local absorbSlot = healthNode:GetOrCreateOverlaySlot("absorb")
 
 	local absorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.absorb
+	if absorbColorEntry then
+		absorbSlot:SetFullHeight(absorbColorEntry.fullHeight == true)
+	end
 	if not absorbColorEntry or not absorbColorEntry.enabled then
 		absorbSlot:HideAll()
 		return
@@ -1584,9 +1599,7 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 
 	-- Store for RefreshAppearance
 	absorbSlot.texture = settings.textures.absorbBar
-	if settings.colors.healthBar and settings.colors.healthBar.absorb then
-		absorbSlot.color = settings.colors.healthBar.absorb.color
-	end
+	absorbSlot.color = absorbColorEntry
 
 	if absorbMode == "appended" or absorbMode == "appendedOverflow" then
 		-- Appended mode: absorb bar LEFT anchored to health fill's RIGHT, inside a clip frame
@@ -1671,10 +1684,11 @@ end
 
 ---Updates the incoming heal overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----Supports three display modes:
+---Supports four display modes:
 ---  "overlay" (default): fills from the left edge of the bar up to the incoming heal amount.
 ---  "appended": visually appends the incoming heal region to the right of the current health fill,
 ---              using a clip frame so it never extends past the bar's right boundary.
+---  "appendedOverflow": appended mode that can scale beyond the bar width when the heal exceeds max health.
 ---  "inset": reverse-fill incoming heal bar RIGHT-anchored to the health fill's RIGHT edge,
 ---           filling leftward to show incoming heals "eating into" visible health.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
@@ -1686,6 +1700,9 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	local incomingHealSlot = healthNode:GetOrCreateOverlaySlot("incomingHeal")
 
 	local incomingHealColorEntry = settings.colors.healthBar and settings.colors.healthBar.incomingHeal
+	if incomingHealColorEntry then
+		incomingHealSlot:SetFullHeight(incomingHealColorEntry.fullHeight == true)
+	end
 	if not incomingHealColorEntry or not incomingHealColorEntry.enabled then
 		incomingHealSlot:HideAll()
 		return
@@ -1698,9 +1715,7 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 
 	-- Store for RefreshAppearance
 	incomingHealSlot.texture = settings.textures.incomingHealBar
-	if settings.colors.healthBar and settings.colors.healthBar.incomingHeal then
-		incomingHealSlot.color = settings.colors.healthBar.incomingHeal.color
-	end
+	incomingHealSlot.color = incomingHealColorEntry
 
 	if incomingHealMode == "appended" or incomingHealMode == "appendedOverflow" then
 		-- Appended mode: incoming heal bar LEFT anchored to health fill's RIGHT, inside a clip frame
@@ -1795,8 +1810,10 @@ end
 
 ---Updates the casting resource overlay on the primary resource bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----When castingAmount > 0, uses an appended overlay (resource gain, extends rightward).
----When castingAmount < 0, uses an inset overlay (resource spend, fills leftward).
+---When castingAmount > 0, uses an appended overlay (resource gain, extends rightward)
+---and is gated by colors.bar.casting.enabled.
+---When castingAmount < 0, uses an inset overlay (resource spend, fills leftward)
+---and is gated by colors.bar.spending.enabled when that setting exists.
 ---If the spec defines a separate spending color (colors.bar.spending) and it is enabled,
 ---the inset overlay uses that color instead of the casting color.
 ---@param node TRB.Classes.BarNode # The bar node to apply the overlay on
@@ -1810,7 +1827,10 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 	local castingSlot = node:GetOrCreateOverlaySlot("casting")
 
 	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
-	if not castingSettings or not castingSettings.enabled then
+	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	local castingEnabled = castingSettings and castingSettings.enabled == true
+	local spendingEnabled = spendingSettings and spendingSettings.enabled == true
+	if not castingEnabled and not spendingEnabled then
 		-- Zero out any existing overlays but don't create them
 		castingSlot:SetAppendedOverlayValue(0)
 		castingSlot:SetInsetOverlayValue(0)
@@ -1849,9 +1869,11 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 
 	-- Resolve spending color: use spending if explicitly defined + enabled, otherwise fall back to casting
 	local spendingColor = castingColor
-	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	local castingFullHeight = castingSettings and castingSettings.fullHeight == true or false
+	local spendingFullHeight = castingFullHeight
 	if spendingSettings and spendingSettings.enabled and spendingSettings.color then
 		spendingColor = spendingSettings
+		spendingFullHeight = spendingSettings.fullHeight == true
 	end
 
 	-- Store for RefreshAppearance
@@ -1861,6 +1883,12 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 
 	if castingAmount > 0 then
 		-- Resource gain: appended overlay extends rightward from current fill
+		if not castingEnabled then
+			castingSlot:SetAppendedOverlayValue(0)
+			castingSlot:SetInsetOverlayValue(0)
+			return
+		end
+		castingSlot:SetFullHeight(castingFullHeight)
 		castingSlot:SetInsetOverlayValue(0)
 		if not castingSlot.appendedClipFrame then
 			castingSlot:CreateAppendedOverlay()
@@ -1876,6 +1904,12 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		castingSlot:SetAppendedOverlayValue(castingAmount)
 	else
 		-- Resource spend: inset overlay fills leftward from current fill
+		if not spendingEnabled then
+			castingSlot:SetAppendedOverlayValue(0)
+			castingSlot:SetInsetOverlayValue(0)
+			return
+		end
+		castingSlot:SetFullHeight(spendingFullHeight)
 		castingSlot:SetAppendedOverlayValue(0)
 		if not castingSlot.insetClipFrame then
 			castingSlot:CreateInsetOverlay()

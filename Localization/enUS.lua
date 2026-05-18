@@ -2781,3 +2781,7 @@ L["CopyMenuConfirmCrossClassFormat"] = "Copy %s configuration?\n%s\n\nNote: sour
 L["MonkMistweaverCheckboxVivify"] = "Instant Vivify color change enabled"
 L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "Changes to this color when Vivify is instant cast due to Vivacious Vivification or Serene Surge."
 L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "Vivify is instant cast"
+
+-- Overlay full-height option
+L["OverlayFullHeightCheckbox"] = "Overlay also overlaps bar border?"
+L["OverlayFullHeightCheckboxTooltip"] = "When enabled, this overlay uses the full bar height instead of stopping at the inner bar area."

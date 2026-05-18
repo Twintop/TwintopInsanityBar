@@ -15,6 +15,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public texture string? # Last-applied texture path (for RefreshAppearance)
 ---@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
 ---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
+---@field public fullHeight boolean? # When true, the overlay extends through the bar's border area vertically
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
@@ -38,6 +39,7 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.texture = nil
 	self.color = nil
 	self.spendingColor = nil
+	self.fullHeight = false
 	self.overlayFrame = nil
 	self.appendedClipFrame = nil
 	self.appendedOverlayFrame = nil
@@ -47,6 +49,27 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.insetOverlayReady = nil
 
 	return self
+end
+
+---Sets whether this overlay should extend vertically through the bar border area.
+---@param fullHeight boolean?
+function TRB.Classes.OverlaySlot:SetFullHeight(fullHeight)
+	fullHeight = fullHeight == true
+	if self.fullHeight ~= fullHeight then
+		self.fullHeight = fullHeight
+		self:Reanchor()
+	end
+end
+
+---Gets the vertical offsets used when anchoring overlay frames to the parent bar.
+---@return number topYOffset
+---@return number bottomYOffset
+function TRB.Classes.OverlaySlot:GetVerticalAnchorOffsets()
+	local parent = self.parentNode
+	if self.fullHeight then
+		return 0, 0
+	end
+	return -parent.border, parent.border
 end
 
 -- ============================================================================
@@ -65,8 +88,9 @@ function TRB.Classes.OverlaySlot:CreateOverlay()
 	local frameName = parent.name .. "_" .. self.slotName .. "_Overlay"
 	local overlay = CreateFrame("StatusBar", frameName, parent.frame)
 	overlay:SetFrameLevel(parent.frame:GetFrameLevel() + 1)
-	overlay:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	overlay:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local topYOffset, bottomYOffset = self:GetVerticalAnchorOffsets()
+	overlay:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, topYOffset)
+	overlay:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, bottomYOffset)
 	overlay:Hide()
 
 	self.overlayFrame = overlay
@@ -171,8 +195,9 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 	local parent = self.parentNode
 	-- Re-anchor clip frame to inner area
 	self.appendedClipFrame:ClearAllPoints()
-	self.appendedClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local clipTopYOffset, clipBottomYOffset = self:GetVerticalAnchorOffsets()
+	self.appendedClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
 	self.appendedOverlayReady = true
 
 	-- Re-anchor the overlay bar to the current fill texture's right edge
@@ -180,8 +205,9 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
 			self.appendedOverlayFrame:ClearAllPoints()
-			self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
-			self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			self.appendedOverlayFrame:SetPoint("LEFT", fillTexture, "RIGHT", 0, 0)
+			self.appendedOverlayFrame:SetPoint("TOP", self.appendedClipFrame, "TOP", 0, 0)
+			self.appendedOverlayFrame:SetPoint("BOTTOM", self.appendedClipFrame, "BOTTOM", 0, 0)
 			local innerWidth = math.max(1, parent.width - 2 * parent.border)
 			self.appendedOverlayFrame:SetWidth(innerWidth)
 		end
@@ -218,8 +244,9 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	-- Anchor LEFT to the fill texture's RIGHT edge
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	if fillTexture then
-		overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
-		overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		overlayBar:SetPoint("LEFT", fillTexture, "RIGHT", 0, 0)
+		overlayBar:SetPoint("TOP", clip, "TOP", 0, 0)
+		overlayBar:SetPoint("BOTTOM", clip, "BOTTOM", 0, 0)
 	end
 
 	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
@@ -236,8 +263,9 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	C_Timer.After(0, function()
 		if slot.appendedClipFrame then
 			slot.appendedClipFrame:ClearAllPoints()
-			slot.appendedClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, -slot.parentNode.border)
-			slot.appendedClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, slot.parentNode.border)
+			local clipTopYOffset, clipBottomYOffset = slot:GetVerticalAnchorOffsets()
+			slot.appendedClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, clipTopYOffset)
+			slot.appendedClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, clipBottomYOffset)
 			slot.appendedOverlayReady = true
 		end
 	end)
@@ -359,8 +387,9 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 	local parent = self.parentNode
 	-- Re-anchor clip frame to inner area
 	self.insetClipFrame:ClearAllPoints()
-	self.insetClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	self.insetClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local clipTopYOffset, clipBottomYOffset = self:GetVerticalAnchorOffsets()
+	self.insetClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+	self.insetClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
 	self.insetOverlayReady = true
 
 	-- Re-anchor the overlay bar to the current fill texture's right edge
@@ -368,8 +397,9 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
 			self.insetOverlayFrame:ClearAllPoints()
-			self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-			self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			self.insetOverlayFrame:SetPoint("RIGHT", fillTexture, "RIGHT", 0, 0)
+			self.insetOverlayFrame:SetPoint("TOP", self.insetClipFrame, "TOP", 0, 0)
+			self.insetOverlayFrame:SetPoint("BOTTOM", self.insetClipFrame, "BOTTOM", 0, 0)
 			local innerWidth = math.max(1, parent.width - 2 * parent.border)
 			self.insetOverlayFrame:SetWidth(innerWidth)
 		end
@@ -408,8 +438,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	-- Anchor RIGHT to the fill texture's RIGHT edge
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	if fillTexture then
-		overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-		overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		overlayBar:SetPoint("RIGHT", fillTexture, "RIGHT", 0, 0)
+		overlayBar:SetPoint("TOP", clip, "TOP", 0, 0)
+		overlayBar:SetPoint("BOTTOM", clip, "BOTTOM", 0, 0)
 	end
 
 	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
@@ -426,8 +457,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	C_Timer.After(0, function()
 		if slot.insetClipFrame then
 			slot.insetClipFrame:ClearAllPoints()
-			slot.insetClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, -slot.parentNode.border)
-			slot.insetClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, slot.parentNode.border)
+			local clipTopYOffset, clipBottomYOffset = slot:GetVerticalAnchorOffsets()
+			slot.insetClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, clipTopYOffset)
+			slot.insetClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, clipBottomYOffset)
 			slot.insetOverlayReady = true
 		end
 	end)
@@ -529,8 +561,9 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	-- Re-anchor generic overlay if it exists
 	if self.overlayFrame then
 		self.overlayFrame:ClearAllPoints()
-		self.overlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-		self.overlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+		local topYOffset, bottomYOffset = self:GetVerticalAnchorOffsets()
+		self.overlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, topYOffset)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, bottomYOffset)
 	end
 
 	-- Re-anchor appended overlay if it exists

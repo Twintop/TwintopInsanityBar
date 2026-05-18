@@ -14,6 +14,9 @@ local content = [====[
 
 # 12.0.5.7-release (2026-05-18)
 ## General
+
+- [#751](#751) Add a toggle to allow for overlays (casting, spending, absorb, incoming heal, etc.) to have their height match the full bar height including the border.
+
 ### Localization
 
 - [#749](#749) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!

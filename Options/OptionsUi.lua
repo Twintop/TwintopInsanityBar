@@ -10315,8 +10315,21 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.casting.enabled)
+		controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.casting.fullHeight == true,
+			function(self)
+				spec.colors.bar.casting.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.casting.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -10325,7 +10338,9 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 	end
 
 	if includeSpendingOverlay then
-		yCoord = yCoord - 30
+		if includeCastingOverlay == false then
+			yCoord = yCoord - 30
+		end
 		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -10342,8 +10357,21 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.spending.fullHeight == true,
+			function(self)
+				spec.colors.bar.spending.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -10952,6 +10980,44 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	return yCoord
 end
 
+---Builds the nested checkbox used by overlay-capable color options for the full-height behavior.
+---@param parent frame The parent frame to attach the checkbox to
+---@param frameName string The global frame name to use for the checkbox
+---@param parentX number The X coordinate of the parent checkbox row
+---@param yCoord number The Y coordinate of the parent checkbox row
+---@param isChecked boolean Whether the checkbox should start checked
+---@param onClick fun(self: CheckButton) The OnClick handler for the checkbox
+---@return CheckButton checkbox The created checkbox
+---@return number yCoord The next available Y coordinate after the child row
+function TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(parent, frameName, parentX, yCoord, isChecked, onClick)
+	local checkbox = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	checkbox:SetPoint("TOPLEFT", parentX + (oUi.xPadding * 2), yCoord - 18)
+	getglobal(checkbox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
+	---@diagnostic disable-next-line: inject-field
+	checkbox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
+	checkbox:SetChecked(isChecked == true)
+	checkbox:SetScript("OnClick", onClick)
+
+	return checkbox, yCoord - 45
+end
+
+---Refreshes active bar appearance and values after an overlay geometry setting changes.
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+	if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		local activeSpecCache = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if TRB.Frames.barGroups ~= nil and activeSpecCache and activeSpecCache.settings then
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(activeSpecCache.settings, TRB.Frames.barGroups)
+		end
+	end
+
+	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
 ---Generates the bar color and color-changing options panel, including base bar color, casting overlay color, and optional spending overlay color.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements
@@ -11001,8 +11067,21 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 	f:SetChecked(spec.colors.bar.casting.enabled)
+	controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
+		oUi.xCoord,
+		yCoord,
+		spec.colors.bar.casting.fullHeight == true,
+		function(self)
+			spec.colors.bar.casting.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.casting.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -11010,7 +11089,6 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	end)
 
 	if includeSpendingOverlay then
-		yCoord = yCoord - 30
 		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -11027,8 +11105,21 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.spending.fullHeight == true,
+			function(self)
+				spec.colors.bar.spending.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -11235,16 +11326,29 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
 	end)
 	
-	yCoord = yCoord - 30
+	local absorbCheckboxY = yCoord - 20
 	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showAbsorb
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, absorbCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowAbsorbTooltip"]
 	f:SetChecked(spec.colors.healthBar.absorb.enabled)
+	controls.checkBoxes.showAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_showAbsorbFullHeight",
+		oUi.xCoord2,
+		absorbCheckboxY,
+		spec.colors.healthBar.absorb.fullHeight == true,
+		function(self)
+			spec.colors.healthBar.absorb.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.absorb.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
@@ -11254,7 +11358,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	end)
 
 	-- Incoming Heal Display Mode dropdown
-	yCoord = yCoord - 20
 	controls.dropDown.incomingHealMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IncomingHealMode", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.incomingHealMode:SetWidth(oUi.sliderWidth)
 	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
@@ -11307,16 +11410,29 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "incomingHeal", "health")
 	end)
 
-	yCoord = yCoord - 30
+	local incomingHealCheckboxY = yCoord - 20
 	controls.checkBoxes.showIncomingHeal = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showIncomingHeal", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showIncomingHeal
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, incomingHealCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowIncomingHeal"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowIncomingHealTooltip"]
 	f:SetChecked(spec.colors.healthBar.incomingHeal.enabled)
+	controls.checkBoxes.showIncomingHealFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_showIncomingHealFullHeight",
+		oUi.xCoord2,
+		incomingHealCheckboxY,
+		spec.colors.healthBar.incomingHeal.fullHeight == true,
+		function(self)
+			spec.colors.healthBar.incomingHeal.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true

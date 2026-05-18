@@ -7781,6 +7781,41 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 			end
 		end
 	end
+
+	local function NormalizeOverlayFullHeight(settings)
+		if type(settings) ~= "table" or type(settings.colors) ~= "table" then
+			return
+		end
+
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.casting) == "table" and settings.colors.bar.casting.fullHeight == nil then
+			settings.colors.bar.casting.fullHeight = false
+		end
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.spending) == "table" and settings.colors.bar.spending.fullHeight == nil then
+			settings.colors.bar.spending.fullHeight = false
+		end
+
+		if type(settings.colors.healthBar) == "table" then
+			if type(settings.colors.healthBar.absorb) == "table" and settings.colors.healthBar.absorb.fullHeight == nil then
+				settings.colors.healthBar.absorb.fullHeight = false
+			end
+			if type(settings.colors.healthBar.incomingHeal) == "table" and settings.colors.healthBar.incomingHeal.fullHeight == nil then
+				settings.colors.healthBar.incomingHeal.fullHeight = false
+			end
+		end
+	end
+
+	NormalizeOverlayFullHeight(newSettings.core)
+	for _, className in ipairs({
+		"deathknight", "demonhunter", "druid", "evoker", "hunter", "mage",
+		"monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"
+	}) do
+		if type(newSettings[className]) == "table" then
+			for _, specSettings in pairs(newSettings[className]) do
+				NormalizeOverlayFullHeight(specSettings)
+			end
+		end
+	end
+
 	return newSettings
 end
 
@@ -7905,8 +7940,8 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },
 		background = { color = "66000000" },
-		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended" },
-		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended" },
+		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
+		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
