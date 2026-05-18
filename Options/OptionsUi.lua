@@ -10378,8 +10378,7 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 			end
 		end)
 	end
-
-	yCoord = yCoord - 30
+	
 	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerBorder"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
