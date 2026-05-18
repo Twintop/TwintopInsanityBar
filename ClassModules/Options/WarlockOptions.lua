@@ -402,6 +402,7 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
 				second = {
 					color = "FF8788EE",
 					color2 = "FF8788EE",
@@ -492,6 +493,8 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 	if includeBarText then
 		settings.displayText.barText = DestructionLoadDefaultBarTextSettings(classic)
 	end
+	settings.textures.comboPointsCastingBar = settings.textures.castingBar
+	settings.textures.comboPointsCastingBarName = settings.textures.castingBarName
 
 	return settings
 end
@@ -1498,6 +1501,9 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceSoulShards"])
+
+	yCoord = TRB.Functions.OptionsUi:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceSoulShards"])
+
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1540,7 +1546,7 @@ local function DestructionConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_destruction
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 3, yCoord, true, L["ResourceSoulShards"], nil, nil, true)
 end
 
 local function DestructionConstructBarVisibilityPanel(parent)

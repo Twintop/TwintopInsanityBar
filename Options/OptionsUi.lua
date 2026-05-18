@@ -5922,6 +5922,71 @@ function TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent
 	return yCoord - 30
 end
 
+---Generates casting overlay color controls for a secondary node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, classId, specId, yCoord, secondaryResourceString)
+	if secondaryResourceString == nil then
+		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	spec.colors = spec.colors or {}
+	spec.colors.comboPoints = spec.colors.comboPoints or {}
+	spec.colors.comboPoints.casting = spec.colors.comboPoints.casting or TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true)
+
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local frameName = "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondaryCastingOverlay"
+
+	controls.colors.comboPoints.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["SecondaryCastingOverlayColorPicker"], secondaryResourceString), spec.colors.comboPoints.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = controls.colors.comboPoints.casting
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "casting")
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.casting, self, classId, specId)
+	end)
+
+	controls.checkBoxes.secondaryCastingOverlayEnabled = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes.secondaryCastingOverlayEnabled
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondaryCastingOverlayCheckbox"], secondaryResourceString))
+	checkBox.tooltip = string.format(L["SecondaryCastingOverlayCheckboxTooltip"], secondaryResourceString)
+	checkBox:SetChecked(spec.colors.comboPoints.casting.enabled)
+	controls.checkBoxes.secondaryCastingOverlayFullHeight = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondaryCastingOverlayFullHeight", parent, "ChatConfigCheckButtonTemplate")
+	local fullHeightCheckBox = controls.checkBoxes.secondaryCastingOverlayFullHeight
+	fullHeightCheckBox:SetPoint("TOPLEFT", oUi.xCoord + (oUi.xPadding * 2), yCoord - 18)
+	getglobal(fullHeightCheckBox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
+	fullHeightCheckBox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
+	fullHeightCheckBox:SetChecked(spec.colors.comboPoints.casting.fullHeight == true)
+	fullHeightCheckBox:SetScript("OnClick", function(self)
+		spec.colors.comboPoints.casting.fullHeight = self:GetChecked()
+		TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+	end)
+	yCoord = yCoord - 45
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.secondaryCastingOverlayFullHeight, spec.colors.comboPoints.casting.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.casting.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.secondaryCastingOverlayFullHeight, spec.colors.comboPoints.casting.enabled)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	return yCoord
+end
+
 ---Legacy wrapper for health bar dimension options. Delegates to GenerateAncillaryBarDimensionsOptions.
 ---@param parent Frame Parent frame for the controls
 ---@param controls table Table to store control references
@@ -6952,10 +7017,14 @@ end
 ---@param includeComboPoints boolean? Whether to sync combo point bar texture
 ---@param includeManaBar boolean? Whether to sync mana bar texture
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to sync
-function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
+---@param includeComboPointsCastingOverlay boolean? Whether to sync secondary casting overlay texture
+function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
+	end
+	if includeComboPointsCastingOverlay == nil then
+		includeComboPointsCastingOverlay = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
@@ -6976,6 +7045,12 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			textures.comboPointsBar = newValue
 			textures.comboPointsBarName = newName
 			DropdownSetupMenuWrapper(controls.comboPointsBar)
+
+			if includeComboPointsCastingOverlay then
+				textures.comboPointsCastingBar = newValue
+				textures.comboPointsCastingBarName = newName
+				DropdownSetupMenuWrapper(controls.comboPointsCastingBar)
+			end
 		end
 
 		if includeManaBar then
@@ -7057,10 +7132,14 @@ end
 ---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
 ---@param includeManaBar boolean? Whether to include mana bar textures
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
+---@param includeComboPointsCastingOverlay boolean? Whether to include secondary casting overlay texture
 ---@return number yCoord New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars)
+function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	if includeComboPoints == nil then
 		includeComboPoints = false
+	end
+	if includeComboPointsCastingOverlay == nil then
+		includeComboPointsCastingOverlay = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
@@ -7123,7 +7202,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	---@param variable string The texture variable being changed (e.g., "resource", "casting")
 	---@param newValue string The new texture value
 	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
+		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	end
 
 	---Applies a new overlay texture value and syncs all related dropdowns via UpdateOverlayDropdowns.
@@ -7172,6 +7251,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	table.insert(barTextureItems, { key = "healthBar", label = L["HealthBarTexture"], callback = function(newValue) StatusbarSetValue("health", newValue) end })
 	if includeComboPoints then
 		table.insert(barTextureItems, { key = "comboPointsBar", label = string.format(L["SecondaryBarTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPoints", newValue) end })
+		if includeComboPointsCastingOverlay then
+			table.insert(barTextureItems, { key = "comboPointsCastingBar", label = string.format(L["SecondaryCastingOverlayTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPointsCasting", newValue) end })
+		end
 	end
 	if includeManaBar then
 		table.insert(barTextureItems, { key = "manaBarBar", label = L["ManaBarTexture"], callback = function(newValue) StatusbarSetValue("manaBar", newValue) end })

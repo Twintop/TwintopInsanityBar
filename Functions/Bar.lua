@@ -1325,6 +1325,18 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	wipe(TRB.Data.cache.colors.backdrop)
 
 	local frameLevels = TRB.Data.constants.frameLevels
+	local secondaryCastingSettings
+	local secondarySpendingSettings
+	local secondaryCastingTexture
+	if settings.colors and settings.colors.comboPoints and settings.colors.comboPoints.casting then
+		secondaryCastingSettings = settings.colors.comboPoints.casting
+		secondarySpendingSettings = nil
+		secondaryCastingTexture = settings.textures.comboPointsCastingBar or settings.textures.castingBar or settings.textures.resourceBar
+	else
+		secondaryCastingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
+		secondarySpendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+		secondaryCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
+	end
 
 	if barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -1368,17 +1380,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if secondaryNode then
 				local secCastingSlot = secondaryNode:GetOverlaySlot("casting")
 				if secCastingSlot then
-					local secCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
-					local secCastingColor = settings.colors.bar.casting
-					local secSpendingSettings = settings.colors.bar.spending
-					secCastingSlot.texture = secCastingTexture
-					secCastingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(secCastingSlot, secCastingColor, secSpendingSettings))
-					if secCastingColor then
-						secCastingSlot.color = secCastingColor
+					secCastingSlot.texture = secondaryCastingTexture
+					secCastingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(secCastingSlot, secondaryCastingSettings, secondarySpendingSettings))
+					if secondaryCastingSettings then
+						secCastingSlot.color = secondaryCastingSettings
 					end
-					local secSpendingColor = secCastingColor
-					if secSpendingSettings and secSpendingSettings.enabled and secSpendingSettings.color then
-						secSpendingColor = secSpendingSettings
+					local secSpendingColor = secondaryCastingSettings
+					if secondarySpendingSettings and secondarySpendingSettings.enabled and secondarySpendingSettings.color then
+						secSpendingColor = secondarySpendingSettings
 					end
 					secCastingSlot.spendingColor = secSpendingColor
 					secCastingSlot:RefreshAppearance()
@@ -1821,13 +1830,23 @@ end
 ---@param settings table # The spec cache settings (specCacheSettings)
 ---@param castingAmountOverride number|nil # Optional: explicit casting amount (pre-factored). When nil, reads snapshotData.casting.resourceFinal * resourceFactor.
 ---@param maxResourceOverride number|nil # Optional: explicit max resource. When nil, reads TRB.Data.character.maxResource.
-function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, settings, castingAmountOverride, maxResourceOverride)
+---@param castingSettingsOverride table|nil # Optional casting color/settings override.
+---@param spendingSettingsOverride table|nil # Optional spending color/settings override.
+---@param castingTextureOverride string|nil # Optional casting texture override.
+function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, settings, castingAmountOverride, maxResourceOverride, castingSettingsOverride, spendingSettingsOverride, castingTextureOverride)
 	if not node then return end
 
 	local castingSlot = node:GetOrCreateOverlaySlot("casting")
 
-	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
-	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	local castingSettings
+	local spendingSettings
+	if castingSettingsOverride ~= nil or spendingSettingsOverride ~= nil then
+		castingSettings = castingSettingsOverride
+		spendingSettings = spendingSettingsOverride
+	else
+		castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
+		spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	end
 	local castingEnabled = castingSettings and castingSettings.enabled == true
 	local spendingEnabled = spendingSettings and spendingSettings.enabled == true
 	if not castingEnabled and not spendingEnabled then
@@ -1864,7 +1883,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		return
 	end
 
-	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
+	local castingTexture = castingTextureOverride or settings.textures.castingBar or settings.textures.resourceBar
 	local castingColor = castingSettings
 
 	-- Resolve spending color: use spending if explicitly defined + enabled, otherwise fall back to casting

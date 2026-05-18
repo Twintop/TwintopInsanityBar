@@ -7644,12 +7644,61 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	local function EnsureSecondaryCastingOverlayColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true)
+		if comboPointColors.casting == nil then
+			comboPointColors.casting = defaultColor
+		elseif type(comboPointColors.casting) == "string" then
+			comboPointColors.casting = {
+				color = comboPointColors.casting,
+				color2 = comboPointColors.casting,
+				gradientDirection = "disabled",
+				enabled = true,
+				fullHeight = false
+			}
+		elseif type(comboPointColors.casting) == "table" then
+			comboPointColors.casting.color = comboPointColors.casting.color or defaultColor.color
+			comboPointColors.casting.color2 = comboPointColors.casting.color2 or comboPointColors.casting.color
+			comboPointColors.casting.gradientDirection = comboPointColors.casting.gradientDirection or "disabled"
+			if comboPointColors.casting.enabled == nil then
+				comboPointColors.casting.enabled = true
+			end
+			if comboPointColors.casting.fullHeight == nil then
+				comboPointColors.casting.fullHeight = false
+			end
+		end
+	end
+
+	local function EnsureSecondaryCastingOverlayTexture(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.textures = specSettings.textures or {}
+		local textures = specSettings.textures
+		local defaultTextures = TRB.Functions.Settings:DefaultTextures(true)
+		textures.comboPointsCastingBar = textures.comboPointsCastingBar or textures.castingBar or textures.comboPointsBar or defaultTextures.castingBar
+		textures.comboPointsCastingBarName = textures.comboPointsCastingBarName or textures.castingBarName or textures.comboPointsBarName or defaultTextures.castingBarName
+	end
+
 	EnsureSecondaryPartialFillColor("paladin", "holy")
 	EnsureSecondaryPartialFillColor("paladin", "protection")
 	EnsureSecondaryPartialFillColor("paladin", "retribution")
 	EnsureSecondaryPartialFillColor("warlock", "affliction")
 	EnsureSecondaryPartialFillColor("warlock", "demonology")
 	EnsureSecondaryPartialFillColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayTexture("warlock", "destruction")
 	EnsureSecondaryPartialFillColor("druid", "feral")
 	EnsureSecondaryPartialFillColor("evoker", "devastation")
 	EnsureSecondaryPartialFillColor("evoker", "preservation")
@@ -7988,6 +8037,23 @@ function TRB.Functions.Settings:DefaultSecondaryPartialFillColor(enabled)
 		color2 = "FFFF4500",
 		gradientDirection = "disabled",
 		enabled = enabled
+	}
+end
+
+---Gets the default secondary casting overlay color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(enabled)
+	if enabled == nil then
+		enabled = true
+	end
+
+	return {
+		color = "FFFFFFFF",
+		color2 = "FFFFFFFF",
+		gradientDirection = "disabled",
+		enabled = enabled,
+		fullHeight = false
 	}
 end
 
