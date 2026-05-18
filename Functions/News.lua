@@ -16,6 +16,8 @@ local content = [====[
 ## General
 
 - [#751](#751) Add a toggle to allow for overlays (casting, spending, absorb, incoming heal, etc.) to have their height match the full bar height including the border.
+- Allow the settings window to be dragged off screen instead of being clamped within the screen boundaries.
+- Allow the settings window to be dragged by other areas besides the title bar.
 
 ### Localization
 
