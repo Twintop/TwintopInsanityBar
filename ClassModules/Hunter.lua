@@ -596,13 +596,14 @@ end
 
 ---comment
 ---@param spell TRB.Classes.SpellBase
-local function FillSnapshotDataCasting(spell)
+local function FillSnapshotDataCasting(spell, mod)
+	mod = mod or 0
 	local currentTime = GetTime()
 	local casting = TRB.Data.snapshotData.casting --[[@as TRB.Classes.SnapshotCasting]]
 	casting.startTime = currentTime
-	if spell.resource ~= nil and spell.resource > 0 then
-		casting.resourceRaw = spell.resource
-		casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
+	if spell.resource ~= nil and spell.resource + mod > 0 then
+		casting.resourceRaw = spell.resource + mod
+		casting.resourceFinal = CalculateAbilityResourceValue(spell.resource + mod)
 	else
 		casting.resourceRaw = -spell:GetPrimaryResourceCost()
 		casting.resourceFinal = casting.resourceRaw
@@ -641,7 +642,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.aimedShot.id then
 				FillSnapshotDataCasting(spells.aimedShot)
 			elseif spellId == spells.steadyShot.id then
-				FillSnapshotDataCasting(spells.steadyShot)
+				if talents:IsTalentActive(spells.invigoratingPulse) then
+					FillSnapshotDataCasting(spells.steadyShot, spells.invigoratingPulse.attributes.resourceMod)
+				else
+					FillSnapshotDataCasting(spells.steadyShot)
+				end
 			elseif spellId == spells.scareBeast.id then
 				FillSnapshotDataCasting(spells.scareBeast)
 			elseif spellId == spells.revivePet.id then
