@@ -700,6 +700,22 @@ local function UpdateResourceBar()
 
 	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+		local regeneratingColor = specSettings.colors.comboPoints.regenerating
+		local function GetSoulShardFillColor(resourceCount, nodeIndex)
+			local shardColor = specSettings.colors.comboPoints.base
+			if (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 3)) then
+				shardColor = specSettings.colors.comboPoints.second
+			elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 2)) then
+				shardColor = specSettings.colors.comboPoints.third
+			elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 1)) then
+				shardColor = specSettings.colors.comboPoints.penultimate
+			elseif (specSettings.comboPoints.sameColor and resourceCount == TRB.Data.character.maxResource2) or nodeIndex == TRB.Data.character.maxResource2 then
+				shardColor = specSettings.colors.comboPoints.final
+			end
+
+			return shardColor
+		end
+
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
 			local cpColor = specSettings.colors.comboPoints.base
@@ -710,18 +726,17 @@ local function UpdateResourceBar()
 
 			if normalizedResource2 >= x then
 				fillValue = 1
-				if (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second
-				elseif (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third
-				elseif (specSettings.comboPoints.sameColor and math.floor(normalizedResource2) == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
-				end
+				cpColor = GetSoulShardFillColor(math.floor(normalizedResource2), x)
 			elseif normalizedResource2 >= (x - 1) then
 				-- Partial fill for Destruction
 				fillValue = normalizedResource2 - (x - 1)
+				if fillValue > 0 and fillValue < 1 then
+					if regeneratingColor and regeneratingColor.enabled then
+						cpColor = regeneratingColor
+					else
+						cpColor = GetSoulShardFillColor(x, x)
+					end
+				end
 			end
 
 			if barGroups and barGroups.secondary then

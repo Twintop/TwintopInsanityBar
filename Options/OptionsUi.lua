@@ -5877,6 +5877,51 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	})
 end
 
+---Generates the optional partial-fill color controls for a secondary node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, classId, specId, yCoord, secondaryResourceString)
+	if secondaryResourceString == nil then
+		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	spec.colors = spec.colors or {}
+	spec.colors.comboPoints = spec.colors.comboPoints or {}
+	spec.colors.comboPoints.regenerating = spec.colors.comboPoints.regenerating or TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local frameName = "TwintopResourceBar_SecondaryPartialFillColor_" .. tostring(classId) .. "_" .. tostring(specId)
+	controls.checkBoxes.secondaryPartialFillColor = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes.secondaryPartialFillColor
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondaryPartialFillColorCheckbox"], secondaryResourceString))
+	checkBox.tooltip = string.format(L["SecondaryPartialFillColorCheckboxTooltip"], secondaryResourceString)
+	checkBox:SetChecked(spec.colors.comboPoints.regenerating.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.regenerating.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.regenerating = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["SecondaryPartialFillColorPicker"], secondaryResourceString), spec.colors.comboPoints.regenerating, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = controls.colors.comboPoints.regenerating
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "regenerating")
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.regenerating, self)
+	end)
+
+	return yCoord - 30
+end
+
 ---Legacy wrapper for health bar dimension options. Delegates to GenerateAncillaryBarDimensionsOptions.
 ---@param parent Frame Parent frame for the controls
 ---@param controls table Table to store control references

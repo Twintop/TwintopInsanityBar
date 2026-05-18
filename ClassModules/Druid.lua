@@ -2642,6 +2642,7 @@ local function UpdateResourceBar()
 				end
 
 				local barOverrideActive = comboPointOverrides and comboPointOverrides.bar
+				local regeneratingColor = specSettings.colors.comboPoints.regenerating
 				local berserkTickShown = 0
 
 				for x = 1, TRB.Data.character.maxResource2 do
@@ -2669,9 +2670,11 @@ local function UpdateResourceBar()
 									berserkTickShown = 1
 
 									if not barOverrideActive then
-										if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+										if regeneratingColor and regeneratingColor.enabled then
+											cpColor = regeneratingColor
+										elseif x == (TRB.Data.character.maxResource2 - 1) then
 											cpColor = specSettings.colors.comboPoints.penultimate
-										elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+										elseif x == TRB.Data.character.maxResource2 then
 											cpColor = specSettings.colors.comboPoints.final
 										end
 									end

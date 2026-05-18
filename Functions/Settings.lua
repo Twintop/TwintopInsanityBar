@@ -7614,6 +7614,47 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	local function EnsureSecondaryPartialFillColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+		if comboPointColors.regenerating == nil then
+			comboPointColors.regenerating = defaultColor
+		elseif type(comboPointColors.regenerating) == "string" then
+			comboPointColors.regenerating = {
+				color = comboPointColors.regenerating,
+				color2 = comboPointColors.regenerating,
+				gradientDirection = "disabled",
+				enabled = false
+			}
+		elseif type(comboPointColors.regenerating) == "table" then
+			comboPointColors.regenerating.color = comboPointColors.regenerating.color or defaultColor.color
+			comboPointColors.regenerating.color2 = comboPointColors.regenerating.color2 or comboPointColors.regenerating.color
+			comboPointColors.regenerating.gradientDirection = comboPointColors.regenerating.gradientDirection or "disabled"
+			if comboPointColors.regenerating.enabled == nil then
+				comboPointColors.regenerating.enabled = false
+			end
+		end
+	end
+
+	EnsureSecondaryPartialFillColor("paladin", "holy")
+	EnsureSecondaryPartialFillColor("paladin", "protection")
+	EnsureSecondaryPartialFillColor("paladin", "retribution")
+	EnsureSecondaryPartialFillColor("warlock", "affliction")
+	EnsureSecondaryPartialFillColor("warlock", "demonology")
+	EnsureSecondaryPartialFillColor("warlock", "destruction")
+	EnsureSecondaryPartialFillColor("druid", "feral")
+	EnsureSecondaryPartialFillColor("evoker", "devastation")
+	EnsureSecondaryPartialFillColor("evoker", "preservation")
+	EnsureSecondaryPartialFillColor("evoker", "augmentation")
+
 	-- Backfill global health bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil and TwintopInsanityBarSettings.core.healthBar ~= nil then
 		local hb = TwintopInsanityBarSettings.core.healthBar
@@ -7931,6 +7972,22 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			yOffset = 0,
 			matchWidth = true,
 		},
+	}
+end
+
+---Gets the default secondary partial-fill color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryPartialFillColor(enabled)
+	if enabled == nil then
+		enabled = false
+	end
+
+	return {
+		color = "FFFF4500",
+		color2 = "FFFF4500",
+		gradientDirection = "disabled",
+		enabled = enabled
 	}
 end
 

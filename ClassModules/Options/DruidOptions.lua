@@ -852,6 +852,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
+				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
 				penultimate = {
 					color = "FFFF9900",
 					color2 = "FFFF9900",
@@ -2144,6 +2145,9 @@ local function FeralConstructComboPointsBarPanel(parent)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
+
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceComboPoints"])
 
 	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)

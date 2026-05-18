@@ -15,6 +15,8 @@ local content = [====[
 # 12.0.5.7-release (2026-05-18)
 ## General
 
+- [#717](#717) Add a new color option for secondary bars that have partial fills (Destruction Warlock's Soul Shards) or time-based generation (Evoker's Essence, Feral Druid's Combo Points).
+- [#717](#717) Standardize the layout of all secondary bar color options to be in the same format and order across all specializations.
 - [#751](#751) Add a toggle to allow for overlays (casting, spending, absorb, incoming heal, etc.) to have their height match the full bar height including the border.
 - Allow the settings window to be dragged off screen instead of being clamped within the screen boundaries.
 - Allow the settings window to be dragged by other areas besides the title bar.

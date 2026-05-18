@@ -888,6 +888,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 	end
 
 	local barOverrideActive = essenceOverrides and essenceOverrides.bar
+	local regeneratingColor = specSettings.colors.comboPoints.regenerating
 
 	for x = 1, TRB.Data.character.maxResource2 do
 		local cpBorderColor = (essenceOverrides and essenceOverrides.border) or specSettings.colors.comboPoints.border.color
@@ -906,6 +907,15 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 			end
 		elseif snapshotData.attributes.resource2 + 1 == x then
 			essenceValue = snapshotData.attributes.essencePartial or UnitPartialPower("player", Enum.PowerType.Essence)
+			if not barOverrideActive and essenceValue > 0 and essenceValue < 1000 then
+				if regeneratingColor and regeneratingColor.enabled then
+					cpColor = regeneratingColor
+				elseif x == (TRB.Data.character.maxResource2 - 1) then
+					cpColor = specSettings.colors.comboPoints.penultimate
+				elseif x == TRB.Data.character.maxResource2 then
+					cpColor = specSettings.colors.comboPoints.final
+				end
+			end
 		end
 
 		if barGroups and barGroups.secondary then

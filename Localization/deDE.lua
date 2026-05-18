@@ -946,7 +946,6 @@ if locale == "deDE" then
     L["BarSettings"] = "Leisteneinstellungen"
     L["CheckboxUseGlobal"] = "Benutze globale Einstellungen"
     L["CheckboxUseGlobalTooltip_Font"] = "Wenn aktiviert, werden die globalen Einstellungen für Schriftart, Farbe und Größe für alle Leistentexte verwendet, bei denen 'Benutze Standard' aktiviert ist."
-    L["WarlockSoulShardsBorderColorsHeader"] = "Seelensplitter Rahmenfarben + Änderungen"
     L["CheckboxUseGlobalTooltip_TextColors"] = "Wenn aktiviert, werden die globalen Einstellungen für Ressourcen-Textfarben verwendet."
     L["GlobalTextColorsHeader"] = "Ressourcen Textfarben"
     L["GlobalColorPickerTextCurrent"] = "Aktuelle Ressource"
