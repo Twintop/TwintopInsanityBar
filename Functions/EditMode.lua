@@ -503,10 +503,10 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	local minX, maxX = 0, baseWidth
 	local minY, maxY = 0, baseHeight
 
-	---Returns the effective width and height for a bar node, accounting for matchWidth, fill direction, multi-node layout, and anchor frame width matching
+	---Returns the effective width and height for a bar node, accounting for matchWidth/matchHeight, multi-node layout, and anchor frame matching
 	---@param node table # An anchor tree node with barSettings, barKey, barGroup, width, height
-	---@param parentWidth number # The parent bar's effective width (used for matchWidth inheritance when horizontal fill)
-	---@param parentHeight number # The parent bar's effective height (used for matchWidth inheritance when vertical fill)
+	---@param parentWidth number # The parent bar's effective width (used for matchWidth inheritance)
+	---@param parentHeight number # The parent bar's effective height (used for matchHeight inheritance)
 	---@return number w # The effective width of the bar
 	---@return number h # The effective height of the bar
 	local function getEffectiveBarSize(node, parentWidth, parentHeight)
@@ -592,8 +592,8 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			end
 		end
 
-		-- Anchor frame width matching override: Edit Mode may have width matching enabled
-		-- for this bar's root, expanding it beyond the matchWidth/calculated width.
+		-- Anchor frame matching overrides: Edit Mode may have width/height matching
+		-- enabled for this bar's root, expanding it beyond the calculated size.
 		if node.barKey then
 			local anchorWidthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, node.barKey)
 			if anchorWidthMatched then
@@ -602,6 +602,16 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 				local anchorWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
 				if anchorWidth and anchorWidth > w then
 					w = anchorWidth
+				end
+			end
+
+			local anchorHeightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, node.barKey)
+			if anchorHeightMatched then
+				local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, node.barKey)
+				local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, node.barKey)
+				local anchorHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
+				if anchorHeight and anchorHeight > h then
+					h = anchorHeight
 				end
 			end
 		end
@@ -1206,6 +1216,21 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 				reapplyLayout()
 			end,
 		},
+		-- 9. Match Height checkbox
+		{
+			kind = LibEditMode.SettingType.Checkbox,
+			name = L["EditModeMatchAnchorHeight"],
+			desc = L["EditModeMatchAnchorHeightTooltip"],
+			default = false,
+			disabled = isLayoutDisabledOrAnchorNone,
+			get = function(layoutName)
+				return self:IsHeightMatchingEnabledRaw(layoutName, rootBarKey)
+			end,
+			set = function(layoutName, newValue, fromReset)
+				self:SetHeightMatchingEnabled(layoutName, newValue, rootBarKey)
+				reapplyLayout()
+			end,
+		},
 	})
 end
 
@@ -1444,6 +1469,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 			anchorToCooldownManager = layoutData.anchorToCooldownManager or "none",
 			anchorOffset = layoutData.anchorOffset or 0,
 			matchCooldownManagerWidth = layoutData.matchCooldownManagerWidth or false,
+			matchCooldownManagerHeight = layoutData.matchCooldownManagerHeight or false,
 		}
 		-- Clean up old flat fields
 		layoutData.enabled = nil
@@ -1451,6 +1477,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		layoutData.anchorToCooldownManager = nil
 		layoutData.anchorOffset = nil
 		layoutData.matchCooldownManagerWidth = nil
+		layoutData.matchCooldownManagerHeight = nil
 	end
 
 	-- Ensure bars sub-table exists
@@ -1471,6 +1498,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 				xOffset = 0,
 				yOffset = 0,
 				matchWidth = false,
+				matchHeight = false,
 			},
 		}
 	end
@@ -1481,6 +1509,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		local oldMode = barData.anchorToCooldownManager
 		local oldOffset = barData.anchorOffset or 0
 		local oldMatchWidth = barData.matchCooldownManagerWidth or false
+		local oldMatchHeight = barData.matchCooldownManagerHeight or false
 
 		barData.anchor = barData.anchor or {}
 		local anchor = barData.anchor
@@ -1506,12 +1535,14 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		end
 
 		anchor.matchWidth = anchor.matchWidth or oldMatchWidth
+		anchor.matchHeight = anchor.matchHeight or oldMatchHeight
 		anchor.customFrameName = anchor.customFrameName or nil
 
 		-- Clean up old flat CDM fields
 		barData.anchorToCooldownManager = nil
 		barData.anchorOffset = nil
 		barData.matchCooldownManagerWidth = nil
+		barData.matchCooldownManagerHeight = nil
 	end
 
 	-- Ensure anchor block and all its fields exist (field-level migration for partial data)
@@ -1525,6 +1556,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 	if anchor.xOffset == nil then anchor.xOffset = 0 end
 	if anchor.yOffset == nil then anchor.yOffset = 0 end
 	if anchor.matchWidth == nil then anchor.matchWidth = false end
+	if anchor.matchHeight == nil then anchor.matchHeight = false end
 	-- customFrameName can legitimately be nil, no default needed
 end
 
@@ -2068,11 +2100,6 @@ end
 ---@return boolean # True if width matching is enabled and applicable
 function TRB.Functions.EditMode:IsWidthMatchingEnabled(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
-	-- matchWidth means "match width" when horizontal, "match height" when vertical
-	local fillDirection = self:GetBarFillDirection(rootBarKey)
-	if TRB.Functions.Bar:IsVerticalFill(fillDirection) then
-		return false
-	end
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
 		-- Early init fallback: scan all layouts for potential width matching
@@ -2136,13 +2163,22 @@ end
 ---@return boolean # True if height matching is enabled and applicable
 function TRB.Functions.EditMode:IsHeightMatchingEnabled(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
-	-- matchWidth means "match height" when vertical fill direction
-	local fillDirection = self:GetBarFillDirection(rootBarKey)
-	if not TRB.Functions.Bar:IsVerticalFill(fillDirection) then
-		return false
-	end
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
+		-- Early init fallback: scan all layouts for potential height matching
+		if TRB.Data.settings.core.editMode and TRB.Data.settings.core.editMode.layouts then
+			for _, layoutData in pairs(TRB.Data.settings.core.editMode.layouts) do
+				if layoutData.bars and layoutData.bars[rootBarKey] then
+					local barData = layoutData.bars[rootBarKey]
+					if barData.enabled and barData.anchor and barData.anchor.matchHeight and barData.anchor.frameKey ~= "none" then
+						if self:IsAnchorFrameAvailable(barData.anchor.frameKey, barData.anchor.customFrameName) then
+							return true
+						end
+						break
+					end
+				end
+			end
+		end
 		return false
 	end
 
@@ -2155,7 +2191,32 @@ function TRB.Functions.EditMode:IsHeightMatchingEnabled(layoutName, rootBarKey)
 		return false
 	end
 
-	return barData.anchor.matchWidth == true
+	return barData.anchor.matchHeight == true
+end
+
+---Gets the RAW saved height matching setting (for UI display)
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+---@return boolean # True if height matching is enabled in settings
+function TRB.Functions.EditMode:IsHeightMatchingEnabledRaw(layoutName, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
+	if not layoutName then
+		return false
+	end
+
+	local barData = self:GetLayoutBarSettings(layoutName, rootBarKey)
+	return barData and barData.anchor and barData.anchor.matchHeight == true
+end
+
+---Sets whether height matching is enabled for a layout for a specific root
+---@param layoutName string # The layout name
+---@param enabled boolean # Whether to enable height matching
+---@param rootBarKey string? # The root bar key (defaults to "primary")
+function TRB.Functions.EditMode:SetHeightMatchingEnabled(layoutName, enabled, rootBarKey)
+	rootBarKey = rootBarKey or "primary"
+	self:EnsureLayoutSettings(layoutName, rootBarKey)
+	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.matchHeight = enabled
 end
 
 -- ============================================================================

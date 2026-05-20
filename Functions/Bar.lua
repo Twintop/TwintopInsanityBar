@@ -2180,7 +2180,9 @@ function TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, bar
 	elseif editMode and editMode.IsWidthMatchingEnabled and editMode:IsWidthMatchingEnabled(nil, barKey) then
 		cdmForced = true
 		if editMode.GetAnchorFrameWidth then
-			local anchorFrameWidth = editMode:GetAnchorFrameWidth(nil, barKey)
+			local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
+			local customFrameName = editMode:GetCustomFrameName(nil, barKey)
+			local anchorFrameWidth = editMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
 			if anchorFrameWidth and anchorFrameWidth > 0 then
 				effectiveWidth = anchorFrameWidth
 			end
@@ -2210,7 +2212,9 @@ function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, ba
 	elseif editMode and editMode.IsHeightMatchingEnabled and editMode:IsHeightMatchingEnabled(nil, barKey) then
 		cdmForced = true
 		if editMode.GetAnchorFrameHeight then
-			local anchorFrameHeight = editMode:GetAnchorFrameHeight(nil, barKey)
+			local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
+			local customFrameName = editMode:GetCustomFrameName(nil, barKey)
+			local anchorFrameHeight = editMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
 			if anchorFrameHeight and anchorFrameHeight > 0 then
 				effectiveHeight = anchorFrameHeight
 			end
@@ -2288,18 +2292,15 @@ function TRB.Functions.Bar:ApplyMultiNodeBarGroupLayout(settings, barGroups, bar
 	local effectiveHeight, cdmHeightForced = self:GetEffectiveHeightForBarGroup(barGroups, settings, barKey)
 	local matchWidth = self:GetMatchWidth(groupSettings)
 	local matchHeight = self:GetMatchHeight(groupSettings)
-	local fullWidth = isVerticalGrowth and matchHeight or matchWidth
+	local fullWidth = isVerticalGrowth and (matchHeight or cdmHeightForced) or (matchWidth or cdmWidthForced)
 	local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
 	local activeNodeCount = targetGroup.nodeCount or nodeCount or 1
 
 	targetGroup:SetLayout(nodeSpacing, fullWidth, self:GetOrientationFromFillDirection(groupSettings.fillDirection), growthDirection)
-	if (not isVerticalGrowth) and cdmWidthForced then
-		targetGroup.fullWidth = true
-	end
 
-	if isVerticalGrowth and not matchHeight then
+	if isVerticalGrowth and not matchHeight and not cdmHeightForced then
 		effectiveHeight = ((groupSettings.height or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
-	elseif (not isVerticalGrowth) and not matchWidth then
+	elseif (not isVerticalGrowth) and not matchWidth and not cdmWidthForced then
 		effectiveWidth = ((groupSettings.width or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
 	end
 
@@ -3034,6 +3035,7 @@ end
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i), "health" (0-maxHealth), or "custom"
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
+---@field public cdmHeightMatched boolean? # If true, Edit Mode anchor-frame height matching is active and vertical multi-node bars should force fullWidth
 ---@field public shouldInitiallyShow boolean? # If false, construction keeps the bar hidden and avoids calling Show() before runtime visibility logic runs
 
 ---Constructs an anchored bar group (combo points, health bar, etc.)
@@ -3092,7 +3094,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local matchHeight = self:GetMatchHeight(groupSettings)
 	local growthDir = groupSettings.growthDirection or "leftRight"
 	local isVertGrowth = (growthDir == "topBottom" or growthDir == "bottomTop")
-	local fullWidth = isVertGrowth and matchHeight or matchWidth
+	local fullWidth = isVertGrowth and (matchHeight or config.cdmHeightMatched) or (matchWidth or config.cdmWidthMatched)
 	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), fullWidth, "HORIZONTAL", groupSettings.growthDirection)
 
 	-- Set frame strata
@@ -3208,9 +3210,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	if config.useApplyLayout then
 		local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
 		local activeNodeCount = targetGroup.nodeCount or nodes or 1
-		if isVertGrowth and not matchHeight then
+		if isVertGrowth and not matchHeight and not config.cdmHeightMatched then
 			groupHeight = ((groupSettings.height or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
-		elseif (not isVertGrowth) and not matchWidth then
+		elseif (not isVertGrowth) and not matchWidth and not config.cdmWidthMatched then
 			groupWidth = ((groupSettings.width or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
 		end
 	end
@@ -3231,14 +3233,6 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Multi-node layout (combo points, runes, etc.)
 		-- Use groupWidth for totalWidth: it has been resolved for matchWidth (parent's width),
 		-- screen-anchored root (rootEffectiveWidth/CDM), or per-node width (non-match case).
-
-		-- When CDM width matching is active along the horizontal growth axis for a
-		-- multi-node root, force fullWidth so ApplyLayout stretches nodes to fill it.
-		-- Vertical growth only stretches via the bar's own matchHeight setting;
-		-- otherwise each node keeps its manually configured height.
-		if (not isVertGrowth) and config.cdmWidthMatched then
-			targetGroup.fullWidth = true
-		end
 
 		-- ApplyLayout expects parameters pre-rotated for vertical growth:
 		--   totalWidth = extent along growth axis (height for vertical)
@@ -3403,9 +3397,10 @@ end
 function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, secondaryGroup, applyAppearance, minMaxModeOverride)
 	local barGroups = TRB.Frames.barGroups
 	local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, "secondary")
+	local heightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, "secondary")
 
-	-- Determine the effective root width for secondary.
-	-- Priority: rootEffectiveWidths (if secondary is a forest root) > anchor frame width > nil
+	-- Determine the effective root dimensions for secondary.
+	-- Priority: rootEffective* (if secondary is a forest root) > anchor frame dimensions > nil
 	local rootEffWidth = barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths["secondary"]
 	if not rootEffWidth and widthMatched then
 		-- Secondary is a child of primary in the forest, but Edit Mode has width
@@ -3413,6 +3408,12 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, "secondary")
 		local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, "secondary")
 		rootEffWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
+	end
+	local rootEffHeight = barGroups and barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights["secondary"]
+	if not rootEffHeight and heightMatched then
+		local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, "secondary")
+		local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, "secondary")
+		rootEffHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
 	end
 
 	---@type TRB.Classes.AnchoredBarGroupConfig
@@ -3423,7 +3424,9 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 		useApplyLayout = true,
 		defaultAnchorAbove = true,
 		rootEffectiveWidth = rootEffWidth,
+		rootEffectiveHeight = rootEffHeight,
 		cdmWidthMatched = widthMatched,
+		cdmHeightMatched = heightMatched,
 		textures = {
 			bar = "comboPointsBar",
 			border = "comboPointsBorder",
