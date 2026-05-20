@@ -573,6 +573,9 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
 					entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
 				end
+				if entry.barGroup.layoutWidth and entry.barGroup.layoutWidth > 0 then
+					entry.barGroup.containerFrame:SetWidth(entry.barGroup.layoutWidth)
+				end
 			else
 				-- Determine if this bar is permanently hidden (collapse) or
 				-- dynamically hidden (maintain height as invisible scaffold).
@@ -581,10 +584,14 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 					or entry.visibilitySettings.neverShow == true
 				if isPermanentlyHidden then
 					entry.barGroup.containerFrame:SetHeight(0.001)
+					entry.barGroup.containerFrame:SetWidth(0.001)
 				else
-					-- Dynamically hidden: keep layout height so anchored bars don't shift
+					-- Dynamically hidden: keep layout dimensions so anchored bars don't shift
 					if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
 						entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
+					end
+					if entry.barGroup.layoutWidth and entry.barGroup.layoutWidth > 0 then
+						entry.barGroup.containerFrame:SetWidth(entry.barGroup.layoutWidth)
 					end
 				end
 			end
@@ -627,6 +634,7 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 				-- Collapse container so anchored children slide together
 				if entry.barGroup.containerFrame then
 					entry.barGroup.containerFrame:SetHeight(0.001)
+					entry.barGroup.containerFrame:SetWidth(0.001)
 				end
 			end
 		end

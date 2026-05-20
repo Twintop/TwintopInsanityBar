@@ -268,23 +268,8 @@ local function ConstructResourceBar(settings)
 			local maxCharges = TRB.Data.character.maxResource2 or 4
 			
 			-- Ensure secondary group knows the correct node count
-			barGroups.secondary:SetNodeCount(maxCharges)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxCharges)
 			barGroups.secondary:Show()
-			
-			-- Get effective width for secondary bar, accounting for CDM width matching
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
-			
-			-- Apply layout to position all nodes correctly
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
 			
 			-- Explicitly set textures and colors for each Arcane Charge node
 			local frameLevels = TRB.Data.constants.frameLevels
@@ -309,31 +294,12 @@ local function ConstructResourceBar(settings)
 			if maxIcicles == 0 then
 				barGroups.secondary:Hide()
 			else
-				-- Ensure secondary group knows the correct node count
-				barGroups.secondary:SetNodeCount(maxIcicles)
-				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
-				barGroups.secondary:Show()
-
-				-- Get effective width for secondary bar, accounting for CDM width matching
-				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-				if cdmForced then
-					barGroups.secondary.fullWidth = true
-				end
-
-				-- Apply layout to position all nodes correctly
-				barGroups.secondary:ApplyLayout(
-					effectiveWidth,
-					settings.comboPoints.width,
-					settings.comboPoints.height,
-					settings.comboPoints.border
-				)
-
 				-- Use the standard rebuild path so caches, textures, and colors are handled correctly
 				if barGroups.secondary.RebuildNodes then
 					barGroups.secondary:RebuildNodes(maxIcicles, settings)
 				else
 					-- Fallback: preserve visibility if RebuildNodes is unavailable
-					barGroups.secondary:SetNodeCount(maxIcicles)
+					Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxIcicles)
 					barGroups.secondary:Show()
 				end
 			end

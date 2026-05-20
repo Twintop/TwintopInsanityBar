@@ -3697,21 +3697,8 @@ function TRB.Functions.Class:CheckCharacter()
 
 				if feralSettings ~= nil and feralSettings.comboPoints ~= nil
 					and feralSettings.colors and feralSettings.colors.comboPoints then
-					-- Get effective width for secondary bar, accounting for CDM width matching
-					local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
-					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(feralSettings.comboPoints), Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL")
-					if cdmForced then
-						barGroups.secondary.fullWidth = true
-					end
-					barGroups.secondary:ApplyLayout(
-						effectiveWidth,
-						feralSettings.comboPoints.width,
-						feralSettings.comboPoints.height,
-						feralSettings.comboPoints.border
-					)
+					Bar:ApplySecondaryBarGroupLayout(feralSettings, barGroups, TRB.Data.character.maxComboPoints)
 					-- Apply textures and colors to all nodes
 					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, TRB.Data.character.maxComboPoints do

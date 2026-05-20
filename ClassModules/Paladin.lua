@@ -274,23 +274,8 @@ local function ConstructResourceBar(settings)
 		local maxHolyPower = TRB.Data.character.maxResource2 or 5
 		
 		-- Ensure secondary group knows the correct node count
-		barGroups.secondary:SetNodeCount(maxHolyPower)
-		barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+		Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxHolyPower)
 		barGroups.secondary:Show()
-		
-		-- Get effective width for secondary bar, accounting for CDM width matching
-		local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-		if cdmForced then
-			barGroups.secondary.fullWidth = true
-		end
-		
-		-- Apply layout to position all nodes correctly
-		barGroups.secondary:ApplyLayout(
-			effectiveWidth,
-			settings.comboPoints.width,
-			settings.comboPoints.height,
-			settings.comboPoints.border
-		)
 		
 		-- Explicitly set textures and colors for each Holy Power node
 		local frameLevels = TRB.Data.constants.frameLevels
