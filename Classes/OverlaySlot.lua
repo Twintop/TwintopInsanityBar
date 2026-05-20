@@ -230,8 +230,9 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 
 			if isVertical then
 				local innerHeight = math.max(1, parent.height - 2 * parent.border)
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
 				self.appendedOverlayFrame:SetHeight(innerHeight)
-				self.appendedOverlayFrame:SetWidth(parent.width - 2 * parent.border)
+				self.appendedOverlayFrame:SetWidth(innerWidth)
 			else
 				local innerWidth = math.max(1, parent.width - 2 * parent.border)
 				self.appendedOverlayFrame:SetWidth(innerWidth)
@@ -297,8 +298,9 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
 	if isVertical then
 		local innerHeight = math.max(1, parent.height - 2 * parent.border)
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
 		overlayBar:SetHeight(innerHeight)
-		overlayBar:SetWidth(parent.width - 2 * parent.border)
+		overlayBar:SetWidth(innerWidth)
 	else
 		local innerWidth = math.max(1, parent.width - 2 * parent.border)
 		overlayBar:SetWidth(innerWidth)
@@ -483,8 +485,9 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 
 			if isVertical then
 				local innerHeight = math.max(1, parent.height - 2 * parent.border)
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
 				self.insetOverlayFrame:SetHeight(innerHeight)
-				self.insetOverlayFrame:SetWidth(parent.width - 2 * parent.border)
+				self.insetOverlayFrame:SetWidth(innerWidth)
 			else
 				local innerWidth = math.max(1, parent.width - 2 * parent.border)
 				self.insetOverlayFrame:SetWidth(innerWidth)
@@ -548,8 +551,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
 	if isVertical then
 		local innerHeight = math.max(1, parent.height - 2 * parent.border)
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
 		overlayBar:SetHeight(innerHeight)
-		overlayBar:SetWidth(parent.width - 2 * parent.border)
+		overlayBar:SetWidth(innerWidth)
 	else
 		local innerWidth = math.max(1, parent.width - 2 * parent.border)
 		overlayBar:SetWidth(innerWidth)
