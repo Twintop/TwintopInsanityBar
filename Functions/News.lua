@@ -23,6 +23,11 @@ local content = [====[
 
 - [#753](#753) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
+## Monk
+### Brewmaster
+
+- Ensure Stagger threshold lines respect the value of the "Threshold line overlap bar border?" option.
+
 ---
 
 # 12.0.5.7-release (2026-05-18)

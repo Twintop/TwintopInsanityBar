@@ -480,9 +480,12 @@ end
 ---@param width number # The width of the threshold line
 ---@param height number # The height of the threshold line
 ---@param borderColor string # The RGBA hex color string for the threshold
-function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor)
+---@param lineThickness? number # The configured threshold line thickness
+function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor, lineThickness)
 	threshold:SetWidth(width)
 	threshold:SetHeight(height)
+---@diagnostic disable-next-line: inject-field
+	threshold.lineThickness = lineThickness or math.min(width or 1, height or 1)
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -568,7 +571,9 @@ end
 ---@param barBorder number # The border size of the bar
 ---@param growRight boolean? # Whether the bar grows right (default true); ignored when fillDirection is present
 ---@param fillDirection trbFillDirection? # The fill direction of the bar (nil defaults to leftRight/rightLeft based on growRight)
-function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine, showThreshold, parentFrame, value, maxResource, barWidth, barBorder, growRight, fillDirection)
+---@param lineThickness? number # The configured threshold line thickness
+---@param overlapBorder? boolean # Whether threshold lines should overlap the bar border
+function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine, showThreshold, parentFrame, value, maxResource, barWidth, barBorder, growRight, fillDirection, lineThickness, overlapBorder)
 	if not showThreshold or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
 		if thresholdLine and not showThreshold then
@@ -595,16 +600,26 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 	local effectiveHeight = renderFrame and renderFrame:GetHeight() or 0
-	local lineThickness
-	if IsVerticalFillDirection(fillDirection) then
-		lineThickness = thresholdLine:GetHeight()
-	else
-		lineThickness = thresholdLine:GetWidth()
+	if lineThickness == nil or lineThickness <= 0 then
+		lineThickness = thresholdLine.lineThickness
+	end
+	if lineThickness == nil or lineThickness <= 0 then
+		if IsVerticalFillDirection(fillDirection) then
+			lineThickness = thresholdLine:GetHeight()
+		else
+			lineThickness = thresholdLine:GetWidth()
+		end
 	end
 	if lineThickness == nil or lineThickness <= 0 then
 		lineThickness = 1
 	end
-	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, 0)
+---@diagnostic disable-next-line: inject-field
+	thresholdLine.lineThickness = lineThickness
+	local borderSubtraction = 0
+	if overlapBorder == false then
+		borderSubtraction = (barBorder or 0) * 2
+	end
+	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}

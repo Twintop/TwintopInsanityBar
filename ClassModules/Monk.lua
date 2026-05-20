@@ -296,7 +296,7 @@ local function ConstructResourceBar(settings)
 					
 					for _ = 1, 3 do
 						local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetFrame())
-						Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
+						Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor, thresholdSize)
 						staggerNode:RegisterThreshold(thresholdFrame)
 					end
 				end
@@ -1188,6 +1188,9 @@ local function UpdateResourceBar()
 						local staggerSettings = specSettings.bars and specSettings.bars.stagger or {}
 						local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
 						local staggerBorder = staggerSettings.border or 2
+						local thresholdProperties = specSettings.thresholds and specSettings.thresholds.properties or {}
+						local thresholdSize = thresholdProperties.width or 2
+						local thresholdOverlapBorder = thresholdProperties.overlapBorder
 						
 						-- Get max scale (default 1.0 = 100% of max health)
 						local maxScale = staggerSettings.maxScale or 1.0
@@ -1312,7 +1315,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection, thresholdSize, thresholdOverlapBorder)
 						end
 
 						-- Heavy Stagger threshold (configurable position, discrete color)
@@ -1322,7 +1325,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection, thresholdSize, thresholdOverlapBorder)
 						end
 
 						-- Extremely Heavy Stagger threshold (configurable position, discrete color)
@@ -1332,7 +1335,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[3], extremeColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection, thresholdSize, thresholdOverlapBorder)
 						end
 					end
 				end
@@ -2378,7 +2381,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				
 				for _ = 1, 3 do
 					local thresholdFrame = CreateFrame("Frame", nil, staggerNode:GetFrame())
-					Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor)
+					Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, borderColor, thresholdSize)
 					staggerNode:RegisterThreshold(thresholdFrame)
 				end
 			end
