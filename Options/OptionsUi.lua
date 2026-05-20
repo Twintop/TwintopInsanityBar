@@ -10276,10 +10276,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, sp
 		local iconRelativeTo = dictEntry.icon.relativeTo or spec.thresholds.icons.relativeTo or "BOTTOM"
 
 		local relativeToMap = {}
-		relativeToMap[L["PositionAbove"]] = "TOP"
+		relativeToMap[L["ThresholdIconPositionAboveLeft"]] = "TOP"
 		relativeToMap[L["PositionMiddle"]] = "CENTER"
-		relativeToMap[L["PositionBelow"]] = "BOTTOM"
-		local relativeToList = { L["PositionAbove"], L["PositionMiddle"], L["PositionBelow"] }
+		relativeToMap[L["ThresholdIconPositionBelowRight"]] = "BOTTOM"
+		local relativeToList = { L["ThresholdIconPositionAboveLeft"], L["PositionMiddle"], L["ThresholdIconPositionBelowRight"] }
 
 		-- Set initial display text
 		for k, v in pairs(relativeToMap) do
@@ -10572,14 +10572,20 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
 
 	local relativeTo = {}
-	relativeTo[L["PositionAbove"]] = "TOP"
+	relativeTo[L["ThresholdIconPositionAboveLeft"]] = "TOP"
 	relativeTo[L["PositionMiddle"]] = "CENTER"
-	relativeTo[L["PositionBelow"]] = "BOTTOM"
+	relativeTo[L["ThresholdIconPositionBelowRight"]] = "BOTTOM"
 	local relativeToList = {
-		L["PositionAbove"],
+		L["ThresholdIconPositionAboveLeft"],
 		L["PositionMiddle"],
-		L["PositionBelow"]
+		L["ThresholdIconPositionBelowRight"]
 	}
+	for label, value in pairs(relativeTo) do
+		if value == spec.thresholds.icons.relativeTo then
+			thresholdIconRelativeTo:SetDefaultText(label)
+			break
+		end
+	end
 
 	local function RelativeToIsSelected(value)
 		return value == spec.thresholds.icons.relativeTo

@@ -2805,3 +2805,7 @@ L["GrowthDirectionBottomTop"] = "Bottom to Top"
 L["GrowthDirectionTopBottom"] = "Top to Bottom"
 L["MatchAnchorHeight"] = "Match Anchor Bar Height"
 L["MatchAnchorHeightTooltip"] = "When enabled, this bar's height will match the bar it is anchored to."
+
+-- Threshold Icon Position Labels
+L["ThresholdIconPositionAboveLeft"] = "Above/Left"
+L["ThresholdIconPositionBelowRight"] = "Below/Right"

@@ -8956,7 +8956,7 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 		showCooldown = true,
 		border = 2,
 		relativeTo = "BOTTOM",
-		relativeToName = L["PositionBelow"],
+		relativeToName = L["ThresholdIconPositionBelowRight"],
 		enabled = true,
 		desaturated = true,
 		xPos = 0,

@@ -38,6 +38,25 @@ local function IsVerticalFillDirection(fillDirection)
 	return fillDirection == "bottomTop" or fillDirection == "topBottom"
 end
 
+---@param thresholdLine Frame
+---@param fillDirection trbFillDirection?
+---@param effectiveWidth number
+---@param effectiveHeight number
+---@param lineThickness number
+---@param borderSubtraction number
+local function SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+	local crossSection = IsVerticalFillDirection(fillDirection) and effectiveWidth or effectiveHeight
+	crossSection = math.max((crossSection or 0) - (borderSubtraction or 0), 0)
+
+	if IsVerticalFillDirection(fillDirection) then
+		thresholdLine:SetWidth(crossSection)
+		thresholdLine:SetHeight(lineThickness)
+	else
+		thresholdLine:SetWidth(lineThickness)
+		thresholdLine:SetHeight(crossSection)
+	end
+end
+
 
 ---Configures a threshold icon's anchor point, position, and size based on the spec's threshold icon settings.
 ---For vertical bars, "Above" (TOP) remaps to LEFT, "Below" (BOTTOM) remaps to RIGHT.
@@ -113,27 +132,40 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		fillDirection = growRight and "leftRight" or "rightLeft"
 	end
 
+	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
+	local cache = TRB.Data.cache.values.threshold[key]
+
 	-- Derive effective dimensions from the parent frame's actual rendered size.
 	local effectiveWidth = parentFrame:GetWidth()
 	local effectiveHeight = parentFrame:GetHeight()
+	local lineThickness = cache.lineThickness or settings.thresholds.properties.width
+	local overlapBorder = cache.overlapBorder
+	if overlapBorder == nil then
+		overlapBorder = settings.thresholds.properties.overlapBorder
+	end
+	local borderSubtraction = 0
+	if not overlapBorder then
+		borderSubtraction = settings.bar.border * 2
+	end
+	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+
 	-- Use the appropriate axis for the cache key
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+	if cache.value ~= value or cache.maxResource ~= maxResource or cache.effectiveSize ~= effectiveSize or cache.fillDirection ~= fillDirection then
 		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
 		thresholdLine:ClearAllPoints()
 		thresholdLine:SetPoint(anchorPoint, parentFrame, parentAnchor, xOffset, yOffset)
-		TRB.Data.cache.values.threshold[key].value = value
-		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
-		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
+		cache.value = value
+		cache.maxResource = maxResource
+		cache.effectiveSize = effectiveSize
+		cache.fillDirection = fillDirection
 	end
 
-	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
+	if cache.icon ~= thresholdLine.icon then
 		SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
-		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
+		cache.icon = thresholdLine.icon
 	end
 end
 
@@ -157,9 +189,10 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 	end
 
 	-- Determine icon visibility: per-threshold override > global setting
+	local iconOverrides = thresholdOverrides and thresholdOverrides.icon
 	local showIcon = settings.thresholds.icons.enabled
-	if thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled then
-		showIcon = thresholdOverrides.icon.show ~= false
+	if iconOverrides and iconOverrides.enabled then
+		showIcon = iconOverrides.show ~= false
 	end
 
 	if showIcon then
@@ -169,14 +202,16 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		end
 
 		-- Determine effective icon size/position: per-threshold override > global
-		local hasOverride = thresholdOverrides and thresholdOverrides.icon and thresholdOverrides.icon.enabled and thresholdOverrides.icon.show ~= false
+		local activeIconOverrides
+		if iconOverrides ~= nil and iconOverrides.enabled and iconOverrides.show ~= false then
+			activeIconOverrides = iconOverrides
+		end
 		local width, height, xPos, yPos
-		if hasOverride then
-			local iconSettings = thresholdOverrides.icon
-			width = iconSettings.width ~= nil and iconSettings.width or settings.thresholds.icons.width
-			height = iconSettings.height ~= nil and iconSettings.height or settings.thresholds.icons.height
-			xPos = iconSettings.xPos ~= nil and iconSettings.xPos or settings.thresholds.icons.xPos
-			yPos = iconSettings.yPos ~= nil and iconSettings.yPos or settings.thresholds.icons.yPos
+		if activeIconOverrides ~= nil then
+			width = activeIconOverrides.width ~= nil and activeIconOverrides.width or settings.thresholds.icons.width
+			height = activeIconOverrides.height ~= nil and activeIconOverrides.height or settings.thresholds.icons.height
+			xPos = activeIconOverrides.xPos ~= nil and activeIconOverrides.xPos or settings.thresholds.icons.xPos
+			yPos = activeIconOverrides.yPos ~= nil and activeIconOverrides.yPos or settings.thresholds.icons.yPos
 		else
 			width = settings.thresholds.icons.width
 			height = settings.thresholds.icons.height
@@ -186,8 +221,8 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 
 		-- Determine effective relativeTo: per-threshold override > global
 		local effectiveRelativeTo = settings.thresholds.icons.relativeTo
-		if hasOverride and thresholdOverrides.icon.relativeTo ~= nil then
-			effectiveRelativeTo = thresholdOverrides.icon.relativeTo
+		if activeIconOverrides ~= nil and activeIconOverrides.relativeTo ~= nil then
+			effectiveRelativeTo = activeIconOverrides.relativeTo
 		end
 
 		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo or cache.iconFillDirection ~= settings.bar.fillDirection then
@@ -233,8 +268,8 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 
 		-- Determine effective icon border: per-threshold override > global
 		local effectiveBorder = settings.thresholds.icons.border
-		if hasOverride and thresholdOverrides.icon.border ~= nil then
-			effectiveBorder = thresholdOverrides.icon.border
+		if activeIconOverrides ~= nil and activeIconOverrides.border ~= nil then
+			effectiveBorder = activeIconOverrides.border
 		end
 
 		if cache.iconBorder ~= effectiveBorder then
@@ -299,14 +334,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	end
 
 	-- For vertical bars, the threshold is a horizontal stripe (swap width/height)
-	local isVertical = IsVerticalFillDirection(settings.bar.fillDirection)
-	if isVertical then
-		threshold:SetWidth(settings.bar.width - borderSubtraction)
-		threshold:SetHeight(settings.thresholds.properties.width)
-	else
-		threshold:SetWidth(settings.thresholds.properties.width)
-		threshold:SetHeight(settings.bar.height - borderSubtraction)
-	end
+	SetThresholdLineDimensions(threshold, settings.bar.fillDirection, settings.bar.width, settings.bar.height, settings.thresholds.properties.width, borderSubtraction)
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -507,6 +535,7 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 	local effectiveHeight = renderFrame and renderFrame:GetHeight() or 0
+	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, settings.thresholds.properties.width, 0)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -566,6 +595,16 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	local renderFrame = thresholdLine:GetParent()
 	local effectiveWidth = renderFrame and renderFrame:GetWidth() or 0
 	local effectiveHeight = renderFrame and renderFrame:GetHeight() or 0
+	local lineThickness
+	if IsVerticalFillDirection(fillDirection) then
+		lineThickness = thresholdLine:GetHeight()
+	else
+		lineThickness = thresholdLine:GetWidth()
+	end
+	if lineThickness == nil or lineThickness <= 0 then
+		lineThickness = 1
+	end
+	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, 0)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -823,15 +862,17 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
+		local colorOverrides = thresholdOverrides and thresholdOverrides.colors
 
 		-- Per-threshold color overrides: each color type has a mode (shared/override/hidden)
 		-- Static color mode: always show with a fixed color, bypass all dynamic color logic
-		local isStaticColorMode = thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.colorMode == "static"
-		if isStaticColorMode then
-			if thresholdOverrides.colors.staticColor and thresholdOverrides.colors.staticColor.color then
-				thresholdColor = thresholdOverrides.colors.staticColor.color
+		local isStaticColorMode = colorOverrides ~= nil and colorOverrides.colorMode == "static"
+		if colorOverrides ~= nil and isStaticColorMode then
+			local staticColor = colorOverrides.staticColor
+			if staticColor ~= nil and staticColor.color ~= nil then
+				thresholdColor = staticColor.color
 			end
-		elseif thresholdOverrides and thresholdOverrides.colors and not curveManagesColor then
+		elseif colorOverrides ~= nil and not curveManagesColor then
 			local function GetMode(colorEntry)
 				if colorEntry == nil then return "shared" end
 				if colorEntry.mode ~= nil then return colorEntry.mode end
@@ -842,25 +883,25 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			local hideThreshold = false
 
 			if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
-				local mode = GetMode(thresholdOverrides.colors.unusable)
+				local mode = GetMode(colorOverrides.unusable)
 				if mode == "hidden" then
 					hideThreshold = true
-				elseif mode == "override" and thresholdOverrides.colors.unusable and thresholdOverrides.colors.unusable.color then
-					thresholdColor = thresholdOverrides.colors.unusable.color
+				elseif mode == "override" and colorOverrides.unusable and colorOverrides.unusable.color then
+					thresholdColor = colorOverrides.unusable.color
 				end
 			elseif frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
-				local mode = GetMode(thresholdOverrides.colors.over)
+				local mode = GetMode(colorOverrides.over)
 				if mode == "hidden" then
 					hideThreshold = true
-				elseif mode == "override" and thresholdOverrides.colors.over and thresholdOverrides.colors.over.color then
-					thresholdColor = thresholdOverrides.colors.over.color
+				elseif mode == "override" and colorOverrides.over and colorOverrides.over.color then
+					thresholdColor = colorOverrides.over.color
 				end
 			else
-				local mode = GetMode(thresholdOverrides.colors.under)
+				local mode = GetMode(colorOverrides.under)
 				if mode == "hidden" then
 					hideThreshold = true
-				elseif mode == "override" and thresholdOverrides.colors.under and thresholdOverrides.colors.under.color then
-					thresholdColor = thresholdOverrides.colors.under.color
+				elseif mode == "override" and colorOverrides.under and colorOverrides.under.color then
+					thresholdColor = colorOverrides.under.color
 				end
 			end
 
@@ -884,8 +925,9 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		end
 
 		local oorMode = "shared"
-		if thresholdOverrides and thresholdOverrides.colors and thresholdOverrides.colors.outOfRange then
-			oorMode = GetOorMode(thresholdOverrides.colors.outOfRange)
+		local outOfRangeOverride = colorOverrides and colorOverrides.outOfRange
+		if outOfRangeOverride ~= nil then
+			oorMode = GetOorMode(outOfRangeOverride)
 		end
 
 		if TRB.Data.character.inCombat and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) then
@@ -896,7 +938,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				end
 			elseif oorMode == "override" then
 				if outOfRange then
-					thresholdColor = thresholdOverrides.colors.outOfRange.color or settings.colors.threshold.outOfRange.color
+					thresholdColor = (outOfRangeOverride and outOfRangeOverride.color) or settings.colors.threshold.outOfRange.color
 					frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
 				end
 			else
@@ -936,33 +978,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
 
-			-- For vertical bars, the threshold line is a horizontal stripe:
-			-- "line width" (thickness) maps to SetHeight, cross-section maps to SetWidth
-			local isVerticalBar = IsVerticalFillDirection(settings.bar.fillDirection)
-
 			-- Per-threshold line width override (thickness of the line)
-			local lineThickness
+			local lineThickness = settings.thresholds.properties.width
 			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.width then
 				lineThickness = thresholdOverrides.line.width
 			end
-
-			if lineThickness then
-				if cache.overrideLineWidth ~= lineThickness then
-					if isVerticalBar then
-						threshold:SetHeight(lineThickness)
-					else
-						threshold:SetWidth(lineThickness)
-					end
-					cache.overrideLineWidth = lineThickness
-				end
-			elseif cache.overrideLineWidth ~= nil then
-				-- Reset to global width
-				if isVerticalBar then
-					threshold:SetHeight(settings.thresholds.properties.width)
-				else
-					threshold:SetWidth(settings.thresholds.properties.width)
-				end
-				cache.overrideLineWidth = nil
+			if cache.lineThickness ~= lineThickness then
+				cache.lineThickness = lineThickness
 			end
 
 			-- Per-threshold overlap border override (cross-section dimension)
@@ -970,26 +992,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			if thresholdOverrides and thresholdOverrides.line and thresholdOverrides.line.enabled and thresholdOverrides.line.overlapBorder ~= nil then
 				effectiveOverlapBorder = thresholdOverrides.line.overlapBorder
 			end
-
-			local borderSubtraction = 0
-			if not effectiveOverlapBorder then
-				borderSubtraction = settings.bar.border * 2
-			end
-
-			local effectiveCrossSection
-			if isVerticalBar then
-				effectiveCrossSection = settings.bar.width - borderSubtraction
-			else
-				effectiveCrossSection = settings.bar.height - borderSubtraction
-			end
-
-			if cache.overrideLineHeight ~= effectiveCrossSection then
-				if isVerticalBar then
-					threshold:SetWidth(effectiveCrossSection)
-				else
-					threshold:SetHeight(effectiveCrossSection)
-				end
-				cache.overrideLineHeight = effectiveCrossSection
+			if cache.overlapBorder ~= effectiveOverlapBorder then
+				cache.overlapBorder = effectiveOverlapBorder
 			end
 
 			local thresholdUsable = false
