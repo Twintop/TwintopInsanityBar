@@ -127,6 +127,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorGradientEnabledEntry : TRB.Classes.Settings.ColorEnabledEntry
 ---@field public color2 string
 ---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
+---@field public fullHeight boolean? # When true, overlay-capable entries extend through the bar border area vertically
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 
@@ -157,6 +158,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.HealthBarOverlayColorEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean
 ---@field public mode trbOverlayMode
+---@field public fullHeight boolean? # When true, this overlay extends through the bar border area vertically
 
 ---@class TRB.Classes.Settings.HealthBarColors
 ---@field public border TRB.Classes.Settings.ColorEntry
@@ -323,6 +325,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@alias trbOverlayMode
 ---| '"overlay"' # Fills from the left edge of the bar up to the overlay amount
 ---| '"appended"' # Visually appends the overlay region to the right of the current health fill
+---| '"appendedOverflow"' # Appended mode that can visually extend beyond the bar's right boundary
 ---| '"inset"' # Reverse-fill from the health fill's trailing edge going leftward
 
 ---@class trbHealthBarVisibilitySetting : trbBarVisibilitySetting

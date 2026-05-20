@@ -267,7 +267,7 @@ end
 ---When the Druid changes form, bars like combo points (secondary) and mana may become
 ---invisible. If such a bar is the root of its own tree (screen-anchored), the wrapper
 ---should be hidden so it doesn't linger as an empty container or capture mouse events.
----@param settings table? # Spec settings table
+---@param settings table? # Spec settings table (form-resolved; used as fallback only)
 ---@param forest table<string, table>? # Pre-built anchor forest (avoids rebuilding)
 function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	if TRB.Data.character.classId ~= 11 then
@@ -284,12 +284,25 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 		return
 	end
 
+	-- Visibility decisions must use the ACTIVE spec's specCache settings (which
+	-- honor that spec's "Use global settings" toggles), not the form-resolved
+	-- settings passed in for layout/dimensions. Otherwise, when in cat form on
+	-- Guardian, the wrapper would be evaluated against Feral's displayBar (and
+	-- Feral's global toggle), ignoring Guardian's effective visibility configuration.
+	local activeSettings
+	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+		local cache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		activeSettings = cache and cache.settings or nil
+	end
+	-- Fallback to the passed-in settings only if the specCache isn't ready yet.
+	local visSource = activeSettings or settings
+
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 	local specId = TRB.Data.character.specId
 
 	-- Determine displaySpecId (mirrors GetFormSpecForSettings in Druid.lua)
 	local enableFormSwitching = true
-	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
+	if visSource and visSource.displayBar and visSource.displayBar.enableFormSwitching == false then
 		enableFormSwitching = false
 	end
 	local displaySpecId = specId
@@ -305,18 +318,18 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
 	-- (defaults ON for Feral, OFF for non-Feral).
 	local shouldShowSecondary
-	local secondaryVis = settings and settings.displayBar and settings.displayBar.secondary
+	local secondaryVis = visSource and visSource.displayBar and visSource.displayBar.secondary
 	local secondaryNotNever = not secondaryVis or not secondaryVis.neverShow
 	if displaySpecId == 2 then
 		-- Cat form (or Feral with form-switching off): CPs are native, always eligible
 		shouldShowSecondary = secondaryNotNever
 	elseif specId == 2 then
 		-- Feral in non-cat form: checkbox defaults ON (nil → show)
-		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		local showCP = visSource and visSource.displayBar and visSource.displayBar.showComboPoints
 		shouldShowSecondary = (showCP ~= false) and secondaryNotNever
 	else
 		-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		local showCP = visSource and visSource.displayBar and visSource.displayBar.showComboPoints
 		shouldShowSecondary = (showCP == true) and secondaryNotNever
 	end
 
@@ -1771,10 +1784,20 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 	if anyAnchorUsage then
 		-- Reapply bar layout to update width/height/position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
-			if specSettings and specSettings.settings then
+			-- Use the class-resolved display settings so form-aware classes (Druid)
+			-- apply the correct form-spec settings here. Falls back to the active
+			-- compositeKey for all other classes.
+			local displaySettings
+			if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
+				displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
+			end
+			if not displaySettings then
+				local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
+				displaySettings = specSettings and specSettings.settings or nil
+			end
+			if displaySettings then
 				isReapplyingAnchorLayout = true
-				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(displaySettings, TRB.Frames.barGroups)
 				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 				isReapplyingAnchorLayout = false
@@ -2377,12 +2400,7 @@ StaticPopupDialogs["TRB_EDIT_MODE_CUSTOM_FRAME"] = {
 		end
 	end,
 	EditBoxOnEnterPressed = function(editBox)
-		local parent = editBox:GetParent()
-		local frameName = editBox:GetText()
-		if parent.data and parent.data.callback then
-			parent.data.callback(frameName)
-		end
-		parent:Hide()
+		StaticPopup_OnClick(editBox:GetParent(), 1)
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide()

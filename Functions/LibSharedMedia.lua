@@ -17,6 +17,18 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	]]
 	
 	-- Text
+	if settings.displayText ~= nil and settings.displayText.default ~= nil then
+		---@type table
+		local defaultText = settings.displayText.default
+		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, defaultText.fontFaceName) then
+			defaultText.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[defaultText.fontFaceName]
+		else
+			print(string.format(L["LSMInvalidFont"], specName, "Default", tostring(defaultText.fontFaceName)))
+			defaultText.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+			defaultText.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+		end
+	end
+
 	if settings.displayText ~= nil and settings.displayText.barText ~= nil then
 		---@type TRB.Classes.Settings.DisplayTextEntry[]
 		local barText = settings.displayText.barText

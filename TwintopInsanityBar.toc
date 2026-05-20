@@ -1,4 +1,4 @@
-## Interface: 120001
+## Interface: 120005
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -13,9 +13,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 12.0.1.57
+## Version: 12.0.5.7
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-04-13
+## X-ReleaseDate: 2026-05-18
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -109,10 +109,12 @@ Functions\LibSharedMedia.lua
 Functions\MinimapButton.lua
 Functions\Number.lua
 Functions\Settings.lua
+Functions\Profiles.lua
 Functions\SpellCast.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
+Functions\WagoCreator.lua
 
 Options\OptionsUi.lua
 Options\OptionsFrame.lua

@@ -45,11 +45,13 @@ function TRB.Classes.SnapshotData:RefreshAllBuffs()
 	end
 end
 
----Recalculates all hasted cooldowns when haste changes
----@param newHaste number # The new haste percentage
-function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(newHaste)
+---Recalculates all hasted cooldowns when the GCD duration changes
+---@param oldGcd number # The previous cached GCD value
+---@param newGcd number # The new cached GCD value
+---@param changeTimestamp number # GetTime() when the haste change was detected
+function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(oldGcd, newGcd, changeTimestamp)
 	for _, v in pairs(self.snapshots) do
-		v.cooldown:RecalculateForHaste(newHaste)
+		v.cooldown:RecalculateForGcdChange(oldGcd, newGcd, changeTimestamp)
 	end
 end
 
@@ -96,6 +98,7 @@ end
 ---@field public remaining number
 ---@field public endTimeLeeway number
 ---@field public applications integer
+---@field public secretRemaining number? # When the live aura's remaining duration is a secret value, the latest secret remaining number captured at the most recent UNIT_AURA refresh. Used by `GetRemainingTime` (when `endTime` is nil) so display formatters such as `TimerPrecision` (which routes through `string.format`) can still render it. Callers MUST treat this value as opaque -- no arithmetic or comparisons.
 ---@field public customPropertyDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
@@ -213,6 +216,7 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
+	self.secretRemaining = nil
 	-- pauseMaxDuration is intentionally NOT cleared here; it's a talent-level configuration
 	-- set/cleared exclusively by SetPauseMaxDuration(). Reset() only clears per-instance state.
 	self.pauseElapsedTime = 0
@@ -359,6 +363,32 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway, force
 
     if not force and self.lastRefreshGetTime == currentTime then
         return self.remaining
+	end
+
+	-- Secret-mode timer: when the live DurationObject reports secret values,
+	-- `RefreshWithSecretAuraData` clears `endTime` and flags secret-mode by setting
+	-- `secretRemaining`. Each call must re-fetch a fresh `GetRemainingDuration()`
+	-- from the live DurationObject -- the cached value would be stale (the secret
+	-- remaining captured at SHOW time, equal to the initial total). We cannot do
+	-- arithmetic / comparisons on the secret, but `string.format` (used by
+	-- `TimerPrecision`) is allowed on secrets and the resulting secret string
+	-- still flows through `FontString:SetText` for display.
+	-- `isActive` is driven by the event-driven path (e.g. SHOW/HIDE handlers).
+	if self.endTime == nil and self.secretRemaining ~= nil and self.auraInstanceId ~= nil then
+		local liveDurationObject = C_UnitAuras.GetAuraDuration("player", self.auraInstanceId)
+		if liveDurationObject ~= nil then
+			local liveRemaining = liveDurationObject:GetRemainingDuration()
+			if liveRemaining ~= nil then
+				self.secretRemaining = liveRemaining
+				self.remaining = liveRemaining
+				self.lastRefreshGetTime = currentTime
+				return liveRemaining
+			end
+		end
+		-- Fallback: stale cached secret remaining (better than nothing)
+		self.remaining = self.secretRemaining
+		self.lastRefreshGetTime = currentTime
+		return self.secretRemaining
 	end
 
 	if useLeeway == nil then
@@ -618,6 +648,54 @@ end
 function TRB.Classes.SnapshotBuff:RefreshWithSecretAuraData(auraData)
 	GetCustomProperties(self, auraData)
 	self.applications = auraData.applications
+
+	-- Pull live timing via the DurationObject API. `HasSecretValues()` is itself
+	-- non-secret, so it is safe to branch on; only when it returns false are the
+	-- numeric getters guaranteed to return regular (untainted) numbers we can do
+	-- Lua arithmetic / string formatting against. When the duration is secret, we
+	-- leave the existing InitializeCustom-based timer in place.
+	--
+	-- Opt-out: spells whose attributes set `disallowSecretTiming = true` (e.g.
+	-- Ignore Pain, where users have long-standing bar text expressions like
+	-- `{$ignorePainTime>0}[...]`) skip this entirely and keep their event-driven
+	-- timer, regardless of whether the live aura duration is secret.
+	local spell = self.parent and self.parent.spell
+	local disallowSecretTiming = spell and spell.attributes and spell.attributes.disallowSecretTiming == true
+	if disallowSecretTiming or self.auraInstanceId == nil or C_UnitAuras == nil or C_UnitAuras.GetAuraDuration == nil then
+		return
+	end
+
+	local durationObject = C_UnitAuras.GetAuraDuration("player", self.auraInstanceId)
+	if durationObject == nil then
+		return
+	end
+
+	local remaining = durationObject:GetRemainingDuration()
+	if remaining == nil then
+		return
+	end
+
+	if durationObject:HasSecretValues() then
+		-- Secret mode: stash the secret remaining for display via string.format.
+		-- Clear endTime so GetRemainingTime takes the secret-mode branch and never
+		-- attempts arithmetic against this value. `duration` may also be secret;
+		-- it is allowed to assign as a value but should not be compared against.
+		self.endTime = nil
+		self.secretRemaining = remaining
+		local total = durationObject:GetTotalDuration()
+		if total ~= nil then
+			self.duration = total
+		end
+	else
+		-- Non-secret mode: standard timer. The DurationObject's GetRemainingDuration()
+		-- gives a live, decreasing value, so writing endTime each refresh is stable.
+		self.secretRemaining = nil
+		self.endTime = GetTime() + remaining
+		local total = durationObject:GetTotalDuration()
+		if total ~= nil then
+			self.duration = total
+		end
+	end
 end
 
 ---Refreshes the buff information for the snapshot
@@ -726,7 +804,7 @@ end
 ---@field public manualMaxCharges integer # Manually tracked max charge count
 ---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
 ---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
----@field public lastKnownHaste number? # The haste percentage used when the cooldown was last initialized or recalculated
+---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -759,7 +837,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.manualMaxCharges = 0
 	self.durationObject = nil
 	self.hastedCooldown = false
-	self.lastKnownHaste = nil
+	self.lastKnownGcd = nil
 end
 
 ---Computes the time remaining on the Snapshot
@@ -856,44 +934,49 @@ end
 ---@param duration number
 ---@param startTime? number
 ---@param hastedCooldown? boolean # When true, the cooldown remaining will be dynamically adjusted when haste changes
----@param currentHaste? number # The current haste percentage (from snapshotData.attributes.haste). Required when hastedCooldown is true.
-function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hastedCooldown, currentHaste)
+---@param currentGcd? number # The current cached GCD duration. Required when hastedCooldown is true.
+function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hastedCooldown, currentGcd)
 	self.startTime = startTime or GetTime()
 	self.duration = duration
 	self.isCustom = true
 	self.hastedCooldown = hastedCooldown or false
-	self.lastKnownHaste = self.hastedCooldown and currentHaste or nil
+	self.lastKnownGcd = self.hastedCooldown and currentGcd or nil
 	self:GetRemainingTime()
 end
 
----Recalculates the remaining cooldown time when haste changes, using the formula:
----  newRemaining = oldRemaining * (1 + oldHaste/100) / (1 + newHaste/100)
----@param newHaste number # The new haste percentage
-function TRB.Classes.SnapshotCooldown:RecalculateForHaste(newHaste)
-	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownHaste == nil then
+---Recalculates the remaining cooldown time when the GCD duration changes (indicating haste changed).
+---Uses the ratio of old/new GCD to scale the remaining time, retroactively accounting for
+---the time elapsed between when haste actually changed and when we observed the new GCD.
+---@param oldGcd number # The previous cached GCD value
+---@param newGcd number # The new cached GCD value
+---@param changeTimestamp number # GetTime() when the haste change was detected
+function TRB.Classes.SnapshotCooldown:RecalculateForGcdChange(oldGcd, newGcd, changeTimestamp)
+	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownGcd == nil then
 		return
 	end
 
-	local oldHaste = self.lastKnownHaste
-	if oldHaste == newHaste then
+	if oldGcd == newGcd then
 		return
 	end
 
 	local currentTime = GetTime()
-	local oldRemaining = self:GetRemainingTime(currentTime)
+	local currentRemaining = self:GetRemainingTime(currentTime)
 
-	if oldRemaining <= 0 then
+	if currentRemaining <= 0 then
 		return
 	end
 
-	local newRemaining = oldRemaining * (1 + oldHaste / 100) / (1 + newHaste / 100)
-	newRemaining = math.max(0, newRemaining)
+	-- Retroactive: how much was remaining at the moment haste actually changed
+	local dt = currentTime - changeTimestamp
+	local remainingAtChange = currentRemaining + dt
+	-- Scale by GCD ratio, then subtract time elapsed since the change
+	local newRemaining = math.max(0, remainingAtChange * (newGcd / oldGcd) - dt)
 
 	-- Reset duration and startTime from "now" so that GetRemainingTime computes newRemaining directly,
 	-- avoiding cumulative floating-point drift from back-calculating startTime through the old duration.
 	self.duration = newRemaining
 	self.startTime = currentTime
-	self.lastKnownHaste = newHaste
+	self.lastKnownGcd = newGcd
 	self:GetRemainingTime(currentTime)
 end
 
@@ -1264,6 +1347,11 @@ function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
 	startTime = spellCooldown.startTime
 	duration = spellCooldown.duration
+	if issecretvalue(startTime) or issecretvalue(duration) then
+		self.gcdLockRemaining = 0
+		self.gcdLockLastUpdate = currentTime
+		return 0
+	end
 	self.gcdLockRemaining = (startTime + duration - currentTime)
 	self.gcdLockLastUpdate = currentTime
 	return self.gcdLockRemaining

@@ -55,6 +55,32 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
+---Resets class/spec-specific proc attributes on player death. Class modules override this to clear their own flags.
+function TRB.Functions.Class:ResetProcsOnDeath()
+	-- Base implementation does nothing; class modules override with spec-specific resets.
+end
+
+---Returns the composite key whose settings should currently drive the bar's layout/appearance.
+---For most classes this is just the active spec (`TRB.Data.character.compositeKey`).
+---Druid overrides this when form-switching is enabled to return the form-resolved spec
+---(e.g., Cat Form on a Guardian Druid returns "druid_feral").
+---@return string|nil compositeKey
+function TRB.Functions.Class:GetActiveDisplayCompositeKey()
+	return TRB.Data.character.compositeKey
+end
+
+---Returns the settings table whose values should currently drive the bar's layout/appearance.
+---Built on top of `GetActiveDisplayCompositeKey`. Returns nil when the spec cache is not
+---populated yet (e.g., during early initialization).
+---@return TRB.Classes.Settings.SpecializationSettingsBase|nil settings
+function TRB.Functions.Class:GetActiveDisplaySettings()
+	local key = self:GetActiveDisplayCompositeKey()
+	if not key or not TRB.Data.specCache or not TRB.Data.specCache[key] then
+		return nil
+	end
+	return TRB.Data.specCache[key].settings
+end
+
 ---Initializes or refreshes a target entry in the snapshot target data by GUID.
 ---@param guid string The target's GUID
 ---@param selfInitializeAllowed boolean|nil If false or nil, skips initialization when guid matches the player's GUID
@@ -420,6 +446,24 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" then
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
+	elseif event == "PLAYER_DEAD" then
+		-- All buffs are lost on death. Reset any manually-tracked (isCustom) buff
+		-- snapshots so they don't show stale timers after the player dies.
+		local snapshotData = TRB.Data.snapshotData
+		if snapshotData and snapshotData.snapshots then
+			for _, snapshot in pairs(snapshotData.snapshots) do
+				if snapshot.buff and snapshot.buff.isCustom then
+					snapshot.buff:Reset(nil, true)
+				end
+			end
+		end
+		-- Reset audio "played" flags so cues can fire again after respawn.
+		if snapshotData and snapshotData.audio then
+			wipe(snapshotData.audio)
+		end
+		-- Let class modules clear their spec-specific proc attributes.
+		TRB.Functions.Class:ResetProcsOnDeath()
+		TRB.Data.lookupDirty = true
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
@@ -454,6 +498,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_FLAGS")
+	characterChangeFrame:RegisterEvent("PLAYER_DEAD")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -482,6 +527,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
+	characterChangeFrame:UnregisterEvent("PLAYER_DEAD")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
@@ -847,12 +893,36 @@ end
 function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
-	local oldHaste = snapshotData.attributes.haste
 	snapshotData.attributes.haste = UnitSpellHaste("player")
 
-	-- Recalculate hasted cooldowns when haste changes
-	if oldHaste ~= nil and oldHaste ~= snapshotData.attributes.haste then
-		snapshotData:RecalculateHastedCooldowns(snapshotData.attributes.haste)
+	-- Try to immediately read the new GCD duration. If we're mid-GCD, GetTotalDuration()
+	-- returns the real value and we can update right away. Otherwise we fall back to the
+	-- deferred path (actioned on next cast in SpellCastEvent).
+	local oldGcd = snapshotData.attributes.gcdDuration or 1.5
+	local immediateGcd
+	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
+	if durationObj then
+		local totalDuration = durationObj:GetTotalDuration()
+		if not issecretvalue(totalDuration) and totalDuration > 0 then
+			immediateGcd = totalDuration
+		end
+	end
+
+	if immediateGcd and immediateGcd ~= oldGcd then
+		snapshotData.attributes.gcdDuration = immediateGcd
+		snapshotData:RecalculateHastedCooldowns(oldGcd, immediateGcd, GetTime())
+		snapshotData.attributes.pendingGcdRecalc = nil
+
+		local displayGcd = immediateGcd
+		if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
+		snapshotData.formatted.gcd = string.format("%.2f", displayGcd)
+		snapshotData.formatted.gcdRaw = displayGcd
+	else
+		-- Flag deferred haste recalc — actioned on next GCD observation in SpellCastEvent.
+		snapshotData.attributes.pendingGcdRecalc = {
+			time = GetTime(),
+			oldGcd = oldGcd,
+		}
 	end
 
 	snapshotData.attributes.crit = GetCritChance()
@@ -889,7 +959,8 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
 
 	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
-	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste / 100))
+	-- Uses cached GCD duration from SpellCastEvent instead of haste math (haste is secret)
+	local _gcd = snapshotData.attributes.gcdDuration or 1.5
 	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
 	formatted.gcd = string.format("%.2f", _gcd)
 ---@diagnostic disable-next-line: assign-type-mismatch
@@ -1475,7 +1546,9 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 	return entry
 end
 
----Calculates the player's current GCD duration based on haste, clamped between 0.75s and 1.5s.
+---Calculates the player's current GCD duration, clamped between 0.75s and 1.5s.
+---Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(61304)
+---during the last spell cast, since haste is now a secret value.
 ---@param floor boolean|nil If true, skips the 0.75s minimum clamp (allows sub-0.75 values)
 ---@return number gcd The GCD duration in seconds
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
@@ -1483,12 +1556,8 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 		floor = false
 	end
 
-	-- Read haste from snapshotted value instead of calling live API each time
 	local snapshotData = TRB.Data.snapshotData
-	local hastePercent = (snapshotData and snapshotData.attributes and snapshotData.attributes.haste) or UnitSpellHaste("player")
-	local haste = hastePercent / 100
-
-	local gcd = 1.5 / (1 + haste)
+	local gcd = (snapshotData and snapshotData.attributes and snapshotData.attributes.gcdDuration) or 1.5
 
 	if not floor and gcd < 0.75 then
 		gcd = 0.75

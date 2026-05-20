@@ -339,21 +339,8 @@ local function ConstructResourceBar(settings)
 				barGroups.secondary:Hide()
 			else
 				barGroups.secondary:SetMaxNodes(maxWhirlwindNodes)
-				barGroups.secondary:SetNodeCount(maxWhirlwindNodes)
-				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
+				Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxWhirlwindNodes)
 				barGroups.secondary:Show()
-
-				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-				if cdmForced then
-					barGroups.secondary.fullWidth = true
-				end
-
-				barGroups.secondary:ApplyLayout(
-					effectiveWidth,
-					settings.comboPoints.width,
-					settings.comboPoints.height,
-					settings.comboPoints.border
-				)
 			end
 		end
 		TRB.Functions.Aura:DisableUnitAuraCache()
@@ -697,7 +684,8 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if talents:IsTalentActive(spells.improvedWhirlwind) then
 				if spellId == spells.bladestorm.id and talents:IsTalentActive(spells.unhinged) then
-					local duration = spells.bladestorm.duration / (1 + (snapshotData.attributes.haste / 100))
+					local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+					local duration = spells.bladestorm.duration * (cachedGcd / 1.5)
 					snapshots[spells.bladestorm.id].buff:InitializeCustom(duration, currentTime)
 				elseif spells.improvedWhirlwind.attributes.builderIds[spellId] or (spells.crashingThunder.attributes.builderIds[spellId] and talents:IsTalentActive(spells.crashingThunder)) then
 					snapshots[spells.improvedWhirlwind.id].buff:InitializeCustom(spells.improvedWhirlwind.duration, currentTime, true, spells.improvedWhirlwind.maxStacks)
@@ -2097,22 +2085,9 @@ function TRB.Functions.Class:CheckCharacter()
 					if whirlwindCharges > 0 then
 						-- Talent became active: set up secondary bar layout and show it
 						barGroups.secondary:SetMaxNodes(whirlwindCharges)
-						barGroups.secondary:SetNodeCount(whirlwindCharges)
-						barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL", sharedSettings.comboPoints.growthDirection)
+						Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, whirlwindCharges)
 						barGroups.secondary:Show()
 						barGroups.secondary:ShowNodes(whirlwindCharges)
-
-						local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
-						if cdmForced then
-							barGroups.secondary.fullWidth = true
-						end
-
-						barGroups.secondary:ApplyLayout(
-							effectiveWidth,
-							sharedSettings.comboPoints.width,
-							sharedSettings.comboPoints.height,
-							sharedSettings.comboPoints.border
-						)
 					else
 						-- Talent removed: hide secondary bar
 						barGroups.secondary:Hide()

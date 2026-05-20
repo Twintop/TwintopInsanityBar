@@ -434,9 +434,35 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	return settings
 end
 
----Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs
-function TRB.Functions.Settings:PortForwardSettings()
-	
+---Per-profile port-forward hook. Calls PortForwardSettings against the given
+---profile subtable. Use for migrating individual profiles in the profiles.list
+---structure. The `profile` parameter should be shaped like a top-level settings
+---table (i.e. has optional `core` and class/spec keys), which is exactly how
+---profiles are stored.
+---@param profile table?
+function TRB.Functions.Settings:PortForwardProfile(profile)
+	if profile == nil then
+		return
+	end
+	self:PortForwardSettings(profile)
+end
+
+---Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs.
+---
+---Accepts any table shaped like the top-level saved-variables (i.e. with `core`,
+---`<className>.<specName>`, etc.). The global `TwintopInsanityBarSettings` is
+---used as the default when no argument is passed, so existing callers continue
+---to work. Inside this function, `TwintopInsanityBarSettings` is aliased to the
+---argument via lexical scoping — every `TwintopInsanityBarSettings.x` reference
+---in the body refers to the passed-in table, not the global.
+---@param settings table?
+function TRB.Functions.Settings:PortForwardSettings(settings)
+	---@diagnostic disable-next-line: unused-local
+	local TwintopInsanityBarSettings = settings or _G.TwintopInsanityBarSettings
+	if TwintopInsanityBarSettings == nil then
+		return
+	end
+
 	-- Forward port old Insanity Bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest == nil and TwintopInsanityBarSettings.bar ~= nil then
 		local tempSettings = TwintopInsanityBarSettings
@@ -1839,6 +1865,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 								yPos = specSettings.comboPoints.yPos or 0,
 								border = specSettings.comboPoints.border or 2,
 								spacing = specSettings.comboPoints.spacing or 0,
+								fillDirection = specSettings.comboPoints.fillDirection or "leftRight",
+								growthDirection = specSettings.comboPoints.growthDirection or "leftRight",
 								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
 								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
 								fullWidth = specSettings.comboPoints.fullWidth
@@ -1895,6 +1923,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 								yPos = specSettings.comboPoints.yPos or 0,
 								border = specSettings.comboPoints.border or 2,
 								spacing = specSettings.comboPoints.spacing or 0,
+								fillDirection = specSettings.comboPoints.fillDirection or "leftRight",
+								growthDirection = specSettings.comboPoints.growthDirection or "leftRight",
 								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
 								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
 								fullWidth = specSettings.comboPoints.fullWidth
@@ -2068,6 +2098,8 @@ function TRB.Functions.Settings:PortForwardSettings()
 									yPos = dimSource.yPos or 0,
 									border = dimSource.border or 2,
 									spacing = dimSource.spacing or 0,
+									fillDirection = dimSource.fillDirection or "leftRight",
+									growthDirection = dimSource.growthDirection or "leftRight",
 									relativeTo = dimSource.relativeTo or "TOP",
 									relativeToName = dimSource.relativeToName or L["PositionAboveMiddle"],
 									fullWidth = dimSource.fullWidth
@@ -6578,6 +6610,83 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	-- Migrate Restoration Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.restoration then
+		local restoration = TwintopInsanityBarSettings.druid.restoration
+		if restoration.colors and restoration.colors.shared and restoration.colors.shared.indicatorColors
+			and restoration.colors.shared.indicatorColors.clearcasting == nil
+			and restoration.colors.bar and restoration.colors.bar.clearcasting ~= nil then
+
+			restoration.colors.shared.nodeOrder = restoration.colors.shared.nodeOrder or {}
+
+			local hasClearcasting = false
+			for _, key in ipairs(restoration.colors.shared.nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				end
+			end
+
+			if not hasClearcasting then
+				table.insert(restoration.colors.shared.nodeOrder, "clearcasting")
+			end
+
+			restoration.colors.shared.indicatorColors.clearcasting = {
+				color = restoration.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = restoration.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = restoration.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = restoration.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					manaBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			restoration.colors.bar.clearcasting = nil
+		end
+	end
+
+	-- Migrate Feral Druid clearcasting from colors.bar.clearcasting to colors.shared.indicatorColors.clearcasting
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
+		local feral = TwintopInsanityBarSettings.druid.feral
+		if feral.colors and feral.colors.shared and feral.colors.shared.indicatorColors
+			and feral.colors.shared.indicatorColors.clearcasting == nil
+			and feral.colors.bar and feral.colors.bar.clearcasting ~= nil then
+
+			-- Insert clearcasting after ravage but before borderStealth in nodeOrder
+			feral.colors.shared.nodeOrder = feral.colors.shared.nodeOrder or {}
+			local nodeOrder = feral.colors.shared.nodeOrder
+			local hasClearcasting = false
+			local borderStealthIndex = nil
+			for i, key in ipairs(nodeOrder) do
+				if key == "clearcasting" then
+					hasClearcasting = true
+					break
+				elseif key == "borderStealth" and borderStealthIndex == nil then
+					borderStealthIndex = i
+				end
+			end
+			if not hasClearcasting then
+				if borderStealthIndex ~= nil then
+					table.insert(nodeOrder, borderStealthIndex, "clearcasting")
+				else
+					table.insert(nodeOrder, "clearcasting")
+				end
+			end
+
+			feral.colors.shared.indicatorColors.clearcasting = {
+				color = feral.colors.bar.clearcasting.color or "FF4A95CE",
+				color2 = feral.colors.bar.clearcasting.color2 or "FF4A95CE",
+				gradientDirection = feral.colors.bar.clearcasting.gradientDirection or "disabled",
+				enabled = feral.colors.bar.clearcasting.enabled ~= false,
+				targets = {
+					energyBar = { bar = true, border = false, background = false },
+				},
+			}
+
+			feral.colors.bar.clearcasting = nil
+		end
+	end
+
 	-- Migrate Hunter BeastMastery to indicator colors
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.hunter and TwintopInsanityBarSettings.hunter.beastMastery then
 		local spec = TwintopInsanityBarSettings.hunter.beastMastery
@@ -6880,18 +6989,16 @@ function TRB.Functions.Settings:PortForwardSettings()
 			spec.colors.shared.gradientOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.gradientOrder, "borderOvercap")
 		end
 
+		local createdRuneRegenOvercap = false
 		if indicatorColors.runeRegenOvercap == nil then
+			createdRuneRegenOvercap = true
 			local legacyEnabled = legacyRuneOvercap and legacyRuneOvercap.enabled == true or false
 			local defaultEnabled = legacyRuneOvercap == nil
 			local enabled = legacyRuneOvercap ~= nil and legacyEnabled or defaultEnabled
 			indicatorColors.runeRegenOvercap = {
 				color = legacyRuneOvercap and legacyRuneOvercap.color or "FFFF4500",
 				enabled = enabled,
-				targets = {
-					runicPowerBar = { bar = false, border = false, background = false },
-					runesBar = { bar = enabled, border = false, background = false },
-					boneShield = spec.bars and spec.bars.boneShield and { bar = false, border = false, background = false } or nil,
-				},
+				targets = {},
 			}
 		end
 
@@ -6901,24 +7008,11 @@ function TRB.Functions.Settings:PortForwardSettings()
 			else
 				EnsureDeathKnightIndicatorTargetTables(indicatorColors.runeRegenOvercap)
 			end
-			if legacyRuneOvercap == nil then
-				local runeTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runesBar
-				local runicPowerTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runicPowerBar
-				local boneShieldTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.boneShield
-				local hasAnyTarget = false
-				if runeTargets then
-					hasAnyTarget = runeTargets.bar or runeTargets.border or runeTargets.background or false
-				end
-				if not hasAnyTarget and runicPowerTargets then
-					hasAnyTarget = runicPowerTargets.bar or runicPowerTargets.border or runicPowerTargets.background or false
-				end
-				if not hasAnyTarget and boneShieldTargets then
-					hasAnyTarget = boneShieldTargets.bar or boneShieldTargets.border or boneShieldTargets.background or false
-				end
-				if indicatorColors.runeRegenOvercap.enabled == false and not hasAnyTarget then
-					indicatorColors.runeRegenOvercap.enabled = true
-					indicatorColors.runeRegenOvercap.targets.runesBar.bar = true
-				end
+			if createdRuneRegenOvercap then
+				-- Only the creation path should seed Death Knight's default target.
+				-- An existing all-false target table is valid saved state from the
+				-- indicator options UI and must survive port-forwarding unchanged.
+				indicatorColors.runeRegenOvercap.targets.runesBar.bar = indicatorColors.runeRegenOvercap.enabled == true
 			end
 			spec.colors.shared.nodeOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.nodeOrder, "runeRegenOvercap")
 		end
@@ -7529,6 +7623,96 @@ function TRB.Functions.Settings:PortForwardSettings()
 		end
 	end
 
+	local function EnsureSecondaryPartialFillColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+		if comboPointColors.regenerating == nil then
+			comboPointColors.regenerating = defaultColor
+		elseif type(comboPointColors.regenerating) == "string" then
+			comboPointColors.regenerating = {
+				color = comboPointColors.regenerating,
+				color2 = comboPointColors.regenerating,
+				gradientDirection = "disabled",
+				enabled = false
+			}
+		elseif type(comboPointColors.regenerating) == "table" then
+			comboPointColors.regenerating.color = comboPointColors.regenerating.color or defaultColor.color
+			comboPointColors.regenerating.color2 = comboPointColors.regenerating.color2 or comboPointColors.regenerating.color
+			comboPointColors.regenerating.gradientDirection = comboPointColors.regenerating.gradientDirection or "disabled"
+			if comboPointColors.regenerating.enabled == nil then
+				comboPointColors.regenerating.enabled = false
+			end
+		end
+	end
+
+	local function EnsureSecondaryCastingOverlayColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true)
+		if comboPointColors.casting == nil then
+			comboPointColors.casting = defaultColor
+		elseif type(comboPointColors.casting) == "string" then
+			comboPointColors.casting = {
+				color = comboPointColors.casting,
+				color2 = comboPointColors.casting,
+				gradientDirection = "disabled",
+				enabled = true,
+				fullHeight = false
+			}
+		elseif type(comboPointColors.casting) == "table" then
+			comboPointColors.casting.color = comboPointColors.casting.color or defaultColor.color
+			comboPointColors.casting.color2 = comboPointColors.casting.color2 or comboPointColors.casting.color
+			comboPointColors.casting.gradientDirection = comboPointColors.casting.gradientDirection or "disabled"
+			if comboPointColors.casting.enabled == nil then
+				comboPointColors.casting.enabled = true
+			end
+			if comboPointColors.casting.fullHeight == nil then
+				comboPointColors.casting.fullHeight = false
+			end
+		end
+	end
+
+	local function EnsureSecondaryCastingOverlayTexture(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.textures = specSettings.textures or {}
+		local textures = specSettings.textures
+		local defaultTextures = TRB.Functions.Settings:DefaultTextures(true)
+		textures.comboPointsCastingBar = textures.comboPointsCastingBar or textures.castingBar or textures.comboPointsBar or defaultTextures.castingBar
+		textures.comboPointsCastingBarName = textures.comboPointsCastingBarName or textures.castingBarName or textures.comboPointsBarName or defaultTextures.castingBarName
+	end
+
+	EnsureSecondaryPartialFillColor("paladin", "holy")
+	EnsureSecondaryPartialFillColor("paladin", "protection")
+	EnsureSecondaryPartialFillColor("paladin", "retribution")
+	EnsureSecondaryPartialFillColor("warlock", "affliction")
+	EnsureSecondaryPartialFillColor("warlock", "demonology")
+	EnsureSecondaryPartialFillColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayTexture("warlock", "destruction")
+	EnsureSecondaryPartialFillColor("druid", "feral")
+	EnsureSecondaryPartialFillColor("evoker", "devastation")
+	EnsureSecondaryPartialFillColor("evoker", "preservation")
+	EnsureSecondaryPartialFillColor("evoker", "augmentation")
+
 	-- Backfill global health bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil and TwintopInsanityBarSettings.core.healthBar ~= nil then
 		local hb = TwintopInsanityBarSettings.core.healthBar
@@ -7605,6 +7789,68 @@ function TRB.Functions.Settings:PortForwardSettings()
 			end
 		end
 	end
+
+	-- Sanitize colors.shared.nodeOrder / gradientOrder for every spec. This
+	-- runs every login (not gated on a one-shot flag) so it cleans up any
+	-- duplicates introduced by earlier migrations or array-index merges like
+	-- Table:Merge writing a shorter default list over a longer saved list.
+	-- Rules applied to each spec:
+	--   * Drop any key not present in colors.shared.indicatorColors.
+	--   * Drop duplicates (keep the first occurrence).
+	--   * Route entries into nodeOrder vs gradientOrder based on the
+	--     indicator's isGradient flag.
+	--   * Append any indicatorColors keys that are missing from both lists
+	--     into the appropriate list based on isGradient.
+	for _, className in ipairs(classes) do
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+			for _, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+				if type(specSettings) == "table"
+					and type(specSettings.colors) == "table"
+					and type(specSettings.colors.shared) == "table"
+					and type(specSettings.colors.shared.indicatorColors) == "table" then
+					local shared = specSettings.colors.shared
+					local ic = shared.indicatorColors
+
+					local newNodeOrder = {}
+					local newGradientOrder = {}
+					local seen = {}
+
+					local function routeKey(key)
+						if type(key) ~= "string" or seen[key] then return end
+						local indicator = ic[key]
+						if type(indicator) ~= "table" then return end
+						seen[key] = true
+						if indicator.isGradient then
+							table.insert(newGradientOrder, key)
+						else
+							table.insert(newNodeOrder, key)
+						end
+					end
+
+					if type(shared.nodeOrder) == "table" then
+						for _, key in ipairs(shared.nodeOrder) do
+							routeKey(key)
+						end
+					end
+					if type(shared.gradientOrder) == "table" then
+						for _, key in ipairs(shared.gradientOrder) do
+							routeKey(key)
+						end
+					end
+					-- Do NOT append every key in indicatorColors here: an orphan
+					-- entry (one left behind by a removed/renamed indicator that
+					-- has no matching indicatorDef) would be inserted into
+					-- nodeOrder and create a phantom row in the Indicator Colors
+					-- panel, breaking the up/down arrow counts. New default keys
+					-- are already carried into nodeOrder by Table:Merge overlaying
+					-- saved settings onto the (longer) default array.
+
+					shared.nodeOrder = newNodeOrder
+					shared.gradientOrder = newGradientOrder
+				end
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -7614,6 +7860,7 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	if oldSettings ~= nil then
 		for k, v in pairs(oldSettings) do
 			if  k == "manualUpdateChecks" or
+				k == "profiles" or
 				k == "core" or
 				k == "deathknight" or
 				k == "demonhunter" or
@@ -7633,6 +7880,41 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 			end
 		end
 	end
+
+	local function NormalizeOverlayFullHeight(settings)
+		if type(settings) ~= "table" or type(settings.colors) ~= "table" then
+			return
+		end
+
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.casting) == "table" and settings.colors.bar.casting.fullHeight == nil then
+			settings.colors.bar.casting.fullHeight = false
+		end
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.spending) == "table" and settings.colors.bar.spending.fullHeight == nil then
+			settings.colors.bar.spending.fullHeight = false
+		end
+
+		if type(settings.colors.healthBar) == "table" then
+			if type(settings.colors.healthBar.absorb) == "table" and settings.colors.healthBar.absorb.fullHeight == nil then
+				settings.colors.healthBar.absorb.fullHeight = false
+			end
+			if type(settings.colors.healthBar.incomingHeal) == "table" and settings.colors.healthBar.incomingHeal.fullHeight == nil then
+				settings.colors.healthBar.incomingHeal.fullHeight = false
+			end
+		end
+	end
+
+	NormalizeOverlayFullHeight(newSettings.core)
+	for _, className in ipairs({
+		"deathknight", "demonhunter", "druid", "evoker", "hunter", "mage",
+		"monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"
+	}) do
+		if type(newSettings[className]) == "table" then
+			for _, specSettings in pairs(newSettings[className]) do
+				NormalizeOverlayFullHeight(specSettings)
+			end
+		end
+	end
+
 	return newSettings
 end
 
@@ -7761,14 +8043,47 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 	}
 end
 
+---Gets the default secondary partial-fill color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryPartialFillColor(enabled)
+	if enabled == nil then
+		enabled = false
+	end
+
+	return {
+		color = "FFFF4500",
+		color2 = "FFFF4500",
+		gradientDirection = "disabled",
+		enabled = enabled
+	}
+end
+
+---Gets the default secondary casting overlay color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(enabled)
+	if enabled == nil then
+		enabled = true
+	end
+
+	return {
+		color = "FFFFFFFF",
+		color2 = "FFFFFFFF",
+		gradientDirection = "disabled",
+		enabled = enabled,
+		fullHeight = false
+	}
+end
+
 --- Gets the default health bar color configuration including border, background, absorb, incoming heal, and step-based thresholds.
 ---@return table # Health bar color settings with low/medium/high color steps and overlay defaults
 function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },
 		background = { color = "66000000" },
-		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended" },
-		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended" },
+		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
+		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -7790,6 +8105,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			spacing = 0,
 			collapseBorderWidth = true,
 			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7814,6 +8130,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 		spacing = 0,
 		collapseBorderWidth = true,
 		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7881,6 +8198,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			spacing = 0,
 			collapseBorderWidth = true,
 			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7905,6 +8223,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 		spacing = 0,
 		collapseBorderWidth = true,
 		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8368,6 +8687,9 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 	local function MigrateOne(barSettings)
 		if barSettings == nil then return end
 		if barSettings.anchor ~= nil and not forceResync then return end
+		-- When forceResync is true but the anchor block already has a valid barKey,
+		-- trust it over stale legacy fields (fixes export/import losing screen anchors).
+		if barSettings.anchor ~= nil and barSettings.anchor.barKey ~= nil then return end
 		if barSettings.relativeTo then
 			local mapping = anchorMap[barSettings.relativeTo]
 			if mapping then

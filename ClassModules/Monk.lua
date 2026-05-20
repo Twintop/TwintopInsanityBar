@@ -110,6 +110,8 @@ local function FillSpecializationCache()
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.monk_mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_mistweaver.snapshotData.snapshots[spells.sereneSurge.id] = TRB.Classes.Snapshot:New(spells.sereneSurge)
 
 	specCache.monk_mistweaver.barTextVariables = {
 		icons = {},
@@ -285,8 +287,11 @@ local function ConstructResourceBar(settings)
 					-- Get stagger bar settings
 					local staggerSettings = settings.bars and settings.bars["stagger"]
 					local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
-					local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
-					local thresholdHeight = staggerSettings and staggerSettings.height or 24
+					local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+					local isVerticalStagger = Bar:IsVerticalFill(staggerSettings and staggerSettings.fillDirection)
+					local staggerFrame = staggerNode:GetFrame()
+					local thresholdWidth = isVerticalStagger and (staggerFrame and staggerFrame:GetWidth() or (staggerSettings and staggerSettings.width) or 30) or thresholdSize
+					local thresholdHeight = isVerticalStagger and thresholdSize or (staggerFrame and staggerFrame:GetHeight() or (staggerSettings and staggerSettings.height) or 24)
 					local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 					
 					for _ = 1, 3 do
@@ -308,23 +313,8 @@ local function ConstructResourceBar(settings)
 			barGroups.secondary:SetMaxNodes(maxChi)
 			
 			-- Set the node count and layout for Chi
-			barGroups.secondary:SetNodeCount(maxChi)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
+			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxChi)
 			barGroups.secondary:Show()
-			
-			-- Get effective width for secondary bar, accounting for CDM width matching
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
-			
-			-- Apply layout to position all Chi nodes correctly
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
 			
 			-- Set up Chi nodes with textures and colors
 			local frameLevels = TRB.Data.constants.frameLevels
@@ -692,8 +682,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if talents:IsTalentActive(spells.vivaciousVivification) and (spellId == spells.risingSunKick.id or spellId == spells.rushingWindKick.id) then
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:InitializeCustom(spells.vivaciousVivification.duration, currentTime)
-			elseif spellId == spells.vivify.id then
+			elseif talents:IsTalentActive(spells.sereneSurge) and spellId == spells.envelopingMist.id then
+				snapshotData.snapshots[spells.sereneSurge.id].buff:InitializeCustom(spells.sereneSurge.duration, currentTime)
+			elseif spellId == spells.vivify.id or spellId == spells.sheilunsGift.id then
 				snapshotData.snapshots[spells.vivaciousVivification.id].buff:Reset()
+				snapshotData.snapshots[spells.sereneSurge.id].buff:Reset()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -727,8 +720,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
 				end
 
-				local currentHaste = snapshotData.attributes.haste or 0
-				cooldown = cooldown / (1 + currentHaste / 100)
+				local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+				cooldown = cooldown * (cachedGcd / 1.5)
 				snapshotData.snapshots[spells.strikeOfTheWindlord.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
@@ -740,8 +733,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cooldown = cooldown + spells.communionWithWind.attributes.cooldownMod
 				end
 
-				local currentHaste = snapshotData.attributes.haste or 0
-				cooldown = cooldown / (1 + currentHaste / 100)
+				local cachedGcd = snapshotData.attributes.gcdDuration or 1.5
+				cooldown = cooldown * (cachedGcd / 1.5)
 				snapshotData.snapshots[spells.whirlingDragonPunch.id].cooldown:InitializeCustom(cooldown, currentTime)
 
 				if talents:IsTalentActive(spells.heartOfTheJadeSerpent) then
@@ -952,6 +945,7 @@ local function UpdateSnapshot_Mistweaver()
 	local currentTime = GetTime()
 	
 	snapshots[spells.vivaciousVivification.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.sereneSurge.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Windwalker()
@@ -1318,7 +1312,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showMediumThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.medium and specSettings.thresholds.stagger.medium.enabled and mediumThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[1], mediumColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold1", staggerThresholds[1], showMediumThreshold, staggerNode:GetFrame(), mediumThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
 						end
 
 						-- Heavy Stagger threshold (configurable position, discrete color)
@@ -1328,7 +1322,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showHeavyThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.heavy and specSettings.thresholds.stagger.heavy.enabled and heavyThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[2], heavyColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold2", staggerThresholds[2], showHeavyThreshold, staggerNode:GetFrame(), heavyThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
 						end
 
 						-- Extremely Heavy Stagger threshold (configurable position, discrete color)
@@ -1338,7 +1332,7 @@ local function UpdateResourceBar()
 							-- Hide threshold if it meets or exceeds the bar's max scale
 							local showExtremeThreshold = specSettings.thresholds.stagger and specSettings.thresholds.stagger.extreme and specSettings.thresholds.stagger.extreme.enabled and extremeThreshold < maxScale or false
 							Color:SetThresholdColor(staggerThresholds[3], extremeColor, true)
-							Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder)
+							Threshold:RepositionThresholdCustomBar("staggerThreshold3", staggerThresholds[3], showExtremeThreshold, staggerNode:GetFrame(), extremeThreshold * snapshotData.attributes.healthMax, scaledMaxHealth, staggerWidth, staggerBorder, nil, staggerSettings.fillDirection)
 						end
 					end
 				end
@@ -1380,7 +1374,7 @@ local function UpdateResourceBar()
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 					local conditionMap = {
-						vivaciousVivification = affectingCombat and snapshots[spells.vivaciousVivification.id].buff.isActive,
+						vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive),
 						heartOfTheJadeSerpent = false,
 						heartOfTheJadeSerpentReady = false,
 					}
@@ -2118,21 +2112,7 @@ function TRB.Functions.Class:CheckCharacter()
 					barGroups.secondary.lastRebuildNodeCount = nil
 					
 					barGroups.secondary:SetMaxNodes(maxComboPoints)
-					barGroups.secondary:SetNodeCount(maxComboPoints)
-					barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL", sharedSettings.comboPoints.growthDirection)
-					
-					-- Get effective width for secondary bar, accounting for CDM width matching
-					local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
-					if cdmForced then
-						barGroups.secondary.fullWidth = true
-					end
-					
-					barGroups.secondary:ApplyLayout(
-						effectiveWidth,
-						sharedSettings.comboPoints.width,
-						sharedSettings.comboPoints.height,
-						sharedSettings.comboPoints.border
-					)
+					Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
 					-- Apply textures and colors to any newly created nodes
 					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, maxComboPoints do
@@ -2218,6 +2198,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.danceOfChiJiActive = false
 	end
 end
 
@@ -2382,8 +2369,11 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				staggerNode:ClearThresholds()
 				local staggerSettings = settings.bars and settings.bars["stagger"]
 				local staggerColors = settings.colors and settings.colors.bars and settings.colors.bars.stagger
-				local thresholdWidth = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
-				local thresholdHeight = staggerSettings and staggerSettings.height or 24
+				local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+				local isVerticalStagger = Bar:IsVerticalFill(staggerSettings and staggerSettings.fillDirection)
+				local staggerFrame = staggerNode:GetFrame()
+				local thresholdWidth = isVerticalStagger and (staggerFrame and staggerFrame:GetWidth() or (staggerSettings and staggerSettings.width) or 30) or thresholdSize
+				local thresholdHeight = isVerticalStagger and thresholdSize or (staggerFrame and staggerFrame:GetHeight() or (staggerSettings and staggerSettings.height) or 24)
 				local borderColor = staggerColors and staggerColors.border and staggerColors.border.color
 				
 				for _ = 1, 3 do

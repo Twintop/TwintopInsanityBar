@@ -1,4 +1,4 @@
-﻿---@diagnostic disable: undefined-field, undefined-global
+---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
@@ -67,6 +67,11 @@ local function DualWriteAnchorToLegacy(barSettings)
 			}
 			barSettings.relativeToName = nameMap[barSettings.relativeTo] or ""
 		end
+	else
+		-- Screen-anchored: clear stale legacy fields so MigrateBarAnchors
+		-- won't incorrectly re-derive a bar-relative anchor from them on import.
+		barSettings.relativeTo = nil
+		barSettings.relativeToName = nil
 	end
 end
 
@@ -356,7 +361,7 @@ local function GetAllSpecsGlobalState(settingKey)
 	local global = TRB.Data.settings.core.global
 	local allTrue = true
 	local allFalse = true
-	
+
 	for className, specs in pairs(allClassSpecs) do
 		if global[className] then
 			for _, specName in ipairs(specs) do
@@ -370,7 +375,7 @@ local function GetAllSpecsGlobalState(settingKey)
 			end
 		end
 	end
-	
+
 	if allTrue then
 		return true
 	elseif allFalse then
@@ -386,7 +391,7 @@ end
 local function SetAllSpecsGlobalSetting(settingKey, value)
 	local global = TRB.Data.settings.core.global
 	local checkboxSuffix = settingKeyToCheckboxSuffix[settingKey]
-	
+
 	-- Update settings for all class/specs
 	for className, specs in pairs(allClassSpecs) do
 		if global[className] then
@@ -397,7 +402,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 			end
 		end
 	end
-	
+
 	-- Update all existing per-spec checkboxes in the UI across ALL classes
 	if checkboxSuffix then
 		for className, specs in pairs(allClassSpecs) do
@@ -414,7 +419,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 			end
 		end
 	end
-	
+
 	-- Refresh caches for all specs that have been initialized (specCache exists)
 	for className, specs in pairs(allClassSpecs) do
 		for _, specName in ipairs(specs) do
@@ -424,7 +429,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 			end
 		end
 	end
-	
+
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()
 	-- RecomputeFormattedValues re-reads live API values and re-formats ALL pre-formatted
@@ -471,7 +476,7 @@ end
 ---@return number # Updated Y coordinate
 function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, controlKey, settingKey, yCoord, customLabel, customTooltip)
 	local f = nil
-	
+
 	yCoord = yCoord - 30
 	controls.checkBoxes = controls.checkBoxes or {}
 	controls.checkBoxes[controlKey] = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
@@ -480,14 +485,14 @@ function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls,
 	getglobal(f:GetName() .. 'Text'):SetText(customLabel or L["CheckboxEnableForAllSpecs"])
 	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 	f.tooltip = customTooltip or L["CheckboxEnableForAllSpecsTooltip"]
-	
+
 	-- Set initial tristate based on current values
 	local currentState = GetAllSpecsGlobalState(settingKey)
 	SetCheckboxTriState(f, currentState)
-	
+
 	-- Store the setting key for the click handler
 	f.settingKey = settingKey
-	
+
 	f:SetScript("OnClick", function(self, ...)
 		-- Get current tristate: Unchecked->Checked, Mixed->Checked, Checked->Unchecked
 		local currentState = GetAllSpecsGlobalState(self.settingKey)
@@ -498,13 +503,20 @@ function TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls,
 			-- Both false and nil (mixed) go to true
 			newValue = true
 		end
-		
+
 		SetAllSpecsGlobalSetting(self.settingKey, newValue)
-		
+
 		-- Update this checkbox's visual state
 		SetCheckboxTriState(self, newValue)
 	end)
-	
+
+	-- Add a "Copy..." button next to the bulk-toggle checkbox so users can
+	-- push Global -> a single spec or pull a single spec -> Global without
+	-- using the all-specs bulk apply.
+	if TRB.Functions.OptionsUi.BuildGlobalBulkCopyButton then
+		TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(f, settingKey)
+	end
+
 	return yCoord
 end
 
@@ -583,6 +595,712 @@ function TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(checkbox, globalTabK
 			end)
 		end
 	end)
+end
+
+-- ============================================================================
+-- "Use Global" Copy menu infrastructure
+-- ============================================================================
+-- Each "Use Global" checkbox in a per-spec panel and each bulk-toggle checkbox
+-- on the Global Options panel gets a sibling "Copy..." button that opens a
+-- context menu allowing the user to copy configuration between Global, the
+-- current spec, and any other spec across any stored profile.
+--
+-- Class/spec metadata (localized class names, spec names, ordering) is read
+-- from the canonical TRB.Data.allClassSpecs table populated in Options.lua.
+-- DO NOT duplicate that data here.
+
+-- Returns the localized full spec name for (className, specName), or a sane
+-- fallback if the lookup fails.
+local function GetCopyMenuSpecLabel(className, specName)
+	local specs = TRB.Data.allClassSpecs
+	if specs then
+		local prefix = className .. "_"
+		for _, classDef in ipairs(specs) do
+			if classDef.classKey == className then
+				for _, specDef in ipairs(classDef.specs) do
+					if specDef.compositeKey == prefix .. specName then
+						return specDef.specLabel
+					end
+				end
+				break
+			end
+		end
+	end
+	return className .. " " .. specName
+end
+
+-- Returns a shallow copy of TRB.Data.allClassSpecs sorted alphabetically by
+-- localized class label, matching the Options nav order.
+local function GetSortedClassSpecs()
+	local sorted = {}
+	for i, classDef in ipairs(TRB.Data.allClassSpecs or {}) do
+		sorted[i] = classDef
+	end
+	table.sort(sorted, function(a, b) return a.classLabel < b.classLabel end)
+	return sorted
+end
+
+-- Per-section copy registry. `paths` is a list of dotted key-paths (as arrays)
+-- that should be deep-copied between source and destination pieces. The
+-- subtree shape mirrors what FillSpecializationCacheSettings reads for each
+-- "Use Global" flag - the same fields that the global toggle would substitute
+-- if it were checked.
+local globalSettingKeyCopyDef = {
+	bar             = { sectionLabel = L["CopyMenuSection_bar"],             paths = { {"bar"} } },
+	comboPoints     = { sectionLabel = L["CopyMenuSection_comboPoints"],     paths = { {"comboPoints"} } },
+	healthBar       = { sectionLabel = L["CopyMenuSection_healthBar"],       paths = { {"healthBar"} } },
+	healthBarColors = { sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
+	textures        = { sectionLabel = L["CopyMenuSection_textures"],        paths = { {"textures"} } },
+	displayBar      = { sectionLabel = L["CopyMenuSection_displayBar"],      paths = { {"displayBar"} } },
+	thresholdIcons  = { sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} } },
+	thresholdColors = { sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} } },
+	displayText     = { sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
+	textColors      = { sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
+	precision       = { sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
+	globalBarText   = { sectionLabel = L["CopyMenuSection_globalBarText"],   paths = { {"displayText", "barText"} } },
+}
+
+-- Sections whose subtree shape differs between specs (e.g. bar text entries
+-- reference spec-specific variables, threshold dictionaries reference
+-- spec-specific spell IDs). Cross-class copies for these sections show an
+-- additional warning in the confirmation popup.
+local globalSettingKeyShapeSensitive = {
+	displayBar    = true,
+	globalBarText = true,
+	thresholdIcons = true,
+	thresholdColors = true,
+}
+
+-- Returns the readable source piece for the given (scope, profile, class, spec).
+-- When profileName matches the resolved active profile (or is nil), the LIVE
+-- runtime table is returned so unflushed edits are picked up. Otherwise the
+-- stored profile table is returned.
+local function GetCopyPieceForRead(scope, profileName, className, specName)
+	local profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		local activeName = profiles:ResolveCoreProfileName()
+		if profileName == nil or profileName == activeName then
+			return TRB.Data.settings.core
+		end
+		local p = TRB.Data.settings.profiles
+		if p and p.list and p.list[profileName] then
+			return p.list[profileName].core
+		end
+	elseif scope == "spec" and className ~= nil and specName ~= nil then
+		local activeName = profiles:ResolveSpecProfileName(className, specName)
+		if profileName == nil or profileName == activeName then
+			TRB.Functions.Character:EnsureSpecSettings(className)
+			local cls = TRB.Data.settings[className]
+			return cls and cls[specName] or nil
+		end
+		local p = TRB.Data.settings.profiles
+		if p and p.list and p.list[profileName] and p.list[profileName][className] then
+			return p.list[profileName][className][specName]
+		end
+	end
+	return nil
+end
+
+-- Returns the writable destination piece for the given (scope, profile, class,
+-- spec). Live runtime is returned when profileName matches the active profile.
+-- For non-active stored profiles, the table is created on demand if missing.
+-- Returns the table plus a boolean indicating whether the destination is the
+-- live (active) piece.
+local function GetCopyPieceForWrite(scope, profileName, className, specName)
+	local profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		local activeName = profiles:ResolveCoreProfileName()
+		if profileName == nil or profileName == activeName then
+			return TRB.Data.settings.core, true
+		end
+		local p = TRB.Data.settings.profiles
+		if p == nil or p.list == nil or p.list[profileName] == nil then
+			return nil, false
+		end
+		p.list[profileName].core = p.list[profileName].core or {}
+		return p.list[profileName].core, false
+	elseif scope == "spec" and className ~= nil and specName ~= nil then
+		local activeName = profiles:ResolveSpecProfileName(className, specName)
+		if profileName == nil or profileName == activeName then
+			TRB.Functions.Character:EnsureSpecSettings(className)
+			local cls = TRB.Data.settings[className]
+			if cls == nil or cls[specName] == nil then
+				return nil, false
+			end
+			return cls[specName], true
+		end
+		local p = TRB.Data.settings.profiles
+		if p == nil or p.list == nil or p.list[profileName] == nil then
+			return nil, false
+		end
+		p.list[profileName][className] = p.list[profileName][className] or {}
+		p.list[profileName][className][specName] = p.list[profileName][className][specName] or {}
+		return p.list[profileName][className][specName], false
+	end
+	return nil, false
+end
+
+-- Deep-copies the given paths from src to dst. Missing paths in src are skipped
+-- silently; intermediate tables in dst are created as needed.
+local function CopySettingsByPaths(src, dst, paths)
+	if src == nil or dst == nil then
+		return false
+	end
+	for _, path in ipairs(paths) do
+		local node = src
+		for _, key in ipairs(path) do
+			if type(node) == "table" then
+				node = node[key]
+			else
+				node = nil
+				break
+			end
+		end
+		if node ~= nil then
+			local parent = dst
+			for i = 1, #path - 1 do
+				local key = path[i]
+				if type(parent[key]) ~= "table" then
+					parent[key] = {}
+				end
+				parent = parent[key]
+			end
+			parent[path[#path]] = TRB.Functions.Table:DeepCopy(node)
+		end
+	end
+	return true
+end
+
+-- Refreshes runtime state after a copy targeting the live (active) piece.
+-- Mirrors the cache/bar-refresh sequence used by SetAllSpecsGlobalSetting.
+local function RefreshAfterLiveCopy(destScope, destClassName, destSpecName)
+	local profiles = TRB.Functions.Profiles
+	if destScope == "core" then
+		-- Re-resolve every initialized spec because any of them may pull from core.
+		for className, specs in pairs(allClassSpecs) do
+			for _, specName in ipairs(specs) do
+				local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+				if TRB.Data.specCache[compositeKey] then
+					TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+				end
+			end
+		end
+		profiles:WriteThrough("core")
+	elseif destScope == "spec" then
+		local compositeKey = TRB.Functions.Character:GetCompositeKey(destClassName, destSpecName)
+		if TRB.Data.specCache[compositeKey] then
+			TRB.Functions.Character:FillSpecializationCacheSettings(destClassName, destSpecName)
+		end
+		profiles:WriteThrough("spec", destClassName, destSpecName)
+	end
+
+	TRB.Functions.Character:ResetCaches()
+	TRB.Functions.Character:RecomputeFormattedValues()
+	if TRB.Frames.barGroups ~= nil and TRB.Data.specCache[TRB.Data.character.compositeKey] then
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		if settings then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			TRB.Functions.BarText:CreateBarTextFrames()
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
+		end
+		TRB.Data.lookupDirty = true
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
+		end
+	end
+end
+
+-- Returns a localized one-line description of a (scope, profile, class, spec)
+-- target, used inside confirmation popups (e.g. "Default - Shadow Priest"
+-- or "Global Options").
+local function FormatCopyTarget(scope, profileName, className, specName)
+	local profiles = TRB.Functions.Profiles
+	local resolvedProfile = profileName
+	if resolvedProfile == nil then
+		if scope == "core" then
+			resolvedProfile = profiles:ResolveCoreProfileName() or profiles.DEFAULT_NAME
+		else
+			resolvedProfile = profiles:ResolveSpecProfileName(className, specName) or profiles.DEFAULT_NAME
+		end
+	end
+
+	local pieceLabel
+	if scope == "core" then
+		pieceLabel = L["ProfileScopeLabelGlobal"]
+	else
+		pieceLabel = GetCopyMenuSpecLabel(className, specName)
+	end
+
+	return string.format(L["CopyMenuTargetFormat"], resolvedProfile, pieceLabel)
+end
+
+-- Static popup registration (idempotent). All copy-confirm popups pass their
+-- operation parameters through `data`.
+local RefreshProfileDropdownForScope
+local copyPopupsRegistered = false
+local function EnsureCopyConfigPopupsRegistered()
+	if copyPopupsRegistered then
+		return
+	end
+	copyPopupsRegistered = true
+
+	local function PerformDeferredCopy(data)
+		if data == nil or data.settingKey == nil then
+			return
+		end
+		local def = globalSettingKeyCopyDef[data.settingKey]
+		if def == nil then
+			return
+		end
+		local src = GetCopyPieceForRead(data.srcScope, data.srcProfileName, data.srcClassName, data.srcSpecName)
+		local dst, isLive = GetCopyPieceForWrite(data.dstScope, data.dstProfileName, data.dstClassName, data.dstSpecName)
+		if src == nil or dst == nil then
+			return
+		end
+		if not CopySettingsByPaths(src, dst, def.paths) then
+			return
+		end
+		if isLive then
+			RefreshAfterLiveCopy(data.dstScope, data.dstClassName, data.dstSpecName)
+			-- The bar updates immediately via RefreshAfterLiveCopy, but the
+			-- options panel controls (sliders, color pickers, etc.) were
+			-- bound at construction time and don't observe runtime mutations.
+			-- A reload is the only way to guarantee they reflect the new
+			-- values consistently across all already-built panels. This
+			-- matches the existing "Use this profile" flow.
+			TRB.Functions.Profiles:FlushAndSuppressLogout()
+			C_UI.Reload()
+		else
+			TRB.Functions.Profiles:InvalidateCache()
+			RefreshProfileDropdownForScope(data.dstScope, data.dstClassName, data.dstSpecName)
+			-- Non-active destination - just persist the changes via a flush
+			-- so a subsequent /reload doesn't overwrite them.
+			TRB.Functions.Profiles:FlushActive()
+		end
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_UseGlobal_CopyConfirm"] = {
+		text = L["CopyMenuConfirmFormat"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function(self, data)
+			PerformDeferredCopy(data)
+		end,
+		hideOnEscape = true,
+		whileDead = true,
+		timeout = 0,
+		preferredIndex = 3,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_UseGlobal_CopyCrossClassConfirm"] = {
+		text = L["CopyMenuConfirmCrossClassFormat"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function(self, data)
+			PerformDeferredCopy(data)
+		end,
+		hideOnEscape = true,
+		whileDead = true,
+		timeout = 0,
+		preferredIndex = 3,
+	}
+end
+
+-- Shows the appropriate confirm popup for the given copy operation. If source
+-- and destination differ in class for a shape-sensitive section, the cross-
+-- class warning popup is used instead.
+local function PromptCopyConfirm(data)
+	EnsureCopyConfigPopupsRegistered()
+
+	local def = globalSettingKeyCopyDef[data.settingKey]
+	local sectionLabel = (def and def.sectionLabel) or data.settingKey
+	local srcLabel = FormatCopyTarget(data.srcScope, data.srcProfileName, data.srcClassName, data.srcSpecName)
+	local dstLabel = FormatCopyTarget(data.dstScope, data.dstProfileName, data.dstClassName, data.dstSpecName)
+
+	local crossClass = globalSettingKeyShapeSensitive[data.settingKey]
+		and data.srcScope == "spec" and data.dstScope == "spec"
+		and data.srcClassName ~= nil and data.dstClassName ~= nil
+		and data.srcClassName ~= data.dstClassName
+
+	local popup = crossClass and "TwintopResourceBar_UseGlobal_CopyCrossClassConfirm"
+		or "TwintopResourceBar_UseGlobal_CopyConfirm"
+	StaticPopup_Show(popup, sectionLabel, string.format("%s\n  -> %s", srcLabel, dstLabel), data)
+end
+
+-- Adds a "From profile -> Class -> Spec" submenu under `parent` (a menu
+-- description). Each leaf calls onSpecPicked(profileName, className, specName).
+-- Returns true if the given profile contains core (Global) data.
+local function ProfileHasCore(profileName)
+	local profiles = TRB.Functions.Profiles
+	if profileName == nil then
+		return false
+	end
+	local activeName = profiles:ResolveCoreProfileName()
+	if profileName == activeName then
+		return TRB.Data.settings.core ~= nil
+	end
+	local p = TRB.Data.settings.profiles
+	return p ~= nil and p.list ~= nil and p.list[profileName] ~= nil
+		and type(p.list[profileName].core) == "table"
+end
+
+-- Returns true if the given profile contains data for (className, specName).
+local function ProfileHasSpec(profileName, className, specName)
+	local profiles = TRB.Functions.Profiles
+	if profileName == nil or className == nil or specName == nil then
+		return false
+	end
+	local activeName = profiles:ResolveSpecProfileName(className, specName)
+	if profileName == activeName then
+		TRB.Functions.Character:EnsureSpecSettings(className)
+		local cls = TRB.Data.settings[className]
+		return cls ~= nil and cls[specName] ~= nil
+	end
+	local p = TRB.Data.settings.profiles
+	return p ~= nil and p.list ~= nil and p.list[profileName] ~= nil
+		and type(p.list[profileName][className]) == "table"
+		and type(p.list[profileName][className][specName]) == "table"
+end
+
+-- Adds a "From profile -> [Global | Class -> Spec]" submenu under `parent` (a
+-- menu description). Each leaf calls onPicked(profileName, className, specName)
+-- where className == nil means "core / Global Options" for that profile.
+-- Only profiles/classes/specs that actually have stored data are included.
+-- `excludeKey` (string "<className>:<specName>") is omitted when present so
+-- the user can't pick the same spec they are operating on.
+local function IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+	if profileName == nil or className == nil or specName == nil or excludeKey == nil then
+		return false
+	end
+	if (className .. ":" .. specName) ~= excludeKey then
+		return false
+	end
+	local activeName = TRB.Functions.Profiles:ResolveSpecProfileName(className, specName)
+	return profileName == activeName
+end
+
+---@param label string
+---@return string
+local function GetCopyMenuNewTargetLabel(label)
+	return string.format(L["CopyMenuNewTargetFormat"], label)
+end
+
+-- Adds a source submenu under `parent` (a menu description). Only profiles /
+-- classes / specs that currently have readable data are included.
+local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
+	local profiles = TRB.Functions.Profiles
+	local profileNames = profiles:GetProfileNames()
+	local sortedClasses = GetSortedClassSpecs()
+	local activeCoreName = excludeCurrentCoreProfile and profiles:ResolveCoreProfileName() or nil
+	for _, profileName in ipairs(profileNames) do
+		-- Pre-compute which classes have any present spec in this profile so
+		-- empty profiles / empty class branches are not shown at all.
+		local classesWithSpecs = {}
+		local hasCore = ProfileHasCore(profileName) and profileName ~= activeCoreName
+		local profileHasAnything = hasCore
+		for _, classDef in ipairs(sortedClasses) do
+			local className = classDef.classKey
+			local prefix = className .. "_"
+			local hasAny = false
+			for _, specDef in ipairs(classDef.specs) do
+				local specName = string.sub(specDef.compositeKey, #prefix + 1)
+				if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+					and ProfileHasSpec(profileName, className, specName) then
+					hasAny = true
+					break
+				end
+			end
+			if hasAny then
+				classesWithSpecs[className] = true
+				profileHasAnything = true
+			end
+		end
+		if profileHasAnything then
+			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+			local profileMenu = parent:CreateButton(profileName)
+			if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
+				if hasCore then
+					profileMenu:CreateButton(L["ProfileScopeLabelGlobal"], function()
+						onPicked(profileName, nil, nil)
+					end)
+				end
+				for _, classDef in ipairs(sortedClasses) do
+					local className = classDef.classKey
+					if classesWithSpecs[className] then
+						---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+						local classMenu = profileMenu:CreateButton(classDef.classLabel)
+						if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+							local prefix = className .. "_"
+							for _, specDef in ipairs(classDef.specs) do
+								local specName = string.sub(specDef.compositeKey, #prefix + 1)
+								if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
+									and ProfileHasSpec(profileName, className, specName) then
+									classMenu:CreateButton(specDef.specLabel, function()
+										onPicked(profileName, className, specName)
+									end)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- Adds a destination submenu under `parent` (a menu description). All
+-- profiles, classes, and specs are included so Copy To can target any
+-- destination. Specs that do not yet exist in the destination profile are
+-- marked with a purple " {New}" suffix.
+local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
+	local profiles = TRB.Functions.Profiles
+	local profileNames = profiles:GetProfileNames()
+	local sortedClasses = GetSortedClassSpecs()
+	local activeCoreName = excludeCurrentCoreProfile and profiles:ResolveCoreProfileName() or nil
+	for _, profileName in ipairs(profileNames) do
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local profileMenu = parent:CreateButton(profileName)
+		if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
+			if profileName ~= activeCoreName then
+				local globalLabel = L["ProfileScopeLabelGlobal"]
+				if not ProfileHasCore(profileName) then
+					globalLabel = GetCopyMenuNewTargetLabel(globalLabel)
+				end
+				profileMenu:CreateButton(globalLabel, function()
+					onPicked(profileName, nil, nil)
+				end)
+			end
+			for _, classDef in ipairs(sortedClasses) do
+				local className = classDef.classKey
+				---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+				local classMenu = profileMenu:CreateButton(classDef.classLabel)
+				if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+					local prefix = className .. "_"
+					for _, specDef in ipairs(classDef.specs) do
+						local specName = string.sub(specDef.compositeKey, #prefix + 1)
+						if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey) then
+							local specLabel = specDef.specLabel
+							if not ProfileHasSpec(profileName, className, specName) then
+								specLabel = GetCopyMenuNewTargetLabel(specLabel)
+							end
+							classMenu:CreateButton(specLabel, function()
+								onPicked(profileName, className, specName)
+							end)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- Builds and shows the per-spec "Use Global" Copy context menu attached to
+-- `owner`. classId/specId identify the destination spec.
+local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	if className == nil or specName == nil then
+		return
+	end
+	local profiles = TRB.Functions.Profiles
+	local def = globalSettingKeyCopyDef[settingKey]
+	local sectionLabel = (def and def.sectionLabel) or settingKey
+	local excludeKey = className .. ":" .. specName
+	local currentCoreProfileName = profiles:ResolveCoreProfileName() or profiles.DEFAULT_NAME
+
+	local function MakeData(srcScope, srcProfileName, srcClassName, srcSpecName, dstScope, dstProfileName, dstClassName, dstSpecName)
+		return {
+			settingKey      = settingKey,
+			srcScope        = srcScope,
+			srcProfileName  = srcProfileName,
+			srcClassName    = srcClassName,
+			srcSpecName     = srcSpecName,
+			dstScope        = dstScope,
+			dstProfileName  = dstProfileName,
+			dstClassName    = dstClassName,
+			dstSpecName     = dstSpecName,
+		}
+	end
+
+	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
+
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+			copyTo:CreateTitle(L["CopyMenuCopyTo"])
+			copyTo:CreateDivider()
+			copyTo:CreateButton(string.format(L["CopyMenuUseAsCurrentGlobalProfileFormat"], currentCoreProfileName), function()
+				PromptCopyConfirm(MakeData("spec", nil, className, specName, "core", nil, nil, nil))
+			end)
+			copyTo:CreateDivider()
+			copyTo:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddDestinationProfileClassSpecSubmenu(copyTo, function(profileName, dstClass, dstSpec)
+				if dstClass == nil then
+					PromptCopyConfirm(MakeData("spec", nil, className, specName, "core", profileName, nil, nil))
+				else
+					PromptCopyConfirm(MakeData("spec", nil, className, specName, "spec", profileName, dstClass, dstSpec))
+				end
+			end, excludeKey, false)
+		end
+
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
+		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
+			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
+			copyFrom:CreateDivider()
+			copyFrom:CreateButton(string.format(L["CopyMenuUseFromCurrentGlobalProfileFormat"], currentCoreProfileName), function()
+				PromptCopyConfirm(MakeData("core", nil, nil, nil, "spec", nil, className, specName))
+			end)
+			copyFrom:CreateDivider()
+			copyFrom:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddProfileClassSpecSubmenu(copyFrom, function(profileName, srcClass, srcSpec)
+				if srcClass == nil then
+					-- "Global" pick: copy that profile's core into this spec
+					PromptCopyConfirm(MakeData("core", profileName, nil, nil, "spec", nil, className, specName))
+				else
+					PromptCopyConfirm(MakeData("spec", profileName, srcClass, srcSpec, "spec", nil, className, specName))
+				end
+			end, excludeKey, true)
+		end
+	end)
+end
+
+---@param checkbox CheckButton
+---@param button Button
+local function PositionCopyButtonLeftOfCheckbox(checkbox, button)
+	local point, relativeTo, relativePoint, xOfs, yOfs = checkbox:GetPoint(1)
+	if point ~= nil then
+		checkbox:ClearAllPoints()
+		checkbox:SetPoint(point, relativeTo, relativePoint, (xOfs or 0) + 78, yOfs or 0)
+		button:SetPoint(point, relativeTo, relativePoint, xOfs or 0, yOfs or 0)
+	else
+		button:SetPoint("RIGHT", checkbox, "LEFT", -4, 0)
+	end
+	-- Final visual order:
+	--   [Copy...] [x] Use global settings
+end
+
+-- Builds the "Copy..." button next to a per-spec "Use Global" checkbox.
+---@param checkbox CheckButton The "Use Global" checkbox to attach the button to
+---@param classId integer The class ID of the destination spec
+---@param specId integer The spec ID of the destination spec
+---@param settingKey string A key from globalSettingKeyCopyDef
+function TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(checkbox, classId, specId, settingKey)
+	if checkbox == nil or globalSettingKeyCopyDef[settingKey] == nil then
+		return nil
+	end
+	-- Bar Text section is intentionally excluded from the Copy menu.
+	if settingKey == "globalBarText" then
+		return nil
+	end
+	local button = CreateFrame("Button", nil, checkbox, "UIPanelButtonTemplate")
+	button:SetText(L["CopyMenuButton"])
+	button:SetSize(70, 20)
+	PositionCopyButtonLeftOfCheckbox(checkbox, button)
+	button.tooltip = L["CopyMenuButtonTooltip"]
+	button:SetScript("OnEnter", function(self)
+		if self.tooltip then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+---@diagnostic disable-next-line: param-type-mismatch
+			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
+			GameTooltip:Show()
+		end
+	end)
+	button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	button:SetScript("OnClick", function(self)
+		ShowUseGlobalCopyMenu(self, classId, specId, settingKey)
+	end)
+	return button
+end
+
+-- Builds and shows the Global panel bulk-toggle Copy context menu attached
+-- to `owner`. Source/destination semantics are inverted relative to the
+-- per-spec menu: pick one or push/pull from one spec at a time.
+local function ShowBulkGlobalCopyMenu(owner, settingKey)
+	local def = globalSettingKeyCopyDef[settingKey]
+	local sectionLabel = (def and def.sectionLabel) or settingKey
+
+	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
+
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+			copyTo:CreateTitle(L["CopyMenuCopyTo"])
+			copyTo:CreateDivider()
+			copyTo:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddDestinationProfileClassSpecSubmenu(copyTo, function(profileName, dstClass, dstSpec)
+				PromptCopyConfirm({
+					settingKey      = settingKey,
+					srcScope        = "core",
+					srcProfileName  = nil,
+					srcClassName    = nil,
+					srcSpecName     = nil,
+					dstScope        = (dstClass == nil) and "core" or "spec",
+					dstProfileName  = profileName,
+					dstClassName    = dstClass,
+					dstSpecName     = dstSpec,
+				})
+			end, nil, false)
+		end
+
+		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
+		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
+			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
+			copyFrom:CreateDivider()
+			copyFrom:CreateTitle(L["ProfileMenuHeaderProfiles"])
+			AddProfileClassSpecSubmenu(copyFrom, function(profileName, srcClass, srcSpec)
+				PromptCopyConfirm({
+					settingKey      = settingKey,
+					srcScope        = (srcClass == nil) and "core" or "spec",
+					srcProfileName  = profileName,
+					srcClassName    = srcClass,
+					srcSpecName     = srcSpec,
+					dstScope        = "core",
+					dstProfileName  = nil,
+					dstClassName    = nil,
+					dstSpecName     = nil,
+				})
+			end, nil, true)
+		end
+	end)
+end
+
+-- Builds a "Copy..." button next to a Global-panel bulk-toggle checkbox.
+---@param bulkCheckbox CheckButton The bulk-toggle checkbox to attach the button to
+---@param settingKey string A key from globalSettingKeyCopyDef
+function TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(bulkCheckbox, settingKey)
+	if bulkCheckbox == nil or globalSettingKeyCopyDef[settingKey] == nil then
+		return nil
+	end
+	-- Bar Text section is intentionally excluded from the Copy menu.
+	if settingKey == "globalBarText" then
+		return nil
+	end
+	local button = CreateFrame("Button", nil, bulkCheckbox, "UIPanelButtonTemplate")
+	button:SetText(L["CopyMenuButton"])
+	button:SetSize(70, 20)
+	PositionCopyButtonLeftOfCheckbox(bulkCheckbox, button)
+	button.tooltip = L["CopyMenuButtonTooltip"]
+	button:SetScript("OnEnter", function(self)
+		if self.tooltip then
+			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+---@diagnostic disable-next-line: param-type-mismatch
+			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
+			GameTooltip:Show()
+		end
+	end)
+	button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	button:SetScript("OnClick", function(self)
+		ShowBulkGlobalCopyMenu(self, settingKey)
+	end)
+	return button
 end
 
 local sounds = {}
@@ -1145,20 +1863,20 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 		local colorValue = colorTable[key]
 		local isNestedTable = type(colorValue) == "table" and colorValue.color ~= nil
 		local colorString = isNestedTable and colorValue.color or colorValue
-		
+
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
 			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 			local newColorString = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
-			
+
 			-- Update the color in the appropriate format
 			if isNestedTable then
 				colorTable[key].color = newColorString
 			else
 				colorTable[key] = newColorString
 			end
-		
+
 			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 				if frame ~= nil then
 					if frameType == "backdrop" then
@@ -1183,7 +1901,7 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 						TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
 					elseif frameType == "threshold" then
 						TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
-					end			
+					end
 				elseif frameType == "health" then
 					TRB.Functions.Character:UpdateHealthValues()
 				end
@@ -1262,8 +1980,8 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetBackdrop({
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		tile = true, 
-		tileSize=4, 
+		tile = true,
+		tileSize=4,
 		edgeSize=12
 	})
 	---@diagnostic disable-next-line: inject-field
@@ -1525,7 +2243,7 @@ function TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, cont
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, controls.colors[controlType], value.name)
 		end)
 	end
-	
+
 	return yCoord, fColor, fCheckbox
 end
 
@@ -1597,7 +2315,7 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	---@diagnostic disable-next-line: inject-field
 	fd.font = fd:CreateFontString(nil)
 	fd.font:SetFontObject(GameFontHighlight)
-	
+
 	if fontFile ~= nil then
 		fd.font:SetFont(fontFile, 12)
 	end
@@ -1670,7 +2388,1397 @@ function TRB.Functions.OptionsUi:BuildExportButton(parent, text, yCoord, height)
 	return f
 end
 
----Builds the spec title row: header + enabled checkbox + import button + export button,
+-- ============================================================================
+-- Profile management dropdown (Phase 2B + 2C)
+-- ============================================================================
+
+-- Maps the lowercase `className` used throughout the addon (e.g. "deathknight")
+-- to the capitalized key under `TRB.Options` (e.g. "DeathKnight") that exposes
+-- each class module's `LoadDefaultSettings` factory. Needed to resolve the
+-- baseline-settings piece for a spec when the user picks "Use Baseline".
+local profileClassNameCapitalized = {
+	deathknight = "DeathKnight",
+	demonhunter = "DemonHunter",
+	druid = "Druid",
+	evoker = "Evoker",
+	hunter = "Hunter",
+	mage = "Mage",
+	monk = "Monk",
+	paladin = "Paladin",
+	priest = "Priest",
+	rogue = "Rogue",
+	shaman = "Shaman",
+	warlock = "Warlock",
+	warrior = "Warrior",
+}
+
+---Returns a deep-copied spec piece from the class's LoadDefaultSettings, so
+---"Use Baseline" gets a fresh default table not shared with runtime state.
+---@param className string # lowercase
+---@param specName string
+---@return table?
+local function GetBaselineSpecPiece(className, specName)
+	local capitalized = profileClassNameCapitalized[className]
+	if capitalized == nil then
+		return nil
+	end
+	local classOptions = TRB.Options and TRB.Options[capitalized]
+	if classOptions == nil or type(classOptions.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+	local full = classOptions.LoadDefaultSettings(true)
+	if type(full) ~= "table" then
+		return nil
+	end
+	local classBucket = full[className]
+	if type(classBucket) ~= "table" then
+		return nil
+	end
+	return classBucket[specName]
+end
+
+---Returns a fresh baseline core piece.
+---@return table?
+local function GetBaselineCorePiece()
+	if TRB.Functions.Settings == nil or type(TRB.Functions.Settings.LoadDefaultSettings) ~= "function" then
+		return nil
+	end
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
+	return settings and settings.core
+end
+
+---Returns the live spec piece for the given class+spec, or nil if not loaded.
+---@param className string
+---@param specName string
+---@return table?
+local function GetCurrentSpecPiece(className, specName)
+	if TRB.Data.settings == nil then
+		return nil
+	end
+	local bucket = TRB.Data.settings[className]
+	if type(bucket) ~= "table" then
+		return nil
+	end
+	return bucket[specName]
+end
+
+---Returns the live core piece, or nil if not loaded.
+---@return table?
+local function GetCurrentCorePiece()
+	return TRB.Data.settings and TRB.Data.settings.core
+end
+
+---Returns the currently active profile name for the given scope.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string
+local function GetActiveProfileName(scope, className, specName)
+	local Profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		return Profiles:ResolveCoreProfileName() or Profiles.DEFAULT_NAME
+	end
+	return Profiles:ResolveSpecProfileName(className, specName) or Profiles.DEFAULT_NAME
+end
+
+---Returns the cached, sorted profile-name list for the given scope.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string[]
+local function GetProfileList(scope, className, specName)
+	local Profiles = TRB.Functions.Profiles
+	if scope == "core" then
+		return Profiles:GetCoreListFromCache()
+	end
+	return Profiles:GetSpecListFromCache(className, specName)
+end
+
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@return string
+local function GetProfileDropdownFrameName(scope, className, specName)
+	local namePrefix = "TwintopResourceBar_ProfileDropdown"
+	if scope == "spec" then
+		return namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
+	end
+	return namePrefix .. "_Core"
+end
+
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+RefreshProfileDropdownForScope = function(scope, className, specName)
+	local dropdown = _G[GetProfileDropdownFrameName(scope, className, specName)]
+	if dropdown == nil then
+		return
+	end
+	if dropdown.UpdateButtonText then
+		dropdown:UpdateButtonText()
+	end
+	if dropdown.SetupMenu and dropdown.GeneratorFunction then
+		dropdown:SetupMenu(dropdown.GeneratorFunction)
+	end
+	if dropdown.RefreshLayout then
+		dropdown:RefreshLayout()
+	end
+end
+
+---Writes a new profile piece and switches the character to it. Flow:
+---  - If `sourceMode == "baseline"`, copies baseline defaults.
+---  - If `sourceMode == "current"`, copies the live settings piece.
+---After writing, updates the character's active-profile ref and writes through.
+---If `reload` is true, prompts a UI reload.
+---@param scope "spec"|"core"
+---@param className string?
+---@param specName string?
+---@param profileName string
+---@param sourceMode "current"|"baseline"
+---@param reload boolean
+local function ApplyNewProfile(scope, className, specName, profileName, sourceMode, reload)
+	local Profiles = TRB.Functions.Profiles
+	local source
+	if scope == "core" then
+		source = sourceMode == "baseline" and GetBaselineCorePiece() or GetCurrentCorePiece()
+		if type(source) ~= "table" then
+			return
+		end
+		Profiles:CreateCoreProfile(profileName, source)
+		Profiles:SetActiveCoreProfile(profileName)
+	else
+		source = sourceMode == "baseline" and GetBaselineSpecPiece(className, specName) or GetCurrentSpecPiece(className, specName)
+		if type(source) ~= "table" then
+			return
+		end
+		Profiles:CreateSpecProfile(profileName, className, specName, source)
+		Profiles:SetActiveSpecProfile(specName, profileName)
+	end
+	-- Only "baseline" source requires a reload: the live in-memory settings
+	-- still hold the previous profile's values, so we need to reload to
+	-- re-resolve them from the freshly-created baseline piece. With "current",
+	-- the new profile is a copy of what's already loaded — just updating the
+	-- active-profile pointer is sufficient and no reload is needed.
+	if reload and sourceMode == "baseline" then
+		-- Suppress the PLAYER_LOGOUT flush: we just wrote baseline defaults
+		-- into the new profile. Without this, FlushActive would overwrite
+		-- those defaults with the current (old) runtime data during reload.
+		TRB.Functions.Profiles.suppressLogoutFlush = true
+		C_UI.Reload()
+	end
+end
+
+-- Lazy registration of all profile-management popup dialogs. Called on first
+-- `BuildProfileDropdown` invocation. Each popup's `data` field carries the
+-- scope/class/spec triplet plus operation-specific fields (attempted name,
+-- source mode, etc.) so the same popup can serve both core and spec scopes.
+local profilePopupsRegistered = false
+local function EnsureProfilePopupsRegistered()
+	if profilePopupsRegistered then
+		return
+	end
+	profilePopupsRegistered = true
+
+	-- Helper: build a human-friendly label for "this scope" used in popup text.
+	local function ScopeLabel(data)
+		if data == nil or data.scope == "core" then
+			return L["ProfileScopeLabelGlobal"]
+		end
+		return data.specLabel or ""
+	end
+
+	local function ExportPieceLabel(data)
+		if data ~= nil and type(data.pieceLabel) == "string" and data.pieceLabel ~= "" then
+			return data.pieceLabel
+		end
+		return ScopeLabel(data)
+	end
+
+	local function HumanizeInternalToken(token)
+		if type(token) ~= "string" or token == "" then
+			return ""
+		end
+
+		local spaced = token:gsub("(%l)(%u)", "%1 %2")
+		return (spaced:gsub("(%a)([%w']*)", function(first, rest)
+			return string.upper(first) .. string.lower(rest)
+		end))
+	end
+
+	local function GetImportSlotDisplayLabel(className, specName)
+		if className == nil or specName == nil then
+			return ""
+		end
+
+		local classId, specId = TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
+		local localizedClass = classId ~= nil and GetClassInfo and GetClassInfo(classId) or nil
+		local classLabel = localizedClass or HumanizeInternalToken(className)
+
+		local specLabel
+		if classId ~= nil and specId ~= nil and GetSpecializationInfoForClassID ~= nil then
+			local _, localizedSpec = GetSpecializationInfoForClassID(classId, specId)
+			specLabel = localizedSpec
+		end
+		specLabel = specLabel or HumanizeInternalToken(specName)
+
+		if specLabel ~= "" and classLabel ~= "" then
+			return string.format("%s %s", specLabel, classLabel)
+		end
+		return specLabel ~= "" and specLabel or classLabel
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_NewName"] = {
+		text = "",
+		button1 = L["ProfileButtonUseCurrent"],
+		button2 = L["ProfileButtonUseBaseline"],
+		button3 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupNewNameText"], ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and data.initialName or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+			data.attemptedName = name
+			data.sourceMode = "current"
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(captured), name, captured)
+				end)
+			else
+				ApplyNewProfile(data.scope, data.className, data.specName, name, "current", true)
+				if data.refresh then data.refresh() end
+			end
+		end,
+		-- button2 = Use Baseline. OnCancel also fires when the user presses
+		-- Escape (hideOnEscape); guard on `reason == "clicked"` so Escape
+		-- doesn't accidentally create a baseline profile.
+		OnCancel = function(self, data, reason)
+			if reason ~= "clicked" then
+				return
+			end
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+			data.attemptedName = name
+			data.sourceMode = "baseline"
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_OverwriteConfirm", ScopeLabel(captured), name, captured)
+				end)
+			else
+				ApplyNewProfile(data.scope, data.className, data.specName, name, "baseline", true)
+				if data.refresh then data.refresh() end
+			end
+		end,
+		-- button3 = Cancel. No handler needed; popup closes on click.
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			StaticPopup_OnClick(self:GetParent(), 1)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_OverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupOverwriteText"], data and data.attemptedName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			-- Yes: proceed with overwrite using the chosen source mode.
+			ApplyNewProfile(data.scope, data.className, data.specName, data.attemptedName, data.sourceMode or "current", true)
+			if data.refresh then data.refresh() end
+		end,
+		OnCancel = function(self, data)
+			-- button2 = No: re-show the name prompt pre-filled with the attempted name.
+			if data ~= nil then
+				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, initialName = data.attemptedName, refresh = data.refresh }
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, followup)
+				end)
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_UseConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupUseConfirmText"], data and data.profileName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			TRB.Functions.Profiles:FlushAndSuppressLogout()
+			if data.scope == "core" then
+				TRB.Functions.Profiles:SetActiveCoreProfile(data.profileName)
+			else
+				TRB.Functions.Profiles:SetActiveSpecProfile(data.specName, data.profileName)
+			end
+			if data.refresh then data.refresh() end
+			C_UI.Reload()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local fmt = (data and data.isActive) and L["ProfilePopupDeleteActiveText"] or L["ProfilePopupDeleteInactiveText"]
+			self:SetFormattedText(fmt, data and data.profileName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:DeleteCoreProfile(data.profileName)
+			else
+				TRB.Functions.Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
+			end
+			if data.refresh then data.refresh() end
+			if data.isActive then
+				C_UI.Reload()
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteReload"] = {
+		text = L["ProfilePopupDeleteReloadMessage"],
+		button1 = L["OK"],
+		OnAccept = function(self)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyName"] = {
+		text = "",
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupCopyText"], data and data.sourceName or "", ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and data.initialName or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" or name == data.sourceName then
+				return
+			end
+			data.attemptedName = name
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				-- Reuse overwrite popup; its OnAccept ApplyNewProfile path doesn't fit here,
+				-- so use a distinct copy-overwrite popup via a tailored flow.
+				local captured = data
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", name, ScopeLabel(captured), captured)
+				end)
+			else
+				local ok
+				if data.scope == "core" then
+					ok = TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, name)
+				else
+					ok = TRB.Functions.Profiles:CopySpecProfile(data.sourceName, name, data.className, data.specName)
+				end
+				if data.refresh then data.refresh() end
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			StaticPopup_OnClick(self:GetParent(), 1)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyOverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupOverwriteText"], data and data.attemptedName or "", ScopeLabel(data))
+		end,
+		OnAccept = function(self, data)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:CopyCoreProfile(data.sourceName, data.attemptedName)
+			else
+				TRB.Functions.Profiles:CopySpecProfile(data.sourceName, data.attemptedName, data.className, data.specName)
+			end
+			if data.refresh then data.refresh() end
+		end,
+		OnCancel = function(self, data)
+			if data ~= nil then
+				local followup = { scope = data.scope, className = data.className, specName = data.specName, specLabel = data.specLabel, sourceName = data.sourceName, initialName = data.attemptedName, refresh = data.refresh }
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, followup)
+				end)
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameName"] = {
+		text = "",
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupRenameText"], data and data.profileName or "", ScopeLabel(data))
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText(data and (data.initialName or data.profileName) or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" or name == data.profileName then
+				return
+			end
+			local exists
+			if data.scope == "core" then
+				exists = TRB.Functions.Profiles:ProfileExistsForCore(name)
+			else
+				exists = TRB.Functions.Profiles:ProfileExistsForSpec(name, data.className, data.specName)
+			end
+			if exists then
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_RenameCollision", name)
+				end)
+				return
+			end
+			local isActive = (name ~= data.profileName) and (GetActiveProfileName(data.scope, data.className, data.specName) == data.profileName)
+			if data.scope == "core" then
+				TRB.Functions.Profiles:RenameCoreProfile(data.profileName, name)
+			else
+				TRB.Functions.Profiles:RenameSpecProfile(data.profileName, name, data.className, data.specName)
+			end
+			if isActive then
+				-- Rename of the active profile already updates character refs; no reload needed.
+			end
+			if data.refresh then data.refresh() end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			StaticPopup_OnClick(self:GetParent(), 1)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameCollision"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupRenameCollisionText"], data or "")
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportExportStub"] = {
+		text = L["ProfilePopupImportExportStubText"],
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
+
+	-- ------------------------------------------------------------------
+	-- Phase 3: Profile Import/Export popups
+	-- ------------------------------------------------------------------
+	-- Applies a parsed import into profiles.list under the given name.
+	-- Writes every valid spec piece and (optionally) the core piece found in
+	-- the payload, then shows a success popup that lets the user choose
+	-- whether to activate the imported profile and reload.
+	local function ApplyImportedProfile(name, parsed, onComplete)
+		if type(name) ~= "string" or name == "" or parsed == nil then
+			return
+		end
+		local writtenSpecs = {}
+		for _, slot in ipairs(parsed.validSpecs or {}) do
+			local piece = parsed.profileBody and parsed.profileBody[slot.className] and parsed.profileBody[slot.className][slot.specName]
+			if type(piece) == "table" then
+				TRB.Functions.Profiles:CreateSpecProfile(name, slot.className, slot.specName, piece)
+				table.insert(writtenSpecs, { className = slot.className, specName = slot.specName })
+			end
+		end
+		local wroteCore = false
+		if parsed.hasCore and type(parsed.profileBody.core) == "table" then
+			TRB.Functions.Profiles:CreateCoreProfile(name, parsed.profileBody.core)
+			wroteCore = true
+		end
+
+		-- Normalise the imported entry against the current settings schema so
+		-- cross-version imports land in a shape the rest of the addon expects.
+		local p = TRB.Data.settings and TRB.Data.settings.profiles
+		if p ~= nil and p.list ~= nil and p.list[name] ~= nil then
+			if TRB.Functions.Settings and TRB.Functions.Settings.PortForwardProfile then
+				TRB.Functions.Settings:PortForwardProfile(p.list[name])
+			end
+		end
+
+		TRB.Functions.Profiles:InvalidateCache()
+		C_Timer.After(0, function()
+			if type(onComplete) == "function" then
+				onComplete(name)
+			end
+			-- If any slot we just wrote is the currently-active profile for
+			-- this character, the runtime content has changed under us; a
+			-- reload is mandatory and the "do you want to start using this
+			-- profile" prompt would be misleading (they're already on it).
+			local reloadRequired = false
+			if wroteCore and TRB.Functions.Profiles:ResolveCoreProfileName() == name then
+				reloadRequired = true
+			end
+			if not reloadRequired then
+				for _, slot in ipairs(writtenSpecs) do
+					if TRB.Functions.Profiles:ResolveSpecProfileName(slot.className, slot.specName) == name then
+						reloadRequired = true
+						break
+					end
+				end
+			end
+			if reloadRequired then
+				-- The imported profile name matches the currently-active
+				-- profile for this character. Do NOT call FlushActive here:
+				-- the live runtime has not picked up the imported contents
+				-- yet, so flushing would DeepCopy stale runtime over the
+				-- freshly-written profile and destroy the import. Just
+				-- suppress the PLAYER_LOGOUT flush and reload.
+				TRB.Functions.Profiles:SuppressLogoutFlush()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportReload", nil, nil, name)
+				return
+			end
+			StaticPopup_Show("TwintopResourceBar_Profile_ImportSuccess", nil, nil, {
+				profileName = name,
+				writtenSpecs = writtenSpecs,
+				wroteCore = wroteCore,
+			})
+		end)
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportSuccess"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupImportSuccessText"], (data and data.profileName) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p == nil then
+				C_UI.Reload()
+				return
+			end
+			-- Activate the imported profile for every slot the payload covered.
+			-- Current character gets direct overrides (so the reload picks up
+			-- the new active profile immediately). Class/spec defaults are also
+			-- updated so other characters of those classes inherit the import.
+			TRB.Functions.Profiles:FlushAndSuppressLogout()
+			if data.wroteCore then
+				TRB.Functions.Profiles:SetActiveCoreProfile(data.profileName)
+				p.default.core = data.profileName
+			end
+			if data.writtenSpecs ~= nil then
+				for _, slot in ipairs(data.writtenSpecs) do
+					TRB.Functions.Profiles:SetActiveSpecProfile(slot.specName, data.profileName)
+					p.default[slot.className] = p.default[slot.className] or {}
+					p.default[slot.className][slot.specName] = data.profileName
+				end
+			end
+			C_UI.Reload()
+		end,
+	}
+
+	-- Shown when an imported profile's name matches the currently-active
+	-- profile for this character. The active profile's contents have just
+	-- changed under the runtime, so a reload is mandatory.
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportReload"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupImportReloadText"], data or "")
+		end,
+		OnAccept = function()
+			C_UI.Reload()
+		end,
+		OnCancel = function()
+			C_UI.Reload()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ExportIncludeCore"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfilePopupExportIncludeCoreTargetText"], ExportPieceLabel(data), (data and data.profileName) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			local output, err
+			if data.specId ~= nil then
+				output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, true)
+			else
+				output, err = TRB.Functions.IO:ExportClassProfile(data.profileName, data.classId, true)
+			end
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local exportData = {
+				message = string.format(L["ProfileExportMessageTargetFormat"], ExportPieceLabel(data), data.profileName),
+				exportString = output,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Export", nil, nil, exportData)
+			end)
+		end,
+		OnCancel = function(self, data, reason)
+			-- button2 = No (OnCancel fires with reason=="clicked"). Escape also
+			-- triggers OnCancel; treat only explicit No as "export without core".
+			if reason ~= "clicked" then return end
+			if data == nil then return end
+			local output, err
+			if data.specId ~= nil then
+				output, err = TRB.Functions.IO:ExportSpecProfile(data.profileName, data.classId, data.specId, false)
+			else
+				output, err = TRB.Functions.IO:ExportClassProfile(data.profileName, data.classId, false)
+			end
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local exportData = {
+				message = string.format(L["ProfileExportMessageTargetFormat"], ExportPieceLabel(data), data.profileName),
+				exportString = output,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Export", nil, nil, exportData)
+			end)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportPaste"] = {
+		text = L["ProfileImportPastePrompt"],
+		button1 = L["Import"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		hasWideEditBox = true,
+		editBoxWidth = 500,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnAccept = function(self)
+			local text = self:GetEditBox():GetText() or ""
+			local parsed, err = TRB.Functions.IO:ParseProfileImport(text)
+			local popupData = self.data
+			if parsed == nil then
+				local msg
+				if err == -6 then
+					msg = L["ProfileImportErrorMultipleProfiles"]
+				elseif err == -7 then
+					msg = L["ProfileImportErrorEmptyWrapper"]
+				elseif err == -4 then
+					msg = L["ProfileImportErrorNoValid"]
+				elseif err == -1 or err == -2 or err == -3 then
+					msg = L["ProfileImportErrorDecode"]
+				else
+					msg = L["ProfileImportErrorGeneric"]
+				end
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				end)
+				return
+			end
+			local nameData = {
+				parsed = parsed,
+				initialName = parsed.suggestedName or "",
+				onComplete = popupData and popupData.onComplete,
+			}
+			-- Explicitly hide the paste popup and defer the name popup so WoW's
+			-- StaticPopup slot is fully free. A 0-frame C_Timer.After was not
+			-- enough to avoid slot collisions; bump to a small positive delay.
+			StaticPopup_Hide("TwintopResourceBar_Profile_ImportPaste")
+			C_Timer.After(0.05, function()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportName", nil, nil, nameData)
+			end)
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportName"] = {
+		text = L["ProfileImportNamePrompt"],
+		button1 = L["OK"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local eb = self:GetEditBox()
+			if eb ~= nil then
+				eb:SetText((data and data.initialName) or "")
+				eb:HighlightText()
+				eb:SetAutoFocus(true)
+			end
+		end,
+		OnAccept = function(self, data)
+			if data == nil or data.parsed == nil then return end
+			local name = self:GetEditBox():GetText() or ""
+			name = name:gsub("^%s+", ""):gsub("%s+$", "")
+			if name == "" then
+				return
+			end
+
+			-- Detect per-slot collisions with existing stored pieces.
+			local collisions = {}
+			for _, slot in ipairs(data.parsed.validSpecs or {}) do
+				if TRB.Functions.Profiles:ProfileExistsForSpec(name, slot.className, slot.specName) then
+					collisions[#collisions + 1] = GetImportSlotDisplayLabel(slot.className, slot.specName)
+				end
+			end
+			if data.parsed.hasCore and TRB.Functions.Profiles:ProfileExistsForCore(name) then
+				collisions[#collisions + 1] = L["ProfileScopeLabelGlobal"]
+			end
+
+			if #collisions > 0 then
+				local confirmData = {
+					parsed = data.parsed,
+					attemptedName = name,
+					collisionList = table.concat(collisions, ", "),
+					onComplete = data.onComplete,
+				}
+				C_Timer.After(0, function()
+					StaticPopup_Show("TwintopResourceBar_Profile_ImportOverwriteConfirm", nil, nil, confirmData)
+				end)
+			else
+				ApplyImportedProfile(name, data.parsed, data.onComplete)
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			-- WoW's StaticPopup_OnClick(self, "accept") is the correct way to
+			-- trigger button1 from an edit box.  Calling parent.OnAccept directly
+			-- bypasses StaticPopup's data-passing and cleanup logic.
+			StaticPopup_OnClick(parent, 1)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportOverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		button3 = L["Cancel"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileImportOverwriteConfirmPrompt"], (data and data.attemptedName) or "", (data and data.collisionList) or "")
+		end,
+		OnAccept = function(self, data)
+			if data == nil then return end
+			ApplyImportedProfile(data.attemptedName, data.parsed, data.onComplete)
+		end,
+		OnCancel = function(self, data, reason)
+			if reason ~= "clicked" then return end
+			if data == nil then return end
+			-- button2 = No: re-prompt for a new name with the previous name prefilled.
+			local nameData = {
+				parsed = data.parsed,
+				initialName = data.attemptedName,
+				onComplete = data.onComplete,
+			}
+			C_Timer.After(0, function()
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportName", nil, nil, nameData)
+			end)
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_ImportError"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText("%s", (data and data.message) or L["ProfileImportErrorGeneric"])
+		end,
+	}
+
+	-- ── Bar-wide (whole-profile) management dialogs ────────────────────────
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeleteProfile_Confirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			if data and data.profileName == TRB.Functions.Profiles.DEFAULT_NAME then
+				self:SetFormattedText("%s", L["ProfileManagerResetDefaultConfirm"])
+			else
+				self:SetFormattedText(L["ProfileManagerDeleteProfileConfirm"], (data and data.profileName) or "")
+			end
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data and data.profileName then
+				local Profiles = TRB.Functions.Profiles
+				local reloadRequired = Profiles:ShouldReloadAfterProfileRemoval(data.profileName)
+				local didDelete = Profiles:DeleteProfile(data.profileName)
+				if didDelete and reloadRequired then
+					Profiles:SuppressLogoutFlush()
+					C_UI.Reload()
+					return
+				end
+				if didDelete and data.onComplete then
+					data.onComplete()
+				end
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_DeletePiece_Confirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			if data then
+				local isDefault = data.profileName == TRB.Functions.Profiles.DEFAULT_NAME
+				if data.specName then
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetPieceConfirm"], data.pieceLabel or data.specName)
+					else
+						self:SetFormattedText(L["ProfileManagerDeletePieceConfirm"], data.pieceLabel or data.specName, data.profileName or "")
+					end
+				elseif data.className then
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetClassConfirm"], data.pieceLabel or data.className)
+					else
+						self:SetFormattedText(L["ProfileManagerDeleteClassConfirm"], data.pieceLabel or data.className, data.profileName or "")
+					end
+				elseif data.isCore then
+					if isDefault then
+						self:SetFormattedText(L["ProfileManagerResetPieceConfirm"], L["ProfileScopeLabelGlobal"])
+					else
+						self:SetFormattedText(L["ProfileManagerDeletePieceConfirm"], L["ProfileScopeLabelGlobal"], data.profileName or "")
+					end
+				end
+			end
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data == nil then return end
+			local Profiles = TRB.Functions.Profiles
+			local reloadRequired = false
+			local didDelete = false
+			if data.specName then
+				reloadRequired = Profiles:ShouldReloadAfterSpecRemoval(data.profileName, data.className, data.specName)
+				didDelete = Profiles:DeleteSpecProfile(data.profileName, data.className, data.specName)
+			elseif data.className then
+				reloadRequired = Profiles:ShouldReloadAfterClassRemoval(data.profileName, data.className)
+				didDelete = Profiles:DeleteClassFromProfile(data.profileName, data.className)
+			elseif data.isCore then
+				reloadRequired = Profiles:ShouldReloadAfterCoreRemoval(data.profileName)
+				didDelete = Profiles:DeleteCoreProfile(data.profileName)
+			end
+			if didDelete and reloadRequired then
+				Profiles:SuppressLogoutFlush()
+				C_UI.Reload()
+				return
+			end
+			if didDelete and data.onComplete then
+				data.onComplete()
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameBarWide_Name"] = {
+		text = "",
+		button1 = L["ProfileManagerButtonRename"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:GetEditBox():SetText((data and data.profileName) or "")
+			self:GetEditBox():SetAutoFocus(true)
+			self:GetEditBox():HighlightText()
+			self:SetFormattedText(L["ProfileManagerRenameBarWidePrompt"], (data and data.profileName) or "")
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			local text = self:GetText()
+			if type(text) == "string" and text ~= "" then
+				StaticPopup_OnClick(parent, 1)
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			local newName = self:GetEditBox():GetText()
+			if type(newName) ~= "string" or newName == "" then return end
+			newName = newName:match("^%s*(.-)%s*$")
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p and p.list and p.list[newName] ~= nil then
+				local d = StaticPopup_Show("TwintopResourceBar_Profile_RenameBarWide_Collision", nil, nil,
+					{ profileName = data and data.profileName, collidingName = newName, onComplete = data and data.onComplete })
+				-- d may be nil if max popups are showing; ignore
+			else
+				TRB.Functions.Profiles:RenameProfileBarWide(data and data.profileName, newName)
+				if data and data.onComplete then data.onComplete(newName) end
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_RenameBarWide_Collision"] = {
+		text = "",
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileManagerRenameBarWideCollision"], (data and data.collidingName) or "")
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			StaticPopup_Show("TwintopResourceBar_Profile_RenameBarWide_Name", nil, nil,
+				{ profileName = data and data.profileName, onComplete = data and data.onComplete })
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyBarWide_Name"] = {
+		text = "",
+		button1 = L["ProfileManagerButtonCopy"],
+		button2 = L["Cancel"],
+		hasEditBox = true,
+		editBoxWidth = 260,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			local suffix = L["ProfileCopyNameSuffix"]
+			self:GetEditBox():SetText(((data and data.profileName) or "") .. " " .. suffix)
+			self:GetEditBox():SetAutoFocus(true)
+			self:GetEditBox():HighlightText()
+			self:SetFormattedText(L["ProfileManagerCopyBarWidePrompt"], (data and data.profileName) or "")
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent()
+			local text = self:GetText()
+			if type(text) == "string" and text ~= "" then
+				StaticPopup_OnClick(parent, 1)
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			local newName = self:GetEditBox():GetText()
+			if type(newName) ~= "string" or newName == "" then return end
+			newName = newName:match("^%s*(.-)%s*$")
+			local p = TRB.Data.settings and TRB.Data.settings.profiles
+			if p and p.list and p.list[newName] ~= nil then
+				StaticPopup_Show("TwintopResourceBar_Profile_CopyBarWide_OverwriteConfirm", nil, nil, {
+					srcName = data and data.profileName,
+					dstName = newName,
+					mode = data and data.mode,
+					selection = data and data.selection,
+					onComplete = data and data.onComplete,
+				})
+			else
+				if data and data.mode == "full" then
+					TRB.Functions.Profiles:CopyProfileFull(data.profileName, newName)
+				else
+					TRB.Functions.Profiles:CopyProfileSelection(data and data.profileName, newName, (data and data.selection) or {})
+				end
+				if data and data.onComplete then data.onComplete(newName) end
+			end
+		end,
+	}
+
+	StaticPopupDialogs["TwintopResourceBar_Profile_CopyBarWide_OverwriteConfirm"] = {
+		text = "",
+		button1 = L["Yes"],
+		button2 = L["No"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+		OnShow = function(self, data)
+			self:SetFormattedText(L["ProfileManagerCopyBarWideOverwrite"], (data and data.dstName) or "")
+		end,
+		OnAccept = function(self)
+			local data = self.data
+			if data == nil then return end
+			if data.mode == "full" then
+				TRB.Functions.Profiles:CopyProfileFull(data.srcName, data.dstName)
+			else
+				TRB.Functions.Profiles:CopyProfileSelection(data.srcName, data.dstName, data.selection or {})
+			end
+			if data.onComplete then data.onComplete(data.dstName) end
+		end,
+	}
+end
+
+---@param onComplete function? # Optional callback invoked after a profile import is written and caches are invalidated.
+function TRB.Functions.OptionsUi:ShowProfileImportPopup(onComplete)
+	EnsureProfilePopupsRegistered()
+	StaticPopup_Show("TwintopResourceBar_Profile_ImportPaste", nil, nil, {
+		onComplete = onComplete,
+	})
+end
+
+---Builds a profile-management dropdown anchored to the top-right of `parent`.
+---Used by both `BuildSpecTitleRow` (spec scope) and Global Options (core scope).
+---@param parent Frame
+---@param yCoord number # vertical offset from parent's top-right
+---@param scope "spec"|"core"
+---@param className string? # required when scope=="spec"
+---@param specName string? # required when scope=="spec"
+---@param specLabel string? # localized label used in popup text for spec scope
+---@return DropdownButton dropdown
+function TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord, scope, className, specName, specLabel)
+	EnsureProfilePopupsRegistered()
+
+	local namePrefix = "TwintopResourceBar_ProfileDropdown"
+	if scope == "spec" then
+		namePrefix = namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
+	else
+		namePrefix = namePrefix .. "_Core"
+	end
+
+	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	dropdown:ClearAllPoints()
+	dropdown:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord)
+	dropdown:SetWidth(240)
+
+	local function RefreshDropdown()
+		if dropdown.UpdateButtonText then
+			dropdown:UpdateButtonText()
+		end
+		-- Re-register the generator so the next open rebuilds the menu with
+		-- the latest cached profile list.
+		if dropdown.SetupMenu and dropdown.GeneratorFunction then
+			dropdown:SetupMenu(dropdown.GeneratorFunction)
+		end
+	end
+
+	local function MakeBaseData()
+		return {
+			scope = scope,
+			className = className,
+			specName = specName,
+			specLabel = specLabel,
+			pieceLabel = (scope == "core") and L["ProfileScopeLabelGlobal"] or specLabel,
+			refresh = RefreshDropdown,
+		}
+	end
+
+	local function OnNewClicked()
+		local data = MakeBaseData()
+		data.initialName = ""
+		StaticPopup_Show("TwintopResourceBar_Profile_NewName", nil, nil, data)
+	end
+
+	local function OnImportClicked()
+		TRB.Functions.OptionsUi:ShowProfileImportPopup()
+	end
+
+	local function OnUseClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		StaticPopup_Show("TwintopResourceBar_Profile_UseConfirm", nil, nil, data)
+	end
+
+	local function OnCopyClicked(profileName)
+		local data = MakeBaseData()
+		data.sourceName = profileName
+		data.initialName = profileName .. " " .. L["ProfileCopyNameSuffix"]
+		StaticPopup_Show("TwintopResourceBar_Profile_CopyName", nil, nil, data)
+	end
+
+	local function OnCopyToProfileClicked(sourceName, destinationName)
+		if sourceName == nil or destinationName == nil or sourceName == destinationName then
+			return
+		end
+
+		local data = MakeBaseData()
+		data.sourceName = sourceName
+		data.attemptedName = destinationName
+
+		local exists
+		if data.scope == "core" then
+			exists = TRB.Functions.Profiles:ProfileExistsForCore(destinationName)
+		else
+			exists = TRB.Functions.Profiles:ProfileExistsForSpec(destinationName, data.className, data.specName)
+		end
+
+		if exists then
+			StaticPopup_Show("TwintopResourceBar_Profile_CopyOverwriteConfirm", destinationName, ScopeLabel(data), data)
+			return
+		end
+
+		local ok
+		if data.scope == "core" then
+			ok = TRB.Functions.Profiles:CopyCoreProfile(sourceName, destinationName)
+		else
+			ok = TRB.Functions.Profiles:CopySpecProfile(sourceName, destinationName, data.className, data.specName)
+		end
+		if ok and data.refresh then
+			data.refresh()
+		end
+	end
+
+	local function OnRenameClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		data.initialName = profileName
+		StaticPopup_Show("TwintopResourceBar_Profile_RenameName", nil, nil, data)
+	end
+
+	local function OnDeleteClicked(profileName)
+		local data = MakeBaseData()
+		data.profileName = profileName
+		data.isActive = (GetActiveProfileName(scope, className, specName) == profileName)
+		StaticPopup_Show("TwintopResourceBar_Profile_DeleteConfirm", nil, nil, data)
+	end
+
+	local function OnExportClicked(profileName)
+		if scope == "core" then
+			local data = MakeBaseData()
+			data.profileName = profileName
+			local output, err = TRB.Functions.IO:ExportCoreProfile(profileName)
+			if output == nil then
+				local msg = (err == -2) and L["ProfileImportErrorEmpty"] or L["ProfileImportErrorGeneric"]
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = msg })
+				return
+			end
+			StaticPopup_Show("TwintopResourceBar_Export", nil, nil, {
+				message = string.format(L["ProfileExportMessageTargetFormat"], data.pieceLabel or L["ProfileScopeLabelGlobal"], profileName),
+				exportString = output,
+			})
+		else
+			local classId, specId = TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
+			if classId == nil or specId == nil then
+				StaticPopup_Show("TwintopResourceBar_Profile_ImportError", nil, nil, { message = L["ProfileImportErrorGeneric"] })
+				return
+			end
+			local data = MakeBaseData()
+			data.profileName = profileName
+			data.classId = classId
+			data.specId = specId
+			StaticPopup_Show("TwintopResourceBar_Profile_ExportIncludeCore", nil, nil, data)
+		end
+	end
+
+	local function Generator(_, rootDescription)
+		rootDescription:CreateTitle(L["ProfileMenuHeaderManage"])
+		rootDescription:CreateButton(L["ProfileMenuNewProfile"], OnNewClicked)
+		rootDescription:CreateButton(L["ProfileMenuImportProfile"], OnImportClicked)
+		rootDescription:CreateDivider()
+		rootDescription:CreateTitle(L["ProfileMenuHeaderProfiles"])
+
+		local activeName = GetActiveProfileName(scope, className, specName)
+		local names = GetProfileList(scope, className, specName)
+		for _, profileName in ipairs(names) do
+			local displayName = profileName
+			if profileName == activeName then
+				displayName = "|cff00ff00" .. profileName .. "|r"
+			end
+			local submenu = rootDescription:CreateButton(displayName)
+			if type(submenu) == "table" and type(submenu.CreateButton) == "function" then
+				local useButton = submenu:CreateButton(L["ProfileActionUse"], function()
+					OnUseClicked(profileName)
+				end)
+				if profileName == activeName and type(useButton) == "table" and type(useButton.SetEnabled) == "function" then
+					useButton:SetEnabled(false)
+				end
+				local copySubmenu = submenu:CreateButton(L["ProfileActionCopyMenu"])
+				if type(copySubmenu) == "table" and type(copySubmenu.CreateButton) == "function" then
+					copySubmenu:CreateButton(L["ProfileActionCopyToNew"], function()
+						OnCopyClicked(profileName)
+					end)
+					local allProfileNames = TRB.Functions.Profiles:GetProfileNames()
+					local addedAnyProfileTargets = false
+					for _, destinationName in ipairs(allProfileNames) do
+						if destinationName ~= profileName then
+							if not addedAnyProfileTargets and type(copySubmenu.CreateDivider) == "function" then
+								copySubmenu:CreateDivider()
+							end
+							addedAnyProfileTargets = true
+							copySubmenu:CreateButton(destinationName, function()
+								OnCopyToProfileClicked(profileName, destinationName)
+							end)
+						end
+					end
+				else
+					submenu:CreateButton(L["ProfileActionCopyToNew"], function()
+						OnCopyClicked(profileName)
+					end)
+				end
+				if profileName ~= TRB.Functions.Profiles.DEFAULT_NAME then
+					submenu:CreateButton(L["ProfileActionRename"], function() OnRenameClicked(profileName) end)
+					submenu:CreateButton(L["ProfileActionDelete"], function() OnDeleteClicked(profileName) end)
+				end
+				---@diagnostic disable-next-line: redundant-parameter
+				submenu:CreateButton(L["ProfileActionExport"], function() OnExportClicked(profileName) end)
+			end
+		end
+	end
+
+	dropdown.GeneratorFunction = Generator
+	dropdown:SetupMenu(Generator)
+
+	-- Apply the inline button label ("Profile: {name}") using the active name.
+	local function UpdateButtonText()
+		local activeName = GetActiveProfileName(scope, className, specName)
+		local text = string.format(L["ProfileDropdownButtonFormat"], activeName)
+		if type(dropdown.SetDefaultText) == "function" then
+			dropdown:SetDefaultText(text)
+		elseif dropdown.Text ~= nil and type(dropdown.Text.SetText) == "function" then
+			dropdown.Text:SetText(text)
+		end
+	end
+	dropdown.UpdateButtonText = UpdateButtonText
+	UpdateButtonText()
+
+	-- Refresh the button label whenever the menu closes (a CRUD op may have
+	-- changed the active profile name).
+	dropdown:HookScript("OnHide", UpdateButtonText)
+
+	return dropdown
+end
+
+-- Register all profile-related static popup dialogs at load time so they are
+-- available even before the first call to BuildProfileDropdown.
+EnsureProfilePopupsRegistered()
+
+---Builds the spec title row: header + enabled checkbox + profile dropdown,
 ---all anchored from the right side of the parent so they stay right-aligned on resize.
 ---@param parent Frame The spec display panel
 ---@param controls table The controls table for this spec
@@ -1679,33 +3787,20 @@ end
 ---@param enabledKey string Key into enabledSettingRef (e.g. "discipline")
 ---@param checkboxName string Global checkbox frame name (e.g. "TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled")
 ---@param checkboxControlKey string Key in controls.checkBoxes (e.g. "disciplinePriestEnabled")
----@param exportControlKey string Key in controls.buttons for the export button (e.g. "exportButton_Priest_Discipline_All")
----@param exportCallback function OnClick handler for export button
+---@param className string Lowercase class name (e.g. "priest")
+---@param specName string Lowercase spec name (e.g. "discipline")
 ---@return number yCoord The updated yCoord after the title row
-function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, exportControlKey, exportCallback)
+function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, enabledSettingRef, enabledKey, checkboxName, checkboxControlKey, className, specName)
 	local yCoord = 0
 
 	-- Section header (left-aligned)
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
 
-	-- Export button (rightmost, anchored to parent's top-right)
-	controls.buttons[exportControlKey] = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 0, 0, 150, 20)
-	local exportBtn = controls.buttons[exportControlKey]
-	exportBtn:ClearAllPoints()
-	exportBtn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord - 10)
-	exportBtn:SetScript("OnClick", exportCallback)
+	-- Profile dropdown (rightmost, anchored to parent's top-right)
+	controls.profileDropdown = TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord - 10, "spec", className, specName, specLabel)
+	local dropdown = controls.profileDropdown
 
-	-- Import button (anchored to left of export)
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 0, 0, 90, 20)
-	local importBtn = controls.buttons.importButton
-	importBtn:ClearAllPoints()
-	importBtn:SetPoint("RIGHT", exportBtn, "LEFT", -5, 0)
-	importBtn:SetFrameLevel(10000)
-	importBtn:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Import")
-	end)
-
-	-- Enabled checkbox (anchored to left of import, with gap for label text)
+	-- Enabled checkbox (anchored to left of dropdown, with gap for label text)
 	controls.checkBoxes[checkboxControlKey] = CreateFrame("CheckButton", checkboxName, parent, "ChatConfigCheckButtonTemplate")
 	local cb = controls.checkBoxes[checkboxControlKey]
 	getglobal(cb:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
@@ -1721,9 +3816,8 @@ function TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, specLabel, 
 	end)
 	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
 
-	-- Position checkbox: anchor its right edge left of import, leaving room for the label text
-	-- ChatConfigCheckButtonTemplate renders text to the RIGHT of the frame, so we offset enough for it
-	cb:SetPoint("RIGHT", importBtn, "LEFT", -75, 0)
+	-- Position checkbox: anchor its right edge left of the dropdown, leaving room for the label text.
+	cb:SetPoint("RIGHT", dropdown, "LEFT", -75, 0)
 
 	return yCoord - 37
 end
@@ -2704,7 +4798,7 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
 	s:SetSize(width, height)
 	s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
-	
+
 ---@diagnostic disable-next-line: inject-field
 	s.ScrollFrame = CreateFrame("EditBox", nil, s, "BackdropTemplate")
 	local e = s.ScrollFrame
@@ -2731,7 +4825,7 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	e:SetScript("OnCursorChanged", function(self, arg1, arg2, arg3, arg4)
 		local vs = self:GetParent():GetVerticalScroll()
 		local h  = self:GetParent():GetHeight()
-	
+
 		if vs+arg2 > 0 or 0 > vs+arg2-arg4+h then
 			self:GetParent():SetVerticalScroll(arg2*-1)
 		end
@@ -2785,7 +4879,7 @@ end
 function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText, setSelectedFunc)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
-	
+
 	local lsmPairs
 	local lsmPairsByName
 
@@ -2977,7 +5071,7 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 		end
 	else
 		getglobal(checkbox:GetName().."Text"):SetTextColor(1, 0, 0)
-		
+
 		if changeText == true then
 			getglobal(checkbox:GetName().."Text"):SetText(L["Disabled"])
 		end
@@ -3004,7 +5098,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 
-	local f = nil	
+	local f = nil
 	local title = ""
 
 	local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -3051,6 +5145,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("bar")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "bar")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllBarDimensions", "bar", yCoord)
@@ -3592,6 +5687,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, globalSettingKey)
 	elseif globalSettingKey and classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKey:gsub("^%l", string.upper), globalSettingKey, yCoord)
@@ -4169,7 +6265,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	if primaryResourceString == nil then
 		primaryResourceString = L["ResourceEnergy"]
 	end
-	
+
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
@@ -4189,6 +6285,116 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		widthDivisor = 6,
 		useSmallerSanityChecks = true
 	})
+end
+
+---Generates the optional partial-fill color controls for a secondary node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, classId, specId, yCoord, secondaryResourceString)
+	if secondaryResourceString == nil then
+		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	spec.colors = spec.colors or {}
+	spec.colors.comboPoints = spec.colors.comboPoints or {}
+	spec.colors.comboPoints.regenerating = spec.colors.comboPoints.regenerating or TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local frameName = "TwintopResourceBar_SecondaryPartialFillColor_" .. tostring(classId) .. "_" .. tostring(specId)
+	controls.checkBoxes.secondaryPartialFillColor = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes.secondaryPartialFillColor
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondaryPartialFillColorCheckbox"], secondaryResourceString))
+	checkBox.tooltip = string.format(L["SecondaryPartialFillColorCheckboxTooltip"], secondaryResourceString)
+	checkBox:SetChecked(spec.colors.comboPoints.regenerating.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.regenerating.enabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.regenerating = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["SecondaryPartialFillColorPicker"], secondaryResourceString), spec.colors.comboPoints.regenerating, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = controls.colors.comboPoints.regenerating
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "regenerating")
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.regenerating, self)
+	end)
+
+	return yCoord - 30
+end
+
+---Generates casting overlay color controls for a secondary node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, classId, specId, yCoord, secondaryResourceString)
+	if secondaryResourceString == nil then
+		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	spec.colors = spec.colors or {}
+	spec.colors.comboPoints = spec.colors.comboPoints or {}
+	spec.colors.comboPoints.casting = spec.colors.comboPoints.casting or TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true)
+
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local frameName = "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondaryCastingOverlay"
+
+	controls.colors.comboPoints.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["SecondaryCastingOverlayColorPicker"], secondaryResourceString), spec.colors.comboPoints.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = controls.colors.comboPoints.casting
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "casting")
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.casting, self, classId, specId)
+	end)
+
+	controls.checkBoxes.secondaryCastingOverlayEnabled = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes.secondaryCastingOverlayEnabled
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondaryCastingOverlayCheckbox"], secondaryResourceString))
+	checkBox.tooltip = string.format(L["SecondaryCastingOverlayCheckboxTooltip"], secondaryResourceString)
+	checkBox:SetChecked(spec.colors.comboPoints.casting.enabled)
+	controls.checkBoxes.secondaryCastingOverlayFullHeight = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondaryCastingOverlayFullHeight", parent, "ChatConfigCheckButtonTemplate")
+	local fullHeightCheckBox = controls.checkBoxes.secondaryCastingOverlayFullHeight
+	fullHeightCheckBox:SetPoint("TOPLEFT", oUi.xCoord + (oUi.xPadding * 2), yCoord - 18)
+	getglobal(fullHeightCheckBox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
+	fullHeightCheckBox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
+	fullHeightCheckBox:SetChecked(spec.colors.comboPoints.casting.fullHeight == true)
+	fullHeightCheckBox:SetScript("OnClick", function(self)
+		spec.colors.comboPoints.casting.fullHeight = self:GetChecked()
+		TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+	end)
+	yCoord = yCoord - 45
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.secondaryCastingOverlayFullHeight, spec.colors.comboPoints.casting.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.casting.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.secondaryCastingOverlayFullHeight, spec.colors.comboPoints.casting.enabled)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	return yCoord
 end
 
 ---Legacy wrapper for health bar dimension options. Delegates to GenerateAncillaryBarDimensionsOptions.
@@ -4238,32 +6444,32 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
-	
+
 	-- Get the bar settings from the nested structure
 	local barSettings = barTypeDef:GetSettings(spec)
 	if not barSettings then
 		return yCoord
 	end
-	
+
 	local displayName = barTypeDef.displayName
 
 	-- Section header
 	local headerText = string.format(L["SecondaryPositionAndSize"], displayName)
 	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
-	
+
 	-- Width slider
 	yCoord = yCoord - 40
 	local widthMin = barTypeDef.isMultiNode and 10 or 30
 	local widthMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
 	local widthDivisor = barTypeDef.isMultiNode and 6 or 1
-	
+
 	controls[barTypeDef.key .. "Width"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryWidth"], displayName),
 		widthMin, math.ceil(widthMax / widthDivisor), barSettings.width, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "Width"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.width = value
-		
+
 		local a = EnsureAnchorBlock(barSettings)
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
 		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
@@ -4272,20 +6478,20 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
-	
+
 	-- Height slider
-	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName), 
+	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName),
 		1, (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100, barSettings.height, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "Height"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.height = value
-		
+
 		local a = EnsureAnchorBlock(barSettings)
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
 		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
@@ -4294,18 +6500,18 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 		controls[barTypeDef.key .. "Border"].EditBox:SetText(tostring(borderSize))
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
-	
+
 	-- X/Y Offset sliders (read/write anchor block, dual-write to legacy)
 	yCoord = yCoord - 60
 	local anchor = EnsureAnchorBlock(barSettings)
 
 	local xPosMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
-	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName), 
+	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName),
 		math.ceil(-xPosMax / 2), math.floor(xPosMax / 2), anchor.xOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
@@ -4313,15 +6519,15 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		local a = EnsureAnchorBlock(barSettings)
 		a.xOffset = value
 		DualWriteAnchorToLegacy(barSettings)
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
-	
+
 	-- Y Offset slider
 	local yPosMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
-	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName), 
+	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName),
 		math.ceil(-yPosMax / 2), math.floor(yPosMax / 2), anchor.yOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
@@ -4329,33 +6535,33 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		local a = EnsureAnchorBlock(barSettings)
 		a.yOffset = value
 		DualWriteAnchorToLegacy(barSettings)
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
-	
+
 	-- Border slider
 	yCoord = yCoord - 60
 	-- When matchWidth is checked, use anchor bar dimensions for border max
 	local effectiveWidthForBorder = anchor.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, anchor.barKey) or barSettings.width
 	local effectiveHeightForBorder = anchor.matchWidth and spec.bar.height or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
-	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName), 
+	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName),
 		0, maxBorderHeight, barSettings.border, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "Border"]:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		barSettings.border = value
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
-		
+
 		local minSliderWidth = math.max(barSettings.border * 2 + 1, widthMin)
 		local minSliderHeight = math.max(barSettings.border * 2 + 1, 1)
 		local heightSliderMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
-		
+
 		controls[barTypeDef.key .. "Height"]:SetMinMaxValues(minSliderHeight, heightSliderMax)
 		controls[barTypeDef.key .. "Height"].MinLabel:SetText(tostring(minSliderHeight))
 		if not EnsureAnchorBlock(barSettings).matchWidth then
@@ -4363,16 +6569,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			controls[barTypeDef.key .. "Width"].MinLabel:SetText(tostring(minSliderWidth))
 		end
 	end)
-	
+
 	-- Spacing slider (only for multi-node bars)
 	if barTypeDef.hasSpacing then
-		controls[barTypeDef.key .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondarySpacing"], displayName), 
+		controls[barTypeDef.key .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondarySpacing"], displayName),
 			-20, 20, barSettings.spacing, 1, 0,
 			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls[barTypeDef.key .. "Spacing"]:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			barSettings.spacing = value
-			
+
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end
@@ -4396,7 +6602,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 			end
 		end)
 	end
-	
+
 	-- Anchor To dropdown + Match Width checkbox
 	yCoord = yCoord - 60
 
@@ -4479,7 +6685,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	anchorToDropdown:SetupMenu(AnchorToGenerator)
 	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
 	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey))
-	
+
 	-- Match Width checkbox
 	controls[barTypeDef.key .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls[barTypeDef.key .. "MatchWidth"]
@@ -4494,7 +6700,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		local a = EnsureAnchorBlock(barSettings)
 		a.matchWidth = self:GetChecked()
 		DualWriteAnchorToLegacy(barSettings)
-		
+
 		-- Update border max based on new effective width/height
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
 		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
@@ -4503,7 +6709,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
@@ -4522,7 +6728,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(barSettings)
 		a.matchHeight = self:GetChecked()
-		
+
 		-- Update border max based on new effective dimensions
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
 		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
@@ -4531,7 +6737,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
-		
+
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
@@ -4774,25 +6980,25 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
-	
+
 	-- Get the color settings from the nested structure
 	local colorSettings = barTypeDef:GetColors(spec)
 	if not colorSettings then
 		return yCoord
 	end
-	
+
 	local displayName = barTypeDef.displayName
-	
+
 	-- Section header
 	local headerText = string.format(L["CustomBarColorHeader"], displayName)
 	controls[barTypeDef.key .. "ColorSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
-	
+
 	yCoord = yCoord - 30
 	controls.colors = controls.colors or {}
 	controls.colors.bars = controls.colors.bars or {}
 	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
 	local colorControls = controls.colors.bars[barTypeDef.key]
-	
+
 	-- For threshold-based color bars (like Stagger), use the threshold color UI
 	if barTypeDef.colorCurveType == "step" or barTypeDef.colorCurveType == "linear" then
 		return TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
@@ -4800,7 +7006,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 
 	-- Simple bar/border/background colors
 	-- Bar Color
-	
+
 	if colorSettings.bar then
 		if type(colorSettings.bar) == "table" and colorSettings.bar.color2 then
 			colorControls.bar = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), colorSettings.bar, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -4821,7 +7027,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 		end
 		yCoord = yCoord - 30
 	end
-	
+
 	-- Per-node colors (for multi-node bars like Warrior defensives)
 	if barTypeDef.nodeColors and colorSettings.nodeColors then
 		colorControls.nodeColors = colorControls.nodeColors or {}
@@ -5019,7 +7225,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 						RebuildBarAfterNodeChange()
 					end)
 					row.checkbox = fCheckbox
-					
+
 					-- Create color picker (dereference via orderedKeys at click-time for settings, but use
 					-- nodeControls for the controls table so the callback updates THIS row's swatch frame)
 					if type(nodeColorSettings) == "table" and nodeColorSettings.color2 then
@@ -5180,7 +7386,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 		end)
 		yCoord = yCoord - 30
 	end
-	
+
 	-- Background Color
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
@@ -5191,7 +7397,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls,
 		end)
 		yCoord = yCoord - 30
 	end
-	
+
 	return yCoord
 end
 
@@ -5209,16 +7415,16 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
-	
+
 	-- Get the color settings from the nested structure
 	local colorSettings = barTypeDef:GetColors(spec)
 	if not colorSettings then
 		return yCoord
 	end
-	
+
 	-- Determine the callback to use (parameter overrides definition)
 	local changeCallback = onChangeCallback or barTypeDef.onChangeCallback
-	
+
 	---Triggers a resource bar update and optional change callback after a threshold color setting is modified.
 	local function triggerChange()
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
@@ -5231,20 +7437,20 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 			changeCallback()
 		end
 	end
-	
+
 	local displayName = barTypeDef.displayName
-	
+
 	controls.colors = controls.colors or {}
 	controls.colors.bars = controls.colors.bars or {}
 	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
 	local colorControls = controls.colors.bars[barTypeDef.key]
-	
+
 	-- Get localized strings from barTypeDef (resolved at registration time, with fallbacks to generic labels)
 	local colorTypeLabel = barTypeDef.colorTypeLabel or L["ColorType"]
 	local colorTypeStepLabel = barTypeDef.colorTypeStepLabel or L["ColorTypeStep"]
 	local colorTypeLinearLabel = barTypeDef.colorTypeLinearLabel or L["ColorTypeLinear"]
 	local colorTypeNoneLabel = barTypeDef.colorTypeNoneLabel or L["ColorTypeNone"]
-	
+
 	-- Color Transition Type dropdown
 	-- Note: yCoord already positioned at header row, so dropdown label goes here
 	local yCoord2 = yCoord - 30
@@ -5304,7 +7510,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		-- Early exit if no threshold levels defined
 		return yCoord
 	end
-	
+
 	-- Build threshold sliders (skip first one - no slider needed for base/low)
 	-- Use percentage sliders: display percentages, store as decimals
 	-- Default max is 100%, but can be overridden by barTypeDef.maxThresholdPercent (e.g., 1000 for stagger)
@@ -5314,7 +7520,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		if i > 1 and colorSettings[thresholdKey] and colorSettings[thresholdKey].threshold ~= nil then
 			-- Use resolved sliderLabel string from thresholdLevel, or fall back to generic formatted label
 			local sliderLabel = thresholdLevel.sliderLabel or string.format(L["CustomBarThreshold"], displayName, thresholdKey:gsub("^%l", string.upper))
-			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, sliderLabel, 
+			controls[barTypeDef.key .. thresholdKey .. "Threshold"] = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, sliderLabel,
 				0, maxThresholdPercent, colorSettings[thresholdKey].threshold, 1, 0,
 				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 			if thresholdLevel.sliderTooltip then
@@ -5330,7 +7536,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 			yCoord = yCoord - 60
 		end
 	end
-	
+
 	-- Build color pickers for each threshold
 	local gradientTooltip = barTypeDef.gradientTooltipNote
 	for _, thresholdLevel in ipairs(thresholdLevels) do
@@ -5357,7 +7563,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 			yCoord2 = yCoord2 - 30
 		end
 	end
-	
+
 	-- Border and background colors
 	if colorSettings.border then
 		local borderColorValue = type(colorSettings.border) == "table" and colorSettings.border.color or colorSettings.border
@@ -5368,7 +7574,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		end)
 		yCoord2 = yCoord2 - 30
 	end
-	
+
 	if colorSettings.background then
 		local bgColorValue = type(colorSettings.background) == "table" and colorSettings.background.color or colorSettings.background
 		colorControls.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
@@ -5378,7 +7584,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(parent, 
 		end)
 		yCoord2 = yCoord2 - 30
 	end
-	
+
 	return math.min(yCoord, yCoord2)
 end
 
@@ -5390,10 +7596,14 @@ end
 ---@param includeComboPoints boolean? Whether to sync combo point bar texture
 ---@param includeManaBar boolean? Whether to sync mana bar texture
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to sync
-function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
+---@param includeComboPointsCastingOverlay boolean? Whether to sync secondary casting overlay texture
+function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
+	end
+	if includeComboPointsCastingOverlay == nil then
+		includeComboPointsCastingOverlay = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
@@ -5414,6 +7624,12 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 			textures.comboPointsBar = newValue
 			textures.comboPointsBarName = newName
 			DropdownSetupMenuWrapper(controls.comboPointsBar)
+
+			if includeComboPointsCastingOverlay then
+				textures.comboPointsCastingBar = newValue
+				textures.comboPointsCastingBarName = newName
+				DropdownSetupMenuWrapper(controls.comboPointsCastingBar)
+			end
 		end
 
 		if includeManaBar then
@@ -5438,7 +7654,7 @@ function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls, textures, ne
 		textures.castingBarName = newName
 		DropdownSetupMenuWrapper(controls.castingBar)
 	end
-	
+
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
 		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -5495,10 +7711,14 @@ end
 ---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
 ---@param includeManaBar boolean? Whether to include mana bar textures
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
+---@param includeComboPointsCastingOverlay boolean? Whether to include secondary casting overlay texture
 ---@return number yCoord New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars)
+function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	if includeComboPoints == nil then
 		includeComboPoints = false
+	end
+	if includeComboPointsCastingOverlay == nil then
+		includeComboPointsCastingOverlay = false
 	end
 	if includeManaBar == nil then
 		includeManaBar = false
@@ -5506,7 +7726,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	if customBars == nil then
 		customBars = {}
 	end
-	
+
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
@@ -5514,9 +7734,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
-	
+
 	controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
-	
+
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
@@ -5547,11 +7767,12 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "textures")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
 	end
-	
+
 	controls.dropDown.textures = {}
 
 	yCoord = yCoord - 30
@@ -5560,7 +7781,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	---@param variable string The texture variable being changed (e.g., "resource", "casting")
 	---@param newValue string The new texture value
 	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars)
+		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	end
 
 	---Applies a new overlay texture value and syncs all related dropdowns via UpdateOverlayDropdowns.
@@ -5609,6 +7830,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	table.insert(barTextureItems, { key = "healthBar", label = L["HealthBarTexture"], callback = function(newValue) StatusbarSetValue("health", newValue) end })
 	if includeComboPoints then
 		table.insert(barTextureItems, { key = "comboPointsBar", label = string.format(L["SecondaryBarTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPoints", newValue) end })
+		if includeComboPointsCastingOverlay then
+			table.insert(barTextureItems, { key = "comboPointsCastingBar", label = string.format(L["SecondaryCastingOverlayTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPointsCasting", newValue) end })
+		end
 	end
 	if includeManaBar then
 		table.insert(barTextureItems, { key = "manaBarBar", label = L["ManaBarTexture"], callback = function(newValue) StatusbarSetValue("manaBar", newValue) end })
@@ -5660,7 +7884,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.border = newValue
 			spec.textures.borderName = newName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-	
+
 			if spec.textures.textureLock then
 				if includeComboPoints then
 					spec.textures.comboPointsBorder = newValue
@@ -5849,7 +8073,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.background = newValue
 			spec.textures.backgroundName = newName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-			
+
 			if spec.textures.textureLock then
 				if includeComboPoints then
 					spec.textures.comboPointsBackground = newValue
@@ -5872,7 +8096,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				spec.textures.healthBackgroundName = newName
 				DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
 			end
-			
+
 			RefreshBar()
 		end)
 
@@ -5882,7 +8106,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			spec.textures.healthBackground = newValue
 			spec.textures.healthBackgroundName = newName
 			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-			
+
 			if spec.textures.textureLock then
 				spec.textures.background = newValue
 				spec.textures.backgroundName = newName
@@ -5905,7 +8129,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 					DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
 				end
 			end
-			
+
 			RefreshBar()
 		end)
 
@@ -6099,15 +8323,15 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 				local barKey = barTypeDef.key .. "Bar"
 				local borderKey = barTypeDef.key .. "Border"
 				local bgKey = barTypeDef.key .. "Background"
-				
+
 				spec.textures[barKey] = spec.textures.resourceBar
 				spec.textures[barKey .. "Name"] = spec.textures.resourceBarName
 				DropdownSetupMenuWrapper(controls.dropDown.textures[barKey])
-				
+
 				spec.textures[borderKey] = spec.textures.border
 				spec.textures[borderKey .. "Name"] = spec.textures.borderName
 				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-				
+
 				spec.textures[bgKey] = spec.textures.background
 				spec.textures[bgKey .. "Name"] = spec.textures.backgroundName
 				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
@@ -6246,6 +8470,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 				RefreshTableForGlobalToggle()
 			end
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "displayBar")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
@@ -6766,7 +8991,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	controls.dropDown.selectedThresholdComparison:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 20)
 	controls.dropDown.selectedThresholdComparison:Hide()
 	controls.dropDown.selectedThresholdComparison.label:Hide()
-	
+
 	detailYCoord = detailYCoord - 10
 	controls.sliders.selectedThresholdValue = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["BarVisibilityThresholdValue"],
 		0, 100, 0, 1, 0,
@@ -8365,7 +10590,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	local f = nil
 	local title = ""
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
-	
+
 	yCoord = yCoord - 30
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
 
@@ -8388,11 +10613,12 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdIcons")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "thresholdIcons")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdIcons", "thresholdIcons", yCoord)
 	end
-	
+
 	yCoord = yCoord - 20
 	local thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRelativeTo", parent, "WowStyle1DropdownTemplate")
 	thresholdIconRelativeTo:SetWidth(oUi.sliderWidth)
@@ -8412,10 +10638,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	local function RelativeToIsSelected(value)
 		return value == spec.thresholds.icons.relativeTo
 	end
-	
+
 	local function RelativeToSetSelected(newValue)
 		spec.thresholds.icons.relativeTo = newValue
-		
+
 		for k, v in pairs(relativeTo) do
 			if v == newValue then
 				spec.thresholds.icons.relativeToName = k
@@ -8451,7 +10677,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		spec.thresholds.icons.enabled = self:GetChecked()
 
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
@@ -8468,14 +10694,14 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f:SetChecked(spec.thresholds.icons.desaturated)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.desaturated = self:GetChecked()
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
-	
+
 	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 
 	yCoord = yCoord - 100
@@ -8492,7 +10718,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
@@ -8513,7 +10739,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		controls.thresholdIconBorderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.thresholdIconBorderWidth.MaxLabel:SetText(maxBorderSize)
 		controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
@@ -8529,7 +10755,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.xPos = value
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
@@ -8543,7 +10769,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.yPos = value
-		
+
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil) then
@@ -8589,7 +10815,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end
 	end)
-	
+
 	yCoord = yCoord - 40
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdOverlapBorder
@@ -8623,7 +10849,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
-	
+
 	controls.colors.threshold = controls.colors.threshold or {}
 
 	if classId == nill then
@@ -8631,7 +10857,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 	else
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
 	end
-	
+
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
@@ -8651,6 +10877,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "thresholdColors")
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdColors", "thresholdColors", yCoord)
@@ -8724,7 +10951,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, contr
 				end
 			end
 		end)
-		
+
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 
 		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -8794,8 +11021,21 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.casting.enabled)
+		controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.casting.fullHeight == true,
+			function(self)
+				spec.colors.bar.casting.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.casting.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -8804,7 +11044,9 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 	end
 
 	if includeSpendingOverlay then
-		yCoord = yCoord - 30
+		if includeCastingOverlay == false then
+			yCoord = yCoord - 30
+		end
 		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -8821,8 +11063,21 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.spending.fullHeight == true,
+			function(self)
+				spec.colors.bar.spending.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -8830,7 +11085,6 @@ function TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spe
 		end)
 	end
 
-	yCoord = yCoord - 30
 	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerBorder"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -8890,9 +11144,13 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	local indicatorColors = sharedSettings.indicatorColors
 
 	-- Working copy of the ordered keys (survives reordering within this panel's lifetime)
+	-- Filter out any keys that have no matching indicatorDef or no indicatorColors entry
+	-- to keep the row count and the up/down arrow bounds in sync.
 	local orderedKeys = {}
-	for i, k in ipairs(sharedSettings.nodeOrder) do
-		orderedKeys[i] = k
+	for _, k in ipairs(sharedSettings.nodeOrder) do
+		if indicatorDefByKey[k] and indicatorColors[k] then
+			orderedKeys[#orderedKeys + 1] = k
+		end
 	end
 
 	-- Per-row UI element references (indexed by row position, NOT by key)
@@ -9011,6 +11269,9 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	---@param indexB number
 	local function SwapNodes(indexA, indexB)
 		orderedKeys[indexA], orderedKeys[indexB] = orderedKeys[indexB], orderedKeys[indexA]
+		-- Rebuild the persisted nodeOrder from orderedKeys so any filtered-out
+		-- orphan trailing entries don't survive the write.
+		wipe(sharedSettings.nodeOrder)
 		for i, k in ipairs(orderedKeys) do
 			sharedSettings.nodeOrder[i] = k
 		end
@@ -9206,10 +11467,13 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 		controls.gradientNote = TRB.Functions.OptionsUi:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
 		yCoord = yCoord - 30
 
-		-- Working copy of gradient ordered keys
+		-- Working copy of gradient ordered keys. Filter out phantom entries so
+		-- the row count stays in sync with the up/down arrow bounds.
 		local orderedGradientKeys = {}
-		for i, k in ipairs(sharedSettings.gradientOrder) do
-			orderedGradientKeys[i] = k
+		for _, k in ipairs(sharedSettings.gradientOrder) do
+			if indicatorDefByKey[k] and indicatorColors[k] then
+				orderedGradientKeys[#orderedGradientKeys + 1] = k
+			end
 		end
 
 		local gradientRows = {}
@@ -9239,6 +11503,7 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 
 		local function SwapGradientNodes(indexA, indexB)
 			orderedGradientKeys[indexA], orderedGradientKeys[indexB] = orderedGradientKeys[indexB], orderedGradientKeys[indexA]
+			wipe(sharedSettings.gradientOrder)
 			for i, k in ipairs(orderedGradientKeys) do
 				sharedSettings.gradientOrder[i] = k
 			end
@@ -9420,6 +11685,44 @@ function TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, 
 	return yCoord
 end
 
+---Builds the nested checkbox used by overlay-capable color options for the full-height behavior.
+---@param parent frame The parent frame to attach the checkbox to
+---@param frameName string The global frame name to use for the checkbox
+---@param parentX number The X coordinate of the parent checkbox row
+---@param yCoord number The Y coordinate of the parent checkbox row
+---@param isChecked boolean Whether the checkbox should start checked
+---@param onClick fun(self: CheckButton) The OnClick handler for the checkbox
+---@return CheckButton checkbox The created checkbox
+---@return number yCoord The next available Y coordinate after the child row
+function TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(parent, frameName, parentX, yCoord, isChecked, onClick)
+	local checkbox = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	checkbox:SetPoint("TOPLEFT", parentX + (oUi.xPadding * 2), yCoord - 18)
+	getglobal(checkbox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
+	---@diagnostic disable-next-line: inject-field
+	checkbox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
+	checkbox:SetChecked(isChecked == true)
+	checkbox:SetScript("OnClick", onClick)
+
+	return checkbox, yCoord - 45
+end
+
+---Refreshes active bar appearance and values after an overlay geometry setting changes.
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+	if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		local activeSpecCache = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if TRB.Frames.barGroups ~= nil and activeSpecCache and activeSpecCache.settings then
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(activeSpecCache.settings, TRB.Frames.barGroups)
+		end
+	end
+
+	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
 ---Generates the bar color and color-changing options panel, including base bar color, casting overlay color, and optional spending overlay color.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements
@@ -9469,8 +11772,21 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 	f:SetChecked(spec.colors.bar.casting.enabled)
+	controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
+		oUi.xCoord,
+		yCoord,
+		spec.colors.bar.casting.fullHeight == true,
+		function(self)
+			spec.colors.bar.casting.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.casting.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -9478,7 +11794,6 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 	end)
 
 	if includeSpendingOverlay then
-		yCoord = yCoord - 30
 		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -9495,8 +11810,21 @@ function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec,
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+			parent,
+			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
+			oUi.xCoord,
+			yCoord,
+			spec.colors.bar.spending.fullHeight == true,
+			function(self)
+				spec.colors.bar.spending.fullHeight = self:GetChecked()
+				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			end
+		)
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -9605,6 +11933,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 			end
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("healthBarColors")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "healthBarColors")
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllHealthBarColors", "healthBarColors", yCoord)
@@ -9686,7 +12015,7 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	local function AbsorbModeGenerator(dropdown, rootDescription)
 		rootDescription:CreateRadio(L["OverlayModeAppended"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appended")
 		rootDescription:CreateRadio(L["OverlayModeAppendedOverflow"], AbsorbModeIsSelected, AbsorbModeSetSelected, "appendedOverflow")
-		rootDescription:CreateRadio(L["OverlayModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")		
+		rootDescription:CreateRadio(L["OverlayModeOverlay"], AbsorbModeIsSelected, AbsorbModeSetSelected, "overlay")
 		rootDescription:CreateRadio(L["OverlayModeInset"], AbsorbModeIsSelected, AbsorbModeSetSelected, "inset")
 	end
 
@@ -9701,17 +12030,30 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	controls.colors.absorb:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
 	end)
-	
-	yCoord = yCoord - 30
+
+	local absorbCheckboxY = yCoord - 20
 	controls.checkBoxes.showAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showAbsorb", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showAbsorb
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, absorbCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowAbsorbTooltip"]
 	f:SetChecked(spec.colors.healthBar.absorb.enabled)
+	controls.checkBoxes.showAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_showAbsorbFullHeight",
+		oUi.xCoord2,
+		absorbCheckboxY,
+		spec.colors.healthBar.absorb.fullHeight == true,
+		function(self)
+			spec.colors.healthBar.absorb.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.absorb.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
@@ -9721,7 +12063,6 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 	end)
 
 	-- Incoming Heal Display Mode dropdown
-	yCoord = yCoord - 20
 	controls.dropDown.incomingHealMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IncomingHealMode", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.incomingHealMode:SetWidth(oUi.sliderWidth)
 	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
@@ -9774,16 +12115,29 @@ function TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls,
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "incomingHeal", "health")
 	end)
 
-	yCoord = yCoord - 30
+	local incomingHealCheckboxY = yCoord - 20
 	controls.checkBoxes.showIncomingHeal = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showIncomingHeal", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showIncomingHeal
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, incomingHealCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowIncomingHeal"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowIncomingHealTooltip"]
 	f:SetChecked(spec.colors.healthBar.incomingHeal.enabled)
+	controls.checkBoxes.showIncomingHealFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_showIncomingHealFullHeight",
+		oUi.xCoord2,
+		incomingHealCheckboxY,
+		spec.colors.healthBar.incomingHeal.fullHeight == true,
+		function(self)
+			spec.colors.healthBar.incomingHeal.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
@@ -9905,7 +12259,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 		end
 	end)
 
-	
+
 	-- Light Stagger Color
 	controls.colors = controls.colors or {}
 	controls.colors.comboPoints = controls.colors.comboPoints or {}
@@ -9939,7 +12293,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.heavy, self)
 	end)
-	
+
 	yCoord2 = yCoord2 - 30
 
 	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
@@ -9947,7 +12301,7 @@ function TRB.Functions.OptionsUi:GenerateStaggerBarColorOptions(parent, controls
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
 	end)
-	
+
 	yCoord2 = yCoord2 - 30
 
 	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
@@ -10061,7 +12415,7 @@ function TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, sp
 	f:SetScript("OnClick", function(self, ...)
 		spec.maxResource.enabled = self:GetChecked()
 	end)
-	
+
 	controls.maxResourceValue = TRB.Functions.OptionsUi:BuildSlider(parent, title, primaryResourceMin, primaryResourceMax, spec.maxResource.value, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.maxResourceValue:SetScript("OnValueChanged", function(self, value)
@@ -10279,6 +12633,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayText")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "displayText")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayText", "displayText", yCoord)
@@ -10295,7 +12650,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	local function FontFaceIsSelected(value)
 		return value == spec.displayText.default.fontFace
 	end
-	
+
 	local function FontFaceSetSelected(newValue)
 		spec.displayText.default.fontFace = newValue
 		spec.displayText.default.fontFaceName = fontPairsByName[newValue]
@@ -10458,6 +12813,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, 
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textColors")
 	end)
+	TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "textColors")
 
 	return yCoord
 end
@@ -10501,6 +12857,7 @@ function TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, cont
 			TRB.Data.lookupDirty = true
 			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("precision")
 		end)
+		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "precision")
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllPrecision", "precision", yCoord)
@@ -10580,7 +12937,7 @@ end
 function TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip, defaultValue, maximumValue)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
-	
+
 	controls.checkBoxes[name] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. name .. "Checkbox", parent, "ChatConfigCheckButtonTemplate")
 
 	local f = controls.checkBoxes[name]
@@ -10622,7 +12979,7 @@ function TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spe
 	local function IsSelected(value)
 		return value == spec.audio[name].sound
 	end
-	
+
 	local function SetSelected(newValue)
 		spec.audio[name].sound = newValue
 		spec.audio[name].soundName = soundPairsByName[newValue]
@@ -10753,18 +13110,18 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			["name"] = "Name",
 			["width"] = 100,
 			["align"] = "LEFT",
-			--[[["color"] = { 
-				["r"] = 0.5, 
-				["g"] = 0.5, 
-				["b"] = 1.0, 
-				["a"] = 1.0 
+			--[[["color"] = {
+				["r"] = 0.5,
+				["g"] = 0.5,
+				["b"] = 1.0,
+				["a"] = 1.0
 			},
 			["colorargs"] = nil,
 			["bgcolor"] = {
-				["r"] = 1.0, 
-				["g"] = 0.0, 
-				["b"] = 0.0, 
-				["a"] = 1.0 
+				["r"] = 1.0,
+				["g"] = 0.0,
+				["b"] = 0.0,
+				["a"] = 1.0
 			}, -- red backgrounds, eww!
 			["defaultsort"] = "dsc",
 			["sortnext"]= 4,
@@ -10901,7 +13258,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		columns[4].width = newBarTextWidth
 		barTextTable:SetDisplayCols(columns)
 	end)
-	
+
 	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 0, 0, 175, 25)
 
 	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame", parent, "BackdropTemplate")
@@ -10922,7 +13279,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 ---@diagnostic disable-next-line: inject-field
 	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
-	
+
 	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText(L["Enabled"])
@@ -11492,11 +13849,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			return false
 		end
 	end
-	
+
 	local function RelativeToFrameSetSelected(newValue)
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			workingBarText.position.relativeToFrame = newValue
-			
+
 			for k, v in pairs(relativeToFrame) do
 				if v == newValue then
 					workingBarText.position.relativeToFrameName = k
@@ -11518,12 +13875,12 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end
 	barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
 	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	
+
 	local barTextRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barTextRelativeTo", barTextOptionsFrame, "WowStyle1DropdownTemplate")
 	barTextRelativeTo:SetWidth(oUi.sliderWidth)
 	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
-	
+
 	local relativeTo = {}
 	relativeTo[L["PositionTopLeft"]] = "TOPLEFT"
 	relativeTo[L["PositionTop"]] = "TOP"
@@ -11553,11 +13910,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			return false
 		end
 	end
-	
+
 	local function RelativeToSetSelected(newValue)
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			workingBarText.position.relativeTo = newValue
-			
+
 			for k, v in pairs(relativeTo) do
 				if v == newValue then
 					workingBarText.position.relativeToName = k
@@ -11580,7 +13937,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	yCoord = yCoord - 60
 
 	controls.colors.text = controls.colors.text or {}
-	
+
 	FillFontCache()
 	local UpdateBarTextEditorInheritedControlState
 
@@ -11588,7 +13945,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextFontFace:SetWidth(oUi.sliderWidth)
 	barTextFontFace.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	barTextFontFace.label.font:SetFontObject(GameFontNormal)
-	
+
 	local function FontFaceIsSelected(value)
 		if workingBarText ~= nil then
 			return value == workingBarText.fontFace
@@ -11596,7 +13953,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			return false
 		end
 	end
-	
+
 	local function FontFaceSetSelected(newValue)
 		if workingBarText ~= nil then
 			workingBarText.fontFace = newValue
@@ -11637,7 +13994,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	barTextFontJustifyHorizontal:SetWidth(oUi.sliderWidth)
 	barTextFontJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextFontJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
-	
+
 	local fontJustifyHorizontal = {}
 	fontJustifyHorizontal[L["PositionLeft"]] = "LEFT"
 	fontJustifyHorizontal[L["PositionCenter"]] = "CENTER"
@@ -11655,11 +14012,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			return false
 		end
 	end
-	
+
 	local function FontJustifyHorizontalSetSelected(newValue)
 		if workingBarText ~= nil then
 			workingBarText.fontJustifyHorizontal = newValue
-			
+
 			for k, v in pairs(fontJustifyHorizontal) do
 				if v == newValue then
 					workingBarText.fontJustifyHorizontalName = k
@@ -11678,7 +14035,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end
 	barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 	barTextFontJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	
+
 	yCoord = yCoord - 100
 	title = L["FontSize"]
 	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 300, 18, 1, 0,
@@ -11974,7 +14331,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextName:SetText(workingBarText.name)
 		barTextEntryEnabled:SetChecked(workingBarText.enabled)
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
-		
+
 		barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
 		barTextRelativeTo:SetupMenu(RelativeToGenerator)
 		barTextFontFace:SetupMenu(FontFaceGenerator)
@@ -11995,7 +14352,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 		barTextHorizontal:SetValue(workingBarText.position.xPos)
 		barTextVertical:SetValue(workingBarText.position.yPos)
-		
+
 		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
 		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
@@ -12011,7 +14368,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		fontShadowXOffset:SetValue(shadow.xOffset or 1)
 		fontShadowYOffset:SetValue(shadow.yOffset or -1)
 		UpdateBarTextEditorInheritedControlState()
-		
+
 		barTextOptionsFrame:Show()
 	end
 
@@ -12047,7 +14404,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
 	end)
-	
+
 	barTextEntryEnabled:SetScript("OnClick", function(self, ...)
 		workingBarText.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
@@ -12129,7 +14486,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 		SetTableValues(spec.displayText, barTextTable)
 		_G["TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame"]:Hide()
-		
+
 		if classId == nil then
 			-- Global bar text editor: rebuild the active spec if it uses global bar text
 			local charClassName = TRB.Data.character.className

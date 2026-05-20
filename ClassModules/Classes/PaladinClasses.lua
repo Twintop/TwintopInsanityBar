@@ -27,7 +27,8 @@ function TRB.Classes.Paladin.HolySpells:New()
     })
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
-        id = 223819
+        id = 223819,
+        isBuff = true
     })
 
     return self
@@ -57,7 +58,9 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = true, color = false },
+		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -79,7 +82,8 @@ function TRB.Classes.Paladin.ProtectionSpells:New()
 	})
 
 	self.divinePurpose = TRB.Classes.SpellBase:New({
-		id = 223819
+		id = 223819,
+		isBuff = true
 	})
     
     return self
@@ -109,7 +113,9 @@ function TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = true, color = false },
+		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -125,7 +131,8 @@ function TRB.Classes.Paladin.RetributionSpells:New()
     self = setmetatable(base:New(), TRB.Classes.Paladin.RetributionSpells) --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
-        id = 223819
+        id = 223819,
+        isBuff = true
     })
    
     return self
@@ -155,7 +162,9 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = true, color = false },
+		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
 

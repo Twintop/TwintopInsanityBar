@@ -824,12 +824,6 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
-				clearcasting = {
-					color = "FF4A95CE",
-					color2 = "FF4A95CE",
-					gradientDirection = "disabled",
-					enabled = true
-				},
 				maxBite = {
 					color = "FF009900",
 					color2 = "FF009900",
@@ -858,6 +852,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
+				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
 				penultimate = {
 					color = "FFFF9900",
 					color2 = "FFFF9900",
@@ -891,6 +886,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				nodeOrder = {
 					"apexPredator",
 					"ravage",
+					"clearcasting",
 					"borderStealth",
 				},
 				gradientOrder = {
@@ -914,6 +910,15 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							comboPoints = { bar = true, border = false, background = false },
+						},
+					},
+					clearcasting = {
+						color = "FF4A95CE",
+						color2 = "FF4A95CE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							energyBar = { bar = true, border = false, background = false },
 						},
 					},
 					borderStealth = {
@@ -1282,12 +1287,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled",
 					enabled = true
 				},
-				clearcasting = {
-					color = "FF4A95CE",
-					color2 = "FF4A95CE",
-					gradientDirection = "disabled",
-					enabled = true
-				},
 				incarnation = {
 					color = "FF005500",
 					color2 = "FF005500",
@@ -1320,6 +1319,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					"incarnationEnd",
 					"incarnation",
 					"noEfflorescence",
+					"clearcasting",
 				},
 				gradientOrder = {},
 				indicatorColors = {
@@ -1344,6 +1344,15 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 					noEfflorescence = {
 						color = "FFFF0000",
 						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+					clearcasting = {
+						color = "FF4A95CE",
+						color2 = "FF4A95CE",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -1752,10 +1761,6 @@ local function BalanceConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Druid_Balance_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Druid_Balance_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 1, false, true, false, false, false, false)
-	end)
 
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceStarsurgeThresholdsHeader"], oUi.xCoord, yCoord)
 
@@ -1796,10 +1801,6 @@ local function BalanceConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Balance_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 11, 1, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 1, yCoord)
 
@@ -1880,10 +1881,6 @@ local function BalanceConstructAudioAndTrackingPanel(parent)
 	local controls = interfaceSettingsFrame.controls.druid_balance
 	local yCoord = 5
 
-	controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -1906,10 +1903,6 @@ local function BalanceConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 11, 1, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 1, yCoord, cache)
@@ -1939,10 +1932,7 @@ local function BalanceConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidBalanceFull"],
 		TRB.Data.settings.core.enabled.druid, "balance",
 		"TwintopResourceBar_Druid_Balance_balanceDruidEnabled", "balanceDruidEnabled",
-		"exportButton_Druid_Balance_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalanceFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 1, true, true, true, true, true, false)
-		end)
+		"druid", "balance")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = controls
@@ -2157,6 +2147,9 @@ local function FeralConstructComboPointsBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceComboPoints"])
+
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2203,6 +2196,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "apexPredator",   label = L["DruidFeralCheckboxApexPredator"],  tooltip = L["DruidFeralIndicatorApexPredatorTooltip"],    colorLabel = L["DruidFeralIndicatorApexPredatorColor"] },
 			{ key = "ravage",        label = L["DruidFeralCheckboxRavage"],        tooltip = L["DruidFeralIndicatorRavageTooltip"],          colorLabel = L["DruidFeralIndicatorRavageColor"] },
+			{ key = "clearcasting",  label = L["DruidFeralCheckboxClearcasting"],  tooltip = L["DruidFeralIndicatorClearcastingTooltip"],    colorLabel = L["DruidFeralIndicatorClearcastingColor"] },
 			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
 		},
 		gradientDefs = {
@@ -2373,10 +2367,6 @@ local function FeralConstructThresholdSettingsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.druid_feral
 	local yCoord = 5
 
-	controls.buttons.exportButton_Druid_Feral_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportThresholds"], yCoord-5)
-	controls.buttons.exportButton_Druid_Feral_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 2, false, true, false, false, false, false)
-	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
@@ -2402,10 +2392,6 @@ local function FeralConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Feral_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 11, 2, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 2, yCoord)
 
@@ -2475,10 +2461,6 @@ local function FeralConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -2522,10 +2504,6 @@ local function FeralConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Feral_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 11, 2, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 2, yCoord, cache)
@@ -2555,10 +2533,7 @@ local function FeralConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidFeralFull"],
 		TRB.Data.settings.core.enabled.druid, "feral",
 		"TwintopResourceBar_Druid_Feral_feralDruidEnabled", "feralDruidEnabled",
-		"exportButton_Druid_Feral_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeralFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 2, true, true, true, true, true, false)
-		end)
+		"druid", "feral")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
@@ -2898,10 +2873,6 @@ local function GuardianConstructThresholdSettingsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 
-	controls.buttons.exportButton_Druid_Guardian_Thresholds = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarDisplay"], yCoord-5)
-	controls.buttons.exportButton_Druid_Guardian_Thresholds:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixThresholds"] .. ".", 11, 3, false, true, false, false, false, false)
-	end)
 
 	---@type TRB.Classes.OptionsUi.Color[]
 	local custom = {
@@ -2927,10 +2898,6 @@ local function GuardianConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Guardian_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Guardian_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 11, 3, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 3, yCoord)
 
@@ -2999,10 +2966,6 @@ local function GuardianConstructAudioAndTrackingPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Guardian_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Druid_Guardian_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 11, 3, false, false, false, true, false, false)
-	end)
 
 	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 end
@@ -3017,10 +2980,6 @@ local function GuardianConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Druid_Guardian_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Guardian_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 11, 3, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	local spec = TRB.Data.settings.druid.guardian
@@ -3051,10 +3010,7 @@ local function GuardianConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidGuardianFull"],
 		TRB.Data.settings.core.enabled.druid, "guardian",
 		"TwintopResourceBar_Druid_Guardian_guardianDruidEnabled", "guardianDruidEnabled",
-		"exportButton_Druid_Guardian_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidGuardianFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 3, true, true, true, true, true, false)
-		end)
+		"druid", "guardian")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
@@ -3224,6 +3180,7 @@ local function RestorationConstructIndicatorColorsPanel(parent)
 			{ key = "incarnationEnd",    label = L["DruidRestorationCheckboxIncarnationEnding"],  tooltip = L["DruidRestorationIndicatorIncarnationEndTooltip"],      colorLabel = L["DruidRestorationIndicatorIncarnationEndColor"] },
 			{ key = "incarnation",       label = L["DruidRestorationCheckboxIncarnation"],        tooltip = L["DruidRestorationIndicatorIncarnationTooltip"],         colorLabel = L["DruidRestorationIndicatorIncarnationColor"] },
 			{ key = "noEfflorescence",   label = L["DruidRestorationCheckboxNoEfflorescence"],    tooltip = L["DruidRestorationIndicatorNoEfflorescenceTooltip"],     colorLabel = L["DruidRestorationIndicatorNoEfflorescenceColor"] },
+			{ key = "clearcasting",      label = L["DruidRestorationCheckboxClearcasting"],       tooltip = L["DruidRestorationIndicatorClearcastingTooltip"],        colorLabel = L["DruidRestorationIndicatorClearcastingColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar",      label = L["BarNameManaBar"] },
@@ -3366,10 +3323,6 @@ local function RestorationConstructFontAndTextPanel(parent)
 
 	local title = ""
 
-	controls.buttons.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportFontText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 11, 4, false, false, true, false, false, false)
-	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 4, yCoord)
 
@@ -3408,10 +3361,6 @@ local function RestorationConstructAudioAndTrackingPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	controls.buttons.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportAudioTracking"], yCoord-5)
-	controls.buttons.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", classId, specId, false, false, false, true, false, false)
-	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
@@ -3428,10 +3377,6 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 	local yCoord = 5
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
-	controls.buttons.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildExportButton(parent, L["ExportMessageExportBarText"], yCoord-5)
-	controls.buttons.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 11, 4, false, false, false, false, true, false)
-	end)
 
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 4, yCoord, cache)
@@ -3461,10 +3406,7 @@ local function RestorationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DruidRestorationFull"],
 		TRB.Data.settings.core.enabled.druid, "restoration",
 		"TwintopResourceBar_Druid_Restoration_restorationDruidEnabled", "restorationDruidEnabled",
-		"exportButton_Druid_Restoration_All",
-		function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestorationFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 11, 4, true, true, true, true, true, false)
-		end)
+		"druid", "restoration")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = controls

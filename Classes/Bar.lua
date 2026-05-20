@@ -797,20 +797,8 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 
 	-- Set node count and apply layout
 	self:SetNodeCount(displayNodes)
-	self:SetLayout(TRB.Functions.Bar:GetEffectiveSpacing(settings.comboPoints), TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
+	TRB.Functions.Bar:ApplySecondaryBarGroupLayout(settings, TRB.Frames.barGroups, displayNodes)
 	self:Show()
-
-	-- Use effectiveWidth (CDM-matched) if available, otherwise fall back to settings.bar.width
-	local barGroups = TRB.Frames.barGroups
-	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
-
-	-- Apply layout to position all nodes correctly
-	self:ApplyLayout(
-		effectiveWidth,
-		settings.comboPoints.width,
-		settings.comboPoints.height,
-		settings.comboPoints.border
-	)
 
 	-- Show/hide nodes and set up textures
 	local frameLevels = TRB.Data.constants.frameLevels

@@ -1761,6 +1761,14 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 		positiveOnly = true
 	end
 
+	if issecretvalue(value) then
+		-- Secret values cannot be compared, but `string.format` is allowed on them
+		-- per the Secret Values rules and produces a secret string that still flows
+		-- through `FontString:SetText` for display. Skip the sign and threshold
+		-- checks (which would crash) and always render with low precision.
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+	end
+
 	if positiveOnly and value < 0 then
 		value = 0
 	end
@@ -1772,19 +1780,8 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 	end
 end
 
----Returns the primary bar group's current visibility alpha (0.0–1.0).
----Used for UIParent-attached bar text that doesn't inherit barGroup alpha.
----@return number
-function TRB.Functions.BarText:GetPrimaryBarAlpha()
-	local barGroups = TRB.Frames.barGroups
-	if barGroups and barGroups.primary and barGroups.primary.currentAlpha then
-		return barGroups.primary.currentAlpha
-	end
-	return 1.0
-end
-
----Hides all bar text, except UIParent-bound ("Screen") entries which remain visible.
----UIParent-bound text gets explicit alpha from the primary bar's current visibility alpha.
+---Hides all bar text, except UIParent-bound ("Screen") entries which remain visible
+---at full opacity, independent of bar state.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Hide(settings)
 	local textFrames = TRB.Frames.textFrames
@@ -1800,9 +1797,8 @@ function TRB.Functions.BarText:Hide(settings)
 				textFrames[i]:Show()
 				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Show()
-				-- UIParent text doesn't inherit barGroup alpha; apply it explicitly
-				local barAlpha = TRB.Functions.BarText:GetPrimaryBarAlpha()
-				textFrames[i]:SetAlpha(barAlpha)
+				-- Screen-bound text is independent of the bar; always fully opaque
+				textFrames[i]:SetAlpha(1.0)
 			else
 				textFrames[i]:Hide()
 				---@diagnostic disable-next-line: undefined-field
@@ -1867,10 +1863,9 @@ function TRB.Functions.BarText:Show(settings)
 					textFrames[i]:Show()
 					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Show()
-					-- UIParent-attached text doesn't inherit barGroup alpha; apply explicitly
+					-- Screen-bound text is independent of the bar; always fully opaque
 					if key == "UIParent" then
-						local barAlpha = TRB.Functions.BarText:GetPrimaryBarAlpha()
-						textFrames[i]:SetAlpha(barAlpha)
+						textFrames[i]:SetAlpha(1.0)
 					end
 				end
 			elseif textFrames[i] ~= nil then

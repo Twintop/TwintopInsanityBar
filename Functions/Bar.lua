@@ -215,7 +215,7 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 	-- For vertical growth, the width is just the per-node width (cross axis)
 	local growthDirection = barSettings.growthDirection
 	if growthDirection == "topBottom" or growthDirection == "bottomTop" then
-		return barSettings.height or barSettings.width or 0
+		return barSettings.width or barSettings.height or 0
 	end
 
 	-- Resolve actual node count from the bar group if available
@@ -1149,9 +1149,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- because at construction time the Druid's current shapeshift form may not be
 	-- known yet. Runtime form-based collapse is handled by ProcessBars after
 	-- HideResourceBar determines the correct visibility per form.
+	-- Also consults IsBarTalentGatedHidden so talent-gated bars (e.g., Holy Priest's
+	-- Lightweaver) collapse at layout time — talents are known at construction time.
 	-- ========================
 	for barKey, _ in pairs(barKeyToRoot) do
-		if not self:IsBarVisible(layoutSettings, barKey, false) then
+		if not self:IsBarVisible(layoutSettings, barKey, false) or self:IsBarTalentGatedHidden(barKey) then
 			local barGroup = barGroups[barKey]
 			if barGroup and barGroup.containerFrame then
 				barGroup.containerFrame:SetHeight(0.001)
@@ -1326,9 +1328,14 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 		return
 	end
 
-	-- Get current spec settings
+	-- Get current spec settings. Use the class-resolved display settings so form-aware
+	-- classes (Druid) use the form-spec settings here. Falls back to the active
+	-- compositeKey for all other classes.
 	local settings
-	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+	if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
+		settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	end
+	if not settings and TRB.Data.specCache and TRB.Data.character.compositeKey then
 		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specCache then
 			settings = specCache.settings
@@ -1407,6 +1414,13 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 		return
 	end
 
+	local function GetActiveCastingOverlayFullHeight(slot, castingSettings, spendingSettings)
+		if slot and slot.insetClipFrame and slot.insetClipFrame:IsShown() and spendingSettings and spendingSettings.enabled then
+			return spendingSettings.fullHeight == true
+		end
+		return castingSettings and castingSettings.fullHeight == true
+	end
+
 	self:TouchRenderTransition(0.35)
 
 	-- If render transition is active, force alpha 0 to prevent flicker
@@ -1419,6 +1433,18 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	wipe(TRB.Data.cache.colors.backdrop)
 
 	local frameLevels = TRB.Data.constants.frameLevels
+	local secondaryCastingSettings
+	local secondarySpendingSettings
+	local secondaryCastingTexture
+	if settings.colors and settings.colors.comboPoints and settings.colors.comboPoints.casting then
+		secondaryCastingSettings = settings.colors.comboPoints.casting
+		secondarySpendingSettings = nil
+		secondaryCastingTexture = settings.textures.comboPointsCastingBar or settings.textures.castingBar or settings.textures.resourceBar
+	else
+		secondaryCastingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
+		secondarySpendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+		secondaryCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
+	end
 
 	if barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -1438,13 +1464,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if castingSlot then
 				local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
 				local castingColor = settings.colors.bar.casting
+				local spendingSettings = settings.colors.bar.spending
 				castingSlot.texture = castingTexture
+				castingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(castingSlot, castingColor, spendingSettings))
 				if castingColor then
 					castingSlot.color = castingColor
 				end
 				-- Resolve spending color for inset overlay
 				local spendingColor = castingColor
-				local spendingSettings = settings.colors.bar.spending
 				if spendingSettings and spendingSettings.enabled and spendingSettings.color then
 					spendingColor = spendingSettings
 				end
@@ -1461,16 +1488,14 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if secondaryNode then
 				local secCastingSlot = secondaryNode:GetOverlaySlot("casting")
 				if secCastingSlot then
-					local secCastingTexture = settings.textures.castingBar or settings.textures.resourceBar
-					local secCastingColor = settings.colors.bar.casting
-					secCastingSlot.texture = secCastingTexture
-					if secCastingColor then
-						secCastingSlot.color = secCastingColor
+					secCastingSlot.texture = secondaryCastingTexture
+					secCastingSlot:SetFullHeight(GetActiveCastingOverlayFullHeight(secCastingSlot, secondaryCastingSettings, secondarySpendingSettings))
+					if secondaryCastingSettings then
+						secCastingSlot.color = secondaryCastingSettings
 					end
-					local secSpendingColor = secCastingColor
-					local secSpendingSettings = settings.colors.bar.spending
-					if secSpendingSettings and secSpendingSettings.enabled and secSpendingSettings.color then
-						secSpendingColor = secSpendingSettings
+					local secSpendingColor = secondaryCastingSettings
+					if secondarySpendingSettings and secondarySpendingSettings.enabled and secondarySpendingSettings.color then
+						secSpendingColor = secondarySpendingSettings
 					end
 					secCastingSlot.spendingColor = secSpendingColor
 					secCastingSlot:RefreshAppearance()
@@ -1631,7 +1656,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if absorbSlot then
 				absorbSlot.texture = settings.textures.absorbBar
 				if settings.colors.healthBar.absorb then
-					absorbSlot.color = settings.colors.healthBar.absorb.color
+					absorbSlot.color = settings.colors.healthBar.absorb
+					absorbSlot:SetFullHeight(settings.colors.healthBar.absorb.fullHeight == true)
 				end
 				absorbSlot:RefreshAppearance()
 			end
@@ -1641,7 +1667,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			if incomingHealSlot then
 				incomingHealSlot.texture = settings.textures.incomingHealBar
 				if settings.colors.healthBar.incomingHeal then
-					incomingHealSlot.color = settings.colors.healthBar.incomingHeal.color
+					incomingHealSlot.color = settings.colors.healthBar.incomingHeal
+					incomingHealSlot:SetFullHeight(settings.colors.healthBar.incomingHeal.fullHeight == true)
 				end
 				incomingHealSlot:RefreshAppearance()
 			end
@@ -1658,10 +1685,11 @@ end
 
 ---Updates the absorb shield overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----Supports three display modes:
+---Supports four display modes:
 ---  "overlay" (default): fills from the left edge of the bar up to the absorb amount.
 ---  "appended": visually appends the absorb region to the right of the current health fill,
 ---              using a clip frame so it never extends past the bar's right boundary.
+---  "appendedOverflow": appended mode that can scale beyond the bar width when the absorb exceeds max health.
 ---  "inset": reverse-fill absorb bar RIGHT-anchored to the health fill's RIGHT edge,
 ---           filling leftward to show absorb "eating into" visible health.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
@@ -1673,6 +1701,9 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local absorbSlot = healthNode:GetOrCreateOverlaySlot("absorb")
 
 	local absorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.absorb
+	if absorbColorEntry then
+		absorbSlot:SetFullHeight(absorbColorEntry.fullHeight == true)
+	end
 	if not absorbColorEntry or not absorbColorEntry.enabled then
 		absorbSlot:HideAll()
 		return
@@ -1685,9 +1716,7 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 
 	-- Store for RefreshAppearance
 	absorbSlot.texture = settings.textures.absorbBar
-	if settings.colors.healthBar and settings.colors.healthBar.absorb then
-		absorbSlot.color = settings.colors.healthBar.absorb.color
-	end
+	absorbSlot.color = absorbColorEntry
 
 	if absorbMode == "appended" or absorbMode == "appendedOverflow" then
 		-- Appended mode: absorb bar anchored to health fill's leading edge, inside a clip frame
@@ -1773,10 +1802,11 @@ end
 
 ---Updates the incoming heal overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----Supports three display modes:
+---Supports four display modes:
 ---  "overlay" (default): fills from the left edge of the bar up to the incoming heal amount.
 ---  "appended": visually appends the incoming heal region to the right of the current health fill,
 ---              using a clip frame so it never extends past the bar's right boundary.
+---  "appendedOverflow": appended mode that can scale beyond the bar width when the heal exceeds max health.
 ---  "inset": reverse-fill incoming heal bar RIGHT-anchored to the health fill's RIGHT edge,
 ---           filling leftward to show incoming heals "eating into" visible health.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
@@ -1788,6 +1818,9 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	local incomingHealSlot = healthNode:GetOrCreateOverlaySlot("incomingHeal")
 
 	local incomingHealColorEntry = settings.colors.healthBar and settings.colors.healthBar.incomingHeal
+	if incomingHealColorEntry then
+		incomingHealSlot:SetFullHeight(incomingHealColorEntry.fullHeight == true)
+	end
 	if not incomingHealColorEntry or not incomingHealColorEntry.enabled then
 		incomingHealSlot:HideAll()
 		return
@@ -1800,9 +1833,7 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 
 	-- Store for RefreshAppearance
 	incomingHealSlot.texture = settings.textures.incomingHealBar
-	if settings.colors.healthBar and settings.colors.healthBar.incomingHeal then
-		incomingHealSlot.color = settings.colors.healthBar.incomingHeal.color
-	end
+	incomingHealSlot.color = incomingHealColorEntry
 
 	if incomingHealMode == "appended" or incomingHealMode == "appendedOverflow" then
 		-- Appended mode: incoming heal bar anchored to health fill's leading edge, inside a clip frame
@@ -1898,8 +1929,10 @@ end
 
 ---Updates the casting resource overlay on the primary resource bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
----When castingAmount > 0, uses an appended overlay (resource gain, extends rightward).
----When castingAmount < 0, uses an inset overlay (resource spend, fills leftward).
+---When castingAmount > 0, uses an appended overlay (resource gain, extends rightward)
+---and is gated by colors.bar.casting.enabled.
+---When castingAmount < 0, uses an inset overlay (resource spend, fills leftward)
+---and is gated by colors.bar.spending.enabled when that setting exists.
 ---If the spec defines a separate spending color (colors.bar.spending) and it is enabled,
 ---the inset overlay uses that color instead of the casting color.
 ---@param node TRB.Classes.BarNode # The bar node to apply the overlay on
@@ -1907,13 +1940,26 @@ end
 ---@param settings table # The spec cache settings (specCacheSettings)
 ---@param castingAmountOverride number|nil # Optional: explicit casting amount (pre-factored). When nil, reads snapshotData.casting.resourceFinal * resourceFactor.
 ---@param maxResourceOverride number|nil # Optional: explicit max resource. When nil, reads TRB.Data.character.maxResource.
-function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, settings, castingAmountOverride, maxResourceOverride)
+---@param castingSettingsOverride table|nil # Optional casting color/settings override.
+---@param spendingSettingsOverride table|nil # Optional spending color/settings override.
+---@param castingTextureOverride string|nil # Optional casting texture override.
+function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, settings, castingAmountOverride, maxResourceOverride, castingSettingsOverride, spendingSettingsOverride, castingTextureOverride)
 	if not node then return end
 
 	local castingSlot = node:GetOrCreateOverlaySlot("casting")
 
-	local castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
-	if not castingSettings or not castingSettings.enabled then
+	local castingSettings
+	local spendingSettings
+	if castingSettingsOverride ~= nil or spendingSettingsOverride ~= nil then
+		castingSettings = castingSettingsOverride
+		spendingSettings = spendingSettingsOverride
+	else
+		castingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
+		spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	end
+	local castingEnabled = castingSettings and castingSettings.enabled == true
+	local spendingEnabled = spendingSettings and spendingSettings.enabled == true
+	if not castingEnabled and not spendingEnabled then
 		-- Zero out any existing overlays but don't create them
 		castingSlot:SetAppendedOverlayValue(0)
 		castingSlot:SetInsetOverlayValue(0)
@@ -1947,14 +1993,16 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		return
 	end
 
-	local castingTexture = settings.textures.castingBar or settings.textures.resourceBar
+	local castingTexture = castingTextureOverride or settings.textures.castingBar or settings.textures.resourceBar
 	local castingColor = castingSettings
 
 	-- Resolve spending color: use spending if explicitly defined + enabled, otherwise fall back to casting
 	local spendingColor = castingColor
-	local spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
+	local castingFullHeight = castingSettings and castingSettings.fullHeight == true or false
+	local spendingFullHeight = castingFullHeight
 	if spendingSettings and spendingSettings.enabled and spendingSettings.color then
 		spendingColor = spendingSettings
+		spendingFullHeight = spendingSettings.fullHeight == true
 	end
 
 	-- Store for RefreshAppearance
@@ -1964,6 +2012,12 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 
 	if castingAmount > 0 then
 		-- Resource gain: appended overlay extends rightward from current fill
+		if not castingEnabled then
+			castingSlot:SetAppendedOverlayValue(0)
+			castingSlot:SetInsetOverlayValue(0)
+			return
+		end
+		castingSlot:SetFullHeight(castingFullHeight)
 		castingSlot:SetInsetOverlayValue(0)
 		if not castingSlot.appendedClipFrame then
 			castingSlot:CreateAppendedOverlay()
@@ -1979,6 +2033,12 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		castingSlot:SetAppendedOverlayValue(castingAmount)
 	else
 		-- Resource spend: inset overlay fills leftward from current fill
+		if not spendingEnabled then
+			castingSlot:SetAppendedOverlayValue(0)
+			castingSlot:SetInsetOverlayValue(0)
+			return
+		end
+		castingSlot:SetFullHeight(spendingFullHeight)
 		castingSlot:SetAppendedOverlayValue(0)
 		if not castingSlot.insetClipFrame then
 			castingSlot:CreateInsetOverlay()
@@ -2112,19 +2172,103 @@ end
 ---@return number effectiveWidth # The resolved width
 ---@return boolean cdmForced # Whether CDM width matching is active (caller should force fullWidth)
 function TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, barKey)
-	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
+	local effectiveWidth = self:ResolveBarWidth(settings, barKey)
 	local cdmForced = false
+	local editMode = TRB.Functions.EditMode
 
 	-- Check for per-root effective width (handles CDM matching when the bar is its own root)
 	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
 		effectiveWidth = barGroups.rootEffectiveWidths[barKey]
 		-- Check if CDM width matching is active for this root
-		if TRB.Functions.EditMode and TRB.Functions.EditMode.IsWidthMatchingEnabled then
-			cdmForced = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, barKey)
+		if editMode and editMode.IsWidthMatchingEnabled then
+			cdmForced = editMode:IsWidthMatchingEnabled(nil, barKey)
+		end
+	elseif editMode and editMode.IsWidthMatchingEnabled and editMode:IsWidthMatchingEnabled(nil, barKey) then
+		cdmForced = true
+		if editMode.GetAnchorFrameWidth then
+			local anchorFrameWidth = editMode:GetAnchorFrameWidth(nil, barKey)
+			if anchorFrameWidth and anchorFrameWidth > 0 then
+				effectiveWidth = anchorFrameWidth
+			end
 		end
 	end
 
 	return effectiveWidth, cdmForced
+end
+
+---Gets the effective height to use when applying layout to a bar group.
+---Handles custom display mode height matching when a bar is either a root or matched to an anchor.
+---@param barGroups table? # TRB.Frames.barGroups
+---@param settings table # Spec settings containing bar.height as fallback
+---@param barKey string # The bar key to resolve height for (e.g., "secondary")
+---@return number effectiveHeight # The resolved height
+---@return boolean cdmForced # Whether CDM height matching is active (caller should force fullWidth for vertical growth)
+function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, barKey)
+	local effectiveHeight = self:ResolveBarHeight(settings, barKey)
+	local cdmForced = false
+	local editMode = TRB.Functions.EditMode
+
+	if barGroups and barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[barKey] then
+		effectiveHeight = barGroups.rootEffectiveHeights[barKey]
+		if editMode and editMode.IsHeightMatchingEnabled then
+			cdmForced = editMode:IsHeightMatchingEnabled(nil, barKey)
+		end
+	elseif editMode and editMode.IsHeightMatchingEnabled and editMode:IsHeightMatchingEnabled(nil, barKey) then
+		cdmForced = true
+		if editMode.GetAnchorFrameHeight then
+			local anchorFrameHeight = editMode:GetAnchorFrameHeight(nil, barKey)
+			if anchorFrameHeight and anchorFrameHeight > 0 then
+				effectiveHeight = anchorFrameHeight
+			end
+		end
+	end
+
+	return effectiveHeight, cdmForced
+end
+
+---Applies a BarGroup layout for multi-node bars using fill/growth direction settings.
+---@param settings table # Spec settings
+---@param barGroups table? # TRB.Frames.barGroups
+---@param barKey string # "secondary" or custom BarTypeRegistry key
+---@param targetGroup TRB.Classes.BarGroup? # The group to lay out
+---@param groupSettings table? # Settings table for this group
+---@param nodeCount number? # Optional visible node count
+function TRB.Functions.Bar:ApplyMultiNodeBarGroupLayout(settings, barGroups, barKey, targetGroup, groupSettings, nodeCount)
+	if settings == nil or targetGroup == nil or groupSettings == nil then
+		return
+	end
+
+	if nodeCount ~= nil then
+		targetGroup:SetNodeCount(nodeCount)
+	end
+
+	local growthDirection = groupSettings.growthDirection or "leftRight"
+	local isVerticalGrowth = growthDirection == "topBottom" or growthDirection == "bottomTop"
+	local effectiveWidth, cdmWidthForced = self:GetEffectiveWidthForBarGroup(barGroups, settings, barKey)
+	local effectiveHeight, cdmHeightForced = self:GetEffectiveHeightForBarGroup(barGroups, settings, barKey)
+	local fullWidth = isVerticalGrowth and self:GetMatchHeight(groupSettings) or self:GetMatchWidth(groupSettings)
+
+	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), fullWidth, self:GetOrientationFromFillDirection(groupSettings.fillDirection), growthDirection)
+	if (isVerticalGrowth and cdmHeightForced) or ((not isVerticalGrowth) and cdmWidthForced) then
+		targetGroup.fullWidth = true
+	end
+
+	if isVerticalGrowth then
+		targetGroup:ApplyLayout(effectiveHeight, groupSettings.height, effectiveWidth, groupSettings.border)
+	else
+		targetGroup:ApplyLayout(effectiveWidth, groupSettings.width, effectiveHeight, groupSettings.border)
+	end
+
+	targetGroup:SetAllNodeFillDirections(groupSettings.fillDirection)
+end
+
+---Applies layout to the standard secondary combo-point-style bar group.
+---@param settings table # Spec settings
+---@param barGroups table? # TRB.Frames.barGroups
+---@param nodeCount number? # Optional visible node count
+function TRB.Functions.Bar:ApplySecondaryBarGroupLayout(settings, barGroups, nodeCount)
+	local secondaryGroup = barGroups and barGroups.secondary
+	self:ApplyMultiNodeBarGroupLayout(settings, barGroups, "secondary", secondaryGroup, settings and settings.comboPoints, nodeCount)
 end
 
 ---Resolves the actual width for a bar, following the matchWidth chain if necessary.
@@ -2261,14 +2405,30 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 		return false
 	end
 
+	-- Talent-gated bars are treated as hidden for layout purposes so that wrapper
+	-- bounding-box calculations (CalculateWrapperLayout) collapse their height to 0
+	-- and no gap is reserved when the gating talent is not selected.
+	-- includeHidden=true (Edit Mode) keeps talent-gated bars visible for previewing.
+	if not includeHidden and self:IsBarTalentGatedHidden(barKey) then
+		return false
+	end
+
 	-- Druid form-based visibility: secondary (combo points) and mana bar
 	-- visibility depends on current shapeshift form and spec options.
 	-- This mirrors the logic in HideResourceBar and CalculateWrapperLayout.
 	if TRB.Data.character.classId == 11 then
 		local specId = TRB.Data.character.specId
 		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		-- Spec-only flags (enableFormSwitching, showComboPoints) live on the
+		-- ACTIVE spec's settings, not on the form-resolved layoutSettings passed
+		-- in here. When the active spec differs from the displayed spec (e.g.,
+		-- Guardian in travel form → layoutSettings is Restoration's), reading
+		-- these flags from `settings` would consult the wrong spec's checkboxes.
+		local activeSpecName = TRB.Data.character.specName
+		local activeSpecSettings = activeSpecName and TRB.Data.settings.druid and TRB.Data.settings.druid[activeSpecName]
+		local activeDisplayBar = activeSpecSettings and activeSpecSettings.displayBar
 		local enableFormSwitching = true
-		if settings.displayBar and settings.displayBar.enableFormSwitching == false then
+		if activeDisplayBar and activeDisplayBar.enableFormSwitching == false then
 			enableFormSwitching = false
 		end
 
@@ -2286,10 +2446,10 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 				return true -- Cat form: combo points are native, always eligible
 			elseif specId == 2 then
 				-- Feral non-cat: showComboPoints defaults ON (nil -> show)
-				return settings.displayBar and settings.displayBar.showComboPoints ~= false
+				return activeDisplayBar and activeDisplayBar.showComboPoints ~= false
 			else
 				-- Non-Feral non-cat: showComboPoints defaults OFF (nil -> hide)
-				return settings.displayBar and settings.displayBar.showComboPoints == true
+				return activeDisplayBar and activeDisplayBar.showComboPoints == true
 			end
 		end
 
@@ -2321,6 +2481,53 @@ function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 		return not visibilitySetting.neverShow
 	end
 	return visibilitySetting.visibility ~= "never"
+end
+
+---Returns true when a bar is permanently hidden at layout time because a class/spec-specific
+---gate (e.g., a required talent) is not satisfied. This is consulted alongside IsBarVisible
+---by construction-time collapse code so that talent-gated bars (such as Holy Priest's
+---Lightweaver) do not keep their full height or leave their nodes visible after
+---ApplyBarGroupsLayout / ApplyCustomBarGroupsLayout rebuilds layout.
+---
+---Runtime visibility (ProcessBars) independently enforces the same gate via the entry's
+---enabled flag; this function exists so layout changes between ProcessBars passes do not
+---briefly resurface the bar.
+---@param barKey string
+---@return boolean
+function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
+	local character = TRB.Data.character
+	if not character then return false end
+
+	local compositeKey = character.compositeKey
+	local specCache = compositeKey and TRB.Data.specCache and TRB.Data.specCache[compositeKey]
+	local talents = specCache and specCache.talents
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if not talents or not spells then return false end
+
+	-- Priest Holy: Lightweaver bar requires the Lightweaver talent
+	if character.classId == 5 and character.specId == 2 and barKey == "lightweaver" then
+		if spells.lightweaver and not talents:IsTalentActive(spells.lightweaver) then
+			return true
+		end
+	end
+
+	-- Priest (all specs): Utility bar (Angelic Feather) requires the Angelic Feather talent
+	if character.classId == 5 and barKey == "utility" then
+		if spells.angelicFeather and not talents:IsTalentActive(spells.angelicFeather) then
+			return true
+		end
+	end
+
+	-- Warrior Fury: Whirlwind stacks bar (rendered on the secondary bar) requires the
+	-- Improved Whirlwind talent. Uses barKey == "secondary" because Fury's Whirlwind
+	-- charges piggy-back on the legacy secondary/combo-points bar infrastructure.
+	if character.classId == 1 and character.specId == 2 and barKey == "secondary" then
+		if spells.improvedWhirlwind and not talents:IsTalentActive(spells.improvedWhirlwind) then
+			return true
+		end
+	end
+
+	return false
 end
 
 ---Enumerates all bar keys present for the current bar groups.
@@ -3221,8 +3428,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			-- have valid dimensions. Other bars may be anchored to a hidden custom bar.
 			-- Get dimensions from settings or defaults from registry
 			local defaultSettings = nil
-			if not barSettings and barTypeDef.defaultDimensionsFunc then
-				defaultSettings = barTypeDef.defaultDimensionsFunc()
+			if not barSettings then
+				defaultSettings = barTypeDef:GetDefaultDimensions()
 			end
 			local effectiveSettings = barSettings or defaultSettings or {}
 			
@@ -3235,6 +3442,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			effectiveSettings.relativeTo = effectiveSettings.relativeTo
 			effectiveSettings.xPos = effectiveSettings.xPos
 			effectiveSettings.yPos = effectiveSettings.yPos
+			effectiveSettings.fillDirection = effectiveSettings.fillDirection or (defaultSettings and defaultSettings.fillDirection) or barTypeDef.fillDirection or "leftRight"
+			effectiveSettings.growthDirection = effectiveSettings.growthDirection or (defaultSettings and defaultSettings.growthDirection) or barTypeDef.growthDirection or "leftRight"
 			
 			-- Get color settings
 			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
@@ -3291,7 +3500,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			}
 
 			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
-			local barIsVisible = self:IsBarVisible(settings, key, inEditMode)
+			local barIsVisible = self:IsBarVisible(settings, key, inEditMode) and not self:IsBarTalentGatedHidden(key)
 			config.shouldInitiallyShow = barIsVisible
 			
 			-- Resolve the correct anchor group from settings

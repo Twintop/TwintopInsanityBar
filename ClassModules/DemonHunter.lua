@@ -267,21 +267,8 @@ local function ConstructResourceBar(settings)
 			local maxSoulFragments = 6
 
 			barGroups.secondary:SetMaxNodes(maxSoulFragments)
-			barGroups.secondary:SetNodeCount(maxSoulFragments)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
+			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxSoulFragments)
 			barGroups.secondary:Show()
-
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
-
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
 
 			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxSoulFragments do
@@ -820,6 +807,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.consume.resource
 				casting.spellId = spells.consume.id
 				casting.icon = spells.consume.icon
+
+				if talents:IsTalentActive(spells.celestialEcoes) then
+					casting.resourceRaw = casting.resourceRaw + spells.celestialEcoes.attributes.resourceMod
+				end
 			end
 			UpdateCastingResourceFinal_Devourer()
 		end
@@ -2470,6 +2461,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.untetheredRageActive = false
+		snapshotData.attributes.eyeBeamOverride = false
+		snapshotData.attributes.shatteredDestinyFury = 0
 	end
 end
 

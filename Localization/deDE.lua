@@ -97,7 +97,7 @@ if locale == "deDE" then
     L["FlashPeriod"] = "%s Blink Dauer (Sek.)"
     L["FlashBar"] = "Aufblinken der Leiste, wenn %s benutzbar ist"
     L["FlashBarTooltip"] = "Dies lässt die Leiste aufblinken, wenn %s gezaubert werden kann."
-    
+
     L["ThresholdIconRelativePosition"] = "Relative Position der Schwellenwert-Icons"
     L["ThresholdIconShow"] = "Zeige Fähigkeiten-Icons für Schwellenwertlinien?"
     L["ThresholdIconShowTooltip"] = "Wenn aktiviert, werden Icons für den Schwellenwert, den jede Linie darstellt, angezeigt. Die Konfiguration von Größe und Position dieser Icons befindet sich unten."
@@ -130,7 +130,7 @@ if locale == "deDE" then
     L["BoundToBar"] = "An Leiste binden"
     L["MainResourceBar"] = "Hauptressourcen-Leiste"
     L["Screen"] = "Bildschirm"
-	
+
     L["ComboPoint1"] = "Combopunkt 1"
     L["ComboPoint2"] = "Combopunkt 2"
     L["ComboPoint3"] = "Combopunkt 3"
@@ -172,7 +172,7 @@ if locale == "deDE" then
     L["HolyWordSanctifyCharge1"] = "Segenswort: Heiligung (1. Aufladung)"
     L["HolyWordSanctifyCharge2"] = "Segenswort: Heiligung (2. Aufladung)"
     L["HolyWordChastiseCharge1"] = "Segenswort: Züchtigung"
-	
+
     L["RelativePositionBarTextHeader"] = "Relative Position von Leistentext zu der ausgewählten Leiste"
     L["FontFaceHeader"] = "Schriftart"
     L["UseDefaultFontFace"] = "Benutze gemeinsame Schriftart"
@@ -386,7 +386,7 @@ if locale == "deDE" then
     L["DruidRestorationIncarnationGcds"] = "Inkarnation GCDs - 0.75s Minimum"
     L["DruidRestorationCheckboxIncarnationTime"] = "Zeit bis Inkarnation endet"
     L["DruidRestorationIncarnationTime"] = "Inkarnation verbleibende Zeit (Sek.)"
-    
+
     L["EvokerEssenceColorsHeader"] = "Essenz Farben"
     L["EvokerColorPickerEssenceBorderHeader"] = "Essenz Rahmen"
     L["EvokerEssenceColorPickerPenultimate"] = "Vorletzte Essenz"
@@ -450,7 +450,6 @@ if locale == "deDE" then
     L["ChiCheckboxUseHighestForAllTooltip"] = "Wenn aktiviert, wird die Farbe des höchsten Chi für alle Chi verwendet. Z.B., wenn du maximal 5 Chi hast und aktuell 4 hast, wird die Farbe des vorletzten für alle verwendet, anstatt nur für das zweite bis letzte."
     L["ChiColorPickerBackground"] = "Hintergrund für ungefülltes Chi"
     L["MonkWindwalkerAudioDanceOfChiJi"] = "Tanz von Chi-Ji"
-    L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
     L["MonkWindwalkerThresholdCheckboxExpelHarm"] = "Schaden umleiten"
     L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Energie benötigt wird, um Schaden umleiten zu nutzen."
     L["MonkWindwalkerThresholdCheckboxTigerPalm"] = "Tigerklaue"
@@ -538,7 +537,7 @@ if locale == "deDE" then
     L["MaelstromWeaponCheckboxUseHighestForAll"] = "Benutze höchste Mahlstromwaffen-Farbe für alle?"
     L["MaelstromWeaponCheckboxUseHighestForAllTooltip"] = "Wenn aktiviert, wird die Farbe der höchsten Mahlstromwaffe für alle Mahlstromwaffen verwendet. Z.B., wenn du maximal 10 Mahlstromwaffen hast und aktuell 9 hast, wird die Farbe der vorletzten für alle verwendet, anstatt nur für die zweite bis letzte."
     L["MaelstromWeaponColorPickerBackground"] = "Hintergrund für ungefüllte Mahlstromwaffe"
-    
+
     L["WarriorAudioSuddenDeathProc"] = "Plötzlicher Tod Proc"
     L["WarriorTextColorsHeader"] = "Wut Textfarben"
     L["WarriorColorPickerTextCurrent"] = "Aktuelle Wut"
@@ -927,7 +926,7 @@ if locale == "deDE" then
     L["WarlockManaTextColorsHeader"] = "Mana Textfarben"
     L["WarlockColorPickerCurrentMana"] = "Aktuelles Mana"
     L["WarlockColorPickerCastingMana"] = "Mana verbraucht durch hart gezauberte Zauber"
-    
+
     L["HunterBeastMasteryThresholdCheckboxBlackArrow"] = "Schwarzer Pfeil"
     L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"] = "Dies zeigt die vertikale Linie auf der Leiste an, die markiert, wie viel Fokus benötigt wird, um Schwarzer Pfeil zu nutzen."
     L["HunterMarksmanshipThresholdCheckboxBlackArrow"] = "Schwarzer Pfeil"
@@ -947,7 +946,6 @@ if locale == "deDE" then
     L["BarSettings"] = "Leisteneinstellungen"
     L["CheckboxUseGlobal"] = "Benutze globale Einstellungen"
     L["CheckboxUseGlobalTooltip_Font"] = "Wenn aktiviert, werden die globalen Einstellungen für Schriftart, Farbe und Größe für alle Leistentexte verwendet, bei denen 'Benutze Standard' aktiviert ist."
-    L["WarlockSoulShardsBorderColorsHeader"] = "Seelensplitter Rahmenfarben + Änderungen"
     L["CheckboxUseGlobalTooltip_TextColors"] = "Wenn aktiviert, werden die globalen Einstellungen für Ressourcen-Textfarben verwendet."
     L["GlobalTextColorsHeader"] = "Ressourcen Textfarben"
     L["GlobalColorPickerTextCurrent"] = "Aktuelle Ressource"
@@ -1457,4 +1455,6 @@ if locale == "deDE" then
     L["DemonHunterDevourerBarTextVariable_fury"] = "Aktueller Jähzorn"
     L["DemonHunterDevourerBarTextVariable_furyMax"] = "Maximaler Jähzorn"
     L["DemonHunterDevourerBarTextVariable_casting"] = "Aufbau-Jähzorn von hart gezauberten Zaubern"
+
+    L["MonkMistweaverCheckboxVivify"] = "Spontanes Beleben Farbänderung aktiviert"
 end

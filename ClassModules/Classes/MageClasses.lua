@@ -52,6 +52,13 @@ end
 
 
 ---@class TRB.Classes.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
+---@field fireBlast TRB.Classes.SpellBase
+--[[---@field ferventFlickering TRB.Classes.SpellBase
+---@field flameOn TRB.Classes.SpellBase
+---@field combustion TRB.Classes.SpellBase
+---@field spontaneousCombustion TRB.Classes.SpellBase
+---@field fromTheAshes TRB.Classes.SpellBase
+---@field fieryRush TRB.Classes.SpellBase]]
 TRB.Classes.Mage.FireSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FireSpells.__index = TRB.Classes.Mage.FireSpells
 
@@ -60,6 +67,13 @@ function TRB.Classes.Mage.FireSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Mage.FireSpells) --[[@as TRB.Classes.Mage.FireSpells]]
     
+    self.fireBlast = TRB.Classes.SpellBase:New({
+        id = 108853,
+        talentId = 1246833,
+        isTalent = true,
+        hasCharges = true
+    })
+
     return self
 end
 

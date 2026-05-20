@@ -54,7 +54,6 @@ local function FillSpecializationCache()
 	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
 	specCache.paladin_holy.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_holy.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_holy.snapshotData.audio = {
 		innervateCue = false,
 		holyPowerThreshold1Played = false,
@@ -63,6 +62,8 @@ local function FillSpecializationCache()
 		infusionOfLightPlayed = false,
 		divinePurposePlayed = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_holy.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
 	specCache.paladin_holy.barTextVariables = {
 		icons = {},
@@ -89,15 +90,18 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Paladin.ProtectionSpells
 	specCache.paladin_protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
 	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_protection.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_protection.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
 		divinePurposePlayed = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_protection.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
 	specCache.paladin_protection.barTextVariables = {
 		icons = {},
@@ -124,15 +128,18 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Paladin.RetributionSpells
 	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_retribution.snapshotData.attributes.divinePurposeActive = false
 	specCache.paladin_retribution.snapshotData.audio = {
 		holyPowerThreshold1Played = false,
 		holyPowerThreshold2Played = false,
 		holyPowerThreshold3Played = false,
 		divinePurposePlayed = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_retribution.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
 	specCache.paladin_retribution.barTextVariables = {
 		icons = {},
@@ -267,23 +274,8 @@ local function ConstructResourceBar(settings)
 		local maxHolyPower = TRB.Data.character.maxResource2 or 5
 		
 		-- Ensure secondary group knows the correct node count
-		barGroups.secondary:SetNodeCount(maxHolyPower)
-		barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL", settings.comboPoints.growthDirection)
+		Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxHolyPower)
 		barGroups.secondary:Show()
-		
-		-- Get effective width for secondary bar, accounting for CDM width matching
-		local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-		if cdmForced then
-			barGroups.secondary.fullWidth = true
-		end
-		
-		-- Apply layout to position all nodes correctly
-		barGroups.secondary:ApplyLayout(
-			effectiveWidth,
-			settings.comboPoints.width,
-			settings.comboPoints.height,
-			settings.comboPoints.border
-		)
 		
 		-- Explicitly set textures and colors for each Holy Power node
 		local frameLevels = TRB.Data.constants.frameLevels
@@ -308,10 +300,16 @@ local function ConstructResourceBar(settings)
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
+
+	-- Enable the UNIT_AURA cache buffer so SPELL_ACTIVATION_OVERLAY_SHOW handlers can
+	-- match a freshly-applied (secret) Divine Purpose aura back to its auraInstanceID,
+	-- mirroring the Evoker Essence Burst / Protection Warrior Ignore Pain pattern.
+	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_holy"].settings
 
 	-- Side-effect: other systems depend on manaRegen being current
@@ -377,10 +375,23 @@ local function RefreshLookupData_Holy()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Boolean state ($divinePurposeActive)
-	if not activeVars or activeVars["$divinePurposeActive"] then
-		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+	-- Block C: Buff state ($divinePurposeActive, $divinePurposeStacks, $divinePurposeTime)
+	if not activeVars or activeVars["$divinePurposeActive"] or activeVars["$divinePurposeStacks"] or activeVars["$divinePurposeTime"] then
+		local currentTime = GetTime()
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local _divinePurposeActive = (divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive) or false
+		local _divinePurposeStacks = (_divinePurposeActive and (divinePurposeBuff.buff.applications or 0)) or 0
+		local _divinePurposeTime = (divinePurposeBuff ~= nil and divinePurposeBuff.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$divinePurposeActive"] = _divinePurposeActive
+		lookupLogic["$divinePurposeStacks"] = _divinePurposeStacks
+		lookupLogic["$divinePurposeTime"] = _divinePurposeTime
 		lookup["$divinePurposeActive"] = ""
+		if lookupChanged(prevState, "$divinePurposeStacks", _divinePurposeStacks) then
+			lookup["$divinePurposeStacks"] = string.format("%.0f", _divinePurposeStacks)
+		end
+		if lookupChanged(prevState, "$divinePurposeTime", _divinePurposeTime) then
+			lookup["$divinePurposeTime"] = TRB.Functions.BarText:TimerPrecision(_divinePurposeTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -389,6 +400,7 @@ end
 
 local function RefreshLookupData_Protection()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_protection"].settings
 
 	-- Side-effect: other systems depend on manaRegen being current
@@ -454,10 +466,23 @@ local function RefreshLookupData_Protection()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Boolean state ($divinePurposeActive)
-	if not activeVars or activeVars["$divinePurposeActive"] then
-		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+	-- Block C: Buff state ($divinePurposeActive, $divinePurposeStacks, $divinePurposeTime)
+	if not activeVars or activeVars["$divinePurposeActive"] or activeVars["$divinePurposeStacks"] or activeVars["$divinePurposeTime"] then
+		local currentTime = GetTime()
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local _divinePurposeActive = (divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive) or false
+		local _divinePurposeStacks = (_divinePurposeActive and (divinePurposeBuff.buff.applications or 0)) or 0
+		local _divinePurposeTime = (divinePurposeBuff ~= nil and divinePurposeBuff.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$divinePurposeActive"] = _divinePurposeActive
+		lookupLogic["$divinePurposeStacks"] = _divinePurposeStacks
+		lookupLogic["$divinePurposeTime"] = _divinePurposeTime
 		lookup["$divinePurposeActive"] = ""
+		if lookupChanged(prevState, "$divinePurposeStacks", _divinePurposeStacks) then
+			lookup["$divinePurposeStacks"] = string.format("%.0f", _divinePurposeStacks)
+		end
+		if lookupChanged(prevState, "$divinePurposeTime", _divinePurposeTime) then
+			lookup["$divinePurposeTime"] = TRB.Functions.BarText:TimerPrecision(_divinePurposeTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -466,6 +491,7 @@ end
 
 local function RefreshLookupData_Retribution()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_retribution"].settings
 
 	-- Side-effect: other systems depend on manaRegen being current
@@ -531,10 +557,23 @@ local function RefreshLookupData_Retribution()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Boolean state ($divinePurposeActive)
-	if not activeVars or activeVars["$divinePurposeActive"] then
-		lookupLogic["$divinePurposeActive"] = snapshotData.attributes.divinePurposeActive or false
+	-- Block C: Buff state ($divinePurposeActive, $divinePurposeStacks, $divinePurposeTime)
+	if not activeVars or activeVars["$divinePurposeActive"] or activeVars["$divinePurposeStacks"] or activeVars["$divinePurposeTime"] then
+		local currentTime = GetTime()
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local _divinePurposeActive = (divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive) or false
+		local _divinePurposeStacks = (_divinePurposeActive and (divinePurposeBuff.buff.applications or 0)) or 0
+		local _divinePurposeTime = (divinePurposeBuff ~= nil and divinePurposeBuff.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$divinePurposeActive"] = _divinePurposeActive
+		lookupLogic["$divinePurposeStacks"] = _divinePurposeStacks
+		lookupLogic["$divinePurposeTime"] = _divinePurposeTime
 		lookup["$divinePurposeActive"] = ""
+		if lookupChanged(prevState, "$divinePurposeStacks", _divinePurposeStacks) then
+			lookup["$divinePurposeStacks"] = string.format("%.0f", _divinePurposeStacks)
+		end
+		if lookupChanged(prevState, "$divinePurposeTime", _divinePurposeTime) then
+			lookup["$divinePurposeTime"] = TRB.Functions.BarText:TimerPrecision(_divinePurposeTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -675,14 +714,39 @@ local function HandleSpellEvents(self, event, ...)
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
 			if spellId == spells.divinePurpose.id then
-				if snapshotData.attributes.divinePurposeActive ~= true then
+				local currentTime = GetTime()
+				local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
+				local wasActive = divinePurposeSnapshot ~= nil and divinePurposeSnapshot.buff.isActive
+
+				if not wasActive then
 					local specSettings = TRB.Data.settings.paladin[TRB.Data.character.specName]
 					if specSettings.audio.divinePurpose.enabled and not snapshotData.audio.divinePurposePlayed then
 						PlaySoundFile(specSettings.audio.divinePurpose.sound, TRB.Data.settings.core.audio.channel.channel)
 						snapshotData.audio.divinePurposePlayed = true
 					end
 				end
-				snapshotData.attributes.divinePurposeActive = true
+
+				-- Drive the buff snapshot from live aura data via the DurationObject API.
+				-- No `duration` is seeded from the spell definition -- the live aura is
+				-- the source of truth and refreshes are picked up automatically by
+				-- RefreshWithSecretAuraData.
+				if divinePurposeSnapshot ~= nil then
+					local buff = divinePurposeSnapshot.buff
+					if not wasActive then
+						buff:InitializeCustomSimple(false)
+						buff.updateFromSecret = true
+					end
+
+					local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
+					if bufferEntry ~= nil then
+						if buff.auraInstanceId == nil then
+							buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+						end
+						buff:RefreshWithSecretAuraData(bufferEntry)
+					elseif not wasActive then
+						TRB.Functions.Aura:InsertAuraRequest(currentTime, buff, "first")
+					end
+				end
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -691,7 +755,10 @@ local function HandleSpellEvents(self, event, ...)
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
 			if spellId == spells.divinePurpose.id then
-				snapshotData.attributes.divinePurposeActive = false
+				local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
+				if divinePurposeSnapshot ~= nil then
+					divinePurposeSnapshot.buff:Reset()
+				end
 				snapshotData.audio.divinePurposePlayed = false
 			end
 		end
@@ -807,7 +874,8 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Holy()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
-		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
 		local manaBarColors = {
 			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
@@ -876,7 +944,8 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Protection()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
-		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
 		local manaBarColors = {
 			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
@@ -933,7 +1002,9 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.retribution
 		local specCacheSettings = TRB.Data.specCache.paladin_retribution.settings
 		UpdateSnapshot_Retribution()
-		local divinePurposeActive = snapshotData.attributes.divinePurposeActive
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
+		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
 		local manaBarColors = {
 			bar = specSettings.colors.bar.base,
 			border = specSettings.colors.bar.border.color,
@@ -1338,6 +1409,19 @@ function TRB.Functions.Class:HideResourceBar(force)
 	end
 end
 
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.snapshots then
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells and spells.divinePurpose then
+			local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
+			if divinePurposeSnapshot ~= nil then
+				divinePurposeSnapshot.buff:Reset()
+			end
+		end
+	end
+end
+
 local specValidVars
 do
 	local shared = {
@@ -1353,7 +1437,28 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
 		["$divinePurposeActive"] = function()
-			return TRB.Data.snapshotData.attributes.divinePurposeActive == true
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			if spells == nil or spells.divinePurpose == nil then
+				return false
+			end
+			local snap = TRB.Data.snapshotData.snapshots[spells.divinePurpose.id]
+			return snap ~= nil and snap.buff.isActive == true
+		end,
+		["$divinePurposeStacks"] = function()
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			if spells == nil or spells.divinePurpose == nil then
+				return false
+			end
+			local snap = TRB.Data.snapshotData.snapshots[spells.divinePurpose.id]
+			return snap ~= nil and snap.buff.isActive == true
+		end,
+		["$divinePurposeTime"] = function()
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			if spells == nil or spells.divinePurpose == nil then
+				return false
+			end
+			local snap = TRB.Data.snapshotData.snapshots[spells.divinePurpose.id]
+			return snap ~= nil and snap.buff.isActive == true
 		end,
 	}
 	specValidVars = { [1] = shared, [2] = shared, [3] = shared }

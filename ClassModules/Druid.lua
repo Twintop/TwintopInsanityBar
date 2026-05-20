@@ -118,6 +118,7 @@ local function FillSpecializationCache()
 
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
+	specCache.druid_feral.snapshotData.attributes.clearcastingActive = false
 	specCache.druid_feral.snapshotData.audio = {
 		apexPredatorsCravingCue = false,
 		comboPointThreshold1Played = false,
@@ -210,6 +211,7 @@ local function FillSpecializationCache()
 	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
 
 	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
+	specCache.druid_restoration.snapshotData.attributes.clearcastingActive = false
 	specCache.druid_restoration.snapshotData.audio = {
 		innervateCue = false
 	}
@@ -221,6 +223,8 @@ local function FillSpecializationCache()
 	specCache.druid_restoration.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_restoration.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	---@type TRB.Classes.Snapshot
+	specCache.druid_restoration.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting)
 
 	specCache.druid_restoration.barTextVariables = {
 		icons = {},
@@ -368,6 +372,73 @@ local function DruidPowerEvent(self, event, ...)
 end
 local druidPowerFrame = CreateFrame("Frame")
 
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+		local snapshotData = TRB.Data.snapshotData
+		local spellId = ...
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = true
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local snapshotData = TRB.Data.snapshotData
+		local spellId = ...
+		if TRB.Data.character.specId == 2 or TRB.Data.character.specId == 4 then
+			local spells = TRB.Data.spellsData.spells
+			if spellId == spells.clearcasting.id then
+				snapshotData.attributes.clearcastingActive = false
+			end
+		end
+	end
+end
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+end
+
+---Returns which spec's settings should be used for the given form
+---@param specId integer The current active spec ID
+---@param formName string The current shapeshift form name
+---@return integer specIdForSettings The spec ID whose settings should be used
+local function GetFormSpecForSettings(specId, formName)
+	-- Check if form switching is enabled for the active spec
+	local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[specId]
+	local settings = TRB.Data.settings.druid[activeSpecName]
+	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
+		return specId -- Return active spec, don't switch based on form
+	end
+
+	-- Cat Form → Feral settings
+	if formName == "cat" then
+		return 2 -- Feral
+	-- Bear Form → Guardian settings
+	elseif formName == "bear" then
+		return 3 -- Guardian
+	-- Moonkin Form → Balance settings (only if Balance spec)
+	elseif formName == "moonkin" then
+		if specId == 1 then -- Balance spec
+			return 1 -- Balance
+		else
+			-- Non-Balance in Moonkin form uses Humanoid/Mana bar
+			return 4 -- Restoration (mana bar)
+		end
+	-- Humanoid, Travel, Aquatic, Flight, Tree of Life, Treant → Mana bar (Restoration settings)
+	else
+		return 4 -- Restoration
+	end
+end
+
 ---@alias trbDruidForm
 ---| '"humanoid"'		# nil
 ---| '"cat"'			# 1
@@ -415,6 +486,30 @@ local function UpdateShapeshiftForm()
 		TRB.Data.character.currentShapeshiftForm = "humanoid"
 	end
 
+	-- When the display spec changes on a form switch (e.g., Bear→Cat goes from Guardian to Feral
+	-- settings), resize the primary bar and reset threshold line heights to match the new spec's
+	-- bar settings. Without this, the bar frame and threshold lines keep the previous spec's
+	-- dimensions (e.g., a modified shorter Rage bar height persists on the Energy bar in Cat Form).
+	if TRB.Data.character.specId and TRB.Data.specCache and TRB.Frames.barGroups then
+		local oldDisplaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, oldForm or "humanoid")
+		local newDisplaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, TRB.Data.character.currentShapeshiftForm)
+		if oldDisplaySpecId ~= newDisplaySpecId then
+			local compositeKeys = { [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" }
+			local newSettings = TRB.Data.specCache[compositeKeys[newDisplaySpecId]] and TRB.Data.specCache[compositeKeys[newDisplaySpecId]].settings
+			if newSettings then
+				Bar:ApplyBarGroupsLayout(newSettings, TRB.Frames.barGroups)
+				-- Clear thresholds so they will be recreated by ConstructPrimaryGeneric using the
+				-- form-spec's settings on the next render. Otherwise SetPosition->RedrawThresholdLines
+				-- (which uses TRB.Data.barConstructedForSpec, always the active spec) would reset
+				-- threshold heights to the active spec's bar height, undoing the resize above.
+				local primaryNode = TRB.Frames.barGroups.primary and TRB.Frames.barGroups.primary:GetNode(1)
+				if primaryNode then
+					primaryNode:ClearThresholds()
+				end
+			end
+		end
+	end
+
 	-- Form change affects which bars are visible (e.g., combo points only in cat form),
 	-- so mark visibility dirty so HideResourceBar will re-evaluate.
 	TRB.Functions.BarVisibility:MarkDirty()
@@ -456,38 +551,6 @@ end
 local shapeshiftFrame = CreateFrame("Frame")
 shapeshiftFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 shapeshiftFrame:SetScript("OnEvent", UpdateShapeshiftForm)
-
----Returns which spec's settings should be used for the given form
----@param specId integer The current active spec ID
----@param formName string The current shapeshift form name
----@return integer specIdForSettings The spec ID whose settings should be used
-local function GetFormSpecForSettings(specId, formName)
-	-- Check if form switching is enabled for the active spec
-	local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[specId]
-	local settings = TRB.Data.settings.druid[activeSpecName]
-	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
-		return specId -- Return active spec, don't switch based on form
-	end
-
-	-- Cat Form → Feral settings
-	if formName == "cat" then
-		return 2 -- Feral
-	-- Bear Form → Guardian settings
-	elseif formName == "bear" then
-		return 3 -- Guardian
-	-- Moonkin Form → Balance settings (only if Balance spec)
-	elseif formName == "moonkin" then
-		if specId == 1 then -- Balance spec
-			return 1 -- Balance
-		else
-			-- Non-Balance in Moonkin form uses Humanoid/Mana bar
-			return 4 -- Restoration (mana bar)
-		end
-	-- Humanoid, Travel, Aquatic, Flight, Tree of Life, Treant → Mana bar (Restoration settings)
-	else
-		return 4 -- Restoration
-	end
-end
 
 local function GetCurrentMoonSpell()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
@@ -894,6 +957,12 @@ local function RefreshLookupData_Feral()
 		end
 	end
 
+	-- Block D: Clearcasting ($clearcastingActive)
+	if not activeVars or activeVars["$clearcastingActive"] then
+		lookupLogic["$clearcastingActive"] = snapshotData.attributes.clearcastingActive or false
+		lookup["$clearcastingActive"] = ""
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1055,6 +1124,12 @@ local function RefreshLookupData_Restoration()
 		if lookupChanged(prevState, "$incarnationTime", _incarnationTime) then
 			lookup["$incarnationTime"] = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
 		end
+	end
+
+	-- Block D: Clearcasting ($clearcastingActive)
+	if not activeVars or activeVars["$clearcastingActive"] then
+		lookupLogic["$clearcastingActive"] = snapshotData.attributes.clearcastingActive or false
+		lookup["$clearcastingActive"] = ""
 	end
 
 	TRB.Data.lookup = lookup
@@ -1640,22 +1715,33 @@ local function UpdateResourceBar()
 		local showCp = false
 		local cpSettings = nil
 		local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[activeSpecId]
+		-- Visibility flags (displayBar.secondary.neverShow, displayBar.showComboPoints)
+		-- must be read from the specCache so that the active spec's "Use global settings"
+		-- toggle is honored. Reading from raw classSettings ignores the global merge and
+		-- shows incorrect visibility (e.g., Guardian useGlobal=on + global=Always but
+		-- Guardian's own raw setting=Never would incorrectly hide combo points).
+		local activeCacheKey = activeSpecName and ("druid_" .. activeSpecName)
+		local activeSpecCache = activeCacheKey and TRB.Data.specCache and TRB.Data.specCache[activeCacheKey]
+		local activeVisSettings = activeSpecCache and activeSpecCache.settings
+		-- Color/dimension config (cpSettings) intentionally still uses raw spec settings;
+		-- non-Feral specs never have comboPoints in their specCache, so we must fall
+		-- back to Feral's raw classSettings for the actual rendering config.
 		local activeSpecSettings = activeSpecName and classSettings[activeSpecName]
-		if activeSpecSettings ~= nil and activeSpecSettings.displayBar ~= nil then
+		if activeVisSettings ~= nil and activeVisSettings.displayBar ~= nil then
 			if displaySpecId == 2 then
 				-- Cat form (or Feral with form-switching off): CPs are native, always eligible
-				showCp = not activeSpecSettings.displayBar.secondary.neverShow
+				showCp = not activeVisSettings.displayBar.secondary.neverShow
 				cpSettings = (activeSpecId == 2) and activeSpecSettings or (classSettings.feral or activeSpecSettings)
 			elseif activeSpecId == 2 then
 				-- Feral in non-cat form: checkbox defaults ON (nil → show)
-				if activeSpecSettings.displayBar.showComboPoints ~= false then
-					showCp = not activeSpecSettings.displayBar.secondary.neverShow
+				if activeVisSettings.displayBar.showComboPoints ~= false then
+					showCp = not activeVisSettings.displayBar.secondary.neverShow
 					cpSettings = activeSpecSettings
 				end
 			else
 				-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-				if activeSpecSettings.displayBar.showComboPoints == true then
-					showCp = not activeSpecSettings.displayBar.secondary.neverShow
+				if activeVisSettings.displayBar.showComboPoints == true then
+					showCp = not activeVisSettings.displayBar.secondary.neverShow
 					cpSettings = classSettings.feral or activeSpecSettings
 				end
 			end
@@ -2338,14 +2424,6 @@ local function UpdateResourceBar()
 						end
 					end
 
-					
-					-- Legacy clearcasting (not an indicator — stays in colors.bar)
-					if displaySpecId == TRB.Data.character.specId then
-						if specSettings.colors.bar.clearcasting.enabled and snapshots[spells.clearcasting.id].buff.remaining > 0 then
-							barColor = specSettings.colors.bar.clearcasting.color
-						end
-					end
-
 					-- Indicator color system
 					barBorderColor = specSettings.colors.bar.border.color
 					barBackgroundColor = specSettings.colors.bar.background.color
@@ -2358,6 +2436,7 @@ local function UpdateResourceBar()
 					local conditionMap = {
 						apexPredator = apcActive,
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
+						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
@@ -2550,7 +2629,8 @@ local function UpdateResourceBar()
 			-- Show native combo points (with Berserk tick tracking) when in Cat form or
 			-- when displaySpecId is Feral (enableFormSwitching disabled). Other forms with
 			-- form switching ON fall through to ConstructComboPointsGeneric for simplified rendering.
-			if (currentForm == "cat" or displaySpecId == 2) and not specSettings.displayBar.secondary.neverShow then
+			-- Visibility check reads from specCache so the "Use global settings" toggle is honored.
+			if (currentForm == "cat" or displaySpecId == 2) and not specCacheSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -2562,6 +2642,7 @@ local function UpdateResourceBar()
 				end
 
 				local barOverrideActive = comboPointOverrides and comboPointOverrides.bar
+				local regeneratingColor = specSettings.colors.comboPoints.regenerating
 				local berserkTickShown = 0
 
 				for x = 1, TRB.Data.character.maxResource2 do
@@ -2589,9 +2670,11 @@ local function UpdateResourceBar()
 									berserkTickShown = 1
 
 									if not barOverrideActive then
-										if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+										if regeneratingColor and regeneratingColor.enabled then
+											cpColor = regeneratingColor
+										elseif x == (TRB.Data.character.maxResource2 - 1) then
 											cpColor = specSettings.colors.comboPoints.penultimate
-										elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+										elseif x == TRB.Data.character.maxResource2 then
 											cpColor = specSettings.colors.comboPoints.final
 										end
 									end
@@ -3093,10 +3176,13 @@ local function UpdateResourceBar()
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
+					local clearcastingActive = snapshotData.attributes.clearcastingActive
+
 					local conditionMap = {
 						incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet,
 						incarnation = isNativeForm and incarnationActive,
 						noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive,
+						clearcasting = isNativeForm and clearcastingActive,
 					}
 
 					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
@@ -3550,6 +3636,24 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 	end
 end)
 
+---Returns the form-resolved composite key for the current shapeshift form.
+---When form switching is enabled (the default), the bar's layout/appearance is driven by
+---the spec settings matching the current form, not the active spec. For example, a
+---Guardian Druid in Cat Form should display the bar using Feral's settings, so this
+---returns "druid_feral".
+---@return string|nil compositeKey
+function TRB.Functions.Class:GetActiveDisplayCompositeKey()
+	if not TRB.Data.character or not TRB.Data.character.specId then
+		return TRB.Data.character and TRB.Data.character.compositeKey or nil
+	end
+	local displaySpecId = GetFormSpecForSettings(
+		TRB.Data.character.specId,
+		TRB.Data.character.currentShapeshiftForm or "humanoid"
+	)
+	local compositeKeys = { [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" }
+	return compositeKeys[displaySpecId] or TRB.Data.character.compositeKey
+end
+
 function TRB.Functions.Class:CheckCharacter()
 	local specId = GetSpecialization()
 	if specId ~= TRB.Data.character.specId then
@@ -3593,21 +3697,8 @@ function TRB.Functions.Class:CheckCharacter()
 
 				if feralSettings ~= nil and feralSettings.comboPoints ~= nil
 					and feralSettings.colors and feralSettings.colors.comboPoints then
-					-- Get effective width for secondary bar, accounting for CDM width matching
-					local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, feralSettings, "secondary")
-					
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetNodeCount(TRB.Data.character.maxComboPoints)
-					barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(feralSettings.comboPoints), Bar:GetMatchWidth(feralSettings.comboPoints), "HORIZONTAL", feralSettings.comboPoints.growthDirection)
-					if cdmForced then
-						barGroups.secondary.fullWidth = true
-					end
-					barGroups.secondary:ApplyLayout(
-						effectiveWidth,
-						feralSettings.comboPoints.width,
-						feralSettings.comboPoints.height,
-						feralSettings.comboPoints.border
-					)
+					Bar:ApplySecondaryBarGroupLayout(feralSettings, barGroups, TRB.Data.character.maxComboPoints)
 					-- Apply textures and colors to all nodes
 					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, TRB.Data.character.maxComboPoints do
@@ -3673,6 +3764,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:DisableEvents()
 	local primaryResourceToken
 	-- For Druids, we need to track ALL power types simultaneously for form-based switching
 	-- The actual displayed resource will be determined by current form in UpdateResourceBar
@@ -3689,6 +3781,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceMana = Enum.PowerType.Mana
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Energy -- Primary spec resource
 		TRB.Data.resourceFactor = ENERGY_RESOURCE_FACTOR
@@ -3712,6 +3805,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceAstralPower = Enum.PowerType.LunarPower
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	elseif TRB.Data.character.specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana -- Primary spec resource
 		TRB.Data.resourceFactor = MANA_RESOURCE_FACTOR
@@ -3805,6 +3899,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.clearcastingActive = false
 	end
 end
 
