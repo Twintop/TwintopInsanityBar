@@ -162,6 +162,65 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 	return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
+---@param frame Frame?
+---@param barGroup TRB.Classes.BarGroup?
+---@return boolean
+local function BarGroupContainsFrame(frame, barGroup)
+	if frame == nil or barGroup == nil then
+		return false
+	end
+
+	if barGroup.GetContainerFrame and frame == barGroup:GetContainerFrame() then
+		return true
+	end
+
+	if barGroup.GetAnchorFrame and frame == barGroup:GetAnchorFrame() then
+		return true
+	end
+
+	if barGroup.GetNodes then
+		for _, node in ipairs(barGroup:GetNodes()) do
+			if node and node.GetFrame and frame == node:GetFrame() then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+---@param barTextEntry table?
+---@param barGroupKey string
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:IsEntryAnchoredToBarGroup(barTextEntry, barGroupKey, classId, specId)
+	local relativeToFrame = barTextEntry and barTextEntry.position and barTextEntry.position.relativeToFrame
+	if type(relativeToFrame) ~= "string" then
+		return false
+	end
+
+	local containerBarGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+	if containerBarGroupKey ~= nil then
+		return containerBarGroupKey == barGroupKey
+	end
+
+	local activeClassId = TRB.Data.character.classId
+	local activeSpecId = TRB.Data.character.specId
+	if classId ~= nil and specId ~= nil and (classId ~= activeClassId or specId ~= activeSpecId) then
+		return false
+	end
+
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local barGroup = barGroups and barGroups[barGroupKey]
+	if barGroup == nil then
+		return false
+	end
+
+	local anchorFrame = self:GetAnchorFrame(relativeToFrame, classId, specId)
+	return BarGroupContainsFrame(anchorFrame, barGroup)
+end
+
 -- Hash table for O(1) bar text cache lookups (keyed by cleanedText).
 -- Declared at file scope so ClearBarTextCacheHash and GetFromBarTextCache share the same upvalue.
 local barTextCacheHash = {}

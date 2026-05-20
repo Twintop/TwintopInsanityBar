@@ -194,11 +194,14 @@ end
 ---Rotates bar text anchor positions for a 90° rotation between horizontal and vertical orientations.
 ---@param spec table The spec settings
 ---@param toVertical boolean True if rotating horizontal→vertical (CCW), false for vertical→horizontal (CW)
-local function RotateBarTextPositions(spec, toVertical)
+---@param barGroupKey string? Optional bar group key to limit rotation to entries anchored to that bar group
+---@param classId integer?
+---@param specId integer?
+local function RotateBarTextPositions(spec, toVertical, barGroupKey, classId, specId)
 	if not spec.displayText or not spec.displayText.barText then return end
 	local rotateMap = toVertical and rotateAnchorCCW or rotateAnchorCW
 	for _, entry in pairs(spec.displayText.barText) do
-		if entry.position then
+		if entry.position and (barGroupKey == nil or TRB.Functions.BarText:IsEntryAnchoredToBarGroup(entry, barGroupKey, classId, specId)) then
 			local oldX, oldY = entry.position.xPos or 0, entry.position.yPos or 0
 			if toVertical then
 				-- 90° CCW: newX = -oldY, newY = oldX
@@ -6135,6 +6138,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				controls[hKey].EditBox:SetText(spec[settingKey].height)
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
+
+				RotateBarTextPositions(spec, isVert, thisBarKey, classId, specId)
+				TRB.Functions.BarText:CreateBarTextFrames()
 			end
 
 			ApplyAnchorLayout()
@@ -6749,6 +6755,9 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				controls[hKey].EditBox:SetText(barSettings.height)
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
+
+				RotateBarTextPositions(spec, isVert, barTypeDef.key, classId, specId)
+				TRB.Functions.BarText:CreateBarTextFrames()
 			end
 
 			if TRB.Frames.barGroups ~= nil then

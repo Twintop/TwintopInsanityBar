@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.5.9-release (2026-05-21)
+## General
+
+- Fix an issue where specialization level bar text was not being rotated into the correct orientation when the bar's orientation was changed between horizontal and vertical. Shared/Global bar text remains unchanged when bar orientation changes occur.
+
+---
+
 # 12.0.5.8-release (2026-05-20)
 ## General
 
