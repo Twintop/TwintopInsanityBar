@@ -406,10 +406,8 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		effectiveWidth = barGroups.effectiveWidth
 	else
 		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
-		-- For multi-node bars (secondary/combo points), barSettings.width is per-node.
-		-- Calculate total group width: nodeCount * nodeWidth + (nodeCount-1) * spacing
 		local rootGroup = barGroups[rootBarKey]
-		effectiveWidth = TRB.Functions.Bar:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
+		effectiveWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(rootGroup) or TRB.Functions.Bar:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
 		if effectiveWidth == 0 then
 			effectiveWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
 		end
@@ -474,13 +472,23 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	end
 
 	local baseWidth, baseHeight
+	local rootGroup = barGroups[rootBarKey]
+	local renderedRootWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(rootGroup)
+	local renderedRootHeight = TRB.Functions.Bar:GetRenderedBarGroupHeight(rootGroup)
 	if rootBarKey == "primary" then
-		baseWidth = effectiveWidth
-		baseHeight = effectiveHeight or settings.bar.height or 0
+		baseWidth = renderedRootWidth or effectiveWidth
+		baseHeight = renderedRootHeight or effectiveHeight or settings.bar.height or 0
 	else
 		local rootBarSettings = rootNode.barSettings
-		baseWidth = effectiveWidth
-		baseHeight = effectiveHeight or (rootBarSettings and rootBarSettings.height) or 0
+		baseWidth = renderedRootWidth or effectiveWidth
+		if effectiveHeight then
+			baseHeight = renderedRootHeight or effectiveHeight
+		else
+			baseHeight = renderedRootHeight or TRB.Functions.Bar:GetMultiNodeBarTotalHeight(rootBarKey, rootBarSettings, rootGroup)
+			if baseHeight == 0 then
+				baseHeight = (rootBarSettings and rootBarSettings.height) or 0
+			end
+		end
 	end
 
 	-- Hidden bars use 0 height in the bounding-box calculation so the wrapper
@@ -529,8 +537,19 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 
 		local matchWidth = TRB.Functions.Bar:GetMatchWidth(barSettings)
 		local matchHeight = TRB.Functions.Bar:GetMatchHeight(barSettings)
+		local renderedWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(node.barGroup)
+		local renderedHeight = TRB.Functions.Bar:GetRenderedBarGroupHeight(node.barGroup)
 
-		if matchWidth then
+		if renderedWidth then
+			w = renderedWidth
+		end
+		if renderedHeight then
+			h = renderedHeight
+		end
+
+		if renderedWidth then
+			-- The rendered group already reflects match width and multi-node layout.
+		elseif matchWidth then
 			w = parentWidth
 		elseif isMultiNode then
 			-- Multi-node bar: calculate group extent along the growth axis
@@ -539,7 +558,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			if node.barGroup and node.barGroup.nodeCount then
 				nodeCount = node.barGroup.nodeCount
 			end
-			local nodeSpacing = barSettings.spacing or 2
+			local nodeSpacing = TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
 
 			if growthDirection == "topBottom" or growthDirection == "bottomTop" then
 				-- Vertical growth: width is per-node (cross axis)
@@ -551,7 +570,9 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			end
 		end
 
-		if matchHeight then
+		if renderedHeight then
+			-- The rendered group already reflects match height and multi-node layout.
+		elseif matchHeight then
 			h = parentHeight
 		elseif isMultiNode then
 			local growthDirection = barSettings.growthDirection
@@ -559,7 +580,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			if node.barGroup and node.barGroup.nodeCount then
 				nodeCount = node.barGroup.nodeCount
 			end
-			local nodeSpacing = barSettings.spacing or 2
+			local nodeSpacing = TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
 
 			if growthDirection == "topBottom" or growthDirection == "bottomTop" then
 				-- Vertical growth: total height = nodeCount * nodeHeight + spacing
@@ -613,29 +634,6 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 					local attachPt = anchor.attachPoint or "BOTTOM"
 					local xOffset = anchor.xOffset or 0
 					local yOffset = anchor.yOffset or 0
-					local matchWidth = child.barSettings and TRB.Functions.Bar:GetMatchWidth(child.barSettings)
-					local matchHeight = child.barSettings and TRB.Functions.Bar:GetMatchHeight(child.barSettings)
-
-					-- Apply matchWidth center-alignment: center horizontally
-					if matchWidth then
-						anchorPt = string.gsub(anchorPt, "LEFT", "")
-						anchorPt = string.gsub(anchorPt, "RIGHT", "")
-						attachPt = string.gsub(attachPt, "LEFT", "")
-						attachPt = string.gsub(attachPt, "RIGHT", "")
-						if anchorPt == "" then anchorPt = "CENTER" end
-						if attachPt == "" then attachPt = "CENTER" end
-						xOffset = 0
-					end
-					-- Apply matchHeight center-alignment: center vertically
-					if matchHeight then
-						anchorPt = string.gsub(anchorPt, "TOP", "")
-						anchorPt = string.gsub(anchorPt, "BOTTOM", "")
-						attachPt = string.gsub(attachPt, "TOP", "")
-						attachPt = string.gsub(attachPt, "BOTTOM", "")
-						if anchorPt == "" then anchorPt = "CENTER" end
-						if attachPt == "" then attachPt = "CENTER" end
-						yOffset = 0
-					end
 
 					-- Calculate anchor point position on parent (Y-up, origin=parent bottom-left)
 					local apX, apY = TRB.Functions.Bar:CalculateAnchorPointOffset(parentWidth, parentHeight, anchorPt)

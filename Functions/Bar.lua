@@ -478,6 +478,9 @@ function TRB.Functions.Bar:HideResourceBar(force)
 				editContext, entries, snapshotData,
 				(specSettings and specSettings.settings) or nil
 			)
+			if TRB.Functions.Bar.RefreshWrapperPositioning then
+				TRB.Functions.Bar:RefreshWrapperPositioning()
+			end
 		end
 		return
 	end
@@ -847,7 +850,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			rootEffHeight = settings.bar.height
 		else
 			local rootBarSettings = self:GetBarSettings(layoutSettings, rootBarKey)
-			rootEffHeight = (rootBarSettings and rootBarSettings.height) or settings.bar.height
+			local rootGroup = barGroups[rootBarKey]
+			rootEffHeight = self:GetMultiNodeBarTotalHeight(rootBarKey, rootBarSettings, rootGroup)
+			if rootEffHeight == 0 then
+				rootEffHeight = (rootBarSettings and rootBarSettings.height) or settings.bar.height
+			end
 		end
 		if rootHeightMatch and useAnchorFrame then
 			local targetHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
@@ -945,26 +952,6 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 					local att = primaryAnchor.attachPoint or "TOP"
 					local xo = primaryAnchor.xOffset or 0
 					local yo = primaryAnchor.yOffset or 0
-					-- matchWidth: center horizontally
-					if primaryAnchor.matchWidth then
-						ap = string.gsub(ap, "LEFT", "")
-						ap = string.gsub(ap, "RIGHT", "")
-						att = string.gsub(att, "LEFT", "")
-						att = string.gsub(att, "RIGHT", "")
-						if ap == "" then ap = "CENTER" end
-						if att == "" then att = "CENTER" end
-						xo = 0
-					end
-					-- matchHeight: center vertically
-					if primaryAnchor.matchHeight then
-						ap = string.gsub(ap, "TOP", "")
-						ap = string.gsub(ap, "BOTTOM", "")
-						att = string.gsub(att, "TOP", "")
-						att = string.gsub(att, "BOTTOM", "")
-						if ap == "" then ap = "CENTER" end
-						if att == "" then att = "CENTER" end
-						yo = 0
-					end
 					primary.containerFrame:ClearAllPoints()
 					primary.containerFrame:SetPoint(att, anchorGroup:GetAnchorFrame(), ap, xo, yo)
 				end
@@ -1114,6 +1101,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 
 	-- Configure custom bar groups from the registry (stagger, defensives, mana, etc.)
 	self:ApplyCustomBarGroupsLayout(layoutSettings, barGroups)
+	-- Re-apply anchored groups in tree order so every descendant measures its anchor
+	-- after that anchor has been resized in this layout pass.
+	self:ApplyAnchoredBarGroupsLayoutInTreeOrder(layoutSettings, barGroups, forest)
 
 	-- Apply per-bar smooth animation settings from displayBar
 	if settings.displayBar then
@@ -1263,15 +1253,17 @@ function TRB.Functions.Bar:ApplyAnchorFramePositioning(barGroups, meta, settings
 	-- Calculate wrapper layout for this specific root's tree
 	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
 
-	-- Update wrapper frame size to encompass all bars in this tree
-	wrapperFrame:SetWidth(meta.effectiveWidth)
+	-- Update wrapper frame size to encompass all bars in this tree.
+	-- Match the free-position wrapper path: the wrapper uses the calculated bounds,
+	-- while the root bar is offset inside it according to the tree extents.
+	wrapperFrame:SetWidth(totalWidth)
 	wrapperFrame:SetHeight(totalHeight)
 
 	-- Reposition the root bar within the wrapper.
 	local rootGroup = barGroups[rootBarKey]
 	if rootGroup then
 		rootGroup.containerFrame:ClearAllPoints()
-		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", 0, -extendAbove)
+		rootGroup.containerFrame:SetPoint("TOP", wrapperFrame, "TOP", baseOffsetX or 0, -extendAbove)
 	end
 
 	-- Anchor the wrapper to the target frame using the 9-point system
@@ -2123,6 +2115,7 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 				xOffset = barSettings.xPos or 0,
 				yOffset = barSettings.yPos or 0,
 				matchWidth = barSettings.fullWidth or false,
+				matchHeight = false,
 			}
 		end
 	end
@@ -2136,6 +2129,7 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 			xOffset = barSettings.xPos or 0,
 			yOffset = barSettings.yPos or -200,
 			matchWidth = false,
+			matchHeight = false,
 		}
 	end
 
@@ -2226,6 +2220,52 @@ function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, ba
 	return effectiveHeight, cdmForced
 end
 
+---Gets the rendered width of a bar group when available.
+---@param barGroup TRB.Classes.BarGroup?
+---@return number?
+function TRB.Functions.Bar:GetRenderedBarGroupWidth(barGroup)
+	if not barGroup then
+		return nil
+	end
+
+	if barGroup.layoutWidth and barGroup.layoutWidth > 0 then
+		return barGroup.layoutWidth
+	end
+
+	local anchorFrame = barGroup.GetAnchorFrame and barGroup:GetAnchorFrame()
+	if anchorFrame and anchorFrame.GetWidth then
+		local width = anchorFrame:GetWidth()
+		if width and width > 0 then
+			return width
+		end
+	end
+
+	return nil
+end
+
+---Gets the rendered height of a bar group when available.
+---@param barGroup TRB.Classes.BarGroup?
+---@return number?
+function TRB.Functions.Bar:GetRenderedBarGroupHeight(barGroup)
+	if not barGroup then
+		return nil
+	end
+
+	if barGroup.layoutHeight and barGroup.layoutHeight > 0 then
+		return barGroup.layoutHeight
+	end
+
+	local anchorFrame = barGroup.GetAnchorFrame and barGroup:GetAnchorFrame()
+	if anchorFrame and anchorFrame.GetHeight then
+		local height = anchorFrame:GetHeight()
+		if height and height > 0 then
+			return height
+		end
+	end
+
+	return nil
+end
+
 ---Applies a BarGroup layout for multi-node bars using fill/growth direction settings.
 ---@param settings table # Spec settings
 ---@param barGroups table? # TRB.Frames.barGroups
@@ -2246,11 +2286,21 @@ function TRB.Functions.Bar:ApplyMultiNodeBarGroupLayout(settings, barGroups, bar
 	local isVerticalGrowth = growthDirection == "topBottom" or growthDirection == "bottomTop"
 	local effectiveWidth, cdmWidthForced = self:GetEffectiveWidthForBarGroup(barGroups, settings, barKey)
 	local effectiveHeight, cdmHeightForced = self:GetEffectiveHeightForBarGroup(barGroups, settings, barKey)
-	local fullWidth = isVerticalGrowth and self:GetMatchHeight(groupSettings) or self:GetMatchWidth(groupSettings)
+	local matchWidth = self:GetMatchWidth(groupSettings)
+	local matchHeight = self:GetMatchHeight(groupSettings)
+	local fullWidth = isVerticalGrowth and matchHeight or matchWidth
+	local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
+	local activeNodeCount = targetGroup.nodeCount or nodeCount or 1
 
-	targetGroup:SetLayout(self:GetEffectiveSpacing(groupSettings), fullWidth, self:GetOrientationFromFillDirection(groupSettings.fillDirection), growthDirection)
-	if (isVerticalGrowth and cdmHeightForced) or ((not isVerticalGrowth) and cdmWidthForced) then
+	targetGroup:SetLayout(nodeSpacing, fullWidth, self:GetOrientationFromFillDirection(groupSettings.fillDirection), growthDirection)
+	if (not isVerticalGrowth) and cdmWidthForced then
 		targetGroup.fullWidth = true
+	end
+
+	if isVerticalGrowth and not matchHeight then
+		effectiveHeight = ((groupSettings.height or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
+	elseif (not isVerticalGrowth) and not matchWidth then
+		effectiveWidth = ((groupSettings.width or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
 	end
 
 	if isVerticalGrowth then
@@ -2315,6 +2365,15 @@ function TRB.Functions.Bar:ResolveBarWidth(settings, barKey, visited)
 		return self:ResolveBarWidth(settings, anchor.barKey, visited)
 	end
 
+
+	-- For multi-node bars with horizontal growth, calculate total group width.
+	-- `barSettings.width` is a per-node width, so chained matchWidth anchors need
+	-- the full rendered extent of the anchor group instead.
+	local totalWidth = self:GetMultiNodeBarTotalWidth(barKey, barSettings, barGroups and barGroups[barKey])
+	if totalWidth and totalWidth > 0 then
+		return totalWidth
+	end
+
 	return barSettings.width or settings.bar.width
 end
 
@@ -2365,8 +2424,13 @@ function TRB.Functions.Bar:ResolveBarHeight(settings, barKey, visited)
 		return self:ResolveBarHeight(settings, anchor.barKey, visited)
 	end
 
-	-- For multi-node bars with vertical growth, calculate total group height
-	return self:GetMultiNodeBarTotalHeight(barKey, barSettings, barGroups and barGroups[barKey]) or barSettings.height or settings.bar.height
+	-- For multi-node bars with vertical growth, calculate total group height.
+	local totalHeight = self:GetMultiNodeBarTotalHeight(barKey, barSettings, barGroups and barGroups[barKey])
+	if totalHeight and totalHeight > 0 then
+		return totalHeight
+	end
+
+	return barSettings.height or settings.bar.height
 end
 
 ---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
@@ -2858,6 +2922,7 @@ function TRB.Functions.Bar:BuildAnchorForest(settings, barGroups, collapseHidden
 					xOffset = anchor.xOffset,
 					yOffset = anchor.yOffset,
 					matchWidth = anchor.matchWidth,
+					matchHeight = anchor.matchHeight or false,
 				}
 			else
 				isRoot = true
@@ -3047,15 +3112,16 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					xOffset = groupSettings.xPos or 0,
 					yOffset = groupSettings.yPos or 0,
 					matchWidth = groupSettings.fullWidth or false,
+					matchHeight = false,
 				}
 			end
 		end
 		-- Ultimate fallback
 		if not anchor then
 			if config.defaultAnchorAbove then
-				anchor = { barKey = "primary", anchorPoint = "TOP", attachPoint = "BOTTOM", xOffset = 0, yOffset = 0, matchWidth = true }
+				anchor = { barKey = "primary", anchorPoint = "TOP", attachPoint = "BOTTOM", xOffset = 0, yOffset = 0, matchWidth = true, matchHeight = false }
 			else
-				anchor = { barKey = "primary", anchorPoint = "BOTTOM", attachPoint = "TOP", xOffset = 0, yOffset = 0, matchWidth = true }
+				anchor = { barKey = "primary", anchorPoint = "BOTTOM", attachPoint = "TOP", xOffset = 0, yOffset = 0, matchWidth = true, matchHeight = false }
 			end
 		end
 	end
@@ -3109,28 +3175,14 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	local isVerticalFill = self:IsVerticalFill(groupSettings.fillDirection)
 
-	-- Match Width: match the anchor's width, center horizontally
+	-- Match Width: match the anchor's width while preserving anchor/attach points.
 	if anchor.matchWidth and anchor.barKey ~= "screen" then
-		groupWidth = self:ResolveBarWidth(settings, anchor.barKey)
-		anchorPoint = string.gsub(anchorPoint, "LEFT", "")
-		anchorPoint = string.gsub(anchorPoint, "RIGHT", "")
-		attachPoint = string.gsub(attachPoint, "LEFT", "")
-		attachPoint = string.gsub(attachPoint, "RIGHT", "")
-		if anchorPoint == "" then anchorPoint = "CENTER" end
-		if attachPoint == "" then attachPoint = "CENTER" end
-		xPos = 0
+		groupWidth = self:GetRenderedBarGroupWidth(anchorGroup) or self:ResolveBarWidth(settings, anchor.barKey)
 	end
 
-	-- Match Height: match the anchor's height, center vertically
+	-- Match Height: match the anchor's height while preserving anchor/attach points.
 	if anchor.matchHeight and anchor.barKey ~= "screen" then
-		groupHeight = self:ResolveBarHeight(settings, anchor.barKey)
-		anchorPoint = string.gsub(anchorPoint, "TOP", "")
-		anchorPoint = string.gsub(anchorPoint, "BOTTOM", "")
-		attachPoint = string.gsub(attachPoint, "TOP", "")
-		attachPoint = string.gsub(attachPoint, "BOTTOM", "")
-		if anchorPoint == "" then anchorPoint = "CENTER" end
-		if attachPoint == "" then attachPoint = "CENTER" end
-		yPos = 0
+		groupHeight = self:GetRenderedBarGroupHeight(anchorGroup) or self:ResolveBarHeight(settings, anchor.barKey)
 	end
 
 	if not anchor.matchWidth and not anchor.matchHeight and anchor.barKey == "screen" and config.rootEffectiveWidth then
@@ -3153,6 +3205,16 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		groupHeight = config.rootEffectiveHeight
 	end
 
+	if config.useApplyLayout then
+		local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
+		local activeNodeCount = targetGroup.nodeCount or nodes or 1
+		if isVertGrowth and not matchHeight then
+			groupHeight = ((groupSettings.height or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
+		elseif (not isVertGrowth) and not matchWidth then
+			groupWidth = ((groupSettings.width or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
+		end
+	end
+
 	-- Position the target container using the new anchor system
 	targetGroup.containerFrame:ClearAllPoints()
 	if isScreenRoot then
@@ -3170,10 +3232,11 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Use groupWidth for totalWidth: it has been resolved for matchWidth (parent's width),
 		-- screen-anchored root (rootEffectiveWidth/CDM), or per-node width (non-match case).
 
-		-- When CDM matching is active along the growth axis for a multi-node root,
-		-- force fullWidth so ApplyLayout stretches nodes to fill the matched dimension.
-		-- For horizontal growth the growth axis is width; for vertical it is height.
-		if (not isVertGrowth and config.cdmWidthMatched) or (isVertGrowth and config.cdmHeightMatched) then
+		-- When CDM width matching is active along the horizontal growth axis for a
+		-- multi-node root, force fullWidth so ApplyLayout stretches nodes to fill it.
+		-- Vertical growth only stretches via the bar's own matchHeight setting;
+		-- otherwise each node keeps its manually configured height.
+		if (not isVertGrowth) and config.cdmWidthMatched then
 			targetGroup.fullWidth = true
 		end
 
@@ -3406,6 +3469,158 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
 end
 
+---Applies layout to one non-primary anchored bar group.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barKey string
+---@param anchorGroup TRB.Classes.BarGroup?
+---@param applyAppearance boolean?
+function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barKey, anchorGroup, applyAppearance)
+	if settings == nil or barGroups == nil or barKey == nil or barKey == "primary" then
+		return
+	end
+
+	local barGroup = barGroups[barKey]
+	if barGroup == nil then
+		return
+	end
+
+	if barKey == "secondary" then
+		local secondaryMinMaxMode
+		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
+			secondaryMinMaxMode = "stepped"
+		end
+		self:ConstructSecondaryBarGroup(settings, anchorGroup, barGroup, applyAppearance, secondaryMinMaxMode)
+
+		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3 then
+			local sfNode = barGroup:GetNode(1)
+			if sfNode then
+				sfNode:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
+			end
+		end
+		return
+	end
+
+	if barKey == "health" then
+		self:ConstructHealthBarGroup(settings, anchorGroup, barGroup, applyAppearance)
+		return
+	end
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local barTypeDef = registry:Get(barKey)
+	if barTypeDef == nil then
+		return
+	end
+
+	local barSettings = settings.bars and settings.bars[barKey]
+	local defaultSettings = nil
+	if not barSettings then
+		defaultSettings = barTypeDef:GetDefaultDimensions()
+	end
+	local effectiveSettings = barSettings or defaultSettings or {}
+	effectiveSettings.width = effectiveSettings.width
+	effectiveSettings.height = effectiveSettings.height
+	effectiveSettings.border = effectiveSettings.border
+	effectiveSettings.spacing = effectiveSettings.spacing
+	effectiveSettings.fullWidth = effectiveSettings.fullWidth
+	effectiveSettings.relativeTo = effectiveSettings.relativeTo
+	effectiveSettings.xPos = effectiveSettings.xPos
+	effectiveSettings.yPos = effectiveSettings.yPos
+	effectiveSettings.fillDirection = effectiveSettings.fillDirection or (defaultSettings and defaultSettings.fillDirection) or barTypeDef.fillDirection or "leftRight"
+	effectiveSettings.growthDirection = effectiveSettings.growthDirection or (defaultSettings and defaultSettings.growthDirection) or barTypeDef.growthDirection or "leftRight"
+
+	local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[barKey]
+	local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, barKey)
+	local heightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, barKey)
+	local rootEffWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey]
+	local rootEffHeight = barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[barKey]
+	if not rootEffWidth and widthMatched then
+		local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, barKey)
+		local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, barKey)
+		rootEffWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
+	end
+	if not rootEffHeight and heightMatched then
+		local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, barKey)
+		local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, barKey)
+		rootEffHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
+	end
+
+	local effectiveNodeCount = barTypeDef.maxNodes or 1
+	if barTypeDef.nodeColors and colorSettings then
+		local enabledCount = barTypeDef:GetEnabledNodeCount(colorSettings)
+		if enabledCount > 0 then
+			effectiveNodeCount = enabledCount
+		end
+	end
+
+	---@type TRB.Classes.AnchoredBarGroupConfig
+	local config = {
+		settingsTable = effectiveSettings,
+		colorsTable = colorSettings,
+		nodeCount = effectiveNodeCount,
+		useApplyLayout = barTypeDef.isMultiNode and effectiveNodeCount > 1,
+		defaultAnchorAbove = true,
+		textures = {
+			bar = barKey .. "Bar",
+			border = barKey .. "Border",
+			background = barKey .. "Background"
+		},
+		colors = {
+			border = "border",
+			background = "background",
+			bar = "bar"
+		},
+		minMaxMode = barTypeDef.minMaxMode or "custom",
+		rootEffectiveWidth = rootEffWidth,
+		rootEffectiveHeight = rootEffHeight,
+		cdmWidthMatched = widthMatched,
+		cdmHeightMatched = heightMatched,
+	}
+
+	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
+	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
+	config.shouldInitiallyShow = barIsVisible
+
+	self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, applyAppearance)
+
+	if not barIsVisible then
+		barGroup:Hide()
+		barGroup:HideAllNodes()
+		if barGroup.containerFrame then
+			barGroup.containerFrame:SetHeight(0.001)
+			barGroup.containerFrame:SetWidth(0.001)
+		end
+	end
+end
+
+---Applies non-primary bar group layout in anchor-tree order.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param forest table<string, TRB.Classes.Settings.AnchorTreeNode>
+function TRB.Functions.Bar:ApplyAnchoredBarGroupsLayoutInTreeOrder(settings, barGroups, forest)
+	if settings == nil or barGroups == nil or forest == nil then
+		return
+	end
+
+	local function layoutNode(node)
+		if node.barKey ~= "primary" then
+			local anchorGroup
+			if node.anchor and node.anchor.barKey and node.anchor.barKey ~= "screen" then
+				anchorGroup = barGroups[node.anchor.barKey]
+			end
+			self:ApplyAnchoredBarGroupLayout(settings, barGroups, node.barKey, anchorGroup, false)
+		end
+
+		for _, child in ipairs(node.children or {}) do
+			layoutNode(child)
+		end
+	end
+
+	for _, rootNode in pairs(forest) do
+		layoutNode(rootNode)
+	end
+end
+
 ---Applies layout to all custom bar groups registered in the BarTypeRegistry
 ---Uses ConstructAnchoredBarGroup for consistent positioning with health bar and combo points
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -3420,89 +3635,9 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 	
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
-		local barSettings = settings.bars and settings.bars[key]
 		
 		-- Apply layout if bar group exists
 		if barGroup then
-			-- Always lay out the bar (even hidden ones) so SetPoint-based anchor frames
-			-- have valid dimensions. Other bars may be anchored to a hidden custom bar.
-			-- Get dimensions from settings or defaults from registry
-			local defaultSettings = nil
-			if not barSettings then
-				defaultSettings = barTypeDef:GetDefaultDimensions()
-			end
-			local effectiveSettings = barSettings or defaultSettings or {}
-			
-			-- Ensure effectiveSettings has required fields with defaults
-			effectiveSettings.width = effectiveSettings.width
-			effectiveSettings.height = effectiveSettings.height
-			effectiveSettings.border = effectiveSettings.border
-			effectiveSettings.spacing = effectiveSettings.spacing
-			effectiveSettings.fullWidth = effectiveSettings.fullWidth
-			effectiveSettings.relativeTo = effectiveSettings.relativeTo
-			effectiveSettings.xPos = effectiveSettings.xPos
-			effectiveSettings.yPos = effectiveSettings.yPos
-			effectiveSettings.fillDirection = effectiveSettings.fillDirection or (defaultSettings and defaultSettings.fillDirection) or barTypeDef.fillDirection or "leftRight"
-			effectiveSettings.growthDirection = effectiveSettings.growthDirection or (defaultSettings and defaultSettings.growthDirection) or barTypeDef.growthDirection or "leftRight"
-			
-			-- Get color settings
-			local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[key]
-			
-			-- Determine if anchor frame width/height matching is active for this custom bar
-			local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, key)
-			local heightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, key)
-			local rootEffWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[key]
-			local rootEffHeight = barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[key]
-			if not rootEffWidth and widthMatched then
-				-- Bar is not a forest root but has width matching; get anchor frame width directly
-				local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, key)
-				local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, key)
-				rootEffWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
-			end
-			if not rootEffHeight and heightMatched then
-				local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, key)
-				local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, key)
-				rootEffHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
-			end
-
-			-- Build config for ConstructAnchoredBarGroup
-			-- For multi-node bars with per-node enable/disable, use enabled count instead of maxNodes
-			local effectiveNodeCount = barTypeDef.maxNodes or 1
-			if barTypeDef.nodeColors and colorSettings then
-				local enabledCount = barTypeDef:GetEnabledNodeCount(colorSettings)
-				if enabledCount > 0 then
-					effectiveNodeCount = enabledCount
-				end
-			end
-
-			---@type TRB.Classes.AnchoredBarGroupConfig
-			local config = {
-				settingsTable = effectiveSettings,
-				colorsTable = colorSettings,
-				nodeCount = effectiveNodeCount,
-				useApplyLayout = barTypeDef.isMultiNode and effectiveNodeCount > 1,
-				defaultAnchorAbove = true, -- Custom bars default to above primary bar
-				textures = {
-					bar = key .. "Bar",
-					border = key .. "Border",
-					background = key .. "Background"
-				},
-				colors = {
-					border = "border",
-					background = "background",
-					bar = "bar"
-				},
-				minMaxMode = barTypeDef.minMaxMode or "custom",
-				rootEffectiveWidth = rootEffWidth,
-				rootEffectiveHeight = rootEffHeight,
-				cdmWidthMatched = widthMatched,
-				cdmHeightMatched = heightMatched,
-			}
-
-			local inEditMode = TRB.Functions.EditMode:IsInEditMode()
-			local barIsVisible = self:IsBarVisible(settings, key, inEditMode) and not self:IsBarTalentGatedHidden(key)
-			config.shouldInitiallyShow = barIsVisible
-			
 			-- Resolve the correct anchor group from settings
 			local anchor = self:GetBarAnchor(settings, key)
 			local anchorBarKey = (anchor and anchor.barKey) or "primary"
@@ -3512,22 +3647,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsLayout(settings, barGroups)
 			end
 			-- anchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
 
-			-- Call ConstructAnchoredBarGroup (layout only, appearance handled separately)
-			self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, false)
-
-			-- Hide the bar group and collapse its container after layout if not visible.
-			-- Layout is still needed so SetPoint-based anchors have valid frames, but
-			-- 0 height means children anchored to it slide together (no blank gap).
-			-- Uses IsBarVisible (settings-only) for construction-time collapse.
-			-- Runtime form-based collapse is handled by ProcessBars.
-			if not barIsVisible then
-				barGroup:Hide()
-				barGroup:HideAllNodes()
-				if barGroup.containerFrame then
-					barGroup.containerFrame:SetHeight(0.001)
-					barGroup.containerFrame:SetWidth(0.001)
-				end
-			end
+			-- Layout only; appearance is handled by ApplyCustomBarGroupsAppearance.
+			self:ApplyAnchoredBarGroupLayout(settings, barGroups, key, anchorGroup, false)
 		end
 	end
 end

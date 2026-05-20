@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, undefined-global
+﻿---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
@@ -5390,7 +5390,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	-- Match Width checkbox
 	controls.checkBoxes.primaryMatchWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barMatchWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.primaryMatchWidth
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
@@ -5407,10 +5407,10 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	-- Match Height checkbox
 	controls.checkBoxes.primaryMatchHeight = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barMatchHeight", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.primaryMatchHeight
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-50)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["MatchHeightTooltip"]
+	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(primaryAnchor.matchHeight or false)
 	f:SetEnabled(primaryAnchor.barKey ~= "screen")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(primaryAnchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
@@ -5970,7 +5970,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	-- Match Width checkbox
 	controls.checkBoxes[settingKey .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "MatchWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes[settingKey .. "MatchWidth"]
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
@@ -6005,10 +6005,10 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	-- Match Height checkbox
 	controls.checkBoxes[settingKey .. "MatchHeight"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "MatchHeight", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes[settingKey .. "MatchHeight"]
-	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-50)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["MatchHeightTooltip"]
+	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(anchor.matchHeight or false)
 	f:SetEnabled(anchor.barKey ~= "screen")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)
@@ -6472,7 +6472,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 
 		local a = EnsureAnchorBlock(barSettings)
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
-		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetValue(borderSize)
@@ -6494,7 +6494,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 
 		local a = EnsureAnchorBlock(barSettings)
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
-		local effectiveHeight = a.matchWidth and spec.bar.height or barSettings.height
+		local effectiveHeight = a.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, a.barKey) or barSettings.height
 		local maxBorderSize = math.min(math.floor(effectiveHeight / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidth / TRB.Data.constants.borderWidthFactor))
 		local borderSize = math.min(maxBorderSize, barSettings.border)
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
@@ -6545,7 +6545,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	yCoord = yCoord - 60
 	-- When matchWidth is checked, use anchor bar dimensions for border max
 	local effectiveWidthForBorder = anchor.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, anchor.barKey) or barSettings.width
-	local effectiveHeightForBorder = anchor.matchWidth and spec.bar.height or barSettings.height
+	local effectiveHeightForBorder = anchor.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, anchor.barKey) or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
 	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName),
 		0, maxBorderHeight, barSettings.border, 1, 0,
@@ -6689,7 +6689,7 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	-- Match Width checkbox
 	controls[barTypeDef.key .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls[barTypeDef.key .. "MatchWidth"]
-	f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord - 30)
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
@@ -6718,10 +6718,10 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 	-- Match Height checkbox
 	controls[barTypeDef.key .. "MatchHeight"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchHeight", parent, "ChatConfigCheckButtonTemplate")
 	f = controls[barTypeDef.key .. "MatchHeight"]
-	f:SetPoint("TOPLEFT", oUi.xCoord2 + oUi.xPadding, yCoord - 50)
-	getglobal(f:GetName() .. 'Text'):SetText(L["MatchHeight"])
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["MatchHeightTooltip"]
+	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(anchor.matchHeight or false)
 	f:SetEnabled(anchor.barKey ~= "screen")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(anchor.barKey ~= "screen" and GameFontHighlight or GameFontDisable)

@@ -266,7 +266,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public attachPoint string # Point on THIS bar that touches the anchor point
 ---@field public xOffset number # Horizontal pixel offset from the anchor point
 ---@field public yOffset number # Vertical pixel offset from the anchor point
----@field public matchWidth boolean # If true and fill is horizontal, bar width matches anchor's width; if true and fill is vertical, bar height matches anchor's height
+---@field public matchWidth boolean # If true, bar width matches anchor's width
+---@field public matchHeight boolean # If true, bar height matches anchor's height
 
 ---@class TRB.Classes.Settings.AnchorTreeNode
 ---@field public barKey string # Key of this bar
