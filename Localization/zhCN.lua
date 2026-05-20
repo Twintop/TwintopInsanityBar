@@ -2575,4 +2575,17 @@ if locale == "zhCN" then
     L["MonkMistweaverCheckboxVivify"] = "瞬发活血术时启用变色"
 	L["MonkMistweaverIndicatorVivaciousVivificationTooltip"] = "当凭借活力苏醒/净水奔流效果使活血术变为瞬发时，切换为此颜色。"
 	L["MonkMistweaverIndicatorVivaciousVivificationColor"] = "活血术为瞬发状态"
+
+	L["OverlayFullHeightCheckbox"] = "覆盖层是否也覆盖资源条框边框？"
+	L["OverlayFullHeightCheckboxTooltip"] = "启用后，该覆盖层将占用整个资源条高度，而非仅覆盖资源条内部区域。"
+	L["SecondaryPartialFillColorPicker"] = "次级%s填充颜色"
+	L["SecondaryPartialFillColorCheckbox"] = "为%s启用次级填充颜色？"
+	L["SecondaryPartialFillColorCheckboxTooltip"] = "勾选后，填充不完全的%s节点将使用该颜色，而非默认节点颜色。"
+	L["MageFrostCheckboxSameColorIcicles"] = "所有冰枪术统一使用最高阶颜色？"
+	L["HunterSurvivalCheckboxTipOfTheSpearSameColor"] = "所有利刃之矛增效统一使用最高阶颜色？"
+	L["WarlockDestructionBarTextVariable_castingFragments"] = "读条法术生成的灵魂碎片"
+	L["SecondaryCastingOverlayColorPicker"] = "次级%s施法覆盖层颜色"
+	L["SecondaryCastingOverlayCheckbox"] = "在%s上显示施法覆盖层？"
+	L["SecondaryCastingOverlayCheckboxTooltip"] = "勾选后，%s上会显示覆盖层，用于展示当前施法所产生的资源数值。"
+	L["SecondaryCastingOverlayTexture"] = "次级%s施法覆盖层材质"
 end
