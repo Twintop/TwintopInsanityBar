@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.5.8-release (2026-05-20)
+## General
+
+- [#327](#327) Allow bars to be oriented in vertical and horizontal orientations via new "Fill Direction" option. Left to Right/Right to Left are the default horizontal fill directions, and Top to Bottom/Bottom to Top are the new vertical fill directions. This is configurable on a per-bar/bar group basis.
+- [#327](#327) Allow multi-node bars to have their growth direction be configured independently of their fill direction via new "Growth Direction" option. This will allow bar groups like Warrior Defensives to have each bar on its own row.
+- [#327](#327) Add a new option to allow bars to match their anchor bar's (or frame's, for Edit Mode) height in addition to width.
+
+### Localization
+
+- [#753](#753) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+---
+
 # 12.0.5.7-release (2026-05-18)
 ## General
 
