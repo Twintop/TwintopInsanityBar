@@ -168,33 +168,6 @@ local anchorToLocalizedName = {
 	BOTTOMLEFT = L["PositionBottomLeft"], BOTTOM = L["PositionBottom"], BOTTOMRIGHT = L["PositionBottomRight"],
 }
 
--- Rotation mapping for growth direction: 90° CCW (horizontal → vertical)
-local rotateGrowthCCW = {
-	leftRight = "bottomTop",
-	rightLeft = "topBottom",
-	bottomTop = "rightLeft",
-	topBottom = "leftRight",
-}
-
--- Rotation mapping for growth direction: 90° CW (vertical → horizontal)
-local rotateGrowthCW = {
-	bottomTop = "leftRight",
-	topBottom = "rightLeft",
-	leftRight = "topBottom",
-	rightLeft = "bottomTop",
-}
-
-local growthDirectionToLabel
-do
-	-- Defer label resolution so L[] keys are only looked up once at init
-	growthDirectionToLabel = {
-		leftRight = L["GrowthDirectionLeftRight"],
-		rightLeft = L["GrowthDirectionRightLeft"],
-		bottomTop = L["GrowthDirectionBottomTop"],
-		topBottom = L["GrowthDirectionTopBottom"],
-	}
-end
-
 ---Rotates per-threshold icon override X/Y offsets for a 90° rotation between horizontal and vertical orientations.
 ---Global threshold icon offsets are always screen-space (horizontal/vertical) and are NOT rotated.
 ---@param spec table The spec settings
@@ -6162,20 +6135,6 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 				controls[hKey].EditBox:SetText(spec[settingKey].height)
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
-
-				-- Rotate growth direction for multi-node bars
-				local oldGrowth = spec[settingKey].growthDirection
-				if oldGrowth then
-					local rotateMap = isVert and rotateGrowthCCW or rotateGrowthCW
-					local newGrowth = rotateMap[oldGrowth]
-					if newGrowth then
-						spec[settingKey].growthDirection = newGrowth
-						local gdDropdown = controls[settingKey .. "GrowthDirectionDropdown"]
-						if gdDropdown then
-							gdDropdown:SetDefaultText(growthDirectionToLabel[newGrowth] or newGrowth)
-						end
-					end
-				end
 			end
 
 			ApplyAnchorLayout()
@@ -6790,19 +6749,6 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, cont
 				controls[hKey].EditBox:SetText(barSettings.height)
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
-
-				-- Rotate growth direction for multi-node bars
-				if barTypeDef.isMultiNode and barSettings.growthDirection then
-					local rotateMap = isVert and rotateGrowthCCW or rotateGrowthCW
-					local newGrowth = rotateMap[barSettings.growthDirection]
-					if newGrowth then
-						barSettings.growthDirection = newGrowth
-						local gdDropdown = controls[barTypeDef.key .. "GrowthDirectionDropdown"]
-						if gdDropdown then
-							gdDropdown:SetDefaultText(growthDirectionToLabel[newGrowth] or newGrowth)
-						end
-					end
-				end
 			end
 
 			if TRB.Frames.barGroups ~= nil then

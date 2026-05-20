@@ -2296,7 +2296,7 @@ function TRB.Functions.Bar:ApplyMultiNodeBarGroupLayout(settings, barGroups, bar
 	local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
 	local activeNodeCount = targetGroup.nodeCount or nodeCount or 1
 
-	targetGroup:SetLayout(nodeSpacing, fullWidth, self:GetOrientationFromFillDirection(groupSettings.fillDirection), growthDirection)
+	targetGroup:SetLayout(nodeSpacing, fullWidth, "HORIZONTAL", growthDirection)
 
 	if isVerticalGrowth and not matchHeight and not cdmHeightForced then
 		effectiveHeight = ((groupSettings.height or 0) * activeNodeCount) + (nodeSpacing * math.max(activeNodeCount - 1, 0))
