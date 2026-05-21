@@ -642,65 +642,56 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
--- ─────────────────────────────────────────────────────────────────────
--- Alphabetically-ordered class/spec table for the profile manager grid.
--- classToken is the uppercase token used with GetClassColor().
--- ─────────────────────────────────────────────────────────────────────
-local PROFILE_CLASSES_ALPHA = {
-	{classId=6,  className="deathknight", token="DEATHKNIGHT", locKey="DeathKnight",
-	 specs={{specId=1,specName="blood",       locKey="DeathKnightBlood"},
-	        {specId=2,specName="frost",       locKey="DeathKnightFrost"},
-	        {specId=3,specName="unholy",      locKey="DeathKnightUnholy"}}},
-	{classId=12, className="demonhunter",  token="DEMONHUNTER",  locKey="DemonHunter",
-	 specs={{specId=1,specName="havoc",       locKey="DemonHunterHavoc"},
-	        {specId=2,specName="vengeance",   locKey="DemonHunterVengeance"},
-	        {specId=3,specName="devourer",    locKey="DemonHunterDevourer"}}},
-	{classId=11, className="druid",        token="DRUID",        locKey="Druid",
-	 specs={{specId=1,specName="balance",     locKey="DruidBalance"},
-	        {specId=2,specName="feral",       locKey="DruidFeral"},
-	        {specId=3,specName="guardian",    locKey="DruidGuardian"},
-	        {specId=4,specName="restoration", locKey="DruidRestoration"}}},
-	{classId=13, className="evoker",       token="EVOKER",       locKey="Evoker",
-	 specs={{specId=1,specName="devastation",  locKey="EvokerDevastation"},
-	        {specId=2,specName="preservation", locKey="EvokerPreservation"},
-	        {specId=3,specName="augmentation", locKey="EvokerAugmentation"}}},
-	{classId=3,  className="hunter",       token="HUNTER",       locKey="Hunter",
-	 specs={{specId=1,specName="beastMastery", locKey="HunterBeastMastery"},
-	        {specId=2,specName="marksmanship", locKey="HunterMarksmanship"},
-	        {specId=3,specName="survival",     locKey="HunterSurvival"}}},
-	{classId=8,  className="mage",         token="MAGE",         locKey="Mage",
-	 specs={{specId=1,specName="arcane",      locKey="MageArcane"},
-	        {specId=2,specName="fire",        locKey="MageFire"},
-	        {specId=3,specName="frost",       locKey="MageFrost"}}},
-	{classId=10, className="monk",         token="MONK",         locKey="Monk",
-	 specs={{specId=1,specName="brewmaster",  locKey="MonkBrewmaster"},
-	        {specId=2,specName="mistweaver",  locKey="MonkMistweaver"},
-	        {specId=3,specName="windwalker",  locKey="MonkWindwalker"}}},
-	{classId=2,  className="paladin",      token="PALADIN",      locKey="Paladin",
-	 specs={{specId=1,specName="holy",        locKey="PaladinHoly"},
-	        {specId=2,specName="protection",  locKey="PaladinProtection"},
-	        {specId=3,specName="retribution", locKey="PaladinRetribution"}}},
-	{classId=5,  className="priest",       token="PRIEST",       locKey="Priest",
-	 specs={{specId=1,specName="discipline",  locKey="PriestDiscipline"},
-	        {specId=2,specName="holy",        locKey="PriestHoly"},
-	        {specId=3,specName="shadow",      locKey="PriestShadow"}}},
-	{classId=4,  className="rogue",        token="ROGUE",        locKey="Rogue",
-	 specs={{specId=1,specName="assassination",locKey="RogueAssassination"},
-	        {specId=2,specName="outlaw",      locKey="RogueOutlaw"},
-	        {specId=3,specName="subtlety",    locKey="RogueSubtlety"}}},
-	{classId=7,  className="shaman",       token="SHAMAN",       locKey="Shaman",
-	 specs={{specId=1,specName="elemental",   locKey="ShamanElemental"},
-	        {specId=2,specName="enhancement", locKey="ShamanEnhancement"},
-	        {specId=3,specName="restoration", locKey="ShamanRestoration"}}},
-	{classId=9,  className="warlock",      token="WARLOCK",      locKey="Warlock",
-	 specs={{specId=1,specName="affliction",  locKey="WarlockAffliction"},
-	        {specId=2,specName="demonology",  locKey="WarlockDemonology"},
-	        {specId=3,specName="destruction", locKey="WarlockDestruction"}}},
-	{classId=1,  className="warrior",      token="WARRIOR",      locKey="Warrior",
-	 specs={{specId=1,specName="arms",        locKey="WarriorArms"},
-	        {specId=2,specName="fury",        locKey="WarriorFury"},
-	        {specId=3,specName="protection",  locKey="WarriorProtection"}}},
+-- Localized labels for the profile/nav catalogs. Identity comes from
+-- TRB.Data.specRegistry; this table only keeps literal localization lookups.
+local PROFILE_LABELS_BY_CLASS = {
+	warrior = { classLabel = L["Warrior"], specs = { arms = { label = L["WarriorArms"], fullLabel = L["WarriorArmsFull"] }, fury = { label = L["WarriorFury"], fullLabel = L["WarriorFuryFull"] }, protection = { label = L["WarriorProtection"], fullLabel = L["WarriorProtectionFull"] } } },
+	paladin = { classLabel = L["Paladin"], specs = { holy = { label = L["PaladinHoly"], fullLabel = L["PaladinHolyFull"] }, protection = { label = L["PaladinProtection"], fullLabel = L["PaladinProtectionFull"] }, retribution = { label = L["PaladinRetribution"], fullLabel = L["PaladinRetributionFull"] } } },
+	hunter = { classLabel = L["Hunter"], specs = { beastMastery = { label = L["HunterBeastMastery"], fullLabel = L["HunterBeastMasteryFull"] }, marksmanship = { label = L["HunterMarksmanship"], fullLabel = L["HunterMarksmanshipFull"] }, survival = { label = L["HunterSurvival"], fullLabel = L["HunterSurvivalFull"] } } },
+	rogue = { classLabel = L["Rogue"], specs = { assassination = { label = L["RogueAssassination"], fullLabel = L["RogueAssassinationFull"] }, outlaw = { label = L["RogueOutlaw"], fullLabel = L["RogueOutlawFull"] }, subtlety = { label = L["RogueSubtlety"], fullLabel = L["RogueSubtletyFull"] } } },
+	priest = { classLabel = L["Priest"], specs = { discipline = { label = L["PriestDiscipline"], fullLabel = L["PriestDisciplineFull"] }, holy = { label = L["PriestHoly"], fullLabel = L["PriestHolyFull"] }, shadow = { label = L["PriestShadow"], fullLabel = L["PriestShadowFull"] } } },
+	deathknight = { classLabel = L["DeathKnight"], specs = { blood = { label = L["DeathKnightBlood"], fullLabel = L["DeathKnightBloodFull"] }, frost = { label = L["DeathKnightFrost"], fullLabel = L["DeathKnightFrostFull"] }, unholy = { label = L["DeathKnightUnholy"], fullLabel = L["DeathKnightUnholyFull"] } } },
+	shaman = { classLabel = L["Shaman"], specs = { elemental = { label = L["ShamanElemental"], fullLabel = L["ShamanElementalFull"] }, enhancement = { label = L["ShamanEnhancement"], fullLabel = L["ShamanEnhancementFull"] }, restoration = { label = L["ShamanRestoration"], fullLabel = L["ShamanRestorationFull"] } } },
+	mage = { classLabel = L["Mage"], specs = { arcane = { label = L["MageArcane"], fullLabel = L["MageArcaneFull"] }, fire = { label = L["MageFire"], fullLabel = L["MageFireFull"] }, frost = { label = L["MageFrost"], fullLabel = L["MageFrostFull"] } } },
+	warlock = { classLabel = L["Warlock"], specs = { affliction = { label = L["WarlockAffliction"], fullLabel = L["WarlockAfflictionFull"] }, demonology = { label = L["WarlockDemonology"], fullLabel = L["WarlockDemonologyFull"] }, destruction = { label = L["WarlockDestruction"], fullLabel = L["WarlockDestructionFull"] } } },
+	monk = { classLabel = L["Monk"], specs = { brewmaster = { label = L["MonkBrewmaster"], fullLabel = L["MonkBrewmasterFull"] }, mistweaver = { label = L["MonkMistweaver"], fullLabel = L["MonkMistweaverFull"] }, windwalker = { label = L["MonkWindwalker"], fullLabel = L["MonkWindwalkerFull"] } } },
+	druid = { classLabel = L["Druid"], specs = { balance = { label = L["DruidBalance"], fullLabel = L["DruidBalanceFull"] }, feral = { label = L["DruidFeral"], fullLabel = L["DruidFeralFull"] }, guardian = { label = L["DruidGuardian"], fullLabel = L["DruidGuardianFull"] }, restoration = { label = L["DruidRestoration"], fullLabel = L["DruidRestorationFull"] } } },
+	demonhunter = { classLabel = L["DemonHunter"], specs = { havoc = { label = L["DemonHunterHavoc"], fullLabel = L["DemonHunterHavocFull"] }, vengeance = { label = L["DemonHunterVengeance"], fullLabel = L["DemonHunterVengeanceFull"] }, devourer = { label = L["DemonHunterDevourer"], fullLabel = L["DemonHunterDevourerFull"] } } },
+	evoker = { classLabel = L["Evoker"], specs = { devastation = { label = L["EvokerDevastation"], fullLabel = L["EvokerDevastationFull"] }, preservation = { label = L["EvokerPreservation"], fullLabel = L["EvokerPreservationFull"] }, augmentation = { label = L["EvokerAugmentation"], fullLabel = L["EvokerAugmentationFull"] } } },
 }
+
+local function BuildProfileClassCatalog()
+	local catalog = {}
+	for _, classEntry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
+		local classLabels = PROFILE_LABELS_BY_CLASS[classEntry.className]
+		if classLabels ~= nil then
+			local classDef = {
+				classId = classEntry.classId,
+				className = classEntry.className,
+				token = classEntry.classToken,
+				classLabel = classLabels.classLabel,
+				specs = {},
+			}
+			for _, specEntry in ipairs(classEntry.specs) do
+				local specLabels = classLabels.specs[specEntry.specName]
+				if specLabels ~= nil then
+					table.insert(classDef.specs, {
+						specId = specEntry.specId,
+						specName = specEntry.specName,
+						compositeKey = specEntry.compositeKey,
+						specLabel = specLabels.label,
+						specFullLabel = specLabels.fullLabel,
+					})
+				end
+			end
+			table.insert(catalog, classDef)
+		end
+	end
+	table.sort(catalog, function(a, b) return a.classLabel < b.classLabel end)
+	return catalog
+end
+
+local PROFILE_CLASSES_ALPHA = BuildProfileClassCatalog()
 
 -- Row and layout constants for the profile manager grid.
 local IE_HEADER_H  = 22  -- column-header row height
@@ -1057,7 +1048,7 @@ local function ConstructImportExportPanel()
 		end
 		frame:SetScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetText(tooltipText, nil, nil, nil, nil, true)
+			GameTooltip:SetText(tooltipText, 1, 1, 1, nil, true)
 			GameTooltip:Show()
 		end)
 		frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1182,7 +1173,7 @@ local function ConstructImportExportPanel()
 		if classDef == nil then return 0 end
 		local className  = classDef.className
 		local classToken = classDef.token
-		local classLabel = L[classDef.locKey]
+		local classLabel = classDef.classLabel
 
 		local _, _, _, classColorHex = GetClassColor(classToken)
 		local colStr = classColorHex and ("|c" .. classColorHex) or "|cffffffff"
@@ -1224,7 +1215,7 @@ local function ConstructImportExportPanel()
 			local sDelBtn = BuildDeleteButton(specRow, SPEC_DEL_X, -2)
 			local sExpBtn = BuildExportButton(specRow, SPEC_EXP_X, -2)
 			local sCb = BuildCheckbox(specRow, SPEC_CB_X, -2)
-			local specLabel = L[spec.locKey]
+			local specLabel = spec.specLabel
 			SetButtonTooltip(sDelBtn, string.format(L["ProfileManagerDeleteSpecTooltipFormat"], specLabel, classLabel))
 			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
 			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
@@ -1236,7 +1227,7 @@ local function ConstructImportExportPanel()
 				end
 			end
 			local sLbl = BuildLabel(specRow, SPEC_LBL_X, -2,
-				IE_COL_W - SPEC_LBL_X - 4, L[spec.locKey])
+				IE_COL_W - SPEC_LBL_X - 4, specLabel)
 
 			local key = className .. "_" .. spec.specName
 			specRowData[key] = {
@@ -1842,7 +1833,7 @@ local function ConstructProfileDefaultsPanel()
 	-- Per-class section with one row per spec, ordered alphabetically by class name.
 	for _, classDef in ipairs(PROFILE_CLASSES_ALPHA) do
 		controls["classHeader_" .. classDef.className] = BuildProfileDefaultsClassHeader(
-			parent, yCoord, classDef.token, classDef.className, L[classDef.locKey])
+			parent, yCoord, classDef.token, classDef.className, classDef.classLabel)
 		yCoord = yCoord - 28
 
 		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
@@ -1853,7 +1844,7 @@ local function ConstructProfileDefaultsPanel()
 				specIconId = iconId
 			end
 			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
-				parent, yCoord, L[specDef.locKey .. "Full"],
+				parent, yCoord, specDef.specFullLabel,
 				"spec", classDef.className, specDef.specName,
 				specIconId, false)
 		end
@@ -2033,97 +2024,27 @@ end
 --- Exposed on TRB.Data so other modules (OptionsUi copy menus, etc.) can reuse it
 --- instead of duplicating class/spec metadata.
 ---@type {classKey: string, classLabel: string, specs: {compositeKey: string, specLabel: string}[]}[]
-TRB.Data.allClassSpecs = {
-	{ classKey = "warrior", classLabel = L["Warrior"], specs = {
-		{ compositeKey = "warrior_arms", specLabel = L["WarriorArmsFull"] },
-		{ compositeKey = "warrior_fury", specLabel = L["WarriorFuryFull"] },
-		{ compositeKey = "warrior_protection", specLabel = L["WarriorProtectionFull"] },
-	}},
-	{ classKey = "paladin", classLabel = L["Paladin"], specs = {
-		{ compositeKey = "paladin_holy", specLabel = L["PaladinHolyFull"] },
-		{ compositeKey = "paladin_protection", specLabel = L["PaladinProtectionFull"] },
-		{ compositeKey = "paladin_retribution", specLabel = L["PaladinRetributionFull"] },
-	}},
-	{ classKey = "hunter", classLabel = L["Hunter"], specs = {
-		{ compositeKey = "hunter_beastMastery", specLabel = L["HunterBeastMasteryFull"] },
-		{ compositeKey = "hunter_marksmanship", specLabel = L["HunterMarksmanshipFull"] },
-		{ compositeKey = "hunter_survival", specLabel = L["HunterSurvivalFull"] },
-	}},
-	{ classKey = "rogue", classLabel = L["Rogue"], specs = {
-		{ compositeKey = "rogue_assassination", specLabel = L["RogueAssassinationFull"] },
-		{ compositeKey = "rogue_outlaw", specLabel = L["RogueOutlawFull"] },
-		{ compositeKey = "rogue_subtlety", specLabel = L["RogueSubtletyFull"] },
-	}},
-	{ classKey = "priest", classLabel = L["Priest"], specs = {
-		{ compositeKey = "priest_discipline", specLabel = L["PriestDisciplineFull"] },
-		{ compositeKey = "priest_holy", specLabel = L["PriestHolyFull"] },
-		{ compositeKey = "priest_shadow", specLabel = L["PriestShadowFull"] },
-	}},
-	{ classKey = "deathknight", classLabel = L["DeathKnight"], specs = {
-		{ compositeKey = "deathknight_blood", specLabel = L["DeathKnightBloodFull"] },
-		{ compositeKey = "deathknight_frost", specLabel = L["DeathKnightFrostFull"] },
-		{ compositeKey = "deathknight_unholy", specLabel = L["DeathKnightUnholyFull"] },
-	}},
-	{ classKey = "shaman", classLabel = L["Shaman"], specs = {
-		{ compositeKey = "shaman_elemental", specLabel = L["ShamanElementalFull"] },
-		{ compositeKey = "shaman_enhancement", specLabel = L["ShamanEnhancementFull"] },
-		{ compositeKey = "shaman_restoration", specLabel = L["ShamanRestorationFull"] },
-	}},
-	{ classKey = "mage", classLabel = L["Mage"], specs = {
-		{ compositeKey = "mage_arcane", specLabel = L["MageArcaneFull"] },
-		{ compositeKey = "mage_fire", specLabel = L["MageFireFull"] },
-		{ compositeKey = "mage_frost", specLabel = L["MageFrostFull"] },
-	}},
-	{ classKey = "warlock", classLabel = L["Warlock"], specs = {
-		{ compositeKey = "warlock_affliction", specLabel = L["WarlockAfflictionFull"] },
-		{ compositeKey = "warlock_demonology", specLabel = L["WarlockDemonologyFull"] },
-		{ compositeKey = "warlock_destruction", specLabel = L["WarlockDestructionFull"] },
-	}},
-	{ classKey = "monk", classLabel = L["Monk"], specs = {
-		{ compositeKey = "monk_brewmaster", specLabel = L["MonkBrewmasterFull"] },
-		{ compositeKey = "monk_mistweaver", specLabel = L["MonkMistweaverFull"] },
-		{ compositeKey = "monk_windwalker", specLabel = L["MonkWindwalkerFull"] },
-	}},
-	{ classKey = "druid", classLabel = L["Druid"], specs = {
-		{ compositeKey = "druid_balance", specLabel = L["DruidBalanceFull"] },
-		{ compositeKey = "druid_feral", specLabel = L["DruidFeralFull"] },
-		{ compositeKey = "druid_guardian", specLabel = L["DruidGuardianFull"] },
-		{ compositeKey = "druid_restoration", specLabel = L["DruidRestorationFull"] },
-	}},
-	{ classKey = "demonhunter", classLabel = L["DemonHunter"], specs = {
-		{ compositeKey = "demonhunter_havoc", specLabel = L["DemonHunterHavocFull"] },
-		{ compositeKey = "demonhunter_vengeance", specLabel = L["DemonHunterVengeanceFull"] },
-		{ compositeKey = "demonhunter_devourer", specLabel = L["DemonHunterDevourerFull"] },
-	}},
-	{ classKey = "evoker", classLabel = L["Evoker"], specs = {
-		{ compositeKey = "evoker_devastation", specLabel = L["EvokerDevastationFull"] },
-		{ compositeKey = "evoker_preservation", specLabel = L["EvokerPreservationFull"] },
-		{ compositeKey = "evoker_augmentation", specLabel = L["EvokerAugmentationFull"] },
-	}},
-}
-
---- Mapping from lowercase className to PascalCase options module key (e.g., TRB.Options.DeathKnight)
-local CLASS_OPTIONS_MODULE = {
-	deathknight = "DeathKnight",
-	demonhunter = "DemonHunter",
-	druid = "Druid",
-	evoker = "Evoker",
-	hunter = "Hunter",
-	mage = "Mage",
-	monk = "Monk",
-	paladin = "Paladin",
-	priest = "Priest",
-	rogue = "Rogue",
-	shaman = "Shaman",
-	warlock = "Warlock",
-	warrior = "Warrior",
-}
+TRB.Data.allClassSpecs = {}
+for _, classDef in ipairs(PROFILE_CLASSES_ALPHA) do
+	local specs = {}
+	for _, specDef in ipairs(classDef.specs) do
+		table.insert(specs, {
+			compositeKey = specDef.compositeKey,
+			specLabel = specDef.specFullLabel,
+		})
+	end
+	table.insert(TRB.Data.allClassSpecs, {
+		classKey = classDef.className,
+		classLabel = classDef.classLabel,
+		specs = specs,
+	})
+end
 
 ---Lazily build all options panels for a class.
 ---Ensures specCache entries and settings exist, then calls the class's ConstructOptionsPanel.
 ---@param classKey string # Lowercase class key (e.g., "warrior")
 function TRB.Options:BuildClassPanels(classKey)
-	local moduleKey = CLASS_OPTIONS_MODULE[classKey]
+	local moduleKey = TRB.Functions.Character:GetClassModuleName(classKey)
 	if not moduleKey or not TRB.Options[moduleKey] or not TRB.Options[moduleKey].ConstructOptionsPanel then
 		return
 	end

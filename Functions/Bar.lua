@@ -2434,6 +2434,34 @@ function TRB.Functions.Bar:ResolveBarHeight(settings, barKey, visited)
 	return barSettings.height or settings.bar.height
 end
 
+---Maps a settings key to its runtime bar key.
+---@param settingKey string
+---@return string barKey
+function TRB.Functions.Bar:GetBarKeyFromSettingsKey(settingKey)
+	if settingKey == "bar" then
+		return "primary"
+	elseif settingKey == "comboPoints" then
+		return "secondary"
+	elseif settingKey == "healthBar" then
+		return "health"
+	end
+	return settingKey
+end
+
+---Maps a runtime bar key to its top-level settings key when one exists.
+---@param barKey string
+---@return string settingKey
+function TRB.Functions.Bar:GetSettingsKeyFromBarKey(barKey)
+	if barKey == "primary" then
+		return "bar"
+	elseif barKey == "secondary" then
+		return "comboPoints"
+	elseif barKey == "health" then
+		return "healthBar"
+	end
+	return barKey
+end
+
 ---Gets the visibility key for a bar key (maps bar keys to displayBar sub-keys).
 ---@param barKey string
 ---@return string

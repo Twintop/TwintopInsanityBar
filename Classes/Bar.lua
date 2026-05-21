@@ -1493,25 +1493,7 @@ end
 ---@return table<string, TRB.Classes.BarTypeDefinition> # Map of key -> definition for this spec's custom bars
 function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 	local result = {}
-	
-	-- Get the class name from classId
-	local classNames = {
-		[1] = "Warrior",
-		[2] = "Paladin",
-		[3] = "Hunter",
-		[4] = "Rogue",
-		[5] = "Priest",
-		[6] = "DeathKnight",
-		[7] = "Shaman",
-		[8] = "Mage",
-		[9] = "Warlock",
-		[10] = "Monk",
-		[11] = "Druid",
-		[12] = "DemonHunter",
-		[13] = "Evoker"
-	}
-	
-	local className = classNames[classId]
+	local className = TRB.Functions.Character:GetClassModuleName(classId)
 	if not className then
 		return result
 	end

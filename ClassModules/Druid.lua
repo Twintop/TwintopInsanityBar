@@ -407,13 +407,36 @@ function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
+---@param specId integer|nil
+---@return TRB.Data.SpecRegistryEntry|nil
+local function GetDruidSpecEntry(specId)
+	if specId == nil then
+		return nil
+	end
+	return TRB.Functions.Character:GetSpecRegistryEntryFromIds(11, specId)
+end
+
+---@param specId integer|nil
+---@return string|nil
+local function GetDruidSpecName(specId)
+	local entry = GetDruidSpecEntry(specId)
+	return entry and entry.specName or nil
+end
+
+---@param specId integer|nil
+---@return string|nil
+local function GetDruidCompositeKey(specId)
+	local entry = GetDruidSpecEntry(specId)
+	return entry and entry.compositeKey or nil
+end
+
 ---Returns which spec's settings should be used for the given form
 ---@param specId integer The current active spec ID
 ---@param formName string The current shapeshift form name
 ---@return integer specIdForSettings The spec ID whose settings should be used
 local function GetFormSpecForSettings(specId, formName)
 	-- Check if form switching is enabled for the active spec
-	local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[specId]
+	local activeSpecName = GetDruidSpecName(specId)
 	local settings = TRB.Data.settings.druid[activeSpecName]
 	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
 		return specId -- Return active spec, don't switch based on form
@@ -494,8 +517,8 @@ local function UpdateShapeshiftForm()
 		local oldDisplaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, oldForm or "humanoid")
 		local newDisplaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, TRB.Data.character.currentShapeshiftForm)
 		if oldDisplaySpecId ~= newDisplaySpecId then
-			local compositeKeys = { [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" }
-			local newSettings = TRB.Data.specCache[compositeKeys[newDisplaySpecId]] and TRB.Data.specCache[compositeKeys[newDisplaySpecId]].settings
+			local newCompositeKey = GetDruidCompositeKey(newDisplaySpecId)
+			local newSettings = newCompositeKey and TRB.Data.specCache[newCompositeKey] and TRB.Data.specCache[newCompositeKey].settings
 			if newSettings then
 				Bar:ApplyBarGroupsLayout(newSettings, TRB.Frames.barGroups)
 				-- Clear thresholds so they will be recreated by ConstructPrimaryGeneric using the
@@ -1145,13 +1168,13 @@ local function RefreshLookupData_Unified()
 	
 	-- Determine which form's settings to use for coloring
 	local formSpecId = GetFormSpecForSettings(specId, currentForm)
-	local formSpecName = ({ [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" })[formSpecId]
-	local sharedSettings = TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
+	local formSpecName = GetDruidCompositeKey(formSpecId)
+	local sharedSettings = formSpecName and TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
 	
 	if not sharedSettings then
 		-- Fallback to active spec settings
 		formSpecName = TRB.Data.character.compositeKey
-		sharedSettings = TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
+		sharedSettings = formSpecName and TRB.Data.specCache[formSpecName] and TRB.Data.specCache[formSpecName].settings
 	end
 	
 	if not sharedSettings then
@@ -1576,8 +1599,11 @@ local function UpdateResourceBar()
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 	local activeSpecId = TRB.Data.character.specId
 	local displaySpecId = GetFormSpecForSettings(activeSpecId, currentForm)
-	local displaySpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[displaySpecId]
-	local displayCompositeKey = ({ [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" })[displaySpecId]
+	local displaySpecName = GetDruidSpecName(displaySpecId)
+	local displayCompositeKey = GetDruidCompositeKey(displaySpecId)
+	if displaySpecName == nil or displayCompositeKey == nil then
+		return
+	end
 	
 	-- Determine which resource to display based on displaySpecId (respects enableFormSwitching setting)
 	local displayResource = snapshotData.attributes.resource -- default
@@ -1714,13 +1740,13 @@ local function UpdateResourceBar()
 		-- or when in cat form via form switching.
 		local showCp = false
 		local cpSettings = nil
-		local activeSpecName = ({ [1] = "balance", [2] = "feral", [3] = "guardian", [4] = "restoration" })[activeSpecId]
+		local activeSpecName = GetDruidSpecName(activeSpecId)
 		-- Visibility flags (displayBar.secondary.neverShow, displayBar.showComboPoints)
 		-- must be read from the specCache so that the active spec's "Use global settings"
 		-- toggle is honored. Reading from raw classSettings ignores the global merge and
 		-- shows incorrect visibility (e.g., Guardian useGlobal=on + global=Always but
 		-- Guardian's own raw setting=Never would incorrectly hide combo points).
-		local activeCacheKey = activeSpecName and ("druid_" .. activeSpecName)
+		local activeCacheKey = GetDruidCompositeKey(activeSpecId)
 		local activeSpecCache = activeCacheKey and TRB.Data.specCache and TRB.Data.specCache[activeCacheKey]
 		local activeVisSettings = activeSpecCache and activeSpecCache.settings
 		-- Color/dimension config (cpSettings) intentionally still uses raw spec settings;
@@ -3650,8 +3676,7 @@ function TRB.Functions.Class:GetActiveDisplayCompositeKey()
 		TRB.Data.character.specId,
 		TRB.Data.character.currentShapeshiftForm or "humanoid"
 	)
-	local compositeKeys = { [1] = "druid_balance", [2] = "druid_feral", [3] = "druid_guardian", [4] = "druid_restoration" }
-	return compositeKeys[displaySpecId] or TRB.Data.character.compositeKey
+	return GetDruidCompositeKey(displaySpecId) or TRB.Data.character.compositeKey
 end
 
 function TRB.Functions.Class:CheckCharacter()
