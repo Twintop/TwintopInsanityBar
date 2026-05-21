@@ -1907,6 +1907,8 @@ function TRB.Functions.Class:CheckCharacter()
 			if maxComboPoints > 0 then
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
+				barGroups.secondary:Show()
+				barGroups.secondary:ShowNodes(maxComboPoints)
 				if maxComboPointsChanged then
 					Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 				end
