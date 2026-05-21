@@ -218,6 +218,20 @@ local function FillSpellData_Survival()
 	TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCache.hunter_survival)
 end
 
+local function GetSurvivalTipOfTheSpearMaxStacks()
+	local spellsData = TRB.Data.spellsData
+	if spellsData == nil or spellsData.spells == nil or talents == nil then
+		return 0
+	end
+
+	local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	if talents:IsTalentActive(spells.tipOfTheSpear) then
+		return spells.tipOfTheSpear.maxStacks or 0
+	end
+
+	return 0
+end
+
 local function CalculateAbilityResourceValue(resource, threshold)
 	local modifier = 1.0
 	if TRB.Data.character.specId == 2 then
@@ -256,14 +270,12 @@ local function ConstructResourceBar(settings)
 		return
 	end
 
-	-- Survival uses secondary bar (Tip of the Spear). maxResource2 must already be populated
-	-- by the snapshot pipeline (EventRegistration -> UpdateResourceValues) before this runs.
+	-- Survival uses secondary bar (Tip of the Spear). Seed the talent-gated node count
+	-- before layout so match-width calculations use the real rendered node count.
 	if barGroups and barGroups.secondary and TRB.Data.character.specId == 3 then
-		local maxStacks = TRB.Data.character.maxResource2
-		if maxStacks == nil or maxStacks == 0 then
-			maxStacks = barGroups.secondary.maxNodes or 3
-		end
+		local maxStacks = GetSurvivalTipOfTheSpearMaxStacks()
 		TRB.Data.character.maxResource2 = maxStacks
+		barGroups.secondary.lastRebuildNodeCount = maxStacks
 	end
 
 	-- Create thresholds on the BarNode (new system)
@@ -284,8 +296,12 @@ local function ConstructResourceBar(settings)
 	-- Survival uses secondary bar (Tip of the Spear); BM/MM do not.
 	if barGroups and barGroups.secondary then
 		if TRB.Data.character.specId == 3 then
-			local maxStacks = TRB.Data.character.maxResource2 or 3
-			barGroups.secondary:RebuildNodes(maxStacks, settings)
+			local maxStacks = TRB.Data.character.maxResource2 or 0
+			if maxStacks > 0 then
+				barGroups.secondary:RebuildNodes(maxStacks, settings)
+			else
+				barGroups.secondary:Hide()
+			end
 		else
 			barGroups.secondary:Hide()
 		end
@@ -1876,26 +1892,26 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.compositeKey = "hunter_survival"
 
 		-- Tip of the Spear: talent-gated secondary resource
-		local spellsData = TRB.Data.spellsData
-		if spellsData and spellsData.spells and talents then
-			local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
-			local maxComboPoints = 0
-			if talents:IsTalentActive(spells.tipOfTheSpear) then
-				maxComboPoints = spells.tipOfTheSpear.maxStacks
-			end
-			local barGroups = TRB.Frames.barGroups
-			local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
-				if barGroups and barGroups.secondary and sharedSettings then
-					if maxComboPoints > 0 then
-						barGroups.secondary:Show()
-						Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
-						Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
-					else
-						barGroups.secondary:Hide()
-					end
+		local maxComboPoints = GetSurvivalTipOfTheSpearMaxStacks()
+		local barGroups = TRB.Frames.barGroups
+		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey] and TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local maxComboPointsChanged = maxComboPoints ~= TRB.Data.character.maxResource2
+
+		if maxComboPointsChanged then
+			TRB.Data.character.maxResource2 = maxComboPoints
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
+
+		if barGroups and barGroups.secondary and sharedSettings then
+			barGroups.secondary.lastRebuildNodeCount = maxComboPoints
+			if maxComboPoints > 0 then
+				barGroups.secondary:SetMaxNodes(maxComboPoints)
+				Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
+				if maxComboPointsChanged then
+					Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 				end
+			else
+				barGroups.secondary:Hide()
 			end
 		end
 	end

@@ -95,19 +95,6 @@ local function GetAnchorPointDisplayName(point)
 	return anchorPointDisplayNames[point or "TOP"] or point or "TOP"
 end
 
----Maps a settings key (used by GenerateAncillaryBarDimensionsOptions) to its bar key
----(used by GetAvailableAnchorTargets, ValidateAnchorTree, etc.).
----@param settingKey string
----@return string barKey
-local function SettingKeyToBarKey(settingKey)
-	local map = {
-		bar = "primary",
-		comboPoints = "secondary",
-		healthBar = "health",
-	}
-	return map[settingKey] or settingKey
-end
-
 ---Applies sensible defaults when changing anchor target type (screen â†” bar).
 ---When transitioning between screen and bar anchoring, the existing offset/point values
 ---are meaningless for the new context, so reset them to useful defaults.
@@ -235,54 +222,21 @@ local function SwapSliderBounds(widthSlider, heightSlider)
 	heightSlider.MaxLabel:SetText(tostring(wMax))
 end
 
--- Mapping of all class names to their spec names for bulk global toggle iteration
-local allClassSpecs = {
-	deathknight = { "blood", "frost", "unholy" },
-	demonhunter = { "havoc", "vengeance", "devourer" },
-	druid = { "balance", "feral", "guardian", "restoration" },
-	evoker = { "devastation", "preservation", "augmentation" },
-	hunter = { "beastMastery", "marksmanship", "survival" },
-	mage = { "arcane", "fire", "frost" },
-	monk = { "brewmaster", "mistweaver", "windwalker" },
-	paladin = { "holy", "protection", "retribution" },
-	priest = { "discipline", "holy", "shadow" },
-	rogue = { "assassination", "outlaw", "subtlety" },
-	shaman = { "elemental", "enhancement", "restoration" },
-	warlock = { "affliction", "demonology", "destruction" },
-	warrior = { "arms", "fury", "protection" }
-}
-
--- Mapping from settings key to checkbox frame suffix
-local settingKeyToCheckboxSuffix = {
-	bar = "barDimensions",
-	comboPoints = "comboPoints",
-	healthBar = "healthBar",
-	healthBarColors = "healthBarColors",
-	textures = "textures",
-	displayBar = "displayBar",
-	thresholdIcons = "thresholdIcons",
-	thresholdColors = "thresholdColors",
-	displayText = "displayText",
-	textColors = "textColors",
-	precision = "precision",
-	globalBarText = "globalBarText"
-}
-
--- Mapping from lowercase class name to classId for frame name resolution
-local classNameToId = {
-	deathknight = 6,
-	demonhunter = 12,
-	druid = 11,
-	evoker = 13,
-	hunter = 3,
-	mage = 8,
-	monk = 10,
-	paladin = 2,
-	priest = 5,
-	rogue = 4,
-	shaman = 7,
-	warlock = 9,
-	warrior = 1
+-- Per-section global settings registry. These keys mirror the per-spec
+-- "Use Global" flags and the copy menu sections that operate on them.
+local globalSettingDefinitions = {
+	bar             = { checkboxSuffix = "barDimensions",   tabKey = "resourceBar",     sectionLabel = L["CopyMenuSection_bar"],             paths = { {"bar"} } },
+	comboPoints     = { checkboxSuffix = "comboPoints",     tabKey = "comboPointsBar",  sectionLabel = L["CopyMenuSection_comboPoints"],     paths = { {"comboPoints"} } },
+	healthBar       = { checkboxSuffix = "healthBar",       tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBar"],       paths = { {"healthBar"} } },
+	healthBarColors = { checkboxSuffix = "healthBarColors", tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
+	textures        = { checkboxSuffix = "textures",        tabKey = "barTextures",     sectionLabel = L["CopyMenuSection_textures"],        paths = { {"textures"} } },
+	displayBar      = { checkboxSuffix = "displayBar",      tabKey = "barVisibility",   sectionLabel = L["CopyMenuSection_displayBar"],      paths = { {"displayBar"} }, shapeSensitive = true },
+	thresholdIcons  = { checkboxSuffix = "thresholdIcons",  tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} }, shapeSensitive = true },
+	thresholdColors = { checkboxSuffix = "thresholdColors", tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} }, shapeSensitive = true },
+	displayText     = { checkboxSuffix = "displayText",     tabKey = "fontText",        sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
+	textColors      = { checkboxSuffix = "textColors",      tabKey = "fontText",        sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
+	precision       = { checkboxSuffix = "precision",       tabKey = "fontText",        sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
+	globalBarText   = { checkboxSuffix = "globalBarText",   tabKey = "barText",         sectionLabel = L["CopyMenuSection_globalBarText"],   paths = { {"displayText", "barText"} }, shapeSensitive = true },
 }
 
 ---Sets a checkbox to tristate visual mode
@@ -338,16 +292,14 @@ local function GetAllSpecsGlobalState(settingKey)
 	local allTrue = true
 	local allFalse = true
 
-	for className, specs in pairs(allClassSpecs) do
-		if global[className] then
-			for _, specName in ipairs(specs) do
-				if global[className][specName] and global[className][specName][settingKey] ~= nil then
-					if global[className][specName][settingKey] then
-						allFalse = false
-					else
-						allTrue = false
-					end
-				end
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		local className = entry.className
+		local specName = entry.specName
+		if global[className] and global[className][specName] and global[className][specName][settingKey] ~= nil then
+			if global[className][specName][settingKey] then
+				allFalse = false
+			else
+				allTrue = false
 			end
 		end
 	end
@@ -366,43 +318,33 @@ end
 ---@param value boolean # The value to set
 local function SetAllSpecsGlobalSetting(settingKey, value)
 	local global = TRB.Data.settings.core.global
-	local checkboxSuffix = settingKeyToCheckboxSuffix[settingKey]
+	local settingDef = globalSettingDefinitions[settingKey]
+	local checkboxSuffix = settingDef and settingDef.checkboxSuffix
 
 	-- Update settings for all class/specs
-	for className, specs in pairs(allClassSpecs) do
-		if global[className] then
-			for _, specName in ipairs(specs) do
-				if global[className][specName] and global[className][specName][settingKey] ~= nil then
-					global[className][specName][settingKey] = value
-				end
-			end
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		local className = entry.className
+		local specName = entry.specName
+		if global[className] and global[className][specName] and global[className][specName][settingKey] ~= nil then
+			global[className][specName][settingKey] = value
 		end
 	end
 
 	-- Update all existing per-spec checkboxes in the UI across ALL classes
 	if checkboxSuffix then
-		for className, specs in pairs(allClassSpecs) do
-			local classId = classNameToId[className]
-			if classId then
-				local capitalizedClassName, _ = TRB.Functions.Character:GetClassAndSpecializationNames(classId, nil)
-				for _, specName in ipairs(specs) do
-					local frameName = "TwintopResourceBar_" .. capitalizedClassName .. "_" .. specName .. "_useGlobal_" .. checkboxSuffix
-					local checkbox = _G[frameName]
-					if checkbox then
-						checkbox:SetChecked(value)
-					end
-				end
+		for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local frameName = "TwintopResourceBar_" .. entry.classToken .. "_" .. entry.specName .. "_useGlobal_" .. checkboxSuffix
+			local checkbox = _G[frameName]
+			if checkbox then
+				checkbox:SetChecked(value)
 			end
 		end
 	end
 
 	-- Refresh caches for all specs that have been initialized (specCache exists)
-	for className, specs in pairs(allClassSpecs) do
-		for _, specName in ipairs(specs) do
-			local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
-			if TRB.Data.specCache[compositeKey] then
-				TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
-			end
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		if TRB.Data.specCache[entry.compositeKey] then
+			TRB.Functions.Character:FillSpecializationCacheSettings(entry.className, entry.specName)
 		end
 	end
 
@@ -508,23 +450,6 @@ function TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(settingKey)
 	end
 end
 
----Mapping from per-spec global setting keys to the corresponding Global Options tab key.
----Used by BuildUseGlobalShortcutLink to navigate to the correct tab.
-local globalSettingKeyToTabKey = {
-	bar = "resourceBar",
-	comboPoints = "comboPointsBar",
-	healthBar = "healthBar",
-	healthBarColors = "healthBar",
-	textures = "barTextures",
-	displayBar = "barVisibility",
-	thresholdIcons = "thresholds",
-	thresholdColors = "thresholds",
-	displayText = "fontText",
-	textColors = "fontText",
-	precision = "fontText",
-	globalBarText = "barText",
-}
-
 ---Creates a teal hyperlink-style text button anchored to the right of a "Use global settings" checkbox.
 ---Clicking the link navigates to the Global Options panel and selects the corresponding tab.
 ---@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
@@ -615,37 +540,6 @@ local function GetSortedClassSpecs()
 	table.sort(sorted, function(a, b) return a.classLabel < b.classLabel end)
 	return sorted
 end
-
--- Per-section copy registry. `paths` is a list of dotted key-paths (as arrays)
--- that should be deep-copied between source and destination pieces. The
--- subtree shape mirrors what FillSpecializationCacheSettings reads for each
--- "Use Global" flag - the same fields that the global toggle would substitute
--- if it were checked.
-local globalSettingKeyCopyDef = {
-	bar             = { sectionLabel = L["CopyMenuSection_bar"],             paths = { {"bar"} } },
-	comboPoints     = { sectionLabel = L["CopyMenuSection_comboPoints"],     paths = { {"comboPoints"} } },
-	healthBar       = { sectionLabel = L["CopyMenuSection_healthBar"],       paths = { {"healthBar"} } },
-	healthBarColors = { sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
-	textures        = { sectionLabel = L["CopyMenuSection_textures"],        paths = { {"textures"} } },
-	displayBar      = { sectionLabel = L["CopyMenuSection_displayBar"],      paths = { {"displayBar"} } },
-	thresholdIcons  = { sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} } },
-	thresholdColors = { sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} } },
-	displayText     = { sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
-	textColors      = { sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
-	precision       = { sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
-	globalBarText   = { sectionLabel = L["CopyMenuSection_globalBarText"],   paths = { {"displayText", "barText"} } },
-}
-
--- Sections whose subtree shape differs between specs (e.g. bar text entries
--- reference spec-specific variables, threshold dictionaries reference
--- spec-specific spell IDs). Cross-class copies for these sections show an
--- additional warning in the confirmation popup.
-local globalSettingKeyShapeSensitive = {
-	displayBar    = true,
-	globalBarText = true,
-	thresholdIcons = true,
-	thresholdColors = true,
-}
 
 -- Returns the readable source piece for the given (scope, profile, class, spec).
 -- When profileName matches the resolved active profile (or is nil), the LIVE
@@ -753,12 +647,9 @@ local function RefreshAfterLiveCopy(destScope, destClassName, destSpecName)
 	local profiles = TRB.Functions.Profiles
 	if destScope == "core" then
 		-- Re-resolve every initialized spec because any of them may pull from core.
-		for className, specs in pairs(allClassSpecs) do
-			for _, specName in ipairs(specs) do
-				local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
-				if TRB.Data.specCache[compositeKey] then
-					TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
-				end
+		for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			if TRB.Data.specCache[entry.compositeKey] then
+				TRB.Functions.Character:FillSpecializationCacheSettings(entry.className, entry.specName)
 			end
 		end
 		profiles:WriteThrough("core")
@@ -829,7 +720,7 @@ local function EnsureCopyConfigPopupsRegistered()
 		if data == nil or data.settingKey == nil then
 			return
 		end
-		local def = globalSettingKeyCopyDef[data.settingKey]
+		local def = globalSettingDefinitions[data.settingKey]
 		if def == nil then
 			return
 		end
@@ -893,12 +784,13 @@ end
 local function PromptCopyConfirm(data)
 	EnsureCopyConfigPopupsRegistered()
 
-	local def = globalSettingKeyCopyDef[data.settingKey]
+	local def = globalSettingDefinitions[data.settingKey]
 	local sectionLabel = (def and def.sectionLabel) or data.settingKey
 	local srcLabel = FormatCopyTarget(data.srcScope, data.srcProfileName, data.srcClassName, data.srcSpecName)
 	local dstLabel = FormatCopyTarget(data.dstScope, data.dstProfileName, data.dstClassName, data.dstSpecName)
 
-	local crossClass = globalSettingKeyShapeSensitive[data.settingKey]
+	local crossClass = globalSettingDefinitions[data.settingKey]
+		and globalSettingDefinitions[data.settingKey].shapeSensitive
 		and data.srcScope == "spec" and data.dstScope == "spec"
 		and data.srcClassName ~= nil and data.dstClassName ~= nil
 		and data.srcClassName ~= data.dstClassName
@@ -1083,7 +975,7 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 		return
 	end
 	local profiles = TRB.Functions.Profiles
-	local def = globalSettingKeyCopyDef[settingKey]
+	local def = globalSettingDefinitions[settingKey]
 	local sectionLabel = (def and def.sectionLabel) or settingKey
 	local excludeKey = className .. ":" .. specName
 	local currentCoreProfileName = profiles:ResolveCoreProfileName() or profiles.DEFAULT_NAME
@@ -1165,9 +1057,9 @@ end
 ---@param checkbox CheckButton The "Use Global" checkbox to attach the button to
 ---@param classId integer The class ID of the destination spec
 ---@param specId integer The spec ID of the destination spec
----@param settingKey string A key from globalSettingKeyCopyDef
+---@param settingKey string A key from globalSettingDefinitions
 function TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(checkbox, classId, specId, settingKey)
-	if checkbox == nil or globalSettingKeyCopyDef[settingKey] == nil then
+	if checkbox == nil or globalSettingDefinitions[settingKey] == nil then
 		return nil
 	end
 	-- Bar Text section is intentionally excluded from the Copy menu.
@@ -1198,7 +1090,7 @@ end
 -- to `owner`. Source/destination semantics are inverted relative to the
 -- per-spec menu: pick one or push/pull from one spec at a time.
 local function ShowBulkGlobalCopyMenu(owner, settingKey)
-	local def = globalSettingKeyCopyDef[settingKey]
+	local def = globalSettingDefinitions[settingKey]
 	local sectionLabel = (def and def.sectionLabel) or settingKey
 
 	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
@@ -1250,9 +1142,9 @@ end
 
 -- Builds a "Copy..." button next to a Global-panel bulk-toggle checkbox.
 ---@param bulkCheckbox CheckButton The bulk-toggle checkbox to attach the button to
----@param settingKey string A key from globalSettingKeyCopyDef
+---@param settingKey string A key from globalSettingDefinitions
 function TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(bulkCheckbox, settingKey)
-	if bulkCheckbox == nil or globalSettingKeyCopyDef[settingKey] == nil then
+	if bulkCheckbox == nil or globalSettingDefinitions[settingKey] == nil then
 		return nil
 	end
 	-- Bar Text section is intentionally excluded from the Copy menu.
@@ -2368,33 +2260,13 @@ end
 -- Profile management dropdown (Phase 2B + 2C)
 -- ============================================================================
 
--- Maps the lowercase `className` used throughout the addon (e.g. "deathknight")
--- to the capitalized key under `TRB.Options` (e.g. "DeathKnight") that exposes
--- each class module's `LoadDefaultSettings` factory. Needed to resolve the
--- baseline-settings piece for a spec when the user picks "Use Baseline".
-local profileClassNameCapitalized = {
-	deathknight = "DeathKnight",
-	demonhunter = "DemonHunter",
-	druid = "Druid",
-	evoker = "Evoker",
-	hunter = "Hunter",
-	mage = "Mage",
-	monk = "Monk",
-	paladin = "Paladin",
-	priest = "Priest",
-	rogue = "Rogue",
-	shaman = "Shaman",
-	warlock = "Warlock",
-	warrior = "Warrior",
-}
-
 ---Returns a deep-copied spec piece from the class's LoadDefaultSettings, so
 ---"Use Baseline" gets a fresh default table not shared with runtime state.
 ---@param className string # lowercase
 ---@param specName string
 ---@return table?
 local function GetBaselineSpecPiece(className, specName)
-	local capitalized = profileClassNameCapitalized[className]
+	local capitalized = TRB.Functions.Character:GetClassModuleName(className)
 	if capitalized == nil then
 		return nil
 	end
@@ -5641,8 +5513,9 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		if globalSettingKeyToTabKey[globalSettingKey] then
-			TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, globalSettingKeyToTabKey[globalSettingKey])
+		local globalSettingDef = globalSettingDefinitions[globalSettingKey]
+		if globalSettingDef and globalSettingDef.tabKey then
+			TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, globalSettingDef.tabKey)
 		end
 		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
@@ -5852,7 +5725,7 @@ function TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, c
 	-- Anchor To dropdown + Match Width checkbox
 	yCoord = yCoord - 40
 
-	local thisBarKey = SettingKeyToBarKey(settingKey)
+	local thisBarKey = TRB.Functions.Bar:GetBarKeyFromSettingsKey(settingKey)
 	local anchorPoints = TRB.Data.constants.anchorPoints
 
 	-- Forward-declare dropdown variables referenced in callbacks

@@ -40,28 +40,12 @@ local containerAnchorFirstNodeLabelByResourceType = {
 	WhirlwindCharges = L["WhirlwindCharge1"],
 }
 
-local barTextClassNamesById = {
-	[1] = "Warrior",
-	[2] = "Paladin",
-	[3] = "Hunter",
-	[4] = "Rogue",
-	[5] = "Priest",
-	[6] = "DeathKnight",
-	[7] = "Shaman",
-	[8] = "Mage",
-	[9] = "Warlock",
-	[10] = "Monk",
-	[11] = "Druid",
-	[12] = "DemonHunter",
-	[13] = "Evoker"
-}
-
 local function GetSpecBarGroupConfig(classId, specId)
 	if classId == nil or specId == nil then
 		return nil
 	end
 
-	local className = barTextClassNamesById[classId]
+	local className = TRB.Functions.Character:GetClassModuleName(classId)
 	if className == nil then
 		return nil
 	end
