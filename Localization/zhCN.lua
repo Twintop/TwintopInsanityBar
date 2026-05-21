@@ -2588,4 +2588,24 @@ if locale == "zhCN" then
 	L["SecondaryCastingOverlayCheckbox"] = "在%s上显示施法覆盖层？"
 	L["SecondaryCastingOverlayCheckboxTooltip"] = "勾选后，%s上会显示覆盖层，用于展示当前施法所产生的资源数值。"
 	L["SecondaryCastingOverlayTexture"] = "次级%s施法覆盖层材质"
+
+	-- Bar Orientation & Fill Direction
+	L["FillDirection"] = "填充方向"
+	L["FillDirectionTooltip"] = "控制进度条从空到满的填充方向。"
+	L["FillDirectionLeftRight"] = "从左到右"
+	L["FillDirectionRightLeft"] = "从右到左"
+	L["FillDirectionBottomTop"] = "从下到上"
+	L["FillDirectionTopBottom"] = "从上到下"
+	L["GrowthDirection"] = "增长方向"
+	L["GrowthDirectionTooltip"] = "控制多节点进度条（如连击点）的排列方向。"
+	L["GrowthDirectionLeftRight"] = "从左到右"
+	L["GrowthDirectionRightLeft"] = "从右到左"
+	L["GrowthDirectionBottomTop"] = "从下到上"
+	L["GrowthDirectionTopBottom"] = "从上到下"
+	L["MatchAnchorHeight"] = "匹配锚定进度条高度"
+	L["MatchAnchorHeightTooltip"] = "启用后，该进度条高度将与其锚定的进度条保持一致。"
+	
+	-- Threshold Icon Position Labels
+	L["ThresholdIconPositionAboveLeft"] = "上方/左侧"
+	L["ThresholdIconPositionBelowRight"] = "下方/右侧"
 end
