@@ -335,6 +335,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
+		barVisibilityThresholds = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds(),
 		endOf = {
 			eclipse = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0, { celestialAlignmentOnly = false })
 		},
@@ -1720,7 +1721,11 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["ResourceComboPoints"], true, true)
+	local extraThresholdTypes = TRB.Functions.OptionsUi:CreateBarVisibilityThresholdTypes("mana", {
+		{ key = "manaPercent", label = L["BarVisibilityThresholdManaPercent"], comparisonLabel = L["BarVisibilityThresholdManaPercentComparison"], valueLabel = L["BarVisibilityThresholdManaPercentValue"], isPercent = true, header = L["BarVisibilityThresholdHeaderWithMana"] },
+		{ key = "manaValue", label = L["BarVisibilityThresholdManaValue"], comparisonLabel = L["BarVisibilityThresholdManaValueComparison"], valueLabel = L["BarVisibilityThresholdManaValueValue"], isPercent = false, header = L["BarVisibilityThresholdHeaderWithMana"] },
+	})
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["ResourceComboPoints"], true, true, nil, extraThresholdTypes)
 end
 
 local function BalanceConstructThresholdListPanel(parent)

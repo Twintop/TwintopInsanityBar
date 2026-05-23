@@ -80,6 +80,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			mana = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
+		barVisibilityThresholds = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds(),
 		endOf = {
 			ascendance = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
@@ -839,8 +840,12 @@ local function ElementalConstructBarVisibilityPanel(parent)
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
+	local extraThresholdTypes = TRB.Functions.OptionsUi:CreateBarVisibilityThresholdTypes("mana", {
+		{ key = "manaPercent", label = L["BarVisibilityThresholdManaPercent"], comparisonLabel = L["BarVisibilityThresholdManaPercentComparison"], valueLabel = L["BarVisibilityThresholdManaPercentValue"], isPercent = true, header = L["BarVisibilityThresholdHeaderWithMana"] },
+		{ key = "manaValue", label = L["BarVisibilityThresholdManaValue"], comparisonLabel = L["BarVisibilityThresholdManaValueComparison"], valueLabel = L["BarVisibilityThresholdManaValueValue"], isPercent = false, header = L["BarVisibilityThresholdHeaderWithMana"] },
+	})
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true, nil, extraThresholdTypes)
 end
 
 local function ElementalConstructThresholdListPanel(parent)

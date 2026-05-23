@@ -1019,6 +1019,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			mana = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			utility = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
+		barVisibilityThresholds = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds(),
 		overcap = {
 			mode = "relative",
 			relative = 0,
@@ -2464,8 +2465,12 @@ local function ShadowConstructBarVisibilityPanel(parent)
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
+	local extraThresholdTypes = TRB.Functions.OptionsUi:CreateBarVisibilityThresholdTypes("mana", {
+		{ key = "manaPercent", label = L["BarVisibilityThresholdManaPercent"], comparisonLabel = L["BarVisibilityThresholdManaPercentComparison"], valueLabel = L["BarVisibilityThresholdManaPercentValue"], isPercent = true, header = L["BarVisibilityThresholdHeaderWithMana"] },
+		{ key = "manaValue", label = L["BarVisibilityThresholdManaValue"], comparisonLabel = L["BarVisibilityThresholdManaValueComparison"], valueLabel = L["BarVisibilityThresholdManaValueValue"], isPercent = false, header = L["BarVisibilityThresholdHeaderWithMana"] },
+	})
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", false, nil, true, true, customBars)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], "notEmpty", false, nil, true, true, customBars, extraThresholdTypes)
 end
 
 local function ShadowConstructThresholdListPanel(parent)

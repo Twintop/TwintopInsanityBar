@@ -8227,6 +8227,28 @@ function TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, cl
 	return yCoord
 end
 
+---Creates extra Show Bar When threshold options for a specific bar.
+---@param displayBarKey string The displayBar key that should expose these options
+---@param thresholdTypes table[] Threshold definitions to attach to the bar
+---@return table[] thresholdTypes Extra threshold definitions for GenerateBarVisibilityOptions
+function TRB.Functions.OptionsUi:CreateBarVisibilityThresholdTypes(displayBarKey, thresholdTypes)
+	local results = {}
+	for _, thresholdType in ipairs(thresholdTypes or {}) do
+		table.insert(results, {
+			displayBarKey = displayBarKey,
+			barKey = thresholdType.barKey,
+			key = thresholdType.key,
+			label = thresholdType.label,
+			comparisonLabel = thresholdType.comparisonLabel,
+			valueLabel = thresholdType.valueLabel,
+			isPercent = thresholdType.isPercent,
+			header = thresholdType.header,
+			maxValue = thresholdType.maxValue,
+		})
+	end
+	return results
+end
+
 ---Generates the bar visibility options panel with per-bar condition dropdowns, alpha/fade sliders, and smooth checkbox.
 ---@param parent Frame Parent frame for the controls
 ---@param controls table Table to store control references
@@ -8241,13 +8263,17 @@ end
 ---@param includeHealthVisibility boolean? Whether to include health bar visibility
 ---@param includeManaBarVisibility boolean? Whether to include mana bar visibility
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
+---@param extraThresholdTypes table[]? Extra threshold condition definitions to include for matching bars
 ---@return number yCoord New Y coordinate after adding controls
-function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars)
+function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars, extraThresholdTypes)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_barVisibility"
 	local f = nil
 	if customBars == nil then
 		customBars = {}
+	end
+	if extraThresholdTypes == nil then
+		extraThresholdTypes = {}
 	end
 
 	-- Forward-declare so the checkbox OnClick (defined before the table) can call it
@@ -8376,12 +8402,39 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 
 	-- Labels for resource/health threshold condition types (used in dropdown and summary)
 	-- Ordered array so dropdown items render in a deterministic, logical order.
-	local thresholdTypes = {
-		{ key = "resourcePercent", label = L["BarVisibilityThresholdResourcePercent"] },
-		{ key = "resourceValue",   label = L["BarVisibilityThresholdResourceValue"] },
-		{ key = "healthPercent",   label = L["BarVisibilityThresholdHealthPercent"] },
-		{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"] },
+	local baseThresholdTypes = {
+		{ key = "resourcePercent", label = L["BarVisibilityThresholdResourcePercent"], comparisonLabel = L["BarVisibilityThresholdResourcePercentComparison"], valueLabel = L["BarVisibilityThresholdResourcePercentValue"], isPercent = true },
+		{ key = "resourceValue",   label = L["BarVisibilityThresholdResourceValue"],   comparisonLabel = L["BarVisibilityThresholdResourceValueComparison"],   valueLabel = L["BarVisibilityThresholdResourceValueValue"],   isPercent = false },
+		{ key = "healthPercent",   label = L["BarVisibilityThresholdHealthPercent"],   comparisonLabel = L["BarVisibilityThresholdHealthPercentComparison"],   valueLabel = L["BarVisibilityThresholdHealthPercentValue"],   isPercent = true },
+		{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"],     comparisonLabel = L["BarVisibilityThresholdHealthValueComparison"],     valueLabel = L["BarVisibilityThresholdHealthValueValue"],     isPercent = false },
 	}
+	local thresholdTypeDefinitions = {}
+	for _, tt in ipairs(baseThresholdTypes) do
+		thresholdTypeDefinitions[tt.key] = tt
+	end
+	for _, tt in ipairs(extraThresholdTypes) do
+		thresholdTypeDefinitions[tt.key] = tt
+	end
+
+	local function GetThresholdTypesForBarEntry(barEntry)
+		local types = {}
+		for _, tt in ipairs(baseThresholdTypes) do
+			table.insert(types, tt)
+		end
+
+		if barEntry ~= nil then
+			for _, tt in ipairs(extraThresholdTypes) do
+				local matchesDisplayBarKey = tt.displayBarKey == nil or tt.displayBarKey == barEntry.displayBarKey
+				local matchesBarKey = tt.barKey == nil or tt.barKey == barEntry.key
+				local hasRuntimeDefinition = spec.barVisibilityThresholds ~= nil and spec.barVisibilityThresholds[tt.key] ~= nil
+				if matchesDisplayBarKey and matchesBarKey and hasRuntimeDefinition then
+					table.insert(types, tt)
+				end
+			end
+		end
+
+		return types
+	end
 
 	---Builds a compact summary from a set of boolean conditions.
 	---@param selectedLabels string[] The selected condition labels
@@ -8421,13 +8474,8 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 		-- Include resource/health threshold as an additional condition in the summary
 		local ct = entry.resourceConditionType
-		if ct ~= nil and ct ~= "none" then
-			for _, tt in ipairs(thresholdTypes) do
-				if tt.key == ct then
-					table.insert(selectedLabels, tt.label)
-					break
-				end
-			end
+		if ct ~= nil and ct ~= "none" and thresholdTypeDefinitions[ct] ~= nil then
+			table.insert(selectedLabels, thresholdTypeDefinitions[ct].label)
 		end
 		return GetConditionDisplayName(selectedLabels)
 	end
@@ -8642,8 +8690,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	---Populates the show-condition dropdown menu.
 	---@param rootDescription table The root menu description to add items to
 	---@param entry table The visibility settings entry to read/write conditions on
+	---@param thresholdTypesForBar table[] The threshold condition types available for the selected bar
 	---@param onChange function Callback invoked after any condition is toggled
-	local function BuildShowVisibilityDropdownItems(rootDescription, entry, onChange)
+	local function BuildShowVisibilityDropdownItems(rootDescription, entry, thresholdTypesForBar, onChange)
 		if rootDescription.SetScrollMode then
 			rootDescription:SetScrollMode(400)
 		end
@@ -8702,9 +8751,17 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			end
 		end
 
+		local thresholdHeader = L["BarVisibilityThresholdHeader"]
+		for _, tt in ipairs(thresholdTypesForBar) do
+			if tt.header ~= nil then
+				thresholdHeader = tt.header
+				break
+			end
+		end
+
 		rootDescription:CreateDivider()
-		rootDescription:CreateTitle(L["BarVisibilityThresholdHeader"])
-		for _, tt in ipairs(thresholdTypes) do
+		rootDescription:CreateTitle(thresholdHeader)
+		for _, tt in ipairs(thresholdTypesForBar) do
 			local capturedKey = tt.key
 			local capturedLabel = tt.label
 			local checkbox = rootDescription:CreateCheckbox(
@@ -9018,6 +9075,16 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			return 1000000
 		end
 
+		local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+		if thresholdDefinition ~= nil and type(thresholdDefinition.maxValue) == "number" then
+			return thresholdDefinition.maxValue
+		end
+
+		local visibilityMaxValue = TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType, spec)
+		if visibilityMaxValue ~= nil and visibilityMaxValue > 0 and (conditionType ~= "resourceValue" or primaryResourceString ~= L["ResourceMana"]) then
+			return visibilityMaxValue
+		end
+
 		if conditionType == "resourceValue" then
 			if primaryResourceString == L["ResourceMana"] then
 				return 275625
@@ -9032,18 +9099,10 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	end
 
 	local function UpdateThresholdControlLabels(conditionType)
-		if conditionType == "resourcePercent" then
-			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdResourcePercentComparison"])
-			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdResourcePercentValue"])
-		elseif conditionType == "resourceValue" then
-			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdResourceValueComparison"])
-			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdResourceValueValue"])
-		elseif conditionType == "healthPercent" then
-			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdHealthPercentComparison"])
-			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdHealthPercentValue"])
-		elseif conditionType == "healthValue" then
-			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdHealthValueComparison"])
-			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdHealthValueValue"])
+		local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+		if thresholdDefinition ~= nil then
+			controls.dropDown.selectedThresholdComparison.label:SetText(thresholdDefinition.comparisonLabel)
+			controls.sliders.selectedThresholdValue.Title:SetText(thresholdDefinition.valueLabel)
 		else
 			controls.dropDown.selectedThresholdComparison.label:SetText(L["BarVisibilityThresholdComparison"])
 			controls.sliders.selectedThresholdValue.Title:SetText(L["BarVisibilityThresholdValue"])
@@ -9063,7 +9122,8 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			controls.sliders.selectedThresholdValue:Show()
 
 			-- Reconfigure slider range based on type
-			local isPercent = (conditionType == "resourcePercent" or conditionType == "healthPercent")
+			local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+			local isPercent = thresholdDefinition ~= nil and thresholdDefinition.isPercent == true
 			if isPercent then
 				controls.sliders.selectedThresholdValue:SetMinMaxValues(0, 100)
 				controls.sliders.selectedThresholdValue.MinLabel:SetText("0%")
@@ -9142,7 +9202,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 
 		local function VisibilityGenerator(dropdown, rootDescription)
-			BuildShowVisibilityDropdownItems(rootDescription, visSettings, OnVisibilityChange)
+			BuildShowVisibilityDropdownItems(rootDescription, visSettings, GetThresholdTypesForBarEntry(barEntry), OnVisibilityChange)
 		end
 
 		local function HideVisibilityGenerator(dropdown, rootDescription)
@@ -9229,7 +9289,8 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		controls.sliders.selectedThresholdValue:SetScript("OnValueChanged", function(self, value)
 			-- Compute precision dynamically based on current condition type (may change after FillDetailPanel)
 			local ct = visSettings.resourceConditionType or "none"
-			local precision = (ct == "resourcePercent" or ct == "healthPercent") and 1 or 0
+			local thresholdDefinition = thresholdTypeDefinitions[ct]
+			local precision = (thresholdDefinition ~= nil and thresholdDefinition.isPercent == true) and 1 or 0
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, precision, nil, true)
 			self.EditBox:SetText(value)

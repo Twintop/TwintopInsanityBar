@@ -2828,3 +2828,12 @@ L["BarVisibilityTableShowNeverShown"] = "Never"
 -- Bar Visibility Dropdown Tooltips
 L["ShowBarVisibilityShowDropdownTooltip"] = "Controls when this bar is allowed to show. Always Show and Never Show override the selected show conditions; resource and health thresholds only apply when neither override is selected."
 L["ShowBarVisibilityForceHideDropdownTooltip"] = "Controls conditions that always force this bar to hide. These options take precedence over Show Bar When, Always Show, opacity, and resource or health threshold settings."
+
+-- Bar Visibility Mana Thresholds
+L["BarVisibilityThresholdManaPercent"] = "Mana Bar %"
+L["BarVisibilityThresholdManaValue"] = "Mana Bar Value"
+L["BarVisibilityThresholdManaPercentComparison"] = "Mana Bar % Comparison"
+L["BarVisibilityThresholdManaPercentValue"] = "Mana Bar % Value"
+L["BarVisibilityThresholdManaValueComparison"] = "Mana Bar Value Comparison"
+L["BarVisibilityThresholdManaValueValue"] = "Mana Bar Value"
+L["BarVisibilityThresholdHeaderWithMana"] = "Resource / Mana / Health Threshold"

@@ -362,6 +362,9 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
+			if TRB.Functions.BarVisibility.hasResourceCurve then
+				TRB.Functions.BarVisibility:MarkDirty()
+			end
 			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
@@ -1369,6 +1372,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	--NYI
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
+	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
 end
 
