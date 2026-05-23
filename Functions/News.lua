@@ -21,7 +21,7 @@ local content = [====[
 
 ### Localization
 
-- [#756](#756) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#756](#756), [#758](#758) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 
