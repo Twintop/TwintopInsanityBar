@@ -360,12 +360,28 @@ TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 local VISIBILITY_HEALTH_MAX = 1000000
 local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
 
+---@param conditionType string
+---@param settings table|nil
+---@return table|nil
+function TRB.Functions.BarVisibility:GetVisibilityThresholdDefinition(conditionType, settings)
+	if settings ~= nil and settings.barVisibilityThresholds ~= nil then
+		return settings.barVisibilityThresholds[conditionType]
+	end
+	return nil
+end
+
 ---Gets the normalization max value for visibility threshold comparisons.
 ---For primary resource value thresholds, use the spec's configured max value from the
 ---associated options/default settings rather than the live character max.
 ---@param conditionType string
+---@param settings table|nil
 ---@return number
-function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType)
+function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType, settings)
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
+	if thresholdDefinition ~= nil and type(thresholdDefinition.maxValue) == "number" then
+		return thresholdDefinition.maxValue
+	end
+
 	if conditionType == "healthValue" then
 		return VISIBILITY_HEALTH_MAX
 	end
@@ -385,8 +401,13 @@ function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionTyp
 			end
 		end
 
-		if specCache ~= nil and specCache.settings ~= nil and specCache.settings.maxResource ~= nil then
-			local value = specCache.settings.maxResource.value
+		local maxResourceSettings = settings and settings.maxResource
+		if maxResourceSettings == nil and specCache ~= nil and specCache.settings ~= nil then
+			maxResourceSettings = specCache.settings.maxResource
+		end
+
+		if maxResourceSettings ~= nil then
+			local value = maxResourceSettings.value
 			if type(value) == "number" and value > 0 then
 				return value
 			end
@@ -409,27 +430,35 @@ end
 ---For ">=" the curve is: [0, inactive) → [threshold, active) → [2.0, active)
 ---For "<=" the curve is: [0, active) → [threshold+ε, inactive) → [2.0, inactive)
 ---
----@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue"
+---@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue" or a spec-defined threshold type
 ---@param operator string # ">=" or "<="
 ---@param thresholdValue number # The user-configured threshold (0–100 for percent, raw for value)
 ---@param activeAlpha number # 0–100 alpha when condition is met
 ---@param inactiveAlpha number # 0–100 alpha when condition is not met
+---@param settings table|nil # Spec settings used to resolve spec-defined threshold types
 ---@return any # A C_CurveUtil color curve
-function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, operator, thresholdValue, activeAlpha, inactiveAlpha)
+function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, operator, thresholdValue, activeAlpha, inactiveAlpha, settings)
 	local cache = TRB.Data.cache.stepColorCurves
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
 
 	-- Compute threshold as a fraction of 0.0–1.0 (the scale UnitPowerPercent/UnitHealthPercent use)
 	local thresholdFraction
-	if conditionType == "resourcePercent" then
+	if thresholdDefinition ~= nil and thresholdDefinition.valueType == "percent" then
+		thresholdFraction = (thresholdValue or 0) / 100
+	elseif thresholdDefinition ~= nil and thresholdDefinition.valueType == "value" then
+		local maxValue = self:GetVisibilityThresholdMaxValue(conditionType, settings)
+		if maxValue <= 0 then maxValue = 100 end
+		thresholdFraction = (thresholdValue or 0) / maxValue
+	elseif conditionType == "resourcePercent" then
 		thresholdFraction = (thresholdValue or 0) / 100
 	elseif conditionType == "resourceValue" then
-		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType)
+		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType, settings)
 		if maxRes <= 0 then maxRes = 100 end
 		thresholdFraction = (thresholdValue or 0) / maxRes
 	elseif conditionType == "healthPercent" then
 		thresholdFraction = (thresholdValue or 0) / 100
 	elseif conditionType == "healthValue" then
-		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType)
+		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType, settings)
 		if maxHP <= 0 then maxHP = 1 end
 		thresholdFraction = (thresholdValue or 0) / maxHP
 	else
@@ -476,17 +505,21 @@ end
 ---Passes the curve to UnitPowerPercent or UnitHealthPercent, which returns a secret
 ---ColorMixin.  The alpha channel of that color encodes the visibility decision.
 ---@param visSettings trbBarVisibilitySetting # The bar's visibility settings
+---@param settings table|nil # Spec settings used to resolve spec-defined threshold types
 ---@return any|nil # A secret ColorMixin with alpha encoding visibility, or nil if not applicable
-function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings)
+function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings, settings)
 	local conditionType = visSettings.resourceConditionType
 	local operator = visSettings.resourceConditionOperator or ">="
 	local threshold = visSettings.resourceConditionValue or 0
 	local activeAlpha = visSettings.activeAlpha or 100
 	local inactiveAlpha = visSettings.inactiveAlpha or 0
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
 
-	local curve = self:BuildVisibilityAlphaCurve(conditionType, operator, threshold, activeAlpha, inactiveAlpha)
+	local curve = self:BuildVisibilityAlphaCurve(conditionType, operator, threshold, activeAlpha, inactiveAlpha, settings)
 
-	if conditionType == "resourcePercent" or conditionType == "resourceValue" then
+	if thresholdDefinition ~= nil and thresholdDefinition.powerType ~= nil then
+		return UnitPowerPercent("player", thresholdDefinition.powerType, true, curve)
+	elseif conditionType == "resourcePercent" or conditionType == "resourceValue" then
 		return UnitPowerPercent("player", TRB.Data.resource, true, curve)
 	elseif conditionType == "healthPercent" or conditionType == "healthValue" then
 		return UnitHealthPercent("player", true, curve)
@@ -606,7 +639,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				-- unsupported), evaluate the curve and apply the secret alpha.
 				-- Otherwise fall through to the normal fade alpha.
 				if hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached then
-					local curveResult = self:EvaluateVisibilityCurve(visSettings)
+					local curveResult = self:EvaluateVisibilityCurve(visSettings, settings)
 					if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
 						local _, _, _, secretAlpha = curveResult:GetRGBA()
 						entry.barGroup.containerFrame:SetAlpha(secretAlpha)

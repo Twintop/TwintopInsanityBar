@@ -3,6 +3,24 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
+local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
+
+---Creates spec-level threshold definitions for secondary Mana Bar visibility options.
+---@return table<string, table>
+function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
+	return {
+		manaPercent = {
+			valueType = "percent",
+			powerType = Enum.PowerType.Mana,
+		},
+		manaValue = {
+			valueType = "value",
+			powerType = Enum.PowerType.Mana,
+			maxValue = VISIBILITY_MANA_MAX,
+		},
+	}
+end
+
 ---Creates a new independent copy of the default hard-hide visibility conditions.
 ---@return trbBarVisibilityHideConditions
 function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
@@ -5235,6 +5253,39 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 					end
 				end
 			end
+		end
+	end
+
+	-- Backfill spec-level extra visibility threshold definitions for secondary Mana Bars.
+	do
+		---@param specSettings table? # Spec settings table to update in-place
+		local function MigrateManaBarVisibilityThresholds(specSettings)
+			if specSettings == nil then
+				return
+			end
+
+			local defaults = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
+			specSettings.barVisibilityThresholds = specSettings.barVisibilityThresholds or {}
+			for key, defaultValue in pairs(defaults) do
+				if specSettings.barVisibilityThresholds[key] == nil then
+					specSettings.barVisibilityThresholds[key] = {}
+				end
+				for settingKey, settingValue in pairs(defaultValue) do
+					if specSettings.barVisibilityThresholds[key][settingKey] == nil then
+						specSettings.barVisibilityThresholds[key][settingKey] = settingValue
+					end
+				end
+			end
+		end
+
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.priest.shadow)
+		end
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.druid.balance)
+		end
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.shaman then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.shaman.elemental)
 		end
 	end
 

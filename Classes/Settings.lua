@@ -19,6 +19,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
+---@field public barVisibilityThresholds table<string, trbBarVisibilityThresholdDefinition>?
 ---@field public colors TRB.Classes.Settings.Colors
 ---@field public comboPoints TRB.Classes.Settings.SecondaryBar
 ---@field public healthBar TRB.Classes.Settings.SecondaryBar
@@ -329,10 +330,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inactiveAlpha number # Opacity (0–100) when visibility conditions are NOT met. 0 = fully hidden. Default 0.
 ---@field public fadeDuration number # Seconds to fade out to inactive opacity. 0 = instant. Default 0.
 ---@field public fadeDelay number # Seconds to wait before starting the fade out. 0 = immediate. Default 0.
----@field public resourceConditionType string? # Type of resource/health threshold condition: "none", "resourcePercent", "resourceValue", "healthPercent", "healthValue"
+---@field public resourceConditionType string? # Type of threshold condition: "none", "resourcePercent", "resourceValue", "manaPercent", "manaValue", "healthPercent", "healthValue"
 ---@field public resourceConditionOperator string? # Comparison operator: ">=", ">", "<=", "<", "==", "!="
----@field public resourceConditionValue number? # Threshold value for the resource/health condition
+---@field public resourceConditionValue number? # Threshold value for the selected visibility condition
 ---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions
+
+---@class trbBarVisibilityThresholdDefinition
+---@field public valueType string # Threshold value interpretation: "percent" or "value"
+---@field public powerType number? # Enum.PowerType value used with UnitPowerPercent for power-based thresholds
+---@field public maxValue number? # Normalization max for value thresholds
 
 ---@alias trbOverlayMode
 ---| '"overlay"' # Fills from the left edge of the bar up to the overlay amount

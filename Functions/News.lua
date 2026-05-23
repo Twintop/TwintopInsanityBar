@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - [#529](#529) Add new visibility overrides to always hide a bar when certain conditions are met, regardless of other visibility settings.
+- [#541](#541) Add new value and percent visibility conditions for Mana Bars for Shadow Priest, Balance Druid, and Elemental Shaman.
 - Fix an issue where specialization level bar text was not being rotated into the correct orientation when the bar's orientation was changed between horizontal and vertical. Shared/Global bar text remains unchanged when bar orientation changes occur.
 
 ### Localization
