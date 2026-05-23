@@ -8353,6 +8353,27 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		},
 	}
 
+	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSkyriding", "inVehicle", "inPetBattle", "onTaxi" }
+	local hideConditionLabels = {
+		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
+		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
+		isMountedFlying = L["ShowBarVisibilityConditionIsSteadyFlight"],
+		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
+		inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
+		onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
+	}
+	local hideConditionGroups = {
+		{
+			title = L["ShowBarVisibilityGroupGeneral"],
+			keys = { "inVehicle", "inPetBattle", "onTaxi" },
+		},
+		{
+			title = L["ShowBarVisibilityGroupMounting"],
+			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isMountedFlying" },
+		},
+	}
+
 	-- Labels for resource/health threshold condition types (used in dropdown and summary)
 	-- Ordered array so dropdown items render in a deterministic, logical order.
 	local thresholdTypes = {
@@ -8362,10 +8383,23 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"] },
 	}
 
-	---Builds a localized summary string describing a bar visibility entry's conditions.
-	---@param entry table The visibility settings entry (with neverShow, alwaysShow, conditions, etc.)
+	---Builds a compact summary from a set of boolean conditions.
+	---@param selectedLabels string[] The selected condition labels
 	---@return string displayName The summary display text
-	local function GetVisibilityDisplayName(entry)
+	local function GetConditionDisplayName(selectedLabels)
+		if #selectedLabels == 0 then
+			return string.format(L["ShowBarVisibilitySelectedCount"], 0)
+		end
+		if #selectedLabels == 1 then
+			return selectedLabels[1]
+		end
+		return string.format(L["ShowBarVisibilitySelectedCount"], #selectedLabels)
+	end
+
+	---Builds a localized summary string describing the show side of a visibility entry.
+	---@param entry table The visibility settings entry
+	---@return string displayName The show summary display text
+	local function GetShowVisibilityDisplayName(entry)
 		if entry.neverShow then
 			return L["ShowBarVisibilityNever"]
 		end
@@ -8379,10 +8413,10 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			if entry.visibility == "combat" then return L["ShowBarVisibilityCombat"] end
 			return L["ShowBarVisibilityAlways"]
 		end
-		local parts = {}
+		local selectedLabels = {}
 		for _, key in ipairs(conditionKeys) do
 			if conditions[key] then
-				table.insert(parts, conditionLabels[key])
+				table.insert(selectedLabels, conditionLabels[key])
 			end
 		end
 		-- Include resource/health threshold as an additional condition in the summary
@@ -8390,37 +8424,120 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		if ct ~= nil and ct ~= "none" then
 			for _, tt in ipairs(thresholdTypes) do
 				if tt.key == ct then
-					table.insert(parts, tt.label)
+					table.insert(selectedLabels, tt.label)
 					break
 				end
 			end
 		end
-		if #parts == 0 then
-			return string.format(L["ShowBarVisibilitySelectedCount"], 0)
-		end
-		if #parts == 1 then
-			return parts[1]
-		end
-		return string.format(L["ShowBarVisibilitySelectedCount"], #parts)
+		return GetConditionDisplayName(selectedLabels)
 	end
 
-	-- Override a dropdown's SetText so the framework's auto-concatenated
-	-- checkbox labels are always replaced with our custom summary text.
-	-- The hook is installed once; call UpdateDropdownDisplayText() to change
-	-- the function that provides the display string and force a refresh.
-	local dropdownOriginalSetText = nil
-	local dropdownGetTextFunc = nil
+	---Counts selected options in the show-condition dropdown.
+	---@param entry table The visibility settings entry
+	---@return number selectedCount The number of selected show options
+	local function GetShowVisibilitySelectedCount(entry)
+		if entry.neverShow or entry.alwaysShow then
+			return 1
+		end
+
+		local conditions = entry.conditions
+		if conditions == nil then
+			return 1
+		end
+
+		local selectedCount = 0
+		for _, key in ipairs(conditionKeys) do
+			if conditions[key] then
+				selectedCount = selectedCount + 1
+			end
+		end
+
+		local ct = entry.resourceConditionType
+		if ct ~= nil and ct ~= "none" then
+			selectedCount = selectedCount + 1
+		end
+
+		return selectedCount
+	end
+
+	---Counts selected options in the hard-hide dropdown.
+	---@param entry table The visibility settings entry
+	---@return number selectedCount The number of selected hide options
+	local function GetHideVisibilitySelectedCount(entry)
+		local selectedCount = 0
+		local hideConditions = entry.hideConditions
+		if hideConditions ~= nil then
+			for _, key in ipairs(hideConditionKeys) do
+				if hideConditions[key] == true then
+					selectedCount = selectedCount + 1
+				end
+			end
+		end
+		return selectedCount
+	end
+
+	---Builds a count display string using the standard "X Selected" format.
+	---@param selectedCount number The number of selected options
+	---@return string displayName The count display text
+	local function GetSelectedCountDisplayName(selectedCount)
+		return string.format(L["ShowBarVisibilitySelectedCount"], selectedCount)
+	end
+
+	---Builds the compact show summary used in the visibility table.
+	---@param entry table The visibility settings entry
+	---@return string displayName The table display text
+	local function GetShowVisibilityTableDisplayName(entry)
+		if entry.neverShow then
+			return L["BarVisibilityTableShowNeverShown"]
+		end
+		if entry.alwaysShow then
+			return L["ShowBarVisibilityAlways"]
+		end
+		return GetSelectedCountDisplayName(GetShowVisibilitySelectedCount(entry))
+	end
+
+	---Builds the compact hard-hide summary used in the visibility table.
+	---@param entry table The visibility settings entry
+	---@return string displayName The table display text
+	local function GetHideVisibilityTableDisplayName(entry)
+		return GetSelectedCountDisplayName(GetHideVisibilitySelectedCount(entry))
+	end
+
+	---Builds a localized summary string describing the hard-hide side of a visibility entry.
+	---@param entry table The visibility settings entry
+	---@return string displayName The hide summary display text
+	---@return number selectedCount The number of selected hide conditions
+	local function GetHideVisibilityDisplayName(entry)
+		local selectedLabels = {}
+		local hideConditions = entry.hideConditions
+		if hideConditions ~= nil then
+			for _, key in ipairs(hideConditionKeys) do
+				if hideConditions[key] == true then
+					table.insert(selectedLabels, hideConditionLabels[key])
+				end
+			end
+		end
+		return GetConditionDisplayName(selectedLabels), GetHideVisibilitySelectedCount(entry)
+	end
+
+	local dropdownOriginalSetText = setmetatable({}, { __mode = "k" })
+	local dropdownGetTextFunc = setmetatable({}, { __mode = "k" })
 
 	---Installs a SetText hook on a dropdown so its display text is always replaced with a custom summary.
 	---@param dropdown DropdownButton The dropdown button to hook
 	local function InstallDropdownDisplayTextHook(dropdown)
-		if dropdownOriginalSetText == nil then
-			dropdownOriginalSetText = dropdown.SetText
+		if dropdownOriginalSetText[dropdown] == nil then
+			dropdownOriginalSetText[dropdown] = dropdown.SetText
 			dropdown.SetText = function(self, text)
-				if dropdownGetTextFunc then
-					dropdownOriginalSetText(self, dropdownGetTextFunc())
+				local originalSetText = dropdownOriginalSetText[self]
+				local getTextFunc = dropdownGetTextFunc[self]
+				if originalSetText == nil then
+					return
+				end
+				if getTextFunc then
+					originalSetText(self, getTextFunc())
 				else
-					dropdownOriginalSetText(self, text)
+					originalSetText(self, text)
 				end
 			end
 		end
@@ -8430,11 +8547,25 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	---@param dropdown DropdownButton The dropdown button to update
 	---@param getTextFunc fun(): string A function that returns the current display text
 	local function UpdateDropdownDisplayText(dropdown, getTextFunc)
-		dropdownGetTextFunc = getTextFunc
+		dropdownGetTextFunc[dropdown] = getTextFunc
 		-- Force an immediate visual refresh via the original SetText
-		if dropdownOriginalSetText then
-			dropdownOriginalSetText(dropdown, getTextFunc())
+		if dropdownOriginalSetText[dropdown] then
+			dropdownOriginalSetText[dropdown](dropdown, getTextFunc())
 		end
+	end
+
+	---Adds a hover tooltip to a dropdown button.
+	---@param dropdown DropdownButton The dropdown button to attach a tooltip to
+	---@param tooltipText string The localized tooltip text
+	local function SetDropdownTooltip(dropdown, tooltipText)
+		dropdown:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(tooltipText, 1, 1, 1, 1, true)
+			GameTooltip:Show()
+		end)
+		dropdown:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
 	end
 
 	---Refreshes the spec/global cache and re-evaluates bar visibility after visibility settings change.
@@ -8508,14 +8639,17 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		end
 	end
 
-	---Populates a dropdown menu with visibility condition checkboxes grouped by category.
+	---Populates the show-condition dropdown menu.
 	---@param rootDescription table The root menu description to add items to
 	---@param entry table The visibility settings entry to read/write conditions on
 	---@param onChange function Callback invoked after any condition is toggled
-	local function BuildVisibilityDropdownItems(rootDescription, entry, onChange)
-		rootDescription:SetScrollMode(400)
+	local function BuildShowVisibilityDropdownItems(rootDescription, entry, onChange)
+		if rootDescription.SetScrollMode then
+			rootDescription:SetScrollMode(400)
+		end
 
-		-- Always Show checkbox (standalone toggle, like Never Show)
+		entry.conditions = entry.conditions or {}
+
 		rootDescription:CreateCheckbox(
 			L["ShowBarVisibilityAlwaysShow"],
 			function() return entry.alwaysShow == true end,
@@ -8530,7 +8664,6 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			end
 		)
 
-		-- Never Show checkbox
 		rootDescription:CreateCheckbox(
 			L["ShowBarVisibilityNeverShow"],
 			function() return entry.neverShow or false end,
@@ -8543,22 +8676,24 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			end
 		)
 
-		-- Grouped condition sections
 		for _, group in ipairs(conditionGroups) do
+			local groupTitle = group.title
+			local groupKeys = group.keys
 			rootDescription:CreateDivider()
-			rootDescription:CreateTitle(group.title)
-			for _, key in ipairs(group.keys) do
+			rootDescription:CreateTitle(groupTitle)
+			for _, key in ipairs(groupKeys) do
+				local capturedKey = key
 				local checkbox = rootDescription:CreateCheckbox(
-					conditionLabels[key],
+					conditionLabels[capturedKey],
 					function()
-						return entry.conditions and entry.conditions[key] or false
+						return entry.conditions and entry.conditions[capturedKey] or false
 					end,
 					function()
 						entry.conditions = entry.conditions or {}
-						if entry.conditions[key] then
-							entry.conditions[key] = nil
+						if entry.conditions[capturedKey] then
+							entry.conditions[capturedKey] = nil
 						else
-							entry.conditions[key] = true
+							entry.conditions[capturedKey] = true
 						end
 						onChange()
 					end
@@ -8567,13 +8702,13 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			end
 		end
 
-		-- Resource / Health Threshold section (mutually exclusive checkboxes)
 		rootDescription:CreateDivider()
 		rootDescription:CreateTitle(L["BarVisibilityThresholdHeader"])
 		for _, tt in ipairs(thresholdTypes) do
 			local capturedKey = tt.key
+			local capturedLabel = tt.label
 			local checkbox = rootDescription:CreateCheckbox(
-				tt.label,
+				capturedLabel,
 				function() return entry.resourceConditionType == capturedKey end,
 				function()
 					if entry.resourceConditionType == capturedKey then
@@ -8585,6 +8720,41 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 				end
 			)
 			checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
+		end
+	end
+
+	---Populates the hard-hide dropdown menu.
+	---@param rootDescription table The root menu description to add items to
+	---@param entry table The visibility settings entry to read/write hide conditions on
+	---@param onChange function Callback invoked after any condition is toggled
+	local function BuildHideVisibilityDropdownItems(rootDescription, entry, onChange)
+		if rootDescription.SetScrollMode then
+			rootDescription:SetScrollMode(400)
+		end
+
+		entry.hideConditions = entry.hideConditions or TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+
+		for groupIndex, group in ipairs(hideConditionGroups) do
+			local groupTitle = group.title
+			local groupKeys = group.keys
+			rootDescription:CreateTitle(groupTitle)
+			for _, key in ipairs(groupKeys) do
+				local capturedKey = key
+				rootDescription:CreateCheckbox(
+					hideConditionLabels[capturedKey],
+					function()
+						return entry.hideConditions and entry.hideConditions[capturedKey] == true
+					end,
+					function()
+						entry.hideConditions = entry.hideConditions or {}
+						entry.hideConditions[capturedKey] = not (entry.hideConditions[capturedKey] == true)
+						onChange()
+					end
+				)
+			end
+			if groupIndex < #hideConditionGroups then
+				rootDescription:CreateDivider()
+			end
 		end
 	end
 
@@ -8670,13 +8840,18 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			["align"] = "LEFT",
 		},
 		{
-			["name"] = L["BarVisibilityTableHeaderVisibility"],
-			["width"] = 75,
+			["name"] = L["BarVisibilityTableHeaderShow"],
+			["width"] = 95,
+			["align"] = "LEFT",
+		},
+		{
+			["name"] = L["BarVisibilityTableHeaderAlwaysHide"],
+			["width"] = 105,
 			["align"] = "LEFT",
 		},
 		{
 			["name"] = L["BarVisibilityTableHeaderSettingsSource"],
-			["width"] = 285,
+			["width"] = 255,
 			["align"] = "LEFT",
 		},
 	}
@@ -8690,11 +8865,11 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 
 	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
 
-	-- Dynamically resize the Visibility column to fill available width
+	-- Dynamically resize the Settings Source column to fill available width
 	bvc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[2].width + columns[4].width
-		local newVisibilityWidth = math.max(60, w - fixedWidth - 30)
-		columns[3].width = newVisibilityWidth
+		local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[4].width
+		local newSettingsSourceWidth = math.max(180, w - fixedWidth - 30)
+		columns[5].width = newSettingsSourceWidth
 		barVisibilityTable:SetDisplayCols(columns)
 	end)
 
@@ -8712,15 +8887,18 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			else
 				visSettings = spec.displayBar[entry.displayBarKey]
 			end
-			local statusText = ""
+			local showText = ""
+			local hideText = ""
 			if visSettings then
-				statusText = GetVisibilityDisplayName(visSettings)
+				showText = GetShowVisibilityTableDisplayName(visSettings)
+				hideText = GetHideVisibilityTableDisplayName(visSettings)
 			end
 			local rowData = {
 				cols = {
 					{ value = entry.key },
 					{ value = entry.label },
-					{ value = statusText },
+					{ value = showText },
+					{ value = hideText },
 					{ value = (classId == nil or isControlledByGlobal) and (classId ~= nil and entry.globalLabel and string.format(L["BarVisibilitySettingsSourceGlobalNamed"], entry.globalLabel) or L["BarVisibilitySettingsSourceGlobal"]) or L["BarVisibilitySettingsSourceSpec"] },
 				}
 			}
@@ -8734,7 +8912,7 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	end
 
 	-- Detail panel below the table
-	local detailHeight = 320
+	local detailHeight = 360
 	controls.barVisibilityDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarVisibilityDetail", parent, "BackdropTemplate")
 	local detailFrame = controls.barVisibilityDetail
 	detailFrame:SetPoint("TOPLEFT", bvc, "BOTTOMLEFT", 0, 0)
@@ -8745,30 +8923,39 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 	local detailYCoord = 0
 	local selectedBarKey = nil
 
-	-- Detail panel contents: header, dropdown, smooth checkbox, sliders
+	-- Detail panel contents: header, show/hide dropdowns, smooth checkbox, sliders
 	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
 
 	detailYCoord = detailYCoord - 30
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.selectedBarVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedBarVisibility", detailFrame, "WowStyle1DropdownTemplate")
 	controls.dropDown.selectedBarVisibility:SetWidth(oUi.sliderWidth)
-	controls.dropDown.selectedBarVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["BarVisibilityConditionsLabel"], oUi.xCoord, detailYCoord)
+	controls.dropDown.selectedBarVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["ShowBarVisibilityShowColumnHeader"], oUi.xCoord, detailYCoord)
 	controls.dropDown.selectedBarVisibility.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.selectedBarVisibility:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 30)
 	InstallDropdownDisplayTextHook(controls.dropDown.selectedBarVisibility)
+	SetDropdownTooltip(controls.dropDown.selectedBarVisibility, L["ShowBarVisibilityShowDropdownTooltip"])
 
-	-- Smooth checkbox (to the right of the dropdown)
+	controls.dropDown.selectedHideVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedHideVisibility", detailFrame, "WowStyle1DropdownTemplate")
+	controls.dropDown.selectedHideVisibility:SetWidth(oUi.sliderWidth)
+	controls.dropDown.selectedHideVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["ShowBarVisibilityForceHideColumnHeader"], oUi.xCoord2, detailYCoord)
+	controls.dropDown.selectedHideVisibility.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.selectedHideVisibility:SetPoint("TOPLEFT", oUi.xCoord2, detailYCoord - 30)
+	InstallDropdownDisplayTextHook(controls.dropDown.selectedHideVisibility)
+	SetDropdownTooltip(controls.dropDown.selectedHideVisibility, L["ShowBarVisibilityForceHideDropdownTooltip"])
+
+	-- Smooth checkbox (separate row below dropdowns)
 	controls.checkBoxes = controls.checkBoxes or {}
 	controls.checkBoxes.selectedSmooth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedSmooth", detailFrame, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.selectedSmooth
-	f:SetPoint("TOPLEFT", oUi.xCoord2, detailYCoord - 30)
+	f:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 70)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxSmoothBar"])
 	f.tooltip = L["CheckboxSmoothBarTooltip"]
 
 	-- Alpha/fade sliders
 	controls.sliders = controls.sliders or {}
 
-	detailYCoord = detailYCoord - 70
+	detailYCoord = detailYCoord - 105
 	controls.sliders.selectedActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityActiveAlpha"],
 		0, 100, 100, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
@@ -8922,9 +9109,9 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 		-- Determine if this bar needs the appearance refresh (custom bars)
 		local refreshFunc = barEntry.isCustomBar and RefreshVisibilityAndAppearance or RefreshVisibilitySettings
 
-		-- Visibility dropdown
+		-- Visibility dropdowns
 		local function OnVisibilityChange()
-			local displayText = GetVisibilityDisplayName(visSettings)
+			local displayText = GetShowVisibilityDisplayName(visSettings)
 			controls.dropDown.selectedBarVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedBarVisibility:SetText(displayText)
 			ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
@@ -8939,12 +9126,36 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, 
 			end
 		end
 
+		local function OnHideVisibilityChange()
+			local displayText = GetHideVisibilityDisplayName(visSettings)
+			controls.dropDown.selectedHideVisibility:SetDefaultText(displayText)
+			controls.dropDown.selectedHideVisibility:SetText(displayText)
+			refreshFunc()
+			SetTableValues()
+			-- Re-select the current row
+			for i, e in ipairs(barEntries) do
+				if e.key == barKey then
+					barVisibilityTable:SetSelection(i)
+					break
+				end
+			end
+		end
+
 		local function VisibilityGenerator(dropdown, rootDescription)
-			BuildVisibilityDropdownItems(rootDescription, visSettings, OnVisibilityChange)
+			BuildShowVisibilityDropdownItems(rootDescription, visSettings, OnVisibilityChange)
+		end
+
+		local function HideVisibilityGenerator(dropdown, rootDescription)
+			BuildHideVisibilityDropdownItems(rootDescription, visSettings, OnHideVisibilityChange)
 		end
 
 		controls.dropDown.selectedBarVisibility:SetupMenu(VisibilityGenerator)
-		UpdateDropdownDisplayText(controls.dropDown.selectedBarVisibility, function() return GetVisibilityDisplayName(visSettings) end)
+		UpdateDropdownDisplayText(controls.dropDown.selectedBarVisibility, function() return GetShowVisibilityDisplayName(visSettings) end)
+		controls.dropDown.selectedHideVisibility:SetupMenu(HideVisibilityGenerator)
+		UpdateDropdownDisplayText(controls.dropDown.selectedHideVisibility, function()
+			local displayText = GetHideVisibilityDisplayName(visSettings)
+			return displayText
+		end)
 
 		-- Smooth checkbox
 		controls.checkBoxes.selectedSmooth:SetChecked(visSettings.smooth)

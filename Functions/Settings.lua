@@ -3,6 +3,20 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
+---Creates a new independent copy of the default hard-hide visibility conditions.
+---@return trbBarVisibilityHideConditions
+function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+	return {
+		isMountedAny = false,
+		isMountedGround = false,
+		isMountedFlying = false,
+		isSkyriding = false,
+		inVehicle = true,
+		inPetBattle = true,
+		onTaxi = true,
+	}
+end
+
 ---Creates a new independent copy of NewSpecGlobalDefaults()
 ---@return TRB.Classes.Settings.SpecializationGlobalEnabled
 local function NewSpecGlobalDefaults()
@@ -83,6 +97,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -96,6 +111,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = false,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -109,6 +125,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -122,6 +139,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = true,
 					alwaysShow = false,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -2188,6 +2206,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									inactiveAlpha = gs.inactiveAlpha,
 									fadeDuration = gs.fadeDuration,
 									fadeDelay = gs.fadeDelay,
+									hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 								}
 								-- Deep copy conditions table if present
 								if gs.conditions then
@@ -2198,6 +2217,11 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								else
 									visSource.conditions = {}
 								end
+								if gs.hideConditions then
+									for ck, cv in pairs(gs.hideConditions) do
+										visSource.hideConditions[ck] = cv
+									end
+								end
 							elseif specSettings.displayBar.secondary then
 								visSource = specSettings.displayBar.secondary
 							end
@@ -2206,7 +2230,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								specSettings.displayBar.holyWords = visSource
 								specSettings.displayBar.secondary = nil
 							else
-								specSettings.displayBar.holyWords = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+								specSettings.displayBar.holyWords = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 							end
 						end
 
@@ -2283,7 +2307,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 							specSettings.displayBar = {}
 						end
 						if not specSettings.displayBar.boneShield then
-							specSettings.displayBar.boneShield = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+							specSettings.displayBar.boneShield = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 						end
 
 						if specSettings.displayText and specSettings.displayText.barText then
@@ -2401,10 +2425,16 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									fadeDuration = gs.fadeDuration,
 									fadeDelay = gs.fadeDelay,
 									conditions = {},
+									hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 								}
 								if gs.conditions then
 									for ck, cv in pairs(gs.conditions) do
 										visSource.conditions[ck] = cv
+									end
+								end
+								if gs.hideConditions then
+									for ck, cv in pairs(gs.hideConditions) do
+										visSource.hideConditions[ck] = cv
 									end
 								end
 							elseif specSettings.displayBar.secondary then
@@ -2415,7 +2445,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 							if visSource then
 								specSettings.displayBar.ebonMight = visSource
 							else
-								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 							end
 						end
 
@@ -5202,6 +5232,51 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
 					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
 						MigrateResourceConditionSettings(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
+	-- Backfill per-bar hard-hide conditions. These replace the old global pet battle
+	-- and taxi force-hide path, and default to enabled for all bars.
+	do
+		---@param displayBar table? # The displayBar settings table to migrate in-place
+		local function MigrateHideConditionSettings(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil then
+					local defaults = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+					if entry.hideConditions == nil then
+						entry.hideConditions = defaults
+					else
+						---@type table<string, boolean>
+						local hideConditions = entry.hideConditions
+						if hideConditions.isSteadyFlight ~= nil and hideConditions.isMountedFlying == nil then
+							hideConditions.isMountedFlying = hideConditions.isSteadyFlight
+							hideConditions.isSteadyFlight = nil
+						end
+						for key, value in pairs(defaults) do
+							if hideConditions[key] == nil then
+								hideConditions[key] = value
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateHideConditionSettings(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateHideConditionSettings(specSettings.displayBar)
 					end
 				end
 			end

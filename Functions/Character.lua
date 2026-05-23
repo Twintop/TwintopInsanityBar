@@ -817,6 +817,8 @@ end
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.isMounted = IsMounted()
+	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
+	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 
 	-- Phase 2 visibility state
 	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
@@ -985,6 +987,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.character.inVehicle = UnitInVehicle("player") or false
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
+	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons

@@ -12,10 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.5.9-release (2026-05-21)
+# 12.0.5.9-release (2026-05-24)
 ## General
 
+- [#529](#529) Add new visibility overrides to always hide a bar when certain conditions are met, regardless of other visibility settings.
 - Fix an issue where specialization level bar text was not being rotated into the correct orientation when the bar's orientation was changed between horizontal and vertical. Shared/Global bar text remains unchanged when bar orientation changes occur.
+
+### Localization
+
+- [#756](#756) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 
