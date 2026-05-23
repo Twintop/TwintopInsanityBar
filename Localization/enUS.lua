@@ -2809,3 +2809,22 @@ L["MatchAnchorHeightTooltip"] = "When enabled, this bar's height will match the 
 -- Threshold Icon Position Labels
 L["ThresholdIconPositionAboveLeft"] = "Above/Left"
 L["ThresholdIconPositionBelowRight"] = "Below/Right"
+
+-- Bar Visibility Hard Hide Conditions
+L["ShowBarVisibilityShowHeader"] = "Show Options"
+L["ShowBarVisibilityConditionInPetBattle"] = "In Pet Battle"
+L["ShowBarVisibilityConditionOnTaxi"] = "On a Flight Path"
+L["BarVisibilitySummaryShowHide"] = "%s / Hide: %s"
+
+-- Bar Visibility Column Headers
+L["ShowBarVisibilityShowColumnHeader"] = "Show Bar When"
+L["ShowBarVisibilityForceHideColumnHeader"] = "Always Hide Bar When"
+
+-- Bar Visibility Split Table Columns
+L["BarVisibilityTableHeaderShow"] = "Show"
+L["BarVisibilityTableHeaderAlwaysHide"] = "Always Hide"
+L["BarVisibilityTableShowNeverShown"] = "Never"
+
+-- Bar Visibility Dropdown Tooltips
+L["ShowBarVisibilityShowDropdownTooltip"] = "Controls when this bar is allowed to show. Always Show and Never Show override the selected show conditions; resource and health thresholds only apply when neither override is selected."
+L["ShowBarVisibilityForceHideDropdownTooltip"] = "Controls conditions that always force this bar to hide. These options take precedence over Show Bar When, Always Show, opacity, and resource or health threshold settings."

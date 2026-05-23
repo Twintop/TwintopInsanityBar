@@ -432,14 +432,10 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	SetBarGroupsAlpha(1)
 end
 
----Evaluates bar visibility and shows or hides the resource bar based on combat state, pet battles, taxi, Edit Mode, and spec support
+---Evaluates bar visibility and shows or hides the resource bar based on combat state, configured hide conditions, Edit Mode, and spec support
 ---@param force boolean? When true, forces the bar to hide regardless of other conditions
 function TRB.Functions.Bar:HideResourceBar(force)
 	force = force or false
-	
-	if TRB.Data.character.inPetBattle or TRB.Data.character.onTaxi then
-		force = true
-	end
 
 	-- If spec is not supported (disabled), hide all bars immediately and skip all other logic
 	if not TRB.Data.specSupported then

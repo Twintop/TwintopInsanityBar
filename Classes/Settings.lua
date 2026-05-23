@@ -309,10 +309,21 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
 ---@field public isWarMode boolean? # Show when War Mode is enabled
 
+---@class trbBarVisibilityHideConditions
+---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
+---@field public isMountedGround boolean? # Hide when the player is on a ground mount (mounted + not flying)
+---@field public isMountedFlying boolean? # Hide when the player is on a flying mount (non-skyriding, flying)
+---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
+---@field public isSkyriding boolean? # Hide when the player is skyriding
+---@field public inVehicle boolean? # Hide when the player is in a vehicle
+---@field public inPetBattle boolean? # Hide when the player is in a pet battle
+---@field public onTaxi boolean? # Hide when the player is on a flight path
+
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions
 ---@field public alwaysShow boolean # When true, the bar is unconditionally shown (overrides conditions but not neverShow). Independent of individual conditions.
 ---@field public conditions trbBarVisibilityConditions # OR-combined conditions evaluated when alwaysShow is false
+---@field public hideConditions trbBarVisibilityHideConditions # OR-combined hard-hide conditions that override alwaysShow, normal show conditions, and threshold visibility
 ---@field public smooth boolean
 ---@field public activeAlpha number # Opacity (0–100) when visibility conditions are met. Default 100.
 ---@field public inactiveAlpha number # Opacity (0–100) when visibility conditions are NOT met. 0 = fully hidden. Default 0.
