@@ -11,7 +11,7 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		isMountedGround = false,
 		isMountedFlying = false,
 		isSkyriding = false,
-		inVehicle = true,
+		inVehicle = false,
 		inPetBattle = true,
 		onTaxi = true,
 	}
