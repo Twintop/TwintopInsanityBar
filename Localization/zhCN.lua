@@ -2608,4 +2608,23 @@ if locale == "zhCN" then
 	-- Threshold Icon Position Labels
 	L["ThresholdIconPositionAboveLeft"] = "上方/左侧"
 	L["ThresholdIconPositionBelowRight"] = "下方/右侧"
+
+	-- Bar Visibility Hard Hide Conditions
+	L["ShowBarVisibilityShowHeader"] = "显示选项"
+	L["ShowBarVisibilityConditionInPetBattle"] = "宠物对战中"
+	L["ShowBarVisibilityConditionOnTaxi"] = "乘坐飞行路线时"
+	L["BarVisibilitySummaryShowHide"] = "%s / 隐藏：%s"
+	
+	-- Bar Visibility Column Headers
+	L["ShowBarVisibilityShowColumnHeader"] = "何时显示状态栏"
+	L["ShowBarVisibilityForceHideColumnHeader"] = "何时始终隐藏状态栏"
+	
+	-- Bar Visibility Split Table Columns
+	L["BarVisibilityTableHeaderShow"] = "显示"
+	L["BarVisibilityTableHeaderAlwaysHide"] = "始终隐藏"
+	L["BarVisibilityTableShowNeverShown"] = "从不"
+	
+	-- Bar Visibility Dropdown Tooltips
+	L["ShowBarVisibilityShowDropdownTooltip"] = "控制该状态栏允许显示的时机。始终显示和从不显示会覆盖所选的显示条件；资源和生命值阈值仅在未选择这两个覆盖选项时生效。"
+	L["ShowBarVisibilityForceHideDropdownTooltip"] = "控制会强制隐藏该状态栏的条件。这些选项优先级高于“何时显示状态栏”、始终显示、透明度，以及资源或生命值阈值设置。"
 end
