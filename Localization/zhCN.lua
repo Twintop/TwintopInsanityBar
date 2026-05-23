@@ -2627,4 +2627,13 @@ if locale == "zhCN" then
 	-- Bar Visibility Dropdown Tooltips
 	L["ShowBarVisibilityShowDropdownTooltip"] = "控制该状态栏允许显示的时机。始终显示和从不显示会覆盖所选的显示条件；资源和生命值阈值仅在未选择这两个覆盖选项时生效。"
 	L["ShowBarVisibilityForceHideDropdownTooltip"] = "控制会强制隐藏该状态栏的条件。这些选项优先级高于“何时显示状态栏”、始终显示、透明度，以及资源或生命值阈值设置。"
+
+	-- Bar Visibility Mana Thresholds
+	L["BarVisibilityThresholdManaPercent"] = "法力值百分比"
+	L["BarVisibilityThresholdManaValue"] = "法力值数值"
+	L["BarVisibilityThresholdManaPercentComparison"] = "法力值百分比条件"
+	L["BarVisibilityThresholdManaPercentValue"] = "法力值百分比数值"
+	L["BarVisibilityThresholdManaValueComparison"] = "法力值数值条件"
+	L["BarVisibilityThresholdManaValueValue"] = "法力值数值"
+	L["BarVisibilityThresholdHeaderWithMana"] = "资源/法力/生命值阈值"
 end
