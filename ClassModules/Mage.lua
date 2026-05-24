@@ -562,20 +562,25 @@ local function RefreshLookupData_Fire()
 		end
 	end
 
-	-- Block B: Fire Blast Charges ($fireBlastCharges, $fbCharges, $fireBlastTime, $fbTime)
+	-- Block B: Fire Blast Charges ($fireBlastCharges, $fbCharges, $fireBlastChargesMax, $fbChargesMax, $fireBlastTime, $fbTime)
 	if not activeVars or activeVars["$fireBlastCharges"] or activeVars["$fbCharges"]
+		or activeVars["$fireBlastChargesMax"] or activeVars["$fbChargesMax"]
 		or activeVars["$fireBlastTime"] or activeVars["$fbTime"] then
-		local _fbCharges, _, isRecharging, durationObject = GetFireBlastChargeInfo(spells)
+		local _fbCharges, _fbChargesMax, isRecharging, durationObject = GetFireBlastChargeInfo(spells)
 		local _fbTime = 0
 		if isRecharging and durationObject ~= nil then
 			_fbTime = durationObject:GetRemainingDuration() or 0
 		end
-		lookupLogic["$fireBlastCharges"] = _fbCharges
-		lookupLogic["$fbCharges"] = _fbCharges
-		lookupLogic["$fireBlastTime"] = _fbTime
-		lookupLogic["$fbTime"] = _fbTime
+		lookupLogic["$fireBlastCharges"] = false
+		lookupLogic["$fbCharges"] = false
+		lookupLogic["$fireBlastChargesMax"] = _fbChargesMax
+		lookupLogic["$fbChargesMax"] = _fbChargesMax
+		lookupLogic["$fireBlastTime"] = isRecharging and 1 or 0
+		lookupLogic["$fbTime"] = isRecharging and 1 or 0
 		lookup["$fireBlastCharges"] = TRB.Functions.Number:RoundTo(_fbCharges, 0)
 		lookup["$fbCharges"] = TRB.Functions.Number:RoundTo(_fbCharges, 0)
+		lookup["$fireBlastChargesMax"] = TRB.Functions.Number:RoundTo(_fbChargesMax, 0)
+		lookup["$fbChargesMax"] = TRB.Functions.Number:RoundTo(_fbChargesMax, 0)
 		lookup["$fireBlastTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
 		lookup["$fbTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
 	end
@@ -895,7 +900,8 @@ local function UpdateResourceBar()
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							local cpKey = "comboPoint" .. x
-							if isRecharging and x == maxCharges and rechargeDurationObject ~= nil then
+							local isPartialRechargeNode = isRecharging and x == maxCharges and rechargeDurationObject ~= nil
+							if isPartialRechargeNode then
 								chargeNode:SetMinMax(0, 1)
 								TRB.Data.cache.values.bar[cpKey] = nil
 								Bar:SetBarNodeTimerDuration(specCacheSettings, cpKey, chargeNode, rechargeDurationObject)
@@ -907,8 +913,12 @@ local function UpdateResourceBar()
 							end
 							if fireBlastColors then
 								local chargeKey = "charge" .. x
-								if fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey] then
-									TRB.Functions.Color:ApplyFillColor(chargeNode, fireBlastColors.nodeColors[chargeKey])
+								local fillColor = fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey]
+								if isPartialRechargeNode and fireBlastColors.regenerating and fireBlastColors.regenerating.enabled then
+									fillColor = fireBlastColors.regenerating
+								end
+								if fillColor then
+									TRB.Functions.Color:ApplyFillColor(chargeNode, fillColor)
 								end
 								chargeNode:SetBorderColor(fireBlastColors.border.color)
 								chargeNode:SetBackgroundColorFromString(fireBlastColors.background.color)
@@ -1454,12 +1464,23 @@ do
 	frost["$comboPointsMax"] = true
 	frost["$iciclesMax"] = true
 	-- Fire
+	local fireBlastChargesMaxFn = function()
+		local maxCharges = TRB.Data.character.maxResource2 or 0
+		return maxCharges > 0
+	end
+	local fireBlastTimeFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local _, _, isRecharging = GetFireBlastChargeInfo(spells)
+		return isRecharging
+	end
 	local fire = {}
 	for k, v in pairs(common) do fire[k] = v end
-	fire["$fireBlastCharges"] = true
-	fire["$fbCharges"] = true
-	fire["$fireBlastTime"] = true
-	fire["$fbTime"] = true
+	fire["$fireBlastCharges"] = false
+	fire["$fbCharges"] = false
+	fire["$fireBlastChargesMax"] = fireBlastChargesMaxFn
+	fire["$fbChargesMax"] = fireBlastChargesMaxFn
+	fire["$fireBlastTime"] = fireBlastTimeFn
+	fire["$fbTime"] = fireBlastTimeFn
 
 	specValidVars = { [1] = arcane, [2] = fire, [3] = frost }
 end
@@ -1507,6 +1528,26 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
+	if normalizedRelativeFrame == "FireBlastChargesBar" or normalizedRelativeFrame == "FireBlastCharges" then
+		if barGroups.secondary then
+			return barGroups.secondary:GetContainerFrame(), true, barGroups.secondary.isVisible
+		end
+		return nil, true, false
+	end
+
+	local fireBlastChargeIndex = string.match(normalizedRelativeFrame, "^FireBlastCharge(%d+)$")
+	if fireBlastChargeIndex ~= nil then
+		local chargeIndex = tonumber(fireBlastChargeIndex)
+		if chargeIndex and barGroups.secondary then
+			local chargeNode = barGroups.secondary:GetNode(chargeIndex)
+			if chargeNode then
+				local isVisible = barGroups.secondary.isVisible and chargeNode.isVisible
+				return chargeNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
 	local comboPointPrefix = "ComboPoint"
 	if string.sub(normalizedRelativeFrame, 1, string.len(comboPointPrefix)) == comboPointPrefix then
 		local comboPoint = tonumber(string.sub(normalizedRelativeFrame, string.len(comboPointPrefix) + 1))
@@ -1521,6 +1562,23 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+function TRB.Functions.Class:HasActiveTimers()
+	if TRB.Data.character.specId == 2 then
+		local activeVars = TRB.Data.activeVariables
+		if activeVars ~= nil and not activeVars["$fireBlastTime"] and not activeVars["$fbTime"] then
+			return false
+		end
+
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		if spells and spells.fireBlast then
+			local chargeInfo = C_Spell.GetSpellCharges(spells.fireBlast.id)
+			return chargeInfo ~= nil and chargeInfo["isActive"] == true
+		end
+	end
+
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

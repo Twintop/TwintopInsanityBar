@@ -108,7 +108,9 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
 
 		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false },
-		{ variable = "$fbCharges", description = "", printInSettings = false, color = false },
+        { variable = "$fbCharges", description = "", printInSettings = false, color = false },
+        { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false },
+        { variable = "$fbChargesMax", description = "", printInSettings = false, color = false },
 		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false },
 		{ variable = "$fbTime", description = "", printInSettings = false, color = false },
 	})

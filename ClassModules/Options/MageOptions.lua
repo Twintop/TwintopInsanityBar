@@ -171,6 +171,8 @@ local function FireLoadDefaultBarTextSettings(classic)
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	local fireBlastChargeTextSettings = TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
+	for _, entry in ipairs(fireBlastChargeTextSettings) do table.insert(textSettings, entry) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Mage.FireLoadDefaultBarTextSettings = FireLoadDefaultBarTextSettings
@@ -905,7 +907,9 @@ local function FireConstructFireBlastChargesBarPanel(parent)
 	yCoord = yCoord - 60
 	local fireBlastChargesDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("fireBlastCharges")
 	if fireBlastChargesDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 8, 2, yCoord, fireBlastChargesDef)
+		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 8, 2, yCoord, fireBlastChargesDef, function(callbackParent, callbackYCoord)
+			return TRB.Functions.OptionsUi:GenerateCustomBarPartialFillColorOptions(callbackParent, controls, spec, 8, 2, callbackYCoord, fireBlastChargesDef, L["MageFireFireBlast"])
+		end)
 	end
 end
 

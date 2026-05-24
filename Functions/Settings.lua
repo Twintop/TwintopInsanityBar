@@ -1887,6 +1887,29 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 						specSettings.colors.text.manaBar = { color = "FF0000FF" }
 					end
 
+					-- Add Fire Mage default Fire Blast charge node timer text to existing profiles.
+					if className == "mage" and specName == "fire" and specSettings.displayText then
+						specSettings.displayText.barText = specSettings.displayText.barText or {}
+						specSettings.displayText.migrations = specSettings.displayText.migrations or {}
+						if not specSettings.displayText.migrations.fireBlastChargeNodeTimers then
+							local existingDefaultEntries = {}
+							for _, entry in ipairs(specSettings.displayText.barText) do
+								if entry.position and entry.position.relativeToFrame and entry.text then
+									existingDefaultEntries[entry.position.relativeToFrame .. "::" .. entry.text] = true
+								end
+							end
+
+							local fireBlastChargeText = TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
+							for _, entry in ipairs(fireBlastChargeText) do
+								local entryKey = entry.position.relativeToFrame .. "::" .. entry.text
+								if not existingDefaultEntries[entryKey] then
+									table.insert(specSettings.displayText.barText, entry)
+								end
+							end
+							specSettings.displayText.migrations.fireBlastChargeNodeTimers = true
+						end
+					end
+
 					-- Migrate Brewmaster Stagger bar from old comboPoints structure to new bars.stagger structure
 					if className == "monk" and specName == "brewmaster" then
 						-- Migrate dimensions: comboPoints -> bars.stagger
@@ -7779,6 +7802,39 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	local function EnsureCustomBarPartialFillColor(className, specName, barKey, defaultColors)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.bars = specSettings.colors.bars or {}
+		if type(specSettings.colors.bars[barKey]) ~= "table" then
+			specSettings.colors.bars[barKey] = defaultColors or {}
+		end
+
+		local barColors = specSettings.colors.bars[barKey]
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+		if barColors.regenerating == nil then
+			barColors.regenerating = defaultColor
+		elseif type(barColors.regenerating) == "string" then
+			barColors.regenerating = {
+				color = barColors.regenerating,
+				color2 = barColors.regenerating,
+				gradientDirection = "disabled",
+				enabled = false
+			}
+		elseif type(barColors.regenerating) == "table" then
+			barColors.regenerating.color = barColors.regenerating.color or defaultColor.color
+			barColors.regenerating.color2 = barColors.regenerating.color2 or barColors.regenerating.color
+			barColors.regenerating.gradientDirection = barColors.regenerating.gradientDirection or "disabled"
+			if barColors.regenerating.enabled == nil then
+				barColors.regenerating.enabled = false
+			end
+		end
+	end
+
 	local function EnsureSecondaryCastingOverlayColor(className, specName)
 		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
 		if type(specSettings) ~= "table" then
@@ -7838,6 +7894,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 	EnsureSecondaryPartialFillColor("evoker", "devastation")
 	EnsureSecondaryPartialFillColor("evoker", "preservation")
 	EnsureSecondaryPartialFillColor("evoker", "augmentation")
+	EnsureCustomBarPartialFillColor("mage", "fire", "fireBlastCharges", TRB.Functions.Settings:DefaultFireBlastChargesBarColors())
 
 	-- Backfill global health bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil and TwintopInsanityBarSettings.core.healthBar ~= nil then
@@ -8630,8 +8687,9 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultFireBlastChargesBarColors()
 	return {
-		border = { color = "FFFF4400" },
+		border = { color = "FFFF7878" },
 		background = { color = "66000000" },
+		regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
 		sameColor = false,
 		nodeColors = {
 			charge1 = { color = "FFFF8800", color2 = "FFFF8800", gradientDirection = "disabled" },
@@ -9396,6 +9454,51 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			}
 		})
 	end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+
+---Returns default bar text for Fire Mage Fire Blast charge nodes.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {}
+	local chargeFrameNames = {
+		L["MageFireFireBlastCharge1"],
+		L["MageFireFireBlastCharge2"],
+		L["MageFireFireBlastCharge3"],
+	}
+
+	for chargeIndex = 1, 3 do
+		table.insert(textSettings, {
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			enabled = true,
+			name = "FB" .. chargeIndex,
+			guid = TRB.Functions.String:Guid(),
+			text = "{$fireBlastChargesMax=" .. chargeIndex .. "&$fireBlastTime}[$fireBlastTime]",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "FireBlastCharge_" .. chargeIndex,
+				relativeToFrameName = chargeFrameNames[chargeIndex],
+			}
+		})
+	end
+
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 

@@ -6170,6 +6170,57 @@ function TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(parent
 	return yCoord - 30
 end
 
+---Generates partial-fill color controls for a custom multi-node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition Custom bar definition
+---@param resourceString string Localized resource/spell name for display labels
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi:GenerateCustomBarPartialFillColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, resourceString)
+	local colorSettings = barTypeDef:GetColors(spec)
+	if colorSettings == nil then
+		return yCoord
+	end
+
+	colorSettings.regenerating = colorSettings.regenerating or TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+
+	controls.colors = controls.colors or {}
+	controls.colors.bars = controls.colors.bars or {}
+	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local colorControls = controls.colors.bars[barTypeDef.key]
+	local frameName = "TwintopResourceBar_CustomBarPartialFillColor_" .. barTypeDef.key .. "_" .. tostring(classId) .. "_" .. tostring(specId)
+	controls.checkBoxes[barTypeDef.key .. "PartialFillColor"] = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes[barTypeDef.key .. "PartialFillColor"]
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondaryPartialFillColorCheckbox"], resourceString))
+	checkBox.tooltip = string.format(L["SecondaryPartialFillColorCheckboxTooltip"], resourceString)
+	checkBox:SetChecked(colorSettings.regenerating.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		colorSettings.regenerating.enabled = self:GetChecked()
+		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	colorControls.regenerating = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, string.format(L["SecondaryPartialFillColorPicker"], resourceString), colorSettings.regenerating, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = colorControls.regenerating
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorSettings, colorControls, "regenerating", barTypeDef.key)
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, colorSettings.regenerating, self, classId, specId)
+	end)
+
+	return yCoord - 30
+end
+
 ---Generates casting overlay color controls for a secondary node bar.
 ---@param parent Frame Parent frame for the controls
 ---@param controls table Table to store control references
@@ -13751,6 +13802,20 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["ArcaneCharge2"],
 			L["ArcaneCharge3"],
 			L["ArcaneCharge4"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif(classId == 8 and specId == 2) then -- Fire Mage
+		relativeToFrame[L["MageFireBlastCharges"]] = "FireBlastChargesBar"
+		relativeToFrame[L["MageFireFireBlastCharge1"]] = "FireBlastCharge_1"
+		relativeToFrame[L["MageFireFireBlastCharge2"]] = "FireBlastCharge_2"
+		relativeToFrame[L["MageFireFireBlastCharge3"]] = "FireBlastCharge_3"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["MageFireBlastCharges"],
+			L["MageFireFireBlastCharge1"],
+			L["MageFireFireBlastCharge2"],
+			L["MageFireFireBlastCharge3"],
 			L["HealthBar"],
 			L["Screen"],
 		}
