@@ -793,6 +793,7 @@ end
 ---@field public remaining number
 ---@field public remainingTotal number
 ---@field public onCooldown boolean
+---@field public isActive boolean # For charge-based spells, mirrors the API's active recharge state.
 ---@field public charges integer
 ---@field public maxCharges integer
 ---@field public castCount integer
@@ -827,6 +828,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.remaining = 0
 	self.remainingTotal = 0
 	self.onCooldown = false
+	self.isActive = false
 	self.charges = 0
 	self.castCount = 0
 	self.maxCharges = 0
@@ -860,6 +862,7 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 		end
 
 		self.onCooldown = self.manualCharges < self.manualMaxCharges
+		self.isActive = self.onCooldown
 		self.charges = self.manualCharges
 		self.maxCharges = self.manualMaxCharges
 		self.remaining = remainingTime
@@ -994,6 +997,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		self.charges = self.manualCharges
 		self.maxCharges = self.manualMaxCharges
 		self.onCooldown = self.manualCharges < self.manualMaxCharges
+		self.isActive = self.onCooldown
 		-- Manual timer-based cooldown tracking for all manual charge spells.
 		-- Check if the current recharge timer has expired.
 		if self.onCooldown and self.manualCooldownExpires ~= nil then
@@ -1016,10 +1020,23 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		local duration = 0
 		if self.parent.spell.hasCharges == true then
 			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
-			self.charges = spellCharges.currentCharges
-			self.maxCharges = spellCharges.maxCharges
-			startTime = spellCharges.cooldownStartTime
-			duration = spellCharges.cooldownDuration
+			if spellCharges ~= nil then
+				self.charges = spellCharges.currentCharges
+				self.maxCharges = spellCharges.maxCharges
+				self.isActive = spellCharges["isActive"] == true
+				startTime = spellCharges.cooldownStartTime
+				duration = spellCharges.cooldownDuration
+				if self.isActive then
+					self:RefreshDurationObject()
+				else
+					self.durationObject = nil
+				end
+			else
+				self.isActive = false
+				self.durationObject = nil
+				startTime = 0
+				duration = 0
+			end
 ---@diagnostic disable-next-line: param-type-mismatch
 			if not issecretvalue(self.charges) and not issecretvalue(self.maxCharges) and self.charges == self.maxCharges then
 				startTime = 0
@@ -1027,6 +1044,8 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			end
 		else
 			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell.id) --[[@as SpellCooldownInfo]]
+			self.isActive = false
+			self.durationObject = nil
 			startTime = spellCooldown.startTime
 			duration = spellCooldown.duration
 		end
@@ -1160,6 +1179,7 @@ function TRB.Classes.SnapshotCooldown:SpendCharge(cooldownDuration)
 	self.manualCharges = self.manualCharges - 1
 	self.charges = self.manualCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
+	self.isActive = self.onCooldown
 
 	-- Start a recharge timer if one isn't already running.
 	-- In WoW's charge system, spending a second charge while the first is recharging
@@ -1181,6 +1201,7 @@ function TRB.Classes.SnapshotCooldown:GainCharge(cooldownDuration)
 	self.manualCharges = math.min(self.manualMaxCharges, self.manualCharges + 1)
 	self.charges = self.manualCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
+	self.isActive = self.onCooldown
 
 	if self.onCooldown and cooldownDuration ~= nil and cooldownDuration > 0 then
 		-- Still recharging (multi-charge spell): start a new timer for the next charge

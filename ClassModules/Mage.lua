@@ -268,28 +268,38 @@ local function SyncFireBlastChargeNodes(maxCharges, settings)
 	secondaryGroup:ShowNodes(maxCharges)
 end
 
-local function GetFireBlastChargeInfo(spells)
-	local maxCharges = TRB.Data.character.maxResource2 or 1
-	local currentCharges = maxCharges
-	local isRecharging = false
-	local durationObject = nil
+---@param spells TRB.Classes.Mage.FireSpells?
+---@param refresh boolean?
+---@return TRB.Classes.SnapshotCooldown?
+local function GetFireBlastCooldownSnapshot(spells, refresh)
+	if not (spells and spells.fireBlast and TRB.Data.snapshotData and TRB.Data.snapshotData.snapshots) then
+		return nil
+	end
 
-	if spells ~= nil and spells.fireBlast ~= nil then
-		local chargeInfo = C_Spell.GetSpellCharges(spells.fireBlast.id)
-		if chargeInfo ~= nil then
-			if chargeInfo.maxCharges ~= nil and not issecretvalue(chargeInfo.maxCharges) then
-				maxCharges = chargeInfo.maxCharges
-			end
-			currentCharges = chargeInfo.currentCharges or currentCharges
-			isRecharging = chargeInfo["isActive"] == true
-		end
+	local snapshot = TRB.Data.snapshotData.snapshots[spells.fireBlast.id]
+	if not (snapshot and snapshot.cooldown) then
+		return nil
+	end
 
-		if isRecharging then
-			durationObject = C_Spell.GetSpellChargeDuration(spells.fireBlast.id)
+	if refresh then
+		snapshot.cooldown:Refresh(true)
+	end
+
+	return snapshot.cooldown
+end
+
+---@param cooldown TRB.Classes.SnapshotCooldown?
+---@return integer
+local function GetFireBlastMaxCharges(cooldown)
+	local maxCharges = cooldown and cooldown.maxCharges
+	if maxCharges ~= nil and not issecretvalue(maxCharges) then
+		local numericMaxCharges = tonumber(maxCharges)
+		if numericMaxCharges ~= nil then
+			return numericMaxCharges
 		end
 	end
 
-	return currentCharges, maxCharges, isRecharging, durationObject
+	return TRB.Data.character.maxResource2 or 1
 end
 
 local function ConstructResourceBar(settings)
@@ -566,7 +576,14 @@ local function RefreshLookupData_Fire()
 	if not activeVars or activeVars["$fireBlastCharges"] or activeVars["$fbCharges"]
 		or activeVars["$fireBlastChargesMax"] or activeVars["$fbChargesMax"]
 		or activeVars["$fireBlastTime"] or activeVars["$fbTime"] then
-		local _fbCharges, _fbChargesMax, isRecharging, durationObject = GetFireBlastChargeInfo(spells)
+		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
+		local _fbChargesMax = GetFireBlastMaxCharges(fireBlastCooldown)
+		local _fbCharges = fireBlastCooldown and fireBlastCooldown.charges or _fbChargesMax
+		local isRecharging = fireBlastCooldown and fireBlastCooldown.isActive == true
+		local durationObject = nil
+		if fireBlastCooldown ~= nil and isRecharging then
+			durationObject = fireBlastCooldown:GetDurationObject()
+		end
 		local _fbTime = 0
 		if isRecharging and durationObject ~= nil then
 			_fbTime = durationObject:GetRemainingDuration() or 0
@@ -891,7 +908,14 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 				if spells and spells.fireBlast and barGroups and barGroups.secondary then
-					local charges, maxCharges, isRecharging, rechargeDurationObject = GetFireBlastChargeInfo(spells)
+					local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells)
+					local maxCharges = GetFireBlastMaxCharges(fireBlastCooldown)
+					local charges = fireBlastCooldown and fireBlastCooldown.charges or maxCharges
+					local isRecharging = fireBlastCooldown and fireBlastCooldown.isActive == true
+					local rechargeDurationObject = nil
+					if fireBlastCooldown ~= nil and isRecharging then
+						rechargeDurationObject = fireBlastCooldown:GetDurationObject()
+					end
 					local fireBlastColors = specCacheSettings.colors.bars and specCacheSettings.colors.bars.fireBlastCharges
 					SyncFireBlastChargeNodes(maxCharges, specCacheSettings)
 
@@ -1089,10 +1113,11 @@ local function SwitchSpec()
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
 
-		-- Sync Fire Blast node count from the charge API after EventRegistration populates spell data.
+		-- Sync Fire Blast node count from the snapshot cooldown after EventRegistration populates spell data.
 		do
 			local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
-			local _, maxCharges = GetFireBlastChargeInfo(fireSpells)
+			local fireBlastCooldown = GetFireBlastCooldownSnapshot(fireSpells, true)
+			local maxCharges = GetFireBlastMaxCharges(fireBlastCooldown)
 			SyncFireBlastChargeNodes(maxCharges, specCache.mage_fire.settings)
 		end
 
@@ -1291,7 +1316,7 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 -- Fire Blast charge update handler. This event is only a repaint hint; charge state
--- comes directly from C_Spell.GetSpellCharges in the update path.
+-- comes from the Fire Blast cooldown snapshot in the update path.
 local function HandleFireBlastChargesEvent(spellId)
 	if TRB.Data.character.specId ~= 2 then return end
 
@@ -1347,7 +1372,8 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "fire"
 		TRB.Data.character.compositeKey = "mage_fire"
 		local fireSpells2 = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
-		local _, maxFBCharges = GetFireBlastChargeInfo(fireSpells2)
+		local fireBlastCooldown = GetFireBlastCooldownSnapshot(fireSpells2, true)
+		local maxFBCharges = GetFireBlastMaxCharges(fireBlastCooldown)
 		TRB.Data.character.maxResource2 = maxFBCharges
 	elseif TRB.Data.character.specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
@@ -1470,8 +1496,8 @@ do
 	end
 	local fireBlastTimeFn = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
-		local _, _, isRecharging = GetFireBlastChargeInfo(spells)
-		return isRecharging
+		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
+		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	end
 	local fire = {}
 	for k, v in pairs(common) do fire[k] = v end
@@ -1572,10 +1598,8 @@ function TRB.Functions.Class:HasActiveTimers()
 		end
 
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
-		if spells and spells.fireBlast then
-			local chargeInfo = C_Spell.GetSpellCharges(spells.fireBlast.id)
-			return chargeInfo ~= nil and chargeInfo["isActive"] == true
-		end
+		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
+		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	end
 
 	return false
