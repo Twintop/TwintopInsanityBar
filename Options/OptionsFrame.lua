@@ -36,6 +36,7 @@ local NAV_INDENT = 20
 local NAV_BUTTON_HEIGHT = 22
 local NAV_BUTTON_PAD = 2
 local NAV_ICON_SIZE = 16
+local configuredDragHandles = setmetatable({}, { __mode = "k" })
 
 -- Lookup tables for class/spec icons (all-lowercase class keys)
 local CLASS_IDS = {
@@ -206,6 +207,25 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 	return btn
 end
 
+---Make a frame act as a drag handle for the main options window.
+---@param handleFrame Frame|nil
+---@param mainFrame Frame|nil
+local function ConfigureDragHandle(handleFrame, mainFrame)
+	if handleFrame == nil or mainFrame == nil or configuredDragHandles[handleFrame] then
+		return
+	end
+
+	configuredDragHandles[handleFrame] = true
+	handleFrame:EnableMouse(true)
+	handleFrame:RegisterForDrag("LeftButton")
+	handleFrame:HookScript("OnDragStart", function()
+		mainFrame:StartMoving()
+	end)
+	handleFrame:HookScript("OnDragStop", function()
+		mainFrame:StopMovingOrSizing()
+	end)
+end
+
 -- ─────────────────────────────────────────────────────────────────────
 -- Constructor
 -- ─────────────────────────────────────────────────────────────────────
@@ -244,7 +264,6 @@ function OptionsFrame:EnsureFrame()
 	mainFrame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	mainFrame:SetPoint("CENTER")
 	mainFrame:SetFrameStrata("DIALOG")
-	mainFrame:SetClampedToScreen(true)
 	mainFrame:EnableMouse(true)
 	mainFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -258,6 +277,9 @@ function OptionsFrame:EnsureFrame()
 	mainFrame:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
 	mainFrame:Hide()
 	mainFrame:SetMovable(true)
+	mainFrame:HookScript("OnHide", function(self)
+		self:StopMovingOrSizing()
+	end)
 
 	-- Add to UISpecialFrames for Escape-to-close
 	tinsert(UISpecialFrames, "TRB_OptionsFrame")
@@ -267,14 +289,7 @@ function OptionsFrame:EnsureFrame()
 	titleBar:SetHeight(TITLE_HEIGHT)
 	titleBar:SetPoint("TOPLEFT", 4, -4)
 	titleBar:SetPoint("TOPRIGHT", -4, -4)
-	titleBar:EnableMouse(true)
-	titleBar:RegisterForDrag("LeftButton")
-	titleBar:SetScript("OnDragStart", function()
-		mainFrame:StartMoving()
-	end)
-	titleBar:SetScript("OnDragStop", function()
-		mainFrame:StopMovingOrSizing()
-	end)
+	ConfigureDragHandle(titleBar, mainFrame)
 
 	-- Title text
 	local titleText = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -309,11 +324,13 @@ function OptionsFrame:EnsureFrame()
 		insets = { left = 0, right = 0, top = 0, bottom = 0 },
 	})
 	navFrame:SetBackdropColor(0, 0, 0, 0.3)
+	ConfigureDragHandle(navFrame, mainFrame)
 
 	-- Nav scroll frame
 	local navScroll = CreateFrame("ScrollFrame", "TRB_OptionsFrame_NavScroll", navFrame, "UIPanelScrollFrameTemplate")
 	navScroll:SetPoint("TOPLEFT", 4, -4)
 	navScroll:SetPoint("BOTTOMRIGHT", -26, 4)
+	ConfigureDragHandle(navScroll, mainFrame)
 
 	local navScrollChild = CreateFrame("Frame", nil, navScroll)
 	navScrollChild:SetWidth(NAV_WIDTH - 30)
@@ -332,6 +349,7 @@ function OptionsFrame:EnsureFrame()
 	footerFrame:SetHeight(FOOTER_HEIGHT)
 	footerFrame:SetPoint("BOTTOMLEFT", 4, 4)
 	footerFrame:SetPoint("BOTTOMRIGHT", -4, 4)
+	ConfigureDragHandle(footerFrame, mainFrame)
 
 	-- Divider above footer
 	local footerDivider = mainFrame:CreateTexture(nil, "ARTWORK")
@@ -517,6 +535,7 @@ function OptionsFrame:EnsureFrame()
 	local contentArea = CreateFrame("Frame", "TRB_OptionsFrame_Content", mainFrame)
 	contentArea:SetPoint("TOPLEFT", navFrame, "TOPRIGHT", 1, 0)
 	contentArea:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -4, 4 + FOOTER_HEIGHT + 1)
+	ConfigureDragHandle(contentArea, mainFrame)
 
 	-- Store references on self
 	self.mainFrame = mainFrame
@@ -552,6 +571,7 @@ function OptionsFrame:RegisterCategory(key, label, panel)
 	panel:SetParent(self.contentArea)
 	panel:ClearAllPoints()
 	panel:SetAllPoints(self.contentArea)
+	ConfigureDragHandle(panel, self.mainFrame)
 	panel:Hide()
 end
 
@@ -576,6 +596,7 @@ function OptionsFrame:RegisterBottomCategory(key, label, panel)
 	panel:SetParent(self.contentArea)
 	panel:ClearAllPoints()
 	panel:SetAllPoints(self.contentArea)
+	ConfigureDragHandle(panel, self.mainFrame)
 	panel:Hide()
 end
 
@@ -620,6 +641,7 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, bui
 			panel:SetParent(self.contentArea)
 			panel:ClearAllPoints()
 			panel:SetAllPoints(self.contentArea)
+			ConfigureDragHandle(panel, self.mainFrame)
 			panel:Hide()
 
 			-- If the button was already created (during RefreshNav) with no panel,
@@ -655,6 +677,7 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, bui
 		panel:SetParent(self.contentArea)
 		panel:ClearAllPoints()
 		panel:SetAllPoints(self.contentArea)
+		ConfigureDragHandle(panel, self.mainFrame)
 		panel:Hide()
 	end
 

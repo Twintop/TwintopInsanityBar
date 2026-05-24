@@ -26,6 +26,7 @@ local barNodeCounter = 0
 ---@field public smooth boolean?
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
 ---@field public _gradientActive boolean? # Whether a gradient is currently applied to the fill texture
+---@field public fillDirection trbFillDirection? # Current fill direction for this node
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -60,6 +61,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.isVisible = false
 	self.smooth = nil
 	self.borderTexture = nil
+	self.fillDirection = "leftRight"
 	self.overlaySlots = {}
 
 	-- Create a single consolidated StatusBar frame
@@ -305,6 +307,33 @@ function TRB.Classes.BarNode:SetBorderSize(size)
 	self:SetDimensions(self.width, self.height, size)
 end
 
+---Sets the fill direction for this node's StatusBar.
+---Translates a trbFillDirection string into the appropriate WoW API calls:
+---SetOrientation (HORIZONTAL/VERTICAL), SetReverseFill (true for rightLeft/topBottom),
+---and SetRotatesTexture (true for vertical so the texture rotates 90°).
+---@param fillDirection trbFillDirection? # The fill direction to apply
+function TRB.Classes.BarNode:SetFillDirection(fillDirection)
+	fillDirection = fillDirection or "leftRight"
+	if self.fillDirection == fillDirection then
+		return
+	end
+	self.fillDirection = fillDirection
+
+	local Bar = TRB.Functions.Bar
+	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
+	local reverseFill = Bar:GetReverseFillFromFillDirection(fillDirection)
+	local isVertical = Bar:IsVerticalFill(fillDirection)
+
+	self.frame:SetOrientation(orientation)
+	self.frame:SetReverseFill(reverseFill)
+	self.frame:SetRotatesTexture(isVertical)
+
+	-- Re-anchor all overlay slots since their positioning depends on fill direction
+	for _, slot in pairs(self.overlaySlots) do
+		slot:Reanchor()
+	end
+end
+
 ---Sets the textures for all frame components
 ---@param resourceTexture string # Path to the resource bar texture
 ---@param borderTexture string # Path to the border texture
@@ -485,6 +514,7 @@ end
 ---@field public spacing number
 ---@field public fullWidth boolean
 ---@field public orientation string
+---@field public growthDirection trbFillDirection # Direction nodes grow within the group
 ---@field public isVisible boolean
 ---@field public isPrimary boolean
 ---@field public targetAlpha number # Target alpha from visibility system (0.0–1.0)
@@ -513,6 +543,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	self.spacing = 0
 	self.fullWidth = false
 	self.orientation = "HORIZONTAL"
+	self.growthDirection = "leftRight"
 	self.isVisible = false
 	self.isPrimary = isPrimary or false
 	self.smooth = nil
@@ -668,10 +699,12 @@ end
 ---@param spacing number # Space between nodes
 ---@param fullWidth boolean # Whether nodes should stretch to fill the width
 ---@param orientation string? # "HORIZONTAL" or "VERTICAL"
-function TRB.Classes.BarGroup:SetLayout(spacing, fullWidth, orientation)
+---@param growthDirection trbFillDirection? # Direction nodes grow within the group
+function TRB.Classes.BarGroup:SetLayout(spacing, fullWidth, orientation, growthDirection)
 	self.spacing = spacing or 0
 	self.fullWidth = fullWidth or false
 	self.orientation = orientation or "HORIZONTAL"
+	self.growthDirection = growthDirection or "leftRight"
 end
 
 ---Sets dimensions for all nodes in the group
@@ -708,6 +741,16 @@ function TRB.Classes.BarGroup:SetAllNodeTextures(barTexture, borderTexture, bgTe
 	for i = 1, self.maxNodes do
 		if self.nodes[i] then
 			self.nodes[i]:SetTextures(barTexture, borderTexture, bgTexture)
+		end
+	end
+end
+
+---Sets the fill direction for all nodes in this group.
+---@param fillDirection trbFillDirection? # The fill direction to apply to each node
+function TRB.Classes.BarGroup:SetAllNodeFillDirections(fillDirection)
+	for i = 1, self.maxNodes do
+		if self.nodes[i] then
+			self.nodes[i]:SetFillDirection(fillDirection)
 		end
 	end
 end
@@ -754,20 +797,8 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 
 	-- Set node count and apply layout
 	self:SetNodeCount(displayNodes)
-	self:SetLayout(TRB.Functions.Bar:GetEffectiveSpacing(settings.comboPoints), TRB.Functions.Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+	TRB.Functions.Bar:ApplySecondaryBarGroupLayout(settings, TRB.Frames.barGroups, displayNodes)
 	self:Show()
-
-	-- Use effectiveWidth (CDM-matched) if available, otherwise fall back to settings.bar.width
-	local barGroups = TRB.Frames.barGroups
-	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
-
-	-- Apply layout to position all nodes correctly
-	self:ApplyLayout(
-		effectiveWidth,
-		settings.comboPoints.width,
-		settings.comboPoints.height,
-		settings.comboPoints.border
-	)
 
 	-- Show/hide nodes and set up textures
 	local frameLevels = TRB.Data.constants.frameLevels
@@ -924,47 +955,105 @@ function TRB.Classes.BarGroup:GetContainerFrame()
 	return self.containerFrame
 end
 
----Applies layout to position nodes within the group (for multi-node groups)
----@param totalWidth number # Total width available for the group
----@param nodeWidth number # Width of each node (ignored if fullWidth is true)
----@param nodeHeight number
+---Applies layout to position nodes within the group (for multi-node groups).
+---Supports four growth directions: leftRight, rightLeft, topBottom, bottomTop.
+---Horizontal growth: nodes are placed side by side; `totalExtent` is width.
+---Vertical growth: nodes are stacked; `totalExtent` is height.
+---@param totalWidth number # Total extent available along the growth axis
+---@param nodeWidth number # Per-node dimension along the growth axis (ignored if fullWidth is true)
+---@param nodeHeight number # Per-node dimension along the cross axis
 ---@param border number
 function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, border)
 	if self.nodeCount == 0 then
 		return
 	end
 
-	local actualNodeWidth = nodeWidth
-	-- Each node is now a single frame at outer dimensions (including its own border),
-	-- so spacing between nodes is just the user-configured spacing.
+	local growthDirection = self.growthDirection or "leftRight"
+	local isVerticalGrowth = (growthDirection == "topBottom" or growthDirection == "bottomTop")
+
+	-- For vertical growth, swap the axis meanings:
+	-- totalWidth becomes totalHeight, nodeWidth becomes per-node height, nodeHeight becomes per-node width
+	local totalExtent = totalWidth
+	local nodeExtent = nodeWidth
+	local nodeCross = nodeHeight
+	if isVerticalGrowth then
+		-- When growing vertically, the "extent" dimension is height and "cross" is width.
+		-- totalWidth parameter is still the available extent along the growth axis.
+		totalExtent = totalWidth
+		nodeExtent = nodeWidth
+		nodeCross = nodeHeight
+	end
+
+	local actualNodeExtent = nodeExtent
 	local nodeSpacing = self.spacing
 
 	if self.fullWidth then
-		-- Calculate node width to fill the total width
-		actualNodeWidth = (totalWidth - ((self.nodeCount - 1) * nodeSpacing)) / self.nodeCount
+		actualNodeExtent = (totalExtent - ((self.nodeCount - 1) * nodeSpacing)) / self.nodeCount
 	end
 
 	-- Set container dimensions
-	local groupWidth = self.fullWidth and totalWidth or (self.nodeCount * actualNodeWidth + (self.nodeCount - 1) * nodeSpacing)
-	self.containerFrame:SetWidth(groupWidth)
-	self.containerFrame:SetHeight(nodeHeight)
-	self.layoutHeight = nodeHeight -- Store layout height for collapse/expand by ProcessBars
+	local groupExtent = self.fullWidth and totalExtent or (self.nodeCount * actualNodeExtent + (self.nodeCount - 1) * nodeSpacing)
+
+	if isVerticalGrowth then
+		self.containerFrame:SetWidth(nodeCross)
+		self.containerFrame:SetHeight(groupExtent)
+		self.layoutHeight = groupExtent
+		self.layoutWidth = nodeCross
+	else
+		self.containerFrame:SetWidth(groupExtent)
+		self.containerFrame:SetHeight(nodeCross)
+		self.layoutHeight = nodeCross
+		self.layoutWidth = groupExtent
+	end
+
+	-- Determine anchor points and chaining based on growth direction
+	local firstAnchor, chainFrom, chainTo
+	if growthDirection == "leftRight" then
+		firstAnchor = "TOPLEFT"
+		chainFrom = "LEFT"
+		chainTo = "RIGHT"
+	elseif growthDirection == "rightLeft" then
+		firstAnchor = "TOPRIGHT"
+		chainFrom = "RIGHT"
+		chainTo = "LEFT"
+	elseif growthDirection == "topBottom" then
+		firstAnchor = "TOPLEFT"
+		chainFrom = "TOP"
+		chainTo = "BOTTOM"
+	elseif growthDirection == "bottomTop" then
+		firstAnchor = "BOTTOMLEFT"
+		chainFrom = "BOTTOM"
+		chainTo = "TOP"
+	else
+		-- Default fallback
+		firstAnchor = "TOPLEFT"
+		chainFrom = "LEFT"
+		chainTo = "RIGHT"
+	end
 
 	-- Position each node
 	for i = 1, self.maxNodes do
 		local node = self.nodes[i]
 		if node then
 			if i <= self.nodeCount then
-				node:SetDimensions(actualNodeWidth, nodeHeight, border)
+				if isVerticalGrowth then
+					node:SetDimensions(nodeCross, actualNodeExtent, border)
+				else
+					node:SetDimensions(actualNodeExtent, nodeCross, border)
+				end
 
 				node.frame:ClearAllPoints()
 				if i == 1 then
-					-- Node frame is the full outer boundary now, no border offset needed
-					node.frame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", 0, 0)
+					node.frame:SetPoint(firstAnchor, self.containerFrame, firstAnchor, 0, 0)
 				else
 					local prevNode = self.nodes[i-1]
 					if prevNode then
-						node.frame:SetPoint("LEFT", prevNode.frame, "RIGHT", nodeSpacing, 0)
+						-- Reversed growth directions (rightLeft, topBottom) anchor node N's trailing edge
+						-- to node N-1's leading edge. A positive spacing offset moves TOWARD the previous
+						-- node in these cases (creating overlap instead of gap), so negate the spacing.
+						local isReversed = (growthDirection == "rightLeft" or growthDirection == "topBottom")
+						local effectiveSpacing = isReversed and -nodeSpacing or nodeSpacing
+						node.frame:SetPoint(chainFrom, prevNode.frame, chainTo, isVerticalGrowth and 0 or effectiveSpacing, isVerticalGrowth and effectiveSpacing or 0)
 					end
 				end
 				node:Show()
@@ -1088,6 +1177,8 @@ end
 ---@field public hasSameColor boolean # True if the "use highest color" checkbox should be shown for this bar's node colors. Defaults to true; set false to hide.
 ---@field public sameColorNodeKey string? # Key of the nodeColor entry that the sameColor checkbox should be placed next to. Defaults to the last nodeColor entry.
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
+---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
+---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1138,6 +1229,8 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.getNodeCountForKey = config.getNodeCountForKey -- Optional callback: (key, colorSettings) -> integer node count
 	self.hasSameColor = config.hasSameColor ~= false -- Defaults to true; set false to hide "use highest" checkbox
 	self.sameColorNodeKey = config.sameColorNodeKey -- Key of node that sameColor checkbox sits next to (defaults to last)
+	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
+	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 
 	return self
 end
@@ -1400,25 +1493,7 @@ end
 ---@return table<string, TRB.Classes.BarTypeDefinition> # Map of key -> definition for this spec's custom bars
 function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 	local result = {}
-	
-	-- Get the class name from classId
-	local classNames = {
-		[1] = "Warrior",
-		[2] = "Paladin",
-		[3] = "Hunter",
-		[4] = "Rogue",
-		[5] = "Priest",
-		[6] = "DeathKnight",
-		[7] = "Shaman",
-		[8] = "Mage",
-		[9] = "Warlock",
-		[10] = "Monk",
-		[11] = "Druid",
-		[12] = "DemonHunter",
-		[13] = "Evoker"
-	}
-	
-	local className = classNames[classId]
+	local className = TRB.Functions.Character:GetClassModuleName(classId)
 	if not className then
 		return result
 	end

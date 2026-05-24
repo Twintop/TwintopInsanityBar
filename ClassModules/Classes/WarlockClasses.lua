@@ -97,6 +97,8 @@ end
 
 
 ---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
+---@field public incinerate TRB.Classes.SpellBase
+---@field public diabolicEmbers TRB.Classes.SpellBase
 TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
 
@@ -105,6 +107,16 @@ function TRB.Classes.Warlock.DestructionSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Warlock.DestructionSpells) --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
+    self.incinerate = TRB.Classes.SpellBase:New({
+        id = 29722,
+        baseline = true,
+        resource = 2
+    })
+    self.diabolicEmbers = TRB.Classes.SpellBase:New({
+        id = 387173,
+        isTalent = true,
+        resourceMod = 2
+    })
 
     return self
 end
@@ -125,6 +137,7 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },

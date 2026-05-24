@@ -19,6 +19,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
+---@field public barVisibilityThresholds table<string, trbBarVisibilityThresholdDefinition>?
 ---@field public colors TRB.Classes.Settings.Colors
 ---@field public comboPoints TRB.Classes.Settings.SecondaryBar
 ---@field public healthBar TRB.Classes.Settings.SecondaryBar
@@ -127,6 +128,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.ColorGradientEnabledEntry : TRB.Classes.Settings.ColorEnabledEntry
 ---@field public color2 string
 ---@field public gradientDirection string -- "horizontal", "vertical", or "disabled"
+---@field public fullHeight boolean? # When true, overlay-capable entries extend through the bar border area vertically
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 
@@ -157,6 +159,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.HealthBarOverlayColorEntry : TRB.Classes.Settings.ColorEntry
 ---@field public enabled boolean
 ---@field public mode trbOverlayMode
+---@field public fullHeight boolean? # When true, this overlay extends through the bar border area vertically
 
 ---@class TRB.Classes.Settings.HealthBarColors
 ---@field public border TRB.Classes.Settings.ColorEntry
@@ -178,12 +181,19 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
 
+---@alias trbFillDirection
+---| '"leftRight"' # Fill from left to right (default horizontal)
+---| '"rightLeft"' # Fill from right to left (reverse horizontal)
+---| '"bottomTop"' # Fill from bottom to top (vertical)
+---| '"topBottom"' # Fill from top to bottom (reverse vertical)
+
 ---@class TRB.Classes.Settings.PrimaryBar
 ---@field public width number
 ---@field public height number
 ---@field public xPos number
 ---@field public yPos number
 ---@field public border integer
+---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # Only used when this bar is NOT the base bar
 
 ---@class TRB.Classes.Settings.SecondaryBar
@@ -191,6 +201,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public height number
 ---@field public border integer
 ---@field public spacing integer
+---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
+---@field public growthDirection trbFillDirection? # Growth direction for multi-node bars (independent from fill)
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # New anchor system
 ---@field public xPos number # @deprecated Use anchor.xOffset instead
 ---@field public yPos number # @deprecated Use anchor.yOffset instead
@@ -255,7 +267,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public attachPoint string # Point on THIS bar that touches the anchor point
 ---@field public xOffset number # Horizontal pixel offset from the anchor point
 ---@field public yOffset number # Vertical pixel offset from the anchor point
----@field public matchWidth boolean # If true, this bar's width matches the anchor bar's effective width
+---@field public matchWidth boolean # If true, bar width matches anchor's width
+---@field public matchHeight boolean # If true, bar height matches anchor's height
 
 ---@class TRB.Classes.Settings.AnchorTreeNode
 ---@field public barKey string # Key of this bar
@@ -297,23 +310,40 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
 ---@field public isWarMode boolean? # Show when War Mode is enabled
 
+---@class trbBarVisibilityHideConditions
+---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
+---@field public isMountedGround boolean? # Hide when the player is on a ground mount (mounted + not flying)
+---@field public isMountedFlying boolean? # Hide when the player is on a flying mount (non-skyriding, flying)
+---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
+---@field public isSkyriding boolean? # Hide when the player is skyriding
+---@field public inVehicle boolean? # Hide when the player is in a vehicle
+---@field public inPetBattle boolean? # Hide when the player is in a pet battle
+---@field public onTaxi boolean? # Hide when the player is on a flight path
+
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions
 ---@field public alwaysShow boolean # When true, the bar is unconditionally shown (overrides conditions but not neverShow). Independent of individual conditions.
 ---@field public conditions trbBarVisibilityConditions # OR-combined conditions evaluated when alwaysShow is false
+---@field public hideConditions trbBarVisibilityHideConditions # OR-combined hard-hide conditions that override alwaysShow, normal show conditions, and threshold visibility
 ---@field public smooth boolean
 ---@field public activeAlpha number # Opacity (0–100) when visibility conditions are met. Default 100.
 ---@field public inactiveAlpha number # Opacity (0–100) when visibility conditions are NOT met. 0 = fully hidden. Default 0.
 ---@field public fadeDuration number # Seconds to fade out to inactive opacity. 0 = instant. Default 0.
 ---@field public fadeDelay number # Seconds to wait before starting the fade out. 0 = immediate. Default 0.
----@field public resourceConditionType string? # Type of resource/health threshold condition: "none", "resourcePercent", "resourceValue", "healthPercent", "healthValue"
+---@field public resourceConditionType string? # Type of threshold condition: "none", "resourcePercent", "resourceValue", "manaPercent", "manaValue", "healthPercent", "healthValue"
 ---@field public resourceConditionOperator string? # Comparison operator: ">=", ">", "<=", "<", "==", "!="
----@field public resourceConditionValue number? # Threshold value for the resource/health condition
+---@field public resourceConditionValue number? # Threshold value for the selected visibility condition
 ---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions
+
+---@class trbBarVisibilityThresholdDefinition
+---@field public valueType string # Threshold value interpretation: "percent" or "value"
+---@field public powerType number? # Enum.PowerType value used with UnitPowerPercent for power-based thresholds
+---@field public maxValue number? # Normalization max for value thresholds
 
 ---@alias trbOverlayMode
 ---| '"overlay"' # Fills from the left edge of the bar up to the overlay amount
 ---| '"appended"' # Visually appends the overlay region to the right of the current health fill
+---| '"appendedOverflow"' # Appended mode that can visually extend beyond the bar's right boundary
 ---| '"inset"' # Reverse-fill from the health fill's trailing edge going leftward
 
 ---@class trbHealthBarVisibilitySetting : trbBarVisibilitySetting

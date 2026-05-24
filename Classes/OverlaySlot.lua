@@ -15,6 +15,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public texture string? # Last-applied texture path (for RefreshAppearance)
 ---@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
 ---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
+---@field public fullHeight boolean? # When true, the overlay extends through the bar's border area vertically
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
@@ -38,6 +39,7 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.texture = nil
 	self.color = nil
 	self.spendingColor = nil
+	self.fullHeight = false
 	self.overlayFrame = nil
 	self.appendedClipFrame = nil
 	self.appendedOverlayFrame = nil
@@ -47,6 +49,27 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.insetOverlayReady = nil
 
 	return self
+end
+
+---Sets whether this overlay should extend vertically through the bar border area.
+---@param fullHeight boolean?
+function TRB.Classes.OverlaySlot:SetFullHeight(fullHeight)
+	fullHeight = fullHeight == true
+	if self.fullHeight ~= fullHeight then
+		self.fullHeight = fullHeight
+		self:Reanchor()
+	end
+end
+
+---Gets the vertical offsets used when anchoring overlay frames to the parent bar.
+---@return number topYOffset
+---@return number bottomYOffset
+function TRB.Classes.OverlaySlot:GetVerticalAnchorOffsets()
+	local parent = self.parentNode
+	if self.fullHeight then
+		return 0, 0
+	end
+	return -parent.border, parent.border
 end
 
 -- ============================================================================
@@ -65,8 +88,9 @@ function TRB.Classes.OverlaySlot:CreateOverlay()
 	local frameName = parent.name .. "_" .. self.slotName .. "_Overlay"
 	local overlay = CreateFrame("StatusBar", frameName, parent.frame)
 	overlay:SetFrameLevel(parent.frame:GetFrameLevel() + 1)
-	overlay:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	overlay:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local topYOffset, bottomYOffset = self:GetVerticalAnchorOffsets()
+	overlay:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, topYOffset)
+	overlay:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, bottomYOffset)
 	overlay:Hide()
 
 	self.overlayFrame = overlay
@@ -164,32 +188,62 @@ end
 -- overlay region from extending past the bar's right boundary.
 
 ---Re-anchors the appended overlay clip frame and its child StatusBar.
----Called when border or fill texture changes on the parent node.
+---Called when border, fill texture, or fill direction changes on the parent node.
 function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 	if not self.appendedClipFrame then return end
 
 	local parent = self.parentNode
+	local fillDirection = parent.fillDirection or "leftRight"
+	local Bar = TRB.Functions.Bar
+	local isVertical = Bar:IsVerticalFill(fillDirection)
+
 	-- Re-anchor clip frame to inner area
 	self.appendedClipFrame:ClearAllPoints()
-	self.appendedClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local clipTopYOffset, clipBottomYOffset = self:GetVerticalAnchorOffsets()
+	self.appendedClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+	self.appendedClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
 	self.appendedOverlayReady = true
 
-	-- Re-anchor the overlay bar to the current fill texture's right edge
+	-- Re-anchor the overlay bar to the current fill texture's leading edge
 	if self.appendedOverlayFrame then
+		-- Set orientation to match the parent bar
+		self.appendedOverlayFrame:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+		self.appendedOverlayFrame:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+		self.appendedOverlayFrame:SetRotatesTexture(isVertical)
+
 		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
 			self.appendedOverlayFrame:ClearAllPoints()
-			self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
-			self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
-			local innerWidth = math.max(1, parent.width - 2 * parent.border)
-			self.appendedOverlayFrame:SetWidth(innerWidth)
+			if fillDirection == "rightLeft" then
+				self.appendedOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPLEFT", 0, 0)
+				self.appendedOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMLEFT", 0, 0)
+			elseif fillDirection == "bottomTop" then
+				self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "TOPLEFT", 0, 0)
+				self.appendedOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+			elseif fillDirection == "topBottom" then
+				self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+				self.appendedOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			else -- leftRight
+				self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
+				self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			end
+
+			if isVertical then
+				local innerHeight = math.max(1, parent.height - 2 * parent.border)
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
+				self.appendedOverlayFrame:SetHeight(innerHeight)
+				self.appendedOverlayFrame:SetWidth(innerWidth)
+			else
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
+				self.appendedOverlayFrame:SetWidth(innerWidth)
+			end
 		end
 	end
 end
 
 ---Creates the appended overlay system: a clip container + child StatusBar.
----The child StatusBar's LEFT edge is anchored to the primary fill texture's RIGHT edge.
+---The child StatusBar is anchored to the primary fill texture's leading edge,
+---extending in the same direction as the fill.
 ---Idempotent: calling this multiple times is safe.
 function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	if self.appendedClipFrame then
@@ -215,16 +269,42 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	overlayBar:SetMinMaxValues(0, 1)
 	overlayBar:SetValue(0)
 
-	-- Anchor LEFT to the fill texture's RIGHT edge
+	-- Set orientation to match parent bar
+	local fillDirection = parent.fillDirection or "leftRight"
+	local Bar = TRB.Functions.Bar
+	local isVertical = Bar:IsVerticalFill(fillDirection)
+	overlayBar:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+	overlayBar:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+	overlayBar:SetRotatesTexture(isVertical)
+
+	-- Anchor to the fill texture's leading edge
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	if fillTexture then
-		overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
-		overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		if fillDirection == "rightLeft" then
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPLEFT", 0, 0)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMLEFT", 0, 0)
+		elseif fillDirection == "bottomTop" then
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "TOPLEFT", 0, 0)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+		elseif fillDirection == "topBottom" then
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		else -- leftRight
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		end
 	end
 
-	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
-	local innerWidth = math.max(1, parent.width - 2 * parent.border)
-	overlayBar:SetWidth(innerWidth)
+	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
+	if isVertical then
+		local innerHeight = math.max(1, parent.height - 2 * parent.border)
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
+		overlayBar:SetHeight(innerHeight)
+		overlayBar:SetWidth(innerWidth)
+	else
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
+		overlayBar:SetWidth(innerWidth)
+	end
 
 	self.appendedClipFrame = clip
 	self.appendedOverlayFrame = overlayBar
@@ -236,8 +316,9 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	C_Timer.After(0, function()
 		if slot.appendedClipFrame then
 			slot.appendedClipFrame:ClearAllPoints()
-			slot.appendedClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, -slot.parentNode.border)
-			slot.appendedClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, slot.parentNode.border)
+			local clipTopYOffset, clipBottomYOffset = slot:GetVerticalAnchorOffsets()
+			slot.appendedClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, clipTopYOffset)
+			slot.appendedClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, clipBottomYOffset)
 			slot.appendedOverlayReady = true
 		end
 	end)
@@ -266,13 +347,18 @@ function TRB.Classes.OverlaySlot:SetAppendedOverlayClipping(clip)
 	self.appendedClipFrame:SetClipsChildren(clip)
 end
 
----Sets the width of the appended overlay StatusBar.
----Used by overflow mode to dynamically scale the overlay bar wider than the inner bar
----when the overlay value exceeds max health.
----@param width number # The desired width in pixels
-function TRB.Classes.OverlaySlot:SetAppendedOverlayWidth(width)
+---Sets the fill-axis dimension of the appended overlay StatusBar.
+---For horizontal fill (leftRight/rightLeft), sets width. For vertical fill (bottomTop/topBottom), sets height.
+---Used by overflow mode to dynamically scale the overlay bar when the overlay value exceeds max health.
+---@param size number # The desired fill-axis dimension in pixels
+function TRB.Classes.OverlaySlot:SetAppendedOverlayWidth(size)
 	if not self.appendedOverlayFrame then return end
-	self.appendedOverlayFrame:SetWidth(math.max(1, width))
+	local isVertical = TRB.Functions.Bar:IsVerticalFill(self.parentNode.fillDirection)
+	if isVertical then
+		self.appendedOverlayFrame:SetHeight(math.max(1, size))
+	else
+		self.appendedOverlayFrame:SetWidth(math.max(1, size))
+	end
 end
 
 ---Sets the appended overlay StatusBar fill texture. No-op if not created.
@@ -352,33 +438,67 @@ end
 -- goes leftward from the fill position, showing the overlay "eating into" the fill.
 
 ---Re-anchors the inset overlay clip frame and its child StatusBar.
----Called when border or fill texture changes on the parent node.
+---Called when border, fill texture, or fill direction changes on the parent node.
 function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 	if not self.insetClipFrame then return end
 
 	local parent = self.parentNode
+	local fillDirection = parent.fillDirection or "leftRight"
+	local Bar = TRB.Functions.Bar
+	local isVertical = Bar:IsVerticalFill(fillDirection)
+
 	-- Re-anchor clip frame to inner area
 	self.insetClipFrame:ClearAllPoints()
-	self.insetClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-	self.insetClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+	local clipTopYOffset, clipBottomYOffset = self:GetVerticalAnchorOffsets()
+	self.insetClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+	self.insetClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
 	self.insetOverlayReady = true
 
-	-- Re-anchor the overlay bar to the current fill texture's right edge
+	-- Re-anchor the overlay bar with reverse-fill relative to the primary fill direction
 	if self.insetOverlayFrame then
+		-- The inset overlay fills OPPOSITE to the primary bar's direction
+		self.insetOverlayFrame:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+		-- Reverse fill is the OPPOSITE of the parent's reverse fill
+		self.insetOverlayFrame:SetReverseFill(not Bar:GetReverseFillFromFillDirection(fillDirection))
+		self.insetOverlayFrame:SetRotatesTexture(isVertical)
+
 		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
 			self.insetOverlayFrame:ClearAllPoints()
-			self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-			self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
-			local innerWidth = math.max(1, parent.width - 2 * parent.border)
-			self.insetOverlayFrame:SetWidth(innerWidth)
+			if fillDirection == "rightLeft" then
+				-- Primary fills right→left, inset eats from LEFT edge of fill
+				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
+				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+			elseif fillDirection == "bottomTop" then
+				-- Primary fills bottom→top, inset eats from TOP edge of fill
+				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
+				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+			elseif fillDirection == "topBottom" then
+				-- Primary fills top→bottom, inset eats from BOTTOM edge of fill
+				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			else -- leftRight
+				-- Primary fills left→right, inset eats from RIGHT edge of fill
+				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			end
+
+			if isVertical then
+				local innerHeight = math.max(1, parent.height - 2 * parent.border)
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
+				self.insetOverlayFrame:SetHeight(innerHeight)
+				self.insetOverlayFrame:SetWidth(innerWidth)
+			else
+				local innerWidth = math.max(1, parent.width - 2 * parent.border)
+				self.insetOverlayFrame:SetWidth(innerWidth)
+			end
 		end
 	end
 end
 
 ---Creates the inset overlay system: a clip container + reverse-fill child StatusBar.
----The child StatusBar's RIGHT edge is anchored to the primary fill texture's RIGHT edge,
----and it fills leftward via SetReverseFill(true).
+---The child StatusBar fills in the opposite direction of the parent bar, starting from
+---the fill's leading edge and "eating into" the primary fill.
 ---Idempotent: calling this multiple times is safe.
 function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	if self.insetClipFrame then
@@ -386,6 +506,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	end
 
 	local parent = self.parentNode
+	local fillDirection = parent.fillDirection or "leftRight"
+	local Bar = TRB.Functions.Bar
+	local isVertical = Bar:IsVerticalFill(fillDirection)
 	local clipName = parent.name .. "_" .. self.slotName .. "_InsetClip"
 
 	-- Create clip container off-screen so any initial flash is invisible to the user.
@@ -396,25 +519,45 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	clip:SetSize(1, 1)
 	clip:SetClipsChildren(true)
 
-	-- Create overlay StatusBar inside the clip frame with reverse fill
+	-- Create overlay StatusBar inside the clip frame with reverse fill relative to parent
 	local overlayBarName = parent.name .. "_" .. self.slotName .. "_InsetOverlay"
 	local overlayBar = CreateFrame("StatusBar", overlayBarName, clip)
 	overlayBar:SetFrameLevel(clip:GetFrameLevel() + 1)
-	overlayBar:SetReverseFill(true)
+	overlayBar:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+	overlayBar:SetReverseFill(not Bar:GetReverseFillFromFillDirection(fillDirection))
+	overlayBar:SetRotatesTexture(isVertical)
 	overlayBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
 	overlayBar:SetMinMaxValues(0, 1)
 	overlayBar:SetValue(0)
 
-	-- Anchor RIGHT to the fill texture's RIGHT edge
+	-- Anchor to the fill texture's leading edge (opposite side from the appended overlay)
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	if fillTexture then
-		overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-		overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		if fillDirection == "rightLeft" then
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+		elseif fillDirection == "bottomTop" then
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+		elseif fillDirection == "topBottom" then
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		else -- leftRight
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+		end
 	end
 
-	-- Width = full inner bar width so the fill ratio matches the primary bar's scale
-	local innerWidth = math.max(1, parent.width - 2 * parent.border)
-	overlayBar:SetWidth(innerWidth)
+	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
+	if isVertical then
+		local innerHeight = math.max(1, parent.height - 2 * parent.border)
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
+		overlayBar:SetHeight(innerHeight)
+		overlayBar:SetWidth(innerWidth)
+	else
+		local innerWidth = math.max(1, parent.width - 2 * parent.border)
+		overlayBar:SetWidth(innerWidth)
+	end
 
 	self.insetClipFrame = clip
 	self.insetOverlayFrame = overlayBar
@@ -426,8 +569,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	C_Timer.After(0, function()
 		if slot.insetClipFrame then
 			slot.insetClipFrame:ClearAllPoints()
-			slot.insetClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, -slot.parentNode.border)
-			slot.insetClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, slot.parentNode.border)
+			local clipTopYOffset, clipBottomYOffset = slot:GetVerticalAnchorOffsets()
+			slot.insetClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, clipTopYOffset)
+			slot.insetClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, clipBottomYOffset)
 			slot.insetOverlayReady = true
 		end
 	end)
@@ -529,8 +673,9 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	-- Re-anchor generic overlay if it exists
 	if self.overlayFrame then
 		self.overlayFrame:ClearAllPoints()
-		self.overlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, -parent.border)
-		self.overlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, parent.border)
+		local topYOffset, bottomYOffset = self:GetVerticalAnchorOffsets()
+		self.overlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, topYOffset)
+		self.overlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, bottomYOffset)
 	end
 
 	-- Re-anchor appended overlay if it exists

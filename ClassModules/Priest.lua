@@ -477,21 +477,8 @@ local function ConstructResourceBar(settings)
 			barGroups.secondary:Hide()
 		else
 			barGroups.secondary:SetMaxNodes(maxPowerWordNodes)
-			barGroups.secondary:SetNodeCount(maxPowerWordNodes)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxPowerWordNodes)
 			barGroups.secondary:Show()
-
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
-
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
 
 			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxPowerWordNodes do
@@ -521,25 +508,8 @@ local function ConstructResourceBar(settings)
 			barGroups.holyWords:Hide()
 		else
 			barGroups.holyWords:SetMaxNodes(maxHolyWordNodes)
-			barGroups.holyWords:SetNodeCount(maxHolyWordNodes)
----@diagnostic disable-next-line: undefined-field
-			barGroups.holyWords:SetLayout(Bar:GetEffectiveSpacing(settings.bars.holyWords), Bar:GetMatchWidth(settings.bars.holyWords), "HORIZONTAL")
+			Bar:ApplyMultiNodeBarGroupLayout(settings, barGroups, "holyWords", barGroups.holyWords, settings.bars.holyWords, maxHolyWordNodes)
 			barGroups.holyWords:Show()
-
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "holyWords")
-			if cdmForced then
-				barGroups.holyWords.fullWidth = true
-			end
-
-			barGroups.holyWords:ApplyLayout(
-				effectiveWidth,
----@diagnostic disable-next-line: undefined-field
-				settings.bars.holyWords.width,
----@diagnostic disable-next-line: undefined-field
-				settings.bars.holyWords.height,
----@diagnostic disable-next-line: undefined-field
-				settings.bars.holyWords.border
-			)
 
 			-- Build an ordered list of enabled node colors so each physical node gets its correct fill color
 			local hwColors = settings.colors.bars.holyWords

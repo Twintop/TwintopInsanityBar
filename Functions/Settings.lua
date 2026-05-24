@@ -3,6 +3,38 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
+local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
+
+---Creates spec-level threshold definitions for secondary Mana Bar visibility options.
+---@return table<string, table>
+function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
+	return {
+		manaPercent = {
+			valueType = "percent",
+			powerType = Enum.PowerType.Mana,
+		},
+		manaValue = {
+			valueType = "value",
+			powerType = Enum.PowerType.Mana,
+			maxValue = VISIBILITY_MANA_MAX,
+		},
+	}
+end
+
+---Creates a new independent copy of the default hard-hide visibility conditions.
+---@return trbBarVisibilityHideConditions
+function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+	return {
+		isMountedAny = false,
+		isMountedGround = false,
+		isMountedFlying = false,
+		isSkyriding = false,
+		inVehicle = false,
+		inPetBattle = true,
+		onTaxi = true,
+	}
+end
+
 ---Creates a new independent copy of NewSpecGlobalDefaults()
 ---@return TRB.Classes.Settings.SpecializationGlobalEnabled
 local function NewSpecGlobalDefaults()
@@ -83,6 +115,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -96,6 +129,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = false,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -109,6 +143,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = false,
 					alwaysShow = true,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -122,6 +157,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					neverShow = true,
 					alwaysShow = false,
 					conditions = {},
+					hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 					smooth = true,
 					activeAlpha = 100,
 					inactiveAlpha = 0,
@@ -1865,6 +1901,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								yPos = specSettings.comboPoints.yPos or 0,
 								border = specSettings.comboPoints.border or 2,
 								spacing = specSettings.comboPoints.spacing or 0,
+								fillDirection = specSettings.comboPoints.fillDirection or "leftRight",
+								growthDirection = specSettings.comboPoints.growthDirection or "leftRight",
 								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
 								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
 								fullWidth = specSettings.comboPoints.fullWidth
@@ -1921,6 +1959,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								yPos = specSettings.comboPoints.yPos or 0,
 								border = specSettings.comboPoints.border or 2,
 								spacing = specSettings.comboPoints.spacing or 0,
+								fillDirection = specSettings.comboPoints.fillDirection or "leftRight",
+								growthDirection = specSettings.comboPoints.growthDirection or "leftRight",
 								relativeTo = specSettings.comboPoints.relativeTo or "TOP",
 								relativeToName = specSettings.comboPoints.relativeToName or L["PositionAboveMiddle"],
 								fullWidth = specSettings.comboPoints.fullWidth
@@ -2094,6 +2134,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									yPos = dimSource.yPos or 0,
 									border = dimSource.border or 2,
 									spacing = dimSource.spacing or 0,
+									fillDirection = dimSource.fillDirection or "leftRight",
+									growthDirection = dimSource.growthDirection or "leftRight",
 									relativeTo = dimSource.relativeTo or "TOP",
 									relativeToName = dimSource.relativeToName or L["PositionAboveMiddle"],
 									fullWidth = dimSource.fullWidth
@@ -2107,6 +2149,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										xOffset = 0,
 										yOffset = 0,
 										matchWidth = true,
+										matchHeight = false,
 									}
 								end
 							end
@@ -2181,6 +2224,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									inactiveAlpha = gs.inactiveAlpha,
 									fadeDuration = gs.fadeDuration,
 									fadeDelay = gs.fadeDelay,
+									hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 								}
 								-- Deep copy conditions table if present
 								if gs.conditions then
@@ -2191,6 +2235,11 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								else
 									visSource.conditions = {}
 								end
+								if gs.hideConditions then
+									for ck, cv in pairs(gs.hideConditions) do
+										visSource.hideConditions[ck] = cv
+									end
+								end
 							elseif specSettings.displayBar.secondary then
 								visSource = specSettings.displayBar.secondary
 							end
@@ -2199,7 +2248,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 								specSettings.displayBar.holyWords = visSource
 								specSettings.displayBar.secondary = nil
 							else
-								specSettings.displayBar.holyWords = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+								specSettings.displayBar.holyWords = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 							end
 						end
 
@@ -2276,7 +2325,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 							specSettings.displayBar = {}
 						end
 						if not specSettings.displayBar.boneShield then
-							specSettings.displayBar.boneShield = { neverShow = false, alwaysShow = true, conditions = {}, smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+							specSettings.displayBar.boneShield = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 						end
 
 						if specSettings.displayText and specSettings.displayText.barText then
@@ -2394,10 +2443,16 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									fadeDuration = gs.fadeDuration,
 									fadeDelay = gs.fadeDelay,
 									conditions = {},
+									hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(),
 								}
 								if gs.conditions then
 									for ck, cv in pairs(gs.conditions) do
 										visSource.conditions[ck] = cv
+									end
+								end
+								if gs.hideConditions then
+									for ck, cv in pairs(gs.hideConditions) do
+										visSource.hideConditions[ck] = cv
 									end
 								end
 							elseif specSettings.displayBar.secondary then
@@ -2408,7 +2463,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 							if visSource then
 								specSettings.displayBar.ebonMight = visSource
 							else
-								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+								specSettings.displayBar.ebonMight = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
 							end
 						end
 
@@ -5201,6 +5256,84 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	-- Backfill spec-level extra visibility threshold definitions for secondary Mana Bars.
+	do
+		---@param specSettings table? # Spec settings table to update in-place
+		local function MigrateManaBarVisibilityThresholds(specSettings)
+			if specSettings == nil then
+				return
+			end
+
+			local defaults = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
+			specSettings.barVisibilityThresholds = specSettings.barVisibilityThresholds or {}
+			for key, defaultValue in pairs(defaults) do
+				if specSettings.barVisibilityThresholds[key] == nil then
+					specSettings.barVisibilityThresholds[key] = {}
+				end
+				for settingKey, settingValue in pairs(defaultValue) do
+					if specSettings.barVisibilityThresholds[key][settingKey] == nil then
+						specSettings.barVisibilityThresholds[key][settingKey] = settingValue
+					end
+				end
+			end
+		end
+
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.priest then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.priest.shadow)
+		end
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.druid.balance)
+		end
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.shaman then
+			MigrateManaBarVisibilityThresholds(TwintopInsanityBarSettings.shaman.elemental)
+		end
+	end
+
+	-- Backfill per-bar hard-hide conditions. These replace the old global pet battle
+	-- and taxi force-hide path, and default to enabled for all bars.
+	do
+		---@param displayBar table? # The displayBar settings table to migrate in-place
+		local function MigrateHideConditionSettings(displayBar)
+			if displayBar == nil then
+				return
+			end
+			for _, entry in pairs(displayBar) do
+				if type(entry) == "table" and entry.conditions ~= nil then
+					local defaults = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+					if entry.hideConditions == nil then
+						entry.hideConditions = defaults
+					else
+						---@type table<string, boolean>
+						local hideConditions = entry.hideConditions
+						if hideConditions.isSteadyFlight ~= nil and hideConditions.isMountedFlying == nil then
+							hideConditions.isMountedFlying = hideConditions.isSteadyFlight
+							hideConditions.isSteadyFlight = nil
+						end
+						for key, value in pairs(defaults) do
+							if hideConditions[key] == nil then
+								hideConditions[key] = value
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if TwintopInsanityBarSettings and TwintopInsanityBarSettings.core and TwintopInsanityBarSettings.core.displayBar then
+			MigrateHideConditionSettings(TwintopInsanityBarSettings.core.displayBar)
+		end
+
+		for _, className in ipairs(classes) do
+			if TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] then
+				for specName, specSettings in pairs(TwintopInsanityBarSettings[className]) do
+					if specSettings and type(specSettings) == "table" and specSettings.displayBar then
+						MigrateHideConditionSettings(specSettings.displayBar)
+					end
+				end
+			end
+		end
+	end
+
 	-- Migrate bar anchor settings from legacy relativeTo/xPos/yPos/fullWidth to new anchor block system.
 	-- Populate anchor blocks alongside legacy fields. Legacy fields are kept for backward compatibility.
 	do
@@ -5227,6 +5360,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 						xOffset = barSettings.xPos or 0,
 						yOffset = barSettings.yPos or 0,
 						matchWidth = barSettings.fullWidth or false,
+						matchHeight = false,
 					}
 				end
 			elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
@@ -5238,6 +5372,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 					xOffset = barSettings.xPos or 0,
 					yOffset = barSettings.yPos or -200,
 					matchWidth = false,
+					matchHeight = false,
 				}
 			end
 		end
@@ -6980,18 +7115,16 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			spec.colors.shared.gradientOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.gradientOrder, "borderOvercap")
 		end
 
+		local createdRuneRegenOvercap = false
 		if indicatorColors.runeRegenOvercap == nil then
+			createdRuneRegenOvercap = true
 			local legacyEnabled = legacyRuneOvercap and legacyRuneOvercap.enabled == true or false
 			local defaultEnabled = legacyRuneOvercap == nil
 			local enabled = legacyRuneOvercap ~= nil and legacyEnabled or defaultEnabled
 			indicatorColors.runeRegenOvercap = {
 				color = legacyRuneOvercap and legacyRuneOvercap.color or "FFFF4500",
 				enabled = enabled,
-				targets = {
-					runicPowerBar = { bar = false, border = false, background = false },
-					runesBar = { bar = enabled, border = false, background = false },
-					boneShield = spec.bars and spec.bars.boneShield and { bar = false, border = false, background = false } or nil,
-				},
+				targets = {},
 			}
 		end
 
@@ -7001,24 +7134,11 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			else
 				EnsureDeathKnightIndicatorTargetTables(indicatorColors.runeRegenOvercap)
 			end
-			if legacyRuneOvercap == nil then
-				local runeTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runesBar
-				local runicPowerTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.runicPowerBar
-				local boneShieldTargets = indicatorColors.runeRegenOvercap.targets and indicatorColors.runeRegenOvercap.targets.boneShield
-				local hasAnyTarget = false
-				if runeTargets then
-					hasAnyTarget = runeTargets.bar or runeTargets.border or runeTargets.background or false
-				end
-				if not hasAnyTarget and runicPowerTargets then
-					hasAnyTarget = runicPowerTargets.bar or runicPowerTargets.border or runicPowerTargets.background or false
-				end
-				if not hasAnyTarget and boneShieldTargets then
-					hasAnyTarget = boneShieldTargets.bar or boneShieldTargets.border or boneShieldTargets.background or false
-				end
-				if indicatorColors.runeRegenOvercap.enabled == false and not hasAnyTarget then
-					indicatorColors.runeRegenOvercap.enabled = true
-					indicatorColors.runeRegenOvercap.targets.runesBar.bar = true
-				end
+			if createdRuneRegenOvercap then
+				-- Only the creation path should seed Death Knight's default target.
+				-- An existing all-false target table is valid saved state from the
+				-- indicator options UI and must survive port-forwarding unchanged.
+				indicatorColors.runeRegenOvercap.targets.runesBar.bar = indicatorColors.runeRegenOvercap.enabled == true
 			end
 			spec.colors.shared.nodeOrder = EnsureDeathKnightIndicatorOrder(spec.colors.shared.nodeOrder, "runeRegenOvercap")
 		end
@@ -7629,6 +7749,96 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	local function EnsureSecondaryPartialFillColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false)
+		if comboPointColors.regenerating == nil then
+			comboPointColors.regenerating = defaultColor
+		elseif type(comboPointColors.regenerating) == "string" then
+			comboPointColors.regenerating = {
+				color = comboPointColors.regenerating,
+				color2 = comboPointColors.regenerating,
+				gradientDirection = "disabled",
+				enabled = false
+			}
+		elseif type(comboPointColors.regenerating) == "table" then
+			comboPointColors.regenerating.color = comboPointColors.regenerating.color or defaultColor.color
+			comboPointColors.regenerating.color2 = comboPointColors.regenerating.color2 or comboPointColors.regenerating.color
+			comboPointColors.regenerating.gradientDirection = comboPointColors.regenerating.gradientDirection or "disabled"
+			if comboPointColors.regenerating.enabled == nil then
+				comboPointColors.regenerating.enabled = false
+			end
+		end
+	end
+
+	local function EnsureSecondaryCastingOverlayColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true)
+		if comboPointColors.casting == nil then
+			comboPointColors.casting = defaultColor
+		elseif type(comboPointColors.casting) == "string" then
+			comboPointColors.casting = {
+				color = comboPointColors.casting,
+				color2 = comboPointColors.casting,
+				gradientDirection = "disabled",
+				enabled = true,
+				fullHeight = false
+			}
+		elseif type(comboPointColors.casting) == "table" then
+			comboPointColors.casting.color = comboPointColors.casting.color or defaultColor.color
+			comboPointColors.casting.color2 = comboPointColors.casting.color2 or comboPointColors.casting.color
+			comboPointColors.casting.gradientDirection = comboPointColors.casting.gradientDirection or "disabled"
+			if comboPointColors.casting.enabled == nil then
+				comboPointColors.casting.enabled = true
+			end
+			if comboPointColors.casting.fullHeight == nil then
+				comboPointColors.casting.fullHeight = false
+			end
+		end
+	end
+
+	local function EnsureSecondaryCastingOverlayTexture(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.textures = specSettings.textures or {}
+		local textures = specSettings.textures
+		local defaultTextures = TRB.Functions.Settings:DefaultTextures(true)
+		textures.comboPointsCastingBar = textures.comboPointsCastingBar or textures.castingBar or textures.comboPointsBar or defaultTextures.castingBar
+		textures.comboPointsCastingBarName = textures.comboPointsCastingBarName or textures.castingBarName or textures.comboPointsBarName or defaultTextures.castingBarName
+	end
+
+	EnsureSecondaryPartialFillColor("paladin", "holy")
+	EnsureSecondaryPartialFillColor("paladin", "protection")
+	EnsureSecondaryPartialFillColor("paladin", "retribution")
+	EnsureSecondaryPartialFillColor("warlock", "affliction")
+	EnsureSecondaryPartialFillColor("warlock", "demonology")
+	EnsureSecondaryPartialFillColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayColor("warlock", "destruction")
+	EnsureSecondaryCastingOverlayTexture("warlock", "destruction")
+	EnsureSecondaryPartialFillColor("druid", "feral")
+	EnsureSecondaryPartialFillColor("evoker", "devastation")
+	EnsureSecondaryPartialFillColor("evoker", "preservation")
+	EnsureSecondaryPartialFillColor("evoker", "augmentation")
+
 	-- Backfill global health bar settings
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil and TwintopInsanityBarSettings.core.healthBar ~= nil then
 		local hb = TwintopInsanityBarSettings.core.healthBar
@@ -7796,6 +8006,41 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 			end
 		end
 	end
+
+	local function NormalizeOverlayFullHeight(settings)
+		if type(settings) ~= "table" or type(settings.colors) ~= "table" then
+			return
+		end
+
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.casting) == "table" and settings.colors.bar.casting.fullHeight == nil then
+			settings.colors.bar.casting.fullHeight = false
+		end
+		if type(settings.colors.bar) == "table" and type(settings.colors.bar.spending) == "table" and settings.colors.bar.spending.fullHeight == nil then
+			settings.colors.bar.spending.fullHeight = false
+		end
+
+		if type(settings.colors.healthBar) == "table" then
+			if type(settings.colors.healthBar.absorb) == "table" and settings.colors.healthBar.absorb.fullHeight == nil then
+				settings.colors.healthBar.absorb.fullHeight = false
+			end
+			if type(settings.colors.healthBar.incomingHeal) == "table" and settings.colors.healthBar.incomingHeal.fullHeight == nil then
+				settings.colors.healthBar.incomingHeal.fullHeight = false
+			end
+		end
+	end
+
+	NormalizeOverlayFullHeight(newSettings.core)
+	for _, className in ipairs({
+		"deathknight", "demonhunter", "druid", "evoker", "hunter", "mage",
+		"monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"
+	}) do
+		if type(newSettings[className]) == "table" then
+			for _, specSettings in pairs(newSettings[className]) do
+				NormalizeOverlayFullHeight(specSettings)
+			end
+		end
+	end
+
 	return newSettings
 end
 
@@ -7817,6 +8062,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 		xPos = 0,
 		yPos = -200,
 		border = border,
+		fillDirection = "leftRight",
 		anchor = {
 			barKey = "screen",
 			anchorPoint = "CENTER",
@@ -7824,6 +8070,7 @@ function TRB.Functions.Settings:DefaultBarDimensions(classic)
 			xOffset = 0,
 			yOffset = -200,
 			matchWidth = false,
+			matchHeight = false,
 		},
 	}
 end
@@ -7851,6 +8098,7 @@ function TRB.Functions.Settings:DefaultHealthDimensions(classic)
 		yPos = yPos,
 		border = border,
 		spacing = 0,
+		fillDirection = "leftRight",
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
@@ -7861,6 +8109,7 @@ function TRB.Functions.Settings:DefaultHealthDimensions(classic)
 			xOffset = 0,
 			yOffset = yPos,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -7878,6 +8127,8 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7888,6 +8139,7 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -7900,6 +8152,8 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo ="TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7910,7 +8164,41 @@ function TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
+	}
+end
+
+---Gets the default secondary partial-fill color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryPartialFillColor(enabled)
+	if enabled == nil then
+		enabled = false
+	end
+
+	return {
+		color = "FFFF4500",
+		color2 = "FFFF4500",
+		gradientDirection = "disabled",
+		enabled = enabled
+	}
+end
+
+---Gets the default secondary casting overlay color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(enabled)
+	if enabled == nil then
+		enabled = true
+	end
+
+	return {
+		color = "FFFFFFFF",
+		color2 = "FFFFFFFF",
+		gradientDirection = "disabled",
+		enabled = enabled,
+		fullHeight = false
 	}
 end
 
@@ -7920,8 +8208,8 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 	return {
 		border = { color = "FF008800" },
 		background = { color = "66000000" },
-		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended" },
-		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended" },
+		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
+		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -7942,6 +8230,8 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			border = 1,
 			spacing = 0,
 			collapseBorderWidth = true,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -7952,6 +8242,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -7964,6 +8255,8 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -7974,6 +8267,7 @@ function TRB.Functions.Settings:DefaultManaBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8029,6 +8323,8 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			border = 1,
 			spacing = 0,
 			collapseBorderWidth = true,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8039,6 +8335,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8051,6 +8348,8 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8061,6 +8360,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8144,6 +8444,8 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8154,6 +8456,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8166,6 +8469,8 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8176,6 +8481,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8208,6 +8514,8 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8218,6 +8526,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8230,6 +8539,8 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8240,6 +8551,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8272,6 +8584,8 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "BOTTOM",
 			relativeToName = L["PositionBelowMiddle"],
 			fullWidth = true,
@@ -8282,6 +8596,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8294,6 +8609,8 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "BOTTOM",
 		relativeToName = L["PositionBelowMiddle"],
 		fullWidth = true,
@@ -8304,6 +8621,7 @@ function TRB.Functions.Settings:DefaultUtilityBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8370,6 +8688,8 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8380,6 +8700,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8392,6 +8713,8 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8402,6 +8725,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8435,6 +8759,8 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 			border = 1,
 			spacing = 14,
 			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
@@ -8445,6 +8771,7 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 				xOffset = 0,
 				yOffset = 4,
 				matchWidth = true,
+				matchHeight = false,
 			},
 		}
 	end
@@ -8457,6 +8784,8 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 		border = 2,
 		spacing = 0,
 		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
@@ -8467,6 +8796,7 @@ function TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 			xOffset = 0,
 			yOffset = 0,
 			matchWidth = true,
+			matchHeight = false,
 		},
 	}
 end
@@ -8511,6 +8841,7 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 					xOffset = barSettings.xPos or 0,
 					yOffset = barSettings.yPos or 0,
 					matchWidth = barSettings.fullWidth or false,
+					matchHeight = false,
 				}
 			end
 		elseif barSettings.xPos ~= nil and barSettings.yPos ~= nil and barSettings.relativeTo == nil then
@@ -8522,6 +8853,7 @@ function TRB.Functions.Settings:MigrateBarAnchors(settingsTable, forceResync)
 				xOffset = barSettings.xPos or 0,
 				yOffset = barSettings.yPos or -200,
 				matchWidth = false,
+				matchHeight = false,
 			}
 		end
 	end
@@ -8765,7 +9097,7 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 		showCooldown = true,
 		border = 2,
 		relativeTo = "BOTTOM",
-		relativeToName = L["PositionBelow"],
+		relativeToName = L["ThresholdIconPositionBelowRight"],
 		enabled = true,
 		desaturated = true,
 		xPos = 0,

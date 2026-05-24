@@ -40,28 +40,12 @@ local containerAnchorFirstNodeLabelByResourceType = {
 	WhirlwindCharges = L["WhirlwindCharge1"],
 }
 
-local barTextClassNamesById = {
-	[1] = "Warrior",
-	[2] = "Paladin",
-	[3] = "Hunter",
-	[4] = "Rogue",
-	[5] = "Priest",
-	[6] = "DeathKnight",
-	[7] = "Shaman",
-	[8] = "Mage",
-	[9] = "Warlock",
-	[10] = "Monk",
-	[11] = "Druid",
-	[12] = "DemonHunter",
-	[13] = "Evoker"
-}
-
 local function GetSpecBarGroupConfig(classId, specId)
 	if classId == nil or specId == nil then
 		return nil
 	end
 
-	local className = barTextClassNamesById[classId]
+	local className = TRB.Functions.Character:GetClassModuleName(classId)
 	if className == nil then
 		return nil
 	end
@@ -160,6 +144,65 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 	end
 
 	return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+end
+
+---@param frame Frame?
+---@param barGroup TRB.Classes.BarGroup?
+---@return boolean
+local function BarGroupContainsFrame(frame, barGroup)
+	if frame == nil or barGroup == nil then
+		return false
+	end
+
+	if barGroup.GetContainerFrame and frame == barGroup:GetContainerFrame() then
+		return true
+	end
+
+	if barGroup.GetAnchorFrame and frame == barGroup:GetAnchorFrame() then
+		return true
+	end
+
+	if barGroup.GetNodes then
+		for _, node in ipairs(barGroup:GetNodes()) do
+			if node and node.GetFrame and frame == node:GetFrame() then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+---@param barTextEntry table?
+---@param barGroupKey string
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:IsEntryAnchoredToBarGroup(barTextEntry, barGroupKey, classId, specId)
+	local relativeToFrame = barTextEntry and barTextEntry.position and barTextEntry.position.relativeToFrame
+	if type(relativeToFrame) ~= "string" then
+		return false
+	end
+
+	local containerBarGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+	if containerBarGroupKey ~= nil then
+		return containerBarGroupKey == barGroupKey
+	end
+
+	local activeClassId = TRB.Data.character.classId
+	local activeSpecId = TRB.Data.character.specId
+	if classId ~= nil and specId ~= nil and (classId ~= activeClassId or specId ~= activeSpecId) then
+		return false
+	end
+
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local barGroup = barGroups and barGroups[barGroupKey]
+	if barGroup == nil then
+		return false
+	end
+
+	local anchorFrame = self:GetAnchorFrame(relativeToFrame, classId, specId)
+	return BarGroupContainsFrame(anchorFrame, barGroup)
 end
 
 -- Hash table for O(1) bar text cache lookups (keyed by cleanedText).

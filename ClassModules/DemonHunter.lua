@@ -267,21 +267,8 @@ local function ConstructResourceBar(settings)
 			local maxSoulFragments = 6
 
 			barGroups.secondary:SetMaxNodes(maxSoulFragments)
-			barGroups.secondary:SetNodeCount(maxSoulFragments)
-			barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxSoulFragments)
 			barGroups.secondary:Show()
-
-			local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-			if cdmForced then
-				barGroups.secondary.fullWidth = true
-			end
-
-			barGroups.secondary:ApplyLayout(
-				effectiveWidth,
-				settings.comboPoints.width,
-				settings.comboPoints.height,
-				settings.comboPoints.border
-			)
 
 			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxSoulFragments do

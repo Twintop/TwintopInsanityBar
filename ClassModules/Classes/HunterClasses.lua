@@ -184,6 +184,7 @@ end
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
+---@field public invigoratingPulse TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public aimedShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
@@ -204,7 +205,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     -- Marksmanship Spec Baseline Abilities
     self.steadyShot = TRB.Classes.SpellBase:New({
         id = 56641,
-        resource = 10,
+        resource = 20,
         baseline = true
     })
     self.arcaneShot = TRB.Classes.SpellThreshold:New({
@@ -300,6 +301,11 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         id = 1253830,
         isTalent = true,
         duration = 2
+    })
+    self.invigoratingPulse = TRB.Classes.SpellBase:New({
+        id = 450379,
+        isTalent = true,
+        resourceMod = 5
     })
 
     return self

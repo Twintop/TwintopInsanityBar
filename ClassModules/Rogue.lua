@@ -430,23 +430,8 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:SetMaxNodes(maxComboPoints)
 		
 		-- Ensure secondary group knows the correct node count
-		barGroups.secondary:SetNodeCount(maxComboPoints)
-		barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+		Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxComboPoints)
 		barGroups.secondary:Show()
-		
-		-- Get effective width for secondary bar, accounting for CDM width matching
-		local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
-		if cdmForced then
-			barGroups.secondary.fullWidth = true
-		end
-		
-		-- Apply layout to position all nodes correctly
-		barGroups.secondary:ApplyLayout(
-			effectiveWidth,
-			settings.comboPoints.width,
-			settings.comboPoints.height,
-			settings.comboPoints.border
-		)
 		
 		-- Explicitly set textures and colors for each Combo Point node
 		local frameLevels = TRB.Data.constants.frameLevels
@@ -2330,21 +2315,7 @@ function TRB.Functions.Class:CheckCharacter()
 				barGroups.secondary.lastRebuildNodeCount = nil
 				
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
-				barGroups.secondary:SetNodeCount(maxComboPoints)
-				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(sharedSettings.comboPoints), Bar:GetMatchWidth(sharedSettings.comboPoints), "HORIZONTAL")
-				
-				-- Get effective width for secondary bar, accounting for CDM width matching
-				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, sharedSettings, "secondary")
-				if cdmForced then
-					barGroups.secondary.fullWidth = true
-				end
-				
-				barGroups.secondary:ApplyLayout(
-					effectiveWidth,
-					sharedSettings.comboPoints.width,
-					sharedSettings.comboPoints.height,
-					sharedSettings.comboPoints.border
-				)
+				Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
 				-- Apply textures and colors to any newly created nodes
 				local frameLevels = TRB.Data.constants.frameLevels
 				for i = 1, maxComboPoints do

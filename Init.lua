@@ -213,8 +213,34 @@ TRB.Data.specCache = {}
 ---@field public classId number
 ---@field public specId number
 ---@field public className string   -- all-lowercase, e.g. "deathknight"
+---@field public classToken string  -- uppercase WoW class file token, e.g. "DEATHKNIGHT"
+---@field public classModuleName string -- PascalCase addon module key, e.g. "DeathKnight"
 ---@field public specName string    -- camelCase, e.g. "beastMastery"
+---@field public specNameLower string -- all-lowercase convenience form, e.g. "beastmastery"
+---@field public specNameUpper string -- uppercase convenience form, e.g. "BEASTMASTERY"
 ---@field public compositeKey string -- "className_specName", e.g. "deathknight_frost"
+
+---@class TRB.Data.ClassRegistryEntry
+---@field public classId number
+---@field public className string   -- all-lowercase settings key, e.g. "deathknight"
+---@field public classToken string  -- uppercase WoW class file token, e.g. "DEATHKNIGHT"
+---@field public classModuleName string -- PascalCase addon module/options key, e.g. "DeathKnight"
+---@field public specs TRB.Data.SpecRegistryEntry[]
+
+---@type TRB.Data.ClassRegistryEntry[]
+TRB.Data.classRegistryOrder = {}
+
+---@type table<string, TRB.Data.ClassRegistryEntry>
+TRB.Data.classRegistry = {}
+
+---@type table<number, TRB.Data.ClassRegistryEntry>
+TRB.Data.classRegistryByIds = {}
+
+---@type table<string, TRB.Data.ClassRegistryEntry>
+TRB.Data.classRegistryByTokens = {}
+
+---@type TRB.Data.SpecRegistryEntry[]
+TRB.Data.specRegistryOrder = {}
 
 ---@type table<string, TRB.Data.SpecRegistryEntry>
 TRB.Data.specRegistry = {}
@@ -223,87 +249,85 @@ TRB.Data.specRegistry = {}
 TRB.Data.specRegistryByIds = {}
 
 do
-	local function reg(classId, specId, className, specName)
-		local compositeKey = className .. "_" .. specName
-		local entry = {
+	local function regClass(classId, className, classToken, classModuleName, specs)
+		local classEntry = {
 			classId = classId,
-			specId = specId,
 			className = className,
-			specName = specName,
-			compositeKey = compositeKey,
+			classToken = classToken,
+			classModuleName = classModuleName,
+			specs = {},
 		}
-		TRB.Data.specRegistry[compositeKey] = entry
+
+		TRB.Data.classRegistry[className] = classEntry
+		TRB.Data.classRegistryByIds[classId] = classEntry
+		TRB.Data.classRegistryByTokens[classToken] = classEntry
+		table.insert(TRB.Data.classRegistryOrder, classEntry)
+
 		if not TRB.Data.specRegistryByIds[classId] then
 			TRB.Data.specRegistryByIds[classId] = {}
 		end
-		TRB.Data.specRegistryByIds[classId][specId] = entry
+
+		for _, spec in ipairs(specs) do
+			local specId = spec[1]
+			local specName = spec[2]
+			local compositeKey = className .. "_" .. specName
+			local entry = {
+				classId = classId,
+				specId = specId,
+				className = className,
+				classToken = classToken,
+				classModuleName = classModuleName,
+				specName = specName,
+				specNameLower = string.lower(specName),
+				specNameUpper = string.upper(specName),
+				compositeKey = compositeKey,
+			}
+			TRB.Data.specRegistry[compositeKey] = entry
+			TRB.Data.specRegistryByIds[classId][specId] = entry
+			table.insert(classEntry.specs, entry)
+			table.insert(TRB.Data.specRegistryOrder, entry)
+		end
 	end
 
-	-- Death Knight (classId 6)
-	reg(6, 1, "deathknight", "blood")
-	reg(6, 2, "deathknight", "frost")
-	reg(6, 3, "deathknight", "unholy")
-
-	-- Demon Hunter (classId 12)
-	reg(12, 1, "demonhunter", "havoc")
-	reg(12, 2, "demonhunter", "vengeance")
-	reg(12, 3, "demonhunter", "devourer")
-
-	-- Druid (classId 11)
-	reg(11, 1, "druid", "balance")
-	reg(11, 2, "druid", "feral")
-	reg(11, 3, "druid", "guardian")
-	reg(11, 4, "druid", "restoration")
-
-	-- Evoker (classId 13)
-	reg(13, 1, "evoker", "devastation")
-	reg(13, 2, "evoker", "preservation")
-	reg(13, 3, "evoker", "augmentation")
-
-	-- Hunter (classId 3)
-	reg(3, 1, "hunter", "beastMastery")
-	reg(3, 2, "hunter", "marksmanship")
-	reg(3, 3, "hunter", "survival")
-
-	-- Mage (classId 8)
-	reg(8, 1, "mage", "arcane")
-	reg(8, 2, "mage", "fire")
-	reg(8, 3, "mage", "frost")
-
-	-- Monk (classId 10)
-	reg(10, 1, "monk", "brewmaster")
-	reg(10, 2, "monk", "mistweaver")
-	reg(10, 3, "monk", "windwalker")
-
-	-- Paladin (classId 2)
-	reg(2, 1, "paladin", "holy")
-	reg(2, 2, "paladin", "protection")
-	reg(2, 3, "paladin", "retribution")
-
-	-- Priest (classId 5)
-	reg(5, 1, "priest", "discipline")
-	reg(5, 2, "priest", "holy")
-	reg(5, 3, "priest", "shadow")
-
-	-- Rogue (classId 4)
-	reg(4, 1, "rogue", "assassination")
-	reg(4, 2, "rogue", "outlaw")
-	reg(4, 3, "rogue", "subtlety")
-
-	-- Shaman (classId 7)
-	reg(7, 1, "shaman", "elemental")
-	reg(7, 2, "shaman", "enhancement")
-	reg(7, 3, "shaman", "restoration")
-
-	-- Warlock (classId 9)
-	reg(9, 1, "warlock", "affliction")
-	reg(9, 2, "warlock", "demonology")
-	reg(9, 3, "warlock", "destruction")
-
-	-- Warrior (classId 1)
-	reg(1, 1, "warrior", "arms")
-	reg(1, 2, "warrior", "fury")
-	reg(1, 3, "warrior", "protection")
+	regClass(1, "warrior", "WARRIOR", "Warrior", {
+		{ 1, "arms" }, { 2, "fury" }, { 3, "protection" }
+	})
+	regClass(2, "paladin", "PALADIN", "Paladin", {
+		{ 1, "holy" }, { 2, "protection" }, { 3, "retribution" }
+	})
+	regClass(3, "hunter", "HUNTER", "Hunter", {
+		{ 1, "beastMastery" }, { 2, "marksmanship" }, { 3, "survival" }
+	})
+	regClass(4, "rogue", "ROGUE", "Rogue", {
+		{ 1, "assassination" }, { 2, "outlaw" }, { 3, "subtlety" }
+	})
+	regClass(5, "priest", "PRIEST", "Priest", {
+		{ 1, "discipline" }, { 2, "holy" }, { 3, "shadow" }
+	})
+	regClass(6, "deathknight", "DEATHKNIGHT", "DeathKnight", {
+		{ 1, "blood" }, { 2, "frost" }, { 3, "unholy" }
+	})
+	regClass(7, "shaman", "SHAMAN", "Shaman", {
+		{ 1, "elemental" }, { 2, "enhancement" }, { 3, "restoration" }
+	})
+	regClass(8, "mage", "MAGE", "Mage", {
+		{ 1, "arcane" }, { 2, "fire" }, { 3, "frost" }
+	})
+	regClass(9, "warlock", "WARLOCK", "Warlock", {
+		{ 1, "affliction" }, { 2, "demonology" }, { 3, "destruction" }
+	})
+	regClass(10, "monk", "MONK", "Monk", {
+		{ 1, "brewmaster" }, { 2, "mistweaver" }, { 3, "windwalker" }
+	})
+	regClass(11, "druid", "DRUID", "Druid", {
+		{ 1, "balance" }, { 2, "feral" }, { 3, "guardian" }, { 4, "restoration" }
+	})
+	regClass(12, "demonhunter", "DEMONHUNTER", "DemonHunter", {
+		{ 1, "havoc" }, { 2, "vengeance" }, { 3, "devourer" }
+	})
+	regClass(13, "evoker", "EVOKER", "Evoker", {
+		{ 1, "devastation" }, { 2, "preservation" }, { 3, "augmentation" }
+	})
 end
 
 TRB.Data.character = {

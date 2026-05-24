@@ -267,7 +267,7 @@ end
 ---When the Druid changes form, bars like combo points (secondary) and mana may become
 ---invisible. If such a bar is the root of its own tree (screen-anchored), the wrapper
 ---should be hidden so it doesn't linger as an empty container or capture mouse events.
----@param settings table? # Spec settings table
+---@param settings table? # Spec settings table (form-resolved; used as fallback only)
 ---@param forest table<string, table>? # Pre-built anchor forest (avoids rebuilding)
 function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	if TRB.Data.character.classId ~= 11 then
@@ -284,12 +284,25 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 		return
 	end
 
+	-- Visibility decisions must use the ACTIVE spec's specCache settings (which
+	-- honor that spec's "Use global settings" toggles), not the form-resolved
+	-- settings passed in for layout/dimensions. Otherwise, when in cat form on
+	-- Guardian, the wrapper would be evaluated against Feral's displayBar (and
+	-- Feral's global toggle), ignoring Guardian's effective visibility configuration.
+	local activeSettings
+	if TRB.Data.specCache and TRB.Data.character.compositeKey then
+		local cache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		activeSettings = cache and cache.settings or nil
+	end
+	-- Fallback to the passed-in settings only if the specCache isn't ready yet.
+	local visSource = activeSettings or settings
+
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 	local specId = TRB.Data.character.specId
 
 	-- Determine displaySpecId (mirrors GetFormSpecForSettings in Druid.lua)
 	local enableFormSwitching = true
-	if settings and settings.displayBar and settings.displayBar.enableFormSwitching == false then
+	if visSource and visSource.displayBar and visSource.displayBar.enableFormSwitching == false then
 		enableFormSwitching = false
 	end
 	local displaySpecId = specId
@@ -305,18 +318,18 @@ function TRB.Functions.EditMode:RefreshDruidWrapperVisibility(settings, forest)
 	-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
 	-- (defaults ON for Feral, OFF for non-Feral).
 	local shouldShowSecondary
-	local secondaryVis = settings and settings.displayBar and settings.displayBar.secondary
+	local secondaryVis = visSource and visSource.displayBar and visSource.displayBar.secondary
 	local secondaryNotNever = not secondaryVis or not secondaryVis.neverShow
 	if displaySpecId == 2 then
 		-- Cat form (or Feral with form-switching off): CPs are native, always eligible
 		shouldShowSecondary = secondaryNotNever
 	elseif specId == 2 then
 		-- Feral in non-cat form: checkbox defaults ON (nil → show)
-		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		local showCP = visSource and visSource.displayBar and visSource.displayBar.showComboPoints
 		shouldShowSecondary = (showCP ~= false) and secondaryNotNever
 	else
 		-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-		local showCP = settings and settings.displayBar and settings.displayBar.showComboPoints
+		local showCP = visSource and visSource.displayBar and visSource.displayBar.showComboPoints
 		shouldShowSecondary = (showCP == true) and secondaryNotNever
 	end
 
@@ -393,10 +406,8 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		effectiveWidth = barGroups.effectiveWidth
 	else
 		local rootBarSettings = TRB.Functions.Bar:GetBarSettings(settings, rootBarKey)
-		-- For multi-node bars (secondary/combo points), barSettings.width is per-node.
-		-- Calculate total group width: nodeCount * nodeWidth + (nodeCount-1) * spacing
 		local rootGroup = barGroups[rootBarKey]
-		effectiveWidth = TRB.Functions.Bar:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
+		effectiveWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(rootGroup) or TRB.Functions.Bar:GetMultiNodeBarTotalWidth(rootBarKey, rootBarSettings, rootGroup)
 		if effectiveWidth == 0 then
 			effectiveWidth = (rootBarSettings and rootBarSettings.width) or settings.bar.width
 		end
@@ -461,13 +472,23 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	end
 
 	local baseWidth, baseHeight
+	local rootGroup = barGroups[rootBarKey]
+	local renderedRootWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(rootGroup)
+	local renderedRootHeight = TRB.Functions.Bar:GetRenderedBarGroupHeight(rootGroup)
 	if rootBarKey == "primary" then
-		baseWidth = effectiveWidth
-		baseHeight = effectiveHeight or settings.bar.height or 0
+		baseWidth = renderedRootWidth or effectiveWidth
+		baseHeight = renderedRootHeight or effectiveHeight or settings.bar.height or 0
 	else
 		local rootBarSettings = rootNode.barSettings
-		baseWidth = effectiveWidth
-		baseHeight = effectiveHeight or (rootBarSettings and rootBarSettings.height) or 0
+		baseWidth = renderedRootWidth or effectiveWidth
+		if effectiveHeight then
+			baseHeight = renderedRootHeight or effectiveHeight
+		else
+			baseHeight = renderedRootHeight or TRB.Functions.Bar:GetMultiNodeBarTotalHeight(rootBarKey, rootBarSettings, rootGroup)
+			if baseHeight == 0 then
+				baseHeight = (rootBarSettings and rootBarSettings.height) or 0
+			end
+		end
 	end
 
 	-- Hidden bars use 0 height in the bounding-box calculation so the wrapper
@@ -482,12 +503,13 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	local minX, maxX = 0, baseWidth
 	local minY, maxY = 0, baseHeight
 
-	---Returns the effective width and height for a bar node, accounting for matchWidth, multi-node layout, and anchor frame width matching
+	---Returns the effective width and height for a bar node, accounting for matchWidth/matchHeight, multi-node layout, and anchor frame matching
 	---@param node table # An anchor tree node with barSettings, barKey, barGroup, width, height
 	---@param parentWidth number # The parent bar's effective width (used for matchWidth inheritance)
+	---@param parentHeight number # The parent bar's effective height (used for matchHeight inheritance)
 	---@return number w # The effective width of the bar
 	---@return number h # The effective height of the bar
-	local function getEffectiveBarSize(node, parentWidth)
+	local function getEffectiveBarSize(node, parentWidth, parentHeight)
 		local barSettings = node.barSettings
 		if not barSettings then
 			return node.width or 0, node.height or 0
@@ -496,45 +518,82 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		local w = barSettings.width or 0
 		local h = barSettings.height or 0
 
-		local matchWidth = TRB.Functions.Bar:GetMatchWidth(barSettings)
-		if matchWidth then
-			w = parentWidth
+		-- Determine if this is a multi-node bar
+		local isMultiNode = false
+		local maxNodes = 1
+		if node.barKey == "secondary" then
+			isMultiNode = true
+			maxNodes = TRB.Data.character.maxResource2 or 5
 		else
-			-- Check if this is a multi-node bar that needs total width calculation
-			local isMultiNode = false
-			local maxNodes = 1
-			if node.barKey == "secondary" then
-				isMultiNode = true
-				maxNodes = TRB.Data.character.maxResource2 or 5
-			else
-				-- Check BarTypeRegistry for custom multi-node bars (e.g., defensives)
-				local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
-				if registry then
-					local barTypeDef = registry:Get(node.barKey)
-					if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
-						isMultiNode = true
-						maxNodes = barTypeDef.maxNodes
-					end
+			local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+			if registry then
+				local barTypeDef = registry:Get(node.barKey)
+				if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
+					isMultiNode = true
+					maxNodes = barTypeDef.maxNodes
 				end
 			end
+		end
 
-			if isMultiNode then
-				-- Multi-node bar: calculate total width from node dimensions.
-				-- The rendered group width (from BarGroup:ApplyLayout) is exactly:
-				--   nodeCount * nodeWidth + (nodeCount - 1) * spacing
-				-- Per-node borders are contained WITHIN each nodeWidth and don't add extra width.
-				local nodeCount = maxNodes
-				if node.barGroup and node.barGroup.nodeCount then
-					nodeCount = node.barGroup.nodeCount
-				end
+		local matchWidth = TRB.Functions.Bar:GetMatchWidth(barSettings)
+		local matchHeight = TRB.Functions.Bar:GetMatchHeight(barSettings)
+		local renderedWidth = TRB.Functions.Bar:GetRenderedBarGroupWidth(node.barGroup)
+		local renderedHeight = TRB.Functions.Bar:GetRenderedBarGroupHeight(node.barGroup)
+
+		if renderedWidth then
+			w = renderedWidth
+		end
+		if renderedHeight then
+			h = renderedHeight
+		end
+
+		if renderedWidth then
+			-- The rendered group already reflects match width and multi-node layout.
+		elseif matchWidth then
+			w = parentWidth
+		elseif isMultiNode then
+			-- Multi-node bar: calculate group extent along the growth axis
+			local growthDirection = barSettings.growthDirection
+			local nodeCount = maxNodes
+			if node.barGroup and node.barGroup.nodeCount then
+				nodeCount = node.barGroup.nodeCount
+			end
+			local nodeSpacing = TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
+
+			if growthDirection == "topBottom" or growthDirection == "bottomTop" then
+				-- Vertical growth: width is per-node (cross axis)
+				w = barSettings.width or 10
+			else
+				-- Horizontal growth: total width = nodeCount * nodeWidth + spacing
 				local nodeWidth = barSettings.width or 10
-				local nodeSpacing = barSettings.spacing or 2
 				w = (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
 			end
 		end
 
-		-- Anchor frame width matching override: Edit Mode may have width matching enabled
-		-- for this bar's root, expanding it beyond the matchWidth/calculated width.
+		if renderedHeight then
+			-- The rendered group already reflects match height and multi-node layout.
+		elseif matchHeight then
+			h = parentHeight
+		elseif isMultiNode then
+			local growthDirection = barSettings.growthDirection
+			local nodeCount = maxNodes
+			if node.barGroup and node.barGroup.nodeCount then
+				nodeCount = node.barGroup.nodeCount
+			end
+			local nodeSpacing = TRB.Functions.Bar:GetEffectiveSpacing(barSettings)
+
+			if growthDirection == "topBottom" or growthDirection == "bottomTop" then
+				-- Vertical growth: total height = nodeCount * nodeHeight + spacing
+				local nodeHeight = barSettings.height or 10
+				h = (nodeHeight * nodeCount) + (nodeSpacing * (nodeCount - 1))
+			else
+				-- Horizontal growth: height is per-node (cross axis)
+				h = barSettings.height or 10
+			end
+		end
+
+		-- Anchor frame matching overrides: Edit Mode may have width/height matching
+		-- enabled for this bar's root, expanding it beyond the calculated size.
 		if node.barKey then
 			local anchorWidthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, node.barKey)
 			if anchorWidthMatched then
@@ -543,6 +602,16 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 				local anchorWidth = TRB.Functions.EditMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
 				if anchorWidth and anchorWidth > w then
 					w = anchorWidth
+				end
+			end
+
+			local anchorHeightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, node.barKey)
+			if anchorHeightMatched then
+				local anchorFrameKey = TRB.Functions.EditMode:GetAnchorFrameKey(nil, node.barKey)
+				local customFrameName = TRB.Functions.EditMode:GetCustomFrameName(nil, node.barKey)
+				local anchorHeight = TRB.Functions.EditMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
+				if anchorHeight and anchorHeight > h then
+					h = anchorHeight
 				end
 			end
 		end
@@ -562,36 +631,24 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		for _, child in ipairs(parentNode.children) do
 			local anchor = child.anchor
 			if anchor then
-				local childWidth, childHeight = getEffectiveBarSize(child, parentWidth)
-				if childWidth > 0 then
-					-- Hidden children use 0 height so they collapse in the bounding box.
-					-- This matches ApplyBarGroupsLayout which sets their container to 0 height.
+				local childWidth, childHeight = getEffectiveBarSize(child, parentWidth, parentHeight)
+				if childWidth > 0 or childHeight > 0 then
+					-- Hidden children use 0 height and 0 width so they collapse in the bounding box.
+					-- This matches ApplyBarGroupsLayout which sets their container to 0 for both.
 					-- Uses IsBarVisibleForLayout for runtime visibility (e.g., Druid forms).
 					local childIsHidden = child.barKey and not TRB.Functions.Bar:IsBarVisibleForLayout(settings, child.barKey, includeHidden)
 					local layoutHeight = childIsHidden and 0 or childHeight
+					local layoutWidth = childIsHidden and 0 or childWidth
 
 					local anchorPt = anchor.anchorPoint or "TOP"
 					local attachPt = anchor.attachPoint or "BOTTOM"
 					local xOffset = anchor.xOffset or 0
 					local yOffset = anchor.yOffset or 0
-					local matchWidth = child.barSettings and TRB.Functions.Bar:GetMatchWidth(child.barSettings)
-
-					-- Apply matchWidth center-alignment override (matching ConstructAnchoredBarGroup)
-					if matchWidth then
-						-- Strip horizontal component to force center alignment, preserve vertical
-						anchorPt = string.gsub(anchorPt, "LEFT", "")
-						anchorPt = string.gsub(anchorPt, "RIGHT", "")
-						attachPt = string.gsub(attachPt, "LEFT", "")
-						attachPt = string.gsub(attachPt, "RIGHT", "")
-						if anchorPt == "" then anchorPt = "CENTER" end
-						if attachPt == "" then attachPt = "CENTER" end
-						xOffset = 0
-					end
 
 					-- Calculate anchor point position on parent (Y-up, origin=parent bottom-left)
 					local apX, apY = TRB.Functions.Bar:CalculateAnchorPointOffset(parentWidth, parentHeight, anchorPt)
-					-- Calculate attach point position on child (use layoutHeight for collapsed bars)
-					local atX, atY = TRB.Functions.Bar:CalculateAnchorPointOffset(childWidth, layoutHeight, attachPt)
+					-- Calculate attach point position on child (use layout dimensions for collapsed bars)
+					local atX, atY = TRB.Functions.Bar:CalculateAnchorPointOffset(layoutWidth, layoutHeight, attachPt)
 
 					-- Child's bottom-left in global coords
 					local childLeft = parentLeft + apX + xOffset - atX
@@ -600,13 +657,13 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 					-- Only include visible children in the bounding box
 					if not childIsHidden then
 						minX = math.min(minX, childLeft)
-						maxX = math.max(maxX, childLeft + childWidth)
+						maxX = math.max(maxX, childLeft + layoutWidth)
 						minY = math.min(minY, childBottom)
 						maxY = math.max(maxY, childBottom + layoutHeight)
 					end
 
 					-- Always recurse into children (even hidden ones may have visible descendants)
-					walkTree(child, childLeft, childBottom, childWidth, layoutHeight)
+					walkTree(child, childLeft, childBottom, layoutWidth, layoutHeight)
 				end
 			end
 		end
@@ -1412,6 +1469,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 			anchorToCooldownManager = layoutData.anchorToCooldownManager or "none",
 			anchorOffset = layoutData.anchorOffset or 0,
 			matchCooldownManagerWidth = layoutData.matchCooldownManagerWidth or false,
+			matchCooldownManagerHeight = layoutData.matchCooldownManagerHeight or false,
 		}
 		-- Clean up old flat fields
 		layoutData.enabled = nil
@@ -1419,6 +1477,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		layoutData.anchorToCooldownManager = nil
 		layoutData.anchorOffset = nil
 		layoutData.matchCooldownManagerWidth = nil
+		layoutData.matchCooldownManagerHeight = nil
 	end
 
 	-- Ensure bars sub-table exists
@@ -1450,6 +1509,7 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		local oldMode = barData.anchorToCooldownManager
 		local oldOffset = barData.anchorOffset or 0
 		local oldMatchWidth = barData.matchCooldownManagerWidth or false
+		local oldMatchHeight = barData.matchCooldownManagerHeight or false
 
 		barData.anchor = barData.anchor or {}
 		local anchor = barData.anchor
@@ -1475,13 +1535,14 @@ function TRB.Functions.EditMode:EnsureLayoutSettings(layoutName, rootBarKey)
 		end
 
 		anchor.matchWidth = anchor.matchWidth or oldMatchWidth
-		anchor.matchHeight = anchor.matchHeight or false
+		anchor.matchHeight = anchor.matchHeight or oldMatchHeight
 		anchor.customFrameName = anchor.customFrameName or nil
 
 		-- Clean up old flat CDM fields
 		barData.anchorToCooldownManager = nil
 		barData.anchorOffset = nil
 		barData.matchCooldownManagerWidth = nil
+		barData.matchCooldownManagerHeight = nil
 	end
 
 	-- Ensure anchor block and all its fields exist (field-level migration for partial data)
@@ -1753,10 +1814,20 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 	if anyAnchorUsage then
 		-- Reapply bar layout to update width/height/position
 		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
-			if specSettings and specSettings.settings then
+			-- Use the class-resolved display settings so form-aware classes (Druid)
+			-- apply the correct form-spec settings here. Falls back to the active
+			-- compositeKey for all other classes.
+			local displaySettings
+			if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
+				displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
+			end
+			if not displaySettings then
+				local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
+				displaySettings = specSettings and specSettings.settings or nil
+			end
+			if displaySettings then
 				isReapplyingAnchorLayout = true
-				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsLayout(displaySettings, TRB.Frames.barGroups)
 				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 				isReapplyingAnchorLayout = false
@@ -2003,6 +2074,25 @@ function TRB.Functions.EditMode:SetVerticalOffset(layoutName, offset, rootBarKey
 	TRB.Data.settings.core.editMode.layouts[layoutName].bars[rootBarKey].anchor.yOffset = offset
 end
 
+---Gets the fill direction for a bar key from the current spec settings.
+---@param rootBarKey string # The bar key to look up
+---@return trbFillDirection # The fill direction, defaults to "leftRight"
+function TRB.Functions.EditMode:GetBarFillDirection(rootBarKey)
+	local specCache = TRB.Data.specCache
+	if not specCache or not TRB.Data.character or not TRB.Data.character.compositeKey then
+		return "leftRight"
+	end
+	local cached = specCache[TRB.Data.character.compositeKey]
+	if not cached or not cached.settings then
+		return "leftRight"
+	end
+	if rootBarKey == "primary" then
+		return cached.settings.bar.fillDirection or "leftRight"
+	end
+	local barSettings = TRB.Functions.Bar:GetBarSettings(cached.settings, rootBarKey)
+	return (barSettings and barSettings.fillDirection) or "leftRight"
+end
+
 ---Gets whether width matching is enabled for the current layout for a specific root.
 ---This returns the EFFECTIVE value — false if layout is not enabled or no anchor frame set.
 ---@param layoutName string? # The layout name (uses active layout if nil)
@@ -2075,6 +2165,20 @@ function TRB.Functions.EditMode:IsHeightMatchingEnabled(layoutName, rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 	layoutName = layoutName or (LibEditMode and LibEditMode:GetActiveLayoutName())
 	if not layoutName then
+		-- Early init fallback: scan all layouts for potential height matching
+		if TRB.Data.settings.core.editMode and TRB.Data.settings.core.editMode.layouts then
+			for _, layoutData in pairs(TRB.Data.settings.core.editMode.layouts) do
+				if layoutData.bars and layoutData.bars[rootBarKey] then
+					local barData = layoutData.bars[rootBarKey]
+					if barData.enabled and barData.anchor and barData.anchor.matchHeight and barData.anchor.frameKey ~= "none" then
+						if self:IsAnchorFrameAvailable(barData.anchor.frameKey, barData.anchor.customFrameName) then
+							return true
+						end
+						break
+					end
+				end
+			end
+		end
 		return false
 	end
 

@@ -7,6 +7,211 @@ TRB.Data = TRB.Data or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 local EXPORT_STRING_PREFIX2 = "!TRBv2!"
 
+local SECONDARY_BAR_EXPORT_SPECS = {
+	[1] = { [2] = true },
+	[2] = { [1] = true, [2] = true, [3] = true },
+	[3] = { [3] = true },
+	[4] = { [1] = true, [2] = true, [3] = true },
+	[5] = { [1] = true },
+	[6] = { [1] = true, [2] = true, [3] = true },
+	[7] = { [2] = true },
+	[8] = { [1] = true, [3] = true },
+	[9] = { [1] = true, [2] = true, [3] = true },
+	[10] = { [3] = true },
+	[11] = { [2] = true },
+	[12] = { [2] = true, [3] = true },
+	[13] = { [1] = true, [2] = true, [3] = true },
+}
+
+local CUSTOM_BAR_EXPORT_SPECS = {
+	[1] = {
+		[2] = { "whirlwind" },
+		[3] = { "defensives" },
+	},
+	[5] = {
+		[1] = { "utility" },
+		[2] = { "holyWords", "lightweaver", "utility" },
+		[3] = { "mana", "utility" },
+	},
+	[6] = {
+		[1] = { "boneShield" },
+	},
+	[7] = {
+		[1] = { "mana" },
+	},
+	[10] = {
+		[1] = { "stagger" },
+	},
+	[11] = {
+		[1] = { "mana" },
+	},
+	[13] = {
+		[3] = { "ebonMight" },
+	},
+}
+
+local CORE_TEXTURE_KEYS = {
+	"background",
+	"backgroundName",
+	"border",
+	"borderName",
+	"resourceBar",
+	"resourceBarName",
+	"textureLock",
+	"healthBackground",
+	"healthBackgroundName",
+	"healthBorder",
+	"healthBorderName",
+	"healthBar",
+	"healthBarName",
+	"absorbBar",
+	"absorbBarName",
+	"incomingHealBar",
+	"incomingHealBarName",
+	"castingBar",
+	"castingBarName",
+}
+
+local DRUID_DISPLAY_BAR_FLAG_KEYS = {
+	"enableFormSwitching",
+	"showComboPoints",
+}
+
+local function CopyKey(destination, source, key)
+	if destination ~= nil and source ~= nil and source[key] ~= nil then
+		destination[key] = source[key]
+	end
+end
+
+local function CopyKeys(destination, source, keys)
+	if destination == nil or source == nil then
+		return
+	end
+
+	for _, key in ipairs(keys) do
+		CopyKey(destination, source, key)
+	end
+end
+
+local function CopyTexturePrefix(destination, source, prefix)
+	CopyKeys(destination, source, {
+		prefix .. "Bar",
+		prefix .. "BarName",
+		prefix .. "Border",
+		prefix .. "BorderName",
+		prefix .. "Background",
+		prefix .. "BackgroundName",
+	})
+end
+
+local function CopyDruidDisplayBarFlags(configuration, settings, classId)
+	if classId ~= 11 then
+		return
+	end
+
+	CopyKeys(configuration.displayBar, settings.displayBar, DRUID_DISPLAY_BAR_FLAG_KEYS)
+end
+
+local function GetSpecBarGroupConfiguration(classId, specId)
+	local className = TRB.Functions.Character:GetClassModuleName(classId)
+	if className == nil then
+		return nil
+	end
+
+	local classModule = TRB.Classes and TRB.Classes[className]
+	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
+		return nil
+	end
+
+	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+end
+
+local function ShouldExportSecondaryBar(classId, specId, settings)
+	local hasSecondarySettings = settings.comboPoints ~= nil or (settings.colors ~= nil and settings.colors.comboPoints ~= nil)
+	if not hasSecondarySettings then
+		return false
+	end
+
+	if SECONDARY_BAR_EXPORT_SPECS[classId] ~= nil and SECONDARY_BAR_EXPORT_SPECS[classId][specId] == true then
+		return true
+	end
+
+	local specConfiguration = GetSpecBarGroupConfiguration(classId, specId)
+	return specConfiguration ~= nil and specConfiguration.secondary ~= nil
+end
+
+local function AddCustomBarKey(allowedBars, barKey)
+	if barKey ~= nil then
+		allowedBars[barKey] = true
+	end
+end
+
+local function GetAllowedCustomBarKeys(classId, specId)
+	local allowedBars = {}
+	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+
+	if registry ~= nil then
+		local registryBars = registry:GetBarTypesForSpec(classId, specId)
+		for barKey in pairs(registryBars) do
+			AddCustomBarKey(allowedBars, barKey)
+		end
+	end
+
+	local classBars = CUSTOM_BAR_EXPORT_SPECS[classId]
+	local specBars = classBars and classBars[specId]
+	if specBars ~= nil then
+		for _, barKey in ipairs(specBars) do
+			AddCustomBarKey(allowedBars, barKey)
+		end
+	end
+
+	return allowedBars
+end
+
+local function CopySecondaryBarConfiguration(configuration, settings)
+	configuration.comboPoints = settings.comboPoints
+	configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
+
+	CopyKey(configuration.displayBar, settings.displayBar, "secondary")
+	CopyTexturePrefix(configuration.textures, settings.textures, "comboPoints")
+	CopyKeys(configuration.textures, settings.textures, {
+		"comboPointsCastingBar",
+		"comboPointsCastingBarName",
+	})
+end
+
+local function CopyCustomBarConfiguration(configuration, settings, barKey)
+	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local barTypeDef = registry and registry:Get(barKey)
+	local barSettings = settings.bars and settings.bars[barKey]
+
+	if barSettings ~= nil then
+		configuration.bars = configuration.bars or {}
+		configuration.bars[barKey] = barSettings
+
+		local visibilityKey = barTypeDef and barTypeDef.visibilityKey or barKey
+		CopyKey(configuration.displayBar, settings.displayBar, visibilityKey)
+		CopyTexturePrefix(configuration.textures, settings.textures, barKey)
+
+		if barKey == "mana" then
+			CopyTexturePrefix(configuration.textures, settings.textures, "manaBar")
+		end
+	end
+
+	local barColors = settings.colors and settings.colors.bars and settings.colors.bars[barKey]
+	if barColors ~= nil then
+		configuration.colors.bars = configuration.colors.bars or {}
+		configuration.colors.bars[barKey] = barColors
+	end
+end
+
+local function CopyCustomBarConfigurations(configuration, settings, classId, specId)
+	local allowedBars = GetAllowedCustomBarKeys(classId, specId)
+	for barKey in pairs(allowedBars) do
+		CopyCustomBarConfiguration(configuration, settings, barKey)
+	end
+end
+
 ---Extracts selected configuration sections (bar display, thresholds, font/text, audio/tracking, bar text) from a single spec's settings table into an export-ready table, including class/spec-specific fields like combo points, mana bar, or stagger bar.
 ---@param classId integer # WoW class ID (1=Warrior, 2=Paladin, ..., 13=Evoker)
 ---@param specId integer # Specialization index within the class (1-based)
@@ -26,263 +231,23 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	if includeBarDisplay then
 		configuration.bar = settings.bar
 		configuration.healthBar = settings.healthBar
-		configuration.displayBar = settings.displayBar
-		configuration.textures = settings.textures or {}
+		configuration.displayBar = {}
+		configuration.textures = {}
 		configuration.colors.bar = settings.colors and settings.colors.bar
 		configuration.colors.shared = settings.colors and settings.colors.shared
 		configuration.colors.healthBar = settings.colors and settings.colors.healthBar
 		configuration.overcap = settings.overcap
 		configuration.endOf = settings.endOf
 
-		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms
-			elseif specId == 2 then -- Fury
-				configuration.comboPoints = settings.comboPoints
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.whirlwind = settings.colors and settings.colors.bars and settings.colors.bars.whirlwind
-			elseif specId == 3 then -- Protection
-				-- Export defensives bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.defensives = settings.bars and settings.bars.defensives
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.defensives = settings.colors and settings.colors.bars and settings.colors.bars.defensives
-				-- Export flat texture keys
-				configuration.textures.defensivesBar = settings.textures and settings.textures.defensivesBar
-				configuration.textures.defensivesBarName = settings.textures and settings.textures.defensivesBarName
-				configuration.textures.defensivesBorder = settings.textures and settings.textures.defensivesBorder
-				configuration.textures.defensivesBorderName = settings.textures and settings.textures.defensivesBorderName
-				configuration.textures.defensivesBackground = settings.textures and settings.textures.defensivesBackground
-				configuration.textures.defensivesBackgroundName = settings.textures and settings.textures.defensivesBackgroundName
-			end
-		elseif classId == 2 then -- Paladin
-			if specId == 1 then -- Holy
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 2 then -- Protection
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Retribution
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 3 then -- Hunters
-			if specId == 1 then -- Beast Mastery
-			elseif specId == 2 then -- Marksmanship
-			elseif specId == 3 then -- Survival
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 4 then -- Rogue
-			if specId == 1 then -- Assassination
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 2 then -- Outlaw
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Subtlety
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end 
-		elseif classId == 5 then -- Priests
-			if specId == 1 then -- Discipline
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-				-- Export utility bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.utility = settings.bars and settings.bars.utility
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
-				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
-				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
-				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
-				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
-				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
-				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
-			elseif specId == 2 then -- Holy
-				-- Export Holy Words bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.holyWords = settings.bars and settings.bars.holyWords
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.holyWords = settings.colors and settings.colors.bars and settings.colors.bars.holyWords
-				configuration.textures.holyWordsBar = settings.textures and settings.textures.holyWordsBar
-				configuration.textures.holyWordsBarName = settings.textures and settings.textures.holyWordsBarName
-				configuration.textures.holyWordsBorder = settings.textures and settings.textures.holyWordsBorder
-				configuration.textures.holyWordsBorderName = settings.textures and settings.textures.holyWordsBorderName
-				configuration.textures.holyWordsBackground = settings.textures and settings.textures.holyWordsBackground
-				configuration.textures.holyWordsBackgroundName = settings.textures and settings.textures.holyWordsBackgroundName
-				-- Export Lightweaver bar settings
-				configuration.bars.lightweaver = settings.bars and settings.bars.lightweaver
-				configuration.colors.bars.lightweaver = settings.colors and settings.colors.bars and settings.colors.bars.lightweaver
-				configuration.textures.lightweaverBar = settings.textures and settings.textures.lightweaverBar
-				configuration.textures.lightweaverBarName = settings.textures and settings.textures.lightweaverBarName
-				configuration.textures.lightweaverBorder = settings.textures and settings.textures.lightweaverBorder
-				configuration.textures.lightweaverBorderName = settings.textures and settings.textures.lightweaverBorderName
-				configuration.textures.lightweaverBackground = settings.textures and settings.textures.lightweaverBackground
-				configuration.textures.lightweaverBackgroundName = settings.textures and settings.textures.lightweaverBackgroundName
-				-- Export utility bar settings
-				configuration.bars.utility = settings.bars and settings.bars.utility
-				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
-				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
-				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
-				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
-				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
-				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
-				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
-			elseif specId == 3 then -- Shadow
-				-- Export mana bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.mana = settings.bars and settings.bars.mana
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
-				-- Export flat texture keys
-				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
-				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
-				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
-				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
-				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
-				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
-				-- Export utility bar settings
-				configuration.bars.utility = settings.bars and settings.bars.utility
-				configuration.colors.bars.utility = settings.colors and settings.colors.bars and settings.colors.bars.utility
-				configuration.textures.utilityBar = settings.textures and settings.textures.utilityBar
-				configuration.textures.utilityBarName = settings.textures and settings.textures.utilityBarName
-				configuration.textures.utilityBorder = settings.textures and settings.textures.utilityBorder
-				configuration.textures.utilityBorderName = settings.textures and settings.textures.utilityBorderName
-				configuration.textures.utilityBackground = settings.textures and settings.textures.utilityBackground
-				configuration.textures.utilityBackgroundName = settings.textures and settings.textures.utilityBackgroundName
-			end
-		elseif classId == 6 then -- Death Knight
-			if specId == 1 then -- Blood
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-				-- Bone Shield bar
-				configuration.bars = configuration.bars or {}
-				configuration.bars.boneShield = settings.bars and settings.bars.boneShield
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.boneShield = settings.colors and settings.colors.bars and settings.colors.bars.boneShield
-				configuration.textures.boneShieldBar = settings.textures and settings.textures.boneShieldBar
-				configuration.textures.boneShieldBarName = settings.textures and settings.textures.boneShieldBarName
-				configuration.textures.boneShieldBorder = settings.textures and settings.textures.boneShieldBorder
-				configuration.textures.boneShieldBorderName = settings.textures and settings.textures.boneShieldBorderName
-				configuration.textures.boneShieldBackground = settings.textures and settings.textures.boneShieldBackground
-				configuration.textures.boneShieldBackgroundName = settings.textures and settings.textures.boneShieldBackgroundName
-			elseif specId == 2 then -- Frost
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Unholy
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 7 then -- Shaman
-			if specId == 1 then -- Elemental
-				-- Export mana bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.mana = settings.bars and settings.bars.mana
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
-				-- Export flat texture keys
-				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
-				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
-				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
-				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
-				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
-				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
-			elseif specId == 2 then -- Enhancement
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Restoration
-			end
-		elseif classId == 8 then -- Mage
-			if specId == 1 then -- Arcane
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 2 then -- Fire
-			elseif specId == 3 then -- Frost
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 9 then -- Warlock
-			if specId == 1 then -- Affliction
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 2 then -- Demonology
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Destruction
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 10 then -- Monk
-			if specId == 1 then -- Brewmaster
-				-- Export stagger bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.stagger = settings.bars and settings.bars.stagger
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.stagger = settings.colors and settings.colors.bars and settings.colors.bars.stagger
-				-- Export flat texture keys (same pattern as manaBar)
-				configuration.textures.staggerBar = settings.textures and settings.textures.staggerBar
-				configuration.textures.staggerBarName = settings.textures and settings.textures.staggerBarName
-				configuration.textures.staggerBorder = settings.textures and settings.textures.staggerBorder
-				configuration.textures.staggerBorderName = settings.textures and settings.textures.staggerBorderName
-				configuration.textures.staggerBackground = settings.textures and settings.textures.staggerBackground
-				configuration.textures.staggerBackgroundName = settings.textures and settings.textures.staggerBackgroundName
-			elseif specId == 2 then -- Mistweaver
-			elseif specId == 3 then -- Windwalker
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 11 then -- Druids
-			if specId == 1 then -- Balance
-				-- Export mana bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.mana = settings.bars and settings.bars.mana
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.mana = settings.colors and settings.colors.bars and settings.colors.bars.mana
-				-- Export flat texture keys
-				configuration.textures.manaBar = settings.textures and settings.textures.manaBar
-				configuration.textures.manaBarName = settings.textures and settings.textures.manaBarName
-				configuration.textures.manaBorder = settings.textures and settings.textures.manaBorder
-				configuration.textures.manaBorderName = settings.textures and settings.textures.manaBorderName
-				configuration.textures.manaBackground = settings.textures and settings.textures.manaBackground
-				configuration.textures.manaBackgroundName = settings.textures and settings.textures.manaBackgroundName
-			elseif specId == 2 then -- Feral
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Guardian
-			elseif specId == 4 then -- Restoration
-			end
-		elseif classId == 12 then -- Demon Hunter
-			if specId == 1 then -- Havoc
-			elseif specId == 2 then -- Vengeance
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Devourer
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			end
-		elseif classId == 13 then -- Evoker
-			if specId == 1 then -- Devastation
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 2 then -- Preservation
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-			elseif specId == 3 then -- Augmentation
-				configuration.colors.comboPoints = settings.colors and settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints
-				-- Export Ebon Might bar settings
-				configuration.bars = configuration.bars or {}
-				configuration.bars.ebonMight = settings.bars and settings.bars.ebonMight
-				configuration.colors.bars = configuration.colors.bars or {}
-				configuration.colors.bars.ebonMight = settings.colors and settings.colors.bars and settings.colors.bars.ebonMight
-				configuration.textures.ebonMightBar = settings.textures and settings.textures.ebonMightBar
-				configuration.textures.ebonMightBarName = settings.textures and settings.textures.ebonMightBarName
-				configuration.textures.ebonMightBorder = settings.textures and settings.textures.ebonMightBorder
-				configuration.textures.ebonMightBorderName = settings.textures and settings.textures.ebonMightBorderName
-				configuration.textures.ebonMightBackground = settings.textures and settings.textures.ebonMightBackground
-				configuration.textures.ebonMightBackgroundName = settings.textures and settings.textures.ebonMightBackgroundName
-			end
+		CopyKeys(configuration.displayBar, settings.displayBar, { "primary", "health" })
+		CopyDruidDisplayBarFlags(configuration, settings, classId)
+		CopyKeys(configuration.textures, settings.textures, CORE_TEXTURE_KEYS)
+
+		if ShouldExportSecondaryBar(classId, specId, settings) then
+			CopySecondaryBarConfiguration(configuration, settings)
 		end
+
+		CopyCustomBarConfigurations(configuration, settings, classId, specId)
 	end
 
 	if includeThresholds then
@@ -295,143 +260,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.precision = settings.precision
 		configuration.displayText.default = settings.displayText and settings.displayText.default
 
-		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms
-			elseif specId == 2 then -- Fury
-			elseif specId == 3 then -- Protection
-			end
-		elseif classId == 2 then -- Paladins
-			if specId == 1 then -- Holy
-			elseif specId == 2 then -- Protection
-			elseif specId == 3 then -- Retribution
-			end
-		elseif classId == 3 then -- Hunters
-			if specId == 1 then -- Beast Mastery
-			elseif specId == 2 then -- Marksmanship
-			elseif specId == 3 then -- Survival
-			end
-		elseif classId == 4 then -- Rogue
-			if specId == 1 then -- Assassination
-			elseif specId == 2 then -- Outlaw
-			elseif specId == 3 then -- Subtlety
-			end 
-		elseif classId == 5 then -- Priests
-			if specId == 1 then -- Discipline
-			elseif specId == 2 then -- Holy
-			elseif specId == 3 then -- Shadow
-				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
-				configuration.hasteThreshold = settings.hasteThreshold
-			end
-		elseif classId == 6 then -- Death Knight
-			if specId == 1 then -- Blood
-			elseif specId == 2 then -- Frost
-			elseif specId == 3 then -- Unholy
-			end
-		elseif classId == 7 then -- Shaman
-			if specId == 1 then -- Elemental
-			elseif specId == 2 then -- Enhancement
-			elseif specId == 3 then -- Restoration
-			end
-		elseif classId == 8 then -- Mage
-			if specId == 1 then -- Arcane
-			elseif specId == 2 then -- Fire
-			elseif specId == 3 then -- Frost
-			end
-		elseif classId == 9 then -- Warlock
-			if specId == 1 then -- Affliction
-			end
-		elseif classId == 10 then -- Monk
-			if specId == 1 then -- Brewmaster
-			elseif specId == 2 then -- Mistweaver
-			elseif specId == 3 then -- Windwalker
-			end
-		elseif classId == 11 then -- Druids
-			if specId == 1 then -- Balance
-			elseif specId == 2 then -- Feral
-			elseif specId == 3 then -- Guardian
-			elseif specId == 4 then -- Restoration
-			end
-		elseif classId == 12 then -- Demon Hunter
-			if specId == 1 then -- Havoc
-			elseif specId == 2 then -- Vengeance
-			elseif specId == 3 then -- Devourer
-			end
-		elseif classId == 13 then -- Evoker
-			if specId == 1 then -- Devastation
-			elseif specId == 2 then -- Preservation
-			elseif specId == 3 then -- Augmentation
-			end
+		if classId == 5 and specId == 3 then -- Shadow Priest
+			configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
+			configuration.hasteThreshold = settings.hasteThreshold
 		end
 	end
 
 	if includeAudioAndTracking then
 		configuration.audio = settings.audio
-
-		if classId == 1 then -- Warrior
-			if specId == 1 then -- Arms
-			elseif specId == 2 then -- Fury
-			elseif specId == 3 then -- Protection
-			end
-		elseif classId == 2 then -- Paladin
-			if specId == 1 then -- Holy
-			elseif specId == 2 then -- Protection
-			elseif specId == 3 then -- Retribution
-			end
-		elseif classId == 3 then -- Hunters
-			if specId == 1 then -- Beast Mastery
-			elseif specId == 2 then -- Marksmanship
-			elseif specId == 3 then -- Survival
-			end
-		elseif classId == 4 then -- Rogues
-			if specId == 1 then -- Assassination
-			elseif specId == 2 then -- Outlaw
-			elseif specId == 3 then -- Subtlety
-			end
-		elseif classId == 5 then -- Priests
-			if specId == 1 then -- Discipline
-			elseif specId == 2 then -- Holy
-			elseif specId == 3 then -- Shadow
-			end
-		elseif classId == 6 then -- Death Knight
-			if specId == 1 then -- Blood
-			elseif specId == 2 then -- Frost
-			elseif specId == 3 then -- Unholy
-			end
-		elseif classId == 7 then -- Shaman
-			if specId == 1 then -- Elemental
-			elseif specId == 2 then -- Enhancement
-			elseif specId == 3 then -- Restoration
-			end
-		elseif classId == 8 then -- Mage
-			if specId == 1 then -- Arcane
-			elseif specId == 2 then -- Fire
-			elseif specId == 3 then -- Frost
-			end
-		elseif classId == 9 then -- Warlock
-			if specId == 1 then -- Affliction
-			end
-		elseif classId == 10 then -- Monk
-			if specId == 1 then -- Brewmaster
-			elseif specId == 2 then -- Mistweaver
-			elseif specId == 3 then -- Windwalker
-			end
-		elseif classId == 11 then -- Druid
-			if specId == 1 then -- Balance
-			elseif specId == 2 then -- Feral
-			elseif specId == 3 then -- Guardian
-			elseif specId == 4 then -- Restoration
-			end
-		elseif classId == 12 then -- Demon Hunter
-			if specId == 1 then -- Havoc
-			elseif specId == 2 then -- Vengeance
-			elseif specId == 3 then -- Devourer
-			end
-		elseif classId == 13 then -- Evoker
-			if specId == 1 then -- Devastation
-			elseif specId == 2 then -- Preservation
-			elseif specId == 3 then -- Augmentation
-			end
-		end
 	end
 
 	if includeBarText then
@@ -481,296 +317,37 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 	local configuration = {}
 
-	if classId ~= nil then -- One class
-		if classId == 1 and settings.warrior ~= nil then -- Warrior
-			configuration.warrior = {}
+	local function ExportClassEntry(entry)
+		if entry == nil then
+			return
+		end
 
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.arms) > 0 then -- Arms
-				configuration.warrior.arms = ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
+		local classSettings = settings[entry.className]
+		if type(classSettings) ~= "table" then
+			return
+		end
 
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.fury) > 0 then -- Fury
-				configuration.warrior.fury = ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.protection) > 0 then -- Protection
-				configuration.warrior.protection = ExportConfigurationSections(1, 3, settings.warrior.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 2 and settings.paladin ~= nil then -- Paladin
-			configuration.paladin = {}
-			
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.holy) > 0 then -- Holy
-				configuration.paladin.holy = ExportConfigurationSections(2, 1, settings.paladin.holy, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.protection) > 0 then -- Protection
-				configuration.paladin.protection = ExportConfigurationSections(2, 2, settings.paladin.protection, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.retribution) > 0 then -- Retribution
-				configuration.paladin.retribution = ExportConfigurationSections(2, 3, settings.paladin.retribution, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
-			configuration.hunter = {}
-
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.beastMastery) > 0 then -- Beast Mastery
-				configuration.hunter.beastMastery = ExportConfigurationSections(3, 1, settings.hunter.beastMastery, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.marksmanship) > 0 then -- Marksmanship
-				configuration.hunter.marksmanship = ExportConfigurationSections(3, 2, settings.hunter.marksmanship, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.survival) > 0 then -- Survival
-				configuration.hunter.survival = ExportConfigurationSections(3, 3, settings.hunter.survival, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 4 and settings.rogue ~= nil then -- Rogue
-			configuration.rogue = {}
-
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.assassination) > 0 then -- Assassination
-				configuration.rogue.assassination = ExportConfigurationSections(4, 1, settings.rogue.assassination, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.outlaw) > 0 then -- Outlaw
-				configuration.rogue.outlaw = ExportConfigurationSections(4, 2, settings.rogue.outlaw, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.subtlety) > 0 then -- Subtlety
-				configuration.rogue.subtlety = ExportConfigurationSections(4, 3, settings.rogue.subtlety, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 5 and settings.priest ~= nil then -- Priest
-			configuration.priest = {}
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
-				configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.priest.holy) > 0 then -- Holy
-				configuration.priest.holy = ExportConfigurationSections(5, 2, settings.priest.holy, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.priest.shadow) > 0 then -- Shadow
-				configuration.priest.shadow = ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 6 and settings.deathknight ~= nil then -- Death Knight
-			configuration.deathknight = {}
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.blood) > 0 then -- Blood
-				configuration.deathknight.blood = ExportConfigurationSections(6, 1, settings.deathknight.blood, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.frost) > 0 then -- Frost
-				configuration.deathknight.frost = ExportConfigurationSections(6, 2, settings.deathknight.frost, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.deathknight.unholy) > 0 then -- Unholy
-				configuration.deathknight.unholy = ExportConfigurationSections(6, 3, settings.deathknight.unholy, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
-			configuration.shaman = {}
-
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.elemental) > 0 then -- Elemental
-				configuration.shaman.elemental = ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-			
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.enhancement) > 0 then -- Enhancement
-				configuration.shaman.enhancement = ExportConfigurationSections(7, 2, settings.shaman.enhancement, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
-				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 8 and settings.mage ~= nil then -- Mage
-			configuration.mage = {}
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.mage.arcane) > 0 then -- Arcane
-				configuration.mage.arcane = ExportConfigurationSections(8, 1, settings.mage.arcane, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.mage.fire) > 0 then -- Fire
-				configuration.mage.fire = ExportConfigurationSections(8, 2, settings.mage.fire, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.mage.frost) > 0 then -- Frost
-				configuration.mage.frost = ExportConfigurationSections(8, 3, settings.mage.frost, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 9 and settings.warlock ~= nil then
-			configuration.warlock = {}
-			
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
-				configuration.warlock.affliction = ExportConfigurationSections(9, 1, settings.warlock.affliction, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.demonology) > 0 then -- Demonology
-				configuration.warlock.demonology = ExportConfigurationSections(9, 2, settings.warlock.demonology, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.destruction) > 0 then -- Destruction
-				configuration.warlock.destruction = ExportConfigurationSections(9, 3, settings.warlock.destruction, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 10 and settings.monk ~= nil then -- Monk
-			configuration.monk = {}
-
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.monk.brewmaster) > 0 then -- Brewmaster
-				configuration.monk.brewmaster = ExportConfigurationSections(10, 1, settings.monk.brewmaster, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.monk.mistweaver) > 0 then -- Mistweaver
-				configuration.monk.mistweaver = ExportConfigurationSections(10, 2, settings.monk.mistweaver, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.monk.windwalker) > 0 then -- Windwalker
-				configuration.monk.windwalker = ExportConfigurationSections(10, 3, settings.monk.windwalker, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 11 and settings.druid ~= nil then -- Druid
-			configuration.druid = {}
-			
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.druid.balance) > 0 then -- Balance
-				configuration.druid.balance = ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-			
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.druid.feral) > 0 then -- Feral
-				configuration.druid.feral = ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.druid.guardian) > 0 then -- Guardian
-				configuration.druid.guardian = ExportConfigurationSections(11, 3, settings.druid.guardian, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 4 or specId == nil) and TRB.Functions.Table:Length(settings.druid.restoration) > 0 then -- Restoration
-				configuration.druid.restoration = ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
-			configuration.demonhunter = {}
-			
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.havoc) > 0 then -- Havoc
-				configuration.demonhunter.havoc = ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.vengeance) > 0 then -- Vengeance
-				configuration.demonhunter.vengeance = ExportConfigurationSections(12, 2, settings.demonhunter.vengeance, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.devourer) > 0 then -- Devourer
-				configuration.demonhunter.devourer = ExportConfigurationSections(12, 3, settings.demonhunter.devourer, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
-			configuration.evoker = {}
-			
-			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
-				configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-
-			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.preservation) > 0 then -- Preservation
-				configuration.evoker.preservation = ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
-			end
-			
-			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
-				configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+		local classConfiguration = {}
+		for _, specEntry in ipairs(entry.specs) do
+			if specId == nil or specId == specEntry.specId then
+				local specSettings = classSettings[specEntry.specName]
+				if type(specSettings) == "table" and TRB.Functions.Table:Length(specSettings) > 0 then
+					classConfiguration[specEntry.specName] = ExportConfigurationSections(specEntry.classId, specEntry.specId, specSettings, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
 			end
 		end
+
+		if next(classConfiguration) ~= nil then
+			configuration[entry.className] = classConfiguration
+		end
+	end
+
+	if classId ~= nil then
+		ExportClassEntry(TRB.Functions.Character:GetClassRegistryEntry(classId))
 	elseif classId == nil and specId == nil then -- Everything
-		-- Instead of just dumping the whole table, let's clean it up
-
-		-- Warrior
-		-- Arms
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Fury
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Protection
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Paladin
-		-- Holy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Protection
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Retribution
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Hunter
-		-- Beast Mastery
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Marksmanship
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Survival
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Rogue
-		-- Assassination
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Outlaw
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Subtlety
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Priest
-		-- Discipline
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Holy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Shadow
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Death Knight
-		-- Blood
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Frost
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Unholy
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(6, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Shaman
-		-- Elemental
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Enhancement
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Restoration
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Mage
-		-- Arcane
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Fire
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Frost
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(8, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Warlock
-		-- Affliction
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Demonology
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Destruction
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Monk
-		-- Brewmaster
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Mistweaver
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Windwalker
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		
-		-- Druid
-		-- Balance
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Feral
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Guardian
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Restoration
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 4, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Demon Hunter
-		-- Havoc
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Vengeance
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Devourer
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		
-		-- Evoker
-		-- Devastation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Preservation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Augmentation
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, includeBarDisplay, includeThresholds, includeFontAndText, includeAudioAndTracking, includeBarText))
+		for _, entry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
+			ExportClassEntry(entry)
+		end
 	end
 
 	if includeCore then
@@ -1022,52 +599,17 @@ Twintop_API.ImportConfiguration = HandleImport
 -- actions. They do not modify the behaviour of the legacy `HandleExport` /
 -- `HandleImport` pipeline used by the Import/Export options screen.
 
--- Ordered list of (classId, className, [specId] = specName). Used to convert
--- between the two representations of a class/spec identity, and to enumerate
--- the valid slots inside an imported profile body.
----@type { classId: integer, className: string, specs: table<integer, string> }[]
-local CLASS_SPEC_TABLE = {
-	{ classId = 1,  className = "warrior",     specs = { [1] = "arms",         [2] = "fury",         [3] = "protection" } },
-	{ classId = 2,  className = "paladin",     specs = { [1] = "holy",         [2] = "protection",   [3] = "retribution" } },
-	{ classId = 3,  className = "hunter",      specs = { [1] = "beastMastery", [2] = "marksmanship", [3] = "survival" } },
-	{ classId = 4,  className = "rogue",       specs = { [1] = "assassination",[2] = "outlaw",       [3] = "subtlety" } },
-	{ classId = 5,  className = "priest",      specs = { [1] = "discipline",   [2] = "holy",         [3] = "shadow" } },
-	{ classId = 6,  className = "deathknight", specs = { [1] = "blood",        [2] = "frost",        [3] = "unholy" } },
-	{ classId = 7,  className = "shaman",      specs = { [1] = "elemental",    [2] = "enhancement",  [3] = "restoration" } },
-	{ classId = 8,  className = "mage",        specs = { [1] = "arcane",       [2] = "fire",         [3] = "frost" } },
-	{ classId = 9,  className = "warlock",     specs = { [1] = "affliction",   [2] = "demonology",   [3] = "destruction" } },
-	{ classId = 10, className = "monk",        specs = { [1] = "brewmaster",   [2] = "mistweaver",   [3] = "windwalker" } },
-	{ classId = 11, className = "druid",       specs = { [1] = "balance",      [2] = "feral",        [3] = "guardian",    [4] = "restoration" } },
-	{ classId = 12, className = "demonhunter", specs = { [1] = "havoc",        [2] = "vengeance",    [3] = "devourer" } },
-	{ classId = 13, className = "evoker",      specs = { [1] = "devastation",  [2] = "preservation", [3] = "augmentation" } },
-}
-
--- Derived lookups.
-local classEntryById = {}
-local classIdByName = {}
-local specNameByClassIdAndSpecId = {}
-local specIdByClassNameAndSpecName = {}
-for _, entry in ipairs(CLASS_SPEC_TABLE) do
-	classEntryById[entry.classId] = entry
-	classIdByName[entry.className] = entry.classId
-	specNameByClassIdAndSpecId[entry.classId] = entry.specs
-	specIdByClassNameAndSpecName[entry.className] = {}
-	for specId, specName in pairs(entry.specs) do
-		specIdByClassNameAndSpecName[entry.className][specName] = specId
-	end
-end
-
 ---Resolves `(classId, specId)` to `(className, specName)`.
 ---@param classId integer
 ---@param specId integer
 ---@return string? className
 ---@return string? specName
 function TRB.Functions.IO:GetClassSpecNamesById(classId, specId)
-	local entry = classEntryById[classId]
+	local entry = TRB.Functions.Character:GetSpecRegistryEntryFromIds(classId, specId)
 	if entry == nil then
 		return nil, nil
 	end
-	return entry.className, entry.specs[specId]
+	return entry.className, entry.specName
 end
 
 ---Resolves `(className, specName)` to `(classId, specId)`.
@@ -1076,15 +618,16 @@ end
 ---@return integer? classId
 ---@return integer? specId
 function TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
-	local classId = classIdByName[className]
-	if classId == nil then
+	local classEntry = TRB.Functions.Character:GetClassRegistryEntry(className)
+	if classEntry == nil then
 		return nil, nil
 	end
-	local specs = specIdByClassNameAndSpecName[className]
-	if specs == nil then
-		return classId, nil
+	for _, specEntry in ipairs(classEntry.specs) do
+		if specEntry.specName == specName then
+			return classEntry.classId, specEntry.specId
+		end
 	end
-	return classId, specs[specName]
+	return classEntry.classId, nil
 end
 
 ---Decodes an export string into a Lua table. Strips the `!TRBv2!` or legacy
@@ -1193,14 +736,16 @@ function TRB.Functions.IO:BuildClassProfileExportConfiguration(profileName, clas
 		return nil
 	end
 
-	local entry = classEntryById[classId]
+	local entry = TRB.Functions.Character:GetClassRegistryEntry(classId)
 	if entry == nil or type(specPieces) ~= "table" then
 		return nil
 	end
 
 	local classConfig = {}
 	local hasAnySpec = false
-	for specId, specName in pairs(entry.specs) do
+	for _, specEntry in ipairs(entry.specs) do
+		local specId = specEntry.specId
+		local specName = specEntry.specName
 		local specPiece = specPieces[specName]
 		if type(specPiece) == "table" then
 			classConfig[specName] = ExportConfigurationSections(classId, specId, specPiece, true, true, true, true, true)
@@ -1240,8 +785,7 @@ end
 ---@return table?
 local function ResolveLiveOrStoredSpecPiece(profileName, className, specName)
 	local character = TRB.Data.character
-	local classId = classIdByName[className]
-	local specId = specIdByClassNameAndSpecName[className] and specIdByClassNameAndSpecName[className][specName]
+	local classId, specId = TRB.Functions.IO:GetClassSpecIdsByName(className, specName)
 	local useLive = character ~= nil
 		and character.classId == classId
 		and character.specId == specId
@@ -1334,14 +878,15 @@ end
 ---@return string? exportString # Encoded export string, or nil on error
 ---@return integer? errorCode # -1 invalid args, -2 no class data available
 function TRB.Functions.IO:ExportClassProfile(profileName, classId, includeCore)
-	local entry = classEntryById[classId]
+	local entry = TRB.Functions.Character:GetClassRegistryEntry(classId)
 	if type(profileName) ~= "string" or profileName == "" or entry == nil then
 		return nil, -1
 	end
 
 	local specPieces = {}
 	local hasAnySpec = false
-	for _, specName in pairs(entry.specs) do
+	for _, specEntry in ipairs(entry.specs) do
+		local specName = specEntry.specName
 		local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
 		if specPiece ~= nil then
 			specPieces[specName] = specPiece
@@ -1436,8 +981,10 @@ function TRB.Functions.IO:ExportFullProfile(profileName)
 
 	-- All spec pieces
 	local hasAnySpec = false
-	for _, entry in ipairs(CLASS_SPEC_TABLE) do
-		for specId, specName in pairs(entry.specs) do
+	for _, entry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
+		for _, specEntry in ipairs(entry.specs) do
+			local specId = specEntry.specId
+			local specName = specEntry.specName
 			local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
 			if specPiece ~= nil then
 				profileBody[entry.className] = profileBody[entry.className] or {}
@@ -1490,10 +1037,12 @@ function TRB.Functions.IO:ExportProfileSelection(profileName, selection)
 		end
 	end
 
-	for _, entry in ipairs(CLASS_SPEC_TABLE) do
+	for _, entry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
 		local specSel = selection[entry.className]
 		if type(specSel) == "table" then
-			for specId, specName in pairs(entry.specs) do
+			for _, specEntry in ipairs(entry.specs) do
+				local specId = specEntry.specId
+				local specName = specEntry.specName
 				if specSel[specName] then
 					local specPiece = ResolveLiveOrStoredSpecPiece(profileName, entry.className, specName)
 					if specPiece ~= nil then
@@ -1573,10 +1122,11 @@ function TRB.Functions.IO:ParseProfileImport(input)
 
 	local validSpecs = {}
 	local hasCore = type(profileBody.core) == "table" and next(profileBody.core) ~= nil
-	for _, entry in ipairs(CLASS_SPEC_TABLE) do
+	for _, entry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
 		local classTable = profileBody[entry.className]
 		if type(classTable) == "table" then
-			for _, specName in pairs(entry.specs) do
+			for _, specEntry in ipairs(entry.specs) do
+				local specName = specEntry.specName
 				local piece = classTable[specName]
 				if type(piece) == "table" and next(piece) ~= nil then
 					validSpecs[#validSpecs + 1] = { className = entry.className, specName = specName }

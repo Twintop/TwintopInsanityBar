@@ -3,15 +3,18 @@ TRB.Classes = TRB.Classes or {}
 TRB.Functions = TRB.Functions or {}
 
 ---@class TRB.Classes.BarVisibilityContext
----@field force boolean # Whether to force-hide all bars (e.g., spec switch, pet battle)
+---@field force boolean # Whether to force-hide all bars (e.g., spec switch or render transition)
 ---@field specSupported boolean # Whether the current spec is enabled in addon settings
 ---@field inCombat boolean # Whether the player is currently in combat
 ---@field inVehicle boolean # Whether the player is currently in a vehicle
+---@field inPetBattle boolean # Whether the player is currently in a pet battle
+---@field onTaxi boolean # Whether the player is currently on a flight path
 ---@field hasTarget boolean # Whether the player has a target selected
 ---@field targetIsFriendly boolean # Whether the current target is friendly
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
+---@field isMountedFlying boolean # Whether the player is on a non-skyriding mount and actively flying
 ---@field isSkyriding boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
 ---@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
@@ -37,11 +40,14 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.specSupported = params.specSupported or false
 	self.inCombat = params.inCombat or false
 	self.inVehicle = params.inVehicle or false
+	self.inPetBattle = params.inPetBattle or false
+	self.onTaxi = params.onTaxi or false
 	self.hasTarget = params.hasTarget or false
 	self.targetIsFriendly = params.targetIsFriendly or false
 	self.targetIsEnemy = params.targetIsEnemy or false
 	self.isMountedAny = params.isMountedAny or false
 	self.isMountedGround = params.isMountedGround or false
+	self.isMountedFlying = params.isMountedFlying or false
 	self.isSkyriding = params.isSkyriding or false
 	self.isSteadyFlight = params.isSteadyFlight or false
 	self.inGroup = params.inGroup or false
@@ -76,6 +82,11 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	local isMountedGround = isMountedAny and not isFlying
 	local isSkyriding = isMountedAny and canSkyriding and isFlying
 	local isSteadyFlight = isMountedAny and not canSkyriding and isFlying
+	local isMountedFlying = isSteadyFlight
+	local onTaxi = TRB.Data.character.onTaxi
+	if onTaxi == nil then
+		onTaxi = UnitOnTaxi("player") or false
+	end
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
@@ -99,11 +110,14 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		specSupported = TRB.Data.specSupported or false,
 		inCombat = TRB.Data.character.inCombat or false,
 		inVehicle = TRB.Data.character.inVehicle or false,
+		inPetBattle = TRB.Data.character.inPetBattle or false,
+		onTaxi = onTaxi or false,
 		hasTarget = hasTarget,
 		targetIsFriendly = targetIsFriendly,
 		targetIsEnemy = targetIsEnemy,
 		isMountedAny = isMountedAny,
 		isMountedGround = isMountedGround,
+		isMountedFlying = isMountedFlying,
 		isSkyriding = isSkyriding,
 		isSteadyFlight = isSteadyFlight,
 		inGroup = IsInGroup() or false,
@@ -126,6 +140,7 @@ end
 ---@field showNodesCount number|nil # If set, calls :ShowNodes(n) when showing the bar
 ---@field setMaxNodes number|nil # If set, calls :SetMaxNodes(n) before showing the bar
 ---@field boolShowCached boolean|nil # Cached result of ShouldShowBar from last dirty evaluation; used by Phase 3 to skip curve when boolean conditions already satisfied
+---@field forceHideCached boolean|nil # Cached result of hard-hide/force/unsupported evaluation from last dirty evaluation
 ---@field thresholdEligibleCached boolean|nil # Cached threshold eligibility from last dirty evaluation; false when force/neverShow/unsupported prevent curve evaluation
 TRB.Classes.BarVisibilityEntry = {}
 TRB.Classes.BarVisibilityEntry.__index = TRB.Classes.BarVisibilityEntry
@@ -163,7 +178,7 @@ TRB.Functions.BarVisibility.hasResourceCurve = false
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
----  isMountedAny, isMountedGround, isSkyriding, hasTarget, inGroup, inRaid,
+---  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, hasTarget, inGroup, inRaid,
 ---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
 ---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
@@ -188,6 +203,45 @@ function TRB.Functions.BarVisibility:MarkClean()
 	self.lastAppliedToken = self.dirtyToken
 end
 
+---Evaluates whether a bar has any configured hard-hide condition active.
+---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
+---@param entry TRB.Classes.BarVisibilityEntry # The bar entry to evaluate
+---@return boolean # true if a hard-hide condition is currently active
+function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
+	if entry.visibilitySettings == nil then
+		return false
+	end
+
+	local conditions = entry.visibilitySettings.hideConditions
+	if conditions == nil then
+		return false
+	end
+
+	if conditions.isMountedAny == true and context.isMountedAny then
+		return true
+	end
+	if conditions.isMountedGround == true and context.isMountedGround then
+		return true
+	end
+	if conditions.isMountedFlying == true and context.isMountedFlying then
+		return true
+	end
+	if conditions.isSkyriding == true and context.isSkyriding then
+		return true
+	end
+	if conditions.inVehicle == true and context.inVehicle then
+		return true
+	end
+	if conditions.inPetBattle == true and context.inPetBattle then
+		return true
+	end
+	if conditions.onTaxi == true and context.onTaxi then
+		return true
+	end
+
+	return false
+end
+
 ---Evaluates whether a single bar should be shown. Pure function, no side effects.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entry TRB.Classes.BarVisibilityEntry # The bar entry to evaluate
@@ -210,6 +264,11 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 
 	-- "Never Show" override
 	if entry.visibilitySettings.neverShow then
+		return false
+	end
+
+	-- Per-bar hard-hide conditions override Always Show and threshold visibility.
+	if self:ShouldForceHideBar(context, entry) then
 		return false
 	end
 
@@ -301,12 +360,28 @@ TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 local VISIBILITY_HEALTH_MAX = 1000000
 local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
 
+---@param conditionType string
+---@param settings table|nil
+---@return table|nil
+function TRB.Functions.BarVisibility:GetVisibilityThresholdDefinition(conditionType, settings)
+	if settings ~= nil and settings.barVisibilityThresholds ~= nil then
+		return settings.barVisibilityThresholds[conditionType]
+	end
+	return nil
+end
+
 ---Gets the normalization max value for visibility threshold comparisons.
 ---For primary resource value thresholds, use the spec's configured max value from the
 ---associated options/default settings rather than the live character max.
 ---@param conditionType string
+---@param settings table|nil
 ---@return number
-function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType)
+function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType, settings)
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
+	if thresholdDefinition ~= nil and type(thresholdDefinition.maxValue) == "number" then
+		return thresholdDefinition.maxValue
+	end
+
 	if conditionType == "healthValue" then
 		return VISIBILITY_HEALTH_MAX
 	end
@@ -326,8 +401,13 @@ function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionTyp
 			end
 		end
 
-		if specCache ~= nil and specCache.settings ~= nil and specCache.settings.maxResource ~= nil then
-			local value = specCache.settings.maxResource.value
+		local maxResourceSettings = settings and settings.maxResource
+		if maxResourceSettings == nil and specCache ~= nil and specCache.settings ~= nil then
+			maxResourceSettings = specCache.settings.maxResource
+		end
+
+		if maxResourceSettings ~= nil then
+			local value = maxResourceSettings.value
 			if type(value) == "number" and value > 0 then
 				return value
 			end
@@ -350,27 +430,35 @@ end
 ---For ">=" the curve is: [0, inactive) → [threshold, active) → [2.0, active)
 ---For "<=" the curve is: [0, active) → [threshold+ε, inactive) → [2.0, inactive)
 ---
----@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue"
+---@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue" or a spec-defined threshold type
 ---@param operator string # ">=" or "<="
 ---@param thresholdValue number # The user-configured threshold (0–100 for percent, raw for value)
 ---@param activeAlpha number # 0–100 alpha when condition is met
 ---@param inactiveAlpha number # 0–100 alpha when condition is not met
+---@param settings table|nil # Spec settings used to resolve spec-defined threshold types
 ---@return any # A C_CurveUtil color curve
-function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, operator, thresholdValue, activeAlpha, inactiveAlpha)
+function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, operator, thresholdValue, activeAlpha, inactiveAlpha, settings)
 	local cache = TRB.Data.cache.stepColorCurves
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
 
 	-- Compute threshold as a fraction of 0.0–1.0 (the scale UnitPowerPercent/UnitHealthPercent use)
 	local thresholdFraction
-	if conditionType == "resourcePercent" then
+	if thresholdDefinition ~= nil and thresholdDefinition.valueType == "percent" then
+		thresholdFraction = (thresholdValue or 0) / 100
+	elseif thresholdDefinition ~= nil and thresholdDefinition.valueType == "value" then
+		local maxValue = self:GetVisibilityThresholdMaxValue(conditionType, settings)
+		if maxValue <= 0 then maxValue = 100 end
+		thresholdFraction = (thresholdValue or 0) / maxValue
+	elseif conditionType == "resourcePercent" then
 		thresholdFraction = (thresholdValue or 0) / 100
 	elseif conditionType == "resourceValue" then
-		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType)
+		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType, settings)
 		if maxRes <= 0 then maxRes = 100 end
 		thresholdFraction = (thresholdValue or 0) / maxRes
 	elseif conditionType == "healthPercent" then
 		thresholdFraction = (thresholdValue or 0) / 100
 	elseif conditionType == "healthValue" then
-		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType)
+		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType, settings)
 		if maxHP <= 0 then maxHP = 1 end
 		thresholdFraction = (thresholdValue or 0) / maxHP
 	else
@@ -417,17 +505,21 @@ end
 ---Passes the curve to UnitPowerPercent or UnitHealthPercent, which returns a secret
 ---ColorMixin.  The alpha channel of that color encodes the visibility decision.
 ---@param visSettings trbBarVisibilitySetting # The bar's visibility settings
+---@param settings table|nil # Spec settings used to resolve spec-defined threshold types
 ---@return any|nil # A secret ColorMixin with alpha encoding visibility, or nil if not applicable
-function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings)
+function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings, settings)
 	local conditionType = visSettings.resourceConditionType
 	local operator = visSettings.resourceConditionOperator or ">="
 	local threshold = visSettings.resourceConditionValue or 0
 	local activeAlpha = visSettings.activeAlpha or 100
 	local inactiveAlpha = visSettings.inactiveAlpha or 0
+	local thresholdDefinition = self:GetVisibilityThresholdDefinition(conditionType, settings)
 
-	local curve = self:BuildVisibilityAlphaCurve(conditionType, operator, threshold, activeAlpha, inactiveAlpha)
+	local curve = self:BuildVisibilityAlphaCurve(conditionType, operator, threshold, activeAlpha, inactiveAlpha, settings)
 
-	if conditionType == "resourcePercent" or conditionType == "resourceValue" then
+	if thresholdDefinition ~= nil and thresholdDefinition.powerType ~= nil then
+		return UnitPowerPercent("player", thresholdDefinition.powerType, true, curve)
+	elseif conditionType == "resourcePercent" or conditionType == "resourceValue" then
 		return UnitPowerPercent("player", TRB.Data.resource, true, curve)
 	elseif conditionType == "healthPercent" or conditionType == "healthValue" then
 		return UnitHealthPercent("player", true, curve)
@@ -465,20 +557,29 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 			-- Phase 1: Evaluate conditions and compute target alpha (only when dirty)
 			if conditionsChanged then
 				local boolShow = self:ShouldShowBar(context, entry)
+				local forceHide = context.force
+					or not context.specSupported
+					or not entry.enabled
+					or visSettings == nil
+					or (visSettings and visSettings.neverShow == true)
+					or self:ShouldForceHideBar(context, entry)
 				-- Cache boolShow and thresholdEligible so Phase 3 can:
 				--  (a) skip the curve when boolean conditions already satisfy the OR,
 				--  (b) skip the curve when force/neverShow/unsupported make it ineligible.
 				entry.boolShowCached = boolShow
+				entry.forceHideCached = forceHide
 				local thresholdEligible = entry.enabled
 					and visSettings ~= nil
-					and not context.force
-					and context.specSupported
-					and not visSettings.neverShow
+					and not forceHide
 				entry.thresholdEligibleCached = thresholdEligible
 				local targetAlpha, fadeDuration
 				local fadeDelay = 0
 
-				if hasCurve and boolShow then
+				if forceHide then
+					targetAlpha = 0
+					fadeDuration = 0
+					fadeDelay = 0
+				elseif hasCurve and boolShow then
 					-- Boolean conditions already satisfied (OR short-circuit).
 					-- Show at active alpha; the curve is not needed this tick.
 					targetAlpha = (visSettings and visSettings.activeAlpha or 100) / 100
@@ -538,7 +639,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				-- unsupported), evaluate the curve and apply the secret alpha.
 				-- Otherwise fall through to the normal fade alpha.
 				if hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached then
-					local curveResult = self:EvaluateVisibilityCurve(visSettings)
+					local curveResult = self:EvaluateVisibilityCurve(visSettings, settings)
 					if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
 						local _, _, _, secretAlpha = curveResult:GetRGBA()
 						entry.barGroup.containerFrame:SetAlpha(secretAlpha)
@@ -573,18 +674,26 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
 					entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
 				end
+				if entry.barGroup.layoutWidth and entry.barGroup.layoutWidth > 0 then
+					entry.barGroup.containerFrame:SetWidth(entry.barGroup.layoutWidth)
+				end
 			else
 				-- Determine if this bar is permanently hidden (collapse) or
 				-- dynamically hidden (maintain height as invisible scaffold).
 				local isPermanentlyHidden = not entry.enabled
 					or entry.visibilitySettings == nil
 					or entry.visibilitySettings.neverShow == true
+					or entry.forceHideCached == true
 				if isPermanentlyHidden then
 					entry.barGroup.containerFrame:SetHeight(0.001)
+					entry.barGroup.containerFrame:SetWidth(0.001)
 				else
-					-- Dynamically hidden: keep layout height so anchored bars don't shift
+					-- Dynamically hidden: keep layout dimensions so anchored bars don't shift
 					if entry.barGroup.layoutHeight and entry.barGroup.layoutHeight > 0 then
 						entry.barGroup.containerFrame:SetHeight(entry.barGroup.layoutHeight)
+					end
+					if entry.barGroup.layoutWidth and entry.barGroup.layoutWidth > 0 then
+						entry.barGroup.containerFrame:SetWidth(entry.barGroup.layoutWidth)
 					end
 				end
 			end
@@ -627,6 +736,7 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 				-- Collapse container so anchored children slide together
 				if entry.barGroup.containerFrame then
 					entry.barGroup.containerFrame:SetHeight(0.001)
+					entry.barGroup.containerFrame:SetWidth(0.001)
 				end
 			end
 		end
@@ -668,7 +778,7 @@ end
 ---@return TRB.Classes.BarVisibilityEntry[]
 function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar, maxResource2)
 	local entries = {}
-	local alwaysVis = { neverShow = false, alwaysShow = true, conditions = {} }
+	local alwaysVis = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = {} }
 
 	-- Primary always shows in Edit Mode
 	if barGroups.primary then

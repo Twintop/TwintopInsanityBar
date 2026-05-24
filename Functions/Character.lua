@@ -60,6 +60,27 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	-- Base implementation does nothing; class modules override with spec-specific resets.
 end
 
+---Returns the composite key whose settings should currently drive the bar's layout/appearance.
+---For most classes this is just the active spec (`TRB.Data.character.compositeKey`).
+---Druid overrides this when form-switching is enabled to return the form-resolved spec
+---(e.g., Cat Form on a Guardian Druid returns "druid_feral").
+---@return string|nil compositeKey
+function TRB.Functions.Class:GetActiveDisplayCompositeKey()
+	return TRB.Data.character.compositeKey
+end
+
+---Returns the settings table whose values should currently drive the bar's layout/appearance.
+---Built on top of `GetActiveDisplayCompositeKey`. Returns nil when the spec cache is not
+---populated yet (e.g., during early initialization).
+---@return TRB.Classes.Settings.SpecializationSettingsBase|nil settings
+function TRB.Functions.Class:GetActiveDisplaySettings()
+	local key = self:GetActiveDisplayCompositeKey()
+	if not key or not TRB.Data.specCache or not TRB.Data.specCache[key] then
+		return nil
+	end
+	return TRB.Data.specCache[key].settings
+end
+
 ---Initializes or refreshes a target entry in the snapshot target data by GUID.
 ---@param guid string The target's GUID
 ---@param selfInitializeAllowed boolean|nil If false or nil, skips initialization when guid matches the player's GUID
@@ -341,6 +362,9 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
+			if TRB.Functions.BarVisibility.hasResourceCurve then
+				TRB.Functions.BarVisibility:MarkDirty()
+			end
 			TRB.Data.lookupDirty = true
 		end
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
@@ -613,6 +637,75 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.cache.values.range = {}
 end
 
+---@param className string?
+---@return string?
+local function NormalizeClassRegistryKey(className)
+	if type(className) ~= "string" then
+		return nil
+	end
+	return string.lower(string.gsub(className, "%s+", ""))
+end
+
+---Look up a classRegistry entry from numeric classId or an internal class name/token.
+---@param classIdOrName number|string
+---@return TRB.Data.ClassRegistryEntry|nil
+function TRB.Functions.Character:GetClassRegistryEntry(classIdOrName)
+	if type(classIdOrName) == "number" then
+		return TRB.Data.classRegistryByIds[classIdOrName]
+	elseif type(classIdOrName) == "string" then
+		local key = NormalizeClassRegistryKey(classIdOrName)
+		if key ~= nil and TRB.Data.classRegistry[key] ~= nil then
+			return TRB.Data.classRegistry[key]
+		end
+		local token = string.upper(string.gsub(classIdOrName, "%s+", ""))
+		return TRB.Data.classRegistryByTokens[token]
+	end
+	return nil
+end
+
+---Returns the addon module/options key for a class, e.g. "DeathKnight".
+---@param classIdOrName number|string
+---@return string|nil
+function TRB.Functions.Character:GetClassModuleName(classIdOrName)
+	local entry = self:GetClassRegistryEntry(classIdOrName)
+	return entry and entry.classModuleName or nil
+end
+
+---Returns the uppercase WoW class file token for a class, e.g. "DEATHKNIGHT".
+---@param classIdOrName number|string
+---@return string|nil
+function TRB.Functions.Character:GetClassToken(classIdOrName)
+	local entry = self:GetClassRegistryEntry(classIdOrName)
+	return entry and entry.classToken or nil
+end
+
+---Returns the numeric classId for an internal class name/token.
+---@param className string
+---@return integer|nil
+function TRB.Functions.Character:GetClassIdFromName(className)
+	local entry = self:GetClassRegistryEntry(className)
+	return entry and entry.classId or nil
+end
+
+---Returns class registry entries in WoW classId order.
+---@return TRB.Data.ClassRegistryEntry[]
+function TRB.Functions.Character:GetClassRegistryEntriesOrdered()
+	return TRB.Data.classRegistryOrder
+end
+
+---Returns spec registry entries in WoW classId/specId order.
+---@return TRB.Data.SpecRegistryEntry[]
+function TRB.Functions.Character:GetSpecRegistryEntriesOrdered()
+	return TRB.Data.specRegistryOrder
+end
+
+---Returns ordered spec registry entries for a class.
+---@param classIdOrName number|string
+---@return TRB.Data.SpecRegistryEntry[]
+function TRB.Functions.Character:GetSpecRegistryEntriesForClass(classIdOrName)
+	local classEntry = self:GetClassRegistryEntry(classIdOrName)
+	return classEntry and classEntry.specs or {}
+end
 
 ---Returns the class file name and specialization name for the given classId and specId.
 ---@param classId number|nil The numeric class ID (1-13). If nil, returns "Global".
@@ -621,20 +714,22 @@ end
 ---@return string className The class file name (e.g., "WARRIOR" or "warrior" if lowerCaseClass is true)
 ---@return string specName The specialization name in camelCase (e.g., "beastMastery"), or "" if not found
 function TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, lowerCaseClass)
+	local classEntry = classId ~= nil and self:GetClassRegistryEntry(classId) or nil
 	local className
 	if classId ~= nil then
-		className = select(2, GetClassInfo(classId))
+		className = classEntry and classEntry.classToken or select(2, GetClassInfo(classId))
 	else
 		className = "Global"
 	end
 
-	local specName = TRB.Functions.Character:GetSpecializationName(className, specId)
+	local specEntry = classId ~= nil and self:GetSpecRegistryEntryFromIds(classId, specId) or nil
+	local specName = specEntry and specEntry.specName or nil
 	if specName == nil then
 		specName = ""
 	end
 
 	if lowerCaseClass then
-		return string.lower(className), specName
+		return classEntry and classEntry.className or string.lower(className), specName
 	else
 		return className, specName
 	end
@@ -645,115 +740,13 @@ end
 ---@param specId number The numeric spec index (1-4) within the class
 ---@return string|nil specName The camelCase specialization name (e.g., "beastMastery"), or nil if not recognized
 function TRB.Functions.Character:GetSpecializationName(className, specId)
-    className = string.upper(className) -- Should be uppercase anyway from UnitClass() but let's be certain
-	if className == "DEATHKNIGHT" then
-        if specId == 1 then
-            return "blood"
-        elseif specId == 2 then
-            return "frost"
-        elseif specId == 3 then
-            return "unholy"
-        end
-    elseif className == "DEMONHUNTER" then
-        if specId == 1 then
-            return "havoc"
-        elseif specId == 2 then
-            return "vengeance"
-		elseif specId == 3 then
-			return "devourer"
-        end
-    elseif className == "DRUID" then
-        if specId == 1 then
-            return "balance"
-        elseif specId == 2 then
-            return "feral"
-        elseif specId == 3 then
-            return "guardian"
-        elseif specId == 4 then
-            return "restoration"
-        end
-    elseif className == "HUNTER" then
-        if specId == 1 then
-            return "beastMastery"
-        elseif specId == 2 then
-            return "marksmanship"
-        elseif specId == 3 then
-            return "survival"
-        end
-    elseif className == "EVOKER" then
-        if specId == 1 then
-            return "devastation"
-        elseif specId == 2 then
-            return "preservation"
-        elseif specId == 3 then
-            return "augmentation"
-        end
-    elseif className == "MAGE" then
-        if specId == 1 then
-            return "arcane"
-        elseif specId == 2 then
-            return "fire"
-        elseif specId == 3 then
-            return "frost"
-        end
-    elseif className == "MONK" then
-        if specId == 1 then
-            return "brewmaster"
-        elseif specId == 2 then
-            return "mistweaver"
-        elseif specId == 3 then
-            return "windwalker"
-        end
-    elseif className == "PALADIN" then
-        if specId == 1 then
-            return "holy"
-        elseif specId == 2 then
-            return "protection"
-        elseif specId == 3 then
-            return "retribution"
-        end
-    elseif className == "PRIEST" then
-        if specId == 1 then
-            return "discipline"
-        elseif specId == 2 then
-            return "holy"
-        elseif specId == 3 then
-            return "shadow"
-        end
-    elseif className == "ROGUE" then
-        if specId == 1 then
-            return "assassination"
-        elseif specId == 2 then
-            return "outlaw"
-        elseif specId == 3 then
-            return "subtlety"
-        end
-    elseif className == "SHAMAN" then
-        if specId == 1 then
-            return "elemental"
-        elseif specId == 2 then
-            return "enhancement"
-        elseif specId == 3 then
-            return "restoration"
-        end
-    elseif className == "WARLOCK" then
-        if specId == 1 then
-            return "affliction"
-        elseif specId == 2 then
-            return "demonology"
-        elseif specId == 3 then
-            return "destruction"
-        end
-    elseif className == "WARRIOR" then
-        if specId == 1 then
-            return "arms"
-        elseif specId == 2 then
-            return "fury"
-        elseif specId == 3 then
-            return "protection"
-        end
-    end
-    return nil
+	local classEntry = self:GetClassRegistryEntry(className)
+	if classEntry == nil then
+		return nil
+	end
+
+	local specEntry = self:GetSpecRegistryEntryFromIds(classEntry.classId, specId)
+	return specEntry and specEntry.specName or nil
 end
 
 ---Build a composite key from a className and specName.
@@ -827,6 +820,8 @@ end
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.isMounted = IsMounted()
+	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
+	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 
 	-- Phase 2 visibility state
 	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
@@ -995,6 +990,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.character.inVehicle = UnitInVehicle("player") or false
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
+	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
 	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
@@ -1376,6 +1372,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	--NYI
 	specCache.settings.audio = spec.audio
 	specCache.settings.maxResource = spec.maxResource
+	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
 end
 
