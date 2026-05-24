@@ -242,12 +242,12 @@ local function SyncFireBlastChargeNodes(maxCharges, settings)
 	local secondaryGroup = barGroups.secondary
 	if maxCharges == 0 then
 		secondaryGroup:HideAllNodes()
-		return
+		return 0
 	end
 
 	local targetNodeCount = math.min(maxCharges, secondaryGroup.maxNodes or maxCharges)
 	local nodeCountChanged = secondaryGroup.nodeCount ~= targetNodeCount
-	secondaryGroup:SetNodeCount(maxCharges)
+	secondaryGroup:SetNodeCount(targetNodeCount)
 
 	if settings ~= nil and settings.comboPoints ~= nil and settings.bar ~= nil and nodeCountChanged then
 		secondaryGroup:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
@@ -265,7 +265,8 @@ local function SyncFireBlastChargeNodes(maxCharges, settings)
 		)
 	end
 
-	secondaryGroup:ShowNodes(maxCharges)
+	secondaryGroup:ShowNodes(targetNodeCount)
+	return targetNodeCount
 end
 
 ---@param spells TRB.Classes.Mage.FireSpells?
@@ -379,8 +380,8 @@ local function ConstructResourceBar(settings)
 			if maxFBCharges == 0 then
 				barGroups.secondary:Hide()
 			else
-				SyncFireBlastChargeNodes(maxFBCharges, settings)
-				barGroups.secondary:SetNodeCount(maxFBCharges)
+				local fireBlastNodeCount = SyncFireBlastChargeNodes(maxFBCharges, settings) or 0
+				barGroups.secondary:SetNodeCount(fireBlastNodeCount)
 				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
 				barGroups.secondary:Show()
 
@@ -395,10 +396,10 @@ local function ConstructResourceBar(settings)
 					settings.comboPoints.height,
 					settings.comboPoints.border
 				)
-				barGroups.secondary:ShowNodes(maxFBCharges)
+				barGroups.secondary:ShowNodes(fireBlastNodeCount)
 
 				local fireBlastColors = settings.colors.bars and settings.colors.bars.fireBlastCharges
-				for i = 1, maxFBCharges do
+				for i = 1, fireBlastNodeCount do
 					local node = barGroups.secondary:GetNode(i)
 					if node then
 						node:SetTextures(
@@ -917,14 +918,14 @@ local function UpdateResourceBar()
 						rechargeDurationObject = fireBlastCooldown:GetDurationObject()
 					end
 					local fireBlastColors = specCacheSettings.colors.bars and specCacheSettings.colors.bars.fireBlastCharges
-					SyncFireBlastChargeNodes(maxCharges, specCacheSettings)
+					local fireBlastNodeCount = SyncFireBlastChargeNodes(maxCharges, specCacheSettings) or 0
 
 					refreshText = true
-					for x = 1, maxCharges do
+					for x = 1, fireBlastNodeCount do
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							local cpKey = "comboPoint" .. x
-							local isPartialRechargeNode = isRecharging and x == maxCharges and rechargeDurationObject ~= nil
+							local isPartialRechargeNode = isRecharging and x == fireBlastNodeCount and rechargeDurationObject ~= nil
 							if isPartialRechargeNode then
 								chargeNode:SetMinMax(0, 1)
 								TRB.Data.cache.values.bar[cpKey] = nil
