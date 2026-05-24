@@ -949,9 +949,10 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			secondaryAnchorGroup = barGroups[secondaryAnchorKey] or barGroups.primary
 		end
 		-- secondaryAnchorGroup may be nil if barKey="screen"; ConstructAnchoredBarGroup handles this
-		-- Demon Hunter Vengeance: Soul Fragment nodes use stepped min/max (i-1, i) instead of discrete (0, 1)
+		-- Some secondary resources use stepped min/max (i-1, i) instead of discrete (0, 1)
 		local secondaryMinMaxMode
-		if TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2 then
+		if (TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2) or
+			(TRB.Data.character.className == "mage" and TRB.Data.character.specId == 2) then
 			secondaryMinMaxMode = "stepped"
 		end
 		self:ConstructSecondaryBarGroup(layoutSettings, secondaryAnchorGroup, barGroups.secondary, false, secondaryMinMaxMode)
@@ -1456,6 +1457,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 
 		local isDevourer = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 3
 		local isVengeance = TRB.Data.character.className == "demonhunter" and TRB.Data.character.specId == 2
+		local isFireMage = TRB.Data.character.className == "mage" and TRB.Data.character.specId == 2
 		for i = 1, barGroups.secondary.maxNodes do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -1469,8 +1471,8 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				-- not with layout (move/resize), to avoid clamping current values.
 				if isDevourer and i == 1 then
 					node:SetMinMax(0, TRB.Data.character.maxResource2Value or 50)
-				elseif isVengeance then
-					-- Stepped min/max: node 1 = (0,1), node 2 = (1,2), ... node 6 = (5,6)
+				elseif isVengeance or isFireMage then
+					-- Stepped min/max: node 1 = (0,1), node 2 = (1,2), etc.
 					-- All nodes receive the same raw secret value; StatusBar clamping handles fill
 					node:SetMinMax(i - 1, i)
 				else
