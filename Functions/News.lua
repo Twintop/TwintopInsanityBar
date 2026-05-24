@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.5.10-release (2026-05-25)
+## Mage
+### Fire
+
+- [#690](#690) Add support for tracking Fire Blast charges and recharge time as a configurable multi-node bar. Fire Blast Charges can be positioned, sized, styled, and used as bar text anchors like other bar groups.
+- [#690](#690) Add `$fireBlastCharges`, `$fireBlastChargesMax`, and `$fireBlastTime` bar text variables, plus default per-node recharge timer text and color options for each node and the partial recharge fill.
+
+---
+
 # 12.0.5.9-release (2026-05-24)
 ## General
 
