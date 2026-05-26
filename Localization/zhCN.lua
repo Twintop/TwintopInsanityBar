@@ -2636,4 +2636,18 @@ if locale == "zhCN" then
 	L["BarVisibilityThresholdManaValueComparison"] = "法力值数值条件"
 	L["BarVisibilityThresholdManaValueValue"] = "法力值数值"
 	L["BarVisibilityThresholdHeaderWithMana"] = "资源/法力/生命值阈值"
+
+	-- Mage Fire - Fire Blast Charges Bar
+	L["MageFireBlastCharges"] = "火焰冲击层数"
+	L["MageFireFireBlastCharge1"] = "火焰冲击（第一层）"
+	L["MageFireFireBlastCharge2"] = "火焰冲击（第二层）"
+	L["MageFireFireBlastCharge3"] = "火焰冲击（第三层）"
+	L["MageFireFireBlastColorPickerCharge1"] = "火焰冲击层数（1）"
+	L["MageFireFireBlastColorPickerCharge2"] = "火焰冲击层数（2）"
+	L["MageFireFireBlastColorPickerCharge3"] = "火焰冲击层数（3）"
+	L["TabFireBlastCharges"] = "火焰冲击"
+	L["MageFireBarTextVariable_fireBlastCharges"] = "当前可用的火焰冲击层数。"
+	L["MageFireBarTextVariable_fireBlastTime"] = "下一层火焰冲击冷却剩余时间。"
+	L["MageFireBarTextVariable_fireBlastChargesMax"] = "火焰冲击最大层数。"
+	L["MageFireFireBlast"] = "火焰冲击"
 end
