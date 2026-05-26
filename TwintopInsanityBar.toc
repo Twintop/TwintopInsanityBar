@@ -116,7 +116,27 @@ Functions\Talent.lua
 Functions\Threshold.lua
 Functions\WagoCreator.lua
 
-Options\OptionsUi.lua
+Options\OptionsUiMedia.lua
+Options\OptionsUiPrimitives.lua
+Options\OptionsUiColorPickers.lua
+Options\OptionsUiProfilePopups.lua
+Options\OptionsUiProfiles.lua
+Options\OptionsUiGlobalSettings.lua
+Options\OptionsUiGlobalCopy.lua
+Options\OptionsUiTextureDropdowns.lua
+Options\OptionsUiTextures.lua
+Options\OptionsUiVisibility.lua
+Options\OptionsUiThresholdList.lua
+Options\OptionsUiThresholds.lua
+Options\OptionsUiText.lua
+Options\OptionsUiIndicators.lua
+Options\OptionsUiColors.lua
+Options\OptionsUiCustomBarColors.lua
+Options\OptionsUiLayout.lua
+Options\OptionsUiBarTextVariables.lua
+Options\OptionsUiBarTextInput.lua
+Options\OptionsUiBarText.lua
+Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua
 

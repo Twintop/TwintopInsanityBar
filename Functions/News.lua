@@ -1274,13 +1274,13 @@ function TRB.Functions.News:BuildNewsPopup()
 	newsFrame:SetHeight(480)
 	newsFrame:SetPoint("CENTER", UIParent)
 
-	local newsPanelParent = TRB.Functions.OptionsUi:CreateTabFrameContainer("TRB_News_Frame_Panel", newsFrame, 640, 410)
+	local newsPanelParent = TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer("TRB_News_Frame_Panel", newsFrame, 640, 410)
 	local newsPanel = newsPanelParent.scrollFrame.scrollChild
 	newsPanelParent:SetBackdropColor(0, 0, 0, 1)
 	newsPanelParent:ClearAllPoints()
 	newsPanelParent:SetPoint("TOPLEFT", 5, -30)
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, L["NewsHeaderTwintopsResourceBarUpdates"], oUi.xCoord, 0)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(newsFrame, L["NewsHeaderTwintopsResourceBarUpdates"], oUi.xCoord, 0)
 
 	local closeX = CreateFrame("Button", nil, newsFrame, "UIPanelCloseButton")
 	closeX:SetPoint("TOPRIGHT", newsFrame, "TOPRIGHT", -2, -2)
@@ -1288,7 +1288,7 @@ function TRB.Functions.News:BuildNewsPopup()
 		TRB.Functions.News:Hide()
 	end)
 
-	local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, L["Close"], 510, -10, 100, 25)
+	local closeButton = TRB.Functions.OptionsUi.Primitives:BuildButton(newsFrame, L["Close"], 510, -10, 100, 25)
 	closeButton:ClearAllPoints()
 	closeButton:SetPoint("BOTTOMRIGHT", -5, 5)
 	closeButton:SetScript("OnClick", function(self, ...)

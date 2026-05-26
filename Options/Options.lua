@@ -41,7 +41,7 @@ local function ConstructResourceBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 ---Constructs the combo points bar dimensions panel in the global options UI.
@@ -56,7 +56,7 @@ local function ConstructComboPointsBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
 end
 
 ---Constructs the health bar dimensions and color options panel in the global options UI.
@@ -71,9 +71,9 @@ local function ConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"])
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, nil, nil, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 ---Constructs the bar textures options panel for resource, combo point, and health bars in the global options UI.
@@ -88,7 +88,7 @@ local function ConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
 end
 
 ---Constructs the bar visibility and display options panel including custom bar (utility) visibility in the global options UI.
@@ -109,7 +109,7 @@ local function ConstructBarVisibilityPanel(parent)
 		table.insert(customBars, utilityBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
 ---Constructs the threshold line color and icon options panel in the global options UI.
@@ -136,10 +136,10 @@ local function ConstructThresholdPanel(parent)
 		}
 	}
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, custom)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], true, true, true, true, custom)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 ---Constructs the font, text color, and decimal precision options panel in the global options UI.
@@ -156,51 +156,51 @@ local function ConstructFontAndTextPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, nil, nil, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, nil, nil, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["GlobalTextColorsHeader"], oUi.xCoord, yCoord)
 
 	-- Global options panel - add bulk toggle checkbox for text colors
-	yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextColors", "textColors", yCoord)
+	yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextColors", "textColors", yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerTextCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerTextCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextPassive"], spec.colors.text.passive.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerTextPassive"], spec.colors.text.passive.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 	end)
 
-	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerTextSpending"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.spending = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerTextSpending"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["GlobalColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -225,7 +225,7 @@ local function ConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 	
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, nil, nil, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, nil, nil, yCoord)
 end
 
 ---Constructs the miscellaneous options panel including minimap icon, number abbreviation, timer precision, data refresh rate, frame strata, and audio channel settings.
@@ -242,7 +242,7 @@ local function ConstructMiscellaneousPanel(parent)
 
 	local title = ""
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarSettings"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.minimapIcon = CreateFrame("CheckButton", "TwintopResourceBar_CB_Minimap_Icon", parent, "ChatConfigCheckButtonTemplate")
@@ -282,11 +282,11 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 	title = L["TimerBelowPrecision"]
-	controls.timersLowPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionLow, 1, 0,
+	controls.timersLowPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionLow, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.timersLowPrecision:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -302,7 +302,7 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 	
 	title = L["TimerAbovePrecision"]
-	controls.timersHighPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
+	controls.timersHighPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.timersHighPrecision:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -320,7 +320,7 @@ local function ConstructMiscellaneousPanel(parent)
 
 	yCoord = yCoord - 60
 	title = L["TimerPrecisionThreshold"]
-	controls.timersPrecisionThreshold = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 600, TRB.Data.settings.core.timers.precisionThreshold, 0.1, 2,
+	controls.timersPrecisionThreshold = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, 600, TRB.Data.settings.core.timers.precisionThreshold, 0.1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.timersPrecisionThreshold:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -338,12 +338,12 @@ local function ConstructMiscellaneousPanel(parent)
 
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["CharacterPlayerSettings"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CharacterPlayerSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 
 	title = L["DataRefreshRate"]
-	controls.characterRefreshRate = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
+	controls.characterRefreshRate = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -360,7 +360,7 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	title = L["ReactionTimeLatency"]
-	controls.reactionTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.00, 1, TRB.Data.settings.core.reactionTime, 0.05, 2,
+	controls.reactionTime = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0.00, 1, TRB.Data.settings.core.reactionTime, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.reactionTime:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -377,13 +377,13 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	
 	local strataDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_frameStrata", parent, "WowStyle1DropdownTemplate")
 	strataDropdown:SetWidth(oUi.sliderWidth)
-	strataDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrataDescription"], oUi.xCoord, yCoord)
+	strataDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FrameStrataDescription"], oUi.xCoord, yCoord)
 	strataDropdown.label.font:SetFontObject(GameFontNormal)
 	
 	local strata = {}
@@ -458,14 +458,14 @@ local function ConstructMiscellaneousPanel(parent)
 	strataDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannel"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioChannel"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
 
 	local comboPointsAudioChannel = CreateFrame("DropdownButton", "TwintopResourceBar_frameAudioChannel", parent, "WowStyle1DropdownTemplate")
 	comboPointsAudioChannel:SetWidth(oUi.sliderWidth)
-	comboPointsAudioChannel.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannelDescription"], oUi.xCoord, yCoord)
+	comboPointsAudioChannel.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioChannelDescription"], oUi.xCoord, yCoord)
 	comboPointsAudioChannel.label.font:SetFontObject(GameFontNormal)
 	
 	local channel = {}
@@ -502,7 +502,7 @@ local function ConstructMiscellaneousPanel(parent)
 	comboPointsAudioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExperimentalFeatures"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ExperimentalFeatures"], oUi.xCoord, yCoord)
 
 end
 
@@ -544,19 +544,19 @@ local function ConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EditModeSettings"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["EditModeSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.buttons.resetEditModeData = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetEditModeDataButton"], oUi.xCoord, yCoord, 200, 30)
+	controls.buttons.resetEditModeData = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetEditModeDataButton"], oUi.xCoord, yCoord, 200, 30)
 	controls.buttons.resetEditModeData:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_ResetEditModeData")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetGlobalBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetGlobalBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.buttons.resetGlobalBarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetGlobalBarText"], oUi.xCoord, yCoord, 250, 30)
+	controls.buttons.resetGlobalBarText = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetGlobalBarText"], oUi.xCoord, yCoord, 250, 30)
 	controls.buttons.resetGlobalBarText:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_ResetGlobalBarText")
 	end)
@@ -573,7 +573,7 @@ local function ConstructGlobalBarTextPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 10
 
@@ -591,7 +591,7 @@ local function ConstructGlobalBarTextPanel(parent)
 		}
 	}
 
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, globalCache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, globalCache)
 end
 
 ---Constructs the global options panel with all tab groups (resource bar, combo points, health, textures, visibility, thresholds, font/text, bar text, miscellaneous, reset defaults) and registers it with the addon's options frame.
@@ -614,10 +614,10 @@ local function ConstructGlobalOptionsPanel()
 
 	parent = interfaceSettingsFrame.optionsPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord - 5)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord - 5)
 
 	-- Profile dropdown for core-scope settings. Replaces the legacy Import button.
-	controls.profileDropdown = TRB.Functions.OptionsUi:BuildProfileDropdown(parent, yCoord - 10, "core", nil, nil, L["GlobalOptions"])
+	controls.profileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord - 10, "core", nil, nil, L["GlobalOptions"])
 
 	yCoord = yCoord - 37
 
@@ -637,7 +637,7 @@ local function ConstructGlobalOptionsPanel()
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ConstructResetDefaultsPanel },
 	}
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, "Global", tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Global", tabDefinitions, yCoord)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
@@ -721,7 +721,7 @@ local function ConstructImportExportPanel()
 	local topPanel = interfaceSettingsFrame.importExportPanel
 
 	-- Outer scroll container
-	topPanel.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer(
+	topPanel.panel = TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(
 		"TwintopResourceBar_ImportExport_LayoutPanel", topPanel)
 	topPanel.panel:SetPoint("TOPLEFT", oUi.xCoord, -5)
 	topPanel.panel:Show()
@@ -754,7 +754,7 @@ local function ConstructImportExportPanel()
 	}
 
 	-- ── Section: Profiles ──────────────────────────────────────────────
-	controls.profileSection = TRB.Functions.OptionsUi:BuildSectionHeader(
+	controls.profileSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(
 		parent, L["ProfileManagerProfilesHeader"], oUi.xCoord, yCoord)
 
 	-- ── Profile table ──────────────────────────────────────────────────
@@ -806,12 +806,12 @@ local function ConstructImportExportPanel()
 	profileTableContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	profileTableContainer:SetHeight(35 + (IE_VISIBLE * 15))
 
-	controls.buttons.importProfile = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.importProfile = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionImport"], 0, 0, 140, 22)
 	controls.buttons.importProfile:ClearAllPoints()
 	controls.buttons.importProfile:SetPoint("TOPRIGHT", profileTableContainer, "TOPRIGHT", 0, 30)
 	controls.buttons.importProfile:SetScript("OnClick", function()
-		TRB.Functions.OptionsUi:ShowProfileImportPopup(function()
+		TRB.Functions.OptionsUi.ProfilePopups:ShowProfileImportPopup(function()
 			if RefreshImportExportView ~= nil then
 				RefreshImportExportView()
 			end
@@ -927,15 +927,15 @@ local function ConstructImportExportPanel()
 	-- to span the full table width with equal gaps. Seed with a reasonable
 	-- width so first-layout sizing looks right before OnSizeChanged fires.
 	local btnW = 140
-	controls.buttons.renameProfile = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.renameProfile = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionRename"], 0, yCoord, btnW, 26)
-	controls.buttons.copyFull = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.copyFull = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionCopyFull"], 0, yCoord, btnW, 26)
-	controls.buttons.copySelected = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.copySelected = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionCopySelected"], 0, yCoord, btnW, 26)
-	controls.buttons.exportFull = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.exportFull = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionExportFull"], 0, yCoord, btnW, 26)
-	controls.buttons.exportSelected = TRB.Functions.OptionsUi:BuildButton(
+	controls.buttons.exportSelected = TRB.Functions.OptionsUi.Primitives:BuildButton(
 		parent, L["ProfileManagerActionExportSelected"], 0, yCoord, btnW, 26)
 
 	-- ── Action button handlers ─────────────────────────────────────
@@ -1802,7 +1802,7 @@ local function ConstructProfileDefaultsPanel()
 
 	local topPanel = interfaceSettingsFrame.profileDefaultsPanel
 
-	topPanel.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer(
+	topPanel.panel = TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(
 		"TwintopResourceBar_ProfileDefaults_LayoutPanel", topPanel)
 	topPanel.panel:SetPoint("TOPLEFT", oUi.xCoord, -5)
 	topPanel.panel:Show()
@@ -1811,7 +1811,7 @@ local function ConstructProfileDefaultsPanel()
 	local parent = scrollChild
 	local yCoord = 5
 
-	controls.header = TRB.Functions.OptionsUi:BuildSectionHeader(
+	controls.header = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(
 		parent, L["ProfileDefaultsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
@@ -1903,16 +1903,16 @@ function TRB.Options:ConstructOptionsPanel()
 	local parent = interfaceSettingsFrame.panel
 	local yCoord = -5
 
-	interfaceSettingsFrame.controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
+	interfaceSettingsFrame.controls.barPositionSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
 
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Author"] .. ":", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["Author"] .. ":", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoVersion = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Version"] .. ":", TRB.Details.addonVersion, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoVersion = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["Version"] .. ":", TRB.Details.addonVersion, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoReleased = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Released"] .. ":", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoReleased = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["Released"] .. ":", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
+	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
 
 	local flagPathTemplate = "|TInterface\\AddOns\\TwintopInsanityBar\\Images\\Flags\\%s.tga:0|t   %s"
 	local localeText1 = string.format(flagPathTemplate, "deDE", "deDE")
@@ -1974,10 +1974,10 @@ function TRB.Options:ConstructOptionsPanel()
 
 
 	yCoord = yCoord - 180
-	interfaceSettingsFrame.controls.labels.localization1 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Localization" .. ":", localeText1, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 100, 15, 300)
-	interfaceSettingsFrame.controls.labels.localization2 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText2, oUi.xCoord+(oUi.xPadding*2)+50, yCoord, 0, 100, 15, 300, "RIGHT")
-	interfaceSettingsFrame.controls.labels.localization3 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText3, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300)
-	interfaceSettingsFrame.controls.labels.localization4 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText4, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300, nil, [[Fonts\ARHei.TTF]])
+	interfaceSettingsFrame.controls.labels.localization1 = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, "Localization" .. ":", localeText1, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 100, 15, 300)
+	interfaceSettingsFrame.controls.labels.localization2 = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, "", localeText2, oUi.xCoord+(oUi.xPadding*2)+50, yCoord, 0, 100, 15, 300, "RIGHT")
+	interfaceSettingsFrame.controls.labels.localization3 = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, "", localeText3, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300)
+	interfaceSettingsFrame.controls.labels.localization4 = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, "", localeText4, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300, nil, [[Fonts\ARHei.TTF]])
 
 	yCoord = yCoord - 140
 
@@ -2103,7 +2103,7 @@ end
 function TRB.Options:CreateBarTextInstructions(parent, xCoord, yCoord)
 	local maxOptionsWidth = 550
 	local barTextInstructionsHeight = 400
-	TRB.Functions.OptionsUi:BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, TRB.Options.variables.barTextInstructions, xCoord+5, yCoord, maxOptionsWidth-(2*(xCoord+5)), barTextInstructionsHeight, GameFontHighlight, "LEFT")
 end
 
 
@@ -2118,7 +2118,7 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 	local entries1 = TRB.Functions.Table:Length(cache.barTextVariables.values)
 	for i=1, entries1 do
 		if cache.barTextVariables.values[i].printInSettings == true then
-			TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 0, width, height)
+			TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.values[i].variable, cache.barTextVariables.values[i].description, xCoord, yCoord, 0, width, height)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
@@ -2126,7 +2126,7 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 	local entries2 = TRB.Functions.Table:Length(cache.barTextVariables.pipe)
 	for i=1, entries2 do
 		if cache.barTextVariables.pipe[i].printInSettings == true then
-			TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, 0, width, height)
+			TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.pipe[i].variable, cache.barTextVariables.pipe[i].description, xCoord, yCoord, 0, width, height)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
@@ -2140,7 +2140,7 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 			if cache.barTextVariables.icons[i].icon ~= "" then
 				text = cache.barTextVariables.icons[i].icon .. " "
 			end
-			TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 0, width, height)
+			TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, cache.barTextVariables.icons[i].variable, text .. cache.barTextVariables.icons[i].description, xCoord, yCoord, 0, width, height)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
