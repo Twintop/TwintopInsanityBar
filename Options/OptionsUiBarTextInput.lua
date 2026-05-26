@@ -131,7 +131,7 @@ end
 ---@param yPos number # Y offset from parent's TOPLEFT
 ---@return EditBox # The inner EditBox (scroll child)
 function TRB.Functions.OptionsUi.BarTextInput:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
-	local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
+	local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate,BackdropTemplate") -- or your actual parent instead
 	s:SetSize(width, height)
 	s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
 

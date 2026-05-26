@@ -146,10 +146,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 		-- Update color picker
 		if row.colorPicker then
+			indicator.color2 = indicator.color2 or indicator.color
+			indicator.gradientDirection = indicator.gradientDirection or "disabled"
 			row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
-			if row.colorPicker.Swatch2 and indicator.color2 then
+			if row.colorPicker.Swatch2 then
 				row.colorPicker.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color2, true))
-				local gradDir = indicator.gradientDirection or "disabled"
+				local gradDir = indicator.gradientDirection
 				if gradDir == "disabled" then
 					row.colorPicker.Swatch2:SetAlpha(0.35)
 					row.colorPicker.Swatch2:EnableMouse(false)
@@ -158,7 +160,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					row.colorPicker.Swatch2:EnableMouse(true)
 				end
 			end
-			if row.colorPicker.DirectionButton and indicator.gradientDirection then
+			if row.colorPicker.DirectionButton then
 				row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[indicator.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 			end
 			if row.colorPicker.Font then
@@ -337,6 +339,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if mouseButton == "LeftButton" then
 					local currentKey = orderedKeys[capturedRowIdx]
 					local currentEntry = indicatorColors[currentKey]
+					if not currentEntry then return end
+					currentEntry.gradientDirection = currentEntry.gradientDirection or "disabled"
 					local ci = 1
 					for idx, dir in ipairs(gradientDirectionCycle) do
 						if dir == currentEntry.gradientDirection then ci = idx; break end
@@ -357,6 +361,23 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					end
 				end
 			end)
+			---@diagnostic disable-next-line: inject-field
+			cp.UpdateSwatch2State = function()
+				local currentKey = orderedKeys[capturedRowIdx]
+				local currentEntry = indicatorColors[currentKey]
+				if not currentEntry then return end
+				currentEntry.color2 = currentEntry.color2 or currentEntry.color
+				currentEntry.gradientDirection = currentEntry.gradientDirection or "disabled"
+				cp.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(currentEntry.color2, true))
+				if currentEntry.gradientDirection == "disabled" then
+					cp.Swatch2:SetAlpha(0.35)
+					cp.Swatch2:EnableMouse(false)
+				else
+					cp.Swatch2:SetAlpha(1.0)
+					cp.Swatch2:EnableMouse(true)
+				end
+				cp.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[currentEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
+			end
 			---@cast cp Button
 			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cp, indicator.enabled)
 			row.colorPicker = cp
