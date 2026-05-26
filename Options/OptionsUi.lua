@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, undefined-global
+﻿---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
@@ -45,43 +45,43 @@ function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(...)
 end
 
 function TRB.Functions.OptionsUi:ShowColorPicker(...)
-	return self.Primitives:ShowColorPicker(...)
+	return self.ColorPickers:ShowColorPicker(...)
 end
 
 function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(...)
-	return self.Primitives:ExtractColorFromColorPicker(...)
+	return self.ColorPickers:ExtractColorFromColorPicker(...)
 end
 
 function TRB.Functions.OptionsUi:ColorOnMouseDown(...)
-	return self.Primitives:ColorOnMouseDown(...)
+	return self.ColorPickers:ColorOnMouseDown(...)
 end
 
 function TRB.Functions.OptionsUi:GetPrimaryBackdropFrame(...)
-	return self.Primitives:GetPrimaryBackdropFrame(...)
+	return self.ColorPickers:GetPrimaryBackdropFrame(...)
 end
 
 function TRB.Functions.OptionsUi:GetSecondaryBackdropFrames(...)
-	return self.Primitives:GetSecondaryBackdropFrames(...)
+	return self.ColorPickers:GetSecondaryBackdropFrames(...)
 end
 
 function TRB.Functions.OptionsUi:GetHealthBackdropFrame(...)
-	return self.Primitives:GetHealthBackdropFrame(...)
+	return self.ColorPickers:GetHealthBackdropFrame(...)
 end
 
 function TRB.Functions.OptionsUi:BuildColorPicker(...)
-	return self.Primitives:BuildColorPicker(...)
+	return self.ColorPickers:BuildColorPicker(...)
 end
 
 function TRB.Functions.OptionsUi:BuildGradientColorPicker(...)
-	return self.Primitives:BuildGradientColorPicker(...)
+	return self.ColorPickers:BuildGradientColorPicker(...)
 end
 
 function TRB.Functions.OptionsUi:GradientColor2OnMouseDown(...)
-	return self.Primitives:GradientColor2OnMouseDown(...)
+	return self.ColorPickers:GradientColor2OnMouseDown(...)
 end
 
 function TRB.Functions.OptionsUi:BuildColorPickerWithEnable(...)
-	return self.Primitives:BuildColorPickerWithEnable(...)
+	return self.ColorPickers:BuildColorPickerWithEnable(...)
 end
 
 function TRB.Functions.OptionsUi:BuildSectionHeader(...)
@@ -204,17 +204,17 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(...)
 	return self.Layout:GenerateComboPointDimensionsOptions(...)
 end
 
--- Secondary and custom bar color option generators live in Options\OptionsUiColors.lua.
+-- Secondary and custom bar color option generators live in Options\OptionsUiCustomBarColors.lua.
 function TRB.Functions.OptionsUi:GenerateSecondaryPartialFillColorOptions(...)
-	return self.Colors:GenerateSecondaryPartialFillColorOptions(...)
+	return self.CustomBarColors:GenerateSecondaryPartialFillColorOptions(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateCustomBarPartialFillColorOptions(...)
-	return self.Colors:GenerateCustomBarPartialFillColorOptions(...)
+	return self.CustomBarColors:GenerateCustomBarPartialFillColorOptions(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateSecondaryCastingOverlayOptions(...)
-	return self.Colors:GenerateSecondaryCastingOverlayOptions(...)
+	return self.CustomBarColors:GenerateSecondaryCastingOverlayOptions(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(...)
@@ -226,11 +226,11 @@ function TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(...)
-	return self.Colors:GenerateCustomBarColorOptions(...)
+	return self.CustomBarColors:GenerateCustomBarColorOptions(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(...)
-	return self.Colors:GenerateCustomBarThresholdColorOptions(...)
+	return self.CustomBarColors:GenerateCustomBarThresholdColorOptions(...)
 end
 
 -- Texture option generators live in Options\OptionsUiTextures.lua.
@@ -259,11 +259,12 @@ function TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(...)
 	return self.Visibility:GenerateBarVisibilityOptions(...)
 end
 
--- Threshold option generators live in Options\OptionsUiThresholds.lua.
+-- Threshold list/detail option generator lives in Options\OptionsUiThresholdList.lua.
 function TRB.Functions.OptionsUi:GenerateThresholdListPanel(...)
-	return self.Thresholds:GenerateThresholdListPanel(...)
+	return self.ThresholdList:GenerateThresholdListPanel(...)
 end
 
+-- Threshold icon/color option generators live in Options\OptionsUiThresholds.lua.
 function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(...)
 	return self.Thresholds:GenerateThresholdLineIconsOptions(...)
 end
@@ -345,5 +346,5 @@ end
 
 -- Bar text editor generator lives in Options\OptionsUiBarText.lua.
 function TRB.Functions.OptionsUi:GenerateBarTextEditor(...)
-return self.BarText:GenerateBarTextEditor(...)
+	return self.BarText:GenerateBarTextEditor(...)
 end
