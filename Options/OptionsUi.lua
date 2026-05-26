@@ -20,11 +20,11 @@ function TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(...)
 end
 
 function TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(...)
-	return self.GlobalSettings:BuildUseGlobalCopyButton(...)
+	return self.GlobalCopy:BuildUseGlobalCopyButton(...)
 end
 
 function TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(...)
-	return self.GlobalSettings:BuildGlobalBulkCopyButton(...)
+	return self.GlobalCopy:BuildGlobalBulkCopyButton(...)
 end
 
 -- Primitive UI builders and color-picker helpers live in Options\OptionsUiPrimitives.lua.
@@ -168,7 +168,7 @@ end
 
 -- Texture dropdown helpers live in Options\OptionsUiTextures.lua.
 function TRB.Functions.OptionsUi:CreateLsmDropdown(...)
-	return self.Textures:CreateLsmDropdown(...)
+	return self.TextureDropdowns:CreateLsmDropdown(...)
 end
 
 -- Widget enable/disable helpers live in Options\OptionsUiPrimitives.lua.
@@ -236,11 +236,11 @@ end
 
 -- Texture option generators live in Options\OptionsUiTextures.lua.
 function TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(...)
-	return self.Textures:UpdateStatusbarDropdowns(...)
+	return self.TextureDropdowns:UpdateStatusbarDropdowns(...)
 end
 
 function TRB.Functions.OptionsUi:UpdateOverlayDropdowns(...)
-	return self.Textures:UpdateOverlayDropdowns(...)
+	return self.TextureDropdowns:UpdateOverlayDropdowns(...)
 end
 
 function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(...)
