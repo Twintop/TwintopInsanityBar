@@ -18,11 +18,9 @@ local function FillBackgroundCache()
 		backgrounds = TRB.Details.addonData.libs.SharedMedia:HashTable("background")
 		backgroundsList = TRB.Details.addonData.libs.SharedMedia:List("background")
 
-		local x = 1
 		for k, v in pairs(backgroundsList) do
 			table.insert(backgroundPairs, { v, backgrounds[v] })
 			backgroundPairsByName[backgrounds[v]] = v
-			x = x + 1
 		end
 	end
 end
@@ -37,11 +35,9 @@ local function FillBorderCache()
 		borders = TRB.Details.addonData.libs.SharedMedia:HashTable("border")
 		bordersList = TRB.Details.addonData.libs.SharedMedia:List("border")
 
-		local x = 1
 		for k, v in pairs(bordersList) do
 			table.insert(borderPairs, { v, borders[v] })
 			borderPairsByName[borders[v]] = v
-			x = x + 1
 		end
 	end
 end
@@ -56,11 +52,9 @@ local function FillStatusbarCache()
 		statusbars = TRB.Details.addonData.libs.SharedMedia:HashTable("statusbar")
 		statusbarsList = TRB.Details.addonData.libs.SharedMedia:List("statusbar")
 
-		local x = 1
 		for k, v in pairs(statusbarsList) do
 			table.insert(statusbarPairs, { v, statusbars[v] })
 			statusbarPairsByName[statusbars[v]] = v
-			x = x + 1
 		end
 	end
 end

@@ -136,7 +136,7 @@ end
 ---@return number g # Green component (0-1)
 ---@return number b # Blue component (0-1)
 local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/225
+	return 100/255, 225/255, 200/255
 end
 
 -- Rotation mapping: 90° CCW (horizontal → vertical / leftRight → bottomTop)

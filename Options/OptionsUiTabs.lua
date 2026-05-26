@@ -21,9 +21,10 @@ function TRB.Functions.OptionsUi.Tabs:CreateScrollFrameContainer(name, parent, w
 	if scrollChild then
 		---@diagnostic disable-next-line: inject-field
 		sf.scrollChild = scrollChild
+		sf.scrollChild:SetParent(sf)
 	else
 		---@diagnostic disable-next-line: inject-field
-		sf.scrollChild = CreateFrame("Frame")
+		sf.scrollChild = CreateFrame("Frame", nil, sf)
 	end
 	sf.scrollChild:SetWidth(width)
 	sf.scrollChild:SetHeight(height-10)
