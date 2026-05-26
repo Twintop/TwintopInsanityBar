@@ -30,7 +30,7 @@ end
 
 -- Delete-bar-text confirmation dialog.  Defined once (outside GenerateBarTextEditor)
 -- so that every spec shares a single dialog whose OnAccept works entirely from the
--- per-invocation data payload â€” no closure references to the wrong spec's locals.
+-- per-invocation data payload -- no closure references to the wrong spec's locals.
 StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 	text = "",
 	button1 = L["Yes"],

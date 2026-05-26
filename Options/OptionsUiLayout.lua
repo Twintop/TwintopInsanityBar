@@ -99,7 +99,7 @@ local function GetAnchorPointDisplayName(point)
 	return anchorPointDisplayNames[point or "TOP"] or point or "TOP"
 end
 
----Applies sensible defaults when changing anchor target type (screen â†” bar).
+---Applies sensible defaults when changing anchor target type (screen <-> bar).
 ---When transitioning between screen and bar anchoring, the existing offset/point values
 ---are meaningless for the new context, so reset them to useful defaults.
 ---@param anchor table The anchor block to modify
@@ -111,7 +111,7 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 	local goingToScreen = (newBarKey == "screen")
 
 	if wasScreen and not goingToScreen then
-		-- Screen â†’ Bar: reset to bar-to-bar defaults
+		-- Screen -> Bar: reset to bar-to-bar defaults
 		-- Attach this bar's TOP to the target bar's BOTTOM (bar appears just below target)
 		anchor.anchorPoint = "BOTTOM"
 		anchor.attachPoint = "TOP"
@@ -120,7 +120,7 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 		anchor.matchWidth = true
 		return true
 	elseif not wasScreen and goingToScreen then
-		-- Bar â†’ Screen: reset to screen defaults
+		-- Bar -> Screen: reset to screen defaults
 		anchor.anchorPoint = "CENTER"
 		anchor.attachPoint = "CENTER"
 		anchor.xOffset = 0
@@ -499,7 +499,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen â†” bar)
+			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls.horizontal:SetValue(a.xOffset)
 				controls.vertical:SetValue(a.yOffset)
@@ -1077,7 +1077,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen â†” bar)
+			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
 				controls[settingKey .. "Vertical"]:SetValue(a.yOffset)
@@ -1675,7 +1675,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
 			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
-			-- Update UI controls if anchor type changed (screen â†” bar)
+			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
 				controls[barTypeDef.key .. "YPos"]:SetValue(a.yOffset)

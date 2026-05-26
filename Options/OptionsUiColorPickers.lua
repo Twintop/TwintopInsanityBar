@@ -438,7 +438,9 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildColorPickerWithEnable(parent,
 	fColor = controls.colors.threshold[value.name]
 
 	if value.colorScript ~= nil and type(value.colorScript) == "function" then
-		fColor:SetScript("OnMouseDown", value.colorScript(self, button))
+		fColor:SetScript("OnMouseDown", function(self, button, ...)
+			value.colorScript(self, button, ...)
+		end)
 	else
 		fColor:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controls.colors[controlType], value.name)

@@ -165,8 +165,8 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		-- Recreate bar text frames to match potentially changed settings.
 		-- FillSpecializationCacheSettings always rebuilds displayText, which can shift
 		-- entry indices (e.g., globalBarText prepends global entries) or change font
-		-- defaults. Without this, text frames become desynced from their entries â€”
-		-- wrong parents, fonts, or positions â€” causing bar text to vanish.
+		-- defaults. Without this, text frames become desynced from their entries --
+		-- wrong parents, fonts, or positions -- causing bar text to vanish.
 		-- This matches the sequence in ConstructBarGroups.
 		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.BarVisibility:MarkDirty()

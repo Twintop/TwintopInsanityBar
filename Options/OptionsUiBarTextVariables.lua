@@ -334,13 +334,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			if button == "LeftButton" and realrow and realrow > 0 then
 				local rowData = data[realrow]
 				if rowData and rowData.isHeader then
-					-- Section header click â€” do nothing
+					-- Section header click -- do nothing
 					scrollingTable:ClearSelection()
 					return true
 				end
 
 				if column == 1 then
-					-- "Add" button column clicked â€” insert variable at cursor
+					-- "Add" button column clicked -- insert variable at cursor
 					local editBox = TRB.Frames.activeBarTextEditBox
 					if editBox and rowData and rowData.variable and rowData.variable ~= "" then
 						local cursorPos = TRB.Frames.activeBarTextCursorPosition or editBox:GetCursorPosition()
@@ -364,7 +364,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 					scrollingTable:ClearSelection()
 					return true
 				else
-					-- Normal click â€” show description and select the row
+					-- Normal click -- show description and select the row
 					if rowData then
 						descLabel:SetText(rowData.variable or "")
 						descText:SetText(rowData.description or "")

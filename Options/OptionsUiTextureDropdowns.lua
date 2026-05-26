@@ -68,7 +68,31 @@ end
 ---Refreshes a WowStyle1DropdownTemplate control by re-invoking its stored GeneratorFunction.
 ---@param control DropdownButton # The dropdown control with a GeneratorFunction field
 local function DropdownSetupMenuWrapper(control)
+	if control == nil then
+		return
+	end
+
 	control:SetupMenu(control.GeneratorFunction)
+end
+
+local function SetDropdownDisplayText(control, text)
+	if control == nil or text == nil then
+		return
+	end
+
+	if type(control.SetDefaultText) == "function" then
+		control:SetDefaultText(text)
+	end
+	if type(control.SetText) == "function" then
+		control:SetText(text)
+	elseif control.Text ~= nil and type(control.Text.SetText) == "function" then
+		control.Text:SetText(text)
+	end
+end
+
+local function RefreshLsmDropdown(control, displayText)
+	DropdownSetupMenuWrapper(control)
+	SetDropdownDisplayText(control, displayText)
 end
 
 ---Creates a LibSharedMedia dropdown for selecting a statusbar, background, or border texture.
@@ -94,15 +118,15 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 	if lsmType == "statusbar" then
 		FillStatusbarCache()
 		lsmPairs = statusbarPairs
-		lsmPairsByName = statusbarPairs
+		lsmPairsByName = statusbarPairsByName
 	elseif lsmType == "background" then
 		FillBackgroundCache()
 		lsmPairs = backgroundPairs
-		lsmPairsByName = backgroundPairs
+		lsmPairsByName = backgroundPairsByName
 	elseif lsmType == "border" then
 		FillBorderCache()
 		lsmPairs = borderPairs
-		lsmPairsByName = borderPairs
+		lsmPairsByName = borderPairsByName
 	end
 
 	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate")
@@ -147,6 +171,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 	end
 	dropDowns[varName].GeneratorFunction = Generator
 	dropDowns[varName]:SetupMenu(Generator)
+	SetDropdownDisplayText(dropDowns[varName], lsmPairsByName[section[varName]] or section[varName .. "Name"] or dropdownInfoText)
 	dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
 end
 
@@ -160,6 +185,7 @@ end
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to sync
 ---@param includeComboPointsCastingOverlay boolean? Whether to sync secondary casting overlay texture
 function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(controls, textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
+	FillStatusbarCache()
 	local newName = statusbarPairsByName[newValue]
 	if includeComboPoints == nil then
 		includeComboPoints = false
@@ -176,28 +202,28 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName
-	DropdownSetupMenuWrapper(controls[variable.."Bar"])
+	RefreshLsmDropdown(controls[variable.."Bar"], newName)
 	if textures.textureLock then
 		textures.resourceBar = newValue
 		textures.resourceBarName = newName
-		DropdownSetupMenuWrapper(controls.resourceBar)
+		RefreshLsmDropdown(controls.resourceBar, newName)
 
 		if includeComboPoints then
 			textures.comboPointsBar = newValue
 			textures.comboPointsBarName = newName
-			DropdownSetupMenuWrapper(controls.comboPointsBar)
+			RefreshLsmDropdown(controls.comboPointsBar, newName)
 
 			if includeComboPointsCastingOverlay then
 				textures.comboPointsCastingBar = newValue
 				textures.comboPointsCastingBarName = newName
-				DropdownSetupMenuWrapper(controls.comboPointsCastingBar)
+				RefreshLsmDropdown(controls.comboPointsCastingBar, newName)
 			end
 		end
 
 		if includeManaBar then
 			textures.manaBarBar = newValue
 			textures.manaBarBarName = newName
-			DropdownSetupMenuWrapper(controls.manaBarBar)
+			RefreshLsmDropdown(controls.manaBarBar, newName)
 		end
 
 		-- Sync custom bar textures
@@ -205,16 +231,16 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 			local barKey = barTypeDef.key .. "Bar"
 			textures[barKey] = newValue
 			textures[barKey .. "Name"] = newName
-			DropdownSetupMenuWrapper(controls[barKey])
+			RefreshLsmDropdown(controls[barKey], newName)
 		end
 
 		textures.healthBar = newValue
 		textures.healthBarName = newName
-		DropdownSetupMenuWrapper(controls.healthBar)
+		RefreshLsmDropdown(controls.healthBar, newName)
 
 		textures.castingBar = newValue
 		textures.castingBarName = newName
-		DropdownSetupMenuWrapper(controls.castingBar)
+		RefreshLsmDropdown(controls.castingBar, newName)
 	end
 
 	TRB.Functions.Character:ResetCaches()
@@ -235,19 +261,20 @@ end
 ---@param newValue string The new texture value
 ---@param variable string The overlay variable being changed (e.g., "absorb", "incomingHeal")
 function TRB.Functions.OptionsUi.TextureDropdowns:UpdateOverlayDropdowns(controls, textures, newValue, variable)
+	FillStatusbarCache()
 	local newName = statusbarPairsByName[newValue]
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName
-	DropdownSetupMenuWrapper(controls[variable.."Bar"])
+	RefreshLsmDropdown(controls[variable.."Bar"], newName)
 	if textures.textureLock then
 		-- Sync all overlay textures to the changed value.
 		textures.absorbBar = newValue
 		textures.absorbBarName = newName
-		DropdownSetupMenuWrapper(controls.absorbBar)
+		RefreshLsmDropdown(controls.absorbBar, newName)
 		textures.incomingHealBar = newValue
 		textures.incomingHealBarName = newName
-		DropdownSetupMenuWrapper(controls.incomingHealBar)
+		RefreshLsmDropdown(controls.incomingHealBar, newName)
 	end
 
 	TRB.Functions.Character:ResetCaches()

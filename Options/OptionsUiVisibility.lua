@@ -1015,7 +1015,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			refreshFunc()
 		end)
 
-		-- Alpha sliders â€” set scripts BEFORE values so SetValue doesn't write to the old entry
+		-- Alpha sliders -- set scripts BEFORE values so SetValue doesn't write to the old entry
 		controls.sliders.selectedActiveAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
@@ -1055,7 +1055,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		-- Show/hide threshold controls based on current condition type
 		ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
 
-		-- Comparison dropdown â€” set up menu and current selection using CreateRadio for proper text+indicator
+		-- Comparison dropdown -- set up menu and current selection using CreateRadio for proper text+indicator
 		local function ThresholdComparisonIsSelected(operator)
 			return (visSettings.resourceConditionOperator or ">=") == operator
 		end
@@ -1076,7 +1076,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.dropDown.selectedThresholdComparison:SetDefaultText(GetComparisonLabel(currentOp))
 		controls.dropDown.selectedThresholdComparison:SetText(GetComparisonLabel(currentOp))
 
-		-- Threshold value slider â€” set script BEFORE value
+		-- Threshold value slider -- set script BEFORE value
 		controls.sliders.selectedThresholdValue:SetScript("OnValueChanged", function(self, value)
 			-- Compute precision dynamically based on current condition type (may change after FillDetailPanel)
 			local ct = visSettings.resourceConditionType or "none"
