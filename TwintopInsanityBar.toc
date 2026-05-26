@@ -120,6 +120,7 @@ Options\OptionsUi.lua
 Options\OptionsUiMedia.lua
 Options\OptionsUiPrimitives.lua
 Options\OptionsUiColorPickers.lua
+Options\OptionsUiProfilePopups.lua
 Options\OptionsUiProfiles.lua
 Options\OptionsUiGlobalSettings.lua
 Options\OptionsUiTextures.lua

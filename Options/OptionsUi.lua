@@ -102,11 +102,12 @@ end
 
 -- ============================================================================
 -- Profile management dropdown (Phase 2B + 2C)
--- Profile dropdown and profile popup implementations live in Options\OptionsUiProfiles.lua.
+-- Profile popup helpers live in Options\OptionsUiProfilePopups.lua.
 function TRB.Functions.OptionsUi:ShowProfileImportPopup(...)
-	return self.Profiles:ShowProfileImportPopup(...)
+	return self.ProfilePopups:ShowProfileImportPopup(...)
 end
 
+-- Profile dropdown and title-row implementations live in Options\OptionsUiProfiles.lua.
 function TRB.Functions.OptionsUi:BuildProfileDropdown(...)
 	return self.Profiles:BuildProfileDropdown(...)
 end
