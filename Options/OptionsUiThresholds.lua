@@ -1251,7 +1251,8 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdListPanel(parent, c
 			audioCheckbox:Show()
 
 			-- Audio sound dropdown
-			FillSoundCache()
+			local soundPairs = TRB.Functions.OptionsUi.Media:GetSoundPairs()
+			local soundPairsByName = TRB.Functions.OptionsUi.Media:GetSoundPairsByName()
 			local soundDisplayName = dictEntry.audio.soundName
 			audioDropdown:SetDefaultText((soundDisplayName and soundDisplayName ~= "") and soundDisplayName or L["ThresholdDetailAudioNone"])
 			local function AudioIsSelected(value)

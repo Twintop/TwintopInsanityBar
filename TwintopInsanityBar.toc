@@ -124,6 +124,11 @@ Options\OptionsUiGlobalSettings.lua
 Options\OptionsUiTextures.lua
 Options\OptionsUiVisibility.lua
 Options\OptionsUiThresholds.lua
+Options\OptionsUiText.lua
+Options\OptionsUiIndicators.lua
+Options\OptionsUiColors.lua
+Options\OptionsUiLayout.lua
+Options\OptionsUiBarText.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua
