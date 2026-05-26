@@ -232,8 +232,8 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 	-- Add a "Copy..." button next to the bulk-toggle checkbox so users can
 	-- push Global -> a single spec or pull a single spec -> Global without
 	-- using the all-specs bulk apply.
-	if TRB.Functions.OptionsUi.BuildGlobalBulkCopyButton then
-		TRB.Functions.OptionsUi:BuildGlobalBulkCopyButton(f, settingKey)
+	if TRB.Functions.OptionsUi.GlobalCopy and TRB.Functions.OptionsUi.GlobalCopy.BuildGlobalBulkCopyButton then
+		TRB.Functions.OptionsUi.GlobalCopy:BuildGlobalBulkCopyButton(f, settingKey)
 	end
 
 	return yCoord
@@ -293,7 +293,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 			TRB.Options.OptionsFrame:SelectCategory("global")
 			C_Timer.After(0, function()
 ---@diagnostic disable-next-line: param-type-mismatch
-				TRB.Functions.OptionsUi:SwitchToTabByClassSpec(nil, nil, globalTabKey)
+				TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(nil, nil, globalTabKey)
 			end)
 		end
 	end)

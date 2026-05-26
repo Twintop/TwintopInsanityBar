@@ -932,31 +932,31 @@ local function BloodConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_Reset")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextClassic")
 	end)
@@ -975,13 +975,13 @@ local function BloodConstructRunicPowerBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
 end
 
 local function BloodConstructRunesBarPanel(parent)
@@ -996,20 +996,20 @@ local function BloodConstructRunesBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
@@ -1023,27 +1023,27 @@ local function BloodConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -1058,10 +1058,10 @@ local function BloodConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
 end
 
 local function BloodConstructBoneShieldBarPanel(parent)
@@ -1077,10 +1077,10 @@ local function BloodConstructBoneShieldBarPanel(parent)
 
 	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
 	if boneShieldBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef, L["ResourceRunicPower"])
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef, L["ResourceRunicPower"])
 
 		yCoord = yCoord - 90
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef,
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef,
 			function(callbackParent, callbackYCoord)
 				local f = nil
 
@@ -1093,7 +1093,7 @@ local function BloodConstructBoneShieldBarPanel(parent)
 				f:SetChecked(boneShieldColors.ossuary.enabled)
 				f:SetScript("OnClick", function(self, ...)
 					boneShieldColors.ossuary.enabled = self:GetChecked()
-					if TRB.Functions.OptionsUi:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Data.cache.colors.bar = {}
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1102,13 +1102,13 @@ local function BloodConstructBoneShieldBarPanel(parent)
 
 				controls.colors.bars = controls.colors.bars or {}
 				controls.colors.bars.boneShield = controls.colors.bars.boneShield or {}
-				controls.colors.bars.boneShield.ossuary = TRB.Functions.OptionsUi:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"], boneShieldColors.ossuary, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				controls.colors.bars.boneShield.ossuary = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"], boneShieldColors.ossuary, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
 				f = controls.colors.bars.boneShield.ossuary
 				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuary", nil, nil, 6, 1)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuary", nil, nil, 6, 1)
 				end)
 				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, boneShieldColors.ossuary, self, 6, 1)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, boneShieldColors.ossuary, self, 6, 1)
 				end)
 
 				callbackYCoord = callbackYCoord - 30
@@ -1122,20 +1122,20 @@ local function BloodConstructBoneShieldBarPanel(parent)
 				f:SetChecked(boneShieldColors.ossuaryThreshold.enabled)
 				f:SetScript("OnClick", function(self, ...)
 					boneShieldColors.ossuaryThreshold.enabled = self:GetChecked()
-					if TRB.Functions.OptionsUi:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 						TRB.Data.cache.colors.bar = {}
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
 					end
 				end)
 
-				controls.colors.bars.boneShield.ossuaryThreshold = TRB.Functions.OptionsUi:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"], boneShieldColors.ossuaryThreshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				controls.colors.bars.boneShield.ossuaryThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"], boneShieldColors.ossuaryThreshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
 				f = controls.colors.bars.boneShield.ossuaryThreshold
 				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuaryThreshold", nil, nil, 6, 1)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuaryThreshold", nil, nil, 6, 1)
 				end)
 				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, boneShieldColors.ossuaryThreshold, self, 6, 1)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, boneShieldColors.ossuaryThreshold, self, 6, 1)
 				end)
 
 				return callbackYCoord - 30
@@ -1159,7 +1159,7 @@ local function BloodConstructBarTexturesPanel(parent)
 	if boneShieldBarDef then
 		table.insert(customBars, boneShieldBarDef)
 	end
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"], false, customBars)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"], false, customBars)
 end
 
 local function BloodConstructBarVisibilityPanel(parent)
@@ -1178,7 +1178,7 @@ local function BloodConstructBarVisibilityPanel(parent)
 	if boneShieldBarDef then
 		table.insert(customBars, boneShieldBarDef)
 	end
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
 end
 
 local function BloodConstructThresholdListPanel(parent)
@@ -1191,7 +1191,7 @@ local function BloodConstructThresholdListPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 	controls.colors.threshold = {}
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
 		labels = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
@@ -1217,10 +1217,10 @@ local function BloodConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 1, yCoord)
 end
 
 local function BloodConstructFontAndTextPanel(parent)
@@ -1238,24 +1238,24 @@ local function BloodConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1270,7 +1270,7 @@ local function BloodConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
 end
 
 local function BloodConstructAudioAndTrackingPanel(parent)
@@ -1288,7 +1288,7 @@ local function BloodConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 end
 
@@ -1302,10 +1302,10 @@ local function BloodConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 6, 1, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 1, yCoord, cache)
 end
 
 local function BloodConstructIndicatorColorsPanel(parent)
@@ -1319,7 +1319,7 @@ local function BloodConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
 		},
@@ -1362,7 +1362,7 @@ local function BloodConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.bloodDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightBloodFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightBloodFull"],
 		TRB.Data.settings.core.enabled.deathknight, "blood",
 		"TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", "bloodDeathKnightEnabled",
 		"deathknight", "blood")
@@ -1370,7 +1370,7 @@ local function BloodConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel },
 		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel },
 		{ key = "boneShieldBar", label = L["TabBoneShield"], width = oUi.tabWidth.medium, constructor = BloodConstructBoneShieldBarPanel },
@@ -1451,31 +1451,31 @@ local function FrostConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_Reset")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextClassic")
 	end)
@@ -1494,13 +1494,13 @@ local function FrostConstructRunicPowerBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
 end
 
 local function FrostConstructRunesBarPanel(parent)
@@ -1515,20 +1515,20 @@ local function FrostConstructRunesBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
@@ -1542,27 +1542,27 @@ local function FrostConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -1577,10 +1577,10 @@ local function FrostConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
 end
 
 local function FrostConstructBarTexturesPanel(parent)
@@ -1594,7 +1594,7 @@ local function FrostConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
 end
 
 local function FrostConstructBarVisibilityPanel(parent)
@@ -1608,7 +1608,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
 local function FrostConstructThresholdListPanel(parent)
@@ -1621,7 +1621,7 @@ local function FrostConstructThresholdListPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 	controls.colors.threshold = {}
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
 		labels = {
 			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
@@ -1651,10 +1651,10 @@ local function FrostConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 2, yCoord)
 end
 
 local function FrostConstructFontAndTextPanel(parent)
@@ -1672,24 +1672,24 @@ local function FrostConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1704,7 +1704,7 @@ local function FrostConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
 end
 
 local function FrostConstructAudioAndTrackingPanel(parent)
@@ -1722,7 +1722,7 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 end
 
@@ -1736,10 +1736,10 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 6, 2, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 2, yCoord, cache)
 end
 
 local function FrostConstructIndicatorColorsPanel(parent)
@@ -1753,7 +1753,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
 		},
@@ -1792,7 +1792,7 @@ local function FrostConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightFrostFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightFrostFull"],
 		TRB.Data.settings.core.enabled.deathknight, "frost",
 		"TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", "frostDeathKnightEnabled",
 		"deathknight", "frost")
@@ -1800,7 +1800,7 @@ local function FrostConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel },
 		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = FrostConstructRunesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
@@ -1879,31 +1879,31 @@ local function UnholyConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_Reset")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextClassic")
 	end)
@@ -1922,13 +1922,13 @@ local function UnholyConstructRunicPowerBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
 end
 
 local function UnholyConstructRunesBarPanel(parent)
@@ -1943,20 +1943,20 @@ local function UnholyConstructRunesBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
@@ -1970,27 +1970,27 @@ local function UnholyConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -2005,10 +2005,10 @@ local function UnholyConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
 end
 
 local function UnholyConstructBarTexturesPanel(parent)
@@ -2022,7 +2022,7 @@ local function UnholyConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
 end
 
 local function UnholyConstructBarVisibilityPanel(parent)
@@ -2036,7 +2036,7 @@ local function UnholyConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
 local function UnholyConstructThresholdListPanel(parent)
@@ -2049,7 +2049,7 @@ local function UnholyConstructThresholdListPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 	controls.colors.threshold = {}
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
 		labels = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
@@ -2077,10 +2077,10 @@ local function UnholyConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 3, yCoord)
 end
 
 local function UnholyConstructFontAndTextPanel(parent)
@@ -2098,24 +2098,24 @@ local function UnholyConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -2130,7 +2130,7 @@ local function UnholyConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)
 end
 
 local function UnholyConstructAudioAndTrackingPanel(parent)
@@ -2148,7 +2148,7 @@ local function UnholyConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 end
 
@@ -2162,10 +2162,10 @@ local function UnholyConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 6, 3, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 3, yCoord, cache)
 end
 
 local function UnholyConstructIndicatorColorsPanel(parent)
@@ -2179,7 +2179,7 @@ local function UnholyConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_unholy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
 		},
@@ -2218,7 +2218,7 @@ local function UnholyConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.unholyDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["DeathKnightUnholyFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightUnholyFull"],
 		TRB.Data.settings.core.enabled.deathknight, "unholy",
 		"TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", "unholyDeathKnightEnabled",
 		"deathknight", "unholy")
@@ -2226,7 +2226,7 @@ local function UnholyConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel },
 		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = UnholyConstructRunesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = UnholyConstructHealthBarPanel },

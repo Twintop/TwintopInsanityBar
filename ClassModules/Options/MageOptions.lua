@@ -493,31 +493,31 @@ local function ArcaneConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Arcane_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Arcane_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Arcane_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Arcane_ResetBarTextClassic")
 	end)
@@ -534,10 +534,10 @@ local function ArcaneConstructManaBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
 end
 
 local function ArcaneConstructArcaneChargesPanel(parent)
@@ -551,52 +551,52 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], L["ResourceArcaneCharges"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], L["ResourceArcaneCharges"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageArcaneChargesColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageArcaneChargesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceArcaneCharges"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceArcaneCharges"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerArcaneChargesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerArcaneChargesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageArcaneChargesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageArcaneChargesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["MageArcaneChargesColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	yCoord = yCoord - 30
@@ -621,10 +621,10 @@ local function ArcaneConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 8, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 8, 1, yCoord)
 end
 
 local function ArcaneConstructBarTexturesPanel(parent)
@@ -637,7 +637,7 @@ local function ArcaneConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"])
 end
 
 local function ArcaneConstructBarVisibilityPanel(parent)
@@ -650,7 +650,7 @@ local function ArcaneConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true)
 end
 
 local function ArcaneConstructFontAndTextPanel(parent)
@@ -668,27 +668,27 @@ local function ArcaneConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 8, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 8, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 8, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 8, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 1, yCoord)
 end
 
 local function ArcaneConstructAudioAndTrackingPanel(parent)
@@ -706,28 +706,28 @@ local function ArcaneConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 	local yCoord2 = yCoord - 20
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "arcaneChargeThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold1"], L["MageAudioCheckboxArcaneChargeThreshold1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "arcaneChargeThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold1"], L["MageAudioCheckboxArcaneChargeThreshold1Tooltip"])
 
-	controls.mage_arcaneChargeThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.mage_arcaneChargeThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.mage_arcaneChargeThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue = value
 	end)
 
 	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "arcaneChargeThreshold2", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold2"], L["MageAudioCheckboxArcaneChargeThreshold2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "arcaneChargeThreshold2", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold2"], L["MageAudioCheckboxArcaneChargeThreshold2Tooltip"])
 
-	controls.mage_arcaneChargeThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.mage_arcaneChargeThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.mage_arcaneChargeThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue = value
@@ -744,10 +744,10 @@ local function ArcaneConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 1, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 1, yCoord, cache)
 end
 
 --local function ArcaneConstructIndicatorColorsPanel(parent)
@@ -774,7 +774,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.arcaneDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageArcaneFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MageArcaneFull"],
 		TRB.Data.settings.core.enabled.mage, "arcane",
 		"TwintopResourceBar_Mage_Arcane_arcaneMageEnabled", "arcaneMageEnabled",
 		"mage", "arcane")
@@ -782,7 +782,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel },
 		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel },
@@ -861,31 +861,31 @@ local function FireConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Fire_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Fire_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Fire_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Fire_ResetBarTextClassic")
 	end)
@@ -902,13 +902,13 @@ local function FireConstructFireBlastChargesBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], L["MageFireBlastCharges"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], L["MageFireBlastCharges"])
 
 	yCoord = yCoord - 60
 	local fireBlastChargesDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("fireBlastCharges")
 	if fireBlastChargesDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 8, 2, yCoord, fireBlastChargesDef, function(callbackParent, callbackYCoord)
-			return TRB.Functions.OptionsUi:GenerateCustomBarPartialFillColorOptions(callbackParent, controls, spec, 8, 2, callbackYCoord, fireBlastChargesDef, L["MageFireFireBlast"])
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 2, yCoord, fireBlastChargesDef, function(callbackParent, callbackYCoord)
+			return TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarPartialFillColorOptions(callbackParent, controls, spec, 8, 2, callbackYCoord, fireBlastChargesDef, L["MageFireFireBlast"])
 		end)
 	end
 end
@@ -923,10 +923,10 @@ local function FireConstructManaBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
 end
 
 local function FireConstructHealthBarPanel(parent)
@@ -939,10 +939,10 @@ local function FireConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 8, 2, yCoord)
 end
 
 local function FireConstructBarTexturesPanel(parent)
@@ -955,7 +955,7 @@ local function FireConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord, true, L["MageFireBlastCharges"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 2, yCoord, true, L["MageFireBlastCharges"])
 end
 
 local function FireConstructBarVisibilityPanel(parent)
@@ -968,7 +968,7 @@ local function FireConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", true, L["MageFireBlastCharges"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], "notFull", true, L["MageFireBlastCharges"], true)
 end
 
 local function FireConstructFontAndTextPanel(parent)
@@ -986,27 +986,27 @@ local function FireConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 8, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 8, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 2, yCoord)
 end
 
 local function FireConstructAudioAndTrackingPanel(parent)
@@ -1024,7 +1024,7 @@ local function FireConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 end
 
@@ -1038,10 +1038,10 @@ local function FireConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.mage_fire
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 2, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 2, yCoord, cache)
 end
 
 --local function FireConstructIndicatorColorsPanel(parent)
@@ -1068,7 +1068,7 @@ local function FireConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.fireDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFireFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MageFireFull"],
 		TRB.Data.settings.core.enabled.mage, "fire",
 		"TwintopResourceBar_Mage_Fire_fireMageEnabled", "fireMageEnabled",
 		"mage", "fire")
@@ -1076,7 +1076,7 @@ local function FireConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
 		{ key = "fireBlastCharges", label = L["TabFireBlastCharges"], width = oUi.tabWidth.medium, constructor = FireConstructFireBlastChargesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel },
@@ -1153,31 +1153,31 @@ local function FrostConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Frost_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Frost_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Frost_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Mage_Frost_ResetBarTextClassic")
 	end)
@@ -1194,10 +1194,10 @@ local function FrostConstructManaBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
 end
 
 local function FrostConstructIciclesBarPanel(parent)
@@ -1211,40 +1211,40 @@ local function FrostConstructIciclesBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], L["ResourceIcicles"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], L["ResourceIcicles"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageFrostIciclesColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageFrostIciclesColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["MageFrostColorPickerIciclesFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Frost_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1258,17 +1258,17 @@ local function FrostConstructIciclesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageFrostColorPickerIciclesBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -1282,10 +1282,10 @@ local function FrostConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 8, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 8, 3, yCoord)
 end
 
 local function FrostConstructBarTexturesPanel(parent)
@@ -1298,7 +1298,7 @@ local function FrostConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"])
 end
 
 local function FrostConstructBarVisibilityPanel(parent)
@@ -1311,7 +1311,7 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
 end
 
 local function FrostConstructFontAndTextPanel(parent)
@@ -1329,27 +1329,27 @@ local function FrostConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 8, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 8, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageManaTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 8, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 8, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MageColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 3, yCoord)
 end
 
 local function FrostConstructAudioAndTrackingPanel(parent)
@@ -1367,15 +1367,15 @@ local function FrostConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
 	local yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "iciclesThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxIciclesThreshold1"], L["MageAudioCheckboxIciclesThreshold1Tooltip"])
-	controls.mage_iciclesThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MageIciclesThresholdSliderTitle"], 0, 5, spec.audio["iciclesThreshold1"].configuration.thresholdValue, 1, 0,
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "iciclesThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxIciclesThreshold1"], L["MageAudioCheckboxIciclesThreshold1Tooltip"])
+	controls.mage_iciclesThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageIciclesThresholdSliderTitle"], 0, 5, spec.audio["iciclesThreshold1"].configuration.thresholdValue, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.mage_iciclesThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["iciclesThreshold1"].configuration.thresholdValue = value
@@ -1394,10 +1394,10 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 8, 3, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 3, yCoord, cache)
 end
 
 --local function FrostConstructIndicatorColorsPanel(parent)
@@ -1424,7 +1424,7 @@ local function FrostConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.frostDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MageFrostFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MageFrostFull"],
 		TRB.Data.settings.core.enabled.mage, "frost",
 		"TwintopResourceBar_Mage_Frost_frostMageEnabled", "frostMageEnabled",
 		"mage", "frost")
@@ -1432,7 +1432,7 @@ local function FrostConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = controls
 
-	yCoord = TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, {
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
 		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },

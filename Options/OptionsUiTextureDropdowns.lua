@@ -107,7 +107,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 
 	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate")
 	dropDowns[varName]:SetWidth(oUi.sliderWidth)
-	dropDowns[varName].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
+	dropDowns[varName].label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
 	dropDowns[varName].label.font:SetFontObject(GameFontNormal)
 	dropDowns[varName].varName = varName
 	dropDowns[varName].lsmPairs = lsmPairs

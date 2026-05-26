@@ -309,7 +309,7 @@ function TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, sp
 	local yCoord = 0
 
 	-- Section header (left-aligned)
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, specLabel, oUi.xCoord, yCoord - 5)
 
 	-- Profile dropdown (rightmost, anchored to parent's top-right)
 	controls.profileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord - 10, "spec", className, specName, specLabel)
@@ -324,12 +324,12 @@ function TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, sp
 	cb:SetScript("OnClick", function(self, ...)
 		enabledSettingRef[enabledKey] = self:GetChecked()
 		TRB.Functions.Class:EventRegistration()
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:RefreshNav()
 		end
 	end)
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(cb, enabledSettingRef[enabledKey], true)
 
 	-- Position checkbox: anchor its right edge left of the dropdown, leaving room for the label text.
 	cb:SetPoint("RIGHT", dropdown, "LEFT", -75, 0)

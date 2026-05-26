@@ -116,7 +116,6 @@ Functions\Talent.lua
 Functions\Threshold.lua
 Functions\WagoCreator.lua
 
-Options\OptionsUi.lua
 Options\OptionsUiMedia.lua
 Options\OptionsUiPrimitives.lua
 Options\OptionsUiColorPickers.lua

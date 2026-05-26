@@ -831,31 +831,31 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Brewmaster_ResetBarTextClassic")
 	end)
@@ -873,13 +873,13 @@ local function BrewmasterConstructEnergyBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], 1, BREWMASTER_MAX_ENERGY)
 end
 
 local function BrewmasterConstructStaggerBarPanel(parent)
@@ -895,24 +895,24 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 	-- Stagger bar dimensions using custom bar system
 	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
 	if staggerBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef, L["ResourceEnergy"])
 	end
 
 	-- Stagger bar colors using custom bar system
 	yCoord = yCoord - 90
 	if staggerBarDef then
-		yCoord = TRB.Functions.OptionsUi:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
 	end
 
 	-- Maximum Stagger Scale slider
-	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerMaxScaleSlider.tooltip = L["StaggerBarMaxScaleTooltip"]
 	controls.staggerMaxScaleSlider:SetScript("OnValueChanged", function(self, value)
 		local displayValue = TRB.Functions.Number:RoundTo(value, 0)
 		self.EditBox:SetText(displayValue .. "%")
 		-- Store as decimal (e.g., 100% -> 1.0, 200% -> 2.0)
 		spec.bars.stagger.maxScale = value / 100
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -931,10 +931,10 @@ local function BrewmasterConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 10, 1, yCoord)
 end
 
 local function BrewmasterConstructIndicatorColorsPanel(parent)
@@ -949,7 +949,7 @@ local function BrewmasterConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "invokeNiuzaoEnd", label = L["MonkBrewmasterCheckboxInvokeNiuzaoEnd"], tooltip = L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"], colorLabel = L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] },
 			{ key = "invokeNiuzao", label = L["MonkBrewmasterCheckboxInvokeNiuzao"], tooltip = L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"], colorLabel = L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] },
@@ -1000,7 +1000,7 @@ local function BrewmasterConstructBarTexturesPanel(parent)
 	if staggerBarDef then
 		table.insert(customBars, staggerBarDef)
 	end
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
 end
 
 local function BrewmasterConstructBarVisibilityPanel(parent)
@@ -1020,7 +1020,7 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 		table.insert(customBars, staggerBarDef)
 	end
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
 end
 
 local function BrewmasterConstructThresholdListPanel(parent)
@@ -1036,7 +1036,7 @@ local function BrewmasterConstructThresholdListPanel(parent)
 
 	controls.colors.threshold = {}
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 10, 1, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 10, 1, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
@@ -1081,7 +1081,7 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 
 
 	-- Stagger Levels section
-	controls.staggerLevelsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerLevelsHeader"], oUi.xCoord, yCoord)
+	controls.staggerLevelsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["StaggerLevelsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.staggerMediumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Brewmaster_Threshold_Option_staggerMedium", parent, "ChatConfigCheckButtonTemplate")
@@ -1092,7 +1092,7 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.medium.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.medium.enabled = self:GetChecked()
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1108,7 +1108,7 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.heavy.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1125,7 +1125,7 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetChecked(spec.thresholds.stagger.extreme.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.extreme.enabled = self:GetChecked()
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(10, 1) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1135,10 +1135,10 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
 end
 
 local function BrewmasterConstructFontAndTextPanel(parent)
@@ -1156,37 +1156,37 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 10, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 10, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkBrewmasterColorPickerCasting"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)	
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkBrewmasterColorPickerThresholdOver"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkBrewmasterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkBrewmasterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1211,7 +1211,7 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
 end
 
 local function BrewmasterConstructAudioAndTrackingPanel(parent)
@@ -1227,7 +1227,7 @@ local function BrewmasterConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 end
 
 local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
@@ -1240,10 +1240,10 @@ local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 10, 1, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 10, 1, yCoord, cache)
 end
 
 local function BrewmasterConstructOptionsPanel(cache)
@@ -1267,7 +1267,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.brewmasterDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkBrewmasterFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MonkBrewmasterFull"],
 		TRB.Data.settings.core.enabled.monk, "brewmaster",
 		"TwintopResourceBar_Monk_Brewmaster_brewmasterMonkEnabled", "brewmasterMonkEnabled",
 		"monk", "brewmaster")
@@ -1289,7 +1289,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 
@@ -1362,31 +1362,31 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextClassic")
 	end)
@@ -1404,10 +1404,10 @@ local function MistweaverConstructManaBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 	--[[	
 	yCoord = yCoord - 30
@@ -1421,10 +1421,10 @@ local function MistweaverConstructManaBarPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpentReady.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpentReady = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpentReady"], spec.colors.bar.heartOfTheJadeSerpentReady.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpentReady
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpentReady")
 	end)
 
 	yCoord = yCoord - 30
@@ -1438,10 +1438,10 @@ local function MistweaverConstructManaBarPanel(parent)
 		spec.colors.bar.heartOfTheJadeSerpent.enabled = self:GetChecked()
 	end)
 
-	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.heartOfTheJadeSerpent = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkMistweaverColorPickerHeartOfTheJadeSerpent"], spec.colors.bar.heartOfTheJadeSerpent.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.heartOfTheJadeSerpent
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "heartOfTheJadeSerpent")
 	end)]]
 end
 
@@ -1457,7 +1457,7 @@ local function MistweaverConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "vivaciousVivification", label = L["MonkMistweaverCheckboxVivify"], tooltip = L["MonkMistweaverIndicatorVivaciousVivificationTooltip"], colorLabel = L["MonkMistweaverIndicatorVivaciousVivificationColor"] },
 			--{ key = "heartOfTheJadeSerpent", label = L["MonkMistweaverCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] },
@@ -1482,10 +1482,10 @@ local function MistweaverConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 10, 2, yCoord)
 end
 
 local function MistweaverConstructBarTexturesPanel(parent)
@@ -1498,7 +1498,7 @@ local function MistweaverConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
 end
 
 local function MistweaverConstructBarVisibilityPanel(parent)
@@ -1511,7 +1511,7 @@ local function MistweaverConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false, nil, true)
 end
 
 local function MistweaverConstructThresholdPanel(parent)
@@ -1543,27 +1543,27 @@ local function MistweaverConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 10, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 10, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 2, yCoord)
 end
 
 local function MistweaverConstructAudioAndTrackingPanel(parent)
@@ -1581,7 +1581,7 @@ local function MistweaverConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 end
 
@@ -1595,10 +1595,10 @@ local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.monk_mistweaver
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 10, 2, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 10, 2, yCoord, cache)
 end
 
 local function MistweaverConstructOptionsPanel(cache)
@@ -1622,7 +1622,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkMistweaverFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MonkMistweaverFull"],
 		TRB.Data.settings.core.enabled.monk, "mistweaver",
 		"TwintopResourceBar_Monk_Mistweaver_mistweaverMonkEnabled", "mistweaverMonkEnabled",
 		"monk", "mistweaver")
@@ -1641,7 +1641,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 
@@ -1714,31 +1714,31 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextClassic")
 	end)
@@ -1756,13 +1756,13 @@ local function WindwalkerConstructEnergyBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 	
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 1, WINDWALKER_MAX_ENERGY)
 end
 
 local function WindwalkerConstructChiPanel(parent)
@@ -1776,40 +1776,40 @@ local function WindwalkerConstructChiPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], L["ResourceChi"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], L["ResourceChi"])
 
 	yCoord = yCoord - 60
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1823,17 +1823,17 @@ local function WindwalkerConstructChiPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -1847,10 +1847,10 @@ local function WindwalkerConstructHealthBarPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 10, 3, yCoord)
 end
 
 local function WindwalkerConstructIndicatorColorsPanel(parent)
@@ -1865,7 +1865,7 @@ local function WindwalkerConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "danceOfChiJi", label = L["MonkWindwalkerCheckboxDanceOfChiJi"], tooltip = L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"], colorLabel = L["MonkWindwalkerIndicatorDanceOfChiJiColor"] },
 			{ key = "heartOfTheJadeSerpent", label = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] },
@@ -1898,7 +1898,7 @@ local function WindwalkerConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
 end
 
 local function WindwalkerConstructBarVisibilityPanel(parent)
@@ -1911,7 +1911,7 @@ local function WindwalkerConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceChi"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceChi"], true)
 end
 
 local function WindwalkerConstructThresholdListPanel(parent)
@@ -1927,7 +1927,7 @@ local function WindwalkerConstructThresholdListPanel(parent)
 
 	controls.colors.threshold = {}
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 10, 3, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 10, 3, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
@@ -1966,10 +1966,10 @@ local function WindwalkerConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 3, yCoord)
 end
 
 local function WindwalkerConstructFontAndTextPanel(parent)
@@ -1987,31 +1987,31 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 10, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 10, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -2036,7 +2036,7 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)
 end
 
 local function WindwalkerConstructAudioAndTrackingPanel(parent)
@@ -2056,42 +2056,42 @@ local function WindwalkerConstructAudioAndTrackingPanel(parent)
 	local title = ""
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
 
 	local yCoord2 = yCoord - 20
 	
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold1", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold1"], L["MonkAudioCheckboxChiThreshold1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold1", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold1"], L["MonkAudioCheckboxChiThreshold1Tooltip"])
 
-	controls.chiThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.chiThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.chiThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["chiThreshold1"].configuration.thresholdValue = value
 	end)
 
 	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold2", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold2"], L["MonkAudioCheckboxChiThreshold2Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold2", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold2"], L["MonkAudioCheckboxChiThreshold2Tooltip"])
 
-	controls.chiThreshold2Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold2"].configuration.thresholdValue, 1, 0,
+	controls.chiThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold2"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.chiThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["chiThreshold2"].configuration.thresholdValue = value
 	end)
 
 	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "chiThreshold3", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold3"], L["MonkAudioCheckboxChiThreshold3Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold3", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold3"], L["MonkAudioCheckboxChiThreshold3Tooltip"])
 
-	controls.chiThreshold3Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold3"].configuration.thresholdValue, 1, 0,
+	controls.chiThreshold3Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold3"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.chiThreshold3Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["chiThreshold3"].configuration.thresholdValue = value
@@ -2108,10 +2108,10 @@ local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.monk_windwalker
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 10, 3, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 10, 3, yCoord, cache)
 end
 
 local function WindwalkerConstructOptionsPanel(cache)
@@ -2135,7 +2135,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.windwalkerDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["MonkWindwalkerFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["MonkWindwalkerFull"],
 		TRB.Data.settings.core.enabled.monk, "windwalker",
 		"TwintopResourceBar_Monk_Windwalker_windwalkerMonkEnabled", "windwalkerMonkEnabled",
 		"monk", "windwalker")
@@ -2158,7 +2158,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 local function ConstructOptionsPanel(specCache)

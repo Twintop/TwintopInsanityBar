@@ -777,31 +777,31 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextClassic")
 	end)
@@ -820,16 +820,16 @@ local function BeastMasteryConstructFocusBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 1, BEAST_MASTERY_MAX_FOCUS)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateFlashOptions(parent, controls, spec, 3, 1, yCoord, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateFlashOptions(parent, controls, spec, 3, 1, yCoord, L["HunterBeastMasteryBestialWrath"], L["HunterBeastMasteryBestialWrath"])
 end
 
 local function BeastMasteryConstructHealthBarPanel(parent)
@@ -844,10 +844,10 @@ local function BeastMasteryConstructHealthBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
 end
 
 local function BeastMasteryConstructIndicatorColorsPanel(parent)
@@ -863,7 +863,7 @@ local function BeastMasteryConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "bestialWrathEnd", label = L["HunterBeastMasteryCheckboxBestialWrathEnd"], tooltip = L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"], colorLabel = L["HunterBeastMasteryIndicatorBestialWrathEndColor"] },
 			{ key = "bestialWrath", label = L["HunterBeastMasteryCheckboxBestialWrath"], tooltip = L["HunterBeastMasteryIndicatorBestialWrathTooltip"], colorLabel = L["HunterBeastMasteryIndicatorBestialWrathColor"] },
@@ -906,7 +906,7 @@ local function BeastMasteryConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
 end
 
 local function BeastMasteryConstructBarVisibilityPanel(parent)
@@ -920,7 +920,7 @@ local function BeastMasteryConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
 end
 
 local function BeastMasteryConstructThresholdListPanel(parent)
@@ -936,7 +936,7 @@ local function BeastMasteryConstructThresholdListPanel(parent)
 
 	controls.colors.threshold = {}
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 3, 1, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 3, 1, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
@@ -977,10 +977,10 @@ local function BeastMasteryConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
 end
 
 local function BeastMasteryConstructFontAndTextPanel(parent)
@@ -998,31 +998,31 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 3, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 3, 1, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1047,7 +1047,7 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 1, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 1, yCoord)
 end
 
 local function BeastMasteryConstructAudioAndTrackingPanel(parent)
@@ -1067,10 +1067,10 @@ local function BeastMasteryConstructAudioAndTrackingPanel(parent)
 	local title = ""
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
 end
 
 local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
@@ -1083,10 +1083,10 @@ local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 3, 1, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 3, 1, yCoord, cache)
 end
 
 local function BeastMasteryConstructOptionsPanel(cache)
@@ -1110,7 +1110,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 
 	parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterBeastMasteryFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["HunterBeastMasteryFull"],
 		TRB.Data.settings.core.enabled.hunter, "beastMastery",
 		"TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", "beastMasteryHunterEnabled",
 		"hunter", "beastMastery")
@@ -1132,7 +1132,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 --[[
@@ -1204,31 +1204,31 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextClassic")
 	end)
@@ -1247,13 +1247,13 @@ local function MarksmanshipConstructFocusBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], nil, true)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 1, MARKSMANSHIP_MAX_FOCUS)
 end
 
 local function MarksmanshipConstructHealthBarPanel(parent)
@@ -1268,10 +1268,10 @@ local function MarksmanshipConstructHealthBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
 end
 
 local function MarksmanshipConstructIndicatorColorsPanel(parent)
@@ -1287,7 +1287,7 @@ local function MarksmanshipConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "trueshotEnd", label = L["HunterMarksmanshipCheckboxEndOfTrueshot"], tooltip = L["HunterMarksmanshipIndicatorTrueshotEndTooltip"], colorLabel = L["HunterMarksmanshipIndicatorTrueshotEndColor"] },
 			{ key = "trueshot", label = L["HunterMarksmanshipCheckboxTrueshot"], tooltip = L["HunterMarksmanshipIndicatorTrueshotTooltip"], colorLabel = L["HunterMarksmanshipIndicatorTrueshotColor"] },
@@ -1329,7 +1329,7 @@ local function MarksmanshipConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
 end
 
 local function MarksmanshipConstructBarVisibilityPanel(parent)
@@ -1343,7 +1343,7 @@ local function MarksmanshipConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false, nil, true)
 end
 
 local function MarksmanshipConstructThresholdListPanel(parent)
@@ -1359,7 +1359,7 @@ local function MarksmanshipConstructThresholdListPanel(parent)
 
 	controls.colors.threshold = {}
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 3, 2, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 3, 2, yCoord, {
 		labels = {
 			arcaneShot = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"],
 			revivePet = L["HunterThresholdCheckboxRevivePet"],
@@ -1402,10 +1402,10 @@ local function MarksmanshipConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 end
 
 local function MarksmanshipConstructFontAndTextPanel(parent)
@@ -1420,44 +1420,44 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 3, 2, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 3, 2, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingBuilder"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerTextCastingBuilder"], spec.colors.text.casting.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.spending = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -1482,7 +1482,7 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 2, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 2, yCoord)
 end
 
 local function MarksmanshipConstructAudioAndTrackingPanel(parent)
@@ -1502,10 +1502,10 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 	local title = ""
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
-	--[[yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "aimedShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxAimedShot"], L["HunterMarksmanshipCheckboxAimedShotTooltip"])
+	--[[yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "aimedShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxAimedShot"], L["HunterMarksmanshipCheckboxAimedShotTooltip"])
 	
 	controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.aimedShotModeGCDs
@@ -1522,10 +1522,10 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 	end)
 
 	title = L["HunterMarksmanshipAimedShotGcds"]
-	controls.aimedShotGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
+	controls.aimedShotGCDs = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.audio.aimedShot.gcds = value
 	end)
 
@@ -1546,10 +1546,10 @@ local function MarksmanshipConstructAudioAndTrackingPanel(parent)
 	end)
 
 	title = L["HunterMarksmanshipAimedShotTime"]
-	controls.aimedShotTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
+	controls.aimedShotTime = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio.aimedShot.time = value
@@ -1567,10 +1567,10 @@ local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 3, 2, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 3, 2, yCoord, cache)
 end
 
 local function MarksmanshipConstructOptionsPanel(cache)
@@ -1594,7 +1594,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 
 	parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterMarksmanshipFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["HunterMarksmanshipFull"],
 		TRB.Data.settings.core.enabled.hunter, "marksmanship",
 		"TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", "marksmanshipHunterEnabled",
 		"hunter", "marksmanship")
@@ -1615,7 +1615,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 --[[
@@ -1688,31 +1688,31 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_Reset")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetClassic")
 	end)
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextCompact")
 	end)
 
 	yCoord = yCoord - 40
-	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextClassic")
 	end)
@@ -1731,13 +1731,13 @@ local function SurvivalConstructFocusBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBaseColorsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 1, SURVIVAL_MAX_FOCUS)
 end
 
 local function SurvivalConstructTipOfTheSpearBarPanel(parent)
@@ -1752,40 +1752,40 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], L["ResourceTipOfTheSpear"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], L["ResourceTipOfTheSpear"])
 
 	yCoord = yCoord - 60
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalTipOfTheSpearColorsHeader"], oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HunterSurvivalTipOfTheSpearColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBase"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.penultimate, self)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerFinal"], spec.colors.comboPoints.final, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1799,17 +1799,17 @@ local function SurvivalConstructTipOfTheSpearBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterSurvivalTipOfTheSpearColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 end
 
@@ -1825,10 +1825,10 @@ local function SurvivalConstructHealthBarPanel(parent)
 	local yCoord = 5
 	local f = nil
 
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
 end
 
 local function SurvivalConstructIndicatorColorsPanel(parent)
@@ -1844,7 +1844,7 @@ local function SurvivalConstructIndicatorColorsPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
 			{ key = "takedownEnd", label = L["HunterSurvivalCheckboxTakedownEnd"], tooltip = L["HunterSurvivalIndicatorTakedownEndTooltip"], colorLabel = L["HunterSurvivalIndicatorTakedownEndColor"] },
 			{ key = "takedown", label = L["HunterSurvivalCheckboxTakedown"], tooltip = L["HunterSurvivalIndicatorTakedownTooltip"], colorLabel = L["HunterSurvivalIndicatorTakedownColor"] },
@@ -1887,7 +1887,7 @@ local function SurvivalConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, true, L["ResourceTipOfTheSpear"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, true, L["ResourceTipOfTheSpear"])
 end
 
 local function SurvivalConstructBarVisibilityPanel(parent)
@@ -1901,7 +1901,7 @@ local function SurvivalConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi:GenerateBarVisibilityOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", true, L["ResourceTipOfTheSpear"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", true, L["ResourceTipOfTheSpear"], true)
 end
 
 local function SurvivalConstructThresholdListPanel(parent)
@@ -1917,7 +1917,7 @@ local function SurvivalConstructThresholdListPanel(parent)
 
 	controls.colors.threshold = {}
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdListPanel(parent, controls, spec, 3, 3, yCoord, {
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 3, 3, yCoord, {
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
@@ -1952,10 +1952,10 @@ local function SurvivalConstructThresholdSettingsPanel(parent)
 	local yCoord = 5
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, nil)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, true, true, true, nil)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 end
 
 local function SurvivalConstructFontAndTextPanel(parent)
@@ -1973,37 +1973,37 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	local title = ""
 
 
-	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 3, 3, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultTextColors(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 3, 3, yCoord)
 	
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.spending = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	controls.colors.text.overThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
 	f = controls.colors.text.overThreshold
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 	end)
 
-	controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HunterColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.overcap
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
 	end)
 
 	yCoord = yCoord - 30
@@ -2028,7 +2028,7 @@ local function SurvivalConstructFontAndTextPanel(parent)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
 
-	yCoord = TRB.Functions.OptionsUi:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 3, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 3, yCoord)
 end
 
 local function SurvivalConstructAudioAndTrackingPanel(parent)
@@ -2046,16 +2046,16 @@ local function SurvivalConstructAudioAndTrackingPanel(parent)
 	local f = nil
 
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 	local yCoord2 = yCoord - 20
 
-	yCoord = TRB.Functions.OptionsUi:CreateAudioOption(parent, controls, "totsThreshold1", spec, classId, specId, yCoord, L["HunterSurvivalAudioCheckboxTotsThreshold1"], L["HunterSurvivalAudioCheckboxTotsThreshold1Tooltip"])
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "totsThreshold1", spec, classId, specId, yCoord, L["HunterSurvivalAudioCheckboxTotsThreshold1"], L["HunterSurvivalAudioCheckboxTotsThreshold1Tooltip"])
 
-	controls.totsThreshold1Slider = TRB.Functions.OptionsUi:BuildSlider(parent, L["HunterSurvivalTotsThresholdSliderTitle"], 0, 3, spec.audio["totsThreshold1"].configuration.thresholdValue, 1, 0,
+	controls.totsThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["HunterSurvivalTotsThresholdSliderTitle"], 0, 3, spec.audio["totsThreshold1"].configuration.thresholdValue, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
 	controls.totsThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.audio["totsThreshold1"].configuration.thresholdValue = value
@@ -2072,10 +2072,10 @@ local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 	local controls = interfaceSettingsFrame.controls.hunter_survival
 	local yCoord = 5
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 3, 3, yCoord, cache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 3, 3, yCoord, cache)
 end
 
 local function SurvivalConstructOptionsPanel(cache)
@@ -2099,7 +2099,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	
 	parent = interfaceSettingsFrame.survivalDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi:BuildSpecTitleRow(parent, controls, L["HunterSurvivalFull"],
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["HunterSurvivalFull"],
 		TRB.Data.settings.core.enabled.hunter, "survival",
 		"TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", "survivalHunterEnabled",
 		"hunter", "survival")
@@ -2122,7 +2122,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 	TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival = controls
 
-	TRB.Functions.OptionsUi:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
 end
 
 

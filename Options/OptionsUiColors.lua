@@ -34,10 +34,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 
-	controls.baseColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BaseColorsHeader"], oUi.xCoord, yCoord)
+	controls.baseColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BaseColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
@@ -45,21 +45,21 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			barFrame = node and node.GetFrame and node:GetFrame() or nil
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
 	end)
 
 	if includeCastingOverlay ~= false then
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
 		end)
 		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
+			TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
 		end)
 
 		controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -69,7 +69,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.casting.enabled)
-		controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 			parent,
 			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
 			oUi.xCoord,
@@ -77,13 +77,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 			spec.colors.bar.casting.fullHeight == true,
 			function(self)
 				spec.colors.bar.casting.fullHeight = self:GetChecked()
-				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+				TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 			end
 		)
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.casting.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -95,13 +95,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		if includeCastingOverlay == false then
 			yCoord = yCoord - 30
 		end
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
+			TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
 		end)
 
 		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -111,7 +111,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
-		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 			parent,
 			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
 			oUi.xCoord,
@@ -119,13 +119,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 			spec.colors.bar.spending.fullHeight == true,
 			function(self)
 				spec.colors.bar.spending.fullHeight = self:GetChecked()
-				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+				TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 			end
 		)
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -133,7 +133,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		end)
 	end
 
-	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerBorder"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ColorPickerBorder"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local borderFrame = nil
@@ -141,14 +141,14 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			borderFrame = node and node.GetFrame and node:GetFrame()
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetPrimaryBackdropFrame())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetPrimaryBackdropFrame())
 	end)
 
 	return yCoord
@@ -170,10 +170,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.base = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, primaryResourceString, spec.colors.bar.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.base
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
 		local barFrame = nil
@@ -181,20 +181,20 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			barFrame = node and node.GetFrame and node:GetFrame() or nil
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base", "bar", barFrame)
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.base, self, classId, specId)
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.casting = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.casting = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["BarColorCastingOverlay"], spec.colors.bar.casting, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.casting
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.casting, self, classId, specId)
 	end)
 
 	controls.checkBoxes.castingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -204,7 +204,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 	f:SetChecked(spec.colors.bar.casting.enabled)
-	controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+	controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 		parent,
 		"TwintopResourceBar_" .. namePrefix .. "_Checkbox_CastingOverlayFullHeight",
 		oUi.xCoord,
@@ -212,13 +212,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 		spec.colors.bar.casting.fullHeight == true,
 		function(self)
 			spec.colors.bar.casting.fullHeight = self:GetChecked()
-			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 		end
 	)
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.casting.enabled = self:GetChecked()
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -226,13 +226,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 	end)
 
 	if includeSpendingOverlay then
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["BarColorSpendingOverlay"], spec.colors.bar.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending")
 		end)
 		f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
+			TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.bar.spending, self, classId, specId)
 		end)
 
 		controls.checkBoxes.spendingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlay", parent, "ChatConfigCheckButtonTemplate")
@@ -242,7 +242,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
-		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 			parent,
 			"TwintopResourceBar_" .. namePrefix .. "_Checkbox_SpendingOverlayFullHeight",
 			oUi.xCoord,
@@ -250,13 +250,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 			spec.colors.bar.spending.fullHeight == true,
 			function(self)
 				spec.colors.bar.spending.fullHeight = self:GetChecked()
-				TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+				TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 			end
 		)
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -283,10 +283,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarBorderColorOptions(parent, co
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarBorderColorsChangingHeader"], oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarBorderColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 25
-	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		local borderFrame = nil
@@ -294,7 +294,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarBorderColorOptions(parent, co
 			local node = TRB.Frames.barGroups.primary:GetNode(1)
 			borderFrame = node and node.GetFrame and node:GetFrame()
 		end
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", borderFrame)
 	end)
 
 	if includeOvercap then
@@ -310,10 +310,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarBorderColorOptions(parent, co
 			spec.colors.bar.borderOvercap.enabled = self:GetChecked()
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 	end
 
@@ -338,7 +338,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	local f = nil
 
 	-- Build the header
-	controls.healthBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
+	controls.healthBarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -348,7 +348,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "healthBar")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "healthBar")
 		f.tooltip = L["CheckboxUseGlobalTooltip_HealthBarColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].healthBarColors)
 		f:SetScript("OnClick", function(self, ...)
@@ -363,12 +363,12 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("healthBarColors")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("healthBarColors")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "healthBarColors")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "healthBarColors")
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllHealthBarColors", "healthBarColors", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllHealthBarColors", "healthBarColors", yCoord)
 	end
 
 	yCoord = yCoord - 30
@@ -400,7 +400,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	}
 
 	-- Use the generic threshold color function with the Health Bar callback
-	yCoord = TRB.Functions.OptionsUi:GenerateCustomBarThresholdColorOptions(
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColorOptions(
 		parent, controls, spec, classId, specId, yCoord, healthBarTypeDef,
 		function()
 			TRB.Functions.Character:UpdateHealthValues()
@@ -412,7 +412,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.absorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AbsorbMode", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.absorbMode:SetWidth(oUi.sliderWidth)
-	controls.dropDown.absorbMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarAbsorbMode"], oUi.xCoord, yCoord)
+	controls.dropDown.absorbMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarAbsorbMode"], oUi.xCoord, yCoord)
 	controls.dropDown.absorbMode.label.font:SetFontObject(GameFontNormal)
 	---@diagnostic disable-next-line: inject-field
 	controls.dropDown.absorbMode.label.font.tooltip = L["HealthBarAbsorbModeTooltip"]
@@ -436,7 +436,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	local function AbsorbModeSetSelected(newValue)
 		spec.colors.healthBar.absorb.mode = newValue
 		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -458,9 +458,9 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	yCoord = yCoord - 10
 
 	controls.colors = controls.colors or {}
-	controls.colors.absorb = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarAbsorbColor"], spec.colors.healthBar.absorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.absorb = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HealthBarAbsorbColor"], spec.colors.healthBar.absorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	controls.colors.absorb:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "absorb", "health")
 	end)
 
 	local absorbCheckboxY = yCoord - 20
@@ -471,7 +471,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowAbsorbTooltip"]
 	f:SetChecked(spec.colors.healthBar.absorb.enabled)
-	controls.checkBoxes.showAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+	controls.checkBoxes.showAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 		parent,
 		"TwintopResourceBar_" .. namePrefix .. "_showAbsorbFullHeight",
 		oUi.xCoord2,
@@ -479,14 +479,14 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.absorb.fullHeight == true,
 		function(self)
 			spec.colors.healthBar.absorb.fullHeight = self:GetChecked()
-			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 		end
 	)
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.absorb.enabled = self:GetChecked()
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -497,7 +497,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	-- Incoming Heal Display Mode dropdown
 	controls.dropDown.incomingHealMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IncomingHealMode", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.incomingHealMode:SetWidth(oUi.sliderWidth)
-	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
+	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
 	controls.dropDown.incomingHealMode.label.font:SetFontObject(GameFontNormal)
 	---@diagnostic disable-next-line: inject-field
 	controls.dropDown.incomingHealMode.label.font.tooltip = L["HealthBarIncomingHealModeTooltip"]
@@ -521,7 +521,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	local function IncomingHealModeSetSelected(newValue)
 		spec.colors.healthBar.incomingHeal.mode = newValue
 		controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(newValue))
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -542,9 +542,9 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 
 	yCoord = yCoord - 10
 	-- Incoming Heal Overlay
-	controls.colors.incomingHeal = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealthBarIncomingHealColor"], spec.colors.healthBar.incomingHeal.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.incomingHeal = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HealthBarIncomingHealColor"], spec.colors.healthBar.incomingHeal.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	controls.colors.incomingHeal:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "incomingHeal", "health")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "incomingHeal", "health")
 	end)
 
 	local incomingHealCheckboxY = yCoord - 20
@@ -555,7 +555,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowIncomingHealTooltip"]
 	f:SetChecked(spec.colors.healthBar.incomingHeal.enabled)
-	controls.checkBoxes.showIncomingHealFullHeight, yCoord = TRB.Functions.OptionsUi:BuildOverlayFullHeightCheckbox(
+	controls.checkBoxes.showIncomingHealFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
 		parent,
 		"TwintopResourceBar_" .. namePrefix .. "_showIncomingHealFullHeight",
 		oUi.xCoord2,
@@ -563,14 +563,14 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.incomingHeal.fullHeight == true,
 		function(self)
 			spec.colors.healthBar.incomingHeal.fullHeight = self:GetChecked()
-			TRB.Functions.OptionsUi:RefreshOverlayGeometryPreview(classId, specId)
+			TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
 		end
 	)
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -594,7 +594,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 
-	controls.staggerBarColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorHeader"], oUi.xCoord, yCoord)
+	controls.staggerBarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["StaggerBarColorHeader"], oUi.xCoord, yCoord)
 
 	-- Color Transition Type dropdown
 	yCoord = yCoord - 30
@@ -602,7 +602,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.staggerColorCurveType = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_StaggerColorCurveType", parent, "WowStyle1DropdownTemplate")
 	controls.dropDown.staggerColorCurveType:SetWidth(oUi.sliderWidth)
-	controls.dropDown.staggerColorCurveType.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["StaggerBarColorType"], oUi.xCoord, yCoord)
+	controls.dropDown.staggerColorCurveType.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["StaggerBarColorType"], oUi.xCoord, yCoord)
 	controls.dropDown.staggerColorCurveType.label.font:SetFontObject(GameFontNormal)
 
 	local function StaggerColorCurveTypeIsSelected(value)
@@ -622,7 +622,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 	local function StaggerColorCurveTypeSetSelected(newValue)
 		spec.colors.comboPoints.type = newValue
 		controls.dropDown.staggerColorCurveType:SetDefaultText(StaggerColorCurveTypeGetDisplayName(newValue))
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -643,11 +643,11 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 
 	-- Medium Stagger Threshold Slider
 	yCoord = yCoord - 80
-	controls.staggerThresholdMedium = TRB.Functions.OptionsUi:BuildSlider(parent, L["StaggerBarThresholdMedium"], 0, 1, spec.colors.comboPoints.medium.threshold, 0.01, 2,
+	controls.staggerThresholdMedium = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["StaggerBarThresholdMedium"], 0, 1, spec.colors.comboPoints.medium.threshold, 0.01, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerThresholdMedium.tooltip = L["StaggerBarThresholdMediumTooltip"]
 	controls.staggerThresholdMedium:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.colors.comboPoints.medium.threshold = value
@@ -658,7 +658,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 			controls.staggerThresholdMedium:SetValue(spec.colors.comboPoints.medium.threshold)
 		end
 
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -668,11 +668,11 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 
 	-- Heavy Stagger Threshold Slider
 	yCoord = yCoord - 60
-	controls.staggerThresholdHeavy = TRB.Functions.OptionsUi:BuildSlider(parent, L["StaggerBarThresholdHeavy"], 0, 1, spec.colors.comboPoints.heavy.threshold, 0.01, 2,
+	controls.staggerThresholdHeavy = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["StaggerBarThresholdHeavy"], 0, 1, spec.colors.comboPoints.heavy.threshold, 0.01, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerThresholdHeavy.tooltip = L["StaggerBarThresholdHeavyTooltip"]
 	controls.staggerThresholdHeavy:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.colors.comboPoints.heavy.threshold = value
@@ -683,7 +683,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 			controls.staggerThresholdHeavy:SetValue(spec.colors.comboPoints.heavy.threshold)
 		end
 
-		if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -695,51 +695,51 @@ function TRB.Functions.OptionsUi.Colors:GenerateStaggerBarColorOptions(parent, c
 	-- Light Stagger Color
 	controls.colors = controls.colors or {}
 	controls.colors.comboPoints = controls.colors.comboPoints or {}
-	controls.colors.comboPoints.light = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.light = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["StaggerBarColorLight"], spec.colors.comboPoints.light, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.light
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "light", "stagger")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "light", "stagger")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.light, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.light, self)
 	end)
 
 	-- Medium Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.medium = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["StaggerBarColorMedium"], spec.colors.comboPoints.medium, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.medium
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "medium", "stagger")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "medium", "stagger")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.medium, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.medium, self)
 	end)
 
 	-- Heavy Stagger Color
 	yCoord2 = yCoord2 - 30
-	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.comboPoints.heavy = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["StaggerBarColorHeavy"], spec.colors.comboPoints.heavy, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.comboPoints.heavy
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "heavy", "stagger")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "heavy", "stagger")
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, spec.colors.comboPoints.heavy, self)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.heavy, self)
 	end)
 
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.staggerColorBorder = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["StaggerBarColorBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.staggerColorBorder
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "border", "border", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord2 = yCoord2 - 30
 
-	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
+	controls.colors.staggerColorBackground = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 	f = controls.colors.staggerColorBackground
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi:GetSecondaryBackdropFrames())
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
 
 	yCoord = yCoord2 - 20
@@ -763,7 +763,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateOvercapOptions(parent, controls,
 	local f = nil
 	local title = ""
 
-	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
@@ -781,10 +781,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateOvercapOptions(parent, controls,
 	end)
 
 	title = string.format(L["OvercapRelativeOffsetAmount"], primaryResourceString)
-	controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
+	controls.overcapRelative = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.overcap.relative = value
 	end)
@@ -806,10 +806,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateOvercapOptions(parent, controls,
 	end)
 
 	title = string.format(L["OvercapAbove"], primaryResourceString)
-	controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
+	controls.overcapFixed = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.overcap.fixed = value
 	end)
@@ -834,7 +834,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, contr
 	local f = nil
 	local title = ""
 
-	controls.maxResourceConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MaxResourceHeader"], oUi.xCoord, yCoord)
+	controls.maxResourceConfiguration = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MaxResourceHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 	title = string.format(L["MaxResourceValue"], primaryResourceString)
@@ -848,10 +848,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, contr
 		spec.maxResource.enabled = self:GetChecked()
 	end)
 
-	controls.maxResourceValue = TRB.Functions.OptionsUi:BuildSlider(parent, title, primaryResourceMin, primaryResourceMax, spec.maxResource.value, 1, 2,
+	controls.maxResourceValue = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, primaryResourceMin, primaryResourceMax, spec.maxResource.value, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.maxResourceValue:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		spec.maxResource.value = value
 		if (classId == nil and specId == nil) or (classId == TRB.Data.character.classId and specId == TRB.Data.character.specId) then
@@ -897,10 +897,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfColorOptions(parent, contro
 		spec.colors.bar[config.activeColorKey].enabled = self:GetChecked()
 	end)
 
-	controls.colors[config.activeColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.activeColorLabel, spec.colors.bar[config.activeColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors[config.activeColorKey] = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, config.activeColorLabel, spec.colors.bar[config.activeColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors[config.activeColorKey]
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.activeColorKey)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.activeColorKey)
 	end)
 
 	-- End of buff color checkbox + color picker
@@ -915,10 +915,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfColorOptions(parent, contro
 		spec.endOf[config.endOfKey].enabled = self:GetChecked()
 	end)
 
-	controls.colors[config.endColorKey] = TRB.Functions.OptionsUi:BuildColorPicker(parent, config.endColorLabel, spec.colors.bar[config.endColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors[config.endColorKey] = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, config.endColorLabel, spec.colors.bar[config.endColorKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors[config.endColorKey]
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.endColorKey)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, config.endColorKey)
 	end)
 
 	-- Additional colors (optional)
@@ -935,11 +935,11 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfColorOptions(parent, contro
 				spec.colors.bar[colorConfig.key].enabled = self:GetChecked()
 			end)
 
-			controls.colors[colorConfig.key] = TRB.Functions.OptionsUi:BuildColorPicker(parent, colorConfig.colorLabel, spec.colors.bar[colorConfig.key].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+			controls.colors[colorConfig.key] = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, colorConfig.colorLabel, spec.colors.bar[colorConfig.key].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 			f = controls.colors[colorConfig.key]
 			local capturedKey = colorConfig.key
 			f:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, capturedKey)
+				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, capturedKey)
 			end)
 		end
 	end
@@ -967,7 +967,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfConfigurationOptions(parent
 
 	controls.checkBoxes = controls.checkBoxes or {}
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, config.sectionHeader, oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, config.sectionHeader, oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 
@@ -985,10 +985,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfConfigurationOptions(parent
 		endOfSettings.mode = "gcd"
 	end)
 
-	controls["endOf" .. config.endOfKey .. "GCDs"] = TRB.Functions.OptionsUi:BuildSlider(parent, config.gcdSliderLabel, 0.5, gcdSliderMax, endOfSettings.gcdsMax, 0.25, 2,
+	controls["endOf" .. config.endOfKey .. "GCDs"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, config.gcdSliderLabel, 0.5, gcdSliderMax, endOfSettings.gcdsMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls["endOf" .. config.endOfKey .. "GCDs"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		endOfSettings.gcdsMax = value
 	end)
 
@@ -1007,10 +1007,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfConfigurationOptions(parent
 		endOfSettings.mode = "time"
 	end)
 
-	controls["endOf" .. config.endOfKey .. "Time"] = TRB.Functions.OptionsUi:BuildSlider(parent, config.timeSliderLabel, 0, timeSliderMax, endOfSettings.timeMax, 0.25, 2,
+	controls["endOf" .. config.endOfKey .. "Time"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, config.timeSliderLabel, 0, timeSliderMax, endOfSettings.timeMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls["endOf" .. config.endOfKey .. "Time"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		endOfSettings.timeMax = value

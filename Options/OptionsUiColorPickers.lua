@@ -78,7 +78,7 @@ function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTabl
 				colorTable[key] = newColorString
 			end
 
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				if frame ~= nil then
 					if frameType == "backdrop" then
 						-- Handle both single frame and array of frames
@@ -392,7 +392,7 @@ function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, 
 			swatch2.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 			colorEntry.color2 = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				TRB.Data.cache.colors.gradient = {}
 				TRB.Data.cache.colors.bar = {}
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

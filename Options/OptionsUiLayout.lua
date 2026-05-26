@@ -254,7 +254,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
+	controls.barPositionSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
 
 	-- Show Edit Mode informational notice
 	yCoord = yCoord - 30
@@ -272,7 +272,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "resourceBar")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "resourceBar")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDimensions"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].bar)
 		f:SetScript("OnClick", function(self, ...)
@@ -292,20 +292,20 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("bar")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("bar")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "bar")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "bar")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllBarDimensions", "bar", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllBarDimensions", "bar", yCoord)
 	end
 
 	yCoord = yCoord - 40
 	title = L["BarWidth"]
-	controls.width = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
+	controls.width = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.width:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.bar.width = value
 
 		local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -334,10 +334,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	end)
 
 	title = L["BarHeight"]
-	controls.height = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
+	controls.height = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.bar.height = value
 
 		local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -372,10 +372,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	title = L["BarHorizontalPosition"]
 	yCoord = yCoord - 60
-	controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), primaryAnchor.xOffset, 1, 2,
+	controls.horizontal = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), primaryAnchor.xOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.horizontal:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.xOffset = value
 		DualWriteAnchorToLegacy(spec.bar)
@@ -392,10 +392,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	end)
 
 	title = L["BarVerticalPosition"]
-	controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), primaryAnchor.yOffset, 1, 2,
+	controls.vertical = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), primaryAnchor.yOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.yOffset = value
 		DualWriteAnchorToLegacy(spec.bar)
@@ -413,10 +413,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	title = L["BarBorderWidth"]
 	yCoord = yCoord - 60
-	controls.borderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
+	controls.borderWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.bar.border = value
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -471,7 +471,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	yCoord = yCoord - 40
 	local primaryAnchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAnchorTo", parent, "WowStyle1DropdownTemplate")
 	primaryAnchorToDropdown:SetWidth(oUi.sliderWidth)
-	primaryAnchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], L["Resource"]), oUi.xCoord, yCoord)
+	primaryAnchorToDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], L["Resource"]), oUi.xCoord, yCoord)
 	primaryAnchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given barKey is the current anchor target for the primary bar.
@@ -573,7 +573,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	yCoord = yCoord - 60
 	primaryAnchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAnchorPoint", parent, "WowStyle1DropdownTemplate")
 	primaryAnchorPointDropdown:SetWidth(oUi.sliderWidth)
-	primaryAnchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	primaryAnchorPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	primaryAnchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given anchor point matches the primary bar's current anchor point.
@@ -611,7 +611,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	-- Attach Point dropdown (point on this bar)
 	primaryAttachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barAttachPoint", parent, "WowStyle1DropdownTemplate")
 	primaryAttachPointDropdown:SetWidth(oUi.sliderWidth)
-	primaryAttachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	primaryAttachPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	primaryAttachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given anchor point matches the primary bar's current attach point.
@@ -657,7 +657,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	local primaryFillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_barFillDirection", parent, "WowStyle1DropdownTemplate")
 	primaryFillDirectionDropdown:SetWidth(oUi.sliderWidth)
-	primaryFillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	primaryFillDirectionDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
 	primaryFillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
 
 	local function GetFillDirectionLabel(value)
@@ -803,7 +803,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
 	-- Section header
-	controls[settingKey .. "PositionSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, sectionHeader, oUi.xCoord, yCoord)
+	controls[settingKey .. "PositionSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeader, oUi.xCoord, yCoord)
 
 	-- Global checkbox (if applicable)
 	if globalSettingKey and classId ~= nil and specId ~= nil then
@@ -816,7 +816,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
 		local globalSettingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(globalSettingKey)
 		if globalSettingDef and globalSettingDef.tabKey then
-			TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, globalSettingDef.tabKey)
+			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, globalSettingDef.tabKey)
 		end
 		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
@@ -835,12 +835,12 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 					TRB.Functions.Class:TriggerResourceBarUpdates()
 				end)
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, globalSettingKey)
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, globalSettingKey)
 	elseif globalSettingKey and classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKey:gsub("^%l", string.upper), globalSettingKey, yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKey:gsub("^%l", string.upper), globalSettingKey, yCoord)
 	end
 
 	-- Width and Height sliders
@@ -849,10 +849,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	yCoord = yCoord - 40
 	title = string.format(L["SecondaryWidth"], displayName)
-	controls[settingKey .. "Width"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, maxWidthValue, spec[settingKey].width, 1, 2,
+	controls[settingKey .. "Width"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, maxWidthValue, spec[settingKey].width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[settingKey .. "Width"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].width = value
 
 		local a = EnsureAnchorBlock(spec[settingKey])
@@ -876,10 +876,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	end)
 
 	title = string.format(L["SecondaryHeight"], displayName)
-	controls[settingKey .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, maxHeightValue, spec[settingKey].height, 1, 2,
+	controls[settingKey .. "Height"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, maxHeightValue, spec[settingKey].height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[settingKey .. "Height"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].height = value
 
 		local a = EnsureAnchorBlock(spec[settingKey])
@@ -907,10 +907,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	title = string.format(L["SecondaryHorizontalPosition"], displayName)
 	yCoord = yCoord - 60
-	controls[settingKey .. "Horizontal"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), anchor.xOffset, 1, 2,
+	controls[settingKey .. "Horizontal"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), anchor.xOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[settingKey .. "Horizontal"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.xOffset = value
 		DualWriteAnchorToLegacy(spec[settingKey])
@@ -928,10 +928,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	end)
 
 	title = string.format(L["SecondaryVerticalPosition"], displayName)
-	controls[settingKey .. "Vertical"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), anchor.yOffset, 1, 2,
+	controls[settingKey .. "Vertical"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), anchor.yOffset, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[settingKey .. "Vertical"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.yOffset = value
 		DualWriteAnchorToLegacy(spec[settingKey])
@@ -951,10 +951,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	-- Border width slider
 	title = string.format(L["SecondaryBorderWidth"], displayName)
 	yCoord = yCoord - 60
-	controls[settingKey .. "BorderWidth"] = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec[settingKey].border, 1, 2,
+	controls[settingKey .. "BorderWidth"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, maxBorderHeight, spec[settingKey].border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[settingKey .. "BorderWidth"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec[settingKey].border = value
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -987,10 +987,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	-- Spacing slider (if applicable)
 	if includeSpacing then
 		title = string.format(L["SecondarySpacing"], displayName)
-		controls.comboPointSpacing = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
+		controls.comboPointSpacing = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			spec.comboPoints.spacing = value
 
 			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -1008,10 +1008,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		---@diagnostic disable-next-line: inject-field
 		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
 		cbCollapse:SetChecked(spec.comboPoints.collapseBorderWidth)
-		TRB.Functions.OptionsUi:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
 		cbCollapse:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.collapseBorderWidth = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
 
 			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -1048,7 +1048,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	-- "Anchor To" dropdown
 	local anchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AnchorTo", parent, "WowStyle1DropdownTemplate")
 	anchorToDropdown:SetWidth(oUi.sliderWidth)
-	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
+	anchorToDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
 	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given barKey is the current anchor target for this ancillary bar.
@@ -1191,7 +1191,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	anchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AnchorPoint", parent, "WowStyle1DropdownTemplate")
 	anchorPointDropdown:SetWidth(oUi.sliderWidth)
-	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	anchorPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given value matches the ancillary bar's current anchor point.
@@ -1229,7 +1229,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	-- Attach Point dropdown (point on this bar)
 	attachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "AttachPoint", parent, "WowStyle1DropdownTemplate")
 	attachPointDropdown:SetWidth(oUi.sliderWidth)
-	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	attachPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given value matches the ancillary bar's current attach point.
@@ -1274,7 +1274,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	}
 	local ancFillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "FillDirection", parent, "WowStyle1DropdownTemplate")
 	ancFillDirectionDropdown:SetWidth(oUi.sliderWidth)
-	ancFillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	ancFillDirectionDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
 	ancFillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
 
 	local function GetAncFillDirectionLabel(value)
@@ -1347,7 +1347,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		local ancGrowthDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "GrowthDirection", parent, "WowStyle1DropdownTemplate")
 		controls[settingKey .. "GrowthDirectionDropdown"] = ancGrowthDirectionDropdown
 		ancGrowthDirectionDropdown:SetWidth(oUi.sliderWidth)
-		ancGrowthDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
+		ancGrowthDirectionDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
 		ancGrowthDirectionDropdown.label.font:SetFontObject(GameFontNormal)
 
 		local function GetAncGrowthDirectionLabel(value)
@@ -1413,7 +1413,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(pare
 		includeSpacing = true
 	end
 
-	return TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, {
+	return TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, {
 		settingKey = "comboPoints",
 		displayName = secondaryResourceString,
 		primaryResourceString = primaryResourceString,
@@ -1441,7 +1441,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(paren
 		primaryResourceString = L["ResourceMana"]
 	end
 
-	return TRB.Functions.OptionsUi:GenerateAncillaryBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, {
+	return TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, {
 		settingKey = "healthBar",
 		displayName = L["HealthBar"],
 		primaryResourceString = primaryResourceString,
@@ -1486,7 +1486,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	-- Section header
 	local headerText = string.format(L["SecondaryPositionAndSize"], displayName)
-	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
 
 	-- Width slider
 	yCoord = yCoord - 40
@@ -1494,11 +1494,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	local widthMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
 	local widthDivisor = barTypeDef.isMultiNode and 6 or 1
 
-	controls[barTypeDef.key .. "Width"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryWidth"], displayName),
+	controls[barTypeDef.key .. "Width"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondaryWidth"], displayName),
 		widthMin, math.ceil(widthMax / widthDivisor), barSettings.width, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "Width"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		barSettings.width = value
 
 		local a = EnsureAnchorBlock(barSettings)
@@ -1516,11 +1516,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	end)
 
 	-- Height slider
-	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName),
+	controls[barTypeDef.key .. "Height"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondaryHeight"], displayName),
 		1, (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100, barSettings.height, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "Height"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		barSettings.height = value
 
 		local a = EnsureAnchorBlock(barSettings)
@@ -1542,11 +1542,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	local anchor = EnsureAnchorBlock(barSettings)
 
 	local xPosMax = (TRB.Data.sanityCheckValues.barMaxWidth and TRB.Data.sanityCheckValues.barMaxWidth > 0) and TRB.Data.sanityCheckValues.barMaxWidth or 300
-	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName),
+	controls[barTypeDef.key .. "XPos"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondaryHorizontalPosition"], displayName),
 		math.ceil(-xPosMax / 2), math.floor(xPosMax / 2), anchor.xOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "XPos"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(barSettings)
 		a.xOffset = value
 		DualWriteAnchorToLegacy(barSettings)
@@ -1558,11 +1558,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	-- Y Offset slider
 	local yPosMax = (TRB.Data.sanityCheckValues.barMaxHeight and TRB.Data.sanityCheckValues.barMaxHeight > 0) and TRB.Data.sanityCheckValues.barMaxHeight or 100
-	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName),
+	controls[barTypeDef.key .. "YPos"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondaryVerticalPosition"], displayName),
 		math.ceil(-yPosMax / 2), math.floor(yPosMax / 2), anchor.yOffset, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls[barTypeDef.key .. "YPos"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		local a = EnsureAnchorBlock(barSettings)
 		a.yOffset = value
 		DualWriteAnchorToLegacy(barSettings)
@@ -1578,11 +1578,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	local effectiveWidthForBorder = anchor.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, anchor.barKey) or barSettings.width
 	local effectiveHeightForBorder = anchor.matchHeight and TRB.Functions.Bar:ResolveBarHeight(spec, anchor.barKey) or barSettings.height
 	local maxBorderHeight = math.min(math.floor(effectiveHeightForBorder / TRB.Data.constants.borderWidthFactor), math.floor(effectiveWidthForBorder / TRB.Data.constants.borderWidthFactor))
-	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName),
+	controls[barTypeDef.key .. "Border"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondaryBorderWidth"], displayName),
 		0, maxBorderHeight, barSettings.border, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "Border"]:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		barSettings.border = value
 
 		if TRB.Frames.barGroups ~= nil then
@@ -1603,11 +1603,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	-- Spacing slider (only for multi-node bars)
 	if barTypeDef.hasSpacing then
-		controls[barTypeDef.key .. "Spacing"] = TRB.Functions.OptionsUi:BuildSlider(parent, string.format(L["SecondarySpacing"], displayName),
+		controls[barTypeDef.key .. "Spacing"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["SecondarySpacing"], displayName),
 			-20, 20, barSettings.spacing, 1, 0,
 			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls[barTypeDef.key .. "Spacing"]:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			barSettings.spacing = value
 
 			if TRB.Frames.barGroups ~= nil then
@@ -1623,10 +1623,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		---@diagnostic disable-next-line: inject-field
 		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
 		cbCollapse:SetChecked(barSettings.collapseBorderWidth)
-		TRB.Functions.OptionsUi:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
 		cbCollapse:SetScript("OnClick", function(self, ...)
 			barSettings.collapseBorderWidth = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -1646,7 +1646,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	-- "Anchor To" dropdown
 	local anchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AnchorTo", parent, "WowStyle1DropdownTemplate")
 	anchorToDropdown:SetWidth(oUi.sliderWidth)
-	anchorToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
+	anchorToDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["AnchorToBarLabel"], displayName), oUi.xCoord, yCoord)
 	anchorToDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given barKey is the current anchor target for this custom bar.
@@ -1778,7 +1778,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	yCoord = yCoord - 60
 	local fillDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_FillDirection", parent, "WowStyle1DropdownTemplate")
 	fillDirectionDropdown:SetWidth(oUi.sliderWidth)
-	fillDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
+	fillDirectionDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FillDirection"], oUi.xCoord, yCoord)
 	fillDirectionDropdown.label.font:SetFontObject(GameFontNormal)
 
 	local fillDirectionOptions = {
@@ -1854,7 +1854,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		local growthDirectionDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_GrowthDirection", parent, "WowStyle1DropdownTemplate")
 		controls[barTypeDef.key .. "GrowthDirectionDropdown"] = growthDirectionDropdown
 		growthDirectionDropdown:SetWidth(oUi.sliderWidth)
-		growthDirectionDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
+		growthDirectionDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["GrowthDirection"], oUi.xCoord2, yCoord)
 		growthDirectionDropdown.label.font:SetFontObject(GameFontNormal)
 
 		local growthDirectionOptions = {
@@ -1906,7 +1906,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	anchorPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AnchorPoint", parent, "WowStyle1DropdownTemplate")
 	anchorPointDropdown:SetWidth(oUi.sliderWidth)
-	anchorPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
+	anchorPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AnchorPoint"], oUi.xCoord, yCoord)
 	anchorPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given value matches the custom bar's current anchor point.
@@ -1947,7 +1947,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	-- Attach Point dropdown (point on this bar)
 	attachPointDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AttachPoint", parent, "WowStyle1DropdownTemplate")
 	attachPointDropdown:SetWidth(oUi.sliderWidth)
-	attachPointDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
+	attachPointDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AttachPoint"], oUi.xCoord2, yCoord)
 	attachPointDropdown.label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given value matches the custom bar's current attach point.

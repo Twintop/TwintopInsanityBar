@@ -79,7 +79,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		return TRB.Data.settings.core.global[lc][specName].displayBar == true
 	end
 
-	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
+	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -90,13 +90,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "barVisibility")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barVisibility")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].displayBar = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -110,15 +110,15 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 					end
 				end
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayBar")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("displayBar")
 			if RefreshTableForGlobalToggle then
 				RefreshTableForGlobalToggle()
 			end
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "displayBar")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "displayBar")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
 	end
 
 	yCoord = yCoord - 30
@@ -411,7 +411,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function RefreshVisibilitySettings()
 		if classId ~= nil and specId ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -443,7 +443,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		if classId ~= nil and specId ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				if TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
@@ -772,13 +772,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local selectedBarKey = nil
 
 	-- Detail panel contents: header, show/hide dropdowns, smooth checkbox, sliders
-	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
+	local detailHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
 
 	detailYCoord = detailYCoord - 30
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.selectedBarVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedBarVisibility", detailFrame, "WowStyle1DropdownTemplate")
 	controls.dropDown.selectedBarVisibility:SetWidth(oUi.sliderWidth)
-	controls.dropDown.selectedBarVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["ShowBarVisibilityShowColumnHeader"], oUi.xCoord, detailYCoord)
+	controls.dropDown.selectedBarVisibility.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailFrame, L["ShowBarVisibilityShowColumnHeader"], oUi.xCoord, detailYCoord)
 	controls.dropDown.selectedBarVisibility.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.selectedBarVisibility:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 30)
 	InstallDropdownDisplayTextHook(controls.dropDown.selectedBarVisibility)
@@ -786,7 +786,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	controls.dropDown.selectedHideVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedHideVisibility", detailFrame, "WowStyle1DropdownTemplate")
 	controls.dropDown.selectedHideVisibility:SetWidth(oUi.sliderWidth)
-	controls.dropDown.selectedHideVisibility.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailFrame, L["ShowBarVisibilityForceHideColumnHeader"], oUi.xCoord2, detailYCoord)
+	controls.dropDown.selectedHideVisibility.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailFrame, L["ShowBarVisibilityForceHideColumnHeader"], oUi.xCoord2, detailYCoord)
 	controls.dropDown.selectedHideVisibility.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.selectedHideVisibility:SetPoint("TOPLEFT", oUi.xCoord2, detailYCoord - 30)
 	InstallDropdownDisplayTextHook(controls.dropDown.selectedHideVisibility)
@@ -804,24 +804,24 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	controls.sliders = controls.sliders or {}
 
 	detailYCoord = detailYCoord - 105
-	controls.sliders.selectedActiveAlpha = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityActiveAlpha"],
+	controls.sliders.selectedActiveAlpha = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailFrame, L["ShowBarVisibilityActiveAlpha"],
 		0, 100, 100, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.selectedActiveAlpha.MinLabel:SetText("0%")
 	controls.sliders.selectedActiveAlpha.MaxLabel:SetText("100%")
 
-	controls.sliders.selectedInactiveAlpha = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityInactiveAlpha"],
+	controls.sliders.selectedInactiveAlpha = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailFrame, L["ShowBarVisibilityInactiveAlpha"],
 		0, 100, 0, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.selectedInactiveAlpha.MinLabel:SetText("0%")
 	controls.sliders.selectedInactiveAlpha.MaxLabel:SetText("100%")
 
 	detailYCoord = detailYCoord - 60
-	controls.sliders.selectedFadeDuration = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDuration"],
+	controls.sliders.selectedFadeDuration = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDuration"],
 		0, 10, 0, 0.25, 2,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 
-	controls.sliders.selectedFadeDelay = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDelay"],
+	controls.sliders.selectedFadeDelay = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailFrame, L["ShowBarVisibilityFadeDelay"],
 		0, 10, 0, 0.25, 2,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 
@@ -856,7 +856,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	controls.dropDown.selectedThresholdComparison.label:Hide()
 
 	detailYCoord = detailYCoord - 10
-	controls.sliders.selectedThresholdValue = TRB.Functions.OptionsUi:BuildSlider(detailFrame, L["BarVisibilityThresholdValue"],
+	controls.sliders.selectedThresholdValue = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailFrame, L["BarVisibilityThresholdValue"],
 		0, 100, 0, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.selectedThresholdValue:Hide()
@@ -1017,7 +1017,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 		-- Alpha sliders â€” set scripts BEFORE values so SetValue doesn't write to the old entry
 		controls.sliders.selectedActiveAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			visSettings.activeAlpha = value
@@ -1026,7 +1026,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.sliders.selectedActiveAlpha:SetValue(visSettings.activeAlpha or 100)
 
 		controls.sliders.selectedInactiveAlpha:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			visSettings.inactiveAlpha = value
@@ -1035,7 +1035,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.sliders.selectedInactiveAlpha:SetValue(visSettings.inactiveAlpha or 0)
 
 		controls.sliders.selectedFadeDuration:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			visSettings.fadeDuration = value
@@ -1044,7 +1044,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.sliders.selectedFadeDuration:SetValue(visSettings.fadeDuration or 0)
 
 		controls.sliders.selectedFadeDelay:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			visSettings.fadeDelay = value
@@ -1082,7 +1082,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local ct = visSettings.resourceConditionType or "none"
 			local thresholdDefinition = thresholdTypeDefinitions[ct]
 			local precision = (thresholdDefinition ~= nil and thresholdDefinition.isPercent == true) and 1 or 0
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, precision, nil, true)
 			self.EditBox:SetText(value)
 			visSettings.resourceConditionValue = value

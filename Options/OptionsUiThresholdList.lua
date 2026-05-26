@@ -146,7 +146,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	}
 
 	yCoord = yCoord - 3
-	controls.thresholdOverridesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdOverridesHeader"], oUi.xCoord, yCoord)
+	controls.thresholdOverridesSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdOverridesHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 20
 
 	-- Create table container
@@ -218,7 +218,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	end
 
 	-- Detail header below the table (outside the scrolling detail panel)
-	local detailHeader = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "", oUi.xCoord, 0)
+	local detailHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, "", oUi.xCoord, 0)
 	detailHeader:SetPoint("TOPLEFT", tlc, "BOTTOMLEFT", oUi.xCoord, 0)
 	detailHeader:Hide()
 
@@ -250,12 +250,12 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	local enabledCheckbox = controls.checkBoxes.thresholdEnabled
 	enabledCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	getglobal(enabledCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailEnabledCheckbox"])
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, false, false)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, false, false)
 	enabledCheckbox:Hide()
 
 	-- ===== COLOR OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 30
-	local colorsHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailColorsHeader"], oUi.xCoord, detailYCoord)
+	local colorsHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailColorsHeader"], oUi.xCoord, detailYCoord)
 	colorsHeader.font:SetFontObject(GameFontNormalLarge)
 	colorsHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
@@ -287,7 +287,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	colorModeDropdown:Hide()
 
-	controls.colors.thresholdStatic = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorModeStaticColor"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdStatic = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorModeStaticColor"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdStatic:Hide()
 
 	-- Under color: mode dropdown + color picker
@@ -298,7 +298,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	colorUnderModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	colorUnderModeDropdown:Hide()
 
-	controls.colors.thresholdUnder = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnder"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdUnder = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnder"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdUnder:Hide()
 
 	-- Over color: mode dropdown + color picker
@@ -309,7 +309,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	colorOverModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	colorOverModeDropdown:Hide()
 
-	controls.colors.thresholdOver = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOver"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdOver = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOver"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdOver:Hide()
 
 	-- Unusable color: mode dropdown + color picker
@@ -320,7 +320,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	colorUnusableModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	colorUnusableModeDropdown:Hide()
 
-	controls.colors.thresholdUnusable = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnusable"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdUnusable = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsUnusable"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdUnusable:Hide()
 
 	-- Out of Range: mode dropdown + override color picker
@@ -331,12 +331,12 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	colorOorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	colorOorModeDropdown:Hide()
 
-	controls.colors.thresholdOutOfRange = TRB.Functions.OptionsUi:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOutOfRange"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
+	controls.colors.thresholdOutOfRange = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOutOfRange"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdOutOfRange:Hide()
 
 	-- ===== LINE OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
-	local lineHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
+	local lineHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
 	lineHeader.font:SetFontObject(GameFontNormalLarge)
 	lineHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
@@ -350,7 +350,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	detailYCoord = detailYCoord - 40
 	controls.sliders = controls.sliders or {}
-	controls.sliders.thresholdLineWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailLineWidth"], 1, 10, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdLineWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailLineWidth"], 1, 10, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.thresholdLineWidth:Hide()
 
 	controls.checkBoxes.thresholdLineOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdLineOverlapBorder", detailScrollChild, "ChatConfigCheckButtonTemplate")
@@ -362,7 +362,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	-- ===== ICON OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 50
-	local iconHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconHeader"], oUi.xCoord, detailYCoord)
+	local iconHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconHeader"], oUi.xCoord, detailYCoord)
 	iconHeader.font:SetFontObject(GameFontNormalLarge)
 	iconHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
@@ -379,7 +379,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	controls.dropDown.thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdIconRelativeTo", detailScrollChild, "WowStyle1DropdownTemplate")
 	local iconRelativeToDropdown = controls.dropDown.thresholdIconRelativeTo
 	iconRelativeToDropdown:SetWidth(oUi.sliderWidth)
-	iconRelativeToDropdown.label = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconRelativePosition"], oUi.xCoord, detailYCoord)
+	iconRelativeToDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailIconRelativePosition"], oUi.xCoord, detailYCoord)
 	iconRelativeToDropdown.label.font:SetFontObject(GameFontNormal)
 	iconRelativeToDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 30)
 	iconRelativeToDropdown:Hide()
@@ -399,26 +399,26 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	iconDesaturateCheckbox:Hide()
 
 	detailYCoord = detailYCoord - 100
-	controls.sliders.thresholdIconWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconWidth"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconWidth"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.thresholdIconWidth:Hide()
 
-	controls.sliders.thresholdIconHeight = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconHeight"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.thresholdIconHeight = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconHeight"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.thresholdIconHeight:Hide()
 
 	detailYCoord = detailYCoord - 60
-	controls.sliders.thresholdIconXPos = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconXPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconXPos = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconXPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.thresholdIconXPos:Hide()
 
-	controls.sliders.thresholdIconYPos = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconYPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
+	controls.sliders.thresholdIconYPos = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconYPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.thresholdIconYPos:Hide()
 
 	detailYCoord = detailYCoord - 60
-	controls.sliders.thresholdIconBorderWidth = TRB.Functions.OptionsUi:BuildSlider(detailScrollChild, L["ThresholdDetailIconBorderWidth"], 0, 12, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
+	controls.sliders.thresholdIconBorderWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconBorderWidth"], 0, 12, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.thresholdIconBorderWidth:Hide()
 
 	-- ===== AUDIO CUE SECTION =====
 	detailYCoord = detailYCoord - 50
-	local audioHeader = TRB.Functions.OptionsUi:BuildSectionHeader(detailScrollChild, L["ThresholdDetailAudioHeader"], oUi.xCoord, detailYCoord)
+	local audioHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailAudioHeader"], oUi.xCoord, detailYCoord)
 	audioHeader.font:SetFontObject(GameFontNormalLarge)
 	audioHeader.font:SetTextColor(1, 1, 1)
 	detailYCoord = detailYCoord - 30
@@ -428,7 +428,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	getglobal(audioCheckbox:GetName() .. 'Text'):SetText(L["ThresholdDetailAudioCheckbox"])
 	audioCheckbox.tooltip = L["ThresholdDetailAudioCheckboxTooltip"]
-	TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, false, true)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, false, true)
 	audioCheckbox:Hide()
 
 	controls.dropDown.thresholdAudioSound = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdAudioSound", detailScrollChild, "WowStyle1DropdownTemplate")
@@ -795,7 +795,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 		-- ===== ENABLED CHECKBOX =====
 		enabledCheckbox:SetChecked(isEnabled)
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, isEnabled, false)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, isEnabled, false)
 		enabledCheckbox:SetScript("OnClick", function(self, ...)
 			local checked = self:GetChecked()
 			dictEntry.enabled = checked
@@ -806,7 +806,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 					end
 				end
 			end
-			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(enabledCheckbox, checked, false)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, checked, false)
 			RepositionDetailControls()
 			SetTableValues()
 			for i, e in ipairs(thresholdEntries) do
@@ -878,8 +878,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			colorPicker:SetScript("OnMouseDown", function(self, button, ...)
 				if button == "LeftButton" then
 					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorEntry.color or fallbackColor, true)
-					TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-						local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+					TRB.Functions.OptionsUi.ColorPickers:ShowColorPicker(r, g, b, 1-a, function(color)
+						local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi.ColorPickers:ExtractColorFromColorPicker(color)
 						local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 						colorEntry.color = newColor
 						colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
@@ -945,8 +945,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.colors.thresholdStatic:SetScript("OnMouseDown", function(self, button, ...)
 			if button == "LeftButton" then
 				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(dictEntry.colors.staticColor.color or spec.colors.threshold.under.color or "FFFFFFFF", true)
-				TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+				TRB.Functions.OptionsUi.ColorPickers:ShowColorPicker(r, g, b, 1-a, function(color)
+					local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi.ColorPickers:ExtractColorFromColorPicker(color)
 					local newColor = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 					dictEntry.colors.staticColor.color = newColor
 					controls.colors.thresholdStatic.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(newColor, true))
@@ -1006,10 +1006,10 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		lineUseSpecificCheckbox:SetChecked(dictEntry.line.enabled or false)
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled or false, true)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled or false, true)
 		lineUseSpecificCheckbox:SetScript("OnClick", function(self, ...)
 			dictEntry.line.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled, true)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(lineUseSpecificCheckbox, dictEntry.line.enabled, true)
 			UpdateLineControlsVisibility()
 			RepositionDetailControls()
 			TRB.Functions.Threshold:RedrawThresholdLines()
@@ -1021,7 +1021,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdLineWidth:SetValue(lineWidth)
 		controls.sliders.thresholdLineWidth.EditBox:SetText(lineWidth)
 		controls.sliders.thresholdLineWidth:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.line.width = value
@@ -1045,7 +1045,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				iconRelativeToDropdown:Show()
 				iconShowCheckbox:Show()
 				iconDesaturateCheckbox:Show()
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
 				controls.sliders.thresholdIconWidth:Show()
 				controls.sliders.thresholdIconHeight:Show()
 				controls.sliders.thresholdIconXPos:Show()
@@ -1065,10 +1065,10 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		iconUseSpecificCheckbox:SetChecked(dictEntry.icon.enabled or false)
-		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled or false, true)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled or false, true)
 		iconUseSpecificCheckbox:SetScript("OnClick", function(self, ...)
 			dictEntry.icon.enabled = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled, true)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled, true)
 			UpdateIconControlsVisibility()
 			RepositionDetailControls()
 			TRB.Functions.Threshold:RedrawThresholdLines()
@@ -1118,7 +1118,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		iconShowCheckbox:SetChecked(dictEntry.icon.show ~= false)
 		iconShowCheckbox:SetScript("OnClick", function(self, ...)
 			dictEntry.icon.show = self:GetChecked()
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show)
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
 
@@ -1128,7 +1128,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			dictEntry.icon.desaturated = self:GetChecked()
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
 
 		-- Icon size/position sliders
 		local iconWidth = dictEntry.icon.width or spec.thresholds.icons.width or 32
@@ -1141,7 +1141,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdIconWidth:SetValue(iconWidth)
 		controls.sliders.thresholdIconWidth.EditBox:SetText(iconWidth)
 		controls.sliders.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.icon.width = value
@@ -1160,7 +1160,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdIconHeight:SetValue(iconHeight)
 		controls.sliders.thresholdIconHeight.EditBox:SetText(iconHeight)
 		controls.sliders.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.icon.height = value
@@ -1179,7 +1179,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdIconXPos:SetValue(iconXPos)
 		controls.sliders.thresholdIconXPos.EditBox:SetText(iconXPos)
 		controls.sliders.thresholdIconXPos:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.icon.xPos = value
@@ -1190,7 +1190,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdIconYPos:SetValue(iconYPos)
 		controls.sliders.thresholdIconYPos.EditBox:SetText(iconYPos)
 		controls.sliders.thresholdIconYPos:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.icon.yPos = value
@@ -1205,7 +1205,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		controls.sliders.thresholdIconBorderWidth:SetValue(iconBorder)
 		controls.sliders.thresholdIconBorderWidth.EditBox:SetText(iconBorder)
 		controls.sliders.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			dictEntry.icon.border = value
@@ -1231,10 +1231,10 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		if detailCanHaveAudio then
 			audioHeader:Show()
 			audioCheckbox:SetChecked(dictEntry.audio.enabled or false)
-			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
 			audioCheckbox:SetScript("OnClick", function(self, ...)
 				dictEntry.audio.enabled = self:GetChecked()
-				TRB.Functions.OptionsUi:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
+				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
 				if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
 					PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
 				end

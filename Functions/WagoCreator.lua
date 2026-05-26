@@ -46,8 +46,8 @@ function TwintopsResourceBarAPI:ImportProfile(profileString, profileKey)
 	-- NOTE: You do not NEED to implement your encoding like this, this code is just meant as an easy example. If you have your own / already existing encoding that is perfectly fine.
 	--       It is however expected that Profiles exported by the API are 100% compatible with your own internal import/export system for profile strings.
 
-	-- TRB: Mirrors the headless equivalent of `ApplyImportedProfile`
-	-- (Options/OptionsUi.lua) -- same writes, no popups, no reload. After
+	-- TRB: Mirrors the headless equivalent of the profile import popup apply flow:
+	-- same writes, no popups, no reload. After
 	-- writing, the imported profile is activated for every scope present in
 	-- the payload on the current character so the upcoming WagoUI-batched
 	-- reload picks up the new content.

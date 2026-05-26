@@ -52,7 +52,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	local namePrefix = className .. "_" .. specName
 	local f = nil
 
-	controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
+	controls.textBarTexturesSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -62,13 +62,13 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "barTextures")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barTextures")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Textures"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textures)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 				TRB.Functions.Character:ResetCaches()
 				if TRB.Frames.barGroups ~= nil then
 					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -82,12 +82,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 					end
 				end
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textures")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "textures")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "textures")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
 	end
 
 	controls.dropDown.textures = {}
@@ -98,19 +98,19 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	---@param variable string The texture variable being changed (e.g., "resource", "casting")
 	---@param newValue string The new texture value
 	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
+		TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
 	end
 
 	---Applies a new overlay texture value and syncs all related dropdowns via UpdateOverlayDropdowns.
 	---@param variable string The overlay variable being changed (e.g., "absorb", "incomingHeal")
 	---@param newValue string The new texture value
 	local function OverlaySetValue(variable, newValue)
-		TRB.Functions.OptionsUi:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
+		TRB.Functions.OptionsUi.TextureDropdowns:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
 	end
 
 	---Refreshes bar layout and appearance after a texture option change if editing the active spec.
 	local function RefreshBar()
-		if not TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+		if not TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			return
 		end
 		TRB.Functions.Character:ResetCaches()
@@ -127,17 +127,17 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	-- ===== BAR TEXTURES SUBSECTION =====
 ---@diagnostic disable-next-line: param-type-mismatch
-	controls.barTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+	controls.barTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
 
 	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("resource", newValue)
 		end)
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			StatusbarSetValue("casting", newValue)
 		end)
@@ -164,24 +164,24 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			yCoord = yCoord - 60
 		end
 		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", item.key, item.label, L["StatusBarTextures"], item.callback)
+		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", item.key, item.label, L["StatusBarTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
 
 	-- ===== OVERLAY TEXTURES SUBSECTION =====
 ---@diagnostic disable-next-line: param-type-mismatch
-	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
 
 	-- Row 1: Absorb Overlay + Incoming Heal Overlay
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			OverlaySetValue("absorb", newValue)
 		end)
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "incomingHealBar", L["IncomingHealBarTexture"], L["StatusBarTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "incomingHealBar", L["IncomingHealBarTexture"], L["StatusBarTextures"],
 		function(newValue)
 			OverlaySetValue("incomingHeal", newValue)
 		end)
@@ -190,12 +190,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	-- ===== BORDER TEXTURES SUBSECTION =====
 ---@diagnostic disable-next-line: param-type-mismatch
-	controls.borderTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+	controls.borderTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
 
 	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
 		function(newValue)
 			local newName = borderPairsByName[newValue]
 			spec.textures.border = newValue
@@ -228,7 +228,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			RefreshBar()
 		end)
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
 		function(newValue)
 			local newName = borderPairsByName[newValue]
 			spec.textures.healthBorder = newValue
@@ -372,19 +372,19 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			yCoord = yCoord - 60
 		end
 		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", item.key, item.label, L["BorderTextures"], item.callback)
+		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", item.key, item.label, L["BorderTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
 
 	-- ===== BACKGROUND TEXTURES SUBSECTION =====
 ---@diagnostic disable-next-line: param-type-mismatch
-	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
+	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
 
 	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
 		function(newValue)
 			local newName = backgroundPairsByName[newValue]
 			spec.textures.background = newValue
@@ -417,7 +417,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			RefreshBar()
 		end)
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
 		function(newValue)
 			local newName = backgroundPairsByName[newValue]
 			spec.textures.healthBackground = newValue
@@ -561,7 +561,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			yCoord = yCoord - 60
 		end
 		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", item.key, item.label, L["BackgroundTextures"], item.callback)
+		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", item.key, item.label, L["BackgroundTextures"], item.callback)
 	end
 
 	yCoord = yCoord - 70
@@ -677,24 +677,24 @@ function TRB.Functions.OptionsUi.Textures:GenerateFlashOptions(parent, controls,
 	local f = nil
 	local title = ""
 
-	controls.flashSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FlashSectionHeader"], oUi.xCoord, yCoord)
+	controls.flashSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FlashSectionHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 	title = string.format(L["FlashAlpha"], flashAlphaName)
-	controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
+	controls.flashAlpha = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.colors.bar.flashAlpha = value
 	end)
 
 	title = string.format(L["FlashPeriod"], flashAlphaName)
-	controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
+	controls.flashPeriod = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0.05, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.colors.bar.flashPeriod = value

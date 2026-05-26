@@ -35,7 +35,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
 	yCoord = yCoord - 30
-	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -45,7 +45,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "thresholds")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdIcons"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons)
 		f:SetScript("OnClick", function(self, ...)
@@ -54,18 +54,18 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdIcons")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("thresholdIcons")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "thresholdIcons")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "thresholdIcons")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdIcons", "thresholdIcons", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdIcons", "thresholdIcons", yCoord)
 	end
 
 	yCoord = yCoord - 20
 	local thresholdIconRelativeTo = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRelativeTo", parent, "WowStyle1DropdownTemplate")
 	thresholdIconRelativeTo:SetWidth(oUi.sliderWidth)
-	thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
+	thresholdIconRelativeTo.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
 	thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
 
 	local relativeTo = {}
@@ -125,7 +125,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
 
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
@@ -151,14 +151,14 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		end
 	end)
 
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
 
 	yCoord = yCoord - 100
 	title = L["ThresholdIconWidth"]
-	controls.thresholdIconWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
+	controls.thresholdIconWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.width = value
 
 		local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -176,10 +176,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end)
 
 	title = L["ThresholdIconHeight"]
-	controls.thresholdIconHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
+	controls.thresholdIconHeight = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.height = value
 
 		local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -199,10 +199,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 
 	title = L["ThresholdIconHorizontal"]
 	yCoord = yCoord - 60
-	controls.thresholdIconHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
+	controls.thresholdIconHorizontal = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.xPos = value
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -213,10 +213,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end)
 
 	title = L["ThresholdIconVertical"]
-	controls.thresholdIconVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
+	controls.thresholdIconVertical = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.yPos = value
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -230,10 +230,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 
 	title = L["ThresholdIconBorderWidth"]
 	yCoord = yCoord - 60
-	controls.thresholdIconBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
+	controls.thresholdIconBorderWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.border = value
 
 		local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -252,10 +252,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end)
 
 	title = L["ThresholdLineWidth"]
-	controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.properties.width, 1, 2,
+	controls.thresholdWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 1, 10, spec.thresholds.properties.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.properties.width = value
 
 		if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
@@ -302,9 +302,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 	controls.colors.threshold = controls.colors.threshold or {}
 
 	if classId == nill then
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsForDpsAndTanksHeader"], oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineColorsForDpsAndTanksHeader"], oUi.xCoord, yCoord)
 	else
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
 	end
 
 	if classId ~= nil and specId ~= nil then
@@ -315,7 +315,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "thresholds")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors)
 		f:SetScript("OnClick", function(self, ...)
@@ -324,38 +324,38 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("thresholdColors")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "thresholdColors")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "thresholdColors")
 	elseif classId == nil and specId == nil then
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdColors", "thresholdColors", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdColors", "thresholdColors", yCoord)
 	end
 
 	if under == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 	end
 
 	if over == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 	end
 
 	if unusable == true then
 		yCoord = yCoord - 30
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 	end
 
@@ -370,7 +370,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.threshold.outOfRange.show = self:GetChecked()
 
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 			if TRB.Data.character.classId == 11 or -- HACK: Workaround for Druids sharing settings across forms
 			(TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
@@ -401,18 +401,18 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			end
 		end)
 
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 		end)
 	end
 
 	if custom ~= nil and #custom > 0 then
 		for _, value in pairs(custom) do
-			yCoord, _, _ = TRB.Functions.OptionsUi:BuildColorPickerWithEnable(parent, yCoord, controls, "threshold", spec.colors.threshold, namePrefix, value)
+			yCoord, _, _ = TRB.Functions.OptionsUi.ColorPickers:BuildColorPickerWithEnable(parent, yCoord, controls, "threshold", spec.colors.threshold, namePrefix, value)
 		end
 	end
 

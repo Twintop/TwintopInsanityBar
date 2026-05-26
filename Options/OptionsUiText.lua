@@ -37,7 +37,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	controls.checkBoxes = controls.checkBoxes or {}
 	controls.dropDown.fonts = {}
 
-	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
 
 	-- Show informational notice about how default font settings work
 	yCoord = yCoord - 30
@@ -55,19 +55,19 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "fontText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Font"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayText)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].displayText = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("displayText")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("displayText")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "displayText")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "displayText")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayText", "displayText", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayText", "displayText", yCoord)
 	end
 	yCoord = yCoord - 30
 
@@ -76,7 +76,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 
 	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFaceDefault", parent, "WowStyle1DropdownTemplate")
 	barTextFontFace:SetWidth(oUi.sliderWidth)
-	barTextFontFace.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FontFaceHeader"], oUi.xCoord, yCoord)
+	barTextFontFace.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	barTextFontFace.label.font:SetFontObject(GameFontNormal)
 
 	local function FontFaceIsSelected(value)
@@ -104,18 +104,18 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 10
-	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color.color,
+	controls.colors.text.color = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color.color,
 																		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.displayText.default, controls.colors.text, "color")
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.displayText.default, controls.colors.text, "color")
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
 	-- Font Shadow section
 	yCoord = yCoord - 30
 
-	controls.colors.text.fontShadowColor = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["FontSharedShadowColor"],
+	controls.colors.text.fontShadowColor = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["FontSharedShadowColor"],
 		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.color) or "FF000000",
 		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.text.fontShadowColor
@@ -126,8 +126,8 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 			end
 			local colorString = spec.displayText.default.fontShadow.color or "FF000000"
 			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-			TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-				local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			TRB.Functions.OptionsUi.ColorPickers:ShowColorPicker(r, g, b, 1-a, function(color)
+				local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi.ColorPickers:ExtractColorFromColorPicker(color)
 				controls.colors.text.fontShadowColor.Texture:SetColorTexture(r_1, g_1, b_1, a_1)
 				spec.displayText.default.fontShadow.color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 				TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
@@ -137,10 +137,10 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 
 	yCoord = yCoord - 50
 	title = L["DefaultFontSize"]
-	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
+	controls.fontSizeDefault = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.displayText.default.fontSize = value
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
@@ -161,7 +161,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 
 	local barTextFontOutline = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontOutlineDefault", parent, "WowStyle1DropdownTemplate")
 	barTextFontOutline:SetWidth(oUi.sliderWidth)
-	barTextFontOutline.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontOutline"], oUi.xCoord2, yCoord+25)
+	barTextFontOutline.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DefaultFontOutline"], oUi.xCoord2, yCoord+25)
 	barTextFontOutline.label.font:SetFontObject(GameFontNormal)
 
 	local function FontOutlineIsSelected(value)
@@ -184,11 +184,11 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 
 	yCoord = yCoord - 50
 	title = L["FontShadowXOffset"]
-	controls.fontShadowXOffsetDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, -10, 10,
+	controls.fontShadowXOffsetDefault = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, -10, 10,
 		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.xOffset) or 1, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.fontShadowXOffsetDefault:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		if spec.displayText.default.fontShadow == nil then
 			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
@@ -197,11 +197,11 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	end)
 
 	title = L["FontShadowYOffset"]
-	controls.fontShadowYOffsetDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, -10, 10,
+	controls.fontShadowYOffsetDefault = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, -10, 10,
 		(spec.displayText.default.fontShadow and spec.displayText.default.fontShadow.yOffset) or -1, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.fontShadowYOffsetDefault:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		if spec.displayText.default.fontShadow == nil then
 			spec.displayText.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
@@ -236,16 +236,16 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, contr
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-	TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
+	TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "fontText")
 	f.tooltip = L["CheckboxUseGlobalTooltip_TextColors"]
 	f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textColors)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.global[lowerClassName][specName].textColors = self:GetChecked()
 		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
-		TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("textColors")
+		TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("textColors")
 	end)
-	TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "textColors")
+	TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "textColors")
 
 	return yCoord
 end
@@ -269,7 +269,7 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 	controls.checkBoxes = controls.checkBoxes or {}
 
 	yCoord = yCoord - 30
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 25
 		local lowerClassName = string.lower(className)
@@ -278,7 +278,7 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi:BuildUseGlobalShortcutLink(f, "fontText")
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "fontText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Precision"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].precision)
 		f:SetScript("OnClick", function(self, ...)
@@ -287,21 +287,21 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			TRB.Data.snapshotData.attributes.cacheRefresh = true
 			TRB.Data.lookupDirty = true
-			TRB.Functions.OptionsUi:RefreshBulkGlobalToggleCheckbox("precision")
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("precision")
 		end)
-		TRB.Functions.OptionsUi:BuildUseGlobalCopyButton(f, classId, specId, "precision")
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "precision")
 	else
 		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllPrecision", "precision", yCoord)
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllPrecision", "precision", yCoord)
 		yCoord = yCoord + 25 -- Offset adjustment for consistency with per-spec layout
 	end
 	yCoord = yCoord - 50
 
 	title = L["SecondaryDecimalPrecision"]
-	controls.precisionSecondary = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.secondary, 1, 0,
+	controls.precisionSecondary = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 10, spec.precision.secondary, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.precisionSecondary:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.precision.secondary = value
@@ -321,10 +321,10 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 		(classId == 13) -- Evoker
 		then
 		title = L["ManaDecimalPrecision"]
-		controls.precisionMana = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.mana, 1, 0,
+		controls.precisionMana = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 10, spec.precision.mana, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.precisionMana:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.precision.mana = value
@@ -337,10 +337,10 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 	yCoord = yCoord - 60
 
 	title = L["HealthDecimalPrecision"]
-	controls.precisionHealth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.precision.health, 1, 0,
+	controls.precisionHealth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 10, spec.precision.health, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.precisionHealth:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		spec.precision.health = value
@@ -383,7 +383,7 @@ function TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, name, 
 			PlaySoundFile(spec.audio[name].sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 	end)
-	TRB.Functions.OptionsUi:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
+	TRB.Functions.OptionsUi.Text:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
 
 	yCoord = yCoord - 60
 	return yCoord

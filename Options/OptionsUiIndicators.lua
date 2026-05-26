@@ -71,7 +71,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	controls.indicatorColors.rows = controls.indicatorColors.rows or {}
 
 	-- Section header
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["IndicatorColorPriorityHeader"], oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["IndicatorColorPriorityHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
@@ -129,7 +129,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local row = rows[rowIndex]
 		if row then
 			if row.colorPicker then
-				TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, anyEnabled)
+				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, anyEnabled)
 			end
 		end
 	end
@@ -164,7 +164,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
 			end
-			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
 		end
 		-- Update dropdown text
 		if row.dropdown then
@@ -323,15 +323,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			row.dropdown = dd
 
 			-- Color picker
-			local cp = TRB.Functions.OptionsUi:BuildGradientColorPicker(parent, def.colorLabel, indicator, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"])
+			local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, def.colorLabel, indicator, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"])
 			---@cast cp Button
 			cp.Swatch1:SetScript("OnMouseDown", function(self, button)
 				local currentKey = orderedKeys[capturedRowIdx]
-				TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
+				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
 			end)
 			cp.Swatch2:SetScript("OnMouseDown", function(self, button)
 				local currentKey = orderedKeys[capturedRowIdx]
-				TRB.Functions.OptionsUi:GradientColor2OnMouseDown(button, indicatorColors[currentKey], cp.Swatch2, classId, specId)
+				TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, indicatorColors[currentKey], cp.Swatch2, classId, specId)
 			end)
 			cp.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
 				if mouseButton == "LeftButton" then
@@ -358,7 +358,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				end
 			end)
 			---@cast cp Button
-			TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, indicator.enabled)
+			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cp, indicator.enabled)
 			row.colorPicker = cp
 
 			-- Store row controls for the color picker callback
@@ -371,11 +371,11 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	-- Gradient Color Overrides section
 	if #gradientDefs > 0 then
 		yCoord = yCoord - 10
-		controls.textSectionGradient = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GradientColorOverridesHeader"], oUi.xCoord, yCoord)
+		controls.textSectionGradient = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["GradientColorOverridesHeader"], oUi.xCoord, yCoord)
 		yCoord = yCoord - 30
 
 		-- Note explaining gradient behavior
-		controls.gradientNote = TRB.Functions.OptionsUi:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
+		controls.gradientNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
 		yCoord = yCoord - 30
 
 		-- Working copy of gradient ordered keys. Filter out phantom entries so
@@ -403,7 +403,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if row.colorPicker.Font then
 					row.colorPicker.Font:SetText(def.colorLabel)
 				end
-				TRB.Functions.OptionsUi:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
 			end
 			if row.dropdown then
 				row.dropdown:SetText(GetSummaryText(key))
@@ -549,7 +549,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 											end
 											indicator.enabled = anyEnabled
 											if gradRow.colorPicker then
-												TRB.Functions.OptionsUi:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
+												TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
 											end
 										end
 									)
@@ -563,13 +563,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				gradRow.dropdown = dd
 
 				-- Color picker
-				local cp = TRB.Functions.OptionsUi:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+				local cp = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 				---@cast cp Button
 				cp:SetScript("OnMouseDown", function(self, button)
 					local gk = orderedGradientKeys[capturedGradIdx]
-					TRB.Functions.OptionsUi:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk, "indicatorColor_" .. gk)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk, "indicatorColor_" .. gk)
 				end)
-				TRB.Functions.OptionsUi:ToggleColorPickerEnabled(cp, gradIndicator.enabled)
+				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cp, gradIndicator.enabled)
 				gradRow.colorPicker = cp
 
 				controls.indicatorColors.gradientRows[gradIdx] = gradRow
@@ -583,14 +583,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	if config.endOfConfigs then
 		for _, endOfConfig in ipairs(config.endOfConfigs) do
 			yCoord = yCoord - 10
-			yCoord = TRB.Functions.OptionsUi:GenerateEndOfConfigurationOptions(parent, controls, spec, classId, specId, yCoord, endOfConfig)
+			yCoord = TRB.Functions.OptionsUi.Colors:GenerateEndOfConfigurationOptions(parent, controls, spec, classId, specId, yCoord, endOfConfig)
 		end
 	end
 
 	-- Optional Overcap configuration
 	if config.overcapConfig then
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, config.overcapConfig.primaryResourceString, config.overcapConfig.primaryResourceMax)
+		yCoord = TRB.Functions.OptionsUi.Colors:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, config.overcapConfig.primaryResourceString, config.overcapConfig.primaryResourceMax)
 	end
 
 	return yCoord
@@ -621,7 +621,7 @@ end
 ---@param classId integer?
 ---@param specId integer?
 function TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
-	if TRB.Functions.OptionsUi:IsEditingActiveSpec(classId, specId) then
+	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 		local activeSpecCache = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if TRB.Frames.barGroups ~= nil and activeSpecCache and activeSpecCache.settings then
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(activeSpecCache.settings, TRB.Frames.barGroups)
