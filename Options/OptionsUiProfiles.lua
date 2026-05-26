@@ -107,7 +107,7 @@ end
 ---@param scope "spec"|"core"
 ---@param className string?
 ---@param specName string?
-RefreshProfileDropdownForScope = function(scope, className, specName)
+function TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope(scope, className, specName)
 	local dropdown = _G[GetProfileDropdownFrameName(scope, className, specName)]
 	if dropdown == nil then
 		return

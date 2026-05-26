@@ -117,8 +117,13 @@ Functions\Threshold.lua
 Functions\WagoCreator.lua
 
 Options\OptionsUi.lua
+Options\OptionsUiMedia.lua
 Options\OptionsUiPrimitives.lua
 Options\OptionsUiProfiles.lua
+Options\OptionsUiGlobalSettings.lua
+Options\OptionsUiTextures.lua
+Options\OptionsUiVisibility.lua
+Options\OptionsUiThresholds.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua
