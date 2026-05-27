@@ -288,9 +288,9 @@ Many specs can track important buff status and timers via color changes and dire
 
 TRB is being actively translated into multiple languages. Current progress:
 
-- **French (frFR)** - 10%
-- **German (deDE)** - 60%
 - **Simplified Chinese (zhCN)** - 100%
+- **German (deDE)** - 57%
+- **French (frFR)** - 8%
 
 If you're interested in helping translate TRB into other languages, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
 
