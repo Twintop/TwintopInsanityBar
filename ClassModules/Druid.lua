@@ -1648,6 +1648,30 @@ local function UpdateResourceBar()
 		end
 	end
 
+	local function UpdateHealthBarGeneric()
+		local healthVisSettings = formSpecCacheSettings.displayBar and formSpecCacheSettings.displayBar.health
+		if healthVisSettings ~= nil and not healthVisSettings.neverShow then
+			refreshText = true
+			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+			if healthNode then
+				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+				healthNode:SetValue(snapshotData.attributes.health or 0)
+				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+				healthNode:SetBorderColor(formSpecCacheSettings.colors.healthBar.border.color)
+				healthNode:SetBackgroundColorFromString(formSpecCacheSettings.colors.healthBar.background.color)
+			end
+			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, formSpecCacheSettings)
+		elseif barGroups and barGroups.health and not isInEditMode then
+			barGroups.health:Hide()
+		end
+	end
+
+	local function IsFormBarVisible(barKey)
+		local displayBarSettings = formSpecCacheSettings.displayBar
+		local visibilitySettings = displayBarSettings and displayBarSettings[barKey]
+		return visibilitySettings ~= nil and visibilitySettings.neverShow ~= true
+	end
+
 	local function ConstructPrimaryGeneric(maxPrimaryBarResource)
 		-- Guard: Skip threshold processing if the form's spec doesn't define thresholds
 		if formSpecCacheSettings.thresholds == nil or formSpecCacheSettings.thresholds.properties == nil then
@@ -1744,11 +1768,10 @@ local function UpdateResourceBar()
 		local showCp = false
 		local cpSettings = nil
 		local activeSpecName = GetDruidSpecName(activeSpecId)
-		-- Visibility flags (displayBar.secondary.neverShow, displayBar.showComboPoints)
-		-- must be read from the specCache so that the active spec's "Use global settings"
-		-- toggle is honored. Reading from raw classSettings ignores the global merge and
-		-- shows incorrect visibility (e.g., Guardian useGlobal=on + global=Always but
-		-- Guardian's own raw setting=Never would incorrectly hide combo points).
+		-- Visibility flags must be read from specCache so the "Use global settings" toggle
+		-- is honored. Native Cat/Feral secondary visibility comes from the displayed Feral
+		-- settings; optional non-native CP display is still gated by the active spec's
+		-- showComboPoints setting.
 		local activeCacheKey = GetDruidCompositeKey(activeSpecId)
 		local activeSpecCache = activeCacheKey and TRB.Data.specCache and TRB.Data.specCache[activeCacheKey]
 		local activeVisSettings = activeSpecCache and activeSpecCache.settings
@@ -1759,7 +1782,7 @@ local function UpdateResourceBar()
 		if activeVisSettings ~= nil and activeVisSettings.displayBar ~= nil then
 			if displaySpecId == 2 then
 				-- Cat form (or Feral with form-switching off): CPs are native, always eligible
-				showCp = not activeVisSettings.displayBar.secondary.neverShow
+				showCp = IsFormBarVisible("secondary")
 				cpSettings = (activeSpecId == 2) and activeSpecSettings or (classSettings.feral or activeSpecSettings)
 			elseif activeSpecId == 2 then
 				-- Feral in non-cat form: checkbox defaults ON (nil → show)
@@ -1856,7 +1879,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
-			if not specSettings.displayBar.primary.neverShow then
+			if IsFormBarVisible("primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
@@ -2173,24 +2196,10 @@ local function UpdateResourceBar()
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric(comboPointOverrides)
 			refreshText = refreshText or refreshTextFromComboPoints
 
-			-- Health bar update
-			if not specSettings.displayBar.health.neverShow then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health and not isInEditMode then
-				barGroups.health:Hide()
-			end
+			UpdateHealthBarGeneric()
 
 			-- Mana bar update (Balance only, when primary bar is Astral Power — not when primary is already mana)
-			if displaySpecId == 1 and specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
+			if displaySpecId == 1 and IsFormBarVisible("mana") then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
@@ -2215,7 +2224,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
-			if not specSettings.displayBar.primary.neverShow then
+			if IsFormBarVisible("primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
@@ -2659,7 +2668,7 @@ local function UpdateResourceBar()
 			-- when displaySpecId is Feral (enableFormSwitching disabled). Other forms with
 			-- form switching ON fall through to ConstructComboPointsGeneric for simplified rendering.
 			-- Visibility check reads from specCache so the "Use global settings" toggle is honored.
-			if (currentForm == "cat" or displaySpecId == 2) and not specCacheSettings.displayBar.secondary.neverShow then
+			if (currentForm == "cat" or displaySpecId == 2) and IsFormBarVisible("secondary") then
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
@@ -2741,21 +2750,7 @@ local function UpdateResourceBar()
 				refreshText = refreshText or refreshTextFromComboPoints
 			end
 
-			-- Health bar update
-			if not specSettings.displayBar.health.neverShow then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health and not isInEditMode then
-				barGroups.health:Hide()
-			end
+			UpdateHealthBarGeneric()
 		end
 
 		-- Combo Point threshold audio cues (independent of bar visibility)
@@ -2804,7 +2799,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
-			if not specSettings.displayBar.primary.neverShow then
+			if IsFormBarVisible("primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
@@ -3141,21 +3136,7 @@ local function UpdateResourceBar()
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric(comboPointOverrides)
 			refreshText = refreshText or refreshTextFromComboPoints
 
-			-- Health bar update
-			if not specSettings.displayBar.health.neverShow then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health and not isInEditMode then
-				barGroups.health:Hide()
-			end
+			UpdateHealthBarGeneric()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 4 then
@@ -3166,7 +3147,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
-			if not formSpecSettings.displayBar.primary.neverShow then
+			if IsFormBarVisible("primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
@@ -3265,21 +3246,7 @@ local function UpdateResourceBar()
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric(comboPointOverrides)
 			refreshText = refreshText or refreshTextFromComboPoints
 
-			-- Health bar update
-			if not specSettings.displayBar.health.neverShow then
-				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
-			elseif barGroups and barGroups.health and not isInEditMode then
-				barGroups.health:Hide()
-			end
+			UpdateHealthBarGeneric()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -3872,36 +3839,44 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 or TRB.Data.character.specId == 4 then
-		local sharedSettings
+		local activeSettings
 		if TRB.Data.specCache[TRB.Data.character.compositeKey] ~= nil then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			activeSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
-		-- Determine form-based display spec for secondary and mana bar routing
+		-- Determine form-based display spec for primary, health, secondary, and mana bar routing
 		local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 		local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
+		local displayCompositeKey = GetDruidCompositeKey(displaySpecId)
+		local sharedSettings = displayCompositeKey and TRB.Data.specCache[displayCompositeKey] and TRB.Data.specCache[displayCompositeKey].settings
+		if sharedSettings == nil then
+			sharedSettings = activeSettings
+		end
+		local secondarySharedSettings = activeSettings or sharedSettings
 
 		-- Secondary (Combo Points): In cat form (displaySpecId == 2), CPs are the native resource
 		-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
 		-- (defaults ON for Feral, OFF for non-Feral).
 		local hasSecondary = false
 		local secondaryVisSettings = nil
-		if sharedSettings ~= nil and sharedSettings.displayBar ~= nil then
-			if displaySpecId == 2 then
+		if displaySpecId == 2 then
+			if sharedSettings ~= nil and sharedSettings.displayBar ~= nil then
 				-- Cat form (or Feral with form-switching off): CPs are native, always eligible
 				hasSecondary = true
 				secondaryVisSettings = sharedSettings.displayBar.secondary
-			elseif TRB.Data.character.specId == 2 then
+			end
+		elseif secondarySharedSettings ~= nil and secondarySharedSettings.displayBar ~= nil then
+			if TRB.Data.character.specId == 2 then
 				-- Feral in non-cat form: checkbox defaults ON (nil → show)
-				if sharedSettings.displayBar.showComboPoints ~= false then
+				if secondarySharedSettings.displayBar.showComboPoints ~= false then
 					hasSecondary = true
-					secondaryVisSettings = sharedSettings.displayBar.secondary
+					secondaryVisSettings = secondarySharedSettings.displayBar.secondary
 				end
 			else
 				-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-				if sharedSettings.displayBar.showComboPoints == true then
+				if secondarySharedSettings.displayBar.showComboPoints == true then
 					hasSecondary = true
-					secondaryVisSettings = sharedSettings.displayBar.secondary
+					secondaryVisSettings = secondarySharedSettings.displayBar.secondary
 				end
 			end
 		end

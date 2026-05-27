@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.0.5.11-release (2026-05-28)
+## General
+### Localization
+
+- [#759](#759), [#761](#761) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Druid
+
+- Fix a bug where the visibility options for a bar were not being applied correctly when formswitching.
+
+---
+
 # 12.0.5.10-release (2026-05-25)
 ## Mage
 ### Fire
