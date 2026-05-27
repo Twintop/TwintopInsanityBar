@@ -309,6 +309,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inDelve boolean? # Show when the player is in a delve
 ---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
 ---@field public isWarMode boolean? # Show when War Mode is enabled
+---@field public isDruidHumanoidForm boolean? # Show when the Druid player is in humanoid form
+---@field public isDruidTravelFormAny boolean? # Show when the Druid player is in any travel form variant
+---@field public isDruidStagForm boolean? # Show when the Druid player is in stag/ground travel form
+---@field public isDruidFlightForm boolean? # Show when the Druid player is in steady flight form
+---@field public isDruidSwiftFlightForm boolean? # Show when the Druid player is in skyriding flight form
+---@field public isDruidAquaticForm boolean? # Show when the Druid player is in aquatic form
+---@field public isDruidCatForm boolean? # Show when the Druid player is in cat form
+---@field public isDruidBearForm boolean? # Show when the Druid player is in bear form
+---@field public isDruidMoonkinForm boolean? # Show when the Druid player is in moonkin form
 
 ---@class trbBarVisibilityHideConditions
 ---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
@@ -316,6 +325,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isMountedFlying boolean? # Hide when the player is on a flying mount (non-skyriding, flying)
 ---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
 ---@field public isSkyriding boolean? # Hide when the player is skyriding
+---@field public isDruidHumanoidForm boolean? # Hide when the Druid player is in humanoid form
+---@field public isDruidTravelFormAny boolean? # Hide when the Druid player is in any travel form variant
+---@field public isDruidStagForm boolean? # Hide when the Druid player is in stag/ground travel form
+---@field public isDruidFlightForm boolean? # Hide when the Druid player is in steady flight form
+---@field public isDruidSwiftFlightForm boolean? # Hide when the Druid player is in skyriding flight form
+---@field public isDruidAquaticForm boolean? # Hide when the Druid player is in aquatic form
+---@field public isDruidCatForm boolean? # Hide when the Druid player is in cat form
+---@field public isDruidBearForm boolean? # Hide when the Druid player is in bear form
+---@field public isDruidMoonkinForm boolean? # Hide when the Druid player is in moonkin form
 ---@field public inVehicle boolean? # Hide when the player is in a vehicle
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path

@@ -122,6 +122,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	yCoord = yCoord - 30
+	local isDruidVisibilityPanel = classId == 11 or (classId == nil and TRB.Data.character ~= nil and TRB.Data.character.classId == 11)
+	local druidFormConditionKeys = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
+	local druidFormConditionLabels = {
+		isDruidHumanoidForm = L["ShowBarVisibilityConditionDruidHumanoidForm"],
+		isDruidTravelFormAny = L["ShowBarVisibilityConditionDruidTravelFormAny"],
+		isDruidStagForm = L["ShowBarVisibilityConditionDruidStagForm"],
+		isDruidFlightForm = L["ShowBarVisibilityConditionDruidFlightForm"],
+		isDruidSwiftFlightForm = L["ShowBarVisibilityConditionDruidSwiftFlightForm"],
+		isDruidAquaticForm = L["ShowBarVisibilityConditionDruidAquaticForm"],
+		isDruidCatForm = L["ShowBarVisibilityConditionDruidCatForm"],
+		isDruidBearForm = L["ShowBarVisibilityConditionDruidBearForm"],
+		isDruidMoonkinForm = L["ShowBarVisibilityConditionDruidMoonkinForm"],
+	}
 
 	-- Condition definitions for multi-select bar visibility
 	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
@@ -169,6 +182,16 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = { "isPvpFlagged", "isWarMode" },
 		},
 	}
+	if isDruidVisibilityPanel then
+		for _, key in ipairs(druidFormConditionKeys) do
+			table.insert(conditionKeys, key)
+			conditionLabels[key] = druidFormConditionLabels[key]
+		end
+		table.insert(conditionGroups, {
+			title = L["ShowBarVisibilityGroupDruidForms"],
+			keys = druidFormConditionKeys,
+		})
+	end
 
 	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSkyriding", "inVehicle", "inPetBattle", "onTaxi" }
 	local hideConditionLabels = {
@@ -190,6 +213,16 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isMountedFlying" },
 		},
 	}
+	if isDruidVisibilityPanel then
+		for _, key in ipairs(druidFormConditionKeys) do
+			table.insert(hideConditionKeys, key)
+			hideConditionLabels[key] = druidFormConditionLabels[key]
+		end
+		table.insert(hideConditionGroups, {
+			title = L["ShowBarVisibilityGroupDruidForms"],
+			keys = druidFormConditionKeys,
+		})
+	end
 
 	-- Labels for resource/health threshold condition types (used in dropdown and summary)
 	-- Ordered array so dropdown items render in a deterministic, logical order.

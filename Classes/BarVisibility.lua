@@ -27,6 +27,15 @@ TRB.Functions = TRB.Functions or {}
 ---@field inDelve boolean # Whether the player is in a delve (scenario with isDelve flag)
 ---@field isPvpFlagged boolean # Whether the player is PVP flagged
 ---@field isWarMode boolean # Whether War Mode is enabled
+---@field isDruidHumanoidForm boolean # Whether the Druid player is in humanoid form
+---@field isDruidTravelFormAny boolean # Whether the Druid player is in any travel form variant
+---@field isDruidStagForm boolean # Whether the Druid player is in stag/ground travel form
+---@field isDruidFlightForm boolean # Whether the Druid player is in steady flight form
+---@field isDruidSwiftFlightForm boolean # Whether the Druid player is in skyriding flight form
+---@field isDruidAquaticForm boolean # Whether the Druid player is in aquatic form
+---@field isDruidCatForm boolean # Whether the Druid player is in cat form
+---@field isDruidBearForm boolean # Whether the Druid player is in bear form
+---@field isDruidMoonkinForm boolean # Whether the Druid player is in moonkin form
 TRB.Classes.BarVisibilityContext = {}
 TRB.Classes.BarVisibilityContext.__index = TRB.Classes.BarVisibilityContext
 
@@ -60,6 +69,15 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inDelve = params.inDelve or false
 	self.isPvpFlagged = params.isPvpFlagged or false
 	self.isWarMode = params.isWarMode or false
+	self.isDruidHumanoidForm = params.isDruidHumanoidForm or false
+	self.isDruidTravelFormAny = params.isDruidTravelFormAny or false
+	self.isDruidStagForm = params.isDruidStagForm or false
+	self.isDruidFlightForm = params.isDruidFlightForm or false
+	self.isDruidSwiftFlightForm = params.isDruidSwiftFlightForm or false
+	self.isDruidAquaticForm = params.isDruidAquaticForm or false
+	self.isDruidCatForm = params.isDruidCatForm or false
+	self.isDruidBearForm = params.isDruidBearForm or false
+	self.isDruidMoonkinForm = params.isDruidMoonkinForm or false
 	return self
 end
 
@@ -87,6 +105,13 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	if onTaxi == nil then
 		onTaxi = UnitOnTaxi("player") or false
 	end
+
+	local isDruid = TRB.Data.character.classId == 11
+	local druidForm = nil
+	if isDruid then
+		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+	end
+	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
@@ -130,6 +155,15 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		inDelve = inDelve,
 		isPvpFlagged = UnitIsPVP("player") or false,
 		isWarMode = C_PvP.IsWarModeDesired() or false,
+		isDruidHumanoidForm = druidForm == "humanoid",
+		isDruidTravelFormAny = isDruidTravelFormAny,
+		isDruidStagForm = druidForm == "travel",
+		isDruidFlightForm = druidForm == "flight",
+		isDruidSwiftFlightForm = druidForm == "swiftFlight",
+		isDruidAquaticForm = druidForm == "aquatic",
+		isDruidCatForm = druidForm == "cat",
+		isDruidBearForm = druidForm == "bear",
+		isDruidMoonkinForm = druidForm == "moonkin",
 	})
 end
 
@@ -175,11 +209,33 @@ TRB.Functions.BarVisibility.fading = false
 -- Character.lua checks this to MarkDirty on resource/health changes.
 TRB.Functions.BarVisibility.hasResourceCurve = false
 
+local DRUID_FORM_VISIBILITY_KEYS = {
+	"isDruidHumanoidForm",
+	"isDruidTravelFormAny",
+	"isDruidStagForm",
+	"isDruidFlightForm",
+	"isDruidSwiftFlightForm",
+	"isDruidAquaticForm",
+	"isDruidCatForm",
+	"isDruidBearForm",
+	"isDruidMoonkinForm",
+}
+
+local function HasMatchingDruidFormCondition(conditions, context)
+	for _, key in ipairs(DRUID_FORM_VISIBILITY_KEYS) do
+		if conditions[key] == true and context[key] == true then
+			return true
+		end
+	end
+	return false
+end
+
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
 ---  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, hasTarget, inGroup, inRaid,
 ---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
+---  Druid shapeshift form,
 ---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
 	self.dirtyToken = self.dirtyToken + 1
@@ -236,6 +292,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 		return true
 	end
 	if conditions.onTaxi == true and context.onTaxi then
+		return true
+	end
+	if HasMatchingDruidFormCondition(conditions, context) then
 		return true
 	end
 
@@ -344,6 +403,9 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return true
 	end
 	if conditions.isWarMode and context.isWarMode then
+		return true
+	end
+	if HasMatchingDruidFormCondition(conditions, context) then
 		return true
 	end
 

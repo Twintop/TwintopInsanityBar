@@ -20,6 +20,7 @@ local content = [====[
 
 ## Druid
 
+- Add visibility options for bars to be shown or hidden in specific Druid forms.
 - Fix a bug where the visibility options for a bar were not being applied correctly when formswitching.
 
 ---

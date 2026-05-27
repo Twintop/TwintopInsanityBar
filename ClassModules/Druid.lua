@@ -3849,10 +3849,12 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
 		local displayCompositeKey = GetDruidCompositeKey(displaySpecId)
 		local sharedSettings = displayCompositeKey and TRB.Data.specCache[displayCompositeKey] and TRB.Data.specCache[displayCompositeKey].settings
-		if sharedSettings == nil then
+		if sharedSettings == nil or sharedSettings.displayBar == nil then
 			sharedSettings = activeSettings
 		end
+		local sharedDisplayBar = sharedSettings and sharedSettings.displayBar or nil
 		local secondarySharedSettings = activeSettings or sharedSettings
+		local secondarySharedDisplayBar = secondarySharedSettings and secondarySharedSettings.displayBar or nil
 
 		-- Secondary (Combo Points): In cat form (displaySpecId == 2), CPs are the native resource
 		-- and always show. In non-cat forms, the showComboPoints checkbox controls visibility
@@ -3860,23 +3862,23 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local hasSecondary = false
 		local secondaryVisSettings = nil
 		if displaySpecId == 2 then
-			if sharedSettings ~= nil and sharedSettings.displayBar ~= nil then
+			if sharedDisplayBar ~= nil then
 				-- Cat form (or Feral with form-switching off): CPs are native, always eligible
 				hasSecondary = true
-				secondaryVisSettings = sharedSettings.displayBar.secondary
+				secondaryVisSettings = sharedDisplayBar.secondary
 			end
-		elseif secondarySharedSettings ~= nil and secondarySharedSettings.displayBar ~= nil then
+		elseif secondarySharedDisplayBar ~= nil then
 			if TRB.Data.character.specId == 2 then
 				-- Feral in non-cat form: checkbox defaults ON (nil → show)
-				if secondarySharedSettings.displayBar.showComboPoints ~= false then
+				if secondarySharedDisplayBar.showComboPoints ~= false then
 					hasSecondary = true
-					secondaryVisSettings = secondarySharedSettings.displayBar.secondary
+					secondaryVisSettings = secondarySharedDisplayBar.secondary
 				end
 			else
 				-- Non-Feral in non-cat form: checkbox defaults OFF (nil → hide)
-				if secondarySharedSettings.displayBar.showComboPoints == true then
+				if secondarySharedDisplayBar.showComboPoints == true then
 					hasSecondary = true
-					secondaryVisSettings = secondarySharedSettings.displayBar.secondary
+					secondaryVisSettings = secondarySharedDisplayBar.secondary
 				end
 			end
 		end
@@ -3885,16 +3887,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 		-- When form switching routes to displaySpecId == 4 (Restoration), the primary bar IS mana,
 		-- so the dedicated mana bar would duplicate it. Only show it when displaySpecId == 1 (Astral Power on primary).
 		local hasMana = TRB.Data.character.specId == 1 and displaySpecId == 1
-		local manaVisSettings = (sharedSettings and sharedSettings.displayBar.mana) or nil
+		local manaVisSettings = sharedDisplayBar and sharedDisplayBar.mana or nil
 
 		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedDisplayBar and sharedDisplayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedDisplayBar and sharedDisplayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
 		}
 
-		if sharedSettings ~= nil then
+		if sharedSettings ~= nil and sharedDisplayBar ~= nil then
 			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else

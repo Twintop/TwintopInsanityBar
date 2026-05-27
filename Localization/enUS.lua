@@ -2813,3 +2813,15 @@ L["MageFireBarTextVariable_fireBlastCharges"] = "Number of Fire Blast charges cu
 L["MageFireBarTextVariable_fireBlastTime"] = "Remaining time until the next Fire Blast charge is restored."
 L["MageFireBarTextVariable_fireBlastChargesMax"] = "Maximum number of Fire Blast charges."
 L["MageFireFireBlast"] = "Fire Blast"
+
+-- Druid Form Visibility Conditions
+L["ShowBarVisibilityGroupDruidForms"] = "Druid Forms"
+L["ShowBarVisibilityConditionDruidHumanoidForm"] = "Humanoid Form"
+L["ShowBarVisibilityConditionDruidTravelFormAny"] = "Travel Form (Any)"
+L["ShowBarVisibilityConditionDruidStagForm"] = "Stag Form"
+L["ShowBarVisibilityConditionDruidFlightForm"] = "Flight Form"
+L["ShowBarVisibilityConditionDruidSwiftFlightForm"] = "Swift Flight Form"
+L["ShowBarVisibilityConditionDruidAquaticForm"] = "Aquatic Form"
+L["ShowBarVisibilityConditionDruidCatForm"] = "Cat Form"
+L["ShowBarVisibilityConditionDruidBearForm"] = "Bear Form"
+L["ShowBarVisibilityConditionDruidMoonkinForm"] = "Moonkin Form"
