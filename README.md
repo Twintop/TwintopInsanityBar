@@ -51,8 +51,9 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Group state: In Group, In Raid Group
 - Instance state: In Instance, In Dungeon, In Raid Instance, In Delve, In Battleground, In Arena
 - PvP state: PvP Flagged
-- Resource and health thresholds (percentage or raw value)
+- Resource and health thresholds (percentage or raw value), including the secondary Mana bar for Shadow Priest, Balance Druid, and Elemental Shaman
 - Per-bar opacity and fade-out configuration
+- Always-hide overrides that take precedence over other visibility settings when specific conditions are met
 - Hidden bars maintain their layout height so other bars don't shift position
 
 ### Size and Position
@@ -61,6 +62,9 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Pixel-precise positioning with horizontal and vertical offsets
 - Anchor bars to other bars for automatic relative positioning, or position each bar independently
 - Position bars via Edit Mode or classic X/Y offset settings
+- Per-bar Fill Direction: Left to Right, Right to Left, Top to Bottom, or Bottom to Top, allowing any bar or bar group to be oriented horizontally or vertically
+- Independent Growth Direction for multi-node bars so groups like Warrior Defensives can place each bar on its own row regardless of fill direction
+- Optionally match an anchor bar's (or Edit Mode frame's) height in addition to its width for a cohesive layout
 
 ### Colors
 
@@ -69,8 +73,10 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Optional gradient color transitions for bar fills and casting overlays
 - Per-threshold colors: under resource threshold, over resource threshold, unusable, out of range -- each overridable per-threshold with static or per-state colors
 - Per-threshold visibility overrides (e.g., hide when unusable)
-- Individual node coloring for secondary resources
+- Individual node coloring for secondary resources, with per-stack distinct color options for bars like Holy Power (1-5), Soul Shards (1-5), Whirlwind Charges (1 vs. 2 charges, plus an optional 0-charge background), and the 5th Maelstrom Weapon stack
+- Dedicated color option for the partial-fill portion of bars with time-based or fragment-based generation (Evoker Essence, Feral Druid Combo Points, Destruction Warlock Soul Shards)
 - Node border overlap option for multi-node bars (Combo Points, Runes, etc.)
+- Optional full-bar-height overlays (casting, spending, absorb, incoming heal) that extend across the border for a flush appearance
 - Global color settings that apply across all specializations (e.g., Health Bar colors)
 
 ### Textures and Fonts
@@ -84,6 +90,7 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Customizable sound cues triggered by resource thresholds or proc events
 - Per-threshold audio cues that play when a threshold becomes usable
 - Secondary resource audio cues (Combo Points, Holy Power, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) that fire independently of bar visibility, triggering only during combat
+- Proc and cooldown audio cues for key abilities and buffs, including Benediction procs (Holy Priest), Lightweaver stacks (configurable trigger threshold plus an optional drop-off warning), Holy Word: Chastise/Serenity/Sanctify coming off cooldown per charge, Surge of Light (with optional Spiritwell-only restriction), Dance of Chi-Ji, Earthquake/Elemental Blast usability, Divine Purpose, and more
 - LibSharedMedia support for custom sounds
 - Configurable audio output channel
 
@@ -108,6 +115,14 @@ Share your configuration with others or back up your settings:
 - Export individual sections (colors, thresholds, fonts, audio) or entire spec configurations
 - Import configurations from other players
 - Compressed export strings using Blizzard's `C_EncodingUtil` with Deflate compression for smaller sizes (legacy import strings remain compatible)
+- "Copy..." buttons on supported settings sections let you copy shared settings between profiles, specializations, and Global Options without exporting and re-importing
+- Native Wago Profile Import/Export API support for one-click sharing through the Wago Companion app
+
+### Profiles
+
+- Per-specialization profiles, groupable into named profile sets for easy sharing across characters and specs
+- Configurable on a per-specialization and per-character basis with a default fallback profile
+- Dedicated profiles for Global Options, with one active at a time that applies to every specialization using global settings
 
 ### Options Window
 
@@ -147,10 +162,24 @@ Full integration with WoW's native Edit Mode system, allowing you to position an
 
 Every spec gets a primary resource bar that tracks your main resource (Mana, Rage, Energy, Focus, Runic Power, Fury, Insanity, Astral Power, or Maelstrom). The bar includes:
 
-- **Threshold lines** showing the cost of your abilities, color-coded by availability. Thresholds are managed via a sortable, searchable table with a detail panel for per-threshold configuration including icon display (visibility, position, size, border width), color overrides, visibility overrides, and audio cues. A Threshold Shared Settings tab provides defaults for threshold colors, line dimensions, and icon settings across all thresholds for a specialization.
+- **Threshold lines** showing the cost of your abilities, color-coded by availability. See the Threshold Lines section below for full details.
 - **Predictive cast resource overlay** for some specs, showing expected resource changes during your current cast as an overlay on the bar or via bar text
 - **Maximum display customization** allows the bar to fill to a lower value than your maximum resource; useful for specs like Assassination Rogue with threshold lines and very high maximum resource pools
 - **Overcapping resource alert** change the bar border and resource text color when almost full on resources for specs with fast auto-regennerating resources (i.e. Rogues) and those with builder/spender playstyles (i.e. Shadow)
+
+### Threshold Lines
+
+Threshold lines mark the resource cost of your abilities on the primary bar, color-coded by whether the ability is currently usable. Every threshold for a specialization is managed from a single sortable, searchable table with columns for icon, name, category, bar target, audio cue, and enabled status. Selecting a row opens a detail panel below the table for editing without navigating away.
+
+Per-threshold options include:
+
+- **Color overrides** -- use a static color, or independently override the default Under, Over, Unusable, and Out of Range colors for that specific threshold
+- **Visibility overrides** -- hide a threshold line entirely under specific states (for example, hide when unusable) instead of relying on color alone
+- **Icon display** -- toggle the icon, position it relative to the line, and adjust its size and border width
+- **Audio cues** -- choose a sound to play when the threshold becomes usable (thresholds tied to `secret` resource values, such as Execute at max Rage, don't support audio cues)
+- **Enable/disable** -- turn individual thresholds on or off without removing them
+
+A dedicated **Threshold Shared Settings** tab sets the default threshold colors, line dimensions, and icon defaults that apply to every threshold for the specialization, giving you a single place to restyle them all at once while still allowing per-threshold overrides.
 
 ### Secondary Resource Nodes
 
@@ -162,10 +191,11 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
 - **Ebon Might** (Augmentation Evoker) - separate bar tracking remaining duration
 - **Essence** (Devastation/Preservation/Augmentation Evoker) - displayed with timer-based regeneration progress
+- **Fire Blast Charges** (Fire Mage) - per-node recharge timers with bar text and color options for each node and the partial recharge fill
 - **Holy Power** (Holy/Protection/Retribution Paladin)
 - **Icicles** (Frost Mage) - up to 5 stacks
 - **Holy Words** (Holy Priest) - individually toggleable and reorderable cooldown nodes for Holy Word: Serenity, Sanctify, and Chastise with real-time cooldown progress and CDR tracking
-- **Lightweaver** (Holy Priest) - per-stack nodes with duration timer, disabled by default
+- **Lightweaver** (Holy Priest) - per-stack nodes with duration timer, disabled by default. Includes an optional background indicator on the next unfilled node while Benediction is active.
 - **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks with a dedicated color for the 5th stack
 - **Power Words** (Discipline Priest) - cooldown nodes for Power Word: Radiance with real-time cooldown progress
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
@@ -229,22 +259,28 @@ Many specs can track important buff status and timers via color changes and dire
 
 | Spec | Tracked Cooldowns |
 | ------ | ------------------- |
-| Havoc/Vengeance/Devourer Demon Hunter | (Void) Metamorphosis |
+| Havoc Demon Hunter | Metamorphosis |
+| Vengeance Demon Hunter | Metamorphosis |
+| Devourer Demon Hunter | Void Metamorphosis, Rolling Torment Fury prediction |
 | Balance Druid | Eclipse/Incarnation |
-| Feral Druid | Berserk/Incarnation (including incoming combo point generation timing) |
+| Feral Druid | Berserk/Incarnation (including incoming combo point generation timing), Clearcasting, Ravage |
 | Guardian Druid | Berserk/Incarnation |
-| Restoration Druid | Efflorescence, Incarnation |
+| Restoration Druid | Efflorescence, Incarnation, Clearcasting |
 | Augmentation Evoker | Ebon Might |
 | Devastation Evoker | Dragonrage |
 | Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
 | Marksmanship Hunter | Trueshot |
 | Survival Hunter | Takedown |
 | Brewmaster Monk | Invoke Niuzao, the Black Ox |
+| Mistweaver Monk | Instant Vivify (Sheilun's Gift, Serene Surge) |
 | Windwalker Monk | Heart of the Jade Serpent, Dance of Chi-Ji |
-| Discipline Priest | Power Word: Radiance, Void Shield |
-| Holy Priest | Apotheosis, Benediction, Lightweaver, Holy Word cooldown reduction tracking |
-| Shadow Priest | Voidform, Entropic Rift (including extensions remaining) |
-| Elemental/Enhancement/Restoration Shaman | Ascendance |
+| Holy/Protection/Retribution Paladin | Divine Purpose |
+| Discipline Priest | Power Word: Radiance, Void Shield, Surge of Light |
+| Holy Priest | Apotheosis, Benediction, Lightweaver, Surge of Light, Holy Word cooldown reduction tracking |
+| Shadow Priest | Voidform, Entropic Rift (including extensions remaining), Shadowy Insight (Instant Mind Blast) |
+| Elemental Shaman | Ascendance, Earthquake/Elemental Blast usability |
+| Enhancement Shaman | Ascendance |
+| Restoration Shaman | Ascendance |
 
 ---
 
