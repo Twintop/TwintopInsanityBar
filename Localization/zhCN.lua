@@ -2586,4 +2586,16 @@ if locale == "zhCN" then
     L["MageFireBarTextVariable_fireBlastTime"] = "下一层火焰冲击冷却剩余时间。"
     L["MageFireBarTextVariable_fireBlastChargesMax"] = "火焰冲击最大层数。"
     L["MageFireFireBlast"] = "火焰冲击"
+
+	-- Druid Form Visibility Conditions
+	L["ShowBarVisibilityGroupDruidForms"] = "德鲁伊形态"
+	L["ShowBarVisibilityConditionDruidHumanoidForm"] = "人形态"
+	L["ShowBarVisibilityConditionDruidTravelFormAny"] = "旅行形态(所有)"
+	L["ShowBarVisibilityConditionDruidStagForm"] = "雄鹿形态"
+	L["ShowBarVisibilityConditionDruidFlightForm"] = "飞行形态"
+	L["ShowBarVisibilityConditionDruidSwiftFlightForm"] = "迅捷飞行形态"
+	L["ShowBarVisibilityConditionDruidAquaticForm"] = "水栖形态"
+	L["ShowBarVisibilityConditionDruidCatForm"] = "猎豹形态"
+	L["ShowBarVisibilityConditionDruidBearForm"] = "熊形态"
+	L["ShowBarVisibilityConditionDruidMoonkinForm"] = "枭兽形态"
 end
