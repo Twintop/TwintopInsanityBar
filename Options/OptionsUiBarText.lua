@@ -5,6 +5,10 @@ TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
 TRB.Functions.OptionsUi.BarText = TRB.Functions.OptionsUi.BarText or {}
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
+local barTextCopyIconMarkup = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14:0:0|t"
+local actionCellDimAlpha = 0.65
+local actionCellBrightAlpha = 1.0
+local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 
 ---Returns the RGB color values used for "Use Global Settings" checkbox label text.
 ---@return number r # Red component (0-1)
@@ -172,7 +176,12 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		},
 		{
 			["name"] = "",
-			["width"] = 15,--260,
+			["width"] = 22,
+			["align"] = "CENTER",
+		},
+		{
+			["name"] = "",
+			["width"] = 15,
 			["align"] = "CENTER",
 			["color"] = {
 				["r"] = 1,
@@ -283,13 +292,26 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 
 	-- Dynamically resize "Bar Text" column (index 4) to fill available width
 	btc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[5].width
+		local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[5].width + columns[6].width
 		local newBarTextWidth = math.max(200, w - fixedWidth - 30) -- 30 for internal padding/scrollbar
 		columns[4].width = newBarTextWidth
 		barTextTable:SetDisplayCols(columns)
 	end)
 
 	local addButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["AddNewBarTextArea"], 0, 0, 175, 25)
+
+	local function UpdateActionCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+		scrollingTable.DoCellUpdate(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+		if fShow and cellFrame ~= nil and cellFrame.text ~= nil then
+			cellFrame.text:SetAlpha(actionCellDimAlpha)
+		end
+	end
+
+	local function SetActionCellHoverState(cellFrame, isHovering)
+		if cellFrame ~= nil and cellFrame.text ~= nil then
+			cellFrame.text:SetAlpha(isHovering and actionCellBrightAlpha or actionCellDimAlpha)
+		end
+	end
 
 	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTextOptionsFrame", parent, "BackdropTemplate")
 	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, -10)
@@ -1290,7 +1312,13 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 							value = displayText.barText[i].text,
 						},
 						{
+							value = barTextCopyIconMarkup,
+							DoCellUpdate = UpdateActionCell,
+						},
+						{
 							value = "X",
+							color = deleteActionTextColor,
+							DoCellUpdate = UpdateActionCell,
 						}
 					}
 				})
@@ -1417,6 +1445,232 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		barTextOptionsFrame:Show()
 	end
 
+	local function ScrollBarTextTableToRow(realrow)
+		local scrollFrame = barTextTable and barTextTable.scrollframe
+		if realrow == nil or scrollFrame == nil then
+			return
+		end
+
+		local displayIndex = realrow
+		local filteredRows = barTextTable.filtered
+		local totalRows = #(barTextTable.data or {})
+		if filteredRows ~= nil then
+			totalRows = #filteredRows
+			for i = 1, totalRows do
+				if filteredRows[i] == realrow then
+					displayIndex = i
+					break
+				end
+			end
+		end
+
+		local displayRows = barTextTable.displayRows or 0
+		if displayRows <= 0 then
+			return
+		end
+
+		local offset = math.max(0, displayIndex - displayRows)
+		offset = math.min(offset, math.max(0, totalRows - displayRows))
+		if FauxScrollFrame_SetOffset ~= nil then
+			FauxScrollFrame_SetOffset(scrollFrame, offset)
+		end
+		scrollFrame:SetVerticalScroll(offset * (barTextTable.rowHeight or 15))
+		barTextTable:Refresh()
+	end
+
+	local function ClearBarTextRuntimeCaches()
+		TRB.Data.cache.barText = {}
+		TRB.Functions.BarText:ClearBarTextCacheHash()
+		TRB.Data.cache.symbols = {}
+		TRB.Data.cache.barTextTree = {}
+		TRB.Data.activeVariables = nil
+		TRB.Data.lookupDirty = true
+	end
+
+	local function RebuildSpecCacheBarText(destClassName, destSpecName)
+		if destClassName == nil or destSpecName == nil then
+			return
+		end
+
+		local composite = TRB.Functions.Character:GetCompositeKey(destClassName, destSpecName)
+		local specCache = TRB.Data.specCache[composite]
+		if specCache == nil or specCache.settings == nil then
+			return
+		end
+
+		local core = TRB.Data.settings.core
+		local globalSettings = core.global and core.global[destClassName] and core.global[destClassName][destSpecName]
+		local destSpec = TRB.Data.settings[destClassName] and TRB.Data.settings[destClassName][destSpecName]
+		if globalSettings == nil or destSpec == nil or destSpec.displayText == nil then
+			return
+		end
+
+		local mergedBarText = destSpec.displayText.barText
+		local globalBarTextCount = 0
+		if globalSettings.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
+			mergedBarText = {}
+			for _, entry in ipairs(core.displayText.barText) do
+				mergedBarText[#mergedBarText + 1] = entry
+			end
+			globalBarTextCount = #mergedBarText
+			for _, entry in ipairs(destSpec.displayText.barText) do
+				mergedBarText[#mergedBarText + 1] = entry
+			end
+		end
+
+		specCache.settings.displayText = specCache.settings.displayText or {}
+		specCache.settings.displayText.barText = mergedBarText
+		specCache.settings.displayText.globalBarTextCount = globalBarTextCount
+		if globalSettings.displayText and core.displayText then
+			specCache.settings.displayText.default = core.displayText.default
+		else
+			specCache.settings.displayText.default = destSpec.displayText.default
+		end
+	end
+
+	local function RebuildAllGlobalBarTextSpecCaches()
+		for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local specCache = TRB.Data.specCache[entry.compositeKey]
+			if specCache ~= nil and specCache.settings ~= nil then
+				RebuildSpecCacheBarText(entry.className, entry.specName)
+			end
+		end
+	end
+
+	local function DestinationAffectsActiveBarText(destScope, destClassName, destSpecName)
+		if destScope == "global" then
+			local charClassName = TRB.Data.character.className
+			local charSpecName = TRB.Data.character.specName
+			return charClassName ~= nil and charSpecName ~= nil
+				and TRB.Data.settings.core.global[charClassName] ~= nil
+				and TRB.Data.settings.core.global[charClassName][charSpecName] ~= nil
+				and TRB.Data.settings.core.global[charClassName][charSpecName].globalBarText == true
+		end
+
+		return destClassName == TRB.Data.character.className and destSpecName == TRB.Data.character.specName
+	end
+
+	local function RefreshAfterBarTextEntryCopy(destScope, destClassName, destSpecName)
+		if destScope == "global" then
+			RebuildAllGlobalBarTextSpecCaches()
+		else
+			RebuildSpecCacheBarText(destClassName, destSpecName)
+		end
+
+		if DestinationAffectsActiveBarText(destScope, destClassName, destSpecName) then
+			ClearBarTextRuntimeCaches()
+			TRB.Functions.BarText:CreateBarTextFrames()
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end
+
+	local function GetDestinationDisplayText(destScope, destClassName, destSpecName)
+		if destScope == "global" then
+			TRB.Data.settings.core.displayText = TRB.Data.settings.core.displayText or {}
+			TRB.Data.settings.core.displayText.barText = TRB.Data.settings.core.displayText.barText or {}
+			return TRB.Data.settings.core.displayText
+		end
+
+		if destClassName == nil or destSpecName == nil then
+			return nil
+		end
+		if not TRB.Functions.Character:EnsureSpecSettings(destClassName) then
+			return nil
+		end
+		local classSettings = TRB.Data.settings[destClassName]
+		local destSpec = classSettings and classSettings[destSpecName]
+		if destSpec == nil then
+			return nil
+		end
+		destSpec.displayText = destSpec.displayText or {}
+		destSpec.displayText.barText = destSpec.displayText.barText or {}
+		return destSpec.displayText
+	end
+
+	local function CopyBarTextEntryToDestination(entry, destScope, destClassName, destSpecName)
+		local destinationDisplayText = GetDestinationDisplayText(destScope, destClassName, destSpecName)
+		if entry == nil or destinationDisplayText == nil or destinationDisplayText.barText == nil then
+			return nil
+		end
+
+		local copiedEntry = TRB.Functions.Table:DeepCopy(entry)
+		copiedEntry.guid = TRB.Functions.String:Guid()
+		NormalizeBarTextEntryColor(copiedEntry)
+		table.insert(destinationDisplayText.barText, copiedEntry)
+		RefreshAfterBarTextEntryCopy(destScope, destClassName, destSpecName)
+		return copiedEntry
+	end
+
+	local function IsCurrentEditorDestination(destScope, destClassName, destSpecName)
+		if destScope == "global" then
+			return classId == nil and specId == nil
+		end
+
+		local editorClassName = classId ~= nil and string.lower(className) or nil
+		return editorClassName == destClassName and specName == destSpecName
+	end
+
+	local function CopyBarTextEntryAndRefreshEditor(entry, destScope, destClassName, destSpecName)
+		local copiedEntry = CopyBarTextEntryToDestination(entry, destScope, destClassName, destSpecName)
+		if copiedEntry ~= nil and IsCurrentEditorDestination(destScope, destClassName, destSpecName) then
+			SetTableValues(spec.displayText, barTextTable)
+			local newRow = TRB.Functions.Table:Length(spec.displayText.barText)
+			barTextTable:SetSelection(newRow)
+			ScrollBarTextTableToRow(newRow)
+			FillBarTextEditorFields(copiedEntry.guid, spec.displayText)
+		end
+	end
+
+	local function ShowBarTextEntryCopyMenu(owner, entry)
+		if owner == nil or entry == nil then
+			return
+		end
+
+		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			rootDescription:CreateTitle(string.format(L["BarTextCopyMenuTitleFormat"], entry.name or L["BarText"]))
+			rootDescription:CreateButton(L["BarTextCopyMenuDuplicate"], function()
+				if classId == nil or specId == nil then
+					CopyBarTextEntryAndRefreshEditor(entry, "global")
+				else
+					CopyBarTextEntryAndRefreshEditor(entry, "spec", string.lower(className), specName)
+				end
+			end)
+
+			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+			local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+			if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+				copyTo:CreateTitle(L["CopyMenuCopyTo"])
+				copyTo:CreateDivider()
+				copyTo:CreateButton(L["BarTextCopyMenuGlobal"], function()
+					CopyBarTextEntryAndRefreshEditor(entry, "global")
+				end)
+				copyTo:CreateDivider()
+
+				local sortedClasses = {}
+				for i, classDef in ipairs(TRB.Data.allClassSpecs or {}) do
+					sortedClasses[i] = classDef
+				end
+				table.sort(sortedClasses, function(a, b) return a.classLabel < b.classLabel end)
+
+				for _, classDef in ipairs(sortedClasses) do
+					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+					local classMenu = copyTo:CreateButton(classDef.classLabel)
+					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+						local prefix = classDef.classKey .. "_"
+						for _, specDef in ipairs(classDef.specs) do
+							local targetSpecName = string.sub(specDef.compositeKey, #prefix + 1)
+							classMenu:CreateButton(specDef.specLabel, function()
+								CopyBarTextEntryAndRefreshEditor(entry, "spec", classDef.classKey, targetSpecName)
+							end)
+						end
+					end
+				end
+			end
+		end)
+	end
+
 	SetTableValues(spec.displayText, barTextTable)
 
 	addButton:SetScript("OnClick", function(self, ...)
@@ -1424,7 +1678,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local newEntry = GetNewDisplayTextEntry()
 		table.insert(displayText.barText, newEntry)
 		SetTableValues(displayText, barTextTable)
-		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
+		local newRow = TRB.Functions.Table:Length(displayText.barText)
+		barTextTable:SetSelection(newRow)
+		ScrollBarTextTableToRow(newRow)
 		-- Refresh the active spec's merged bar text list when global bar text is in use
 		-- (the merged table is a copy, so the insert above won't be reflected without a rebuild)
 		if classId == nil then
@@ -1482,7 +1738,35 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	-- recording handler is guaranteed to persist.
 	TRB.Functions.OptionsUi.BarTextInput:AttachUndoRedo(barText)
 
+	local function ShowActionCellTooltip(cellFrame, text)
+		if cellFrame == nil or text == nil then
+			return
+		end
+		GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+		GameTooltip:SetText(text, 1, 1, 1, 1, true)
+		GameTooltip:Show()
+	end
+
 	barTextTable:RegisterEvents({
+		OnEnter = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			scrollingTable.DefaultEvents.OnEnter(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow ~= nil and realrow > 0 then
+				if column == 5 then
+					SetActionCellHoverState(cellFrame, true)
+					ShowActionCellTooltip(cellFrame, L["BarTextCopyActionTooltip"])
+				elseif column == 6 then
+					SetActionCellHoverState(cellFrame, true)
+					ShowActionCellTooltip(cellFrame, L["BarTextDeleteActionTooltip"])
+				end
+			end
+		end,
+		OnLeave = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			scrollingTable.DefaultEvents.OnLeave(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if column == 5 or column == 6 then
+				SetActionCellHoverState(cellFrame, false)
+				GameTooltip:Hide()
+			end
+		end,
 		OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
 			if button == "LeftButton" then
 				local currentSelection = scrollingTable:GetSelection()
@@ -1491,6 +1775,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 					local guid = data[realrow].cols[1].value
 
 					if column == 5 then
+						ShowBarTextEntryCopyMenu(cellFrame or rowFrame, spec.displayText.barText[realrow])
+					elseif column == 6 then
 						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
 							message = string.format(L["BarTextDeleteConfirmation"], data[realrow].cols[2].value),
 							displayText = spec.displayText,

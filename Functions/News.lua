@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.5.12-release (2026-05-30)
+## General
+
+- [#672](#672) Add options to duplicate bar text entries and copy them between Global and specialization bar text settings.
+
+---
+
+
 # 12.0.5.11-release (2026-05-29)
 ## General
 ### Localization

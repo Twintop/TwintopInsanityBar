@@ -2825,3 +2825,10 @@ L["ShowBarVisibilityConditionDruidAquaticForm"] = "Aquatic Form"
 L["ShowBarVisibilityConditionDruidCatForm"] = "Cat Form"
 L["ShowBarVisibilityConditionDruidBearForm"] = "Bear Form"
 L["ShowBarVisibilityConditionDruidMoonkinForm"] = "Moonkin Form"
+
+-- Bar Text Entry Copy Menu
+L["BarTextCopyMenuTitleFormat"] = "Bar Text: %s"
+L["BarTextCopyMenuDuplicate"] = "Duplicate"
+L["BarTextCopyMenuGlobal"] = "Global"
+L["BarTextCopyActionTooltip"] = "Duplicate or copy this bar text entry"
+L["BarTextDeleteActionTooltip"] = "Delete this bar text entry"
