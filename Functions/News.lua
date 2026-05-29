@@ -12,11 +12,11 @@ local content = [====[
 
 ---
 
-# 12.0.5.11-release (2026-05-28)
+# 12.0.5.11-release (2026-05-29)
 ## General
 ### Localization
 
-- [#759](#759), [#761](#761) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#759](#759), [#761](#761), [#766](#766) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Druid
 
