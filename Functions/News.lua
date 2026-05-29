@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - [#672](#672) Add options to duplicate bar text entries and copy them between Global and specialization bar text settings.
+- [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
 
 ---
 

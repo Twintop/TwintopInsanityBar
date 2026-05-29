@@ -306,6 +306,163 @@ function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
 	return icons
 end
 
+TRB.Functions.BarText.VariableLogicType = {
+	NONE = "none",
+	BOOLEAN = "boolean",
+	INTEGER = "integer",
+	NUMBER = "number",
+	TEXT = "text",
+	UNKNOWN = "unknown",
+}
+
+TRB.Functions.BarText.VariableRenderType = {
+	TEXT = "text",
+	LOGIC_ONLY = "logicOnly",
+	ICON = "icon",
+	COMMAND = "command",
+	UNKNOWN = "unknown",
+}
+
+local defaultSecretBarTextVariables = {
+	["$health"] = true,
+	["$healthMax"] = true,
+	["$healthPercent"] = true,
+	["$absorb"] = true,
+	["$incomingHeal"] = true,
+}
+
+---@param variable string|nil
+---@param sectionKey string
+---@param entry table
+---@return string
+local function InferBarTextVariableLogicType(variable, sectionKey, entry)
+	if sectionKey == "icons" or sectionKey == "pipe" then
+		return TRB.Functions.BarText.VariableLogicType.NONE
+	end
+
+	if type(entry.logicType) == "string" and entry.logicType ~= "" then
+		return entry.logicType
+	end
+
+	local variableName = string.gsub(variable or "", "^%$", "")
+	variableName = string.lower(variableName)
+
+	if variableName == "" then
+		return TRB.Functions.BarText.VariableLogicType.UNKNOWN
+	end
+
+	if entry.logicOnly == true then
+		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
+	end
+
+	if variableName == "incombat" or variableName == "instealth" or variableName == "eclipse" or
+		variableName == "lunar" or variableName == "solar" or variableName == "celestialalignment" or
+		variableName == "rtbgoodbuff" or variableName == "benediction" or
+		string.match(variableName, "usable$") ~= nil or string.match(variableName, "ready$") ~= nil or
+		string.match(variableName, "active$") ~= nil then
+		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
+	end
+
+	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil or
+		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
+		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
+		variableName == "overs" or variableName == "dvers" then
+		return TRB.Functions.BarText.VariableLogicType.NUMBER
+	end
+
+	if string.match(variableName, "stacks$") ~= nil or string.match(variableName, "charges$") ~= nil or
+		string.match(variableName, "count$") ~= nil or string.match(variableName, "rating$") ~= nil or
+		string.match(variableName, "max$") ~= nil or string.match(variableName, "maxcharges$") ~= nil or
+		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil then
+		return TRB.Functions.BarText.VariableLogicType.INTEGER
+	end
+
+	return TRB.Functions.BarText.VariableLogicType.NUMBER
+end
+
+---@param variable string|nil
+---@param sectionKey string
+---@param entry table
+---@param logicType string
+---@return boolean
+local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, logicType)
+	if entry.booleanCheck ~= nil then
+		return entry.booleanCheck == true
+	end
+
+	if sectionKey == "icons" or sectionKey == "pipe" then
+		return false
+	end
+
+	if entry.logicOnly == true or logicType == TRB.Functions.BarText.VariableLogicType.BOOLEAN then
+		return true
+	end
+
+	local variableName = string.gsub(variable or "", "^%$", "")
+	variableName = string.lower(variableName)
+
+	if variableName == "resource" or variableName == "mana" or variableName == "energy" or
+		variableName == "rage" or variableName == "focus" or variableName == "fury" or
+		variableName == "pain" or variableName == "insanity" or variableName == "astralpower" or
+		variableName == "maelstrom" or variableName == "runicpower" or variableName == "holypower" or
+		variableName == "resourcepercent" or variableName == "manapercent" then
+		return false
+	end
+
+	if variableName == "casting" or variableName == "health" or variableName == "healthmax" or
+		variableName == "healthpercent" or variableName == "absorb" or variableName == "incomingheal" or
+		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
+		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
+		variableName == "overs" or variableName == "dvers" then
+		return true
+	end
+
+	return string.match(variableName, "time$") ~= nil or string.match(variableName, "stacks$") ~= nil or
+		string.match(variableName, "charges$") ~= nil or string.match(variableName, "count$") ~= nil or
+		string.match(variableName, "rating$") ~= nil or string.match(variableName, "max$") ~= nil or
+		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil
+end
+
+---@param entry table
+---@param sectionKey string
+---@return table
+function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
+	entry = entry or {}
+	sectionKey = sectionKey or "values"
+
+	local logicType = InferBarTextVariableLogicType(entry.variable, sectionKey, entry)
+	local comparisonUsable = entry.comparisonUsable
+	if comparisonUsable == nil then
+		comparisonUsable = logicType == self.VariableLogicType.NUMBER or logicType == self.VariableLogicType.INTEGER
+	end
+
+	local booleanCheck = InferBarTextVariableBooleanCheck(entry.variable, sectionKey, entry, logicType)
+
+	local renderType = entry.renderType
+	if renderType == nil then
+		if sectionKey == "icons" then
+			renderType = self.VariableRenderType.ICON
+		elseif sectionKey == "pipe" then
+			renderType = self.VariableRenderType.COMMAND
+		elseif entry.logicOnly == true or entry.renderText == false then
+			renderType = self.VariableRenderType.LOGIC_ONLY
+		elseif logicType == self.VariableLogicType.BOOLEAN and entry.variable ~= "$inCombat" then
+			renderType = self.VariableRenderType.LOGIC_ONLY
+		else
+			renderType = self.VariableRenderType.TEXT
+		end
+	end
+
+	return {
+		secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true,
+		logicType = logicType,
+		comparisonUsable = comparisonUsable == true,
+		booleanCheck = booleanCheck == true,
+		logicOnly = renderType == self.VariableRenderType.LOGIC_ONLY,
+		renderType = renderType,
+	}
+end
+
 ---Creates and returns the common bar text values shared by all specializations, with any additional spec-specific values appended.
 ---@param additionalValues table|nil Optional array of spec-specific value entries to append
 ---@return table # Combined values table
