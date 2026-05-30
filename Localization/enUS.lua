@@ -2872,3 +2872,7 @@ L["BarTextVariablesDescriptionBooleanCheck"] = "Bare Boolean check"
 L["BarTextVariablesDescriptionLogicComparisons"] = "Logic comparisons"
 L["BarTextVariablesDescriptionLogicType"] = "Logic type"
 L["BarTextVariablesDescriptionOutput"] = "Display output"
+
+L["SecondarySpendingOverlayColorPicker"] = "%s Spending Overlay"
+L["SecondarySpendingOverlayCheckbox"] = "Show spending overlay on %s?"
+L["SecondarySpendingOverlayCheckboxTooltip"] = "When checked, an overlay will be displayed on %s representing the resource spent by your current cast."

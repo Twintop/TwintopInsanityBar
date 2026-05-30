@@ -87,6 +87,7 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				spending = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true),
 				second = {
 					color = "FF8788EE",
 					color2 = "FF8788EE",
@@ -244,6 +245,8 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
+				spending = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true),
 				second = {
 					color = "FF8788EE",
 					color2 = "FF8788EE",
@@ -318,6 +321,8 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 	if includeBarText then
 		settings.displayText.barText = DemonologyLoadDefaultBarTextSettings(classic)
 	end
+	settings.textures.comboPointsCastingBar = settings.textures.castingBar
+	settings.textures.comboPointsCastingBarName = settings.textures.castingBarName
 
 	return settings
 end
@@ -403,6 +408,7 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
 				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
+				spending = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true),
 				second = {
 					color = "FF8788EE",
 					color2 = "FF8788EE",
@@ -710,6 +716,7 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceSoulShards"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
@@ -1013,6 +1020,8 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceSoulShards"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
@@ -1056,7 +1065,7 @@ local function DemonologyConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warlock_demonology
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 9, 2, yCoord, true, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 9, 2, yCoord, true, L["ResourceSoulShards"], nil, nil, true)
 end
 
 local function DemonologyConstructBarVisibilityPanel(parent)
@@ -1503,6 +1512,7 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceSoulShards"])
 
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceSoulShards"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border

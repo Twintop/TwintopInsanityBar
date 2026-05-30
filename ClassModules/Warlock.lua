@@ -351,6 +351,17 @@ local function RefreshLookupData_Affliction()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Casting Soul Shard Fragments ($castingFragments)
+	if not activeVars or activeVars["$castingFragments"] then
+		local castingFragmentsColor = sharedSettings.colors.text.casting.color
+
+		lookupLogic["$castingFragments"] = 0
+
+		if lookupChanged(prevState, "$castingFragments", 0, castingFragmentsColor) then
+			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, 0)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -358,6 +369,7 @@ end
 local function RefreshLookupData_Demonology()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
 	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -429,8 +441,70 @@ local function RefreshLookupData_Demonology()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Casting Soul Shard Fragments ($castingFragments)
+	if not activeVars or activeVars["$castingFragments"] then
+		local castingFragmentsColor = sharedSettings.colors.text.casting.color
+		local castingFragments = 0
+		if spells.demonbolt ~= nil and snapshotData.casting.spellId == spells.demonbolt.id then
+			castingFragments = spells.demonbolt.resource or 0
+		end
+
+		lookupLogic["$castingFragments"] = castingFragments
+
+		if lookupChanged(prevState, "$castingFragments", castingFragments, castingFragmentsColor) then
+			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
+end
+
+---@param spells TRB.Classes.Warlock.AfflictionSpells?
+---@return number
+local function GetAfflictionSpendingShards(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	if snapshotData == nil or snapshotData.casting == nil or spells == nil then
+		return 0
+	end
+
+	if spells.seedOfCorruption ~= nil and snapshotData.casting.spellId == spells.seedOfCorruption.id then
+		return spells.seedOfCorruption.resource or 0
+	elseif spells.unstableAffliction ~= nil and snapshotData.casting.spellId == spells.unstableAffliction.id then
+		return spells.unstableAffliction.resource or 0
+	end
+
+	return 0
+end
+
+---@param spells TRB.Classes.Warlock.DemonologySpells?
+---@return number
+local function GetDemonologyCastingShards(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.demonbolt == nil then
+		return 0
+	end
+
+	if snapshotData.casting.spellId == spells.demonbolt.id then
+		return spells.demonbolt.resource or 0
+	end
+
+	return 0
+end
+
+---@param spells TRB.Classes.Warlock.DemonologySpells?
+---@return number
+local function GetDemonologySpendingShards(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.handOfGuldan == nil then
+		return 0
+	end
+
+	if snapshotData.casting.spellId == spells.handOfGuldan.id then
+		return spells.handOfGuldan.resource or 0
+	end
+
+	return 0
 end
 
 ---@param spells TRB.Classes.Warlock.DestructionSpells?
@@ -449,6 +523,21 @@ local function GetDestructionCastingFragments(spells)
 		end
 	elseif snapshotData.casting.spellId == spells.soulFire.id then
 		return spells.soulFire.resource
+	end
+
+	return 0
+end
+
+---@param spells TRB.Classes.Warlock.DestructionSpells?
+---@return number
+local function GetDestructionSpendingFragments(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.chaosBolt == nil then
+		return 0
+	end
+
+	if snapshotData.casting.spellId == spells.chaosBolt.id then
+		return spells.chaosBolt.resource or 0
 	end
 
 	return 0
@@ -650,8 +739,30 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
+	local function GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, nodeIndex)
+		local nodeStart = nodeIndex - 1
+		local nodeEnd = nodeIndex
+
+		if incomingShards > 0 then
+			local predictionEnd = math.min(normalizedResource2 + incomingShards, TRB.Data.character.maxResource2)
+			return math.max(0, math.min(predictionEnd, nodeEnd) - math.max(normalizedResource2, nodeStart))
+		elseif spendingShards > 0 then
+			local spendingEnd = math.max(normalizedResource2 - spendingShards, 0)
+			local overlayValue = math.max(0, math.min(normalizedResource2, nodeEnd) - math.max(spendingEnd, nodeStart))
+			return -overlayValue
+		end
+
+		return 0
+	end
+
+	local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, spells)
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+		local castingSettings = specCacheSettings.colors.comboPoints.casting
+		local spendingSettings = specCacheSettings.colors.comboPoints.spending
+		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
+		local incomingShards = GetDemonologyCastingShards(spells)
+		local spendingShards = math.abs(GetDemonologySpendingShards(spells))
+
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
 			local cpColor = specSettings.colors.comboPoints.base
@@ -659,6 +770,7 @@ local function UpdateResourceBar()
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = normalizedResource2 >= x
+			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, x)
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
@@ -679,6 +791,10 @@ local function UpdateResourceBar()
 					shardNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+					end
 				end
 			end
 		end
@@ -686,6 +802,10 @@ local function UpdateResourceBar()
 
 	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+		local spendingSettings = specCacheSettings.colors.comboPoints.spending
+		local spendingTexture = specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
+		local spendingShards = math.abs(GetAfflictionSpendingShards(spells))
+
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
 			local cpColor = specSettings.colors.comboPoints.base
@@ -693,6 +813,7 @@ local function UpdateResourceBar()
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = normalizedResource2 >= x
+			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, 0, spendingShards, x)
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
@@ -713,6 +834,10 @@ local function UpdateResourceBar()
 					shardNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, nil, spendingSettings, spendingTexture)
+					end
 				end
 			end
 		end
@@ -722,11 +847,12 @@ local function UpdateResourceBar()
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		local regeneratingColor = specSettings.colors.comboPoints.regenerating
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
+		local spendingSettings = specCacheSettings.colors.comboPoints.spending
 		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
 		local castingFragments = GetDestructionCastingFragments(spells)
 		local incomingShards = castingFragments / TRB.Data.resource2Factor
-		local predictionStart = normalizedResource2
-		local predictionEnd = math.min(predictionStart + incomingShards, TRB.Data.character.maxResource2)
+		local spendingFragments = GetDestructionSpendingFragments(spells)
+		local spendingShards = math.abs(spendingFragments / TRB.Data.resource2Factor)
 		local function GetSoulShardFillColor(resourceCount, nodeIndex)
 			local shardColor = specSettings.colors.comboPoints.base
 			if (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 3)) then
@@ -749,7 +875,7 @@ local function UpdateResourceBar()
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local fillValue = 0
-			local overlayValue = 0
+			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, x)
 
 			if normalizedResource2 >= x then
 				fillValue = 1
@@ -766,12 +892,6 @@ local function UpdateResourceBar()
 				end
 			end
 
-			if incomingShards > 0 then
-				local nodeStart = x - 1
-				local nodeEnd = x
-				overlayValue = math.max(0, math.min(predictionEnd, nodeEnd) - math.max(predictionStart, nodeStart))
-			end
-
 			if barGroups and barGroups.secondary then
 				local shardNode = barGroups.secondary:GetNode(x)
 				if shardNode then
@@ -780,8 +900,8 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
-					if overlayValue > 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayValue, 1, castingSettings, nil, castingTexture)
+					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
 					end
 				end
 			end
@@ -856,8 +976,9 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShards(specSettings, specCacheSettings, normalizedResource2)
+				UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, spells)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1295,6 +1416,10 @@ do
 		["$resource"] = false, ["$mana"] = false,
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
 		["$resourceMax"] = true, ["$manaMax"] = true,
+		["$castingFragments"] = function()
+			local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingFragments"]
+			return value ~= nil and not issecretvalue(value) and value ~= 0
+		end,
 		["$comboPoints"] = true, ["$soulShards"] = true,
 		["$comboPointsMax"] = true, ["$soulShardsMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
@@ -1304,7 +1429,6 @@ do
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
 	end
-	destruction["$castingFragments"] = true
 	specValidVars = { [1] = shared, [2] = shared, [3] = destruction }
 end
 

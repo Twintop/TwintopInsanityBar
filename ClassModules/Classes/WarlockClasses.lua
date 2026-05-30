@@ -3,6 +3,8 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 
 ---@class TRB.Classes.Warlock.AfflictionSpells : TRB.Classes.SpecializationSpellsBase
+---@field public seedOfCorruption TRB.Classes.SpellBase
+---@field public unstableAffliction TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
 
@@ -11,19 +13,16 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Warlock.AfflictionSpells) --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-    -- Warlock Class Baseline Abilities
-
-    -- Affliction Baseline Abilities 
-    
-
-    -- Warlock Talent Abilities
-
-
-    -- Affliction Talent Abilities
-
-    -- Hellcaller
-
-    -- Soul Harvester
+    self.seedOfCorruption = TRB.Classes.SpellBase:New({
+        id = 27243,
+        baseline = true,
+        resource = -1
+    })
+    self.unstableAffliction = TRB.Classes.SpellBase:New({
+        id = 1259790,
+        isTalent = true,
+        resource = -1
+    })
 
     return self
 end
@@ -38,7 +37,10 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#seedOfCorruption", icon = spells.seedOfCorruption.icon, description = spells.seedOfCorruption.name, printInSettings = true },
+		{ variable = "#unstableAffliction", icon = spells.unstableAffliction.icon, description = spells.unstableAffliction.name, printInSettings = true },
+	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
@@ -46,7 +48,8 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
 		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
+        { variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
 					
 		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false, secret = true },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
@@ -56,6 +59,8 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 end
 
 ---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
+---@field public demonbolt TRB.Classes.SpellBase
+---@field public handOfGuldan TRB.Classes.SpellBase
 TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
 
@@ -64,6 +69,16 @@ function TRB.Classes.Warlock.DemonologySpells:New()
     local base = TRB.Classes.SpecializationSpellsBase
     self = setmetatable(base:New(), TRB.Classes.Warlock.DemonologySpells) --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
+    self.demonbolt = TRB.Classes.SpellBase:New({
+        id = 264178,
+        baseline = true,
+        resource = 2
+    })
+    self.handOfGuldan = TRB.Classes.SpellBase:New({
+        id = 105174,
+        baseline = true,
+        resource = -3
+    })
 
     return self
 end
@@ -78,7 +93,10 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#demonbolt", icon = spells.demonbolt.icon, description = spells.demonbolt.name, printInSettings = true },
+		{ variable = "#handOfGuldan", icon = spells.handOfGuldan.icon, description = spells.handOfGuldan.name, printInSettings = true },
+	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
@@ -87,6 +105,7 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
 					
 		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false, secret = true },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
@@ -100,6 +119,7 @@ end
 ---@field public incinerate TRB.Classes.SpellBase
 ---@field public diabolicEmbers TRB.Classes.SpellBase
 ---@field public soulFire TRB.Classes.SpellBase
+---@field public chaosBolt TRB.Classes.SpellBase
 TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
 
@@ -123,6 +143,11 @@ function TRB.Classes.Warlock.DestructionSpells:New()
         isTalent = true,
         resource = 10
     })
+    self.chaosBolt = TRB.Classes.SpellBase:New({
+        id = 116858,
+        baseline = true,
+        resource = -20
+    })
 
     return self
 end
@@ -137,7 +162,11 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#incinerate", icon = spells.incinerate.icon, description = spells.incinerate.name, printInSettings = true },
+		{ variable = "#soulFire", icon = spells.soulFire.icon, description = spells.soulFire.name, printInSettings = true },
+		{ variable = "#chaosBolt", icon = spells.chaosBolt.icon, description = spells.chaosBolt.name, printInSettings = true },
+	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },

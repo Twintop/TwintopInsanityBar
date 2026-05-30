@@ -7878,6 +7878,40 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	local function EnsureSecondarySpendingOverlayColor(className, specName)
+		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
+		if type(specSettings) ~= "table" then
+			return
+		end
+
+		specSettings.colors = specSettings.colors or {}
+		specSettings.colors.comboPoints = specSettings.colors.comboPoints or {}
+
+		local comboPointColors = specSettings.colors.comboPoints
+		local defaultColor = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true)
+		if comboPointColors.spending == nil then
+			comboPointColors.spending = defaultColor
+		elseif type(comboPointColors.spending) == "string" then
+			comboPointColors.spending = {
+				color = comboPointColors.spending,
+				color2 = comboPointColors.spending,
+				gradientDirection = "disabled",
+				enabled = true,
+				fullHeight = false
+			}
+		elseif type(comboPointColors.spending) == "table" then
+			comboPointColors.spending.color = comboPointColors.spending.color or defaultColor.color
+			comboPointColors.spending.color2 = comboPointColors.spending.color2 or comboPointColors.spending.color
+			comboPointColors.spending.gradientDirection = comboPointColors.spending.gradientDirection or "disabled"
+			if comboPointColors.spending.enabled == nil then
+				comboPointColors.spending.enabled = true
+			end
+			if comboPointColors.spending.fullHeight == nil then
+				comboPointColors.spending.fullHeight = false
+			end
+		end
+	end
+
 	local function EnsureSecondaryCastingOverlayTexture(className, specName)
 		local specSettings = TwintopInsanityBarSettings and TwintopInsanityBarSettings[className] and TwintopInsanityBarSettings[className][specName]
 		if type(specSettings) ~= "table" then
@@ -7897,7 +7931,12 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 	EnsureSecondaryPartialFillColor("warlock", "affliction")
 	EnsureSecondaryPartialFillColor("warlock", "demonology")
 	EnsureSecondaryPartialFillColor("warlock", "destruction")
+	EnsureSecondarySpendingOverlayColor("warlock", "affliction")
+	EnsureSecondaryCastingOverlayColor("warlock", "demonology")
+	EnsureSecondarySpendingOverlayColor("warlock", "demonology")
+	EnsureSecondaryCastingOverlayTexture("warlock", "demonology")
 	EnsureSecondaryCastingOverlayColor("warlock", "destruction")
+	EnsureSecondarySpendingOverlayColor("warlock", "destruction")
 	EnsureSecondaryCastingOverlayTexture("warlock", "destruction")
 	EnsureSecondaryPartialFillColor("druid", "feral")
 	EnsureSecondaryPartialFillColor("evoker", "devastation")
@@ -8084,6 +8123,12 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 		if type(settings.colors.bar) == "table" and type(settings.colors.bar.spending) == "table" and settings.colors.bar.spending.fullHeight == nil then
 			settings.colors.bar.spending.fullHeight = false
 		end
+		if type(settings.colors.comboPoints) == "table" and type(settings.colors.comboPoints.casting) == "table" and settings.colors.comboPoints.casting.fullHeight == nil then
+			settings.colors.comboPoints.casting.fullHeight = false
+		end
+		if type(settings.colors.comboPoints) == "table" and type(settings.colors.comboPoints.spending) == "table" and settings.colors.comboPoints.spending.fullHeight == nil then
+			settings.colors.comboPoints.spending.fullHeight = false
+		end
 
 		if type(settings.colors.healthBar) == "table" then
 			if type(settings.colors.healthBar.absorb) == "table" and settings.colors.healthBar.absorb.fullHeight == nil then
@@ -8262,6 +8307,23 @@ function TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(enabled)
 	return {
 		color = "FFFFFFFF",
 		color2 = "FFFFFFFF",
+		gradientDirection = "disabled",
+		enabled = enabled,
+		fullHeight = false
+	}
+end
+
+---Gets the default secondary spending overlay color configuration.
+---@param enabled boolean?
+---@return table
+function TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(enabled)
+	if enabled == nil then
+		enabled = true
+	end
+
+	return {
+		color = "FF555555",
+		color2 = "FF555555",
 		gradientDirection = "disabled",
 		enabled = enabled,
 		fullHeight = false

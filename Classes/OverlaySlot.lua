@@ -72,6 +72,58 @@ function TRB.Classes.OverlaySlot:GetVerticalAnchorOffsets()
 	return -parent.border, parent.border
 end
 
+---Gets the parent's current fill ratio without leaking secret values into layout math.
+---@return number?
+function TRB.Classes.OverlaySlot:GetParentFillRatio()
+	local frame = self.parentNode and self.parentNode.frame
+	if frame == nil or frame.GetMinMaxValues == nil or frame.GetValue == nil then
+		return nil
+	end
+
+	local minValue, maxValue = frame:GetMinMaxValues()
+	local value = frame:GetValue()
+	if minValue == nil or maxValue == nil or value == nil then
+		return nil
+	end
+	if issecretvalue(minValue) or issecretvalue(maxValue) or issecretvalue(value) then
+		return nil
+	end
+	if maxValue == minValue then
+		return nil
+	end
+
+	return math.max(0, math.min(1, (value - minValue) / (maxValue - minValue)))
+end
+
+---Returns the offset needed to translate the raw StatusBar fill edge to the
+---inner fill edge used by overlay clip frames.
+---@param fillDirection trbFillDirection?
+---@return number xOffset
+---@return number yOffset
+function TRB.Classes.OverlaySlot:GetFillEdgeAnchorOffsets(fillDirection)
+	local parent = self.parentNode
+	local border = parent and parent.border or 0
+	if border == 0 then
+		return 0, 0
+	end
+
+	local fillRatio = self:GetParentFillRatio()
+	if fillRatio == nil then
+		return 0, 0
+	end
+
+	fillDirection = fillDirection or parent.fillDirection or "leftRight"
+	if fillDirection == "rightLeft" then
+		return border * ((2 * fillRatio) - 1), 0
+	elseif fillDirection == "bottomTop" then
+		return 0, border * (1 - (2 * fillRatio))
+	elseif fillDirection == "topBottom" then
+		return 0, border * ((2 * fillRatio) - 1)
+	end
+
+	return border * (1 - (2 * fillRatio)), 0
+end
+
 -- ============================================================================
 -- Generic Overlay (full-bar fill from left)
 -- ============================================================================
@@ -464,23 +516,24 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 
 		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
+			local fillEdgeXOffset, fillEdgeYOffset = self:GetFillEdgeAnchorOffsets(fillDirection)
 			self.insetOverlayFrame:ClearAllPoints()
 			if fillDirection == "rightLeft" then
 				-- Primary fills right→left, inset eats from LEFT edge of fill
-				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
-				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", fillEdgeXOffset, fillEdgeYOffset)
+				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", fillEdgeXOffset, fillEdgeYOffset)
 			elseif fillDirection == "bottomTop" then
 				-- Primary fills bottom→top, inset eats from TOP edge of fill
-				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
-				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+				self.insetOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", fillEdgeXOffset, fillEdgeYOffset)
+				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 			elseif fillDirection == "topBottom" then
 				-- Primary fills top→bottom, inset eats from BOTTOM edge of fill
-				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
-				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+				self.insetOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", fillEdgeXOffset, fillEdgeYOffset)
+				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 			else -- leftRight
 				-- Primary fills left→right, inset eats from RIGHT edge of fill
-				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+				self.insetOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", fillEdgeXOffset, fillEdgeYOffset)
+				self.insetOverlayFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 			end
 
 			if isVertical then
@@ -533,18 +586,19 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	-- Anchor to the fill texture's leading edge (opposite side from the appended overlay)
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	if fillTexture then
+		local fillEdgeXOffset, fillEdgeYOffset = self:GetFillEdgeAnchorOffsets(fillDirection)
 		if fillDirection == "rightLeft" then
-			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
-			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", fillEdgeXOffset, fillEdgeYOffset)
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", fillEdgeXOffset, fillEdgeYOffset)
 		elseif fillDirection == "bottomTop" then
-			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, 0)
-			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
+			overlayBar:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", fillEdgeXOffset, fillEdgeYOffset)
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 		elseif fillDirection == "topBottom" then
-			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", 0, 0)
-			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			overlayBar:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", fillEdgeXOffset, fillEdgeYOffset)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 		else -- leftRight
-			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, 0)
-			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, 0)
+			overlayBar:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", fillEdgeXOffset, fillEdgeYOffset)
+			overlayBar:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", fillEdgeXOffset, fillEdgeYOffset)
 		end
 	end
 

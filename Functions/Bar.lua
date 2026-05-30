@@ -1425,9 +1425,9 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	local secondaryCastingSettings
 	local secondarySpendingSettings
 	local secondaryCastingTexture
-	if settings.colors and settings.colors.comboPoints and settings.colors.comboPoints.casting then
+	if settings.colors and settings.colors.comboPoints and (settings.colors.comboPoints.casting or settings.colors.comboPoints.spending) then
 		secondaryCastingSettings = settings.colors.comboPoints.casting
-		secondarySpendingSettings = nil
+		secondarySpendingSettings = settings.colors.comboPoints.spending
 		secondaryCastingTexture = settings.textures.comboPointsCastingBar or settings.textures.castingBar or settings.textures.resourceBar
 	else
 		secondaryCastingSettings = settings.colors and settings.colors.bar and settings.colors.bar.casting
@@ -2038,6 +2038,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		if not castingSlot.insetOverlayReady then
 			return
 		end
+		castingSlot:ReanchorInsetOverlay()
 		castingSlot:SetInsetOverlayMinMax(0, maxResource)
 		castingSlot:SetInsetOverlayTexture(castingTexture)
 		TRB.Functions.Color:ApplyOverlayFillColor(castingSlot, spendingColor, "inset")

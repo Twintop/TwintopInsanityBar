@@ -178,6 +178,72 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlay
 	return yCoord
 end
 
+---Generates spending overlay color controls for a secondary node bar.
+---@param parent Frame Parent frame for the controls
+---@param controls table Table to store control references
+---@param spec table Spec settings table
+---@param classId integer Class ID
+---@param specId integer Spec ID
+---@param yCoord number Starting Y coordinate
+---@param secondaryResourceString string? Localized secondary resource name (defaults to "Combo Points")
+---@return number yCoord New Y coordinate after adding controls
+function TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, classId, specId, yCoord, secondaryResourceString)
+	if secondaryResourceString == nil then
+		secondaryResourceString = L["ResourceComboPoints"]
+	end
+
+	spec.colors = spec.colors or {}
+	spec.colors.comboPoints = spec.colors.comboPoints or {}
+	spec.colors.comboPoints.spending = spec.colors.comboPoints.spending or TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true)
+
+	controls.colors = controls.colors or {}
+	controls.colors.comboPoints = controls.colors.comboPoints or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+	local frameName = "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondarySpendingOverlay"
+
+	controls.colors.comboPoints.spending = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, string.format(L["SecondarySpendingOverlayColorPicker"], secondaryResourceString), spec.colors.comboPoints.spending, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local colorPicker = controls.colors.comboPoints.spending
+	colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "spending")
+	end)
+	colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.spending, self, classId, specId)
+	end)
+
+	controls.checkBoxes.secondarySpendingOverlayEnabled = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
+	local checkBox = controls.checkBoxes.secondarySpendingOverlayEnabled
+	checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["SecondarySpendingOverlayCheckbox"], secondaryResourceString))
+	checkBox.tooltip = string.format(L["SecondarySpendingOverlayCheckboxTooltip"], secondaryResourceString)
+	checkBox:SetChecked(spec.colors.comboPoints.spending.enabled)
+
+	controls.checkBoxes.secondarySpendingOverlayFullHeight = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_SecondarySpendingOverlayFullHeight", parent, "ChatConfigCheckButtonTemplate")
+	local fullHeightCheckBox = controls.checkBoxes.secondarySpendingOverlayFullHeight
+	fullHeightCheckBox:SetPoint("TOPLEFT", oUi.xCoord + (oUi.xPadding * 2), yCoord - 18)
+	getglobal(fullHeightCheckBox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
+	fullHeightCheckBox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
+	fullHeightCheckBox:SetChecked(spec.colors.comboPoints.spending.fullHeight == true)
+	fullHeightCheckBox:SetScript("OnClick", function(self)
+		spec.colors.comboPoints.spending.fullHeight = self:GetChecked()
+		TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
+	end)
+	yCoord = yCoord - 45
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.secondarySpendingOverlayFullHeight, spec.colors.comboPoints.spending.enabled)
+	checkBox:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.spending.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.secondarySpendingOverlayFullHeight, spec.colors.comboPoints.spending.enabled)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	return yCoord
+end
+
 
 ---Generates color options for a custom bar with simple bar/border/background colors
 ---@param parent Frame # Parent frame for the controls

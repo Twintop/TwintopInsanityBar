@@ -19,9 +19,23 @@ local content = [====[
 - [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
 
 ## Warlock
+### Affliction
+
+- [#760](#760) Add Soul Shard spending overlay support for Seed of Corruption and Unstable Affliction.
+- [#760](#760) Add bar text icon variables for Seed of Corruption (`#seedOfCorruption`) and Unstable Affliction (`#unstableAffliction`).
+- [#760](#760) Add `$castingFragments` as a valid bar text variable.
+
+### Demonology
+
+- [#760](#760) Add incoming Soul Shard generation overlay support for Demonbolt and Soul Shard spending overlay support for Hand of Gul'dan.
+- [#760](#760) Add bar text icon variables for Demonbolt (`#demonbolt`) and Hand of Gul'dan (`#handOfGuldan`).
+- [#760](#760) Add `$castingFragments` as a valid bar text variable.
+
 ### Destruction
 
-- Add incoming Soul Shard generation tracking for Soul Fire.
+- [#760](#760) Add Soul Shard spending overlay support for Chaos Bolt.
+- [#760](#760) Add incoming Soul Shard generation tracking for Soul Fire.
+- [#760](#760) Add bar text icon variables for Incinerate (`#incinerate`), Soul Fire (`#soulFire`), and Chaos Bolt (`#chaosBolt`).
 
 ---
 
