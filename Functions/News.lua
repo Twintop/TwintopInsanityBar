@@ -18,6 +18,13 @@ local content = [====[
 - [#672](#672) Add options to duplicate bar text entries and copy them between Global and specialization bar text settings.
 - [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
 
+## Paladin
+### Holy
+
+- [#354](#354) Add incoming Holy Power generation overlay support for Flash of Light and Holy Light.
+- [#354](#354) Add bar text icon variables for Flash of Light (`#flashOfLight`) and Holy Light (`#holyLight`).
+- [#354](#354) Add `$castingHolyPower` as a valid bar text variable.
+
 ## Warlock
 ### Affliction
 

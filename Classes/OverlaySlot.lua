@@ -264,7 +264,23 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 		self.appendedOverlayFrame:SetRotatesTexture(isVertical)
 
 		local fillTexture = parent.frame:GetStatusBarTexture()
-		if fillTexture then
+		local fillRatio = self:GetParentFillRatio()
+		if fillRatio ~= nil and fillRatio <= 0 then
+			self.appendedOverlayFrame:ClearAllPoints()
+			if fillDirection == "rightLeft" then
+				self.appendedOverlayFrame:SetPoint("TOPRIGHT", parent.frame, "TOPRIGHT", -parent.border, clipTopYOffset)
+				self.appendedOverlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
+			elseif fillDirection == "bottomTop" then
+				self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", parent.frame, "BOTTOMLEFT", parent.border, clipBottomYOffset)
+				self.appendedOverlayFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -parent.border, clipBottomYOffset)
+			elseif fillDirection == "topBottom" then
+				self.appendedOverlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+				self.appendedOverlayFrame:SetPoint("TOPRIGHT", parent.frame, "TOPRIGHT", -parent.border, clipTopYOffset)
+			else -- leftRight
+				self.appendedOverlayFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", parent.border, clipTopYOffset)
+				self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", parent.frame, "BOTTOMLEFT", parent.border, clipBottomYOffset)
+			end
+		elseif fillTexture then
 			self.appendedOverlayFrame:ClearAllPoints()
 			if fillDirection == "rightLeft" then
 				self.appendedOverlayFrame:SetPoint("TOPRIGHT", fillTexture, "TOPLEFT", 0, 0)
@@ -279,16 +295,16 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 				self.appendedOverlayFrame:SetPoint("TOPLEFT", fillTexture, "TOPRIGHT", 0, 0)
 				self.appendedOverlayFrame:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMRIGHT", 0, 0)
 			end
+		end
 
-			if isVertical then
-				local innerHeight = math.max(1, parent.height - 2 * parent.border)
-				local innerWidth = math.max(1, parent.width - 2 * parent.border)
-				self.appendedOverlayFrame:SetHeight(innerHeight)
-				self.appendedOverlayFrame:SetWidth(innerWidth)
-			else
-				local innerWidth = math.max(1, parent.width - 2 * parent.border)
-				self.appendedOverlayFrame:SetWidth(innerWidth)
-			end
+		if isVertical then
+			local innerHeight = math.max(1, parent.height - 2 * parent.border)
+			local innerWidth = math.max(1, parent.width - 2 * parent.border)
+			self.appendedOverlayFrame:SetHeight(innerHeight)
+			self.appendedOverlayFrame:SetWidth(innerWidth)
+		else
+			local innerWidth = math.max(1, parent.width - 2 * parent.border)
+			self.appendedOverlayFrame:SetWidth(innerWidth)
 		end
 	end
 end
@@ -367,11 +383,7 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	local slot = self
 	C_Timer.After(0, function()
 		if slot.appendedClipFrame then
-			slot.appendedClipFrame:ClearAllPoints()
-			local clipTopYOffset, clipBottomYOffset = slot:GetVerticalAnchorOffsets()
-			slot.appendedClipFrame:SetPoint("TOPLEFT", slot.parentNode.frame, "TOPLEFT", slot.parentNode.border, clipTopYOffset)
-			slot.appendedClipFrame:SetPoint("BOTTOMRIGHT", slot.parentNode.frame, "BOTTOMRIGHT", -slot.parentNode.border, clipBottomYOffset)
-			slot.appendedOverlayReady = true
+			slot:ReanchorAppendedOverlay()
 		end
 	end)
 end

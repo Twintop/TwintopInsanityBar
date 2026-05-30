@@ -307,10 +307,28 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
+---@param spells TRB.Classes.Paladin.HolySpells?
+---@return number
+local function GetHolyCastingHolyPower(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	if snapshotData == nil or snapshotData.casting == nil or spells == nil then
+		return 0
+	end
+
+	if spells.flashOfLight ~= nil and snapshotData.casting.spellId == spells.flashOfLight.id then
+		return spells.flashOfLight.resource or 0
+	elseif spells.holyLight ~= nil and snapshotData.casting.spellId == spells.holyLight.id then
+		return spells.holyLight.resource or 0
+	end
+
+	return 0
+end
+
 local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_holy"].settings
+	local castingHolyPower = GetHolyCastingHolyPower(spells)
 
 	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -375,7 +393,18 @@ local function RefreshLookupData_Holy()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Buff state ($divinePurposeActive, $divinePurposeStacks, $divinePurposeTime)
+	-- Block C: Casting Holy Power ($castingHolyPower)
+	if not activeVars or activeVars["$castingHolyPower"] then
+		local castingHolyPowerColor = sharedSettings.colors.text.casting.color
+
+		lookupLogic["$castingHolyPower"] = castingHolyPower
+
+		if lookupChanged(prevState, "$castingHolyPower", castingHolyPower, castingHolyPowerColor) then
+			lookup["$castingHolyPower"] = string.format("|c%s%.0f|r", castingHolyPowerColor, castingHolyPower)
+		end
+	end
+
+	-- Block D: Buff state ($divinePurposeActive, $divinePurposeStacks, $divinePurposeTime)
 	if not activeVars or activeVars["$divinePurposeActive"] or activeVars["$divinePurposeStacks"] or activeVars["$divinePurposeTime"] then
 		local currentTime = GetTime()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
@@ -805,10 +834,13 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
+	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower)
 		local currentHolyPower = snapshotData.attributes.resource2 or 0
 		local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
 		local barOverrideActive = holyPowerColors and holyPowerColors.barOverridden == true
+		local castingSettings = specCacheSettings.colors.comboPoints.casting
+		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
+		local incomingHolyPower = castingHolyPower or 0
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
@@ -817,6 +849,14 @@ local function UpdateResourceBar()
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = currentHolyPower >= x
+			local overlayAmount = 0
+
+			if incomingHolyPower > 0 then
+				local nodeStart = x - 1
+				local nodeEnd = x
+				local predictionEnd = math.min(currentHolyPower + incomingHolyPower, TRB.Data.character.maxResource2)
+				overlayAmount = math.max(0, math.min(predictionEnd, nodeEnd) - math.max(currentHolyPower, nodeStart))
+			end
 
 			if filled and not barOverrideActive then
 				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
@@ -837,6 +877,10 @@ local function UpdateResourceBar()
 					holyPowerNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+					if castingSettings ~= nil and (overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil) then
+						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nil, castingTexture)
+					end
 				end
 			end
 		end
@@ -873,6 +917,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
 		UpdateSnapshot_Holy()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local castingHolyPower = GetHolyCastingHolyPower(spells)
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
@@ -914,7 +959,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
+				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1461,7 +1506,15 @@ do
 			return snap ~= nil and snap.buff.isActive == true
 		end,
 	}
-	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+	local holy = {}
+	for key, entry in pairs(shared) do
+		holy[key] = entry
+	end
+	holy["$castingHolyPower"] = function()
+		local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingHolyPower"]
+		return value ~= nil and not issecretvalue(value) and value ~= 0
+	end
+	specValidVars = { [1] = holy, [2] = shared, [3] = shared }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

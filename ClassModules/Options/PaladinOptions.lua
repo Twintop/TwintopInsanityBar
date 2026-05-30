@@ -91,6 +91,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
 				second = {
 					color = "FFFCE58E",
 					color2 = "FFFCE58E",
@@ -207,6 +208,8 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 	if includeBarText then
 		settings.displayText.barText = HolyLoadDefaultBarTextSettings(classic)
 	end
+	settings.textures.comboPointsCastingBar = settings.textures.castingBar
+	settings.textures.comboPointsCastingBarName = settings.textures.castingBarName
 
 	return settings
 end
@@ -798,6 +801,7 @@ local function HolyConstructHolyPowerBarPanel(parent)
 
 	yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceHolyPower"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceHolyPower"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
@@ -841,7 +845,7 @@ local function HolyConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.paladin_holy
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 2, 1, yCoord, true, L["ResourceHolyPower"])
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 2, 1, yCoord, true, L["ResourceHolyPower"], nil, nil, true)
 end
 
 local function HolyConstructBarVisibilityPanel(parent)

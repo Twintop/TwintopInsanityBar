@@ -2017,6 +2017,7 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		if not castingSlot.appendedOverlayReady then
 			return
 		end
+		castingSlot:ReanchorAppendedOverlay()
 		castingSlot:SetAppendedOverlayMinMax(0, maxResource)
 		castingSlot:SetAppendedOverlayTexture(castingTexture)
 		TRB.Functions.Color:ApplyOverlayFillColor(castingSlot, castingColor, "appended")

@@ -7,6 +7,7 @@ TRB.Classes.Paladin = TRB.Classes.Paladin or {}
 ---@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
 ---@field flashOfLight TRB.Classes.SpellBase
 ---@field divinePurpose TRB.Classes.SpellBase
+---@field holyLight TRB.Classes.SpellBase
 TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
 
@@ -14,22 +15,22 @@ function TRB.Classes.Paladin.HolySpells:New()
     ---@type TRB.Classes.Healer.HealerSpells
     local base = TRB.Classes.Healer.HealerSpells
     self = setmetatable(base:New(), TRB.Classes.Paladin.HolySpells) --[[@as TRB.Classes.Paladin.HolySpells]]
-    -- Paladin Class Baseline Abilities
 
-    -- Holy Baseline Abilities
-
-    -- Paladin Class Talents		
-    
-    -- Holy Spec Talents
     self.flashOfLight = TRB.Classes.SpellBase:New({
         id = 19750,
-        baseline = true
+        baseline = true,
+		resource = 1
     })
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
         isBuff = true
     })
+
+	self.holyLight = TRB.Classes.SpellBase:New({
+		id = 82326,
+		resource = 1
+	})
 
     return self
 end
@@ -44,7 +45,10 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#flashOfLight", icon = spells.flashOfLight.icon, description = spells.flashOfLight.name, printInSettings = true },
+		{ variable = "#holyLight", icon = spells.holyLight.icon, description = spells.holyLight.name, printInSettings = true },
+	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
@@ -53,6 +57,7 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$castingHolyPower", description = L["PaladinHolyBarTextVariable_castingHolyPower"], printInSettings = true, color = false },
 					
 		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
