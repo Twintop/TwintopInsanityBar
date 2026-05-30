@@ -18,6 +18,11 @@ local content = [====[
 - [#672](#672) Add options to duplicate bar text entries and copy them between Global and specialization bar text settings.
 - [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
 
+## Warlock
+### Destruction
+
+- Add incoming Soul Shard generation tracking for Soul Fire.
+
 ---
 
 

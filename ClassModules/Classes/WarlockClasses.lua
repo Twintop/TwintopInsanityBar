@@ -99,6 +99,7 @@ end
 ---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public incinerate TRB.Classes.SpellBase
 ---@field public diabolicEmbers TRB.Classes.SpellBase
+---@field public soulFire TRB.Classes.SpellBase
 TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
 
@@ -116,6 +117,11 @@ function TRB.Classes.Warlock.DestructionSpells:New()
         id = 387173,
         isTalent = true,
         resourceMod = 2
+    })
+    self.soulFire = TRB.Classes.SpellBase:New({
+        id = 6353,
+        isTalent = true,
+        resource = 10
     })
 
     return self

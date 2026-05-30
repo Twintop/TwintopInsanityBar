@@ -447,6 +447,8 @@ local function GetDestructionCastingFragments(spells)
 		else
 			return spells.incinerate.resource
 		end
+	elseif snapshotData.casting.spellId == spells.soulFire.id then
+		return spells.soulFire.resource
 	end
 
 	return 0
