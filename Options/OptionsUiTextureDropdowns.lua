@@ -25,6 +25,12 @@ local function FillBackgroundCache()
 	end
 end
 
+---@return table backgroundPairsByName
+function TRB.Functions.OptionsUi.TextureDropdowns:GetBackgroundPairsByName()
+	FillBackgroundCache()
+	return backgroundPairsByName
+end
+
 local borders = {}
 local bordersList = {}
 local borderPairs = {}
@@ -40,6 +46,12 @@ local function FillBorderCache()
 			borderPairsByName[borders[v]] = v
 		end
 	end
+end
+
+---@return table borderPairsByName
+function TRB.Functions.OptionsUi.TextureDropdowns:GetBorderPairsByName()
+	FillBorderCache()
+	return borderPairsByName
 end
 
 local statusbars = {}
@@ -87,6 +99,12 @@ end
 local function RefreshLsmDropdown(control, displayText)
 	DropdownSetupMenuWrapper(control)
 	SetDropdownDisplayText(control, displayText)
+end
+
+---@param control DropdownButton? # The dropdown control to refresh
+---@param displayText string? # Optional text to show on the dropdown button
+function TRB.Functions.OptionsUi.TextureDropdowns:RefreshLsmDropdown(control, displayText)
+	RefreshLsmDropdown(control, displayText)
 end
 
 ---Creates a LibSharedMedia dropdown for selecting a statusbar, background, or border texture.

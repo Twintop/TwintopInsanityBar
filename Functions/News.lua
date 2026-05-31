@@ -12,11 +12,12 @@ local content = [====[
 
 ---
 
-# 12.0.5.12-release (2026-05-30)
+# 12.0.5.12-release (2026-06-01)
 ## General
 
 - [#672](#672) Add options to duplicate bar text entries and copy them between Global and specialization bar text settings.
 - [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
+- Fix some Lua errors related to texture, font, and sound dropdowns.
 
 ## Paladin
 ### Holy

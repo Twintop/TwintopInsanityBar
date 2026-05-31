@@ -91,6 +91,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 
 	controls.dropDown.textures = {}
+	local textureDropdowns = TRB.Functions.OptionsUi.TextureDropdowns
+	local backgroundPairsByName = textureDropdowns:GetBackgroundPairsByName()
+	local borderPairsByName = textureDropdowns:GetBorderPairsByName()
+	local function DropdownSetupMenuWrapper(control)
+		textureDropdowns:RefreshLsmDropdown(control)
+	end
 
 	yCoord = yCoord - 30
 
