@@ -1142,6 +1142,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.displayText.default = spec.displayText.default
 	end
 
+	TRB.Functions.Settings:EnsureThresholdSettingsForSpec(spec)
+
 	specCache.settings.colors = {
 ---@diagnostic disable-next-line: missing-fields
 		text = {},
@@ -1217,7 +1219,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	---@diagnostic disable-next-line: missing-fields
 		specCache.settings.thresholds = {
 			specProperties = spec.thresholds.specProperties,
-			thresholdDictionary = {}
+			thresholdDictionary = {},
+			customThresholds = {}
 		}
 		if s.thresholdIcons then
 			specCache.settings.thresholds.properties = core.thresholds.properties
@@ -1232,12 +1235,19 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
 			end
 		end
+
+		if spec.thresholds ~= nil and spec.thresholds.customThresholds ~= nil then
+			for key, _ in pairs(spec.thresholds.customThresholds) do
+				specCache.settings.thresholds.customThresholds[key] = spec.thresholds.customThresholds[key]
+			end
+		end
 	else
 		specCache.settings.thresholds = {
 			specProperties = {},
 			properties = core.thresholds.properties,
 			icons = core.thresholds.icons,
-			thresholdDictionary = {}
+			thresholdDictionary = {},
+			customThresholds = {}
 		}
 	end
 

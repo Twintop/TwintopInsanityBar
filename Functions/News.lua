@@ -19,6 +19,10 @@ local content = [====[
 - [#672](#672) Enhance the "Bar Text Variables" flyout to show more information about each variable.
 - Fix some Lua errors related to texture, font, and sound dropdowns.
 
+### Localization
+
+- [#767](#767) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Paladin
 ### Holy
 

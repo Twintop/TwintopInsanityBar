@@ -1729,6 +1729,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 			end
 		end
 	end
+
+	if TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
+		TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
+	end
 end
 
 ---Repositions an existing bar text frame without rebuilding all bar text frames.

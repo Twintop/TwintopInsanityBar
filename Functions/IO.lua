@@ -251,6 +251,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeThresholds then
+		TRB.Functions.Settings:EnsureThresholdSettingsForSpec(settings)
 		configuration.thresholds = settings.thresholds
 		configuration.colors.threshold = settings.colors and settings.colors.threshold
 	end

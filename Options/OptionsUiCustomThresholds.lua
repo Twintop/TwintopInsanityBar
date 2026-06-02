@@ -1,0 +1,964 @@
+---@diagnostic disable: undefined-field, undefined-global
+local _, TRB = ...
+TRB.Functions = TRB.Functions or {}
+TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
+TRB.Functions.OptionsUi.CustomThresholds = TRB.Functions.OptionsUi.CustomThresholds or {}
+
+local oUi = TRB.Data.constants.optionsUi
+local L = TRB.Localization
+local copyActionIconMarkup = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14:0:0|t"
+local actionCellDimAlpha = 0.65
+local actionCellBrightAlpha = 1.0
+local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
+
+StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomThreshold"] = {
+	text = "%s",
+	button1 = L["CustomThresholdDelete"],
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		if data == nil then
+			return
+		end
+
+		local guid = data.guid
+		local spec = data.spec
+		if spec and spec.thresholds then
+			spec.thresholds.customThresholds[guid] = nil
+			local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)
+			if dictionaryKey ~= nil then
+				spec.thresholds.thresholdDictionary[dictionaryKey] = nil
+			end
+		end
+
+		if data.refresh then
+			data.refresh(nil)
+		end
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+---@param spec table
+local function EnsureCustomThresholdSettings(spec)
+	TRB.Functions.Settings:EnsureThresholdSettingsForSpec(spec)
+	spec.thresholds.customThresholds = spec.thresholds.customThresholds or {}
+	spec.thresholds.thresholdDictionary = spec.thresholds.thresholdDictionary or {}
+end
+
+---@param guid string
+---@param spec table
+---@return table?
+local function EnsureThresholdDictionaryEntry(guid, spec)
+	EnsureCustomThresholdSettings(spec)
+	local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)
+	if dictionaryKey == nil then
+		return nil
+	end
+	if spec.thresholds.thresholdDictionary[dictionaryKey] == nil and spec.thresholds.thresholdDictionary[guid] ~= nil then
+		spec.thresholds.thresholdDictionary[dictionaryKey] = spec.thresholds.thresholdDictionary[guid]
+	end
+	spec.thresholds.thresholdDictionary[dictionaryKey] = TRB.Functions.Settings:NormalizeThresholdDictionaryEntry(spec.thresholds.thresholdDictionary[dictionaryKey], true)
+	return spec.thresholds.thresholdDictionary[dictionaryKey]
+end
+
+---@param spec table
+---@return table[]
+local function GetOrderedEntries(spec)
+	local entries = {}
+	if spec == nil or spec.thresholds == nil or spec.thresholds.customThresholds == nil then
+		return entries
+	end
+
+	for guid, customThreshold in pairs(spec.thresholds.customThresholds) do
+		if type(customThreshold) == "table" then
+			customThreshold.guid = customThreshold.guid or guid
+			table.insert(entries, customThreshold)
+		end
+	end
+
+	table.sort(entries, function(a, b)
+		local aName = a.name or ""
+		local bName = b.name or ""
+		if aName == bName then
+			return (a.guid or "") < (b.guid or "")
+		end
+		return aName < bName
+	end)
+
+	return entries
+end
+
+---@param spec table
+---@param barTarget string
+---@return number minValue
+---@return number maxValue
+local function GetBarTargetRange(spec, barTarget)
+	return TRB.Functions.Threshold:GetCustomThresholdTargetRange(spec, barTarget)
+end
+
+---@param className string
+---@param specName string
+local function RefreshSpecCache(className, specName)
+	if className ~= nil and specName ~= nil then
+		TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+	end
+
+	if className == TRB.Data.character.className and specName == TRB.Data.character.specName then
+		TRB.Data.lookupDirty = true
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+
+		-- TriggerResourceBarUpdates() is class-specific and does not always guarantee
+		-- custom threshold redraws, so force custom threshold refresh for immediate UI feedback.
+		local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+		local specCacheEntry = compositeKey and TRB.Data.specCache and TRB.Data.specCache[compositeKey]
+		if specCacheEntry ~= nil and specCacheEntry.settings ~= nil then
+			TRB.Functions.Threshold:UpdateCustomThresholdLines(specCacheEntry.settings, TRB.Frames.barGroups)
+		elseif TRB.Data.barConstructedForSpec and TRB.Data.specCache[TRB.Data.barConstructedForSpec] then
+			TRB.Functions.Threshold:UpdateCustomThresholdLines(TRB.Data.specCache[TRB.Data.barConstructedForSpec].settings, TRB.Frames.barGroups)
+		end
+	end
+end
+
+---@param sourceLine table
+---@param sourceDictEntry table
+---@param destClassName string
+---@param destSpecName string
+---@return table?
+local function CopyCustomThresholdToSpec(sourceLine, sourceDictEntry, destClassName, destSpecName)
+	if sourceLine == nil or destClassName == nil or destSpecName == nil then
+		return nil
+	end
+
+	if not TRB.Functions.Character:EnsureSpecSettings(destClassName) then
+		return nil
+	end
+
+	local destSpec = TRB.Data.settings[destClassName] and TRB.Data.settings[destClassName][destSpecName]
+	if destSpec == nil then
+		return nil
+	end
+
+	EnsureCustomThresholdSettings(destSpec)
+	local copiedLine = TRB.Functions.Table:DeepCopy(sourceLine)
+	copiedLine.guid = TRB.Functions.String:Guid()
+	local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(copiedLine.guid)
+	destSpec.thresholds.customThresholds[copiedLine.guid] = copiedLine
+	destSpec.thresholds.thresholdDictionary[dictionaryKey] = TRB.Functions.Table:DeepCopy(sourceDictEntry or TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true))
+	RefreshSpecCache(destClassName, destSpecName)
+	return copiedLine
+end
+
+local function BuildCheckButton(parent, name, label, x, y)
+	local checkbox = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
+	checkbox:SetPoint("TOPLEFT", x, y)
+	getglobal(checkbox:GetName() .. "Text"):SetText(label)
+	return checkbox
+end
+
+---@param parent Frame
+---@param controls table
+---@param spec table
+---@param classId integer
+---@param specId integer
+---@param yCoord number
+---@return number
+function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(parent, controls, spec, classId, specId, yCoord)
+	if parent == nil or spec == nil then
+		return yCoord
+	end
+
+	EnsureCustomThresholdSettings(spec)
+	controls.customThresholds = controls.customThresholds or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.dropDown = controls.dropDown or {}
+	controls.sliders = controls.sliders or {}
+	controls.colors = controls.colors or {}
+	controls.colors.customThresholds = controls.colors.customThresholds or {}
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local lowerClassName = string.lower(className)
+	local namePrefix = lowerClassName .. "_" .. specName .. "_CustomThresholds"
+	local selectedGuid = nil
+	local isRefreshing = false
+
+	local function RefreshRuntime()
+		RefreshSpecCache(lowerClassName, specName)
+	end
+
+	local function GetCurrentSpec()
+		return TRB.Data.settings[lowerClassName] and TRB.Data.settings[lowerClassName][specName]
+	end
+
+	local function GetCurrentThresholdSettings()
+		local currentSpec = GetCurrentSpec()
+		return currentSpec and currentSpec.thresholds or TRB.Functions.Settings:DefaultThresholdSettings()
+	end
+
+	local function GetCurrentThresholdColors()
+		local currentSpec = GetCurrentSpec()
+		return currentSpec and currentSpec.colors and currentSpec.colors.threshold or TRB.Functions.Settings:DefaultThresholdColors()
+	end
+
+	local columns = {
+		{ name = "", width = 1, align = "CENTER" },
+		{ name = "", width = 22, align = "CENTER" },
+		{ name = L["Name"], width = 170, align = "LEFT", sort = 1, defaultsort = 1 },
+		{ name = L["BoundToBar"], width = 120, align = "LEFT" },
+		{ name = L["CustomThresholdTableHeaderValue"], width = 70, align = "RIGHT" },
+		{ name = L["Enabled"], width = 70, align = "LEFT" },
+		{ name = "", width = 22, align = "CENTER" },
+		{ name = "", width = 15, align = "CENTER", color = { r = 1, g = 0, b = 0, a = 1 } },
+	}
+
+	yCoord = yCoord - 5
+	controls.customThresholds.header = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CustomThresholdsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 20
+
+	local tableContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	tableContainer:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord - 10)
+	tableContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	tableContainer:SetHeight(35 + 5 * 15)
+
+	local customThresholdTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 5, 15, nil, tableContainer, false, false)
+	controls.customThresholds.table = customThresholdTable
+
+	-- Dynamically resize the Name column to fill available width (matches every other options table).
+	tableContainer:HookScript("OnSizeChanged", function(self, w, h)
+		local fixedWidth = columns[1].width + columns[2].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width + columns[8].width
+		columns[3].width = math.max(120, w - fixedWidth - 30)
+		customThresholdTable:SetDisplayCols(columns)
+	end)
+
+	-- Dim the copy/delete action-cell glyphs by default, brightening on hover (matches Bar Text styling).
+	local function UpdateActionCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+		scrollingTable.DoCellUpdate(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+		if fShow and cellFrame ~= nil and cellFrame.text ~= nil then
+			cellFrame.text:SetAlpha(actionCellDimAlpha)
+		end
+	end
+
+	local function SetActionCellHoverState(cellFrame, isHovering)
+		if cellFrame ~= nil and cellFrame.text ~= nil then
+			cellFrame.text:SetAlpha(isHovering and actionCellBrightAlpha or actionCellDimAlpha)
+		end
+	end
+
+	local function ShowActionCellTooltip(cellFrame, text)
+		if cellFrame == nil or text == nil then
+			return
+		end
+		GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+		GameTooltip:SetText(text, 1, 1, 1, 1, true)
+		GameTooltip:Show()
+	end
+
+	-- Fixed (non-scrolling) header row that holds the Name field, Enabled checkbox, and Add button.
+	-- The Name/Enabled controls are shown/hidden alongside the editor panel; the Add button is always visible.
+	local editorHeaderRow = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_EditorHeaderRow", parent)
+	editorHeaderRow:SetPoint("TOPLEFT", tableContainer, "BOTTOMLEFT", 0, -2)
+	editorHeaderRow:SetPoint("TOPRIGHT", tableContainer, "BOTTOMRIGHT", 0, -2)
+	editorHeaderRow:SetHeight(45)
+	controls.customThresholds.editorHeaderRow = editorHeaderRow
+
+	local addButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["CustomThresholdAdd"], 0, 0, 140, 24)
+	addButton:ClearAllPoints()
+	addButton:SetPoint("TOPRIGHT", editorHeaderRow, "TOPRIGHT", -5, -8)
+	controls.customThresholds.addButton = addButton
+
+	local nameLabel = TRB.Functions.OptionsUi.Primitives:BuildLabel(editorHeaderRow, L["CustomThresholdNameLabel"], oUi.xCoord, 0, 110, 20)
+	local nameBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(editorHeaderRow, "", 80, 260, 20, oUi.xCoord, -20)
+	local enabledCheckbox = BuildCheckButton(editorHeaderRow, "TwintopResourceBar_" .. namePrefix .. "_Enabled", L["Enabled"], oUi.xCoord2, -18)
+	nameLabel:Hide()
+	nameBox:Hide()
+	enabledCheckbox:Hide()
+
+	local editorFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_Editor", parent, "BackdropTemplate")
+	editorFrame:SetPoint("TOPLEFT", editorHeaderRow, "BOTTOMLEFT", 0, -5)
+	editorFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -oUi.xCoord, 3)
+	editorFrame:Hide()
+	controls.customThresholds.editorFrame = editorFrame
+
+	-- Scroll frame inside the editor panel so all "Bar Target onward" controls scroll (mirrors the Threshold Lines tab).
+	local editorScrollFrame = CreateFrame("ScrollFrame", "TwintopResourceBar_" .. namePrefix .. "_EditorScroll", editorFrame, "UIPanelScrollFrameTemplate")
+	editorScrollFrame:SetPoint("TOPLEFT", editorFrame, "TOPLEFT", 0, 0)
+	editorScrollFrame:SetPoint("BOTTOMRIGHT", editorFrame, "BOTTOMRIGHT", -20, 0)
+	local editorContent = CreateFrame("Frame", nil, editorScrollFrame)
+	editorContent:SetSize(editorScrollFrame:GetWidth() or 600, 1)
+	editorScrollFrame:SetScrollChild(editorContent)
+	editorScrollFrame:HookScript("OnSizeChanged", function(self, w, h)
+		editorContent:SetWidth(w)
+	end)
+
+	local editorY = 0
+	local barTargetDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_BarTarget", editorContent, "WowStyle1DropdownTemplate")
+	barTargetDropdown:SetWidth(oUi.sliderWidth)
+	barTargetDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdBarTarget"], oUi.xCoord, editorY)
+	barTargetDropdown.label.font:SetFontObject(GameFontNormal)
+	barTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 25)
+
+	local valueSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["CustomThresholdValue"], 0, 100, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY - 25)
+
+	editorY = editorY - 105
+	local iconHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdIconHeader"], oUi.xCoord, editorY)
+	iconHeader.font:SetFontObject(GameFontNormalLarge)
+	editorY = editorY - 28
+
+	local iconTypeDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IconType", editorContent, "WowStyle1DropdownTemplate")
+	iconTypeDropdown:SetWidth(oUi.sliderWidth)
+	iconTypeDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdIconSourceType"], oUi.xCoord, editorY)
+	iconTypeDropdown.label.font:SetFontObject(GameFontNormal)
+	iconTypeDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 25)
+
+	local iconIdLabel = TRB.Functions.OptionsUi.Primitives:BuildLabel(editorContent, L["CustomThresholdIconSourceId"], oUi.xCoord2, editorY, 150, 20)
+	local iconIdBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(editorContent, "", 12, 110, 20, oUi.xCoord2, editorY - 25)
+	iconIdBox:SetNumeric(true)
+	local iconPreview = CreateFrame("Frame", nil, editorContent, "BackdropTemplate")
+	iconPreview:SetPoint("TOPLEFT", iconIdBox, "TOPRIGHT", 15, 0)
+	iconPreview:SetSize(32, 32)
+	iconPreview.texture = iconPreview:CreateTexture(nil, "ARTWORK")
+	iconPreview.texture:SetAllPoints(iconPreview)
+
+	editorY = editorY - 85
+	local colorsHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["ThresholdDetailColorsHeader"], oUi.xCoord, editorY)
+	colorsHeader.font:SetFontObject(GameFontNormalLarge)
+	editorY = editorY - 30
+
+	local colorModeDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ColorMode", editorContent, "WowStyle1DropdownTemplate")
+	colorModeDropdown:SetWidth(oUi.sliderWidth)
+	colorModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY)
+	local staticColorPicker = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(editorContent, L["ThresholdDetailColorModeStaticColor"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, editorY)
+
+	editorY = editorY - 35
+	local underModeDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_UnderMode", editorContent, "WowStyle1DropdownTemplate")
+	underModeDropdown:SetWidth(oUi.sliderWidth)
+	underModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY)
+	local underColorPicker = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(editorContent, L["ThresholdDetailColorsUnder"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, editorY)
+
+	editorY = editorY - 35
+	local overModeDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_OverMode", editorContent, "WowStyle1DropdownTemplate")
+	overModeDropdown:SetWidth(oUi.sliderWidth)
+	overModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY)
+	local overColorPicker = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(editorContent, L["ThresholdDetailColorsOver"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, editorY)
+
+	editorY = editorY - 55
+	local lineHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["ThresholdDetailLineHeader"], oUi.xCoord, editorY)
+	lineHeader.font:SetFontObject(GameFontNormalLarge)
+	editorY = editorY - 30
+	local lineUseSpecificCheckbox = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_LineUseSpecific", L["ThresholdDetailLineUseSpecific"], oUi.xCoord, editorY)
+	local lineOverlapBorderCheckbox = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_LineOverlapBorder", L["ThresholdDetailLineOverlapBorder"], oUi.xCoord2, editorY)
+	editorY = editorY - 50
+	local lineWidthSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailLineWidth"], 0, 20, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, editorY)
+
+	editorY = editorY - 75
+	local iconOverrideHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["ThresholdDetailIconHeader"], oUi.xCoord, editorY)
+	iconOverrideHeader.font:SetFontObject(GameFontNormalLarge)
+	editorY = editorY - 30
+	local iconUseSpecificCheckbox = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_IconUseSpecific", L["ThresholdDetailIconUseSpecific"], oUi.xCoord, editorY)
+	local iconShowCheckbox = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_IconShow", L["ThresholdDetailIconShowCheckbox"], oUi.xCoord2, editorY)
+	editorY = editorY - 28
+	local iconDesaturateCheckbox = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_IconDesaturate", L["ThresholdDetailIconDesaturate"], oUi.xCoord2 + oUi.xPadding * 2, editorY)
+	editorY = editorY - 45
+
+	local iconRelativeToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_IconRelativeTo", editorContent, "WowStyle1DropdownTemplate")
+	iconRelativeToDropdown:SetWidth(oUi.sliderWidth)
+	iconRelativeToDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["ThresholdDetailIconRelativePosition"], oUi.xCoord, editorY)
+	iconRelativeToDropdown.label.font:SetFontObject(GameFontNormal)
+	iconRelativeToDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 25)
+
+	local iconWidthSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconWidth"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY - 25)
+	editorY = editorY - 85
+	local iconHeightSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconHeight"], 1, 128, 32, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, editorY)
+	local iconBorderSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconBorderWidth"], 0, 12, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY)
+	editorY = editorY - 85
+	local iconXSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconXPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, editorY)
+	local iconYSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconYPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY)
+
+	local function GetSelectedLine()
+		local currentSpec = GetCurrentSpec()
+		return selectedGuid and currentSpec and currentSpec.thresholds.customThresholds[selectedGuid] or nil
+	end
+
+	local function GetSelectedDictEntry()
+		if selectedGuid == nil then
+			return nil
+		end
+		local currentSpec = GetCurrentSpec()
+		return currentSpec and EnsureThresholdDictionaryEntry(selectedGuid, currentSpec) or nil
+	end
+
+	local function GetSelectedDictEntrySections()
+		local dictEntry = GetSelectedDictEntry()
+		if dictEntry == nil then
+			return nil, nil, nil, nil
+		end
+		---@cast dictEntry TRB.Classes.Settings.ThresholdDictionaryEntry
+		dictEntry.colors = dictEntry.colors or {}
+		local dictColors = dictEntry.colors --[[@as table]]
+		local currentThresholdColors = GetCurrentThresholdColors()
+		local defaultThresholdColors = TRB.Functions.Settings:DefaultThresholdColors()
+		local underColor = (currentThresholdColors and currentThresholdColors.under and currentThresholdColors.under.color) or defaultThresholdColors.under.color
+		local overColor = (currentThresholdColors and currentThresholdColors.over and currentThresholdColors.over.color) or defaultThresholdColors.over.color
+		dictColors.staticColor = dictColors.staticColor or { color = underColor }
+		dictColors.under = dictColors.under or { mode = "shared", color = underColor }
+		dictColors.over = dictColors.over or { mode = "shared", color = overColor }
+		dictEntry.line = dictEntry.line or {}
+		dictEntry.icon = dictEntry.icon or {}
+		return dictEntry, dictColors, dictEntry.line, dictEntry.icon
+	end
+
+	local function UpdateIconPreview(line)
+		local texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(line)
+		if texture ~= nil then
+			iconPreview.texture:SetTexture(texture)
+			iconPreview:Show()
+		else
+			iconPreview.texture:SetTexture(nil)
+			iconPreview:Show()
+		end
+	end
+
+	local function SetTableValues()
+		local currentSpec = GetCurrentSpec()
+		if currentSpec == nil then
+			return
+		end
+		local dataTable = {}
+		for _, customThreshold in ipairs(GetOrderedEntries(currentSpec)) do
+			local dictEntry = currentSpec.thresholds.thresholdDictionary[TRB.Functions.Settings:GetCustomThresholdDictionaryKey(customThreshold.guid)]
+			local texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
+			local iconText = texture and ("|T" .. tostring(texture) .. ":16|t") or ""
+			local targetLabel = customThreshold.barTarget or "primary"
+			if TRB.Functions.Bar and TRB.Functions.Bar.GetBarDisplayName then
+				targetLabel = TRB.Functions.Bar:GetBarDisplayName(customThreshold.barTarget or "primary")
+			end
+			local enabledText = dictEntry and dictEntry.enabled and ("|cFF00FF00" .. L["BarTextVariablesStatusYes"] .. "|r") or ("|cFFFF0000" .. L["BarTextVariablesStatusNo"] .. "|r")
+			table.insert(dataTable, {
+				cols = {
+					{ value = customThreshold.guid },
+					{ value = iconText },
+					{ value = customThreshold.name or L["CustomThresholdDefaultName"] },
+					{ value = targetLabel },
+					{ value = tostring(customThreshold.value or 0) },
+					{ value = enabledText },
+					{ value = copyActionIconMarkup, DoCellUpdate = UpdateActionCell },
+					{ value = "X", color = deleteActionTextColor, DoCellUpdate = UpdateActionCell },
+				}
+			})
+		end
+		customThresholdTable:SetData(dataTable)
+		customThresholdTable:EnableSelection(true)
+	end
+
+	local function RepositionEditorControls(isThresholdEnabled, colorMode, dictColors, dictLine, dictIcon)
+		local y = 0
+
+		barTargetDropdown.label:ClearAllPoints()
+		barTargetDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+		barTargetDropdown:ClearAllPoints()
+		barTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 25)
+		valueSlider:ClearAllPoints()
+		valueSlider:SetPoint("TOPLEFT", oUi.xCoord2, y - 25)
+
+		y = y - 105
+		iconHeader:ClearAllPoints()
+		iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+		y = y - 28
+		iconTypeDropdown.label:ClearAllPoints()
+		iconTypeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+		iconTypeDropdown:ClearAllPoints()
+		iconTypeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 25)
+		iconIdLabel:ClearAllPoints()
+		iconIdLabel:SetPoint("TOPLEFT", oUi.xCoord2, y)
+		iconIdBox:ClearAllPoints()
+		iconIdBox:SetPoint("TOPLEFT", oUi.xCoord2, y - 25)
+		iconPreview:ClearAllPoints()
+		iconPreview:SetPoint("TOPLEFT", iconIdBox, "TOPRIGHT", 15, 0)
+
+		y = y - 85
+
+		y = TRB.Functions.OptionsUi.ThresholdList:ApplyColorOverrideLayout({
+			yCoord = y,
+			isEnabled = isThresholdEnabled,
+			colorMode = colorMode,
+			hasUnusable = false,
+			hasOutOfRange = false,
+			underMode = TRB.Functions.OptionsUi.ThresholdList:GetThresholdColorMode(dictColors and dictColors.under),
+			overMode = TRB.Functions.OptionsUi.ThresholdList:GetThresholdColorMode(dictColors and dictColors.over),
+			colorsHeader = colorsHeader,
+			colorModeDropdown = colorModeDropdown,
+			staticColorPicker = staticColorPicker,
+			underModeDropdown = underModeDropdown,
+			underColorPicker = underColorPicker,
+			overModeDropdown = overModeDropdown,
+			overColorPicker = overColorPicker,
+		})
+
+		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
+			yCoord = y,
+			isEnabled = isThresholdEnabled,
+			hasThresholdIcon = true,
+			lineHeader = lineHeader,
+			lineUseSpecificCheckbox = lineUseSpecificCheckbox,
+			lineWidthSlider = lineWidthSlider,
+			lineOverlapBorderCheckbox = lineOverlapBorderCheckbox,
+			iconHeader = iconOverrideHeader,
+			iconUseSpecificCheckbox = iconUseSpecificCheckbox,
+			iconRelativeToDropdown = iconRelativeToDropdown,
+			iconShowCheckbox = iconShowCheckbox,
+			iconDesaturateCheckbox = iconDesaturateCheckbox,
+			iconWidthSlider = iconWidthSlider,
+			iconHeightSlider = iconHeightSlider,
+			iconXSlider = iconXSlider,
+			iconYSlider = iconYSlider,
+			iconBorderSlider = iconBorderSlider,
+		})
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictIcon and dictIcon.show ~= false)
+
+		local minHeight = 360
+		editorContent:SetHeight(math.max(minHeight, math.abs(y) + 30))
+	end
+
+	local function HideEditor()
+		editorFrame:Hide()
+		nameLabel:Hide()
+		nameBox:Hide()
+		enabledCheckbox:Hide()
+	end
+
+	local function RefreshEditor(guid)
+		selectedGuid = guid
+		local line = GetSelectedLine()
+		if line == nil then
+			HideEditor()
+			return
+		end
+
+		local dictEntry, dictColors, dictLine, dictIcon = GetSelectedDictEntrySections()
+		if dictEntry == nil then
+			HideEditor()
+			return
+		end
+		---@cast dictColors table
+		---@cast dictLine table
+		---@cast dictIcon table
+		local function ReflowColorSectionOnly()
+			RepositionEditorControls(dictEntry.enabled == true, dictColors.colorMode or "dynamic", dictColors, dictLine, dictIcon)
+		end
+		isRefreshing = true
+		editorFrame:Show()
+		nameLabel:Show()
+		nameBox:Show()
+		enabledCheckbox:Show()
+		nameBox:SetText(line.name or L["CustomThresholdDefaultName"])
+		enabledCheckbox:SetChecked(dictEntry.enabled == true)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, dictEntry.enabled == true, true)
+
+		local currentSpec = GetCurrentSpec() or spec
+		local currentThresholdSettings = GetCurrentThresholdSettings()
+		local currentThresholdColors = GetCurrentThresholdColors()
+		local defaultThresholdColors = TRB.Functions.Settings:DefaultThresholdColors()
+		local underColor = (currentThresholdColors and currentThresholdColors.under and currentThresholdColors.under.color) or defaultThresholdColors.under.color
+		local overColor = (currentThresholdColors and currentThresholdColors.over and currentThresholdColors.over.color) or defaultThresholdColors.over.color
+
+		local minValue, maxValue = GetBarTargetRange(currentSpec, line.barTarget or "primary")
+		local clampedValue = math.max(minValue, math.min(line.value or minValue, maxValue))
+		if line.value ~= clampedValue then
+			line.value = clampedValue
+		end
+		valueSlider:SetMinMaxValues(minValue, maxValue)
+		valueSlider.MaxLabel:SetText(maxValue)
+		valueSlider.MinLabel:SetText(minValue)
+		valueSlider:SetValue(clampedValue)
+		valueSlider.EditBox:SetText(clampedValue)
+
+		local targetLabel = TRB.Functions.Bar:GetBarDisplayName(line.barTarget or "primary")
+		barTargetDropdown:SetDefaultText(targetLabel)
+		barTargetDropdown:SetupMenu(function(dd, rootDescription)
+			for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(GetCurrentSpec() or spec)) do
+				rootDescription:CreateRadio(target.label, function(value) return value == (line.barTarget or "primary") end, function(value)
+					line.barTarget = value
+					local newMin, newMax = GetBarTargetRange(GetCurrentSpec() or spec, value)
+					line.value = math.max(newMin, math.min(line.value or newMin, newMax))
+					RefreshEditor(selectedGuid)
+					SetTableValues()
+					RefreshRuntime()
+				end, target.key)
+			end
+		end)
+
+		local iconTypeLabels = {
+			spell = L["CustomThresholdIconSourceSpell"],
+			item = L["CustomThresholdIconSourceItem"],
+		}
+		iconTypeDropdown:SetDefaultText(iconTypeLabels[line.iconSourceType or "spell"])
+		iconTypeDropdown:SetupMenu(function(dd, rootDescription)
+			for _, sourceType in ipairs({ "spell", "item" }) do
+				rootDescription:CreateRadio(iconTypeLabels[sourceType], function(value) return value == (line.iconSourceType or "spell") end, function(value)
+					line.iconSourceType = value
+					line.iconTexture = nil
+					RefreshEditor(selectedGuid)
+					SetTableValues()
+					RefreshRuntime()
+				end, sourceType)
+			end
+		end)
+		iconIdBox:SetText(tostring(line.iconSourceId or 0))
+		UpdateIconPreview(line)
+
+		local colorMode = dictColors.colorMode or "dynamic"
+		local colorModeLabels = { static = L["ThresholdDetailColorModeStatic"], dynamic = L["ThresholdDetailColorModeDynamic"] }
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorTypeDropdown({
+			dropdown = colorModeDropdown,
+			colorState = dictColors,
+			colorModeLabels = colorModeLabels,
+			colorModePrefix = L["ThresholdDetailColorModePrefix"],
+			onLayoutChanged = function()
+				ReflowColorSectionOnly()
+			end,
+			onChanged = function(newValue)
+				if newValue == "static" then
+					staticColorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(dictColors.staticColor.color or underColor, true))
+				end
+				RefreshRuntime()
+			end,
+		})
+
+		if colorMode == "static" then
+			staticColorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(dictColors.staticColor.color or underColor, true))
+		end
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorModeDropdown({
+			dropdown = underModeDropdown,
+			colorPicker = underColorPicker,
+			colorEntry = dictColors.under,
+			fallbackColor = underColor,
+			modeLabels = { shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenUnder"] },
+			prefix = L["ThresholdDetailColorsPrefixUnder"],
+			onLayoutChanged = function()
+				ReflowColorSectionOnly()
+			end,
+			onChanged = function()
+				RefreshRuntime()
+			end,
+		})
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorModeDropdown({
+			dropdown = overModeDropdown,
+			colorPicker = overColorPicker,
+			colorEntry = dictColors.over,
+			fallbackColor = overColor,
+			modeLabels = { shared = L["ThresholdDetailColorsModeShared"], override = L["ThresholdDetailColorsModeOverride"], hidden = L["ThresholdDetailColorsModeHiddenOver"] },
+			prefix = L["ThresholdDetailColorsPrefixOver"],
+			onLayoutChanged = function()
+				ReflowColorSectionOnly()
+			end,
+			onChanged = function()
+				RefreshRuntime()
+			end,
+		})
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorPicker({
+			colorPicker = staticColorPicker,
+			colorEntry = dictColors.staticColor,
+			fallbackColor = underColor,
+			onChanged = function()
+				RefreshRuntime()
+			end,
+		})
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorPicker({
+			colorPicker = underColorPicker,
+			colorEntry = dictColors.under,
+			fallbackColor = underColor,
+			onChanged = function()
+				RefreshRuntime()
+			end,
+		})
+		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorPicker({
+			colorPicker = overColorPicker,
+			colorEntry = dictColors.over,
+			fallbackColor = overColor,
+			onChanged = function()
+				RefreshRuntime()
+			end,
+		})
+
+		lineUseSpecificCheckbox:SetChecked(dictLine.enabled == true)
+		lineOverlapBorderCheckbox:SetChecked(dictLine.overlapBorder ~= false)
+		lineWidthSlider:SetValue(dictLine.width or (currentThresholdSettings.properties and currentThresholdSettings.properties.width) or 2)
+		lineWidthSlider.EditBox:SetText(dictLine.width or (currentThresholdSettings.properties and currentThresholdSettings.properties.width) or 2)
+
+		iconUseSpecificCheckbox:SetChecked(dictIcon.enabled == true)
+		iconShowCheckbox:SetChecked(dictIcon.show ~= false)
+		iconDesaturateCheckbox:SetChecked(dictIcon.desaturated == true)
+		iconWidthSlider:SetValue(dictIcon.width or (currentThresholdSettings.icons and currentThresholdSettings.icons.width))
+		iconHeightSlider:SetValue(dictIcon.height or (currentThresholdSettings.icons and currentThresholdSettings.icons.height))
+		iconBorderSlider:SetValue(dictIcon.border or (currentThresholdSettings.icons and currentThresholdSettings.icons.border))
+		iconXSlider:SetValue(dictIcon.xPos or (currentThresholdSettings.icons and currentThresholdSettings.icons.xPos))
+		iconYSlider:SetValue(dictIcon.yPos or (currentThresholdSettings.icons and currentThresholdSettings.icons.yPos))
+		iconRelativeToDropdown:SetDefaultText((dictIcon.relativeTo == "CENTER" and L["AnchorPointCENTER"]) or (dictIcon.relativeTo == "BOTTOM" and L["AnchorPointBOTTOM"]) or L["AnchorPointTOP"])
+		iconRelativeToDropdown:SetupMenu(function(dd, rootDescription)
+			local options = {
+				{ key = "TOP", label = L["AnchorPointTOP"] },
+				{ key = "CENTER", label = L["AnchorPointCENTER"] },
+				{ key = "BOTTOM", label = L["AnchorPointBOTTOM"] },
+			}
+			for _, option in ipairs(options) do
+				rootDescription:CreateRadio(option.label, function(value) return value == (dictIcon.relativeTo or (currentThresholdSettings.icons and currentThresholdSettings.icons.relativeTo) or "TOP") end, function(value)
+					dictIcon.relativeTo = value
+					RefreshEditor(selectedGuid)
+					RefreshRuntime()
+				end, option.key)
+			end
+		end)
+
+		local isThresholdEnabled = dictEntry.enabled == true
+		RepositionEditorControls(isThresholdEnabled, colorMode, dictColors, dictLine, dictIcon)
+
+		isRefreshing = false
+	end
+
+	local function SaveIconId()
+		if isRefreshing then return end
+		local line = GetSelectedLine()
+		if line == nil then return end
+		line.iconSourceId = tonumber(iconIdBox:GetText()) or 0
+		line.iconTexture = nil
+		UpdateIconPreview(line)
+		SetTableValues()
+		RefreshRuntime()
+	end
+
+	nameBox:SetScript("OnTextChanged", function(self)
+		if isRefreshing then return end
+		local line = GetSelectedLine()
+		if line == nil then return end
+		line.name = self:GetText()
+		SetTableValues()
+	end)
+	nameBox:SetScript("OnEditFocusLost", function() RefreshRuntime() end)
+
+	enabledCheckbox:SetScript("OnClick", function(self)
+		local dictEntry = GetSelectedDictEntry()
+		if dictEntry == nil then return end
+		dictEntry.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, dictEntry.enabled == true, true)
+		SetTableValues()
+		RefreshEditor(selectedGuid)
+		RefreshRuntime()
+	end)
+
+	valueSlider:SetScript("OnValueChanged", function(self, value)
+		if isRefreshing then return end
+		local line = GetSelectedLine()
+		if line == nil then return end
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		line.value = TRB.Functions.Number:RoundTo(value, 0)
+		SetTableValues()
+		RefreshRuntime()
+	end)
+
+	iconIdBox:SetScript("OnEnterPressed", function(self) SaveIconId(); self:ClearFocus() end)
+	iconIdBox:SetScript("OnEditFocusLost", SaveIconId)
+
+	-- Color pickers are wired in RefreshEditor via shared ThresholdList binding helpers.
+
+	lineUseSpecificCheckbox:SetScript("OnClick", function(self)
+		local _, _, dictLine = GetSelectedDictEntrySections()
+		if dictLine == nil then return end
+		dictLine.enabled = self:GetChecked()
+		RefreshEditor(selectedGuid)
+		RefreshRuntime()
+	end)
+	lineOverlapBorderCheckbox:SetScript("OnClick", function(self)
+		local _, _, dictLine = GetSelectedDictEntrySections()
+		if dictLine == nil then return end
+		dictLine.overlapBorder = self:GetChecked()
+		RefreshRuntime()
+	end)
+	lineWidthSlider:SetScript("OnValueChanged", function(self, value)
+		if isRefreshing then return end
+		local _, _, dictLine = GetSelectedDictEntrySections()
+		if dictLine == nil then return end
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		dictLine.width = TRB.Functions.Number:RoundTo(value, 0)
+		RefreshRuntime()
+	end)
+
+	iconUseSpecificCheckbox:SetScript("OnClick", function(self)
+		local _, _, _, dictIcon = GetSelectedDictEntrySections()
+		if dictIcon == nil then return end
+		dictIcon.enabled = self:GetChecked()
+		RefreshEditor(selectedGuid)
+		RefreshRuntime()
+	end)
+	iconShowCheckbox:SetScript("OnClick", function(self)
+		local _, _, _, dictIcon = GetSelectedDictEntrySections()
+		if dictIcon == nil then return end
+		dictIcon.show = self:GetChecked()
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictIcon.show ~= false)
+		RefreshRuntime()
+	end)
+	iconDesaturateCheckbox:SetScript("OnClick", function(self)
+		local _, _, _, dictIcon = GetSelectedDictEntrySections()
+		if dictIcon == nil then return end
+		dictIcon.desaturated = self:GetChecked()
+		RefreshRuntime()
+	end)
+
+	local function WireIconSlider(slider, fieldName, decimals)
+		slider:SetScript("OnValueChanged", function(self, value)
+			if isRefreshing then return end
+			local _, _, _, dictIcon = GetSelectedDictEntrySections()
+			if dictIcon == nil then return end
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+			dictIcon[fieldName] = TRB.Functions.Number:RoundTo(value, decimals or 0)
+			RefreshRuntime()
+		end)
+	end
+	WireIconSlider(iconWidthSlider, "width")
+	WireIconSlider(iconHeightSlider, "height")
+	WireIconSlider(iconBorderSlider, "border")
+	WireIconSlider(iconXSlider, "xPos")
+	WireIconSlider(iconYSlider, "yPos")
+
+	local function CopyMenu(owner, guid)
+		local currentSpec = GetCurrentSpec()
+		if currentSpec == nil then return end
+		local sourceLine = currentSpec.thresholds.customThresholds[guid]
+		local sourceDictEntry = currentSpec.thresholds.thresholdDictionary[TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)]
+		if sourceLine == nil then
+			return
+		end
+
+		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			rootDescription:CreateTitle(string.format(L["CustomThresholdCopyMenuTitleFormat"], sourceLine.name or L["CustomThresholdDefaultName"]))
+			rootDescription:CreateButton(L["CustomThresholdCopyMenuDuplicate"], function()
+				local copiedLine = CopyCustomThresholdToSpec(sourceLine, sourceDictEntry, lowerClassName, specName)
+				if copiedLine ~= nil then
+					SetTableValues()
+					RefreshEditor(copiedLine.guid)
+				end
+			end)
+
+			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+			local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
+			if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
+				copyTo:CreateTitle(L["CopyMenuCopyTo"])
+				copyTo:CreateDivider()
+				local sortedClasses = {}
+				for i, classDef in ipairs(TRB.Data.allClassSpecs or {}) do
+					sortedClasses[i] = classDef
+				end
+				table.sort(sortedClasses, function(a, b) return a.classLabel < b.classLabel end)
+				for _, classDef in ipairs(sortedClasses) do
+					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+					local classMenu = copyTo:CreateButton(classDef.classLabel)
+					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+						local prefix = classDef.classKey .. "_"
+						for _, specDef in ipairs(classDef.specs) do
+							local targetSpecName = string.sub(specDef.compositeKey, #prefix + 1)
+							classMenu:CreateButton(specDef.specLabel, function()
+								local copiedLine = CopyCustomThresholdToSpec(sourceLine, sourceDictEntry, classDef.classKey, targetSpecName)
+								if classDef.classKey == lowerClassName and targetSpecName == specName and copiedLine ~= nil then
+									SetTableValues()
+									RefreshEditor(copiedLine.guid)
+								end
+							end)
+						end
+					end
+				end
+			end
+		end)
+	end
+
+	addButton:SetScript("OnClick", function()
+		local currentSpec = GetCurrentSpec()
+		if currentSpec == nil then return end
+		local guid = TRB.Functions.String:Guid()
+		local minValue = GetBarTargetRange(currentSpec, "primary")
+		local newLine = TRB.Functions.Settings:NormalizeCustomThresholdLine({
+			guid = guid,
+			name = L["CustomThresholdDefaultName"],
+			barTarget = "primary",
+			value = minValue,
+			iconSourceType = "spell",
+			iconSourceId = 0,
+		}, guid)
+		currentSpec.thresholds.customThresholds[guid] = newLine
+		EnsureThresholdDictionaryEntry(guid, currentSpec)
+		SetTableValues()
+		RefreshEditor(guid)
+		RefreshRuntime()
+	end)
+
+	customThresholdTable:RegisterEvents({
+		OnEnter = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			scrollingTable.DefaultEvents.OnEnter(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if realrow ~= nil and realrow > 0 then
+				if column == 7 then
+					SetActionCellHoverState(cellFrame, true)
+					ShowActionCellTooltip(cellFrame, L["CustomThresholdCopyActionTooltip"])
+				elseif column == 8 then
+					SetActionCellHoverState(cellFrame, true)
+					ShowActionCellTooltip(cellFrame, L["CustomThresholdDeleteActionTooltip"])
+				end
+			end
+		end,
+		OnLeave = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			scrollingTable.DefaultEvents.OnLeave(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+			if column == 7 or column == 8 then
+				SetActionCellHoverState(cellFrame, false)
+				GameTooltip:Hide()
+			end
+		end,
+		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button)
+			if button ~= "LeftButton" or realrow == nil or realrow <= 0 then
+				return
+			end
+			local guid = data[realrow].cols[1].value
+			if column == 7 then
+				CopyMenu(cellFrame or rowFrame, guid)
+			elseif column == 8 then
+				local currentSpec = GetCurrentSpec()
+				local line = currentSpec and currentSpec.thresholds.customThresholds[guid]
+				StaticPopup_Show("TwintopResourceBar_ConfirmDeleteCustomThreshold", string.format(L["CustomThresholdDeleteConfirmation"], line and line.name or L["CustomThresholdDefaultName"]), nil, {
+					spec = currentSpec,
+					guid = guid,
+					refresh = function()
+						SetTableValues()
+						RefreshEditor(nil)
+						RefreshRuntime()
+					end,
+				})
+			else
+				RefreshEditor(guid)
+			end
+		end,
+	})
+
+	SetTableValues()
+
+	return yCoord - 820
+end
+
+---@param className string
+---@param specName string
+---@param controls table
+---@return table
+function TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition(className, specName, controls)
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local specRegistryEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	return {
+		key = "customThresholds",
+		label = L["TabCustomThresholds"],
+		width = oUi.tabWidth.large,
+		isManualScrollFrame = true,
+		constructor = function(scrollChild)
+			local spec = TRB.Data.settings[className] and TRB.Data.settings[className][specName]
+			if spec ~= nil and specRegistryEntry ~= nil then
+				TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(scrollChild, controls, spec, specRegistryEntry.classId, specRegistryEntry.specId, 5)
+			end
+		end,
+	}
+end
