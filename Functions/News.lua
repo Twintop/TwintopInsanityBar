@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - Fix an issue where overlay would sometimes flicker.
+- Allow Bar Text entries to be copied to any profile rather than just the currently active ones.
 
 ---
 

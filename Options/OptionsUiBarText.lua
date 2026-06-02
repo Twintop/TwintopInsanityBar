@@ -1487,6 +1487,18 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		TRB.Data.lookupDirty = true
 	end
 
+	local function GetActiveDestinationProfileName(destScope, destClassName, destSpecName)
+		local profiles = TRB.Functions.Profiles
+		if destScope == "global" then
+			return profiles:ResolveCoreProfileName() or profiles.DEFAULT_NAME
+		end
+		return profiles:ResolveSpecProfileName(destClassName, destSpecName) or profiles.DEFAULT_NAME
+	end
+
+	local function IsLiveBarTextDestination(destScope, destProfileName, destClassName, destSpecName)
+		return destProfileName == nil or destProfileName == GetActiveDestinationProfileName(destScope, destClassName, destSpecName)
+	end
+
 	local function RebuildSpecCacheBarText(destClassName, destSpecName)
 		if destClassName == nil or destSpecName == nil then
 			return
@@ -1537,7 +1549,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
-	local function DestinationAffectsActiveBarText(destScope, destClassName, destSpecName)
+	local function DestinationAffectsActiveBarText(destScope, destProfileName, destClassName, destSpecName)
+		if not IsLiveBarTextDestination(destScope, destProfileName, destClassName, destSpecName) then
+			return false
+		end
+
 		if destScope == "global" then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
@@ -1550,14 +1566,29 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		return destClassName == TRB.Data.character.className and destSpecName == TRB.Data.character.specName
 	end
 
-	local function RefreshAfterBarTextEntryCopy(destScope, destClassName, destSpecName)
-		if destScope == "global" then
-			RebuildAllGlobalBarTextSpecCaches()
+	local function RefreshAfterBarTextEntryCopy(destScope, destProfileName, destClassName, destSpecName)
+		local isLiveDestination = IsLiveBarTextDestination(destScope, destProfileName, destClassName, destSpecName)
+		if isLiveDestination then
+			if destScope == "global" then
+				RebuildAllGlobalBarTextSpecCaches()
+				TRB.Functions.Profiles:WriteThrough("core")
+			else
+				RebuildSpecCacheBarText(destClassName, destSpecName)
+				TRB.Functions.Profiles:WriteThrough("spec", destClassName, destSpecName)
+			end
 		else
-			RebuildSpecCacheBarText(destClassName, destSpecName)
+			TRB.Functions.Profiles:InvalidateCache()
+			if TRB.Functions.OptionsUi.Profiles and TRB.Functions.OptionsUi.Profiles.RefreshProfileDropdownForScope then
+				if destScope == "global" then
+					TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("core")
+				else
+					TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("spec", destClassName, destSpecName)
+				end
+			end
+			TRB.Functions.Profiles:FlushActive()
 		end
 
-		if DestinationAffectsActiveBarText(destScope, destClassName, destSpecName) then
+		if DestinationAffectsActiveBarText(destScope, destProfileName, destClassName, destSpecName) then
 			ClearBarTextRuntimeCaches()
 			TRB.Functions.BarText:CreateBarTextFrames()
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -1566,7 +1597,34 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
-	local function GetDestinationDisplayText(destScope, destClassName, destSpecName)
+	local function GetDestinationDisplayText(destScope, destProfileName, destClassName, destSpecName)
+		local profiles = TRB.Functions.Profiles
+		if not IsLiveBarTextDestination(destScope, destProfileName, destClassName, destSpecName) then
+			profiles:EnsureStructure()
+			local profileList = TRB.Data.settings.profiles and TRB.Data.settings.profiles.list
+			if profileList == nil or destProfileName == nil then
+				return nil
+			end
+			profileList[destProfileName] = profileList[destProfileName] or {}
+			local profile = profileList[destProfileName]
+
+			if destScope == "global" then
+				profile.core = profile.core or {}
+				profile.core.displayText = profile.core.displayText or {}
+				profile.core.displayText.barText = profile.core.displayText.barText or {}
+				return profile.core.displayText
+			end
+
+			if destClassName == nil or destSpecName == nil then
+				return nil
+			end
+			profile[destClassName] = profile[destClassName] or {}
+			profile[destClassName][destSpecName] = profile[destClassName][destSpecName] or {}
+			profile[destClassName][destSpecName].displayText = profile[destClassName][destSpecName].displayText or {}
+			profile[destClassName][destSpecName].displayText.barText = profile[destClassName][destSpecName].displayText.barText or {}
+			return profile[destClassName][destSpecName].displayText
+		end
+
 		if destScope == "global" then
 			TRB.Data.settings.core.displayText = TRB.Data.settings.core.displayText or {}
 			TRB.Data.settings.core.displayText.barText = TRB.Data.settings.core.displayText.barText or {}
@@ -1589,8 +1647,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		return destSpec.displayText
 	end
 
-	local function CopyBarTextEntryToDestination(entry, destScope, destClassName, destSpecName)
-		local destinationDisplayText = GetDestinationDisplayText(destScope, destClassName, destSpecName)
+	local function CopyBarTextEntryToDestination(entry, destScope, destProfileName, destClassName, destSpecName)
+		local destinationDisplayText = GetDestinationDisplayText(destScope, destProfileName, destClassName, destSpecName)
 		if entry == nil or destinationDisplayText == nil or destinationDisplayText.barText == nil then
 			return nil
 		end
@@ -1599,11 +1657,15 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		copiedEntry.guid = TRB.Functions.String:Guid()
 		NormalizeBarTextEntryColor(copiedEntry)
 		table.insert(destinationDisplayText.barText, copiedEntry)
-		RefreshAfterBarTextEntryCopy(destScope, destClassName, destSpecName)
+		RefreshAfterBarTextEntryCopy(destScope, destProfileName, destClassName, destSpecName)
 		return copiedEntry
 	end
 
-	local function IsCurrentEditorDestination(destScope, destClassName, destSpecName)
+	local function IsCurrentEditorDestination(destScope, destProfileName, destClassName, destSpecName)
+		if not IsLiveBarTextDestination(destScope, destProfileName, destClassName, destSpecName) then
+			return false
+		end
+
 		if destScope == "global" then
 			return classId == nil and specId == nil
 		end
@@ -1612,14 +1674,93 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		return editorClassName == destClassName and specName == destSpecName
 	end
 
-	local function CopyBarTextEntryAndRefreshEditor(entry, destScope, destClassName, destSpecName)
-		local copiedEntry = CopyBarTextEntryToDestination(entry, destScope, destClassName, destSpecName)
-		if copiedEntry ~= nil and IsCurrentEditorDestination(destScope, destClassName, destSpecName) then
+	local function CopyBarTextEntryAndRefreshEditor(entry, destScope, destProfileName, destClassName, destSpecName)
+		local copiedEntry = CopyBarTextEntryToDestination(entry, destScope, destProfileName, destClassName, destSpecName)
+		if copiedEntry ~= nil and IsCurrentEditorDestination(destScope, destProfileName, destClassName, destSpecName) then
 			SetTableValues(spec.displayText, barTextTable)
 			local newRow = TRB.Functions.Table:Length(spec.displayText.barText)
 			barTextTable:SetSelection(newRow)
 			ScrollBarTextTableToRow(newRow)
 			FillBarTextEditorFields(copiedEntry.guid, spec.displayText)
+		end
+	end
+
+	local function ProfileHasCore(profileName)
+		if profileName == nil then
+			return false
+		end
+		if IsLiveBarTextDestination("global", profileName) then
+			return TRB.Data.settings.core ~= nil
+		end
+		local profileList = TRB.Data.settings.profiles and TRB.Data.settings.profiles.list
+		return profileList ~= nil and profileList[profileName] ~= nil and type(profileList[profileName].core) == "table"
+	end
+
+	local function ProfileHasSpec(profileName, profileClassName, profileSpecName)
+		if profileName == nil or profileClassName == nil or profileSpecName == nil then
+			return false
+		end
+		if IsLiveBarTextDestination("spec", profileName, profileClassName, profileSpecName) then
+			TRB.Functions.Character:EnsureSpecSettings(profileClassName)
+			local classSettings = TRB.Data.settings[profileClassName]
+			return classSettings ~= nil and classSettings[profileSpecName] ~= nil
+		end
+		local profileList = TRB.Data.settings.profiles and TRB.Data.settings.profiles.list
+		return profileList ~= nil and profileList[profileName] ~= nil
+			and type(profileList[profileName][profileClassName]) == "table"
+			and type(profileList[profileName][profileClassName][profileSpecName]) == "table"
+	end
+
+	local function GetSortedClassSpecs()
+		local sortedClasses = {}
+		for i, classDef in ipairs(TRB.Data.allClassSpecs or {}) do
+			sortedClasses[i] = classDef
+		end
+		table.sort(sortedClasses, function(a, b) return a.classLabel < b.classLabel end)
+		return sortedClasses
+	end
+
+	local function GetCopyMenuNewTargetLabel(label)
+		return string.format(L["CopyMenuNewTargetFormat"], label)
+	end
+
+	local function AddBarTextDestinationProfileSubmenu(parent, onPicked)
+		local profiles = TRB.Functions.Profiles
+		profiles:EnsureStructure()
+		local profileNames = profiles:GetProfileNames()
+		local sortedClasses = GetSortedClassSpecs()
+
+		for _, profileName in ipairs(profileNames) do
+			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+			local profileMenu = parent:CreateButton(profileName)
+			if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
+				local globalLabel = L["ProfileScopeLabelGlobal"]
+				if not ProfileHasCore(profileName) then
+					globalLabel = GetCopyMenuNewTargetLabel(globalLabel)
+				end
+				profileMenu:CreateButton(globalLabel, function()
+					onPicked(profileName, nil, nil)
+				end)
+
+				for _, classDef in ipairs(sortedClasses) do
+					local targetClassName = classDef.classKey
+					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+					local classMenu = profileMenu:CreateButton(classDef.classLabel)
+					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
+						local prefix = targetClassName .. "_"
+						for _, specDef in ipairs(classDef.specs) do
+							local targetSpecName = string.sub(specDef.compositeKey, #prefix + 1)
+							local specLabel = specDef.specLabel
+							if not ProfileHasSpec(profileName, targetClassName, targetSpecName) then
+								specLabel = GetCopyMenuNewTargetLabel(specLabel)
+							end
+							classMenu:CreateButton(specLabel, function()
+								onPicked(profileName, targetClassName, targetSpecName)
+							end)
+						end
+					end
+				end
+			end
 		end
 	end
 
@@ -1632,9 +1773,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			rootDescription:CreateTitle(string.format(L["BarTextCopyMenuTitleFormat"], entry.name or L["BarText"]))
 			rootDescription:CreateButton(L["BarTextCopyMenuDuplicate"], function()
 				if classId == nil or specId == nil then
-					CopyBarTextEntryAndRefreshEditor(entry, "global")
+					CopyBarTextEntryAndRefreshEditor(entry, "global", nil)
 				else
-					CopyBarTextEntryAndRefreshEditor(entry, "spec", string.lower(className), specName)
+					CopyBarTextEntryAndRefreshEditor(entry, "spec", nil, string.lower(className), specName)
 				end
 			end)
 
@@ -1643,30 +1784,14 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
 				copyTo:CreateTitle(L["CopyMenuCopyTo"])
 				copyTo:CreateDivider()
-				copyTo:CreateButton(L["BarTextCopyMenuGlobal"], function()
-					CopyBarTextEntryAndRefreshEditor(entry, "global")
-				end)
-				copyTo:CreateDivider()
-
-				local sortedClasses = {}
-				for i, classDef in ipairs(TRB.Data.allClassSpecs or {}) do
-					sortedClasses[i] = classDef
-				end
-				table.sort(sortedClasses, function(a, b) return a.classLabel < b.classLabel end)
-
-				for _, classDef in ipairs(sortedClasses) do
-					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
-					local classMenu = copyTo:CreateButton(classDef.classLabel)
-					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
-						local prefix = classDef.classKey .. "_"
-						for _, specDef in ipairs(classDef.specs) do
-							local targetSpecName = string.sub(specDef.compositeKey, #prefix + 1)
-							classMenu:CreateButton(specDef.specLabel, function()
-								CopyBarTextEntryAndRefreshEditor(entry, "spec", classDef.classKey, targetSpecName)
-							end)
-						end
+				copyTo:CreateTitle(L["ProfileMenuHeaderProfiles"])
+				AddBarTextDestinationProfileSubmenu(copyTo, function(profileName, destClassName, destSpecName)
+					if destClassName == nil then
+						CopyBarTextEntryAndRefreshEditor(entry, "global", profileName)
+					else
+						CopyBarTextEntryAndRefreshEditor(entry, "spec", profileName, destClassName, destSpecName)
 					end
-				end
+				end)
 			end
 		end)
 	end
