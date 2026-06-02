@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.5.13-release (2026-06-02)
+## General
+
+- Fix an issue where overlay would sometimes flicker.
+
+---
+
 # 12.0.5.12-release (2026-06-01)
 ## General
 

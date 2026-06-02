@@ -146,6 +146,9 @@ function TRB.Classes.OverlaySlot:CreateOverlay()
 	overlay:Hide()
 
 	self.overlayFrame = overlay
+	-- Reset memoized state so the freshly-created frame re-applies texture/color.
+	self._overlayTexturePath = nil
+	self._overlayColorSig = nil
 end
 
 ---Sets the overlay StatusBar value. No-op if overlay has not been created.
@@ -167,6 +170,10 @@ end
 ---@param texture string # Path to the texture
 function TRB.Classes.OverlaySlot:SetOverlayTexture(texture)
 	if not self.overlayFrame then return end
+	if self._overlayTexturePath == texture then return end
+	self._overlayTexturePath = texture
+	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
+	self._overlayColorSig = nil
 	self.overlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.overlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -178,6 +185,9 @@ end
 ---@param colorString string # ARGB hex color string (e.g., "66FFFFFF" for semi-transparent white)
 function TRB.Classes.OverlaySlot:SetOverlayColor(colorString)
 	if not self.overlayFrame then return end
+	local sig = "flat:" .. tostring(colorString)
+	if self._overlayColorSig == sig then return end
+	self._overlayColorSig = sig
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.overlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -197,6 +207,9 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetOverlayColorGradient(color1String, color2String, direction)
 	if not self.overlayFrame then return end
+	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
+	if self._overlayColorSig == sig then return end
+	self._overlayColorSig = sig
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -241,13 +254,31 @@ end
 
 ---Re-anchors the appended overlay clip frame and its child StatusBar.
 ---Called when border, fill texture, or fill direction changes on the parent node.
-function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
+---@param force boolean? # When true, always re-anchors. When false/nil, skips when no geometry-relevant input changed.
+function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay(force)
 	if not self.appendedClipFrame then return end
 
 	local parent = self.parentNode
 	local fillDirection = parent.fillDirection or "leftRight"
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)
+
+	-- Skip redundant re-anchoring when no geometry-relevant input has changed.
+	-- The overlay bar is anchored to the primary fill texture's leading edge, so it
+	-- already tracks the fill automatically each frame without re-anchoring. Re-anchoring
+	-- every frame against a live (and possibly interpolating) StatusBar fill texture causes
+	-- visible flicker, so only re-anchor when the geometry, fill texture object, or the
+	-- empty/non-empty fill state actually changes.
+	local fillTexture = parent.frame:GetStatusBarTexture()
+	local fillRatio = self:GetParentFillRatio()
+	local isEmpty = fillRatio ~= nil and fillRatio <= 0
+	local sig = string.format("%s|%s|%s|%s|%s|%s|%s",
+		tostring(parent.border), tostring(parent.width), tostring(parent.height),
+		fillDirection, tostring(self.fullHeight), tostring(fillTexture), tostring(isEmpty))
+	if force ~= true and self.appendedOverlayReady and self._appendedAnchorSig == sig then
+		return
+	end
+	self._appendedAnchorSig = sig
 
 	-- Re-anchor clip frame to inner area
 	self.appendedClipFrame:ClearAllPoints()
@@ -263,8 +294,6 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay()
 		self.appendedOverlayFrame:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
 		self.appendedOverlayFrame:SetRotatesTexture(isVertical)
 
-		local fillTexture = parent.frame:GetStatusBarTexture()
-		local fillRatio = self:GetParentFillRatio()
 		if fillRatio ~= nil and fillRatio <= 0 then
 			self.appendedOverlayFrame:ClearAllPoints()
 			if fillDirection == "rightLeft" then
@@ -377,13 +406,17 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	self.appendedClipFrame = clip
 	self.appendedOverlayFrame = overlayBar
 	self.appendedOverlayReady = false
+	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
+	self._appendedAnchorSig = nil
+	self._appendedTexturePath = nil
+	self._appendedColorSig = nil
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
 	-- Any flash from initial geometry happens off-screen during this frame.
 	local slot = self
 	C_Timer.After(0, function()
 		if slot.appendedClipFrame then
-			slot:ReanchorAppendedOverlay()
+			slot:ReanchorAppendedOverlay(true)
 		end
 	end)
 end
@@ -429,6 +462,10 @@ end
 ---@param texture string
 function TRB.Classes.OverlaySlot:SetAppendedOverlayTexture(texture)
 	if not self.appendedOverlayFrame then return end
+	if self._appendedTexturePath == texture then return end
+	self._appendedTexturePath = texture
+	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
+	self._appendedColorSig = nil
 	self.appendedOverlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -440,6 +477,9 @@ end
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetAppendedOverlayColor(colorString)
 	if not self.appendedOverlayFrame then return end
+	local sig = "flat:" .. tostring(colorString)
+	if self._appendedColorSig == sig then return end
+	self._appendedColorSig = sig
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -459,6 +499,9 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetAppendedOverlayColorGradient(color1String, color2String, direction)
 	if not self.appendedOverlayFrame then return end
+	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
+	if self._appendedColorSig == sig then return end
+	self._appendedColorSig = sig
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -503,13 +546,30 @@ end
 
 ---Re-anchors the inset overlay clip frame and its child StatusBar.
 ---Called when border, fill texture, or fill direction changes on the parent node.
-function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
+---@param force boolean? # When true, always re-anchors. When false/nil, skips when no geometry-relevant input changed.
+function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 	if not self.insetClipFrame then return end
 
 	local parent = self.parentNode
 	local fillDirection = parent.fillDirection or "leftRight"
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)
+
+	-- Skip redundant re-anchoring when no geometry-relevant input has changed. The inset
+	-- overlay tracks the fill texture's leading edge automatically once anchored, so only
+	-- re-anchor when the geometry, fill texture object, or the fill-edge border-correction
+	-- offset (which depends on the fill ratio) actually changes. Re-anchoring every frame
+	-- against a live, interpolating fill texture causes visible flicker.
+	local fillTexture = parent.frame:GetStatusBarTexture()
+	local fillEdgeXOffset, fillEdgeYOffset = self:GetFillEdgeAnchorOffsets(fillDirection)
+	local sig = string.format("%s|%s|%s|%s|%s|%s|%d|%d",
+		tostring(parent.border), tostring(parent.width), tostring(parent.height),
+		fillDirection, tostring(self.fullHeight), tostring(fillTexture),
+		math.floor((fillEdgeXOffset or 0) + 0.5), math.floor((fillEdgeYOffset or 0) + 0.5))
+	if force ~= true and self.insetOverlayReady and self._insetAnchorSig == sig then
+		return
+	end
+	self._insetAnchorSig = sig
 
 	-- Re-anchor clip frame to inner area
 	self.insetClipFrame:ClearAllPoints()
@@ -526,9 +586,7 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay()
 		self.insetOverlayFrame:SetReverseFill(not Bar:GetReverseFillFromFillDirection(fillDirection))
 		self.insetOverlayFrame:SetRotatesTexture(isVertical)
 
-		local fillTexture = parent.frame:GetStatusBarTexture()
 		if fillTexture then
-			local fillEdgeXOffset, fillEdgeYOffset = self:GetFillEdgeAnchorOffsets(fillDirection)
 			self.insetOverlayFrame:ClearAllPoints()
 			if fillDirection == "rightLeft" then
 				-- Primary fills right→left, inset eats from LEFT edge of fill
@@ -628,6 +686,10 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	self.insetClipFrame = clip
 	self.insetOverlayFrame = overlayBar
 	self.insetOverlayReady = false
+	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
+	self._insetAnchorSig = nil
+	self._insetTexturePath = nil
+	self._insetColorSig = nil
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
 	-- Any flash from initial geometry happens off-screen during this frame.
@@ -662,6 +724,10 @@ end
 ---@param texture string
 function TRB.Classes.OverlaySlot:SetInsetOverlayTexture(texture)
 	if not self.insetOverlayFrame then return end
+	if self._insetTexturePath == texture then return end
+	self._insetTexturePath = texture
+	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
+	self._insetColorSig = nil
 	self.insetOverlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -673,6 +739,9 @@ end
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetInsetOverlayColor(colorString)
 	if not self.insetOverlayFrame then return end
+	local sig = "flat:" .. tostring(colorString)
+	if self._insetColorSig == sig then return end
+	self._insetColorSig = sig
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -692,6 +761,9 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetInsetOverlayColorGradient(color1String, color2String, direction)
 	if not self.insetOverlayFrame then return end
+	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
+	if self._insetColorSig == sig then return end
+	self._insetColorSig = sig
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -745,10 +817,10 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	end
 
 	-- Re-anchor appended overlay if it exists
-	self:ReanchorAppendedOverlay()
+	self:ReanchorAppendedOverlay(true)
 
 	-- Re-anchor inset overlay if it exists
-	self:ReanchorInsetOverlay()
+	self:ReanchorInsetOverlay(true)
 end
 
 ---Reapplies the stored texture and color to all existing overlay frame types.
