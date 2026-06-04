@@ -18,6 +18,22 @@ local content = [====[
 - Fix an issue where overlay would sometimes flicker.
 - Allow Bar Text entries to be copied to any profile rather than just the currently active ones.
 
+## Warlock
+### Affliction
+
+- Add prediction support for Seed of Corruption, Unstable Affliction, and Shadow of Death.
+
+### Demonology
+
+- Add prediction support for Shadow Bolt, Demonbolt, Infernal Bolt, Ruination, Hand of Gul'dan, Shadow of Death, Summon Felguard, Call Dreadstalkers, Demonic Core, and Dominion of Argus.
+- Add bar text variables for Demonic Core: `$demonicCoreTime` and `$demonicCoreStacks`. As these are both secret values, when used in bar text logic they will return only TRUE or FALSE and not the current value.
+- Add bar text variable for Dominion of Argus: `$doaTime`.
+- Add Color Indicators for Demonic Core and Dominion of Argus being active.
+- Add an audio cue option for gaining Demonic Core.
+
+### Destruction
+
+- Add prediction support for Incinerate, Soul Fire, Infernal Bolt, and Chaos Bolt.
 ---
 
 # 12.0.5.12-release (2026-06-01)

@@ -94,7 +94,12 @@ local function FillSpecializationCache()
 	specCache.warlock_demonology.snapshotData.audio = {
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
+		demonicCorePlayed = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore)
 
 	specCache.warlock_demonology.barTextVariables = {
 		icons = {},
@@ -354,11 +359,12 @@ local function RefreshLookupData_Affliction()
 	-- Block C: Casting Soul Shard Fragments ($castingFragments)
 	if not activeVars or activeVars["$castingFragments"] then
 		local castingFragmentsColor = sharedSettings.colors.text.casting.color
+		local castingFragments = snapshotData.casting.resource2Casting or 0
 
-		lookupLogic["$castingFragments"] = 0
+		lookupLogic["$castingFragments"] = castingFragments
 
-		if lookupChanged(prevState, "$castingFragments", 0, castingFragmentsColor) then
-			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, 0)
+		if lookupChanged(prevState, "$castingFragments", castingFragments, castingFragmentsColor) then
+			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
 		end
 	end
 
@@ -369,7 +375,6 @@ end
 local function RefreshLookupData_Demonology()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
 	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -444,10 +449,7 @@ local function RefreshLookupData_Demonology()
 	-- Block C: Casting Soul Shard Fragments ($castingFragments)
 	if not activeVars or activeVars["$castingFragments"] then
 		local castingFragmentsColor = sharedSettings.colors.text.casting.color
-		local castingFragments = 0
-		if spells.demonbolt ~= nil and snapshotData.casting.spellId == spells.demonbolt.id then
-			castingFragments = spells.demonbolt.resource or 0
-		end
+		local castingFragments = snapshotData.casting.resource2Casting or 0
 
 		lookupLogic["$castingFragments"] = castingFragments
 
@@ -456,98 +458,74 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
+	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks)
+	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local currentTime = GetTime()
+		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id]
+		local _demonicCoreActive = (demonicCoreBuff ~= nil and demonicCoreBuff.buff.isActive) or false
+
+		-- Demonic Core is sourced from secret aura data, so `applications` and the
+		-- remaining time are always treated as secret. The conditional/boolean check
+		-- is driven by `isActive` (a plain boolean), while the displayed values use
+		-- secret-safe `string.format`/`TimerPrecision`.
+		lookupLogic["$demonicCoreTime"] = _demonicCoreActive
+		lookupLogic["$demonicCoreStacks"] = _demonicCoreActive
+
+		if _demonicCoreActive then
+			local _demonicCoreStacks = demonicCoreBuff.buff.applications
+			local _demonicCoreTime = demonicCoreBuff.buff:GetRemainingTime(currentTime)
+
+			if lookupChanged(prevState, "$demonicCoreStacks", _demonicCoreStacks, nil, true) then
+				lookup["$demonicCoreStacks"] = string.format("%.0f", _demonicCoreStacks)
+			end
+			if lookupChanged(prevState, "$demonicCoreTime", _demonicCoreTime, nil, true) then
+				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
+			end
+		else
+			-- When Demonic Core is not active, display zeroed defaults rather than
+			-- blank strings. Stacks render as a whole number ("0") and the timer
+			-- respects the user's timer precision setting ("0.0" by default).
+			if lookupChanged(prevState, "$demonicCoreStacks", 0) then
+				lookup["$demonicCoreStacks"] = string.format("%.0f", 0)
+			end
+			if lookupChanged(prevState, "$demonicCoreTime", 0) then
+				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
+	end
+
+	-- Block E: Dominion of Argus ($doaTime)
+	if not activeVars or activeVars["$doaTime"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local currentTime = GetTime()
+		local doaBuff = snapshotData.snapshots[spells.dominionOfArgus.id]
+		local _doaActive = (doaBuff ~= nil and doaBuff.buff.isActive) or false
+
+		lookupLogic["$doaTime"] = _doaActive
+
+		if _doaActive then
+			local _doaTime = doaBuff.buff:GetRemainingTime(currentTime)
+			if lookupChanged(prevState, "$doaTime", _doaTime, nil) then
+				lookup["$doaTime"] = TRB.Functions.BarText:TimerPrecision(_doaTime)
+			end
+		else
+			-- When Dominion of Argus is not active, display a zeroed default that
+			-- respects the user's timer precision setting ("0.0" by default).
+			if lookupChanged(prevState, "$doaTime", 0) then
+				lookup["$doaTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
-end
-
----@param spells TRB.Classes.Warlock.AfflictionSpells?
----@return number
-local function GetAfflictionSpendingShards(spells)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	if snapshotData == nil or snapshotData.casting == nil or spells == nil then
-		return 0
-	end
-
-	if spells.seedOfCorruption ~= nil and snapshotData.casting.spellId == spells.seedOfCorruption.id then
-		return spells.seedOfCorruption.resource or 0
-	elseif spells.unstableAffliction ~= nil and snapshotData.casting.spellId == spells.unstableAffliction.id then
-		return spells.unstableAffliction.resource or 0
-	end
-
-	return 0
-end
-
----@param spells TRB.Classes.Warlock.DemonologySpells?
----@return number
-local function GetDemonologyCastingShards(spells)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.demonbolt == nil then
-		return 0
-	end
-
-	if snapshotData.casting.spellId == spells.demonbolt.id then
-		return spells.demonbolt.resource or 0
-	end
-
-	return 0
-end
-
----@param spells TRB.Classes.Warlock.DemonologySpells?
----@return number
-local function GetDemonologySpendingShards(spells)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.handOfGuldan == nil then
-		return 0
-	end
-
-	if snapshotData.casting.spellId == spells.handOfGuldan.id then
-		return spells.handOfGuldan.resource or 0
-	end
-
-	return 0
-end
-
----@param spells TRB.Classes.Warlock.DestructionSpells?
----@return number
-local function GetDestructionCastingFragments(spells)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.incinerate == nil then
-		return 0
-	end
-
-	if snapshotData.casting.spellId == spells.incinerate.id then
-		if talents:IsTalentActive(spells.diabolicEmbers) then
-			return spells.incinerate.resource + spells.diabolicEmbers.attributes.resourceMod
-		else
-			return spells.incinerate.resource
-		end
-	elseif snapshotData.casting.spellId == spells.soulFire.id then
-		return spells.soulFire.resource
-	end
-
-	return 0
-end
-
----@param spells TRB.Classes.Warlock.DestructionSpells?
----@return number
-local function GetDestructionSpendingFragments(spells)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	if snapshotData == nil or snapshotData.casting == nil or spells == nil or spells.chaosBolt == nil then
-		return 0
-	end
-
-	if snapshotData.casting.spellId == spells.chaosBolt.id then
-		return spells.chaosBolt.resource or 0
-	end
-
-	return 0
 end
 
 local function RefreshLookupData_Destruction()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_destruction"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
-	local castingFragments = GetDestructionCastingFragments(spells)
+	local castingFragments = snapshotData.casting.resource2Casting or 0
 
 	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -636,9 +614,81 @@ local function RefreshLookupData_Destruction()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
-local function UpdateCastingResourceFinal()
+local function UpdateCastingResourceFinal_Affliction()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+	local casting = snapshotData.casting
+	casting.resourceFinal = casting.resourceRaw
+	casting.resource2Casting = 0
+	casting.resource2Spending = 0
+
+	if casting.spellId == spells.seedOfCorruption.id then
+		casting.resource2Spending = spells.seedOfCorruption.resource
+	elseif casting.spellId == spells.unstableAffliction.id then
+		casting.resource2Spending = spells.unstableAffliction.resource
+	elseif casting.spellId == spells.darkHarvest.id and talents:IsTalentActive(spells.shadowOfDeath) then
+		casting.resource2Casting = spells.shadowOfDeath.resource
+	end
+end
+
+local function UpdateCastingResourceFinal_Demonology()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
+	casting.resourceFinal = casting.resourceRaw
+	casting.resource2Casting = 0
+	casting.resource2Spending = 0
+
+	if casting.spellId == spells.shadowBolt.id then
+		casting.resource2Casting = spells.shadowBolt.resource
+	elseif casting.spellId == spells.demonbolt.id then
+		casting.resource2Casting = spells.demonbolt.resource
+	elseif casting.spellId == spells.infernalBolt.id then
+		casting.resource2Casting = spells.infernalBolt.resource
+	elseif casting.spellId == spells.ruination.id then
+		casting.resource2Casting = spells.ruination.resource
+	elseif casting.spellId == spells.summonDemonicTyrant.id and talents:IsTalentActive(spells.shadowOfDeath) then
+		casting.resource2Casting = spells.shadowOfDeath.resource
+	elseif casting.spellId == spells.handOfGuldan.id then
+		local mod = 0
+		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.id]
+		if dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
+			mod = spells.demonicCalling.attributes.resourceMod
+		end
+		casting.resource2Spending = spells.handOfGuldan.resource + mod
+	elseif casting.spellId == spells.summonFelguard.id then
+		casting.resource2Spending = spells.summonFelguard.resource
+	elseif casting.spellId == spells.callDreadstalkers.id then
+		local demonicCallingTalent = talents.talents[spells.demonicCalling.id]
+		local mod = 0
+		if demonicCallingTalent ~= nil and demonicCallingTalent.currentRank ~= nil then
+			mod = spells.demonicCalling.attributes.resourceMod * demonicCallingTalent.currentRank
+		end
+		casting.resource2Spending = spells.callDreadstalkers.resource + mod
+	end
+end
+
+local function UpdateCastingResourceFinal_Destruction()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local casting = snapshotData.casting
+	casting.resourceFinal = casting.resourceRaw
+	casting.resource2Casting = 0
+	casting.resource2Spending = 0
+
+	if casting.spellId == spells.incinerate.id then
+		if talents:IsTalentActive(spells.diabolicEmbers) then
+			casting.resource2Casting = spells.incinerate.resource + spells.diabolicEmbers.attributes.resourceMod
+		else
+			casting.resource2Casting = spells.incinerate.resource
+		end
+	elseif casting.spellId == spells.soulFire.id then
+		casting.resource2Casting = spells.soulFire.resource
+	elseif casting.spellId == spells.infernalBolt.id then
+		casting.resource2Casting = spells.infernalBolt.resource
+	elseif casting.spellId == spells.chaosBolt.id then
+		casting.resource2Spending = spells.chaosBolt.resource
+	end
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -648,10 +698,33 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 
-	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+	if TRB.Data.character.specId == 1 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_START" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Affliction()
+		end
+	elseif TRB.Data.character.specId == 2 then
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
-			UpdateCastingResourceFinal()
+			UpdateCastingResourceFinal_Demonology()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			 -- Handle instant-cast spells that generate resources on cast success rather than cast start
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			if spellId == spells.summonDemonicTyrant.id then
+				if talents:IsTalentActive(spells.dominionOfArgus) then
+					local duration = spells.dominionOfArgus.duration
+					local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.id]
+					if dominionOfArgusTalent and dominionOfArgusTalent.currentRank > 1 then
+						duration = duration + math.min(dominionOfArgusTalent.currentRank - 1, 2) * spells.dominionOfArgus.attributes.durationMod
+					end
+					snapshotData.snapshots[spells.dominionOfArgus.id].buff:InitializeCustom(duration, GetTime(), true)
+				end
+			end
+		end
+	elseif TRB.Data.character.specId == 3 then
+		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
+			casting:SnapshotManaSpell()
+			UpdateCastingResourceFinal_Destruction()
 		end
 	end
 end
@@ -666,6 +739,10 @@ end
 
 local function UpdateSnapshot_Demonology()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(GetTime())
+	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(GetTime())
 end
 
 local function UpdateSnapshot_Destruction()
@@ -708,6 +785,77 @@ local function ProcessSoulShardAudioCues(specSettings)
 	if currentResource2 < threshold2Value then
 		snapshotData.audio.soulShardThreshold2Played = false
 	end
+end
+
+
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			if spellId == spells.demonbolt.id then -- Demonic Core
+				local currentTime = GetTime()
+				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
+				local wasActive = demonicCoreSnapshot ~= nil and demonicCoreSnapshot.buff.isActive
+
+				if not wasActive then
+					local specSettings = TRB.Data.settings.warlock.demonology
+					if specSettings.audio.demonicCore.enabled and not snapshotData.audio.demonicCorePlayed then
+						PlaySoundFile(specSettings.audio.demonicCore.sound, TRB.Data.settings.core.audio.channel.channel)
+						snapshotData.audio.demonicCorePlayed = true
+					end
+				end
+
+				demonicCoreSnapshot.buff:InitializeCustom(spells.demonicCore.duration, currentTime, true, 1, true)
+				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
+				if bufferEntry ~= nil then
+					snapshotData.snapshots[spells.demonicCore.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+					snapshotData.snapshots[spells.demonicCore.id].buff:RefreshWithSecretAuraData(bufferEntry)
+				else
+					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.demonicCore.id].buff)
+				end
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local spellId = ...
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			if spellId == spells.demonbolt.id then -- Demonic Core
+				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
+				if demonicCoreSnapshot ~= nil then
+					demonicCoreSnapshot.buff:Reset()
+				end
+				snapshotData.audio.demonicCorePlayed = false
+
+				snapshotData.attributes.demonicCoreActiveGrace = true
+
+				C_Timer.After(0, function()
+					C_Timer.After(0.05, function()
+						snapshotData.attributes.demonicCoreActiveGrace = false
+					end)
+				end)
+			end
+		end
+	end
+end
+
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	TRB.Functions.Aura:EnableUnitAuraCache()
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	TRB.Functions.Aura:DisableUnitAuraCache()
 end
 
 local function UpdateResourceBar()
@@ -755,13 +903,70 @@ local function UpdateResourceBar()
 		return 0
 	end
 
-	local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, spells)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
 		local spendingSettings = specCacheSettings.colors.comboPoints.spending
 		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
-		local incomingShards = GetDemonologyCastingShards(spells)
-		local spendingShards = math.abs(GetDemonologySpendingShards(spells))
+		local incomingShards = snapshotData.casting.resource2Casting or 0
+		local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
+		-- Demonology renders whole-shard (binary) nodes, so anchor the predictive/spending
+		-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
+		-- value (which can occur transiently after a talent change, before it settles on a
+		-- whole shard via a passive power update) splits a single-shard prediction across
+		-- two adjacent nodes.
+		local overlayBaseline = math.floor(normalizedResource2)
+
+		for x = 1, TRB.Data.character.maxResource2 do
+			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+			local cpColor = fillOverride or specSettings.colors.comboPoints.base
+			local cpBR = cpBackgroundRed
+			local cpBG = cpBackgroundGreen
+			local cpBB = cpBackgroundBlue
+			local filled = normalizedResource2 >= x
+			local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
+
+			if filled and fillOverride == nil then
+				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
+					cpColor = specSettings.colors.comboPoints.second
+				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
+					cpColor = specSettings.colors.comboPoints.third
+				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+					cpColor = specSettings.colors.comboPoints.penultimate
+				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+					cpColor = specSettings.colors.comboPoints.final
+				end
+			end
+
+			if barGroups and barGroups.secondary then
+				local shardNode = barGroups.secondary:GetNode(x)
+				if shardNode then
+					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
+					shardNode:SetBorderColor(cpBorderColor)
+					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
+					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+
+					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+					end
+				end
+			end
+		end
+	end
+
+	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+		local castingSettings = specCacheSettings.colors.comboPoints.casting
+		local spendingSettings = specCacheSettings.colors.comboPoints.spending
+		local castingTexture = specCacheSettings.textures.comboPointsCastingBar or specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
+		local incomingShards = snapshotData.casting.resource2Casting or 0
+		local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
+		-- Affliction renders whole-shard (binary) nodes, so anchor the predictive/spending
+		-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
+		-- value (which can occur transiently after a talent change, before it settles on a
+		-- whole shard via a passive power update) splits a single-shard prediction across
+		-- two adjacent nodes.
+		local overlayBaseline = math.floor(normalizedResource2)
 
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = specSettings.colors.comboPoints.border.color
@@ -770,7 +975,7 @@ local function UpdateResourceBar()
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = normalizedResource2 >= x
-			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, x)
+			local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
 
 			if filled then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
@@ -800,58 +1005,15 @@ local function UpdateResourceBar()
 		end
 	end
 
-	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
-		local spendingSettings = specCacheSettings.colors.comboPoints.spending
-		local spendingTexture = specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
-		local spendingShards = math.abs(GetAfflictionSpendingShards(spells))
-
-		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base
-			local cpBR = cpBackgroundRed
-			local cpBG = cpBackgroundGreen
-			local cpBB = cpBackgroundBlue
-			local filled = normalizedResource2 >= x
-			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, 0, spendingShards, x)
-
-			if filled then
-				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
-				end
-			end
-
-			if barGroups and barGroups.secondary then
-				local shardNode = barGroups.secondary:GetNode(x)
-				if shardNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
-					shardNode:SetBorderColor(cpBorderColor)
-					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
-					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-
-					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, nil, spendingSettings, spendingTexture)
-					end
-				end
-			end
-		end
-	end
-
-	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, spells)
+	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 		local regeneratingColor = specSettings.colors.comboPoints.regenerating
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
 		local spendingSettings = specCacheSettings.colors.comboPoints.spending
 		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
-		local castingFragments = GetDestructionCastingFragments(spells)
+		local castingFragments = snapshotData.casting.resource2Casting or 0
 		local incomingShards = castingFragments / TRB.Data.resource2Factor
-		local spendingFragments = GetDestructionSpendingFragments(spells)
+		local spendingFragments = snapshotData.casting.resource2Spending or 0
 		local spendingShards = math.abs(spendingFragments / TRB.Data.resource2Factor)
 		local function GetSoulShardFillColor(resourceCount, nodeIndex)
 			local shardColor = specSettings.colors.comboPoints.base
@@ -930,9 +1092,8 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, spells)
+				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -960,25 +1121,62 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_demonology.settings
 		UpdateSnapshot_Demonology()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+			-- Resolve indicator colors (shared system). manaBar uses default colors;
+			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
+			-- preserved unless an indicator explicitly targets a given element.
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				dominionOfArgus = snapshotData.snapshots[spells.dominionOfArgus.id] ~= nil and snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive,
+				demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive,
+			}
+
+			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local soulShardsOverride = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, spells)
+				UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, soulShardsOverride.bar, soulShardsOverride.border, soulShardsOverride.background)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1022,9 +1220,8 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, spells)
+				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1085,6 +1282,9 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.warlock_affliction.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#seedOfCorruption"] = spells.seedOfCorruption.icon
+		lookup["#unstableAffliction"] = spells.unstableAffliction.icon
+		lookup["#shadowOfDeath"] = spells.shadowOfDeath.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1111,6 +1311,16 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.warlock_demonology.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#shadowBolt"] = spells.shadowBolt.icon
+		lookup["#demonbolt"] = spells.demonbolt.icon
+		lookup["#infernalBolt"] = spells.infernalBolt.icon
+		lookup["#ruination"] = spells.ruination.icon
+		lookup["#handOfGuldan"] = spells.handOfGuldan.icon
+		lookup["#shadowOfDeath"] = spells.shadowOfDeath.icon
+		lookup["#summonFelguard"] = spells.summonFelguard.icon
+		lookup["#callDreadstalkers"] = spells.callDreadstalkers.icon
+		lookup["#demonicCore"] = spells.demonicCore.icon
+		lookup["#doa"] = spells.dominionOfArgus.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1137,6 +1347,10 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.warlock_destruction.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#incinerate"] = spells.incinerate.icon
+		lookup["#soulFire"] = spells.soulFire.icon
+		lookup["#infernalBolt"] = spells.infernalBolt.icon
+		lookup["#chaosBolt"] = spells.chaosBolt.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1348,6 +1562,7 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:DisableEvents()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.warlock.affliction == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1360,6 +1575,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.SoulShards
 		TRB.Data.resource2Factor = 10
+		TRB.Functions.Class:EnableEvents()
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.warlock.destruction == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1425,11 +1641,31 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
 	}
+	local demonology = {}
+	for key, entry in pairs(shared) do
+		demonology[key] = entry
+	end
+	demonology["$demonicCoreTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.demonicCore == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	demonology["$demonicCoreStacks"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.demonicCore == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	local destruction = {}
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
 	end
-	specValidVars = { [1] = shared, [2] = shared, [3] = destruction }
+	specValidVars = { [1] = shared, [2] = demonology, [3] = destruction }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

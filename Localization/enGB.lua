@@ -311,4 +311,6 @@ if locale == "enGB" then
     L["SecondaryPartialFillColorCheckboxTooltip"] = "When checked, partially filled %s nodes will use this colour instead of the normal node colour."
     L["MageFrostCheckboxSameColorIcicles"] = "Use highest Icicle colour for all?"
     L["HunterSurvivalCheckboxTipOfTheSpearSameColor"] = "Use highest Tip of the Spear colour for all?"
+    L["WarlockDemonologyIndicatorDemonicCoreTooltip"] = "Changes to this colour when Demonic Core is active."
+    L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "Changes to this colour when Dominion of Argus is active."
 end
