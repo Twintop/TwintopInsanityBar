@@ -87,6 +87,7 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
 				spending = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true),
 				second = {
 					color = "FF8788EE",
@@ -271,9 +272,30 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			},
 				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 				shared = {
-					nodeOrder = {},
+					nodeOrder = { "dominionOfArgus", "demonicCore" },
 					gradientOrder = {},
-					indicatorColors = {},
+					indicatorColors = {
+						dominionOfArgus = {
+							color = "FFFF00FF",
+							color2 = "FFFF00FF",
+							gradientDirection = "disabled",
+							enabled = true,
+							targets = {
+								manaBar = { bar = true, border = false, background = false },
+								soulShardsBar = { bar = false, border = false, background = false },
+							},
+						},
+						demonicCore = {
+							color = "FF00FF00",
+							color2 = "FF00FF00",
+							gradientDirection = "disabled",
+							enabled = true,
+							targets = {
+								manaBar = { bar = false, border = false, background = false },
+								soulShardsBar = { bar = false, border = true, background = false },
+							},
+						},
+					},
 				},
 		},
 		displayText={
@@ -313,6 +335,12 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 5
 				}
+			},
+			demonicCore={
+				name = L["WarlockAudioDemonicCore"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -716,6 +744,7 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceSoulShards"])
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceSoulShards"])
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceSoulShards"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1161,6 +1190,8 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "demonicCore", spec, classId, specId, yCoord, L["WarlockAudioCheckboxDemonicCore"], L["WarlockAudioCheckboxDemonicCoreTooltip"])
 end
 
 local function DemonologyConstructBarTextDisplayPanel(parent, cache)
@@ -1273,8 +1304,31 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
---local function DemonologyConstructIndicatorColorsPanel(parent)
---end
+local function DemonologyConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.demonology
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 9, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "dominionOfArgus", label = L["WarlockDemonologyCheckboxDominionOfArgus"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusColor"] },
+			{ key = "demonicCore", label = L["WarlockDemonologyCheckboxDemonicCore"], tooltip = L["WarlockDemonologyIndicatorDemonicCoreTooltip"], colorLabel = L["WarlockDemonologyIndicatorDemonicCoreColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "soulShardsBar", label = L["BarNameSoulShardsBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warlock_Demonology",
+	}))
+
+	yCoord = yCoord - 40
+end
 
 local function DemonologyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 2)
@@ -1307,7 +1361,7 @@ local function DemonologyConstructOptionsPanel(cache)
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "demonology", controls),
-		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DemonologyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DemonologyConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DemonologyConstructFontAndTextPanel },

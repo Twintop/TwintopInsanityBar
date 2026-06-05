@@ -2877,6 +2877,25 @@ L["SecondarySpendingOverlayColorPicker"] = "%s Spending Overlay"
 L["SecondarySpendingOverlayCheckbox"] = "Show spending overlay on %s?"
 L["SecondarySpendingOverlayCheckboxTooltip"] = "When checked, an overlay will be displayed on %s representing the resource spent by your current cast."
 L["PaladinHolyBarTextVariable_castingHolyPower"] = "Holy Power from Casting Spells"
+
+-- Warlock Demonology Demonic Core
+L["WarlockAudioDemonicCore"] = "Demonic Core"
+L["WarlockAudioCheckboxDemonicCore"] = "Play sound when gaining Demonic Core?"
+L["WarlockAudioCheckboxDemonicCoreTooltip"] = "When checked, a sound will play the first time you gain Demonic Core. It will not play again until all stacks are consumed."
+L["WarlockDemonologyBarTextVariable_demonicCoreTime"] = "Time remaining on Demonic Core"
+L["WarlockDemonologyBarTextVariable_demonicCoreStacks"] = "Number of Demonic Core stacks"
+
+-- Warlock Demonology Indicator Colors (bar-agnostic tooltips and color picker labels)
+L["BarNameSoulShardsBar"] = "Soul Shards"
+L["WarlockDemonologyCheckboxDemonicCore"] = "Demonic Core"
+L["WarlockDemonologyIndicatorDemonicCoreTooltip"] = "Changes to this color when Demonic Core is active."
+L["WarlockDemonologyIndicatorDemonicCoreColor"] = "Demonic Core is active"
+
+-- Warlock Demonology Dominion of Argus
+L["WarlockDemonologyBarTextVariable_doaTime"] = "Time remaining on Dominion of Argus"
+L["WarlockDemonologyCheckboxDominionOfArgus"] = "Dominion of Argus"
+L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "Changes to this color when Dominion of Argus is active."
+L["WarlockDemonologyIndicatorDominionOfArgusColor"] = "Dominion of Argus is active"
 L["TabCustomThresholds"] = "Custom Thresholds"
 L["CustomThresholdDefaultName"] = "Custom Threshold"
 L["CustomThresholdsHeader"] = "Custom Threshold Lines"
