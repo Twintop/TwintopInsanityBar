@@ -2917,3 +2917,34 @@ L["CustomThresholdDeleteConfirmation"] = "Delete custom threshold '%s'?"
 
 L["CustomThresholdCopyActionTooltip"] = "Duplicate or copy this custom threshold"
 L["CustomThresholdDeleteActionTooltip"] = "Delete this custom threshold"
+
+-- Custom Threshold bound-bar target name for the Health bar (resource-accurate, no "Bar" suffix)
+L["ResourceHealth"] = "Health"
+
+-- Custom Threshold icon type: no icon (hides the threshold's ability icon)
+L["CustomThresholdIconSourceNone"] = "No Icon"
+
+-- Custom Threshold icon type: direct texture/file ID lookup
+L["CustomThresholdIconSourceIcon"] = "Icon"
+
+-- Resource type display names used in Threshold Settings panels (GenerateThresholdLineColorOptions)
+-- and in GetResourceTypeName for the custom threshold bar-target dropdown labels.
+-- Primary power types
+L["ResourceRage"] = "Rage"
+L["ResourceMana"] = "Mana"
+L["ResourceEnergy"] = "Energy"
+L["ResourceFocus"] = "Focus"
+L["ResourceInsanity"] = "Insanity"
+L["ResourceRunicPower"] = "Runic Power"
+L["ResourceMaelstrom"] = "Maelstrom"
+L["ResourceAstralPower"] = "Astral Power"
+L["ResourceFury"] = "Fury"
+-- Secondary and custom resource types
+L["ResourceComboPoints"] = "Combo Points"
+L["ResourceSoulShards"] = "Soul Shards"
+L["ResourceArcaneCharges"] = "Arcane Charges"
+L["ResourceRunes"] = "Runes"
+L["ResourceHolyPower"] = "Holy Power"
+L["ResourceChi"] = "Chi"
+L["ResourceEssence"] = "Essence"
+L["ResourceStagger"] = "Stagger"

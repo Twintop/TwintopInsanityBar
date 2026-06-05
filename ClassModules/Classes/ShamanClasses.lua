@@ -434,7 +434,8 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Maelstrom"
             },
             health = {
                 maxNodes = 1,
@@ -446,7 +447,8 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 10,
@@ -463,7 +465,8 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             health = {
                 maxNodes = 1,

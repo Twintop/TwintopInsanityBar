@@ -381,6 +381,52 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 		end
 	end
 
+	-- Icon source section (custom thresholds only): positioned between the Line override
+	-- and Icon override sections. The header + type dropdown always show while the threshold
+	-- is enabled; the spell/item ID controls are hidden when the type is "No Icon".
+	local iconSource = config.iconSourceSection
+	if iconSource ~= nil and iconSource.header ~= nil and iconSource.typeDropdown ~= nil then
+		local srcHeader = iconSource.header
+		local typeDropdown = iconSource.typeDropdown
+		local idLabel = iconSource.idLabel
+		local idBox = iconSource.idBox
+		local preview = iconSource.preview
+		local showIdControls = iconSource.showIdControls ~= false
+
+		if isEnabled then
+			srcHeader:Show()
+			typeDropdown.label:Show()
+			typeDropdown:Show()
+
+			srcHeader:ClearAllPoints()
+			srcHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			y = y - 28
+
+			typeDropdown.label:ClearAllPoints()
+			typeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+			typeDropdown:ClearAllPoints()
+			typeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 25)
+
+			if showIdControls then
+				if idLabel then idLabel:Show(); idLabel:ClearAllPoints(); idLabel:SetPoint("TOPLEFT", oUi.xCoord2, y) end
+				if idBox then idBox:Show(); idBox:ClearAllPoints(); idBox:SetPoint("TOPLEFT", oUi.xCoord2, y - 25) end
+				if preview and idBox then preview:Show(); preview:ClearAllPoints(); preview:SetPoint("TOPLEFT", idBox, "TOPRIGHT", 15, 0) end
+			else
+				if idLabel then idLabel:Hide() end
+				if idBox then idBox:Hide() end
+				if preview then preview:Hide() end
+			end
+			y = y - 55
+		else
+			srcHeader:Hide()
+			typeDropdown.label:Hide()
+			typeDropdown:Hide()
+			if idLabel then idLabel:Hide() end
+			if idBox then idBox:Hide() end
+			if preview then preview:Hide() end
+		end
+	end
+
 	-- Icon override section
 	if hasIconSection and isEnabled and hasThresholdIcon then
 		iconHeader:Show()

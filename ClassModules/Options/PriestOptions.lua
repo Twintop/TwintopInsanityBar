@@ -231,6 +231,15 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -304,6 +313,26 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			bars = {
 				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
@@ -646,6 +675,15 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -754,11 +792,18 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
 				over = {
 					color = "FF00FF00"
 				},
 				unusable = {
 					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
@@ -1679,6 +1724,26 @@ local function PriestConstructAngelicFeatherBarPanel(spec, controls, classId, sp
 	end
 end
 
+local function DisciplineConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.discipline
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_discipline
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 1, yCoord)
+end
+
 local function DisciplineConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 1)
 	local namePrefix = className .. "_" .. specName
@@ -1713,6 +1778,7 @@ local function DisciplineConstructOptionsPanel(cache)
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.discipline, controls, 5, 1) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DisciplineConstructIndicatorColorsPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DisciplineConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("priest", "discipline", controls),
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarVisibilityPanel },
@@ -2173,6 +2239,26 @@ local function HolyConstructIndicatorColorsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+local function HolyConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.priest.holy
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.priest_holy
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 2, yCoord)
+end
+
 local function HolyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(5, 2)
 	local namePrefix = className .. "_" .. specName
@@ -2209,6 +2295,7 @@ local function HolyConstructOptionsPanel(cache)
 		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HolyConstructIndicatorColorsPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = HolyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("priest", "holy", controls),
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },

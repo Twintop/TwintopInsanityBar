@@ -1250,6 +1250,15 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -1308,11 +1317,23 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
 				over = {
 					color = "FF00FF00"
 				},
 				unusable = {
 					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
 				}
 			},
 			shared = {
@@ -3390,6 +3411,26 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 11, 4, yCoord, cache)
 end
 
+local function RestorationConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.restoration
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_restoration
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord)
+end
+
 local function RestorationConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(11, 4)
 	local namePrefix = className .. "_" .. specName
@@ -3423,6 +3464,7 @@ local function RestorationConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = RestorationConstructHealthBarPanel },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = RestorationConstructIndicatorColorsPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = RestorationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("druid", "restoration", controls),
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = RestorationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = RestorationConstructBarVisibilityPanel },

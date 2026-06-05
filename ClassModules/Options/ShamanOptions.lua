@@ -282,6 +282,15 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -368,6 +377,10 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				},
 				unusable = {
 					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
 				},
 				outOfRange = {
 					color = "FF440000",
@@ -482,6 +495,15 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -524,6 +546,26 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			shared = {
 				nodeOrder = {
 					"ascendanceEnd",
@@ -1476,6 +1518,26 @@ local function EnhancementConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 7, 2, yCoord, cache)
 end
 
+local function EnhancementConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.shaman.enhancement
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_enhancement
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 2, yCoord)
+end
+
 local function EnhancementConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(7, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1507,6 +1569,7 @@ local function EnhancementConstructOptionsPanel(cache)
 		{ "maelstromWeaponBar", L["TabMaelstromWeapon"], oUi.tabWidth.small, EnhancementConstructMaelstromWeaponBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, EnhancementConstructHealthBarPanel },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, EnhancementConstructIndicatorColorsPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, EnhancementConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "enhancement", controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, EnhancementConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, EnhancementConstructBarVisibilityPanel },
@@ -1812,13 +1875,32 @@ local function RestorationConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 7, 3, yCoord, cache)
 end
 
+local function RestorationConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.shaman.restoration
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_restoration
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
+end
+
 local function RestorationConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(7, 3)
 	local namePrefix = className .. "_" .. specName
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.shaman_restoration or {}
-	local yCoord = 0
 	local f = nil
 
 	controls.colors = {}
@@ -1833,7 +1915,7 @@ local function RestorationConstructOptionsPanel(cache)
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
-	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["ShamanRestorationFull"],
+	local yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["ShamanRestorationFull"],
 		TRB.Data.settings.core.enabled.shaman, "restoration",
 		"TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", "restorationShamanEnabled",
 		"shaman", "restoration")
@@ -1842,6 +1924,7 @@ local function RestorationConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RestorationConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RestorationConstructHealthBarPanel },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RestorationConstructIndicatorColorsPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, RestorationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "restoration", controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, RestorationConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, RestorationConstructBarVisibilityPanel },

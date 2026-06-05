@@ -35,6 +35,15 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -112,6 +121,26 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				sameColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			shared = {
 				nodeOrder = {},
 				gradientOrder = {},
@@ -194,6 +223,15 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -271,6 +309,26 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 				sameColor = false,
 			},
 				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				threshold = {
+					under = {
+						color = "FFFFFFFF"
+					},
+					over = {
+						color = "FF00FF00"
+					},
+					unusable = {
+						color = "FFFF0000"
+					},
+					special = {
+						color = "FFFF00FF",
+						enabled = true
+					},
+					outOfRange = {
+						color = "FF440000",
+						enabled = true,
+						show = true
+					}
+				},
 				shared = {
 					nodeOrder = { "dominionOfArgus", "demonicCore" },
 					gradientOrder = {},
@@ -383,6 +441,15 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -460,11 +527,6 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				sameColor = false,
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
-				shared = {
-					nodeOrder = {},
-					gradientOrder = {},
-					indicatorColors = {},
-				},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -475,12 +537,21 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				unusable = {
 					color = "FFFF0000"
 				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
 				outOfRange = {
 					color = "FF440000",
 					enabled = true,
 					show = true
 				}
-			}
+			},
+			shared = {
+				nodeOrder = {},
+				gradientOrder = {},
+				indicatorColors = {},
+			},
 		},
 		displayText={
 			default = {
@@ -906,6 +977,26 @@ end
 --local function AfflictionConstructIndicatorColorsPanel(parent)
 --end
 
+local function AfflictionConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.affliction
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 9, 1, yCoord)
+end
+
 local function AfflictionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 1)
 	local namePrefix = className .. "_" .. specName
@@ -936,6 +1027,7 @@ local function AfflictionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, AfflictionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "affliction", controls),
 		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AfflictionConstructBarTexturesPanel },
@@ -1330,6 +1422,26 @@ local function DemonologyConstructIndicatorColorsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+local function DemonologyConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.demonology
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_demonology
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 9, 2, yCoord)
+end
+
 local function DemonologyConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1360,6 +1472,7 @@ local function DemonologyConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DemonologyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "demonology", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DemonologyConstructBarTexturesPanel },
@@ -1730,6 +1843,26 @@ end
 --local function DestructionConstructIndicatorColorsPanel(parent)
 --end
 
+local function DestructionConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 9, 3, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 9, 3, yCoord)
+end
+
 local function DestructionConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(9, 3)
 	local namePrefix = className .. "_" .. specName
@@ -1760,6 +1893,7 @@ local function DestructionConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel },
 		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DestructionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "destruction", controls),
 		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DestructionConstructBarTexturesPanel },

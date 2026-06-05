@@ -112,20 +112,6 @@ local function CopyDruidDisplayBarFlags(configuration, settings, classId)
 	CopyKeys(configuration.displayBar, settings.displayBar, DRUID_DISPLAY_BAR_FLAG_KEYS)
 end
 
-local function GetSpecBarGroupConfiguration(classId, specId)
-	local className = TRB.Functions.Character:GetClassModuleName(classId)
-	if className == nil then
-		return nil
-	end
-
-	local classModule = TRB.Classes and TRB.Classes[className]
-	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
-		return nil
-	end
-
-	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
-end
-
 local function ShouldExportSecondaryBar(classId, specId, settings)
 	local hasSecondarySettings = settings.comboPoints ~= nil or (settings.colors ~= nil and settings.colors.comboPoints ~= nil)
 	if not hasSecondarySettings then
@@ -136,7 +122,7 @@ local function ShouldExportSecondaryBar(classId, specId, settings)
 		return true
 	end
 
-	local specConfiguration = GetSpecBarGroupConfiguration(classId, specId)
+	local specConfiguration = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	return specConfiguration ~= nil and specConfiguration.secondary ~= nil
 end
 
@@ -251,7 +237,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeThresholds then
-		TRB.Functions.Settings:EnsureThresholdSettingsForSpec(settings)
 		configuration.thresholds = settings.thresholds
 		configuration.colors.threshold = settings.colors and settings.colors.threshold
 	end

@@ -522,7 +522,8 @@ function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
     local config = {
         primary = {
             maxNodes = 1,
-            isPrimary = true
+            isPrimary = true,
+            resourceType = "Focus"
         },
         health = {
             maxNodes = 1,

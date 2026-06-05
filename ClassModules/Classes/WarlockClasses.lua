@@ -334,7 +334,8 @@ function TRB.Classes.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
-            isPrimary = true
+            isPrimary = true,
+            resourceType = "Mana"
         },
         secondary = {
             maxNodes = 5,

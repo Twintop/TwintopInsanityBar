@@ -1176,6 +1176,7 @@ end
 ---@field public getNodeCountForKey (fun(key: string, colorSettings: table): integer)? # Optional callback returning node count per key (for multi-charge nodes like Holy Words). When nil, each enabled key counts as 1 node.
 ---@field public hasSameColor boolean # True if the "use highest color" checkbox should be shown for this bar's node colors. Defaults to true; set false to hide.
 ---@field public sameColorNodeKey string? # Key of the nodeColor entry that the sameColor checkbox should be placed next to. Defaults to the last nodeColor entry.
+---@field public isAmalgamation boolean # True if this multi-node bar combines distinct ability types (e.g. Holy Words, Warrior Defensives). Custom thresholds expose one sub-target per node type instead of a single bar-wide target. Defaults to false.
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
@@ -1229,6 +1230,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.getNodeCountForKey = config.getNodeCountForKey -- Optional callback: (key, colorSettings) -> integer node count
 	self.hasSameColor = config.hasSameColor ~= false -- Defaults to true; set false to hide "use highest" checkbox
 	self.sameColorNodeKey = config.sameColorNodeKey -- Key of node that sameColor checkbox sits next to (defaults to last)
+	self.isAmalgamation = config.isAmalgamation or false -- Multi-type bar (Holy Words, Defensives); custom thresholds expose per-type sub-targets
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 
@@ -1577,6 +1579,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		key = "defensives",
 		displayName = L["ResourceWarriorDefensives"],
 		isMultiNode = true,
+		isAmalgamation = true, -- Distinct buff types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 3, -- Ignore Pain (Time) + Ignore Pain (Absorb) + Shield Block
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
@@ -1608,6 +1611,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		key = "holyWords",
 		displayName = L["ResourcePriestHolyWords"],
 		isMultiNode = true,
+		isAmalgamation = true, -- Distinct Holy Word types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 5, -- Serenity x2 + Sanctify x2 + Chastise x1
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (cooldown progress)

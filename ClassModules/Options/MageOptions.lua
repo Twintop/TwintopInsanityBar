@@ -39,6 +39,15 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -103,6 +112,26 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				sameColor=true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			shared = {
 				nodeOrder = {},
 				gradientOrder = {},
@@ -189,6 +218,15 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -229,6 +267,26 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			bars = {
 				fireBlastCharges = TRB.Functions.Settings:DefaultFireBlastChargesBarColors(),
 			},
@@ -297,6 +355,15 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -361,6 +428,26 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			shared = {
 				nodeOrder = {},
 				gradientOrder = {},
@@ -753,6 +840,26 @@ end
 --local function ArcaneConstructIndicatorColorsPanel(parent)
 --end
 
+local function ArcaneConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.arcane
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_arcane
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 8, 1, yCoord)
+end
+
 local function ArcaneConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 1)
 	local namePrefix = className .. "_" .. specName
@@ -786,6 +893,7 @@ local function ArcaneConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel },
 		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = ArcaneConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "arcane", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ArcaneConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarTexturesPanel },
@@ -1048,6 +1156,26 @@ end
 --local function FireConstructIndicatorColorsPanel(parent)
 --end
 
+local function FireConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.fire
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_fire
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 8, 2, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 8, 2, yCoord)
+end
+
 local function FireConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1081,6 +1209,7 @@ local function FireConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
 		{ key = "fireBlastCharges", label = L["TabFireBlastCharges"], width = oUi.tabWidth.medium, constructor = FireConstructFireBlastChargesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FireConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "fire", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FireConstructBarTexturesPanel },
@@ -1405,6 +1534,26 @@ end
 --local function FrostConstructIndicatorColorsPanel(parent)
 --end
 
+local function FrostConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_frost
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 8, 3, yCoord)
+end
+
 local function FrostConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(8, 3)
 	local namePrefix = className .. "_" .. specName
@@ -1438,6 +1587,7 @@ local function FrostConstructOptionsPanel(cache)
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
 		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "frost", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },

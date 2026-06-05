@@ -641,7 +641,8 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Rage"
             },
             defensives = {
                 maxNodes = 3,
@@ -659,7 +660,8 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Rage"
             },
             secondary = {
                 maxNodes = 4,
@@ -676,7 +678,8 @@ function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Rage"
             },
             health = {
                 maxNodes = 1,

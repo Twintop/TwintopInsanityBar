@@ -42,7 +42,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomThreshold"] = {
 
 ---@param spec table
 local function EnsureCustomThresholdSettings(spec)
-	TRB.Functions.Settings:EnsureThresholdSettingsForSpec(spec)
+	spec.thresholds = spec.thresholds or {}
 	spec.thresholds.customThresholds = spec.thresholds.customThresholds or {}
 	spec.thresholds.thresholdDictionary = spec.thresholds.thresholdDictionary or {}
 end
@@ -92,10 +92,27 @@ end
 
 ---@param spec table
 ---@param barTarget string
+---@param classId integer?
+---@param specId integer?
 ---@return number minValue
 ---@return number maxValue
-local function GetBarTargetRange(spec, barTarget)
-	return TRB.Functions.Threshold:GetCustomThresholdTargetRange(spec, barTarget)
+local function GetBarTargetRange(spec, barTarget, classId, specId)
+	return TRB.Functions.Threshold:GetCustomThresholdTargetRange(spec, barTarget, nil, classId, specId)
+end
+
+---Returns the decimal precision allowed on the Threshold Value slider for a given bar target.
+---@param spec table
+---@param barTarget string
+---@param classId integer?
+---@param specId integer?
+---@return integer
+local function GetBarTargetDecimals(spec, barTarget, classId, specId)
+	for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(spec, classId, specId)) do
+		if target.key == barTarget then
+			return target.decimals or 0
+		end
+	end
+	return 0
 end
 
 ---@param className string
@@ -184,6 +201,10 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 	local namePrefix = lowerClassName .. "_" .. specName .. "_CustomThresholds"
 	local selectedGuid = nil
 	local isRefreshing = false
+	-- Decimal precision currently applied to the Threshold Value slider. Most bars use whole
+	-- numbers; bars whose underlying resource has finer granularity than its node count (e.g.
+	-- Destruction Warlock Soul Shards) opt into decimals via the bar-target descriptor.
+	local currentValueDecimals = 0
 
 	local function RefreshRuntime()
 		RefreshSpecCache(lowerClassName, specName)
@@ -426,14 +447,21 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		if currentSpec == nil then
 			return
 		end
+		-- Build a key -> label lookup from the bound-bar descriptors so the table shows the
+		-- same resource-accurate names (e.g. "Insanity", "Holy Word: Serenity") as the editor.
+		local targetLabels = {}
+		for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(currentSpec, classId, specId)) do
+			targetLabels[target.key] = target.label
+		end
 		local dataTable = {}
 		for _, customThreshold in ipairs(GetOrderedEntries(currentSpec)) do
 			local dictEntry = currentSpec.thresholds.thresholdDictionary[TRB.Functions.Settings:GetCustomThresholdDictionaryKey(customThreshold.guid)]
 			local texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 			local iconText = texture and ("|T" .. tostring(texture) .. ":16|t") or ""
-			local targetLabel = customThreshold.barTarget or "primary"
-			if TRB.Functions.Bar and TRB.Functions.Bar.GetBarDisplayName then
-				targetLabel = TRB.Functions.Bar:GetBarDisplayName(customThreshold.barTarget or "primary")
+			local barTargetKey = customThreshold.barTarget or "primary"
+			local targetLabel = targetLabels[barTargetKey]
+			if targetLabel == nil and TRB.Functions.Bar and TRB.Functions.Bar.GetBarDisplayName then
+				targetLabel = TRB.Functions.Bar:GetBarDisplayName(barTargetKey)
 			end
 			local enabledText = dictEntry and dictEntry.enabled and ("|cFF00FF00" .. L["BarTextVariablesStatusYes"] .. "|r") or ("|cFFFF0000" .. L["BarTextVariablesStatusNo"] .. "|r")
 			table.insert(dataTable, {
@@ -463,22 +491,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		valueSlider:ClearAllPoints()
 		valueSlider:SetPoint("TOPLEFT", oUi.xCoord2, y - 25)
 
-		y = y - 105
-		iconHeader:ClearAllPoints()
-		iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
-		y = y - 28
-		iconTypeDropdown.label:ClearAllPoints()
-		iconTypeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
-		iconTypeDropdown:ClearAllPoints()
-		iconTypeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 25)
-		iconIdLabel:ClearAllPoints()
-		iconIdLabel:SetPoint("TOPLEFT", oUi.xCoord2, y)
-		iconIdBox:ClearAllPoints()
-		iconIdBox:SetPoint("TOPLEFT", oUi.xCoord2, y - 25)
-		iconPreview:ClearAllPoints()
-		iconPreview:SetPoint("TOPLEFT", iconIdBox, "TOPRIGHT", 15, 0)
-
-		y = y - 85
+		y = y - 65
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyColorOverrideLayout({
 			yCoord = y,
@@ -497,14 +510,28 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			overColorPicker = overColorPicker,
 		})
 
+		-- Icon Source sits between the Line and Icon override sections. When its type is
+		-- "No Icon", the whole Icon override subsection is hidden (hasThresholdIcon=false).
+		local selectedLine = GetSelectedLine()
+		local iconType = (selectedLine and selectedLine.iconSourceType) or "spell"
+		local hasThresholdIcon = iconType ~= "none"
+
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
 			yCoord = y,
 			isEnabled = isThresholdEnabled,
-			hasThresholdIcon = true,
+			hasThresholdIcon = hasThresholdIcon,
 			lineHeader = lineHeader,
 			lineUseSpecificCheckbox = lineUseSpecificCheckbox,
 			lineWidthSlider = lineWidthSlider,
 			lineOverlapBorderCheckbox = lineOverlapBorderCheckbox,
+			iconSourceSection = {
+				header = iconHeader,
+				typeDropdown = iconTypeDropdown,
+				idLabel = iconIdLabel,
+				idBox = iconIdBox,
+				preview = iconPreview,
+				showIdControls = hasThresholdIcon,
+			},
 			iconHeader = iconOverrideHeader,
 			iconUseSpecificCheckbox = iconUseSpecificCheckbox,
 			iconRelativeToDropdown = iconRelativeToDropdown,
@@ -564,8 +591,35 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		local underColor = (currentThresholdColors and currentThresholdColors.under and currentThresholdColors.under.color) or defaultThresholdColors.under.color
 		local overColor = (currentThresholdColors and currentThresholdColors.over and currentThresholdColors.over.color) or defaultThresholdColors.over.color
 
-		local minValue, maxValue = GetBarTargetRange(currentSpec, line.barTarget or "primary")
-		local clampedValue = math.max(minValue, math.min(line.value or minValue, maxValue))
+		local currentBarTarget = line.barTarget or "primary"
+		local barTargets = TRB.Functions.Threshold:GetCustomThresholdBarTargets(currentSpec, classId, specId)
+		local targetLabel = nil
+		currentValueDecimals = 0
+		for _, target in ipairs(barTargets) do
+			if target.key == currentBarTarget then
+				targetLabel = target.label
+				currentValueDecimals = target.decimals or 0
+				break
+			end
+		end
+		if targetLabel == nil then
+			-- Stored target no longer exists for this spec; fall back to the first available one.
+			if barTargets[1] ~= nil then
+				currentBarTarget = barTargets[1].key
+				line.barTarget = currentBarTarget
+				targetLabel = barTargets[1].label
+				currentValueDecimals = barTargets[1].decimals or 0
+			else
+				targetLabel = TRB.Functions.Bar:GetBarDisplayName(currentBarTarget)
+			end
+		end
+
+		local valueStep = currentValueDecimals > 0 and (1 / (10 ^ currentValueDecimals)) or 1
+		valueSlider:SetValueStep(valueStep)
+		valueSlider:SetObeyStepOnDrag(true)
+
+		local minValue, maxValue = GetBarTargetRange(currentSpec, currentBarTarget, classId, specId)
+		local clampedValue = TRB.Functions.Number:RoundTo(math.max(minValue, math.min(line.value or minValue, maxValue)), currentValueDecimals)
 		if line.value ~= clampedValue then
 			line.value = clampedValue
 		end
@@ -575,14 +629,14 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		valueSlider:SetValue(clampedValue)
 		valueSlider.EditBox:SetText(clampedValue)
 
-		local targetLabel = TRB.Functions.Bar:GetBarDisplayName(line.barTarget or "primary")
 		barTargetDropdown:SetDefaultText(targetLabel)
 		barTargetDropdown:SetupMenu(function(dd, rootDescription)
-			for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(GetCurrentSpec() or spec)) do
+			for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(GetCurrentSpec() or spec, classId, specId)) do
 				rootDescription:CreateRadio(target.label, function(value) return value == (line.barTarget or "primary") end, function(value)
 					line.barTarget = value
-					local newMin, newMax = GetBarTargetRange(GetCurrentSpec() or spec, value)
-					line.value = math.max(newMin, math.min(line.value or newMin, newMax))
+					local newMin, newMax = GetBarTargetRange(GetCurrentSpec() or spec, value, classId, specId)
+					local newDecimals = GetBarTargetDecimals(GetCurrentSpec() or spec, value, classId, specId)
+					line.value = TRB.Functions.Number:RoundTo(math.max(newMin, math.min(line.value or newMin, newMax)), newDecimals)
 					RefreshEditor(selectedGuid)
 					SetTableValues()
 					RefreshRuntime()
@@ -593,13 +647,23 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		local iconTypeLabels = {
 			spell = L["CustomThresholdIconSourceSpell"],
 			item = L["CustomThresholdIconSourceItem"],
+			icon = L["CustomThresholdIconSourceIcon"],
+			none = L["CustomThresholdIconSourceNone"],
 		}
 		iconTypeDropdown:SetDefaultText(iconTypeLabels[line.iconSourceType or "spell"])
 		iconTypeDropdown:SetupMenu(function(dd, rootDescription)
-			for _, sourceType in ipairs({ "spell", "item" }) do
+			for _, sourceType in ipairs({ "spell", "item", "icon", "none" }) do
 				rootDescription:CreateRadio(iconTypeLabels[sourceType], function(value) return value == (line.iconSourceType or "spell") end, function(value)
 					line.iconSourceType = value
 					line.iconTexture = nil
+					-- "No Icon" writes the per-threshold show flag the "Show ability icon?"
+					-- checkbox uses, so the shared runtime icon path hides the icon; Spell/Item
+					-- restore it. The selection itself is still stored in iconSourceType so the
+					-- spell/item code paths keep working unchanged.
+					local _, _, _, dictIcon = GetSelectedDictEntrySections()
+					if dictIcon ~= nil then
+						dictIcon.show = value ~= "none"
+					end
 					RefreshEditor(selectedGuid)
 					SetTableValues()
 					RefreshRuntime()
@@ -616,6 +680,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			colorState = dictColors,
 			colorModeLabels = colorModeLabels,
 			colorModePrefix = L["ThresholdDetailColorModePrefix"],
+			tooltip = L["ThresholdDetailColorModeTooltip"],
 			onLayoutChanged = function()
 				ReflowColorSectionOnly()
 			end,
@@ -753,7 +818,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		local line = GetSelectedLine()
 		if line == nil then return end
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		line.value = TRB.Functions.Number:RoundTo(value, 0)
+		line.value = TRB.Functions.Number:RoundTo(value, currentValueDecimals)
 		SetTableValues()
 		RefreshRuntime()
 	end)

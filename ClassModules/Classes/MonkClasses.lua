@@ -595,7 +595,8 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Energy"
             },
             stagger = {
                 maxNodes = 1,
@@ -613,7 +614,8 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             health = {
                 maxNodes = 1,
@@ -625,7 +627,8 @@ function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Energy"
             },
             secondary = {
                 maxNodes = 5,

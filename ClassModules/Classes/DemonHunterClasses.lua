@@ -581,7 +581,8 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Fury"
             },
             health = {
                 maxNodes = 1,
@@ -593,7 +594,8 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Fury"
             },
             secondary = {
                 maxNodes = 6,
@@ -610,7 +612,8 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Fury"
             },
             secondary = {
                 maxNodes = 1,

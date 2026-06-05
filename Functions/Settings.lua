@@ -7736,10 +7736,6 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
-	-- Ensure threshold settings exist for every spec so custom threshold lines can be used
-	-- even by specs that do not have predefined spell threshold lines.
-	TRB.Functions.Settings:EnsureThresholdSettingsForAllSpecs(TwintopInsanityBarSettings)
-
 	-- Remove legacy consistentUnfilledColor from comboPoints colors (deprecated option removed)
 	if TwintopInsanityBarSettings ~= nil then
 		for _, classValue in pairs(TwintopInsanityBarSettings) do
@@ -9387,78 +9383,12 @@ function TRB.Functions.Settings:NormalizeCustomThresholdLine(customThreshold, gu
 	line.barTarget = line.barTarget or "primary"
 	line.value = tonumber(line.value) or 0
 	line.iconSourceType = line.iconSourceType or "spell"
-	if line.iconSourceType ~= "spell" and line.iconSourceType ~= "item" then
+	if line.iconSourceType ~= "spell" and line.iconSourceType ~= "item" and line.iconSourceType ~= "icon" and line.iconSourceType ~= "none" then
 		line.iconSourceType = "spell"
 	end
 	line.iconSourceId = tonumber(line.iconSourceId) or 0
 
 	return line --[[@as TRB.Classes.Settings.CustomThresholdLine]]
-end
-
----@param specSettings TRB.Classes.Settings.SpecializationSettingsBase?
----@return TRB.Classes.Settings.Thresholds?
-function TRB.Functions.Settings:EnsureThresholdSettingsForSpec(specSettings)
-	if type(specSettings) ~= "table" then
-		return nil
-	end
-
-	specSettings.thresholds = specSettings.thresholds or TRB.Functions.Settings:DefaultThresholdSettings()
-	local thresholds = specSettings.thresholds --[[@as TRB.Classes.Settings.Thresholds]]
-	thresholds.properties = thresholds.properties or {
-		width = 2,
-		overlapBorder = true,
-	}
-	if thresholds.properties.width == nil then
-		thresholds.properties.width = 2
-	end
-	if thresholds.properties.overlapBorder == nil then
-		thresholds.properties.overlapBorder = true
-	end
-	thresholds.icons = TRB.Functions.Table:DeepMergeCopy(TRB.Functions.Settings:DefaultThresholdIconSettings(), thresholds.icons)
-	thresholds.specProperties = thresholds.specProperties or {}
-	thresholds.thresholdDictionary = thresholds.thresholdDictionary or {}
-
-	local normalizedCustomThresholds = {}
-	if type(thresholds.customThresholds) == "table" then
-		for key, customThreshold in pairs(thresholds.customThresholds) do
-			local line = TRB.Functions.Settings:NormalizeCustomThresholdLine(customThreshold, type(key) == "string" and key or nil)
-			local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(line.guid)
-			normalizedCustomThresholds[line.guid] = line
-			if dictionaryKey ~= nil then
-				if thresholds.thresholdDictionary[dictionaryKey] == nil and thresholds.thresholdDictionary[line.guid] ~= nil then
-					thresholds.thresholdDictionary[dictionaryKey] = thresholds.thresholdDictionary[line.guid]
-				end
-				thresholds.thresholdDictionary[dictionaryKey] = TRB.Functions.Settings:NormalizeThresholdDictionaryEntry(thresholds.thresholdDictionary[dictionaryKey], true)
-			end
-		end
-	end
-	thresholds.customThresholds = normalizedCustomThresholds
-
-	specSettings.colors = specSettings.colors or {}
-	specSettings.colors.threshold = TRB.Functions.Table:DeepMergeCopy(TRB.Functions.Settings:DefaultThresholdColors(), specSettings.colors.threshold)
-
-	return thresholds
-end
-
----@param settings table?
-function TRB.Functions.Settings:EnsureThresholdSettingsForAllSpecs(settings)
-	if type(settings) ~= "table" then
-		return
-	end
-
-	local classes = {
-		"deathknight", "demonhunter", "druid", "evoker", "hunter",
-		"mage", "monk", "paladin", "priest", "rogue",
-		"shaman", "warlock", "warrior"
-	}
-
-	for _, className in ipairs(classes) do
-		if type(settings[className]) == "table" then
-			for _, specSettings in pairs(settings[className]) do
-				TRB.Functions.Settings:EnsureThresholdSettingsForSpec(specSettings)
-			end
-		end
-	end
 end
 
 ---Returns default bar text for the health bar

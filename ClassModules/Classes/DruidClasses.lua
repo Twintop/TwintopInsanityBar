@@ -989,7 +989,8 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "AstralPower"
             },
             secondary = {
                 maxNodes = 5,
@@ -1011,7 +1012,8 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Energy"
             },
             secondary = {
                 maxNodes = 5,
@@ -1028,7 +1030,8 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Rage"
             },
             secondary = {
                 maxNodes = 5,
@@ -1045,7 +1048,8 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 5,

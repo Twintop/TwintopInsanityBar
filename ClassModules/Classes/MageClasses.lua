@@ -273,7 +273,8 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 4,
@@ -290,7 +291,8 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 3,
@@ -307,7 +309,8 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 5,

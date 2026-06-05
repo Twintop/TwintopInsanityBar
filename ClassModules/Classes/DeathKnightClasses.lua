@@ -335,7 +335,8 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
     local config = {
         primary = {
             maxNodes = 1,
-            isPrimary = true
+            isPrimary = true,
+            resourceType = "RunicPower"
         },
         secondary = {
             maxNodes = 6,
