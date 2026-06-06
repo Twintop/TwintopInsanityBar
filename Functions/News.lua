@@ -12,9 +12,10 @@ local content = [====[
 
 ---
 
-# 12.0.5.13-release (2026-06-05)
+# 12.0.5.13-release (2026-06-07)
 ## General
 
+- [#42](#42) Add support for custom threshold lines on all bars, including multi-node bars (e.g. Combo Points, Angelic Feather, Maelstrom Weapon, etc.).
 - Fix an issue where overlay would sometimes flicker.
 - Allow Bar Text entries to be copied to any profile rather than just the currently active ones.
 
