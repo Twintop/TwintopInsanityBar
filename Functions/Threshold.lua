@@ -974,6 +974,33 @@ local function ParseBarTarget(barTarget)
 	return barTarget, nil
 end
 
+---Returns true when a bar target's live value is a SECRET cast/charge count (Vengeance DH Soul
+---Fragments, Blood DK Bone Shield, Fire Mage Fire Blast Charges) that Lua cannot compare or
+---curve-evaluate. Such targets are restricted to the static color mode and have no over/under
+---trigger. The flag is declared either on the registry BarTypeDefinition (custom bars like Bone
+---Shield) or on the spec's GetSpecConfiguration block (secondary bars like Soul Fragments / Fire
+---Blast). A target key may be a sub-target like "secondary:soulFragments"; the flag lives on the
+---base bar.
+---@param barTarget string
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId)
+	if barTarget == nil then
+		return false
+	end
+	local baseKey = ParseBarTarget(barTarget)
+	local barTypeDef = GetBarTypeDefinition(baseKey)
+	if barTypeDef ~= nil and barTypeDef.usesSecretValue == true then
+		return true
+	end
+	local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	if config ~= nil and config[baseKey] ~= nil and config[baseKey].usesSecretValue == true then
+		return true
+	end
+	return false
+end
+
 ---Resolves the display name for a custom-threshold bound-bar target. Unlike the generic
 ---bar anchoring UI (which intentionally says "Primary Resource Bar"), custom thresholds show
 ---the actual resource (e.g. "Insanity", "Soul Shards", "Health"). Registry bars already carry
@@ -1276,6 +1303,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	-- nil for normal targets; true/false for a context sub-target whose game-state context is
 	-- (in)active. UpdateCustomThresholdLines hides the line when this is false.
 	local contextActive = nil
+	-- Enhancement compressed Maelstrom Weapon: 5 nodes show 10 stacks (6-10 overlap 1-5).
+	local compressedOverlap = false
+	local compressedSplit = 0
+	local compressedActive = false
 
 	if baseKey == "primary" and FindContextSubTarget(classId, specId, "primary", nodeKey, settings) ~= nil then
 		-- Druid form sub-target (e.g. "primary:energy"): the primary bar shows a different
@@ -1404,27 +1435,55 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			else
 				currentValue = rawResource2
 			end
-			-- Secondary bars whose live count is stored as non-secret node fills (e.g. Fury Warrior
-			-- Whirlwind stacks, 1 per filled node) have no real power-type resource (resource2 is
-			-- nil), so the ColorCurve path can't decide over/under. Derive it from the node sum like
-			-- the registered multi-node bars. Power-type secondary bars (combo points, soul shards)
-			-- report secret node values, so they keep using the ColorCurve path instead.
-			local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
-			local hasPowerCurve = type(TRB.Data.resource2) == "number"
-			if not sawSecret then
-				currentValue = nodeSum
+			local isRunes = Enum and Enum.PowerType and TRB.Data.resource2 == Enum.PowerType.Runes
+			local compressedView = specId == 2 and settings.colors and settings.colors.comboPoints
+				and settings.colors.comboPoints.compressedView == true
+			if isRunes then
+				-- Death Knight Runes recharge per-node (fractional fills) and Runes is a real PowerType, so
+				-- UnitPowerPercent only sees the ready count and the curve never matches the bar. Compare
+				-- the complete (ready) rune count directly instead, like a summed combo-point bar.
+				currentValue = GetPlainNumber(attributes.runesReadyCount, 0)
 				supportsValueComparison = true
-			elseif not hasPowerCurve and sawPlain then
-				-- Charge bars without a secret-safe power-type curve (e.g. Fire Blast Charges, Icicles)
-				-- have a timer-driven recharging node whose value is secret. That node is always < 1
-				-- charge, so the plain completed-charge count alone decides integer over/under; use it
-				-- instead of falling back to the static under color.
-				currentValue = nodeSum
+			elseif compressedView and liveMax > nodeCount then
+				-- Enhancement compressed Maelstrom Weapon: 5 physical nodes show 10 stacks (6-10 overlap
+				-- 1-5). Keep the full 0-10 stack scale so 6-10 thresholds stay in range, and use the plain
+				-- stack count for over/under (the render remap folds 6-10 onto the overlap nodes and the
+				-- visibility gate hides the inactive layer). Stacks come from the snapshot (resource2 is
+				-- nil for Enhancement); node fills cap at the visible 5 in compressed view.
+				local stacks = GetPlainNumber(attributes.maelstromWeaponStacks, rawResource2)
+				maxValue = liveMax
+				currentValue = stacks
 				supportsValueComparison = true
+				compressedOverlap = true
+				compressedSplit = nodeCount
+				compressedActive = stacks >= (nodeCount + 1)
+			else
+				-- Secondary bars whose live count is stored as non-secret node fills (e.g. Fury Warrior
+				-- Whirlwind stacks, 1 per filled node) have no real power-type resource (resource2 is
+				-- nil), so the ColorCurve path can't decide over/under. Derive it from the node sum like
+				-- the registered multi-node bars. Power-type secondary bars (combo points, soul shards)
+				-- report secret node values, so they keep using the ColorCurve path instead.
+				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				local hasPowerCurve = type(TRB.Data.resource2) == "number"
+				if not sawSecret then
+					currentValue = nodeSum
+					supportsValueComparison = true
+				elseif not hasPowerCurve and sawPlain then
+					-- Charge bars without a secret-safe power-type curve (e.g. Fire Blast Charges, Icicles)
+					-- have a timer-driven recharging node whose value is secret. That node is always < 1
+					-- charge, so the plain completed-charge count alone decides integer over/under; use it
+					-- instead of falling back to the static under color.
+					currentValue = nodeSum
+					supportsValueComparison = true
+				end
 			end
 			fillDirection = settings.comboPoints and settings.comboPoints.fillDirection or fillDirection
 			border = settings.comboPoints and settings.comboPoints.border or 0
 			resourceType = TRB.Data.resource2
+			-- Skip the power curve for Runes so the ready-count comparison above decides over/under.
+			if isRunes then
+				resourceType = nil
+			end
 			if nodeCount > 1 then
 				isNodeMapped = true
 				nodes = {}
@@ -1513,8 +1572,21 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			-- Explicit per-definition value scale (e.g. Shield Block 0-8s) overrides the node-count max.
 			local minOverride, maxOverride = GetCustomThresholdScaleConfig(barTarget)
 			if maxOverride ~= nil then
-				maxValue = maxOverride
 				minValue = minOverride or 0
+				-- thresholdScaleFromLiveMax bars (e.g. Ebon Might) keep the live frame max for
+				-- positioning/over-under so the line tracks the bar's current scaling (the last-known
+				-- buff duration). Only the value SLIDER uses thresholdMax (via GetCustomThresholdScaleConfig
+				-- in GetCustomThresholdTargetRange); the runtime scale stays the live bar max.
+				if not barTypeDef.thresholdScaleFromLiveMax then
+					maxValue = maxOverride
+				end
+			end
+
+			-- Gate this bar's custom thresholds on a live "is this mechanic active?" snapshot
+			-- attribute (e.g. hide Ebon Might's lines while the buff is down). contextActive == false
+			-- makes UpdateCustomThresholdLines hide the line until the attribute is truthy again.
+			if barTypeDef.thresholdActiveAttribute ~= nil then
+				contextActive = attributes[barTypeDef.thresholdActiveAttribute] == true
 			end
 		end
 	end
@@ -1567,7 +1639,11 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		nodeCount = nodeCount,
 		nodeStartIndex = nodeStartIndex,
 		supportsValueComparison = supportsValueComparison,
+		usesSecretValue = TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId),
 		contextActive = contextActive,
+		compressedOverlap = compressedOverlap,
+		compressedSplit = compressedSplit,
+		compressedActive = compressedActive,
 	}
 end
 
@@ -1932,6 +2008,14 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				local maxValue = targetInfo.maxValue or 100
 				local thresholdValue = math.max(minValue, customThreshold.value or minValue)
 				local inRange = thresholdValue <= maxValue
+				-- Compressed Maelstrom Weapon: base (1-5) and overflow (6-10) lines share the same nodes,
+				-- so only the active layer is shown - base below 6 stacks, overflow at 6+.
+				if targetInfo.compressedOverlap then
+					local isOverflowLine = thresholdValue > targetInfo.compressedSplit
+					if isOverflowLine ~= targetInfo.compressedActive then
+						inRange = false
+					end
+				end
 				customThreshold.value = thresholdValue
 
 				-- Position value/frame default to the bar-wide value across the whole target
@@ -1948,7 +2032,12 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					-- Map the value onto node-run units (0..n). For node-count bars maxValue == n,
 					-- so this is the identity; for scaled bars it converts to the node fill fraction.
 					local mappedValue = thresholdValue
-					if maxValue > 0 then
+					if targetInfo.compressedOverlap then
+						-- Compressed Maelstrom Weapon: fold the 6-10 overflow layer back onto the 1-5
+						-- strip (split == n nodes), so value 6 -> node 1 ... value 10 -> node 5.
+						mappedValue = thresholdValue > targetInfo.compressedSplit
+							and (thresholdValue - targetInfo.compressedSplit) or thresholdValue
+					elseif maxValue > 0 then
 						mappedValue = (thresholdValue / maxValue) * n
 					end
 					local floorV = math.floor(mappedValue)
@@ -2015,7 +2104,14 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				local thresholdColor = nil
 				local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 				if not curveApplied then
-					if targetInfo.supportsValueComparison then
+					if targetInfo.usesSecretValue then
+						-- Forced-static secret bars (Soul Fragments, Bone Shield, Fire Blast Charges)
+						-- have no over/under trigger: the count is secret in combat but plain out of
+						-- combat, which would otherwise flip the icon to desaturated "under" on load.
+						-- Always render as "over" (frameLevel stays thresholdOver) so the icon is never
+						-- desaturated; the static color is applied via colorMode in AdjustThresholdDisplay.
+						thresholdColor = settings.colors.threshold.over.color
+					elseif targetInfo.supportsValueComparison then
 						local liveValue = GetPlainNumber(targetInfo.currentValue, 0)
 						local isOver = liveValue >= thresholdValue
 						frameLevel = isOver and TRB.Data.constants.frameLevels.thresholdOver

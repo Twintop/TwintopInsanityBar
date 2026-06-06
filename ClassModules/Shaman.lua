@@ -683,6 +683,9 @@ local function UpdateSnapshot_Enhancement()
 	local snapshots = snapshotData.snapshots
 
 	snapshots[spells.maelstromWeapon.id].buff:GetRemainingTime(currentTime)
+
+	-- Plain (non-secret) stack count for the compressed Maelstrom Weapon custom-threshold overlap gate.
+	snapshotData.attributes.maelstromWeaponStacks = snapshots[spells.maelstromWeapon.id].buff.applications or 0
 end
 
 local function UpdateSnapshot_Restoration()

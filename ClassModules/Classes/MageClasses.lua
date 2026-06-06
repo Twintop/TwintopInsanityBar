@@ -297,7 +297,11 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
             secondary = {
                 maxNodes = 3,
                 isPrimary = false,
-                resourceType = "FireBlastCharges"
+                resourceType = "FireBlastCharges",
+                -- Fire Blast charges come from the spell's cooldown charge count (secret in combat),
+                -- so the count cannot be compared or curve-evaluated in Lua. Custom thresholds on
+                -- this bar are restricted to the static color mode (and the icon stays full color).
+                usesSecretValue = true
             },
             health = {
                 maxNodes = 1,

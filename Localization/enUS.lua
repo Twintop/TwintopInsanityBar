@@ -2896,6 +2896,7 @@ L["WarlockDemonologyBarTextVariable_doaTime"] = "Time remaining on Dominion of A
 L["WarlockDemonologyCheckboxDominionOfArgus"] = "Dominion of Argus"
 L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "Changes to this color when Dominion of Argus is active."
 L["WarlockDemonologyIndicatorDominionOfArgusColor"] = "Dominion of Argus is active"
+
 L["TabCustomThresholds"] = "Custom Thresholds"
 L["CustomThresholdDefaultName"] = "Custom Threshold"
 L["CustomThresholdsHeader"] = "Custom Threshold Lines"
@@ -2907,21 +2908,14 @@ L["CustomThresholdIconHeader"] = "Icon Source"
 L["CustomThresholdIconSourceType"] = "Icon Type"
 L["CustomThresholdIconSourceSpell"] = "Spell"
 L["CustomThresholdIconSourceItem"] = "Item"
-L["CustomThresholdIconSourceId"] = "Spell or Item ID"
+L["CustomThresholdIconSourceId"] = "Spell, Item, or Icon ID"
 L["CustomThresholdCopy"] = "Copy"
 L["CustomThresholdDelete"] = "Delete"
 L["CustomThresholdCopyMenuTitleFormat"] = "Custom Threshold: %s"
 L["CustomThresholdCopyMenuDuplicate"] = "Duplicate in this spec"
 L["CustomThresholdDeleteConfirmation"] = "Delete custom threshold '%s'?"
-
 L["CustomThresholdCopyActionTooltip"] = "Duplicate or copy this custom threshold"
 L["CustomThresholdDeleteActionTooltip"] = "Delete this custom threshold"
-
--- Custom Threshold bound-bar target name for the Health bar (resource-accurate, no "Bar" suffix)
 L["ResourceHealth"] = "Health"
-
--- Custom Threshold icon type: no icon (hides the threshold's ability icon)
 L["CustomThresholdIconSourceNone"] = "No Icon"
-
--- Custom Threshold icon type: direct texture/file ID lookup
 L["CustomThresholdIconSourceIcon"] = "Icon"

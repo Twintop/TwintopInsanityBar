@@ -1159,6 +1159,8 @@ end
 ---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
 ---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i per node), "health", "mana", "percentage", or "custom"
+---@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max (e.g. Ebon Might, whose bar max is the last-known buff duration), not thresholdMax.
+---@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render (e.g. Ebon Might hides its lines when "ebonMightActive" is false). nil = always render.
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
@@ -1183,6 +1185,7 @@ end
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
+---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are restricted to the static color mode only.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1213,6 +1216,8 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.thresholdMax = config.thresholdMax
 	self.thresholdMin = config.thresholdMin
 	self.thresholdDecimals = config.thresholdDecimals
+	self.thresholdScaleFromLiveMax = config.thresholdScaleFromLiveMax
+	self.thresholdActiveAttribute = config.thresholdActiveAttribute
 	self.gradientTooltipNote = config.gradientTooltipNote
 	self.colorTypeLabel = config.colorTypeLabel
 	self.colorTypeStepLabel = config.colorTypeStepLabel
@@ -1241,6 +1246,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.isAmalgamation = config.isAmalgamation or false -- Multi-type bar (Holy Words, Defensives); custom thresholds expose per-type sub-targets
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
+	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield); restricts custom thresholds to static color mode
 
 	return self
 end
@@ -1681,6 +1687,14 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		maxNodes = 1,
 		hasSameColor = false,
 		minMaxMode = "custom",
+		-- Custom-threshold value slider is a 0-20s timer (Ebon Might base 10s, extendable to 20s).
+		-- The bar's live max is the last-known buff duration, so position/compare against that live
+		-- scale rather than the fixed 20s slider max.
+		thresholdMin = 0,
+		thresholdMax = 20,
+		thresholdScaleFromLiveMax = true,
+		-- Hide the custom threshold lines while Ebon Might is down (no active timer to mark).
+		thresholdActiveAttribute = "ebonMightActive",
 		hasSpacing = false,
 		hasThresholds = false,
 		colorCurveType = nil, -- Simple bar color
@@ -1729,6 +1743,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		hasSameColor = false,
 		colorCurveType = nil,
+		-- Fire Blast charges come from the spell's cooldown charge count (secret in combat), so the
+		-- count cannot be compared or curve-evaluated in Lua. Custom thresholds on it are static-only.
+		usesSecretValue = true,
 		nodeColors = {
 			{ key = "charge1", displayName = L["MageFireFireBlastCharge1"], colorLabel = L["MageFireFireBlastColorPickerCharge1"] },
 			{ key = "charge2", displayName = L["MageFireFireBlastCharge2"], colorLabel = L["MageFireFireBlastColorPickerCharge2"] },
@@ -1802,6 +1819,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil,
 		visibilityKey = "boneShield",
+		-- Bone Shield stacks come from C_Spell.GetSpellCastCount (secret in combat), so the count
+		-- cannot be compared or curve-evaluated in Lua. Custom thresholds on it are static-only.
+		usesSecretValue = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 		end,

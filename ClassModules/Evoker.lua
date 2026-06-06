@@ -867,11 +867,17 @@ end
 
 local function UpdateSnapshot_Augmentation()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	
+
 	local currentTime = GetTime()
+
+	-- Plain (non-secret) active flag for the Ebon Might bar's custom thresholds: the lines hide
+	-- while the buff is down (see ebonMight thresholdActiveAttribute).
+	if spells.ebonMight ~= nil and snapshots[spells.ebonMight.id] ~= nil then
+		TRB.Data.snapshotData.attributes.ebonMightActive = snapshots[spells.ebonMight.id].buff.isActive == true
+	end
 end
 
 ---Updates Essence bar nodes with current values and colors

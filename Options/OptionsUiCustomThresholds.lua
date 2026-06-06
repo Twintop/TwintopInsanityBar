@@ -214,6 +214,13 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		return TRB.Data.settings[lowerClassName] and TRB.Data.settings[lowerClassName][specName]
 	end
 
+	-- Secret cast-count targets (Soul Fragments, Fire Blast charges, Bone Shield) are forced to the
+	-- static color mode and their icon is always full color (no under->over trigger). Shared detector
+	-- so the options UI and the runtime renderer agree on which targets are static-only.
+	local function IsTargetStaticColorOnly(barTarget)
+		return TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId)
+	end
+
 	local function GetCurrentThresholdSettings()
 		local currentSpec = GetCurrentSpec()
 		return currentSpec and currentSpec.thresholds or TRB.Functions.Settings:DefaultThresholdSettings()
@@ -543,7 +550,11 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			iconYSlider = iconYSlider,
 			iconBorderSlider = iconBorderSlider,
 		})
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictIcon and dictIcon.show ~= false)
+		-- Forced-static thresholds (secret cast-count bars) always show a full-color icon (no
+		-- under->over trigger exists), so the "Desaturate icon" option is meaningless: keep it
+		-- unchecked and disabled. Other targets keep the normal "enabled while the icon shows" rule.
+		local staticColorOnly = selectedLine ~= nil and IsTargetStaticColorOnly(selectedLine.barTarget)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, (dictIcon and dictIcon.show ~= false) and not staticColorOnly)
 
 		local minHeight = 360
 		editorContent:SetHeight(math.max(minHeight, math.abs(y) + 30))
