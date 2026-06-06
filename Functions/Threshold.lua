@@ -1388,7 +1388,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		-- Mana primary (healer specs) is percent-based: the absolute mana max is huge and useless
 		-- as a slider scale. Use resourcePercent on a 0-100 scale; over/under still uses the
 		-- secret-safe Mana ColorCurve (resourceType stays a real PowerType).
-		if resourceType == (Enum and Enum.PowerType and Enum.PowerType.Mana) then
+		if resourceType == Enum.PowerType.Mana then
 			maxValue = 100
 			currentValue = GetPlainNumber(attributes.resourcePercent, 0)
 		end
@@ -1435,7 +1435,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			else
 				currentValue = rawResource2
 			end
-			local isRunes = Enum and Enum.PowerType and TRB.Data.resource2 == Enum.PowerType.Runes
+			local isRunes = TRB.Data.resource2 == Enum.PowerType.Runes
 			local compressedView = specId == 2 and settings.colors and settings.colors.comboPoints
 				and settings.colors.comboPoints.compressedView == true
 			if isRunes then
@@ -1565,7 +1565,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			elseif barTypeDef.minMaxMode == "mana" then
 				-- Dedicated mana bar (Shadow/Balance/Elemental): percent-based, 0-100. The bar fills
 				-- 0-manaMax, so a percent threshold lines up with the matching fill fraction.
-				resourceType = Enum and Enum.PowerType and Enum.PowerType.Mana or nil
+				resourceType = Enum.PowerType.Mana
 				maxValue = 100
 			end
 

@@ -1185,7 +1185,7 @@ end
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
----@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are restricted to the static color mode only.
+---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color).
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1246,7 +1246,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.isAmalgamation = config.isAmalgamation or false -- Multi-type bar (Holy Words, Defensives); custom thresholds expose per-type sub-targets
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
-	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield); restricts custom thresholds to static color mode
+	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
 
 	return self
 end

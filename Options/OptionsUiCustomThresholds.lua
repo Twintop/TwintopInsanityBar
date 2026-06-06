@@ -688,6 +688,13 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		iconIdBox:SetText(tostring(line.iconSourceId or 0))
 		UpdateIconPreview(line)
 
+		-- Secret cast-count bars (Bone Shield, Fire Blast charges) have no under->over trigger, so
+		-- their custom thresholds are forced to the static color mode: lock the value to "static" and
+		-- disable the dropdown so the line shows a single fixed color.
+		local staticColorOnly = line ~= nil and IsTargetStaticColorOnly(line.barTarget)
+		if staticColorOnly then
+			dictColors.colorMode = "static"
+		end
 		local colorMode = dictColors.colorMode or "dynamic"
 		local colorModeLabels = { static = L["ThresholdDetailColorModeStatic"], dynamic = L["ThresholdDetailColorModeDynamic"] }
 		TRB.Functions.OptionsUi.ThresholdList:BindThresholdColorTypeDropdown({
@@ -706,6 +713,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 				RefreshRuntime()
 			end,
 		})
+		colorModeDropdown:SetEnabled(not staticColorOnly)
 
 		if colorMode == "static" then
 			staticColorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(dictColors.staticColor.color or underColor, true))
