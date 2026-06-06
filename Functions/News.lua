@@ -19,6 +19,10 @@ local content = [====[
 - Fix an issue where overlay would sometimes flicker.
 - Allow Bar Text entries to be copied to any profile rather than just the currently active ones.
 
+### Localization
+
+- [#768](#768) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Warlock
 ### Affliction
 
