@@ -9289,6 +9289,108 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 	}
 end
 
+---Creates default threshold line colors.
+---@return TRB.Classes.Settings.ThresholdColors
+function TRB.Functions.Settings:DefaultThresholdColors()
+	return {
+		under = {
+			color = "FFFFFFFF"
+		},
+		over = {
+			color = "FF00FF00"
+		},
+		unusable = {
+			color = "FFFF0000",
+			enabled = true,
+			show = true
+		},
+		special = {
+			color = "FFFF00FF",
+			enabled = true
+		},
+		outOfRange = {
+			color = "FF440000",
+			enabled = true,
+			show = true
+		},
+	}
+end
+
+---Creates default specialization threshold settings.
+---@return TRB.Classes.Settings.Thresholds
+function TRB.Functions.Settings:DefaultThresholdSettings()
+	return {
+		properties = {
+			width = 2,
+			overlapBorder = true,
+		},
+		icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+		specProperties = {},
+		thresholdDictionary = {},
+		customThresholds = {},
+	}
+end
+
+---@param entry TRB.Classes.Settings.ThresholdDictionaryEntry?
+---@param isEnabled boolean?
+---@return TRB.Classes.Settings.ThresholdDictionaryEntry
+function TRB.Functions.Settings:NormalizeThresholdDictionaryEntry(entry, isEnabled)
+	local defaultEntry = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled == true)
+	if type(entry) ~= "table" then
+		return defaultEntry
+	end
+
+	-- Backfill defaults into the EXISTING entry while preserving its table identity
+	-- (and the identity of every nested table). The options color pickers capture
+	-- references to entry.colors.under/over/staticColor; replacing the entry with a
+	-- fresh DeepMergeCopy table would orphan those references, so live edits would
+	-- neither apply in real time nor persist to disk. DeepMergeInto mutates in place.
+	local merged = TRB.Functions.Table:DeepMergeCopy(defaultEntry, entry)
+	TRB.Functions.Table:DeepMergeInto(entry, merged)
+	return entry
+end
+
+---Custom thresholds use the shared thresholdDictionary entry shape, but a namespaced key
+---keeps them from colliding with predefined spell threshold setting keys.
+---@param guid string?
+---@return string?
+function TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)
+	if guid == nil then
+		return nil
+	end
+
+	local key = tostring(guid)
+	local prefix = "custom:"
+	if string.sub(key, 1, string.len(prefix)) == prefix then
+		return key
+	end
+
+	return prefix .. key
+end
+
+---@param customThreshold table?
+---@param guid string?
+---@return TRB.Classes.Settings.CustomThresholdLine
+function TRB.Functions.Settings:NormalizeCustomThresholdLine(customThreshold, guid)
+	local line = customThreshold
+	if type(line) ~= "table" then
+		line = {}
+	end
+
+	local resolvedGuid = line.guid or guid or TRB.Functions.String:Guid()
+	line.guid = resolvedGuid
+	line.name = line.name or L["CustomThresholdDefaultName"]
+	line.barTarget = line.barTarget or "primary"
+	line.value = tonumber(line.value) or 0
+	line.iconSourceType = line.iconSourceType or "none"
+	if line.iconSourceType ~= "spell" and line.iconSourceType ~= "item" and line.iconSourceType ~= "icon" and line.iconSourceType ~= "none" then
+		line.iconSourceType = "none"
+	end
+	line.iconSourceId = tonumber(line.iconSourceId) or 0
+
+	return line --[[@as TRB.Classes.Settings.CustomThresholdLine]]
+end
+
 ---Returns default bar text for the health bar
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]

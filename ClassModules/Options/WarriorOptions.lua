@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_arms = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_fury = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_protection = {}
 
-local ARMS_MAX_RAGE = 130
-local FURY_MAX_RAGE = 130
-local PROTECTION_MAX_RAGE = 130
+local ARMS_MAX_RAGE = TRB.Data.maxResource.warrior.arms.rage
+local FURY_MAX_RAGE = TRB.Data.maxResource.warrior.fury.rage
+local PROTECTION_MAX_RAGE = TRB.Data.maxResource.warrior.protection.rage
 
 --[[
 	Arms Defaults
@@ -1271,6 +1271,7 @@ local function ArmsConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ArmsConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ArmsConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ArmsConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warrior", "arms", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ArmsConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ArmsConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ArmsConstructResetDefaultsPanel },
@@ -1709,6 +1710,7 @@ local function FuryConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, FuryConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, FuryConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warrior", "fury", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, FuryConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) FuryConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, FuryConstructResetDefaultsPanel },
@@ -2161,6 +2163,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ProtectionConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warrior", "protection", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ProtectionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ProtectionConstructResetDefaultsPanel },

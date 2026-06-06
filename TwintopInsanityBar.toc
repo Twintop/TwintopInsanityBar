@@ -15,7 +15,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.0.5.13
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-06-05
+## X-ReleaseDate: 2026-06-07
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -128,6 +128,7 @@ Options\OptionsUiTextures.lua
 Options\OptionsUiVisibility.lua
 Options\OptionsUiThresholdList.lua
 Options\OptionsUiThresholds.lua
+Options\OptionsUiCustomThresholds.lua
 Options\OptionsUiText.lua
 Options\OptionsUiIndicators.lua
 Options\OptionsUiColors.lua

@@ -629,6 +629,15 @@ local function UpdateSnapshot()
 			return a.percentage > b.percentage
 		end)
 	end
+
+	-- Plain count of complete (ready) runes ($runesReadyCount) for Runes custom thresholds.
+	local readyCount = 0
+	for x = 1, TRB.Data.character.maxResource2 or 0 do
+		if runes[x] and runes[x].ready then
+			readyCount = readyCount + 1
+		end
+	end
+	TRB.Data.snapshotData.attributes.runesReadyCount = readyCount
 end
 
 local function UpdateSnapshot_Blood()

@@ -299,7 +299,14 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 		end
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
 		if frame.icon ~= nil and frame.hasIcon == true then
-			frame.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
+			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize)
+			frame.icon:SetBackdropBorderColor(r, g, b, a)
+			-- Remember the applied border color so SetThresholdIcon can restore it after any
+			-- SetBackdrop re-application (which resets the border) without needing to recompute it.
+			-- Reuse the table to avoid per-tick GC churn on curve-colored thresholds.
+			local bc = frame.icon.borderColorCache or {}
+			bc[1], bc[2], bc[3], bc[4] = r, g, b, a
+			frame.icon.borderColorCache = bc
 		end
 	end
 end
@@ -498,9 +505,61 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 	return colorCurve
 end
 
+---Builds a threshold ColorCurve for an explicit value on a known max range.
+---@param value number # The threshold value
+---@param maxResource number # The maximum resource value represented by the bar
+---@param underColor string # ARGB hex color below the threshold
+---@param overColor string # ARGB hex color at or above the threshold
+---@return LuaColorCurveObject? colorCurve # A ColorCurve object ready for UnitPowerPercent
+function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underColor, overColor)
+	TRB.Data.cache.customThresholdCurves = TRB.Data.cache.customThresholdCurves or {}
+	local cache = TRB.Data.cache.customThresholdCurves
+
+	value = tonumber(value) or 0
+	maxResource = tonumber(maxResource) or 0
+	if value < 0 or maxResource <= 0 then
+		return nil
+	end
+
+	local thresholdPercent = value / maxResource
+	if thresholdPercent < 0 then
+		thresholdPercent = 0
+	elseif thresholdPercent > 1 then
+		thresholdPercent = 1
+	end
+
+	local cacheKey = tostring(value) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
+	if cache[cacheKey] then
+		return cache[cacheKey]
+	end
+
+	local underR, underG, underB, underA = TRB.Functions.Color:GetRGBAFromString(underColor, true)
+	local overR, overG, overB, overA = TRB.Functions.Color:GetRGBAFromString(overColor, true)
+
+	local underColorObj = CreateColor(underR, underG, underB, underA)
+	local overColorObj = CreateColor(overR, overG, overB, overA)
+
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+	colorCurve:SetType(Enum.LuaCurveType.Step)
+	if thresholdPercent <= 0 then
+		-- A threshold of 0 means "any resource at or above 0 is over". Since the resource
+		-- is always >= 0, the over color applies everywhere. Adding both points at the same
+		-- position (0) produces a degenerate Step curve that resolves to "under", so add only
+		-- the over point here.
+		colorCurve:AddPoint(0, overColorObj)
+	else
+		colorCurve:AddPoint(0, underColorObj)
+		colorCurve:AddPoint(thresholdPercent, overColorObj)
+	end
+
+	cache[cacheKey] = colorCurve
+	return colorCurve
+end
+
 ---Clears the threshold ColorCurve cache (call when settings change)
 function TRB.Functions.Color:ClearThresholdCurveCache()
 	TRB.Data.cache.thresholdCurves = {}
+	TRB.Data.cache.customThresholdCurves = {}
 end
 
 ---Evaluates a threshold curve using UnitPowerPercent and returns the color object
@@ -533,10 +592,16 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
 		if frame.icon ~= nil and frame.hasIcon == true then
-			frame.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+			local r, g, b, a = colorResult:GetRGBA()
+			frame.icon:SetBackdropBorderColor(r, g, b, a)
+			-- Remember the applied border color so SetThresholdIcon can restore it after any
+			-- SetBackdrop re-application (which resets the border) without needing to recompute it.
+			-- Reuse the table to avoid per-tick GC churn on curve-colored thresholds.
+			local bc = frame.icon.borderColorCache or {}
+			bc[1], bc[2], bc[3], bc[4] = r, g, b, a
+			frame.icon.borderColorCache = bc
 			-- When the curve resolves to transparent (hidden mode), also hide the icon;
 			-- when visible, ensure the icon alpha is restored.
-			local _, _, _, a = colorResult:GetRGBA()
 			if a ~= nil then
 				frame.icon:SetAlpha(a)
 			end

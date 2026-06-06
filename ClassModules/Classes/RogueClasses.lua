@@ -853,7 +853,8 @@ function TRB.Classes.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
-            isPrimary = true
+            isPrimary = true,
+            resourceType = "Energy"
         },
         secondary = {
             maxNodes = 7, -- Max possible with talents

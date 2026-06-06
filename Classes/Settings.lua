@@ -51,6 +51,16 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public icons TRB.Classes.Settings.ThresholdIcons
 ---@field public specProperties table?
 ---@field public thresholdDictionary { [string]: TRB.Classes.Settings.ThresholdDictionaryEntry }
+---@field public customThresholds { [string]: TRB.Classes.Settings.CustomThresholdLine }
+
+---@class TRB.Classes.Settings.CustomThresholdLine
+---@field public guid string
+---@field public name string
+---@field public barTarget string
+---@field public value number
+---@field public iconSourceType string # "spell", "item", "icon", or "none"
+---@field public iconSourceId number
+---@field public iconTexture string|number?
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryEntry
 ---@field public enabled boolean
@@ -65,6 +75,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public soundName string
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryColors
+---@field public colorMode string?
+---@field public staticColor TRB.Classes.Settings.ColorEntry?
 ---@field public under TRB.Classes.Settings.ColorModeEntry
 ---@field public over TRB.Classes.Settings.ColorModeEntry
 ---@field public unusable TRB.Classes.Settings.ColorModeEntry

@@ -294,7 +294,8 @@ function TRB.Classes.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
-            isPrimary = true
+            isPrimary = true,
+            resourceType = "Mana"
         },
         secondary = {
             maxNodes = 6,

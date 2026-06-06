@@ -1127,7 +1127,8 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             secondary = {
                 maxNodes = 2,
@@ -1150,7 +1151,8 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Mana"
             },
             holyWords = {
                 maxNodes = 5,
@@ -1178,7 +1180,8 @@ function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
         return {
             primary = {
                 maxNodes = 1,
-                isPrimary = true
+                isPrimary = true,
+                resourceType = "Insanity"
             },
             health = {
                 maxNodes = 1,

@@ -671,6 +671,90 @@ function TRB.Functions.Character:GetClassModuleName(classIdOrName)
 	return entry and entry.classModuleName or nil
 end
 
+-- Resolved display name per resource-type token. Literal localization keys only (built at
+-- load like BarText's anchor maps). Single source for turning a GetSpecConfiguration
+-- resourceType / primary token into a user-facing name.
+local resourceTypeNames = {
+	-- Primary power types
+	Rage = TRB.Localization["ResourceRage"],
+	Mana = TRB.Localization["ResourceMana"],
+	Energy = TRB.Localization["ResourceEnergy"],
+	Focus = TRB.Localization["ResourceFocus"],
+	Insanity = TRB.Localization["ResourceInsanity"],
+	RunicPower = TRB.Localization["ResourceRunicPower"],
+	Maelstrom = TRB.Localization["ResourceMaelstrom"],
+	AstralPower = TRB.Localization["ResourceAstralPower"],
+	Fury = TRB.Localization["ResourceFury"],
+	-- Secondary / custom / utility resources
+	ComboPoints = TRB.Localization["ResourceComboPoints"],
+	SoulShards = TRB.Localization["ResourceSoulShards"],
+	SoulFragments = TRB.Localization["ResourceSoulFragments"],
+	CollapsingStar = TRB.Localization["ResourceCollapsingStar"],
+	ArcaneCharges = TRB.Localization["ResourceArcaneCharges"],
+	Runes = TRB.Localization["ResourceRunes"],
+	HolyPower = TRB.Localization["ResourceHolyPower"],
+	Chi = TRB.Localization["ResourceChi"],
+	Essence = TRB.Localization["ResourceEssence"],
+	TipOfTheSpear = TRB.Localization["ResourceTipOfTheSpear"],
+	MaelstromWeapon = TRB.Localization["ResourceMaelstromWeapon"],
+	Icicles = TRB.Localization["ResourceIcicles"],
+	BoneShield = TRB.Localization["ResourceBoneShield"],
+	Stagger = TRB.Localization["ResourceStagger"],
+	Health = TRB.Localization["ResourceHealth"],
+	Utility = TRB.Localization["ResourceUtility"],
+	AngelicFeather = TRB.Localization["ResourceAngelicFeather"],
+	Lightweaver = TRB.Localization["ResourcePriestLightweaver"],
+	HolyWords = TRB.Localization["ResourcePriestHolyWords"],
+	PowerWords = TRB.Localization["BarNamePowerWordsBar"],
+	DefensiveBuffs = TRB.Localization["ResourceWarriorDefensives"],
+	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
+	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
+	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
+}
+
+---Reads a spec's bar-group configuration (GetSpecConfiguration) without requiring it to be
+---the active spec. Shared by the BarText, IO, and Threshold modules.
+---@param classId integer?
+---@param specId integer?
+---@return table?
+function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	if classId == nil or specId == nil then
+		return nil
+	end
+	local className = self:GetClassModuleName(classId)
+	if className == nil then
+		return nil
+	end
+	local classModule = TRB.Classes and TRB.Classes[className]
+	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
+		return nil
+	end
+	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+end
+
+---Returns the localized display name for a resource-type token (as used in
+---GetSpecConfiguration resourceType fields and primary power types), or nil if unknown.
+---@param resourceType string?
+---@return string?
+function TRB.Functions.Character:GetResourceTypeName(resourceType)
+	if resourceType == nil then
+		return nil
+	end
+	return resourceTypeNames[resourceType]
+end
+
+---Returns the localized PRIMARY resource name for a spec, or nil if unknown. Reads the
+---primary bar's resourceType from the spec's GetSpecConfiguration (declared alongside the
+---secondary/health/custom bar resource types).
+---@param classId integer?
+---@param specId integer?
+---@return string?
+function TRB.Functions.Character:GetPrimaryResourceName(classId, specId)
+	local config = self:GetSpecBarGroupConfig(classId, specId)
+	local token = config and config.primary and config.primary.resourceType or nil
+	return self:GetResourceTypeName(token)
+end
+
 ---Returns the uppercase WoW class file token for a class, e.g. "DEATHKNIGHT".
 ---@param classIdOrName number|string
 ---@return string|nil
@@ -1217,7 +1301,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	---@diagnostic disable-next-line: missing-fields
 		specCache.settings.thresholds = {
 			specProperties = spec.thresholds.specProperties,
-			thresholdDictionary = {}
+			thresholdDictionary = {},
+			customThresholds = {}
 		}
 		if s.thresholdIcons then
 			specCache.settings.thresholds.properties = core.thresholds.properties
@@ -1232,12 +1317,19 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				specCache.settings.thresholds.thresholdDictionary[key] = spec.thresholds.thresholdDictionary[key]
 			end
 		end
+
+		if spec.thresholds ~= nil and spec.thresholds.customThresholds ~= nil then
+			for key, _ in pairs(spec.thresholds.customThresholds) do
+				specCache.settings.thresholds.customThresholds[key] = spec.thresholds.customThresholds[key]
+			end
+		end
 	else
 		specCache.settings.thresholds = {
 			specProperties = {},
 			properties = core.thresholds.properties,
 			icons = core.thresholds.icons,
-			thresholdDictionary = {}
+			thresholdDictionary = {},
+			customThresholds = {}
 		}
 	end
 

@@ -9,9 +9,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = {}
 
-local HAVOC_MAX_FURY = 170
-local VENGEANCE_MAX_FURY = 120
-local DEVOURER_MAX_FURY = 140
+local HAVOC_MAX_FURY = TRB.Data.maxResource.demonhunter.havoc.fury
+local VENGEANCE_MAX_FURY = TRB.Data.maxResource.demonhunter.vengeance.fury
+local DEVOURER_MAX_FURY = TRB.Data.maxResource.demonhunter.devourer.fury
 
 ---Loads shared default bar text settings for Demon Hunter
 ---@param classic boolean?
@@ -1192,6 +1192,7 @@ local function HavocConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HavocConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = HavocConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("demonhunter", "havoc", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HavocConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HavocConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = HavocConstructResetDefaultsPanel },
@@ -1666,6 +1667,7 @@ local function VengeanceConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = VengeanceConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = VengeanceConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("demonhunter", "vengeance", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = VengeanceConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) VengeanceConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = VengeanceConstructResetDefaultsPanel },
@@ -2073,6 +2075,7 @@ local function DevourerConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevourerConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = DevourerConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("demonhunter", "devourer", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevourerConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevourerConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DevourerConstructResetDefaultsPanel },

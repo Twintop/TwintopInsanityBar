@@ -1602,6 +1602,9 @@ local function UpdateResourceBar()
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 	local activeSpecId = TRB.Data.character.specId
 	local displaySpecId = GetFormSpecForSettings(activeSpecId, currentForm)
+	-- Publish the current form's display spec so custom-threshold primary sub-targets know which
+	-- form-resource is live (Astral Power=1, Energy=2, Rage=3, Mana=4) for visibility + bar routing.
+	snapshotData.attributes.druidDisplaySpecId = displaySpecId
 	local displaySpecName = GetDruidSpecName(displaySpecId)
 	local displayCompositeKey = GetDruidCompositeKey(displaySpecId)
 	if displaySpecName == nil or displayCompositeKey == nil then

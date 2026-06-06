@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_assassination = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_outlaw = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_subtlety = {}
 
-local ASSASSINATION_MAX_ENERGY = 300
-local OUTLAW_MAX_ENERGY = 250
-local SUBTLETY_MAX_ENERGY = 200
+local ASSASSINATION_MAX_ENERGY = TRB.Data.maxResource.rogue.assassination.energy
+local OUTLAW_MAX_ENERGY = TRB.Data.maxResource.rogue.outlaw.energy
+local SUBTLETY_MAX_ENERGY = TRB.Data.maxResource.rogue.subtlety.energy
 
 ---Loads default bar text settings for Assassination
 ---@param classic boolean?
@@ -1504,6 +1504,7 @@ local function AssassinationConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AssassinationConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, AssassinationConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, AssassinationConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "assassination", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AssassinationConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, AssassinationConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) AssassinationConstructBarTextDisplayPanel(scrollChild, cache) end },
@@ -2099,6 +2100,7 @@ local function OutlawConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, OutlawConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, OutlawConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, OutlawConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "outlaw", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, OutlawConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, OutlawConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) OutlawConstructBarTextDisplayPanel(scrollChild, cache) end },
@@ -2679,6 +2681,7 @@ local function SubtletyConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SubtletyConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, SubtletyConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SubtletyConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "subtlety", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SubtletyConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SubtletyConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SubtletyConstructBarTextDisplayPanel(scrollChild, cache) end },

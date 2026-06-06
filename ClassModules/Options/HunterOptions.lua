@@ -11,9 +11,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival = {}
 
-local BEAST_MASTERY_MAX_FOCUS = 100
-local MARKSMANSHIP_MAX_FOCUS = 100
-local SURVIVAL_MAX_FOCUS = 100
+local BEAST_MASTERY_MAX_FOCUS = TRB.Data.maxResource.hunter.beastMastery.focus
+local MARKSMANSHIP_MAX_FOCUS = TRB.Data.maxResource.hunter.marksmanship.focus
+local SURVIVAL_MAX_FOCUS = TRB.Data.maxResource.hunter.survival.focus
 
 ---Loads default bar text settings for Beast Mastery
 ---@param classic boolean?
@@ -1123,6 +1123,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BeastMasteryConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, BeastMasteryConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BeastMasteryConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "beastMastery", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BeastMasteryConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, BeastMasteryConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BeastMasteryConstructBarTextDisplayPanel(scrollChild, cache) end },
@@ -1607,6 +1608,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MarksmanshipConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MarksmanshipConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, MarksmanshipConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "marksmanship", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MarksmanshipConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) MarksmanshipConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, MarksmanshipConstructResetDefaultsPanel },
@@ -2113,6 +2115,7 @@ local function SurvivalConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SurvivalConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, SurvivalConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SurvivalConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "survival", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SurvivalConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SurvivalConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SurvivalConstructBarTextDisplayPanel(scrollChild, cache) end },

@@ -12,8 +12,8 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker = {}
 
-local BREWMASTER_MAX_ENERGY = 100
-local WINDWALKER_MAX_ENERGY = 150
+local BREWMASTER_MAX_ENERGY = TRB.Data.maxResource.monk.brewmaster.energy
+local WINDWALKER_MAX_ENERGY = TRB.Data.maxResource.monk.windwalker.energy
 
 
 
@@ -356,6 +356,15 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 			resource = 0,
 			mana = 1
 		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder = true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {},
+			customThresholds = {}
+		},
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
@@ -395,6 +404,26 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			},
 			shared = {
 				nodeOrder = {
 					"vivaciousVivification",
@@ -1281,6 +1310,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, BrewmasterConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BrewmasterConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "brewmaster", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BrewmasterConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BrewmasterConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, BrewmasterConstructResetDefaultsPanel },
@@ -1601,6 +1631,26 @@ local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 10, 2, yCoord, cache)
 end
 
+local function MistweaverConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.mistweaver
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_mistweaver
+	local yCoord = 5
+
+	---@type TRB.Classes.OptionsUi.Color[]
+	local custom = {
+	}
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], true, true, true, true, custom)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 2, yCoord)
+end
+
 local function MistweaverConstructOptionsPanel(cache)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(10, 2)
 	local namePrefix = className .. "_" .. specName
@@ -1631,6 +1681,8 @@ local function MistweaverConstructOptionsPanel(cache)
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
+		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MistweaverConstructThresholdSettingsPanel },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "mistweaver", controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MistweaverConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MistweaverConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MistweaverConstructFontAndTextPanel },
@@ -2149,6 +2201,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, WindwalkerConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdListPanel, true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "windwalker", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, WindwalkerConstructFontAndTextPanel },
 		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, WindwalkerConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) WindwalkerConstructBarTextDisplayPanel(scrollChild, cache) end },

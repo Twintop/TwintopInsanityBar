@@ -40,24 +40,6 @@ local containerAnchorFirstNodeLabelByResourceType = {
 	WhirlwindCharges = L["WhirlwindCharge1"],
 }
 
-local function GetSpecBarGroupConfig(classId, specId)
-	if classId == nil or specId == nil then
-		return nil
-	end
-
-	local className = TRB.Functions.Character:GetClassModuleName(classId)
-	if className == nil then
-		return nil
-	end
-
-	local classModule = TRB.Classes[className]
-	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
-		return nil
-	end
-
-	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
-end
-
 local function GetContainerAnchorBarGroupKey(relativeToFrame)
 	if type(relativeToFrame) ~= "string" then
 		return nil
@@ -67,7 +49,7 @@ local function GetContainerAnchorBarGroupKey(relativeToFrame)
 end
 
 local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
-	local specConfig = GetSpecBarGroupConfig(classId, specId)
+	local specConfig = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if specConfig == nil then
 		return nil
 	end
@@ -94,7 +76,7 @@ end
 ---@param specId integer?
 ---@return table[]
 function TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
-	local specConfig = GetSpecBarGroupConfig(classId, specId)
+	local specConfig = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	local options = {}
 
 	if specConfig == nil then
@@ -1728,6 +1710,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				end
 			end
 		end
+	end
+
+	if TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
+		TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
 	end
 end
 

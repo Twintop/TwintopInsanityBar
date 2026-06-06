@@ -1146,6 +1146,9 @@ end
 ---@field public colorLabel string? # Localized label shown on the color swatch (e.g., "Ignore Pain"). Falls back to displayName if nil.
 ---@field public tooltip string? # Localized tooltip body text for the enable checkbox. Falls back to displayName if nil.
 ---@field public hasEnabled boolean? # True if this node can be independently enabled/disabled by the user
+---@field public thresholdMax number? # Optional custom-threshold slider max for this sub-target (and runtime value scale, e.g. Shield Block 8.0s). Defaults to the node-run count.
+---@field public thresholdMin number? # Optional custom-threshold slider min for this sub-target. Defaults to 0.
+---@field public thresholdDecimals integer? # Optional decimal precision for this sub-target's value slider. Defaults to 0.
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
@@ -1156,6 +1159,8 @@ end
 ---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
 ---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i per node), "health", "mana", "percentage", or "custom"
+---@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max (e.g. Ebon Might, whose bar max is the last-known buff duration), not thresholdMax.
+---@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render (e.g. Ebon Might hides its lines when "ebonMightActive" is false). nil = always render.
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
@@ -1176,9 +1181,11 @@ end
 ---@field public getNodeCountForKey (fun(key: string, colorSettings: table): integer)? # Optional callback returning node count per key (for multi-charge nodes like Holy Words). When nil, each enabled key counts as 1 node.
 ---@field public hasSameColor boolean # True if the "use highest color" checkbox should be shown for this bar's node colors. Defaults to true; set false to hide.
 ---@field public sameColorNodeKey string? # Key of the nodeColor entry that the sameColor checkbox should be placed next to. Defaults to the last nodeColor entry.
+---@field public isAmalgamation boolean # True if this multi-node bar combines distinct ability types (e.g. Holy Words, Warrior Defensives). Custom thresholds expose one sub-target per node type instead of a single bar-wide target. Defaults to false.
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
+---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color).
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1204,6 +1211,13 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	-- Threshold color options (required when colorCurveType is "step" or "linear")
 	self.thresholdLevels = config.thresholdLevels
 	self.maxThresholdPercent = config.maxThresholdPercent -- Max percentage for threshold sliders (default 100 if nil)
+	-- Custom-threshold value slider overrides (e.g. Shield Block 0.0-8.0s). Amalgamation bars
+	-- usually declare these per-node on nodeColors entries instead.
+	self.thresholdMax = config.thresholdMax
+	self.thresholdMin = config.thresholdMin
+	self.thresholdDecimals = config.thresholdDecimals
+	self.thresholdScaleFromLiveMax = config.thresholdScaleFromLiveMax
+	self.thresholdActiveAttribute = config.thresholdActiveAttribute
 	self.gradientTooltipNote = config.gradientTooltipNote
 	self.colorTypeLabel = config.colorTypeLabel
 	self.colorTypeStepLabel = config.colorTypeStepLabel
@@ -1229,8 +1243,10 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.getNodeCountForKey = config.getNodeCountForKey -- Optional callback: (key, colorSettings) -> integer node count
 	self.hasSameColor = config.hasSameColor ~= false -- Defaults to true; set false to hide "use highest" checkbox
 	self.sameColorNodeKey = config.sameColorNodeKey -- Key of node that sameColor checkbox sits next to (defaults to last)
+	self.isAmalgamation = config.isAmalgamation or false -- Multi-type bar (Holy Words, Defensives); custom thresholds expose per-type sub-targets
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
+	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
 
 	return self
 end
@@ -1577,6 +1593,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		key = "defensives",
 		displayName = L["ResourceWarriorDefensives"],
 		isMultiNode = true,
+		isAmalgamation = true, -- Distinct buff types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 3, -- Ignore Pain (Time) + Ignore Pain (Absorb) + Shield Block
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
@@ -1588,9 +1605,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true },
-			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true },
-			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true }
+			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true, thresholdMax = 12, thresholdDecimals = 1 },
+			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1 },
+			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true, thresholdMax = 8, thresholdDecimals = 1 }
 		},
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
@@ -1608,6 +1625,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		key = "holyWords",
 		displayName = L["ResourcePriestHolyWords"],
 		isMultiNode = true,
+		isAmalgamation = true, -- Distinct Holy Word types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 5, -- Serenity x2 + Sanctify x2 + Chastise x1
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (cooldown progress)
@@ -1619,9 +1637,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "holyWordSerenity", displayName = L["HolyWordSerenityBarEnable"], colorLabel = L["HolyWordSerenityBarColor"], tooltip = L["HolyWordSerenityBarEnableTooltip"], hasEnabled = true },
-			{ key = "holyWordSanctify", displayName = L["HolyWordSanctifyBarEnable"], colorLabel = L["HolyWordSanctifyBarColor"], tooltip = L["HolyWordSanctifyBarEnableTooltip"], hasEnabled = true },
-			{ key = "holyWordChastise", displayName = L["HolyWordChastiseBarEnable"], colorLabel = L["HolyWordChastiseBarColor"], tooltip = L["HolyWordChastiseBarEnableTooltip"], hasEnabled = true }
+			{ key = "holyWordSerenity", displayName = L["HolyWordSerenityBarEnable"], colorLabel = L["HolyWordSerenityBarColor"], tooltip = L["HolyWordSerenityBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 },
+			{ key = "holyWordSanctify", displayName = L["HolyWordSanctifyBarEnable"], colorLabel = L["HolyWordSanctifyBarColor"], tooltip = L["HolyWordSanctifyBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 },
+			{ key = "holyWordChastise", displayName = L["HolyWordChastiseBarEnable"], colorLabel = L["HolyWordChastiseBarColor"], tooltip = L["HolyWordChastiseBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 }
 		},
 		onChangeCallback = function()
 			TRB.Functions.Character:ResetCaches()
@@ -1669,6 +1687,14 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		maxNodes = 1,
 		hasSameColor = false,
 		minMaxMode = "custom",
+		-- Custom-threshold value slider is a 0-20s timer (Ebon Might base 10s, extendable to 20s).
+		-- The bar's live max is the last-known buff duration, so position/compare against that live
+		-- scale rather than the fixed 20s slider max.
+		thresholdMin = 0,
+		thresholdMax = 20,
+		thresholdScaleFromLiveMax = true,
+		-- Hide the custom threshold lines while Ebon Might is down (no active timer to mark).
+		thresholdActiveAttribute = "ebonMightActive",
 		hasSpacing = false,
 		hasThresholds = false,
 		colorCurveType = nil, -- Simple bar color
@@ -1717,6 +1743,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		hasSameColor = false,
 		colorCurveType = nil,
+		-- Fire Blast charges come from the spell's cooldown charge count (secret in combat), so the
+		-- count cannot be compared or curve-evaluated in Lua. Custom thresholds on it are static-only.
+		usesSecretValue = true,
 		nodeColors = {
 			{ key = "charge1", displayName = L["MageFireFireBlastCharge1"], colorLabel = L["MageFireFireBlastColorPickerCharge1"] },
 			{ key = "charge2", displayName = L["MageFireFireBlastCharge2"], colorLabel = L["MageFireFireBlastColorPickerCharge2"] },
@@ -1790,6 +1819,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil,
 		visibilityKey = "boneShield",
+		-- Bone Shield stacks come from C_Spell.GetSpellCastCount (secret in combat), so the count
+		-- cannot be compared or curve-evaluated in Lua. Custom thresholds on it are static-only.
+		usesSecretValue = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic)
 		end,

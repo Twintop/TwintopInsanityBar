@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
 
-local BLOOD_MAX_RUNIC_POWER = 125
-local FROST_MAX_RUNIC_POWER = 110
-local UNHOLY_MAX_RUNIC_POWER = 100
+local BLOOD_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.blood.runicPower
+local FROST_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.frost.runicPower
+local UNHOLY_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.unholy.runicPower
 
 ---Loads extra default bar text settings
 ---@param classic boolean?
@@ -1380,6 +1380,7 @@ local function BloodConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = BloodConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BloodConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "blood", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BloodConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BloodConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BloodConstructResetDefaultsPanel },
@@ -1809,6 +1810,7 @@ local function FrostConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = FrostConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "frost", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FrostConstructResetDefaultsPanel },
@@ -2235,6 +2237,7 @@ local function UnholyConstructOptionsPanel(cache)
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = UnholyConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = UnholyConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = UnholyConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "unholy", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = UnholyConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) UnholyConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = UnholyConstructResetDefaultsPanel },

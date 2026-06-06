@@ -66,6 +66,53 @@ end
 
 -- Working data
 TRB.Data = {}
+
+-- Central registry of per-spec maximum primary resource values. Single source of truth shared by
+-- the class options panels (default maxResource / overcap config) and the custom-threshold form
+-- sub-targets (e.g. Druid's per-form primary thresholds), so the numbers are never duplicated.
+-- Keyed by class token -> spec token -> resource token -> max value.
+TRB.Data.maxResource = {
+	deathknight = {
+		blood = { runicPower = 125 },
+		frost = { runicPower = 110 },
+		unholy = { runicPower = 100 },
+	},
+	demonhunter = {
+		havoc = { fury = 170 },
+		vengeance = { fury = 120 },
+		devourer = { fury = 140 },
+	},
+	druid = {
+		balance = { astralPower = 140 },
+		feral = { energy = 160 },
+		guardian = { rage = 100 },
+	},
+	hunter = {
+		beastMastery = { focus = 100 },
+		marksmanship = { focus = 100 },
+		survival = { focus = 100 },
+	},
+	monk = {
+		brewmaster = { energy = 100 },
+		windwalker = { energy = 150 },
+	},
+	priest = {
+		shadow = { insanity = 150 },
+	},
+	rogue = {
+		assassination = { energy = 300 },
+		outlaw = { energy = 250 },
+		subtlety = { energy = 200 },
+	},
+	shaman = {
+		elemental = { maelstrom = 175 },
+	},
+	warrior = {
+		arms = { rage = 130 },
+		fury = { rage = 130 },
+		protection = { rage = 130 },
+	},
+}
 -- Dirty flag: set to true whenever data consumed by lookup refresh changes.
 -- When false and no timers are active, UpdateResourceBarText skips the refresh entirely.
 TRB.Data.lookupDirty = true
