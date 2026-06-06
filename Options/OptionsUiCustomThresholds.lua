@@ -317,7 +317,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 	local editorY = 0
 	local barTargetDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_BarTarget", editorContent, "WowStyle1DropdownTemplate")
 	barTargetDropdown:SetWidth(oUi.sliderWidth)
-	barTargetDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdBarTarget"], oUi.xCoord, editorY)
+	barTargetDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["BoundToBar"], oUi.xCoord, editorY)
 	barTargetDropdown.label.font:SetFontObject(GameFontNormal)
 	barTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 25)
 
@@ -513,7 +513,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		-- Icon Source sits between the Line and Icon override sections. When its type is
 		-- "No Icon", the whole Icon override subsection is hidden (hasThresholdIcon=false).
 		local selectedLine = GetSelectedLine()
-		local iconType = (selectedLine and selectedLine.iconSourceType) or "spell"
+		local iconType = (selectedLine and selectedLine.iconSourceType) or "none"
 		local hasThresholdIcon = iconType ~= "none"
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
@@ -594,11 +594,13 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		local currentBarTarget = line.barTarget or "primary"
 		local barTargets = TRB.Functions.Threshold:GetCustomThresholdBarTargets(currentSpec, classId, specId)
 		local targetLabel = nil
+		local currentIsPercent = false
 		currentValueDecimals = 0
 		for _, target in ipairs(barTargets) do
 			if target.key == currentBarTarget then
 				targetLabel = target.label
 				currentValueDecimals = target.decimals or 0
+				currentIsPercent = target.isPercent == true
 				break
 			end
 		end
@@ -609,6 +611,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 				line.barTarget = currentBarTarget
 				targetLabel = barTargets[1].label
 				currentValueDecimals = barTargets[1].decimals or 0
+				currentIsPercent = barTargets[1].isPercent == true
 			else
 				targetLabel = TRB.Functions.Bar:GetBarDisplayName(currentBarTarget)
 			end
@@ -624,8 +627,9 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			line.value = clampedValue
 		end
 		valueSlider:SetMinMaxValues(minValue, maxValue)
-		valueSlider.MaxLabel:SetText(maxValue)
-		valueSlider.MinLabel:SetText(minValue)
+		local labelSuffix = currentIsPercent and "%" or ""
+		valueSlider.MaxLabel:SetText(maxValue .. labelSuffix)
+		valueSlider.MinLabel:SetText(minValue .. labelSuffix)
 		valueSlider:SetValue(clampedValue)
 		valueSlider.EditBox:SetText(clampedValue)
 
@@ -650,10 +654,10 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			icon = L["CustomThresholdIconSourceIcon"],
 			none = L["CustomThresholdIconSourceNone"],
 		}
-		iconTypeDropdown:SetDefaultText(iconTypeLabels[line.iconSourceType or "spell"])
+		iconTypeDropdown:SetDefaultText(iconTypeLabels[line.iconSourceType or "none"])
 		iconTypeDropdown:SetupMenu(function(dd, rootDescription)
 			for _, sourceType in ipairs({ "spell", "item", "icon", "none" }) do
-				rootDescription:CreateRadio(iconTypeLabels[sourceType], function(value) return value == (line.iconSourceType or "spell") end, function(value)
+				rootDescription:CreateRadio(iconTypeLabels[sourceType], function(value) return value == (line.iconSourceType or "none") end, function(value)
 					line.iconSourceType = value
 					line.iconTexture = nil
 					-- "No Icon" writes the per-threshold show flag the "Show ability icon?"
@@ -817,6 +821,8 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		if isRefreshing then return end
 		local line = GetSelectedLine()
 		if line == nil then return end
+		-- Round before clamping so the edit box display matches the allowed precision.
+		value = TRB.Functions.Number:RoundTo(value, currentValueDecimals, nil, true)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		line.value = TRB.Functions.Number:RoundTo(value, currentValueDecimals)
 		SetTableValues()
@@ -877,7 +883,10 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			local _, _, _, dictIcon = GetSelectedDictEntrySections()
 			if dictIcon == nil then return end
 			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-			dictIcon[fieldName] = TRB.Functions.Number:RoundTo(value, decimals or 0)
+			-- returnAsNumber=true so icon override fields (border, width, height, xPos, yPos) are
+			-- stored as numbers; RoundTo defaults to returning a string, which breaks numeric
+			-- comparisons downstream (e.g. SetThresholdIcon's `effectiveBorder < 1`).
+			dictIcon[fieldName] = TRB.Functions.Number:RoundTo(value, decimals or 0, nil, true)
 			RefreshRuntime()
 		end)
 	end
@@ -947,7 +956,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			name = L["CustomThresholdDefaultName"],
 			barTarget = "primary",
 			value = minValue,
-			iconSourceType = "spell",
+			iconSourceType = "none",
 			iconSourceId = 0,
 		}, guid)
 		currentSpec.thresholds.customThresholds[guid] = newLine

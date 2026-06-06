@@ -10,7 +10,7 @@ TRB.Options.Priest.Discipline = {}
 TRB.Options.Priest.Holy = {}
 TRB.Options.Priest.Shadow = {}
 
-local SHADOW_MAX_INSANITY = 150
+local SHADOW_MAX_INSANITY = TRB.Data.maxResource.priest.shadow.insanity
 
 local function GetPriestUtilityBarTypeDefinition()
 	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")

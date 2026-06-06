@@ -12,8 +12,8 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.monk_brewmaster = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.monk_mistweaver = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.monk_windwalker = {}
 
-local BREWMASTER_MAX_ENERGY = 100
-local WINDWALKER_MAX_ENERGY = 150
+local BREWMASTER_MAX_ENERGY = TRB.Data.maxResource.monk.brewmaster.energy
+local WINDWALKER_MAX_ENERGY = TRB.Data.maxResource.monk.windwalker.energy
 
 
 

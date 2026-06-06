@@ -11,9 +11,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_beastMastery = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_marksmanship = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.hunter_survival = {}
 
-local BEAST_MASTERY_MAX_FOCUS = 100
-local MARKSMANSHIP_MAX_FOCUS = 100
-local SURVIVAL_MAX_FOCUS = 100
+local BEAST_MASTERY_MAX_FOCUS = TRB.Data.maxResource.hunter.beastMastery.focus
+local MARKSMANSHIP_MAX_FOCUS = TRB.Data.maxResource.hunter.marksmanship.focus
+local SURVIVAL_MAX_FOCUS = TRB.Data.maxResource.hunter.survival.focus
 
 ---Loads default bar text settings for Beast Mastery
 ---@param classic boolean?

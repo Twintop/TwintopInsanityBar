@@ -14,9 +14,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = {}
 
-local BALANCE_MAX_ASTRAL_POWER = 140
-local FERAL_MAX_ENERGY = 160
-local GUARDIAN_MAX_RAGE = 100
+local BALANCE_MAX_ASTRAL_POWER = TRB.Data.maxResource.druid.balance.astralPower
+local FERAL_MAX_ENERGY = TRB.Data.maxResource.druid.feral.energy
+local GUARDIAN_MAX_RAGE = TRB.Data.maxResource.druid.guardian.rage
 
 
 ---Loads default bar text settings for Balance

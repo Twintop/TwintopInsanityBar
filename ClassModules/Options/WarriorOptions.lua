@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_arms = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_fury = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.warrior_protection = {}
 
-local ARMS_MAX_RAGE = 130
-local FURY_MAX_RAGE = 130
-local PROTECTION_MAX_RAGE = 130
+local ARMS_MAX_RAGE = TRB.Data.maxResource.warrior.arms.rage
+local FURY_MAX_RAGE = TRB.Data.maxResource.warrior.fury.rage
+local PROTECTION_MAX_RAGE = TRB.Data.maxResource.warrior.protection.rage
 
 --[[
 	Arms Defaults

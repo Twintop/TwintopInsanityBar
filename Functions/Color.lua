@@ -299,7 +299,14 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 		end
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
 		if frame.icon ~= nil and frame.hasIcon == true then
-			frame.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
+			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize)
+			frame.icon:SetBackdropBorderColor(r, g, b, a)
+			-- Remember the applied border color so SetThresholdIcon can restore it after any
+			-- SetBackdrop re-application (which resets the border) without needing to recompute it.
+			-- Reuse the table to avoid per-tick GC churn on curve-colored thresholds.
+			local bc = frame.icon.borderColorCache or {}
+			bc[1], bc[2], bc[3], bc[4] = r, g, b, a
+			frame.icon.borderColorCache = bc
 		end
 	end
 end
@@ -585,10 +592,16 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
 		if frame.icon ~= nil and frame.hasIcon == true then
-			frame.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+			local r, g, b, a = colorResult:GetRGBA()
+			frame.icon:SetBackdropBorderColor(r, g, b, a)
+			-- Remember the applied border color so SetThresholdIcon can restore it after any
+			-- SetBackdrop re-application (which resets the border) without needing to recompute it.
+			-- Reuse the table to avoid per-tick GC churn on curve-colored thresholds.
+			local bc = frame.icon.borderColorCache or {}
+			bc[1], bc[2], bc[3], bc[4] = r, g, b, a
+			frame.icon.borderColorCache = bc
 			-- When the curve resolves to transparent (hidden mode), also hide the icon;
 			-- when visible, ensure the icon alpha is restored.
-			local _, _, _, a = colorResult:GetRGBA()
 			if a ~= nil then
 				frame.icon:SetAlpha(a)
 			end

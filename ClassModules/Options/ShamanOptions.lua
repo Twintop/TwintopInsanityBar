@@ -13,7 +13,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_elemental = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_enhancement = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.shaman_restoration = {}
 
-local ELEMENTAL_MAX_MAELSTROM = 175
+local ELEMENTAL_MAX_MAELSTROM = TRB.Data.maxResource.shaman.elemental.maelstrom
 
 -- Elemental
 

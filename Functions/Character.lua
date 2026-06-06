@@ -689,6 +689,7 @@ local resourceTypeNames = {
 	ComboPoints = TRB.Localization["ResourceComboPoints"],
 	SoulShards = TRB.Localization["ResourceSoulShards"],
 	SoulFragments = TRB.Localization["ResourceSoulFragments"],
+	CollapsingStar = TRB.Localization["ResourceCollapsingStar"],
 	ArcaneCharges = TRB.Localization["ResourceArcaneCharges"],
 	Runes = TRB.Localization["ResourceRunes"],
 	HolyPower = TRB.Localization["ResourceHolyPower"],

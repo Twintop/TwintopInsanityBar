@@ -619,7 +619,13 @@ function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "SoulFragments",
-                fillType = "percentage" -- 0.0 to 1.0 based on Blizzard bar value
+                fillType = "percentage", -- 0.0 to 1.0 based on Blizzard bar value
+                -- Context-switched bar: Soul Fragments normally, Collapsing Star stacks while its
+                -- buff is active. Each gets its own custom-threshold target, shown only in its context.
+                subTargets = {
+                    { key = "soulFragments", resourceType = "SoulFragments", max = 50, decimals = 0, contextAttribute = "devourerCollapsingStarActive", activeWhen = false },
+                    { key = "collapsingStar", resourceType = "CollapsingStar", max = 40, decimals = 0, contextAttribute = "devourerCollapsingStarActive", activeWhen = true },
+                }
             },
             health = {
                 maxNodes = 1,

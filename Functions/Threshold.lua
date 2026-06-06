@@ -278,6 +278,13 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		showIcon = false
 	end
 
+	-- No texture means no icon to show: covers both "none" source type and item/spell/icon
+	-- source types where the ID is 0 (unset) or invalid. Without this, an empty icon frame
+	-- would be displayed even though there is nothing to render.
+	if spell.texture == nil then
+		showIcon = false
+	end
+
 	if showIcon then
 		if cache.iconShown ~= true then
 			threshold.icon:Show()
@@ -347,12 +354,17 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 			cache.iconYPos = yPos
 			cache.iconRelativeTo = effectiveRelativeTo
 			cache.iconFillDirection = settings.bar.fillDirection
+			-- ClearAllPoints/SetSize invalidate BackdropTemplate rendering; force the
+			-- border block below to re-call SetBackdrop on this same pass.
+			cache.iconBorder = nil
 		end
 
-		-- Determine effective icon border: per-threshold override > global
+		-- Determine effective icon border: per-threshold override > global. The override is
+		-- stored as a string (slider/edit-box value), so coerce to a number before any numeric
+		-- comparison below; fall back to 0 if it isn't parseable.
 		local effectiveBorder = settings.thresholds.icons.border
 		if activeIconOverrides ~= nil and activeIconOverrides.border ~= nil then
-			effectiveBorder = activeIconOverrides.border
+			effectiveBorder = tonumber(activeIconOverrides.border) or 0
 		end
 
 		if cache.iconBorder ~= effectiveBorder then
@@ -374,7 +386,18 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 				})
 			end
 			threshold.icon:SetBackdropColor(0, 0, 0, 0)
-			threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+			-- SetBackdrop resets the border color, so restore the last threshold color applied by
+			-- SetThresholdColor/SetThresholdColorFromCurve. Falls back to black only on the very
+			-- first pass before any color has been applied. Without this, re-applying the backdrop
+			-- (e.g. on a border/position change, or after a cache clear on login/spec switch) would
+			-- leave the border black until the next color pass, which is delayed by the bar-text
+			-- update early-out.
+			local bc = threshold.icon.borderColorCache
+			if bc ~= nil then
+				threshold.icon:SetBackdropBorderColor(bc[1], bc[2], bc[3], bc[4])
+			else
+				threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+			end
 			cache.iconBorder = effectiveBorder
 		end
 
@@ -440,6 +463,15 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
+		if settings.thresholds.icons.enabled then
+			threshold.icon:Show()
+			SetThresholdIconSizeAndPosition(settings, threshold, settings.bar.fillDirection)
+		else
+			threshold.icon:Hide()
+		end
+
+		-- Apply backdrop AFTER ClearAllPoints/SetSize: BackdropTemplate rendering is
+		-- invalidated by those layout operations, so SetBackdrop must come last.
 		if settings.thresholds.icons.border < 1 then
 ---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
@@ -459,13 +491,6 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
 		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
-
-		if settings.thresholds.icons.enabled then
-			threshold.icon:Show()
-			SetThresholdIconSizeAndPosition(settings, threshold, settings.bar.fillDirection)
-		else
-			threshold.icon:Hide()
-		end
 	end
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
 end
@@ -527,6 +552,15 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
+		if settings.thresholds.icons.enabled then
+			threshold.icon:Show()
+			SetThresholdIconSizeAndPosition(settings, threshold, settings.comboPoints.fillDirection)
+		else
+			threshold.icon:Hide()
+		end
+
+		-- Apply backdrop AFTER ClearAllPoints/SetSize: BackdropTemplate rendering is
+		-- invalidated by those layout operations, so SetBackdrop must come last.
 		if settings.thresholds.icons.border < 1 then
 ---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
@@ -546,15 +580,8 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
 		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
-
-		if settings.thresholds.icons.enabled then
-			threshold.icon:Show()
-			SetThresholdIconSizeAndPosition(settings, threshold, settings.comboPoints.fillDirection)
-		else
-			threshold.icon:Hide()
-		end
 	end
-	
+
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border.color, true)
 end
 
@@ -810,9 +837,114 @@ local function GetAmalgamationNodeRun(barTypeDef, colorSettings, nodeKey)
 	return nil, 0
 end
 
+---Resolves the per-target custom-threshold slider overrides (min/max/decimals) declared on the
+---bar-type definition, or for amalgamation bars on the specific node entry. Returns nil for any
+---value the definition does not override so callers apply their own defaults. The barTarget may
+---be a plain bar key ("primary") or an amalgamation sub-target ("defensives:shieldBlock").
+---@param barTarget string
+---@return number? minOverride
+---@return number? maxOverride
+---@return integer? decimalsOverride
+local function GetCustomThresholdScaleConfig(barTarget)
+	if type(barTarget) ~= "string" then
+		return nil, nil, nil
+	end
+	local baseKey, nodeKey = string.match(barTarget, "^([^:]+):(.+)$")
+	baseKey = baseKey or barTarget
+	local barTypeDef = GetBarTypeDefinition(baseKey)
+	if barTypeDef == nil then
+		return nil, nil, nil
+	end
+	if barTypeDef.isAmalgamation and nodeKey ~= nil and barTypeDef.nodeColors ~= nil then
+		for _, nodeConfig in ipairs(barTypeDef.nodeColors) do
+			if nodeConfig.key == nodeKey then
+				return nodeConfig.thresholdMin, nodeConfig.thresholdMax, nodeConfig.thresholdDecimals
+			end
+		end
+		return nil, nil, nil
+	end
+	return barTypeDef.thresholdMin, barTypeDef.thresholdMax, barTypeDef.thresholdDecimals
+end
+
+---Returns the context sub-target descriptors declared on a bar's GetSpecConfiguration entry, or
+---nil. Context sub-targets split one physical bar into several custom-threshold targets, each
+---shown only while its game-state context holds (e.g. Devourer secondary: Soul Fragments vs
+---Collapsing Star).
+---@param classId integer?
+---@param specId integer?
+---@param barKey string
+---@param settings table? # Spec settings, used for any subTargetsRequireFormSwitching gate
+---@return table[]?
+local function GetBarContextSubTargets(classId, specId, barKey, settings)
+	local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local barConfig = config and config[barKey]
+	if barConfig == nil or barConfig.subTargets == nil then
+		return nil
+	end
+	-- Druid primary form sub-targets only make sense when form switching is on; with it off the
+	-- bar always shows the spec's native resource, so fall back to the single plain bar target.
+	if barConfig.subTargetsRequireFormSwitching == true then
+		local fs = settings and settings.displayBar and settings.displayBar.enableFormSwitching
+		if fs == false then
+			return nil
+		end
+	end
+	return barConfig.subTargets
+end
+
+---Finds a single context sub-target descriptor by node key.
+---@param classId integer?
+---@param specId integer?
+---@param baseKey string
+---@param nodeKey string?
+---@param settings table?
+---@return table?
+local function FindContextSubTarget(classId, specId, baseKey, nodeKey, settings)
+	if nodeKey == nil then
+		return nil
+	end
+	local subTargets = GetBarContextSubTargets(classId, specId, baseKey, settings)
+	if subTargets == nil then
+		return nil
+	end
+	for _, sub in ipairs(subTargets) do
+		if sub.key == nodeKey then
+			return sub
+		end
+	end
+	return nil
+end
+
+---Returns whether a context sub-target's required game state currently holds. A sub-target with
+---no declared context is always active. The context is read from a non-secret snapshot attribute
+---(contextAttribute): matched against contextValues (a set, e.g. Druid form display-spec ids),
+---contextValue (a single value), or activeWhen (a boolean, e.g. Devourer Collapsing Star).
+---@param sub table?
+---@return boolean
+local function IsContextSubTargetActive(sub)
+	if sub == nil or sub.contextAttribute == nil then
+		return true
+	end
+	local attributes = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes
+	local live = attributes and attributes[sub.contextAttribute]
+	if sub.contextValues ~= nil then
+		for _, v in ipairs(sub.contextValues) do
+			if live == v then
+				return true
+			end
+		end
+		return false
+	end
+	if sub.contextValue ~= nil then
+		return live == sub.contextValue
+	end
+	return (live == true) == (sub.activeWhen == true)
+end
+
 ---Returns the per-target decimal precision allowed on the Threshold Value slider. Most bars
 ---use whole numbers; bars whose underlying resource has finer granularity than its visible
----node count (e.g. Destruction Warlock Soul Shards, tracked in fragments) allow 1 decimal.
+---node count (e.g. Destruction Warlock Soul Shards, tracked in fragments) allow 1 decimal, as
+---do bar definitions that declare thresholdDecimals (e.g. Warrior Shield Block remaining time).
 ---@param classId integer?
 ---@param specId integer?
 ---@param barKey string
@@ -823,7 +955,8 @@ local function GetCustomThresholdTargetDecimals(classId, specId, barKey)
 	if classId == 9 and specId == 3 and barKey == "secondary" then
 		return 1
 	end
-	return 0
+	local _, _, decimals = GetCustomThresholdScaleConfig(barKey)
+	return decimals or 0
 end
 
 ---Splits a stored barTarget into its base bar key and optional amalgamation sub-type key.
@@ -868,6 +1001,31 @@ local function GetCustomThresholdBarTargetName(classId, specId, barKey)
 	return barKey
 end
 
+---Returns whether a bar target's threshold value is a percentage (0-100%-style fill) rather than
+---an absolute/discrete unit. Percentage scales: Health, Mana (primary, dedicated mana bar, and
+---percent sub-targets), and Stagger (minMaxMode "percentage"). Raw power resources (Insanity,
+---Energy, Rage, Astral Power, etc.) and node counts (combo points, charges) are NOT percentages.
+---@param classId integer?
+---@param specId integer?
+---@param barKey string
+---@param barTypeDef table?
+---@return boolean
+local function IsPercentScaleTarget(classId, specId, barKey, barTypeDef)
+	if barKey == "health" then
+		return true
+	end
+	if barTypeDef ~= nil and (barTypeDef.minMaxMode == "percentage" or barTypeDef.minMaxMode == "mana") then
+		return true
+	end
+	if barKey == "primary" then
+		local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+		if config and config.primary and config.primary.resourceType == "Mana" then
+			return true
+		end
+	end
+	return false
+end
+
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param classId integer?
 ---@param specId integer?
@@ -893,8 +1051,23 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 		keys = { "primary", "secondary", "health" }
 	end
 
+	-- Bars folded into another bar's context sub-target (via altBarKey) are not listed on their
+	-- own. Example: Balance's dedicated mana bar is subsumed by the unified primary "Mana" target,
+	-- which renders on the mana bar in Moonkin and on the primary bar in Humanoid/Travel.
+	local suppressed = {}
 	for _, barKey in ipairs(keys) do
-		if barKey ~= "screen" then
+		local subs = GetBarContextSubTargets(classId, specId, barKey, settings)
+		if subs ~= nil then
+			for _, sub in ipairs(subs) do
+				if sub.altBarKey ~= nil then
+					suppressed[sub.altBarKey] = true
+				end
+			end
+		end
+	end
+
+	for _, barKey in ipairs(keys) do
+		if barKey ~= "screen" and not suppressed[barKey] then
 			local barTypeDef = GetBarTypeDefinition(barKey)
 			if barTypeDef ~= nil and barTypeDef.isAmalgamation and barTypeDef.nodeColors ~= nil then
 				-- Amalgamation bars (Holy Words, Defensives) expose one sub-target per node
@@ -911,16 +1084,30 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 						table.insert(targets, {
 							key = barKey .. ":" .. nodeKey,
 							label = nodeConfig.colorLabel or nodeConfig.displayName or nodeKey,
-							decimals = 0,
+							decimals = nodeConfig.thresholdDecimals or 0,
 						})
 					end
 				end
 			else
-				table.insert(targets, {
-					key = barKey,
-					label = GetCustomThresholdBarTargetName(classId, specId, barKey),
-					decimals = GetCustomThresholdTargetDecimals(classId, specId, barKey),
-				})
+				local subTargets = GetBarContextSubTargets(classId, specId, barKey, settings)
+				if subTargets ~= nil then
+					-- Context-switched bars (e.g. Devourer secondary) expose one sub-target per context.
+					for _, sub in ipairs(subTargets) do
+						table.insert(targets, {
+							key = barKey .. ":" .. sub.key,
+							label = (sub.resourceType and TRB.Functions.Character:GetResourceTypeName(sub.resourceType)) or sub.label or sub.key,
+							decimals = sub.decimals or 0,
+							isPercent = sub.scale == "percent",
+						})
+					end
+				else
+					table.insert(targets, {
+						key = barKey,
+						label = GetCustomThresholdBarTargetName(classId, specId, barKey),
+						decimals = GetCustomThresholdTargetDecimals(classId, specId, barKey),
+						isPercent = IsPercentScaleTarget(classId, specId, barKey, barTypeDef),
+					})
+				end
 			end
 		end
 	end
@@ -978,19 +1165,23 @@ local function GetGroupNodeCount(group)
 	return GetPositivePlainNumber(group.nodeCount, GetPositivePlainNumber(group.maxNodes, 1))
 end
 
----Sums the live fill values of a contiguous run of bar-group nodes. Charge/stack-based
----custom bars (e.g. Angelic Feather, Holy Words) store their live count as non-secret node
----fill values (1 per filled node, fractional for a recharging node), so the sum is the
----current count in node-count units. Returns the total and whether any node value was secret;
----when secret, the total is unreliable and callers should not use it for comparisons.
+---Sums the live fill of a contiguous run of bar-group nodes as a count in node-count units.
+---Each node's fill is normalized against its OWN min/max range (0..1 per node), so this works
+---for both node fill models: "1 per filled node" bars (Angelic Feather, Holy Words: range 0..1)
+---and segmented bars that set every node to the absolute count over a per-node range (Fire Blast
+---Charges: node x ranges x-1..x, value = charges). Summing the raw values would over-count the
+---latter. Returns the total and whether any node value/range was secret; when secret, the total
+---is unreliable and callers should not use it for comparisons.
 ---@param group TRB.Classes.BarGroup?
 ---@param fromIndex integer
 ---@param count integer
 ---@return number total
 ---@return boolean sawSecret
+---@return boolean sawPlain
 local function SumNodeValues(group, fromIndex, count)
 	local total = 0
 	local sawSecret = false
+	local sawPlain = false
 	for i = fromIndex, fromIndex + count - 1 do
 		local nodeFrame = GetNodeFrame(group, i)
 		if nodeFrame ~= nil and type(nodeFrame.GetValue) == "function" then
@@ -998,11 +1189,33 @@ local function SumNodeValues(group, fromIndex, count)
 			if IsSecretValue(v) or type(v) ~= "number" then
 				sawSecret = true
 			else
-				total = total + v
+				-- Normalize the raw value into this node's own 0..1 fill fraction.
+				local nodeMin, nodeMax = 0, 1
+				if type(nodeFrame.GetMinMaxValues) == "function" then
+					local lo, hi = nodeFrame:GetMinMaxValues()
+					if IsSecretValue(lo) or IsSecretValue(hi) then
+						sawSecret = true
+					else
+						nodeMin = GetPlainNumber(lo, 0)
+						nodeMax = GetPlainNumber(hi, 1)
+					end
+				end
+				local span = nodeMax - nodeMin
+				local fraction = v
+				if span > 0 then
+					fraction = (v - nodeMin) / span
+				end
+				if fraction < 0 then
+					fraction = 0
+				elseif fraction > 1 then
+					fraction = 1
+				end
+				total = total + fraction
+				sawPlain = true
 			end
 		end
 	end
-	return total, sawSecret
+	return total, sawSecret, sawPlain
 end
 
 ---@param group TRB.Classes.BarGroup?
@@ -1060,8 +1273,58 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	-- (charge/stack custom bars). Those have no secret-safe percent API, so their over/under
 	-- coloring is decided by a direct numeric comparison instead of a ColorCurve.
 	local supportsValueComparison = false
+	-- nil for normal targets; true/false for a context sub-target whose game-state context is
+	-- (in)active. UpdateCustomThresholdLines hides the line when this is false.
+	local contextActive = nil
 
-	if baseKey == "primary" then
+	if baseKey == "primary" and FindContextSubTarget(classId, specId, "primary", nodeKey, settings) ~= nil then
+		-- Druid form sub-target (e.g. "primary:energy"): the primary bar shows a different
+		-- resource per shapeshift form. Each form's resource is a real power type, so coloring
+		-- uses the secret-safe ColorCurve path (no comparison needed). The unified Mana target
+		-- renders on the dedicated mana bar in Moonkin (altBarKey) and the primary bar otherwise.
+		local sub = FindContextSubTarget(classId, specId, "primary", nodeKey, settings)
+		contextActive = IsContextSubTargetActive(sub)
+
+		local resolvedKey = "primary"
+		if sub.altBarKey ~= nil and sub.contextAttribute ~= nil
+			and attributes[sub.contextAttribute] == sub.altWhenContextValue then
+			resolvedKey = sub.altBarKey
+		end
+		local resolvedGroup = GetBarGroup(barGroups, resolvedKey) or group
+		local resolvedNodeFrame = GetFirstNodeFrame(resolvedGroup)
+		if resolvedNodeFrame ~= nil then
+			group = resolvedGroup
+			valueFrame = resolvedNodeFrame
+		end
+		parentFrame = valueFrame
+		resourceType = sub.powerType
+
+		if sub.scale == "percent" then
+			maxValue = GetPositivePlainNumber(sub.max, 100)
+		else
+			-- Raw units shown to the player are the unmodified max divided by the resource's
+			-- display factor (e.g. Rage max 1000 / 10 = 100). The ColorCurve evaluates against
+			-- the resource's true fill fraction, so value/maxValue must be that same fraction.
+			local factor = sub.factor or 1
+			local liveMax = sub.maxField and TRB.Data.character and TRB.Data.character[sub.maxField]
+			if type(liveMax) == "number" and liveMax > 0 and factor > 0 then
+				maxValue = liveMax / factor
+			else
+				maxValue = GetPositivePlainNumber(sub.max, 100)
+			end
+		end
+		-- Over/under comes from the power-type ColorCurve; no Lua-side comparison value needed.
+		currentValue = 0
+
+		if resolvedKey == "primary" then
+			fillDirection = settings.bar and settings.bar.fillDirection or fillDirection
+			border = settings.bar and settings.bar.border or 0
+		else
+			local bs = settings.bars and settings.bars[resolvedKey]
+			fillDirection = (bs and bs.fillDirection) or (resolvedGroup and resolvedGroup.growthDirection) or fillDirection
+			border = (bs and bs.border) or 0
+		end
+	elseif baseKey == "primary" then
 		parentFrame = valueFrame
 		-- Mirror the regular threshold path: positions/comparisons use the spec's
 		-- display-unit resource value (UnitPower unmodified=false, stored as
@@ -1091,52 +1354,92 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		fillDirection = settings.bar and settings.bar.fillDirection or fillDirection
 		border = settings.bar and settings.bar.border or 0
 		resourceType = TRB.Data.resource
-	elseif baseKey == "secondary" then
-		-- Multi-node secondary bars (combo points, soul shards, etc.) are mapped node-by-node:
-		-- the value scale is the visible node count, NOT the raw resource max. This keeps the
-		-- displayed position node-accurate even when the underlying resource has finer
-		-- granularity than the node count (e.g. Destruction Warlock Soul Shards track 50
-		-- fragments across 5 nodes, so a value of 3.5 lands halfway through node 4).
-		nodeCount = GetGroupNodeCount(group)
-		maxValue = GetPositivePlainNumber(nodeCount, GetPositivePlainNumber(group.maxNodes, maxValue))
-		local liveMax = GetPositivePlainNumber(TRB.Data.character and TRB.Data.character.maxResource2, maxValue)
-		local rawResource2 = GetPlainNumber(attributes.resource2, 0)
-		if liveMax > 0 then
-			currentValue = rawResource2 * maxValue / liveMax
-		else
-			currentValue = rawResource2
+		-- Mana primary (healer specs) is percent-based: the absolute mana max is huge and useless
+		-- as a slider scale. Use resourcePercent on a 0-100 scale; over/under still uses the
+		-- secret-safe Mana ColorCurve (resourceType stays a real PowerType).
+		if resourceType == (Enum and Enum.PowerType and Enum.PowerType.Mana) then
+			maxValue = 100
+			currentValue = GetPlainNumber(attributes.resourcePercent, 0)
 		end
-		fillDirection = settings.comboPoints and settings.comboPoints.fillDirection or fillDirection
-		border = settings.comboPoints and settings.comboPoints.border or 0
-		resourceType = TRB.Data.resource2
-		if nodeCount > 1 then
-			isNodeMapped = true
-			nodes = {}
-			for i = 1, nodeCount do
-				nodes[i] = GetNodeFrame(group, i)
+	elseif baseKey == "secondary" then
+		local sub = FindContextSubTarget(classId, specId, "secondary", nodeKey, settings)
+		if sub ~= nil then
+			-- Context sub-target (e.g. Devourer Soul Fragments / Collapsing Star): single-node
+			-- percentage bar positioned across the whole node on the sub-target's own scale.
+			-- resource2 carries the active context's value, so currentValue is only meaningful
+			-- while this sub-target's context is live (gated by contextActive).
+			contextActive = IsContextSubTargetActive(sub)
+			local liveMax = GetPositivePlainNumber(attributes.maxResource2, 0)
+			if contextActive and liveMax > 0 then
+				maxValue = liveMax
+			else
+				maxValue = GetPositivePlainNumber(sub.max, 100)
+			end
+			-- These custom resources have no power-type curve API (resource2 == "CUSTOM"), so
+			-- decide over/under with a direct comparison when the live count is a usable non-secret
+			-- number (e.g. Collapsing Star stacks). Secret values (e.g. Soul Fragments) can't be
+			-- compared in Lua and fall back to the static under color.
+			local liveResource2 = attributes.resource2
+			if liveResource2 ~= nil and not IsSecretValue(liveResource2) and type(liveResource2) == "number" then
+				currentValue = liveResource2
+				supportsValueComparison = true
+			else
+				currentValue = GetPlainNumber(liveResource2, 0)
+			end
+			fillDirection = settings.comboPoints and settings.comboPoints.fillDirection or fillDirection
+			border = settings.comboPoints and settings.comboPoints.border or 0
+			resourceType = TRB.Data.resource2
+		else
+			-- Multi-node secondary bars (combo points, soul shards, etc.) are mapped node-by-node:
+			-- the value scale is the visible node count, NOT the raw resource max. This keeps the
+			-- displayed position node-accurate even when the underlying resource has finer
+			-- granularity than the node count (e.g. Destruction Warlock Soul Shards track 50
+			-- fragments across 5 nodes, so a value of 3.5 lands halfway through node 4).
+			nodeCount = GetGroupNodeCount(group)
+			maxValue = GetPositivePlainNumber(nodeCount, GetPositivePlainNumber(group.maxNodes, maxValue))
+			local liveMax = GetPositivePlainNumber(TRB.Data.character and TRB.Data.character.maxResource2, maxValue)
+			local rawResource2 = GetPlainNumber(attributes.resource2, 0)
+			if liveMax > 0 then
+				currentValue = rawResource2 * maxValue / liveMax
+			else
+				currentValue = rawResource2
+			end
+			-- Secondary bars whose live count is stored as non-secret node fills (e.g. Fury Warrior
+			-- Whirlwind stacks, 1 per filled node) have no real power-type resource (resource2 is
+			-- nil), so the ColorCurve path can't decide over/under. Derive it from the node sum like
+			-- the registered multi-node bars. Power-type secondary bars (combo points, soul shards)
+			-- report secret node values, so they keep using the ColorCurve path instead.
+			local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+			local hasPowerCurve = type(TRB.Data.resource2) == "number"
+			if not sawSecret then
+				currentValue = nodeSum
+				supportsValueComparison = true
+			elseif not hasPowerCurve and sawPlain then
+				-- Charge bars without a secret-safe power-type curve (e.g. Fire Blast Charges, Icicles)
+				-- have a timer-driven recharging node whose value is secret. That node is always < 1
+				-- charge, so the plain completed-charge count alone decides integer over/under; use it
+				-- instead of falling back to the static under color.
+				currentValue = nodeSum
+				supportsValueComparison = true
+			end
+			fillDirection = settings.comboPoints and settings.comboPoints.fillDirection or fillDirection
+			border = settings.comboPoints and settings.comboPoints.border or 0
+			resourceType = TRB.Data.resource2
+			if nodeCount > 1 then
+				isNodeMapped = true
+				nodes = {}
+				for i = 1, nodeCount do
+					nodes[i] = GetNodeFrame(group, i)
+				end
 			end
 		end
 	elseif baseKey == "health" then
 		parentFrame = valueFrame
-
-		-- Health can be unavailable/secret in some contexts. When that happens,
-		-- use healthPercent on a 0-100 scale so current/max units stay consistent.
-		local healthValue = attributes.health
-		local healthMaxValue = attributes.healthMax
-		if type(healthValue) == "number" and not IsSecretValue(healthValue) then
-			currentValue = healthValue
-			maxValue = GetPositivePlainNumber(healthMaxValue, maxValue)
-		else
-			local healthPercent = attributes.healthPercent
-			if type(healthPercent) == "number" and not IsSecretValue(healthPercent) then
-				currentValue = healthPercent
-				maxValue = 100
-			else
-				currentValue = GetPlainNumber(currentValue, 0)
-				maxValue = GetPositivePlainNumber(maxValue, 100)
-			end
-		end
-
+		-- Health custom thresholds are percent-based (0-100): positioning uses the percent value,
+		-- and over/under coloring uses UnitHealthPercent (secret-safe). The bar fills 0-healthMax,
+		-- so a percent threshold lines up with the matching fill fraction.
+		currentValue = GetPlainNumber(attributes.healthPercent, 0)
+		maxValue = 100
 		fillDirection = settings.healthBar and settings.healthBar.fillDirection or fillDirection
 		border = settings.healthBar and settings.healthBar.border or 0
 	else
@@ -1148,8 +1451,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		if barTypeDef ~= nil then
 			if barTypeDef.isAmalgamation and nodeKey ~= nil then
 				-- Amalgamation sub-target (e.g. "holyWords:holyWordSerenity"): position the line
-				-- onto the contiguous node run that this type occupies. These bars have no
-				-- power-type resource, so coloring falls back to the static under color.
+				-- onto the contiguous node run that this type occupies. Live count is the node sum
+				-- (non-secret), so over/under coloring uses a direct comparison via supportsValueComparison.
 				local colorSettings = barTypeDef:GetColors(settings)
 				local startIndex, runCount = GetAmalgamationNodeRun(barTypeDef, colorSettings, nodeKey)
 				if startIndex == nil or runCount <= 0 then
@@ -1160,8 +1463,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				maxValue = runCount
 				-- This type's live count is the sum of its node fill values (non-secret), in the
 				-- same node-count units as maxValue, used for the over/under comparison.
-				local nodeSum, sawSecret = SumNodeValues(group, startIndex, runCount)
-				if not sawSecret then
+				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, startIndex, runCount)
+				-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
+				-- the comparison: it is always < 1, so the plain completed count decides over/under.
+				if not sawSecret or sawPlain then
 					currentValue = nodeSum
 					supportsValueComparison = true
 				end
@@ -1176,8 +1481,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				-- These bars track charge/stack counts as non-secret node fill values (e.g.
 				-- Angelic Feather charges). Sum them so the over/under comparison has the live
 				-- count in node-count units. (Power-type bars never reach here.)
-				local nodeSum, sawSecret = SumNodeValues(group, 1, nodeCount)
-				if not sawSecret then
+				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
+				-- the comparison: it is always < 1, so the plain completed count decides over/under.
+				if not sawSecret or sawPlain then
 					currentValue = nodeSum
 					supportsValueComparison = true
 				end
@@ -1190,8 +1497,24 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				end
 			elseif barTypeDef.minMaxMode == "percentage" then
 				maxValue = GetPositivePlainNumber(barTypeDef.maxThresholdPercent, 100)
+				-- Percentage bars with a maxScale (e.g. Brewmaster Stagger displays 0..maxScale*100%)
+				-- position thresholds against the LIVE visible scale, not the slider's absolute max.
+				local scale = barSettings and barSettings.maxScale
+				if scale ~= nil and scale > 0 then
+					maxValue = scale * 100
+				end
 			elseif barTypeDef.minMaxMode == "mana" then
+				-- Dedicated mana bar (Shadow/Balance/Elemental): percent-based, 0-100. The bar fills
+				-- 0-manaMax, so a percent threshold lines up with the matching fill fraction.
 				resourceType = Enum and Enum.PowerType and Enum.PowerType.Mana or nil
+				maxValue = 100
+			end
+
+			-- Explicit per-definition value scale (e.g. Shield Block 0-8s) overrides the node-count max.
+			local minOverride, maxOverride = GetCustomThresholdScaleConfig(barTarget)
+			if maxOverride ~= nil then
+				maxValue = maxOverride
+				minValue = minOverride or 0
 			end
 		end
 	end
@@ -1200,6 +1523,30 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	maxValue = GetPositivePlainNumber(maxValue, 100)
 	if maxValue < minValue then
 		maxValue = minValue
+	end
+
+	-- General over/under fallback for single-node bars with no power-type curve API (resourceType
+	-- not a real PowerType enum) that haven't already resolved a comparison above (e.g. Ebon Might,
+	-- Stagger, and other custom/percentage bars). Compare the live fill FRACTION against the
+	-- threshold fraction so it stays correct regardless of how maxValue was rescaled. Only applies
+	-- when the bar's live value is a non-secret number; secret-valued bars keep the static under
+	-- color, and multi-node/health/power-type bars are handled by their own paths above.
+	if not supportsValueComparison and not isNodeMapped and baseKey ~= "health"
+		and type(resourceType) ~= "number" and valueFrame ~= nil and type(valueFrame.GetValue) == "function" then
+		local rawValue = valueFrame:GetValue()
+		if rawValue ~= nil and not IsSecretValue(rawValue) and type(rawValue) == "number" then
+			local rawMax = nil
+			if type(valueFrame.GetMinMaxValues) == "function" then
+				local _, fm = valueFrame:GetMinMaxValues()
+				if fm ~= nil and not IsSecretValue(fm) and type(fm) == "number" and fm > 0 then
+					rawMax = fm
+				end
+			end
+			if rawMax ~= nil then
+				currentValue = (rawValue / rawMax) * maxValue
+				supportsValueComparison = true
+			end
+		end
 	end
 
 	return {
@@ -1220,6 +1567,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		nodeCount = nodeCount,
 		nodeStartIndex = nodeStartIndex,
 		supportsValueComparison = supportsValueComparison,
+		contextActive = contextActive,
 	}
 end
 
@@ -1251,6 +1599,15 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetRange(settings, barTarg
 
 	local baseKey, nodeKey = ParseBarTarget(barTarget)
 	if baseKey == "primary" then
+		-- Druid form sub-target: each resource has a fixed display scale (raw 0-max, or 0-100% for Mana).
+		local sub = FindContextSubTarget(classId, specId, "primary", nodeKey, settings)
+		if sub ~= nil then
+			return 0, GetPositivePlainNumber(sub.max, 100)
+		end
+		-- Mana primary (healer specs) is percent-based, matching the live 0-100 scale.
+		if IsPercentScaleTarget(classId, specId, "primary", nil) then
+			return 0, 100
+		end
 		-- Options-panel fallback (no live barGroups): use the spec's DEFINED maximum
 		-- resource constant (settings.maxResource.value, e.g. SHADOW_MAX_INSANITY = 150)
 		-- so a threshold can be configured up to the spec's maximum possible resource,
@@ -1262,6 +1619,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetRange(settings, barTarg
 		end
 		return 0, GetPositivePlainNumber(definedMax, 100)
 	elseif baseKey == "secondary" then
+		local sub = FindContextSubTarget(classId, specId, "secondary", nodeKey, settings)
+		if sub ~= nil then
+			return 0, GetPositivePlainNumber(sub.max, 100)
+		end
 		-- Use the VISIBLE node count (one per displayed shard/point), not the raw resource
 		-- max which can be fragment-scaled (e.g. Destruction Warlock = 50 fragments / 5 nodes).
 		local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
@@ -1275,6 +1636,11 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetRange(settings, barTarg
 	elseif settings.bars and settings.bars[baseKey] then
 		local barTypeDef = GetBarTypeDefinition(baseKey)
 		if barTypeDef ~= nil then
+			-- Explicit per-definition slider scale (e.g. Shield Block 0-8s) overrides the node-count range.
+			local minOverride, maxOverride = GetCustomThresholdScaleConfig(barTarget)
+			if maxOverride ~= nil then
+				return minOverride or 0, GetPositivePlainNumber(maxOverride, 100)
+			end
 			if barTypeDef.isAmalgamation and nodeKey ~= nil then
 				local colorSettings = barTypeDef:GetColors(settings)
 				local _, runCount = GetAmalgamationNodeRun(barTypeDef, colorSettings, nodeKey)
@@ -1353,7 +1719,10 @@ function TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 
 	local sourceId = tonumber(customThreshold.iconSourceId) or 0
 	if sourceId <= 0 then
-		return nil
+		-- A non-"none" source type with an unset/zero ID still wants an icon shown: fall back to
+		-- the "missing icon" question mark rather than hiding it. Only "none" (handled above)
+		-- suppresses the icon entirely.
+		return 134400 -- inv-misc-questionmark
 	end
 
 	local texture = nil
@@ -1416,7 +1785,10 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		end
 		if targetInfo.key == "health" then
 			return UnitHealthPercent("player", true, curve)
-		elseif targetInfo.resourceType ~= nil then
+		elseif type(targetInfo.resourceType) == "number" then
+			-- Only real PowerType enums (numbers) can be evaluated by UnitPowerPercent. String
+			-- sentinels like "CUSTOM" (Devourer Soul Fragments/Collapsing Star) have no power API,
+			-- so return nil and let the caller fall back to the static under color.
 			return UnitPowerPercent("player", targetInfo.resourceType, true, curve)
 		end
 		return nil
@@ -1550,12 +1922,16 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 		local thresholdOverrides = settings.thresholds.thresholdDictionary and settings.thresholds.thresholdDictionary[customThresholdKey]
 		if thresholdOverrides ~= nil and thresholdOverrides.enabled == true then
 			local targetInfo = TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, customThreshold.barTarget or "primary")
-			if targetInfo ~= nil and targetInfo.parentFrame ~= nil then
+			-- contextActive == false: a context sub-target whose game-state context isn't live
+			-- right now (e.g. Soul Fragments threshold while Collapsing Star is active). Skip it so
+			-- HideInactiveCustomThresholdFrames hides the line until its context returns.
+			if targetInfo ~= nil and targetInfo.parentFrame ~= nil and targetInfo.contextActive ~= false then
 				local frameKey = targetInfo.key .. "_" .. customThresholdKey
 				local configuredValue = customThreshold.value
 				local minValue = targetInfo.minValue or 0
 				local maxValue = targetInfo.maxValue or 100
-				local thresholdValue = math.max(minValue, math.min(customThreshold.value or minValue, maxValue))
+				local thresholdValue = math.max(minValue, customThreshold.value or minValue)
+				local inRange = thresholdValue <= maxValue
 				customThreshold.value = thresholdValue
 
 				-- Position value/frame default to the bar-wide value across the whole target
@@ -1569,16 +1945,22 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				local positionMax = maxValue
 				if targetInfo.isNodeMapped and targetInfo.nodes ~= nil and targetInfo.nodeCount > 0 then
 					local n = targetInfo.nodeCount
-					local floorV = math.floor(thresholdValue)
+					-- Map the value onto node-run units (0..n). For node-count bars maxValue == n,
+					-- so this is the identity; for scaled bars it converts to the node fill fraction.
+					local mappedValue = thresholdValue
+					if maxValue > 0 then
+						mappedValue = (thresholdValue / maxValue) * n
+					end
+					local floorV = math.floor(mappedValue)
 					local nodeIndex, fraction
-					if thresholdValue <= 0 then
+					if mappedValue <= 0 then
 						nodeIndex, fraction = 1, 0
-					elseif thresholdValue >= n then
+					elseif mappedValue >= n then
 						nodeIndex, fraction = n, 1
-					elseif thresholdValue == floorV then
+					elseif mappedValue == floorV then
 						nodeIndex, fraction = floorV, 1
 					else
-						nodeIndex, fraction = floorV + 1, thresholdValue - floorV
+						nodeIndex, fraction = floorV + 1, mappedValue - floorV
 					end
 					local nodeFrame = targetInfo.nodes[nodeIndex]
 					if nodeFrame ~= nil then
@@ -1588,7 +1970,9 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					end
 				end
 
-				activeFrameKeys[frameKey] = true
+				if inRange then
+					activeFrameKeys[frameKey] = true
+				end
 				local threshold = TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, customThresholdKey)
 
 				local lineThickness = settings.thresholds.properties.width
@@ -1651,7 +2035,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					spellShim,
 					frameKey,
 					threshold,
-					true,
+					inRange,
 					frameLevel,
 					0,
 					thresholdColor,

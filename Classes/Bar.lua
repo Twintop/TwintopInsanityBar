@@ -1146,6 +1146,9 @@ end
 ---@field public colorLabel string? # Localized label shown on the color swatch (e.g., "Ignore Pain"). Falls back to displayName if nil.
 ---@field public tooltip string? # Localized tooltip body text for the enable checkbox. Falls back to displayName if nil.
 ---@field public hasEnabled boolean? # True if this node can be independently enabled/disabled by the user
+---@field public thresholdMax number? # Optional custom-threshold slider max for this sub-target (and runtime value scale, e.g. Shield Block 8.0s). Defaults to the node-run count.
+---@field public thresholdMin number? # Optional custom-threshold slider min for this sub-target. Defaults to 0.
+---@field public thresholdDecimals integer? # Optional decimal precision for this sub-target's value slider. Defaults to 0.
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
@@ -1205,6 +1208,11 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	-- Threshold color options (required when colorCurveType is "step" or "linear")
 	self.thresholdLevels = config.thresholdLevels
 	self.maxThresholdPercent = config.maxThresholdPercent -- Max percentage for threshold sliders (default 100 if nil)
+	-- Custom-threshold value slider overrides (e.g. Shield Block 0.0-8.0s). Amalgamation bars
+	-- usually declare these per-node on nodeColors entries instead.
+	self.thresholdMax = config.thresholdMax
+	self.thresholdMin = config.thresholdMin
+	self.thresholdDecimals = config.thresholdDecimals
 	self.gradientTooltipNote = config.gradientTooltipNote
 	self.colorTypeLabel = config.colorTypeLabel
 	self.colorTypeStepLabel = config.colorTypeStepLabel
@@ -1591,9 +1599,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true },
-			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true },
-			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true }
+			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true, thresholdMax = 12, thresholdDecimals = 1 },
+			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1 },
+			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true, thresholdMax = 8, thresholdDecimals = 1 }
 		},
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultDefensivesBarDimensions(classic)
@@ -1623,9 +1631,9 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderUpTooltip = L["NodeOrderMoveUpTooltip"],
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
-			{ key = "holyWordSerenity", displayName = L["HolyWordSerenityBarEnable"], colorLabel = L["HolyWordSerenityBarColor"], tooltip = L["HolyWordSerenityBarEnableTooltip"], hasEnabled = true },
-			{ key = "holyWordSanctify", displayName = L["HolyWordSanctifyBarEnable"], colorLabel = L["HolyWordSanctifyBarColor"], tooltip = L["HolyWordSanctifyBarEnableTooltip"], hasEnabled = true },
-			{ key = "holyWordChastise", displayName = L["HolyWordChastiseBarEnable"], colorLabel = L["HolyWordChastiseBarColor"], tooltip = L["HolyWordChastiseBarEnableTooltip"], hasEnabled = true }
+			{ key = "holyWordSerenity", displayName = L["HolyWordSerenityBarEnable"], colorLabel = L["HolyWordSerenityBarColor"], tooltip = L["HolyWordSerenityBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 },
+			{ key = "holyWordSanctify", displayName = L["HolyWordSanctifyBarEnable"], colorLabel = L["HolyWordSanctifyBarColor"], tooltip = L["HolyWordSanctifyBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 },
+			{ key = "holyWordChastise", displayName = L["HolyWordChastiseBarEnable"], colorLabel = L["HolyWordChastiseBarColor"], tooltip = L["HolyWordChastiseBarEnableTooltip"], hasEnabled = true, thresholdMax = 60, thresholdDecimals = 1 }
 		},
 		onChangeCallback = function()
 			TRB.Functions.Character:ResetCaches()

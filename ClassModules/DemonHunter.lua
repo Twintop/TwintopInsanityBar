@@ -922,6 +922,10 @@ local function UpdateSnapshot_Devourer()
 	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
 	local soulFragmentsBuff = snapshotData.snapshots[spells.soulFragments.id].buff
 
+	-- Context flag for custom thresholds: secondary bar shows Collapsing Star stacks while active,
+	-- Soul Fragments otherwise. Read by the custom-threshold sub-target visibility gate.
+	snapshotData.attributes.devourerCollapsingStarActive = collapsingStarBuff.isActive == true
+
 	if collapsingStarBuff.isActive then
 		snapshotData.attributes.resource2 = collapsingStarBuff.applications
 		snapshotData.attributes.maxResource2 = spells.collapsingStar.attributes.maxResource

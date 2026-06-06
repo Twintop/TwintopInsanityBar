@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_assassination = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_outlaw = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.rogue_subtlety = {}
 
-local ASSASSINATION_MAX_ENERGY = 300
-local OUTLAW_MAX_ENERGY = 250
-local SUBTLETY_MAX_ENERGY = 200
+local ASSASSINATION_MAX_ENERGY = TRB.Data.maxResource.rogue.assassination.energy
+local OUTLAW_MAX_ENERGY = TRB.Data.maxResource.rogue.outlaw.energy
+local SUBTLETY_MAX_ENERGY = TRB.Data.maxResource.rogue.subtlety.energy
 
 ---Loads default bar text settings for Assassination
 ---@param classic boolean?

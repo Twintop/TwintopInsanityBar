@@ -985,12 +985,25 @@ end
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
 function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
+    -- Per-form primary thresholds reuse the central max-resource registry (shared with the options
+    -- panels) so form-resource maxes are never hardcoded. Each form maps to a form-spec's resource.
+    local maxRes = TRB.Data.maxResource.druid
     if specId == 1 then -- Balance
         return {
             primary = {
                 maxNodes = 1,
                 isPrimary = true,
-                resourceType = "AstralPower"
+                resourceType = "AstralPower",
+                -- Form-switched primary bar: each shapeshift form shows a different resource. Custom
+                -- thresholds get one sub-target per form-resource, shown only in that form. Mana is
+                -- unified across its two physical bars (dedicated bar in Moonkin, primary otherwise).
+                subTargetsRequireFormSwitching = true,
+                subTargets = {
+                    { key = "astralPower", resourceType = "AstralPower", powerType = Enum.PowerType.LunarPower, scale = "raw", max = maxRes.balance.astralPower, maxField = "maxAstralPower", factor = 10, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 1 } },
+                    { key = "energy", resourceType = "Energy", powerType = Enum.PowerType.Energy, scale = "raw", max = maxRes.feral.energy, maxField = "maxEnergy", factor = 1, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 2 } },
+                    { key = "rage", resourceType = "Rage", powerType = Enum.PowerType.Rage, scale = "raw", max = maxRes.guardian.rage, maxField = "maxRage", factor = 10, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 3 } },
+                    { key = "mana", resourceType = "Mana", powerType = Enum.PowerType.Mana, scale = "percent", max = 100, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 1, 4 }, altBarKey = "mana", altWhenContextValue = 1 },
+                }
             },
             secondary = {
                 maxNodes = 5,
@@ -1013,7 +1026,13 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true,
-                resourceType = "Energy"
+                resourceType = "Energy",
+                subTargetsRequireFormSwitching = true,
+                subTargets = {
+                    { key = "energy", resourceType = "Energy", powerType = Enum.PowerType.Energy, scale = "raw", max = maxRes.feral.energy, maxField = "maxEnergy", factor = 1, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 2 } },
+                    { key = "rage", resourceType = "Rage", powerType = Enum.PowerType.Rage, scale = "raw", max = maxRes.guardian.rage, maxField = "maxRage", factor = 10, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 3 } },
+                    { key = "mana", resourceType = "Mana", powerType = Enum.PowerType.Mana, scale = "percent", max = 100, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 4 } },
+                }
             },
             secondary = {
                 maxNodes = 5,
@@ -1031,7 +1050,13 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true,
-                resourceType = "Rage"
+                resourceType = "Rage",
+                subTargetsRequireFormSwitching = true,
+                subTargets = {
+                    { key = "energy", resourceType = "Energy", powerType = Enum.PowerType.Energy, scale = "raw", max = maxRes.feral.energy, maxField = "maxEnergy", factor = 1, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 2 } },
+                    { key = "rage", resourceType = "Rage", powerType = Enum.PowerType.Rage, scale = "raw", max = maxRes.guardian.rage, maxField = "maxRage", factor = 10, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 3 } },
+                    { key = "mana", resourceType = "Mana", powerType = Enum.PowerType.Mana, scale = "percent", max = 100, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 4 } },
+                }
             },
             secondary = {
                 maxNodes = 5,
@@ -1049,7 +1074,13 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
             primary = {
                 maxNodes = 1,
                 isPrimary = true,
-                resourceType = "Mana"
+                resourceType = "Mana",
+                subTargetsRequireFormSwitching = true,
+                subTargets = {
+                    { key = "energy", resourceType = "Energy", powerType = Enum.PowerType.Energy, scale = "raw", max = maxRes.feral.energy, maxField = "maxEnergy", factor = 1, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 2 } },
+                    { key = "rage", resourceType = "Rage", powerType = Enum.PowerType.Rage, scale = "raw", max = maxRes.guardian.rage, maxField = "maxRage", factor = 10, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 3 } },
+                    { key = "mana", resourceType = "Mana", powerType = Enum.PowerType.Mana, scale = "percent", max = 100, decimals = 0, contextAttribute = "druidDisplaySpecId", contextValues = { 4 } },
+                }
             },
             secondary = {
                 maxNodes = 5,

@@ -9382,9 +9382,9 @@ function TRB.Functions.Settings:NormalizeCustomThresholdLine(customThreshold, gu
 	line.name = line.name or L["CustomThresholdDefaultName"]
 	line.barTarget = line.barTarget or "primary"
 	line.value = tonumber(line.value) or 0
-	line.iconSourceType = line.iconSourceType or "spell"
+	line.iconSourceType = line.iconSourceType or "none"
 	if line.iconSourceType ~= "spell" and line.iconSourceType ~= "item" and line.iconSourceType ~= "icon" and line.iconSourceType ~= "none" then
-		line.iconSourceType = "spell"
+		line.iconSourceType = "none"
 	end
 	line.iconSourceId = tonumber(line.iconSourceId) or 0
 

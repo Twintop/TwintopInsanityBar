@@ -9,9 +9,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_devourer = {}
 
-local HAVOC_MAX_FURY = 170
-local VENGEANCE_MAX_FURY = 120
-local DEVOURER_MAX_FURY = 140
+local HAVOC_MAX_FURY = TRB.Data.maxResource.demonhunter.havoc.fury
+local VENGEANCE_MAX_FURY = TRB.Data.maxResource.demonhunter.vengeance.fury
+local DEVOURER_MAX_FURY = TRB.Data.maxResource.demonhunter.devourer.fury
 
 ---Loads shared default bar text settings for Demon Hunter
 ---@param classic boolean?

@@ -12,9 +12,9 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
 
-local BLOOD_MAX_RUNIC_POWER = 125
-local FROST_MAX_RUNIC_POWER = 110
-local UNHOLY_MAX_RUNIC_POWER = 100
+local BLOOD_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.blood.runicPower
+local FROST_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.frost.runicPower
+local UNHOLY_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.unholy.runicPower
 
 ---Loads extra default bar text settings
 ---@param classic boolean?
