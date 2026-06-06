@@ -2650,4 +2650,23 @@ if locale == "zhCN" then
 	L["SecondarySpendingOverlayCheckbox"] = "在%s上显示消耗覆盖层？"
 	L["SecondarySpendingOverlayCheckboxTooltip"] = "勾选后，将在%s上显示当前施法所消耗的资源覆盖效果。"
 	L["PaladinHolyBarTextVariable_castingHolyPower"] = "施法获得的神圣能量"
+
+	-- Warlock Demonology Demonic Core
+	L["WarlockAudioDemonicCore"] = "恶魔之核"
+	L["WarlockAudioCheckboxDemonicCore"] = "获得恶魔之核时播放音效？"
+	L["WarlockAudioCheckboxDemonicCoreTooltip"] = "勾选后，首次获得恶魔之核时会播放音效。在消耗所有层数前不会再次触发。"
+	L["WarlockDemonologyBarTextVariable_demonicCoreTime"] = "恶魔之核剩余时间"
+	L["WarlockDemonologyBarTextVariable_demonicCoreStacks"] = "恶魔之核层数"
+	
+	-- Warlock Demonology Indicator Colors (bar-agnostic tooltips and color picker labels)
+	L["BarNameSoulShardsBar"] = "灵魂碎片"
+	L["WarlockDemonologyCheckboxDemonicCore"] = "恶魔之核"
+	L["WarlockDemonologyIndicatorDemonicCoreTooltip"] = "恶魔之核激活时，指示器将切换为此颜色。"
+	L["WarlockDemonologyIndicatorDemonicCoreColor"] = "恶魔之核已激活"
+	
+	-- Warlock Demonology Dominion of Argus
+	L["WarlockDemonologyBarTextVariable_doaTime"] = "阿古斯支配剩余时间"
+	L["WarlockDemonologyCheckboxDominionOfArgus"] = "阿古斯支配"
+	L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "阿古斯支配激活时，指示器将切换为此颜色。"
+	L["WarlockDemonologyIndicatorDominionOfArgusColor"] = "阿古斯支配已激活"
 end
