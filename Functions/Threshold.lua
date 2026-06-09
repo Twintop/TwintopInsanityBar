@@ -1732,6 +1732,20 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetRange(settings, barTarg
 	return 0, 100
 end
 
+---Resolves a custom threshold's stored value to an absolute resource value, honoring valueMode.
+---In "offset" mode the stored value is an offset from the bar's maximum (e.g. -10 => max - 10).
+---Returns the raw resolved value WITHOUT clamping so callers keep their own range checks.
+---@param customThreshold TRB.Classes.Settings.CustomThresholdLine
+---@param maxValue number
+---@return number
+function TRB.Functions.Threshold:GetEffectiveCustomThresholdValue(customThreshold, maxValue)
+	local v = customThreshold.value or 0
+	if (customThreshold.valueMode or "absolute") == "offset" then
+		v = maxValue + v
+	end
+	return v
+end
+
 ---@param threshold Frame
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param targetInfo table
@@ -2006,7 +2020,9 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				local configuredValue = customThreshold.value
 				local minValue = targetInfo.minValue or 0
 				local maxValue = targetInfo.maxValue or 100
-				local thresholdValue = math.max(minValue, customThreshold.value or minValue)
+				-- Offset-mode lines store an offset from max; resolve to an absolute value before positioning.
+				local effectiveValue = TRB.Functions.Threshold:GetEffectiveCustomThresholdValue(customThreshold, maxValue)
+				local thresholdValue = math.max(minValue, effectiveValue)
 				local inRange = thresholdValue <= maxValue
 				-- Compressed Maelstrom Weapon: base (1-5) and overflow (6-10) lines share the same nodes,
 				-- so only the active layer is shown - base below 6 stacks, overflow at 6+.

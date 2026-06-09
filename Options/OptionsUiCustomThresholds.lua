@@ -205,6 +205,9 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 	-- numbers; bars whose underlying resource has finer granularity than its node count (e.g.
 	-- Destruction Warlock Soul Shards) opt into decimals via the bar-target descriptor.
 	local currentValueDecimals = 0
+	-- Whether the current bar target is on a fixed 0-100% scale (Mana/Stagger/Health). These are
+	-- absolute-only, so the Absolute/Offset mode dropdown is hidden for them.
+	local currentValueIsPercent = false
 
 	local function RefreshRuntime()
 		RefreshSpecCache(lowerClassName, specName)
@@ -329,6 +332,13 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 	barTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 25)
 
 	local valueSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["CustomThresholdValue"], 0, 100, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY - 25)
+
+	-- Absolute/Offset mode selector, stacked beneath Bound-To-Bar in the left column.
+	local valueModeDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_ValueMode", editorContent, "WowStyle1DropdownTemplate")
+	valueModeDropdown:SetWidth(oUi.sliderWidth)
+	valueModeDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdValueMode"], oUi.xCoord, editorY - 50)
+	valueModeDropdown.label.font:SetFontObject(GameFontNormal)
+	valueModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, editorY - 75)
 
 	editorY = editorY - 105
 	local iconHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, L["CustomThresholdIconHeader"], oUi.xCoord, editorY)
@@ -477,7 +487,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 					{ value = iconText },
 					{ value = customThreshold.name or L["CustomThresholdDefaultName"] },
 					{ value = targetLabel },
-					{ value = tostring(customThreshold.value or 0) },
+					{ value = (customThreshold.valueMode == "offset") and string.format(L["CustomThresholdOffsetDisplay"], customThreshold.value or 0) or tostring(customThreshold.value or 0) },
 					{ value = enabledText },
 					{ value = copyActionIconMarkup, DoCellUpdate = UpdateActionCell },
 					{ value = "X", color = deleteActionTextColor, DoCellUpdate = UpdateActionCell },
@@ -498,7 +508,20 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		valueSlider:ClearAllPoints()
 		valueSlider:SetPoint("TOPLEFT", oUi.xCoord2, y - 25)
 
-		y = y - 65
+		-- Mode dropdown stacks beneath Bound-To-Bar (left column); hidden for absolute-only percent targets.
+		if currentValueIsPercent then
+			valueModeDropdown:Hide()
+			valueModeDropdown.label:Hide()
+			y = y - 65
+		else
+			valueModeDropdown.label:ClearAllPoints()
+			valueModeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y - 50)
+			valueModeDropdown:ClearAllPoints()
+			valueModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 75)
+			valueModeDropdown.label:Show()
+			valueModeDropdown:Show()
+			y = y - 105
+		end
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyColorOverrideLayout({
 			yCoord = y,
@@ -628,21 +651,63 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			end
 		end
 
+		local minValue, maxValue = GetBarTargetRange(currentSpec, currentBarTarget, classId, specId)
+
+		currentValueIsPercent = currentIsPercent
+		-- Percent targets (Mana/Stagger/Health) are absolute-only: fold any stored offset back to absolute.
+		if currentIsPercent and (line.valueMode or "absolute") == "offset" then
+			line.value = maxValue + (line.value or 0)
+			line.valueMode = "absolute"
+		end
+		local valueMode = line.valueMode or "absolute"
+
 		local valueStep = currentValueDecimals > 0 and (1 / (10 ^ currentValueDecimals)) or 1
 		valueSlider:SetValueStep(valueStep)
 		valueSlider:SetObeyStepOnDrag(true)
 
-		local minValue, maxValue = GetBarTargetRange(currentSpec, currentBarTarget, classId, specId)
-		local clampedValue = TRB.Functions.Number:RoundTo(math.max(minValue, math.min(line.value or minValue, maxValue)), currentValueDecimals)
+		-- Offset mode: stored value is a negative offset from max, so the slider runs [min - max, 0].
+		local sliderMin, sliderMax = minValue, maxValue
+		if valueMode == "offset" then
+			sliderMin, sliderMax = minValue - maxValue, 0
+			valueSlider.Title:SetText(L["CustomThresholdOffsetTitle"])
+		else
+			valueSlider.Title:SetText(L["CustomThresholdValue"])
+		end
+
+		local clampedValue = TRB.Functions.Number:RoundTo(math.max(sliderMin, math.min(line.value or sliderMin, sliderMax)), currentValueDecimals)
 		if line.value ~= clampedValue then
 			line.value = clampedValue
 		end
-		valueSlider:SetMinMaxValues(minValue, maxValue)
+		valueSlider:SetMinMaxValues(sliderMin, sliderMax)
 		local labelSuffix = currentIsPercent and "%" or ""
-		valueSlider.MaxLabel:SetText(maxValue .. labelSuffix)
-		valueSlider.MinLabel:SetText(minValue .. labelSuffix)
+		valueSlider.MaxLabel:SetText(sliderMax .. labelSuffix)
+		valueSlider.MinLabel:SetText(sliderMin .. labelSuffix)
 		valueSlider:SetValue(clampedValue)
 		valueSlider.EditBox:SetText(clampedValue)
+
+		local valueModeLabels = { absolute = L["CustomThresholdValueModeAbsolute"], offset = L["CustomThresholdValueModeOffset"] }
+		valueModeDropdown:SetDefaultText(valueModeLabels[valueMode])
+		valueModeDropdown:SetupMenu(function(dd, rootDescription)
+			for _, mode in ipairs({ "absolute", "offset" }) do
+				rootDescription:CreateRadio(valueModeLabels[mode], function(value) return value == (line.valueMode or "absolute") end, function(value)
+					if value == (line.valueMode or "absolute") then
+						return
+					end
+					-- Convert to keep the line in the same position across the mode switch.
+					local rMin, rMax = GetBarTargetRange(GetCurrentSpec() or spec, line.barTarget or "primary", classId, specId)
+					local rDecimals = GetBarTargetDecimals(GetCurrentSpec() or spec, line.barTarget or "primary", classId, specId)
+					if value == "offset" then
+						line.value = TRB.Functions.Number:RoundTo(math.max(rMin - rMax, math.min((line.value or rMax) - rMax, 0)), rDecimals)
+					else
+						line.value = TRB.Functions.Number:RoundTo(math.max(rMin, math.min(rMax + (line.value or 0), rMax)), rDecimals)
+					end
+					line.valueMode = value
+					RefreshEditor(selectedGuid)
+					SetTableValues()
+					RefreshRuntime()
+				end, mode)
+			end
+		end)
 
 		barTargetDropdown:SetDefaultText(targetLabel)
 		barTargetDropdown:SetupMenu(function(dd, rootDescription)
@@ -651,7 +716,17 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 					line.barTarget = value
 					local newMin, newMax = GetBarTargetRange(GetCurrentSpec() or spec, value, classId, specId)
 					local newDecimals = GetBarTargetDecimals(GetCurrentSpec() or spec, value, classId, specId)
-					line.value = TRB.Functions.Number:RoundTo(math.max(newMin, math.min(line.value or newMin, newMax)), newDecimals)
+					-- Percent targets are absolute-only: fold an offset back to absolute first.
+					if target.isPercent == true and (line.valueMode or "absolute") == "offset" then
+						line.value = newMax + (line.value or 0)
+						line.valueMode = "absolute"
+					end
+					if (line.valueMode or "absolute") == "offset" then
+						-- Offset keeps its meaning across bars (distance below max); clamp into the new range.
+						line.value = TRB.Functions.Number:RoundTo(math.max(newMin - newMax, math.min(line.value or 0, 0)), newDecimals)
+					else
+						line.value = TRB.Functions.Number:RoundTo(math.max(newMin, math.min(line.value or newMin, newMax)), newDecimals)
+					end
 					RefreshEditor(selectedGuid)
 					SetTableValues()
 					RefreshRuntime()

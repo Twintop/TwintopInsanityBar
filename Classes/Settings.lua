@@ -58,6 +58,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public name string
 ---@field public barTarget string
 ---@field public value number
+---@field public valueMode string # "absolute" or "offset" (offset from the bar's maximum)
 ---@field public iconSourceType string # "spell", "item", "icon", or "none"
 ---@field public iconSourceId number
 ---@field public iconTexture string|number?
