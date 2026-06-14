@@ -417,19 +417,22 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	-- pending SwitchSpec will queue its own render transition and handle the update.
 	local currentSpec = GetSpecialization()
 	if currentSpec and TRB.Data.character and TRB.Data.character.specId ~= currentSpec then
+		-- Spec still reconciling; mark dirty so the next tick re-evaluates visibility
+		-- conditions instead of leaving all non-"never" bars revealed indefinitely.
+		TRB.Functions.BarVisibility:MarkDirty()
 		SetBarGroupsAlpha(1)
 		return
 	end
 
+	-- Clear the transition's forced alpha-0 first, then let the visibility logic run last so
+	-- ProcessBars sets the authoritative per-bar alpha. Forcing alpha to 1 afterward would
+	-- override partial-transparency bars (e.g. inactiveAlpha 25%) back to full opacity.
+	SetBarGroupsAlpha(1)
 	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:HideResourceBar()
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
-
-	-- Restore alpha only AFTER visibility logic has run
-	-- This prevents a single-frame flash where alpha becomes 1 while the bar is still technically "shown" but should be hidden
-	SetBarGroupsAlpha(1)
 end
 
 ---Evaluates bar visibility and shows or hides the resource bar based on combat state, configured hide conditions, Edit Mode, and spec support

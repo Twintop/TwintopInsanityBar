@@ -17,6 +17,7 @@ local content = [====[
 
 - [#42](#42) Allow custom threshold lines to be set using an offset value from max, like Overcapping, instead of just as a fixed absolute value.
 - [#771](#771) Fix a rounding issue when changing colors.
+- [#771](#771) Fix an issue where bar visibility would not respect transparency settings upon login or UI reloads.
 
 ### Localization
 
