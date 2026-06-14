@@ -2924,3 +2924,13 @@ L["CustomThresholdValueModeAbsolute"] = "Absolute"
 L["CustomThresholdValueModeOffset"] = "Offset from Max"
 L["CustomThresholdOffsetTitle"] = "Offset from Max"
 L["CustomThresholdOffsetDisplay"] = "%s (offset)"
+
+-- Warlock Affliction Indicator Colors
+L["WarlockAfflictionCheckboxShardInstability"] = "Shard Instability"
+L["WarlockAfflictionIndicatorShardInstabilityTooltip"] = "Changes to this color when Shard Instability is active."
+L["WarlockAfflictionIndicatorShardInstabilityColor"] = "Shard Instability is active"
+
+-- Warlock Affliction Shard Instability bar text variables
+L["WarlockAfflictionBarTextVariable_shardInstabilityTime"] = "Time remaining on Shard Instability"
+L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"] = "Number of Shard Instability stacks"
+L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"] = "Maximum number of Shard Instability stacks"

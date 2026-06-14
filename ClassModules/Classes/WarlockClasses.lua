@@ -7,6 +7,7 @@ TRB.Classes.Warlock = TRB.Classes.Warlock or {}
 ---@field public unstableAffliction TRB.Classes.SpellBase
 ---@field public darkHarvest TRB.Classes.SpellBase
 ---@field public shadowOfDeath TRB.Classes.SpellBase
+---@field public shardInstability TRB.Classes.SpellBase
 TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
 
@@ -34,6 +35,12 @@ function TRB.Classes.Warlock.AfflictionSpells:New()
         isTalent = true,
         resource = 1
     })
+    self.shardInstability = TRB.Classes.SpellBase:New({
+        id = 1260264,
+        isTalent = true,
+        buffId = 1260269,
+        maxStacks = 3
+    })
 
     return self
 end
@@ -52,6 +59,7 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#seedOfCorruption", icon = spells.seedOfCorruption.icon, description = spells.seedOfCorruption.name, printInSettings = true },
 		{ variable = "#unstableAffliction", icon = spells.unstableAffliction.icon, description = spells.unstableAffliction.name, printInSettings = true },
 		{ variable = "#shadowOfDeath", icon = spells.shadowOfDeath.icon, description = spells.shadowOfDeath.name, printInSettings = true },
+		{ variable = "#shardInstability", icon = spells.shardInstability.icon, description = spells.shardInstability.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
@@ -67,6 +75,10 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$shardInstabilityMaxStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"], printInSettings = true, color = false },
 	})
 end
 

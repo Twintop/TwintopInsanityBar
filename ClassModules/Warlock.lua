@@ -59,6 +59,8 @@ local function FillSpecializationCache()
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_affliction.snapshotData.snapshots[spells.shardInstability.id] = TRB.Classes.Snapshot:New(spells.shardInstability)
 
 	specCache.warlock_affliction.barTextVariables = {
 		icons = {},
@@ -365,6 +367,45 @@ local function RefreshLookupData_Affliction()
 
 		if lookupChanged(prevState, "$castingFragments", castingFragments, castingFragmentsColor) then
 			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+		end
+	end
+
+	-- Block D: Shard Instability ($shardInstabilityTime, $shardInstabilityStacks, $shardInstabilityMaxStacks)
+	if not activeVars or activeVars["$shardInstabilityTime"] or activeVars["$shardInstabilityStacks"] or activeVars["$shardInstabilityMaxStacks"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+		local currentTime = GetTime()
+		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id]
+		local _shardInstabilityActive = (shardInstabilityBuff ~= nil and shardInstabilityBuff.buff.isActive) or false
+
+		-- Stacks and remaining time come from secret aura data, so the conditional/boolean check
+		-- is driven by `isActive` (a plain boolean) while the displayed values use secret-safe
+		-- `string.format`/`TimerPrecision`. Max stacks is a plain constant from the spell data.
+		lookupLogic["$shardInstabilityTime"] = _shardInstabilityActive
+		lookupLogic["$shardInstabilityStacks"] = _shardInstabilityActive
+		lookupLogic["$shardInstabilityMaxStacks"] = spells.shardInstability.maxStacks
+
+		if _shardInstabilityActive then
+			local _shardInstabilityStacks = shardInstabilityBuff.buff.applications
+			local _shardInstabilityTime = shardInstabilityBuff.buff:GetRemainingTime(currentTime)
+
+			if lookupChanged(prevState, "$shardInstabilityStacks", _shardInstabilityStacks, nil, true) then
+				lookup["$shardInstabilityStacks"] = string.format("%.0f", _shardInstabilityStacks)
+			end
+			if lookupChanged(prevState, "$shardInstabilityTime", _shardInstabilityTime, nil, true) then
+				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
+			end
+		else
+			-- When Shard Instability is not active, display zeroed defaults rather than blank strings.
+			if lookupChanged(prevState, "$shardInstabilityStacks", 0) then
+				lookup["$shardInstabilityStacks"] = string.format("%.0f", 0)
+			end
+			if lookupChanged(prevState, "$shardInstabilityTime", 0) then
+				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
+
+		if lookupChanged(prevState, "$shardInstabilityMaxStacks", spells.shardInstability.maxStacks) then
+			lookup["$shardInstabilityMaxStacks"] = string.format("%.0f", spells.shardInstability.maxStacks)
 		end
 	end
 
@@ -735,6 +776,9 @@ end
 
 local function UpdateSnapshot_Affliction()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.snapshots[spells.shardInstability.id].buff:GetRemainingTime(GetTime())
 end
 
 local function UpdateSnapshot_Demonology()
@@ -793,7 +837,26 @@ local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
-		if TRB.Data.character.specId == 2 then
+		if TRB.Data.character.specId == 1 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+			if spellId == spells.unstableAffliction.id then -- Shard Instability proc glows the Unstable Affliction button
+				local currentTime = GetTime()
+				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
+				if shardInstabilitySnapshot ~= nil then
+					-- Shard Instability has no fixed duration; mark it active (removal handled by
+					-- GLOW_HIDE) and pull stacks/remaining time from the secret aura data.
+					shardInstabilitySnapshot.buff:InitializeCustomSimple(true)
+					shardInstabilitySnapshot.buff.updateFromSecret = true
+					local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
+					if bufferEntry ~= nil then
+						shardInstabilitySnapshot.buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+						shardInstabilitySnapshot.buff:RefreshWithSecretAuraData(bufferEntry)
+					else
+						TRB.Functions.Aura:InsertAuraRequest(currentTime, shardInstabilitySnapshot.buff, "first")
+					end
+				end
+			end
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
 				local currentTime = GetTime()
@@ -821,7 +884,15 @@ local function HandleSpellEvents(self, event, ...)
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
-		if TRB.Data.character.specId == 2 then
+		if TRB.Data.character.specId == 1 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+			if spellId == spells.unstableAffliction.id then -- Shard Instability proc ended
+				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
+				if shardInstabilitySnapshot ~= nil then
+					shardInstabilitySnapshot.buff:Reset()
+				end
+			end
+		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
 				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
@@ -954,8 +1025,8 @@ local function UpdateResourceBar()
 		end
 	end
 
-	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
 		local spendingSettings = specCacheSettings.colors.comboPoints.spending
 		local castingTexture = specCacheSettings.textures.comboPointsCastingBar or specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
@@ -969,15 +1040,15 @@ local function UpdateResourceBar()
 		local overlayBaseline = math.floor(normalizedResource2)
 
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+			local cpColor = fillOverride or specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
 			local filled = normalizedResource2 >= x
 			local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
 
-			if filled then
+			if filled and fillOverride == nil then
 				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
 					cpColor = specSettings.colors.comboPoints.second
 				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
@@ -1075,17 +1146,53 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_affliction.settings
 		UpdateSnapshot_Affliction()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+
+			-- Resolve indicator colors (shared system). manaBar uses default colors;
+			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
+			-- preserved unless an indicator explicitly targets a given element.
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				shardInstability = talents:IsTalentActive(spells.shardInstability) and snapshots[spells.shardInstability.id] ~= nil and snapshots[spells.shardInstability.id].buff.isActive,
+			}
+
+			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local soulShardsOverride = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1093,7 +1200,7 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2)
+				UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, soulShardsOverride.bar, soulShardsOverride.border, soulShardsOverride.background)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1285,6 +1392,7 @@ local function SwitchSpec()
 		lookup["#seedOfCorruption"] = spells.seedOfCorruption.icon
 		lookup["#unstableAffliction"] = spells.unstableAffliction.icon
 		lookup["#shadowOfDeath"] = spells.shadowOfDeath.icon
+		lookup["#shardInstability"] = spells.shardInstability.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1569,6 +1677,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.SoulShards
 		TRB.Data.resource2Factor = 10
+		TRB.Functions.Class:EnableEvents()
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.warlock.demonology == true then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1641,6 +1750,27 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true,
 	}
+	local affliction = {}
+	for key, entry in pairs(shared) do
+		affliction[key] = entry
+	end
+	affliction["$shardInstabilityTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.shardInstability == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	affliction["$shardInstabilityStacks"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.shardInstability == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	affliction["$shardInstabilityMaxStacks"] = true
 	local demonology = {}
 	for key, entry in pairs(shared) do
 		demonology[key] = entry
@@ -1665,7 +1795,7 @@ do
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
 	end
-	specValidVars = { [1] = shared, [2] = demonology, [3] = destruction }
+	specValidVars = { [1] = affliction, [2] = demonology, [3] = destruction }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

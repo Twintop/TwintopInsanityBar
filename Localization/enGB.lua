@@ -313,4 +313,5 @@ if locale == "enGB" then
     L["HunterSurvivalCheckboxTipOfTheSpearSameColor"] = "Use highest Tip of the Spear colour for all?"
     L["WarlockDemonologyIndicatorDemonicCoreTooltip"] = "Changes to this colour when Demonic Core is active."
     L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "Changes to this colour when Dominion of Argus is active."
+    L["WarlockAfflictionIndicatorShardInstabilityTooltip"] = "Changes to this colour when Shard Instability is active."
 end

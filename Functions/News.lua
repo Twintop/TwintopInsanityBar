@@ -23,6 +23,14 @@ local content = [====[
 
 - [#770](#770), [#772](#772) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
+## Warlock
+### Affliction
+
+- [#774](#774) Add support for tracking Shard Instability.
+- Add bar text variables for Shard Instability: `$shardInstabilityTime`, `$shardInstabilityStacks`, and `$shardInstabilityMaxStacks`. As the time and stack count are secret values, when used in bar text logic they will return only TRUE or FALSE and not the current value.
+- Add a bar text icon variable for Shard Instability (`#shardInstability`).
+- Add a Color Indicator for Shard Instability being active.
+
 ---
 
 # 12.0.5.13-release (2026-06-07)

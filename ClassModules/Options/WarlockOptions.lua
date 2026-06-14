@@ -142,9 +142,20 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "shardInstability" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					shardInstability = {
+						color = "FF67F100",
+						color2 = "FF67F100",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							soulShardsBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
 			},
 		},
 		displayText={
@@ -974,8 +985,30 @@ local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 9, 1, yCoord, cache)
 end
 
---local function AfflictionConstructIndicatorColorsPanel(parent)
---end
+local function AfflictionConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.affliction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_affliction
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 9, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "shardInstability", label = L["WarlockAfflictionCheckboxShardInstability"], tooltip = L["WarlockAfflictionIndicatorShardInstabilityTooltip"], colorLabel = L["WarlockAfflictionIndicatorShardInstabilityColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "soulShardsBar", label = L["BarNameSoulShardsBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warlock_Affliction",
+	}))
+
+	yCoord = yCoord - 40
+end
 
 local function AfflictionConstructThresholdSettingsPanel(parent)
 	if parent == nil then
@@ -1029,7 +1062,7 @@ local function AfflictionConstructOptionsPanel(cache)
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, AfflictionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "affliction", controls),
-		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AfflictionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AfflictionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AfflictionConstructFontAndTextPanel },

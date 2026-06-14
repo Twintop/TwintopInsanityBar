@@ -1680,9 +1680,9 @@ local function MistweaverConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
-		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MistweaverConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "mistweaver", controls),
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, MistweaverConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, MistweaverConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MistweaverConstructFontAndTextPanel },
