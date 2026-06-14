@@ -2692,4 +2692,9 @@ if locale == "zhCN" then
 	L["ResourceHealth"] = "生命值"
 	L["CustomThresholdIconSourceNone"] = "无图标"
 	L["CustomThresholdIconSourceIcon"] = "图标"
+	L["CustomThresholdValueMode"] = "模式"
+	L["CustomThresholdValueModeAbsolute"] = "绝对数值"
+	L["CustomThresholdValueModeOffset"] = "最大值偏移"
+	L["CustomThresholdOffsetTitle"] = "最大值偏移"
+	L["CustomThresholdOffsetDisplay"] = "%s（偏移）"
 end
