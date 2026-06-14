@@ -86,7 +86,7 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	if r == 0 or r == nil then
 		_r = "00"
 	else
-		_r = string.format("%x", math.ceil(r * 255))
+		_r = string.format("%x", math.floor(r * 255 + 0.5)) -- round-to-nearest; ceil overshoots on color picker's HSV round-trip error
 		if string.len(_r) == 1 then
 			_r = "0" .. _r
 		end
@@ -95,7 +95,7 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	if g == 0 or g == nil then
 		_g = "00"
 	else
-		_g = string.format("%x", math.ceil(g * 255))
+		_g = string.format("%x", math.floor(g * 255 + 0.5))
 		if string.len(_g) == 1 then
 			_g = "0" .. _g
 		end
@@ -104,7 +104,7 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	if b == 0 or b == nil then
 		_b = "00"
 	else
-		_b = string.format("%x", math.ceil(b * 255))
+		_b = string.format("%x", math.floor(b * 255 + 0.5))
 		if string.len(_b) == 1 then
 			_b = "0" .. _b
 		end
@@ -113,7 +113,7 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	if a == 0 or a == nil then
 		_a = "00"
 	else
-		_a = string.format("%x", math.ceil(a * 255))
+		_a = string.format("%x", math.floor(a * 255 + 0.5))
 		if string.len(_a) == 1 then
 			_a = "0" .. _a
 		end

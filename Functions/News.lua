@@ -11,14 +11,16 @@ local content = [====[
 *Localization of the addon is still underway! If you have any interest in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
 ---
-# 12.0.5.14-release (2026-06-09)
+
+# 12.0.7.0-release (2026-06-16)
 ## General
 
 - [#42](#42) Allow custom threshold lines to be set using an offset value from max, like Overcapping, instead of just as a fixed absolute value.
+- [#771](#771) Fix a rounding issue when changing colors.
 
 ### Localization
 
-- [#770](#770) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#770](#770), [#772](#772) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ---
 
