@@ -2697,4 +2697,14 @@ if locale == "zhCN" then
 	L["CustomThresholdValueModeOffset"] = "最大值偏移"
 	L["CustomThresholdOffsetTitle"] = "最大值偏移"
 	L["CustomThresholdOffsetDisplay"] = "%s（偏移）"
+
+	-- Warlock Affliction Indicator Colors
+	L["WarlockAfflictionCheckboxShardInstability"] = "碎片动荡"
+	L["WarlockAfflictionIndicatorShardInstabilityTooltip"] = "碎片动荡效果激活时切换为此颜色"
+	L["WarlockAfflictionIndicatorShardInstabilityColor"] = "碎片动荡已激活"
+	
+	-- Warlock Affliction Shard Instability bar text variables
+	L["WarlockAfflictionBarTextVariable_shardInstabilityTime"] = "碎片动荡剩余时间"
+	L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"] = "碎片动荡层数"
+	L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"] = "碎片动荡最大层数"
 end
