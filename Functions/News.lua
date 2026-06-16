@@ -21,7 +21,7 @@ local content = [====[
 
 ### Localization
 
-- [#770](#770), [#772](#772) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+- [#770](#770), [#772](#772), [#776](#776) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Warlock
 ### Affliction
