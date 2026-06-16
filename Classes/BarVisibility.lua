@@ -123,7 +123,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 
 	-- Delves are scenarios with the isDelve flag set in ScenarioInfo
 	local inDelve = false
-	if instanceType == "scenario" and C_ScenarioInfo and C_ScenarioInfo.GetScenarioInfo then
+	if instanceType == "scenario" then
 		local scenarioInfo = C_ScenarioInfo.GetScenarioInfo()
 		if scenarioInfo and scenarioInfo.type == 8 then
 			inDelve = true

@@ -661,7 +661,7 @@ function TRB.Classes.SnapshotBuff:RefreshWithSecretAuraData(auraData)
 	-- timer, regardless of whether the live aura duration is secret.
 	local spell = self.parent and self.parent.spell
 	local disallowSecretTiming = spell and spell.attributes and spell.attributes.disallowSecretTiming == true
-	if disallowSecretTiming or self.auraInstanceId == nil or C_UnitAuras == nil or C_UnitAuras.GetAuraDuration == nil then
+	if disallowSecretTiming or self.auraInstanceId == nil then
 		return
 	end
 

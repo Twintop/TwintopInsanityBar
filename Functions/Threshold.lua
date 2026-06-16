@@ -1817,21 +1817,12 @@ function TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 
 	local texture = nil
 	if customThreshold.iconSourceType == "item" then
-		if C_Item and C_Item.GetItemIconByID then
-			texture = C_Item.GetItemIconByID(sourceId)
-		elseif C_Item and C_Item.GetItemInfoInstant then
-			local _, _, _, _, icon = C_Item.GetItemInfoInstant(sourceId)
-			texture = icon
-		end
+		texture = C_Item.GetItemIconByID(sourceId)
 	elseif customThreshold.iconSourceType == "icon" then
 		-- "icon" uses the ID directly as a texture/file ID.
 		texture = sourceId
 	else
-		if C_Spell and C_Spell.GetSpellTexture then
-			texture = C_Spell.GetSpellTexture(sourceId)
-		elseif GetSpellTexture then
-			texture = GetSpellTexture(sourceId)
-		end
+		texture = C_Spell.GetSpellTexture(sourceId)
 	end
 
 	-- A source ID was provided but no texture resolved (e.g. the spell or item matching that
