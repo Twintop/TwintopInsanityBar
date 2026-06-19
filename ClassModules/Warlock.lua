@@ -679,6 +679,8 @@ local function UpdateCastingResourceFinal_Demonology()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	local dominionOfArgusSnapshot = snapshotData.snapshots[spells.dominionOfArgus.id]
+	local dominionOfArgusActive = dominionOfArgusSnapshot ~= nil and dominionOfArgusSnapshot.buff.isActive
 
 	if casting.spellId == spells.shadowBolt.id then
 		casting.resource2Casting = spells.shadowBolt.resource
@@ -686,17 +688,15 @@ local function UpdateCastingResourceFinal_Demonology()
 		casting.resource2Casting = spells.demonbolt.resource
 	elseif casting.spellId == spells.infernalBolt.id then
 		casting.resource2Casting = spells.infernalBolt.resource
-	elseif casting.spellId == spells.ruination.id then
-		casting.resource2Casting = spells.ruination.resource
+	elseif casting.spellId == spells.ruination.id and dominionOfArgusActive then
+		casting.resource2Casting = spells.dominionOfArgus.attributes.resourceMod
 	elseif casting.spellId == spells.summonDemonicTyrant.id and talents:IsTalentActive(spells.shadowOfDeath) then
 		casting.resource2Casting = spells.shadowOfDeath.resource
 	elseif casting.spellId == spells.handOfGuldan.id then
-		local mod = 0
-		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.id]
-		if dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
-			mod = spells.demonicCalling.attributes.resourceMod
+		casting.resource2Spending = spells.handOfGuldan.resource
+		if dominionOfArgusActive then
+			casting.resource2Spending = casting.resource2Spending + spells.dominionOfArgus.attributes.resourceMod
 		end
-		casting.resource2Spending = spells.handOfGuldan.resource + mod
 	elseif casting.spellId == spells.summonFelguard.id then
 		casting.resource2Spending = spells.summonFelguard.resource
 	elseif casting.spellId == spells.callDreadstalkers.id then

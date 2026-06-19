@@ -120,8 +120,7 @@ function TRB.Classes.Warlock.DemonologySpells:New()
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
-        isTalent = true,
-        resource = 1
+        isTalent = true
     })
     self.handOfGuldan = TRB.Classes.SpellBase:New({
         id = 105174,
