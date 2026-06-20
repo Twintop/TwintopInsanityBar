@@ -152,7 +152,8 @@ function TRB.Classes.Warlock.DemonologySpells:New()
         resourceMod = 1
     })
     self.dominionOfArgus = TRB.Classes.SpellBase:New({
-        id = 1276163,
+        id = 1276166,
+        talentId = 1276190,
         isTalent = true,
         duration = 15,
         durationMod = 5,

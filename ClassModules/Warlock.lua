@@ -692,7 +692,7 @@ local function UpdateCastingResourceFinal_Demonology()
 		casting.resource2Casting = spells.shadowOfDeath.resource
 	elseif casting.spellId == spells.handOfGuldan.id then
 		local mod = 0
-		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.id]
+		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId]
 		if dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
 			mod = spells.demonicCalling.attributes.resourceMod
 		end
@@ -700,7 +700,7 @@ local function UpdateCastingResourceFinal_Demonology()
 	elseif casting.spellId == spells.summonFelguard.id then
 		casting.resource2Spending = spells.summonFelguard.resource
 	elseif casting.spellId == spells.callDreadstalkers.id then
-		local demonicCallingTalent = talents.talents[spells.demonicCalling.id]
+		local demonicCallingTalent = talents.talents[spells.demonicCalling.talentId]
 		local mod = 0
 		if demonicCallingTalent ~= nil and demonicCallingTalent.currentRank ~= nil then
 			mod = spells.demonicCalling.attributes.resourceMod * demonicCallingTalent.currentRank
@@ -752,9 +752,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			 -- Handle instant-cast spells that generate resources on cast success rather than cast start
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.summonDemonicTyrant.id then
+				print("tyrant")
 				if talents:IsTalentActive(spells.dominionOfArgus) then
+					print("yes")
 					local duration = spells.dominionOfArgus.duration
-					local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.id]
+					local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId]
 					if dominionOfArgusTalent and dominionOfArgusTalent.currentRank > 1 then
 						duration = duration + math.min(dominionOfArgusTalent.currentRank - 1, 2) * spells.dominionOfArgus.attributes.durationMod
 					end
@@ -782,11 +784,12 @@ local function UpdateSnapshot_Affliction()
 end
 
 local function UpdateSnapshot_Demonology()
+	local currentTime = GetTime()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(GetTime())
-	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(GetTime())
+	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Destruction()

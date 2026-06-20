@@ -12,6 +12,12 @@ local content = [====[
 
 ---
 
+# 12.0.7.1-release (2026-06-21)
+## Warlock
+### Demonology
+
+- Fix Dominion of Argus detection.
+
 # 12.0.7.0-release (2026-06-16)
 ## General
 
