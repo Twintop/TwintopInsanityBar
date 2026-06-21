@@ -97,11 +97,14 @@ local function FillSpecializationCache()
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 		demonicCorePlayed = false,
+		infernalBoltPlayed = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore)
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_demonology.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 
 	specCache.warlock_demonology.barTextVariables = {
 		icons = {},
@@ -137,7 +140,10 @@ local function FillSpecializationCache()
 	specCache.warlock_destruction.snapshotData.audio = {
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
+		infernalBoltPlayed = false,
 	}
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_destruction.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 
 	specCache.warlock_destruction.barTextVariables = {
 		icons = {},
@@ -559,6 +565,13 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
+	-- Block F: Infernal Bolt ($infernalBolt) - logic-only active flag (proc has no trackable duration)
+	if not activeVars or activeVars["$infernalBolt"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
+		lookupLogic["$infernalBolt"] = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -649,6 +662,13 @@ local function RefreshLookupData_Destruction()
 		if lookupChanged(prevState, "$castingFragments", normalizedCastingFragments, castingFragmentsColor) then
 			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, normalizedCastingFragments)
 		end
+	end
+
+	-- Block D: Infernal Bolt ($infernalBolt) - logic-only active flag (proc has no trackable duration)
+	if not activeVars or activeVars["$infernalBolt"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
+		lookupLogic["$infernalBolt"] = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
 	end
 
 	TRB.Data.lookup = lookup
@@ -880,6 +900,41 @@ local function HandleSpellEvents(self, event, ...)
 				else
 					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.demonicCore.id].buff)
 				end
+			elseif spellId == spells.shadowBolt.id then -- Infernal Bolt proc glows the Shadow Bolt button
+				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
+				if infernalBoltSnapshot ~= nil then
+					local wasActive = infernalBoltSnapshot.buff.isActive
+
+					if not wasActive then
+						local specSettings = TRB.Data.settings.warlock.demonology
+						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
+							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
+							snapshotData.audio.infernalBoltPlayed = true
+						end
+					end
+
+					-- Infernal Bolt proc has no aura/duration; just mark active (removal handled by GLOW_HIDE).
+					infernalBoltSnapshot.buff:InitializeCustomSimple(false)
+				end
+			end
+		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+			if spellId == spells.incinerate.id then -- Infernal Bolt proc glows the Incinerate button
+				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
+				if infernalBoltSnapshot ~= nil then
+					local wasActive = infernalBoltSnapshot.buff.isActive
+
+					if not wasActive then
+						local specSettings = TRB.Data.settings.warlock.destruction
+						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
+							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
+							snapshotData.audio.infernalBoltPlayed = true
+						end
+					end
+
+					-- Infernal Bolt proc has no aura/duration; just mark active (removal handled by GLOW_HIDE).
+					infernalBoltSnapshot.buff:InitializeCustomSimple(false)
+				end
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
@@ -909,6 +964,21 @@ local function HandleSpellEvents(self, event, ...)
 						snapshotData.attributes.demonicCoreActiveGrace = false
 					end)
 				end)
+			elseif spellId == spells.shadowBolt.id then -- Infernal Bolt proc ended
+				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
+				if infernalBoltSnapshot ~= nil then
+					infernalBoltSnapshot.buff:Reset()
+				end
+				snapshotData.audio.infernalBoltPlayed = false
+			end
+		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+			if spellId == spells.incinerate.id then -- Infernal Bolt proc ended
+				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
+				if infernalBoltSnapshot ~= nil then
+					infernalBoltSnapshot.buff:Reset()
+				end
+				snapshotData.audio.infernalBoltPlayed = false
 			end
 		end
 	end
@@ -1077,8 +1147,8 @@ local function UpdateResourceBar()
 		end
 	end
 
-	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
 		local regeneratingColor = specSettings.colors.comboPoints.regenerating
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
 		local spendingSettings = specCacheSettings.colors.comboPoints.spending
@@ -1103,8 +1173,8 @@ local function UpdateResourceBar()
 		end
 
 		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = specSettings.colors.comboPoints.border.color
-			local cpColor = specSettings.colors.comboPoints.base
+			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+			local cpColor = fillOverride or specSettings.colors.comboPoints.base
 			local cpBR = cpBackgroundRed
 			local cpBG = cpBackgroundGreen
 			local cpBB = cpBackgroundBlue
@@ -1113,11 +1183,13 @@ local function UpdateResourceBar()
 
 			if normalizedResource2 >= x then
 				fillValue = 1
-				cpColor = GetSoulShardFillColor(math.floor(normalizedResource2), x)
+				if fillOverride == nil then
+					cpColor = GetSoulShardFillColor(math.floor(normalizedResource2), x)
+				end
 			elseif normalizedResource2 >= (x - 1) then
 				-- Partial fill for Destruction
 				fillValue = normalizedResource2 - (x - 1)
-				if fillValue > 0 and fillValue < 1 then
+				if fillOverride == nil and fillValue > 0 and fillValue < 1 then
 					if regeneratingColor and regeneratingColor.enabled then
 						cpColor = regeneratingColor
 					else
@@ -1257,6 +1329,7 @@ local function UpdateResourceBar()
 				dominionOfArgusEnd = doaActive and doaEndMet,
 				dominionOfArgus = doaActive,
 				demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive,
+				infernalBolt = snapshotData.snapshots[spells.infernalBolt.id] ~= nil and snapshotData.snapshots[spells.infernalBolt.id].buff.isActive,
 			}
 
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
@@ -1328,16 +1401,53 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_destruction.settings
 		UpdateSnapshot_Destruction()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+			-- Resolve indicator colors (shared system). manaBar uses default colors;
+			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
+			-- preserved unless an indicator explicitly targets a given element.
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local nodeOrder = sharedColors and sharedColors.nodeOrder
+
+			local conditionMap = {
+				infernalBolt = snapshots[spells.infernalBolt.id] ~= nil and snapshots[spells.infernalBolt.id].buff.isActive,
+			}
+
+			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
+			local soulShardsOverride = { bar = nil, border = nil, background = nil }
+			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			if nodeOrder and indicatorColors then
+				for i = #nodeOrder, 1, -1 do
+					local key = nodeOrder[i]
+					local indicator = indicatorColors[key]
+					if indicator and indicator.enabled and conditionMap[key] then
+						if indicator.targets then
+							for barKey, elements in pairs(indicator.targets) do
+								local targetColors = barColorMap[barKey]
+								if targetColors and elements then
+									for elemKey, isTargeted in pairs(elements) do
+										if isTargeted then
+											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1345,7 +1455,7 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local normalizedResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2)
+				UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, soulShardsOverride.bar, soulShardsOverride.border, soulShardsOverride.background)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1708,6 +1818,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.SoulShards
 		TRB.Data.resource2Factor = 10
+		TRB.Functions.Class:EnableEvents()
 	else
 		TRB.Data.specSupported = false
 	end
@@ -1808,9 +1919,25 @@ do
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
+	demonology["$infernalBolt"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.infernalBolt == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.infernalBolt.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	local destruction = {}
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
+	end
+	destruction["$infernalBolt"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.infernalBolt == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.infernalBolt.id]
+		return snap ~= nil and snap.buff.isActive == true
 	end
 	specValidVars = { [1] = affliction, [2] = demonology, [3] = destruction }
 end

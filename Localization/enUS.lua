@@ -2944,3 +2944,20 @@ L["WarlockDemonologyCheckboxDominionOfArgusGcds"] = "GCDs until Dominion of Argu
 L["WarlockDemonologyDominionOfArgusGcds"] = "Dominion of Argus GCDs - 0.75sec Floor"
 L["WarlockDemonologyCheckboxDominionOfArgusTime"] = "Time until Dominion of Argus ends"
 L["WarlockDemonologyDominionOfArgusTime"] = "Dominion of Argus Time Remaining (sec)"
+
+-- Warlock Destruction Infernal Bolt color indicator
+L["WarlockDestructionCheckboxInfernalBolt"] = "Infernal Bolt"
+L["WarlockDestructionIndicatorInfernalBoltTooltip"] = "Changes to this color when Infernal Bolt is available to be cast."
+L["WarlockDestructionIndicatorInfernalBoltColor"] = "Infernal Bolt is available"
+L["WarlockDestructionBarTextVariable_infernalBolt"] = "Whether Infernal Bolt is available to be cast (duration cannot be tracked)"
+
+-- Warlock Destruction Infernal Bolt audio cue
+L["WarlockAudioInfernalBolt"] = "Infernal Bolt"
+L["WarlockAudioCheckboxInfernalBolt"] = "Play sound when Infernal Bolt procs?"
+L["WarlockAudioCheckboxInfernalBoltTooltip"] = "When checked, a sound will play when an Infernal Bolt proc occurs. It will not play again until the current proc is consumed."
+
+-- Warlock Demonology Infernal Bolt color indicator
+L["WarlockDemonologyCheckboxInfernalBolt"] = "Infernal Bolt"
+L["WarlockDemonologyIndicatorInfernalBoltTooltip"] = "Changes to this color when Infernal Bolt is available to be cast."
+L["WarlockDemonologyIndicatorInfernalBoltColor"] = "Infernal Bolt is available"
+L["WarlockDemonologyBarTextVariable_infernalBolt"] = "Whether Infernal Bolt is available to be cast (duration cannot be tracked)"

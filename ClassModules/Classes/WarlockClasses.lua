@@ -230,6 +230,8 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
 
 		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+
+		{ variable = "$infernalBolt", description = L["WarlockDemonologyBarTextVariable_infernalBolt"], printInSettings = true, color = false, logicType = "boolean", booleanCheck = true, logicOnly = true },
 	})
 end
 
@@ -308,6 +310,8 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$infernalBolt", description = L["WarlockDestructionBarTextVariable_infernalBolt"], printInSettings = true, color = false, logicType = "boolean", booleanCheck = true, logicOnly = true },
 	})
 end
 

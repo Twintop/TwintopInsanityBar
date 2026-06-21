@@ -346,9 +346,19 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					}
 				},
 				shared = {
-					nodeOrder = { "dominionOfArgusEnd", "dominionOfArgus", "demonicCore" },
+					nodeOrder = { "dominionOfArgusEnd", "dominionOfArgus", "demonicCore", "infernalBolt" },
 					gradientOrder = {},
 					indicatorColors = {
+						infernalBolt = {
+							color = "FFFF00FF",
+							color2 = "FFFF00FF",
+							gradientDirection = "disabled",
+							enabled = true,
+							targets = {
+								manaBar = { bar = false, border = true, background = false },
+								soulShardsBar = { bar = false, border = false, background = false },
+							},
+						},
 						dominionOfArgusEnd = {
 							color = "FFFF0000",
 							color2 = "FFFF0000",
@@ -422,6 +432,12 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			},
 			demonicCore={
 				name = L["WarlockAudioDemonicCore"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+			},
+			infernalBolt={
+				name = L["WarlockAudioInfernalBolt"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
@@ -574,9 +590,20 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "infernalBolt" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					infernalBolt = {
+						color = "FF00FF00",
+						color2 = "FF00FF00",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							soulShardsBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
 			},
 		},
 		displayText={
@@ -616,6 +643,12 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 				configuration = {
 					thresholdValue = 5
 				}
+			},
+			infernalBolt={
+				name = L["WarlockAudioInfernalBolt"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -1334,6 +1367,8 @@ local function DemonologyConstructAudioAndTrackingPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "demonicCore", spec, classId, specId, yCoord, L["WarlockAudioCheckboxDemonicCore"], L["WarlockAudioCheckboxDemonicCoreTooltip"])
+
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "infernalBolt", spec, classId, specId, yCoord, L["WarlockAudioCheckboxInfernalBolt"], L["WarlockAudioCheckboxInfernalBoltTooltip"])
 end
 
 local function DemonologyConstructBarTextDisplayPanel(parent, cache)
@@ -1464,6 +1499,7 @@ local function DemonologyConstructIndicatorColorsPanel(parent)
 			{ key = "dominionOfArgusEnd", label = L["WarlockDemonologyCheckboxDominionOfArgusEnding"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusEndColor"] },
 			{ key = "dominionOfArgus", label = L["WarlockDemonologyCheckboxDominionOfArgus"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusColor"] },
 			{ key = "demonicCore", label = L["WarlockDemonologyCheckboxDemonicCore"], tooltip = L["WarlockDemonologyIndicatorDemonicCoreTooltip"], colorLabel = L["WarlockDemonologyIndicatorDemonicCoreColor"] },
+			{ key = "infernalBolt", label = L["WarlockDemonologyCheckboxInfernalBolt"], tooltip = L["WarlockDemonologyIndicatorInfernalBoltTooltip"], colorLabel = L["WarlockDemonologyIndicatorInfernalBoltColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
@@ -1889,6 +1925,8 @@ local function DestructionConstructAudioAndTrackingPanel(parent)
 		self.EditBox:SetText(value)
 		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "infernalBolt", spec, classId, specId, yCoord, L["WarlockAudioCheckboxInfernalBolt"], L["WarlockAudioCheckboxInfernalBoltTooltip"])
 end
 
 local function DestructionConstructBarTextDisplayPanel(parent, cache)
@@ -1907,8 +1945,30 @@ local function DestructionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 9, 3, yCoord, cache)
 end
 
---local function DestructionConstructIndicatorColorsPanel(parent)
---end
+local function DestructionConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warlock.destruction
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warlock_destruction
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 9, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "infernalBolt", label = L["WarlockDestructionCheckboxInfernalBolt"], tooltip = L["WarlockDestructionIndicatorInfernalBoltTooltip"], colorLabel = L["WarlockDestructionIndicatorInfernalBoltColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "soulShardsBar", label = L["BarNameSoulShardsBar"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Warlock_Destruction",
+	}))
+
+	yCoord = yCoord - 40
+end
 
 local function DestructionConstructThresholdSettingsPanel(parent)
 	if parent == nil then
@@ -1962,7 +2022,7 @@ local function DestructionConstructOptionsPanel(cache)
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DestructionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "destruction", controls),
-		--{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },
+		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DestructionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DestructionConstructBarVisibilityPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DestructionConstructFontAndTextPanel },

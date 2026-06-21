@@ -14,11 +14,22 @@ local content = [====[
 
 # 12.0.7.1-release (2026-06-22)
 ## Warlock
+### Destruction
+
+- Add support for tracking Infernal Bolt.
+- Add a bar text variable for Infernal Bolt: `$infernalBolt`. As Infernal Bolt's proc has no trackable duration, this variable will return only TRUE or FALSE based on whether Infernal Bolt is available to be cast when used in bar text logic.
+- Add a Color Indicator for Infernal Bolt being available.
+- Add an audio cue for when Infernal Bolt becomes available.
+
 ### Demonology
 
 - Fix Dominion of Argus detection.
 - Add End of Dominion of Argus support as a new Color Indicator.
 - Add new default bar text extry to track Dominion of Argus time remaining.
+- Add support for tracking Infernal Bolt.
+- Add a bar text variable for Infernal Bolt: `$infernalBolt`. As Infernal Bolt's proc has no trackable duration, this variable will return only TRUE or FALSE based on whether Infernal Bolt is available to be cast when used in bar text logic.
+- Add a Color Indicator for Infernal Bolt being available.
+- Add an audio cue for when Infernal Bolt becomes available.
 
 ---
 

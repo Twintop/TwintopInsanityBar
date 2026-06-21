@@ -315,4 +315,6 @@ if locale == "enGB" then
     L["WarlockDemonologyIndicatorDominionOfArgusTooltip"] = "Changes to this colour when Dominion of Argus is active."
     L["WarlockAfflictionIndicatorShardInstabilityTooltip"] = "Changes to this colour when Shard Instability is active."
     L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"] = "Changes to this colour when Dominion of Argus is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["WarlockDestructionIndicatorInfernalBoltTooltip"] = "Changes to this colour when Infernal Bolt is available to be cast."
+    L["WarlockDemonologyIndicatorInfernalBoltTooltip"] = "Changes to this colour when Infernal Bolt is available to be cast."
 end
