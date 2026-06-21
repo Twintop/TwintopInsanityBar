@@ -8085,6 +8085,48 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Backfill Warlock Demonology dominionOfArgusEnd indicator (Dominion of Argus ending-soon color).
+	-- Runs before defaults are merged in, so for users who already have a saved nodeOrder the new
+	-- entry must be inserted here (index-based merge would otherwise drop it). Top priority.
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warlock and TwintopInsanityBarSettings.warlock.demonology then
+		local spec = TwintopInsanityBarSettings.warlock.demonology
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.dominionOfArgusEnd == nil then
+			-- Mirror the user's existing Dominion of Argus indicator visibility (enabled state and
+			-- targeted bars/elements) so the ending-soon indicator shows where they configured it,
+			-- or stays hidden if they disabled it. Fall back to defaults if it isn't present.
+			local existing = spec.colors.shared.indicatorColors.dominionOfArgus
+			local enabled = true
+			local targets = nil
+			if existing then
+				enabled = existing.enabled ~= false
+				targets = TRB.Functions.Table:DeepCopy(existing.targets)
+			end
+			if targets == nil then
+				targets = {
+					manaBar = { bar = true, border = false, background = false },
+					soulShardsBar = { bar = false, border = false, background = false },
+				}
+			end
+			spec.colors.shared.indicatorColors.dominionOfArgusEnd = {
+				color = "FFFF0000",
+				color2 = "FFFF0000",
+				gradientDirection = "disabled",
+				enabled = enabled,
+				targets = targets,
+			}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "dominionOfArgusEnd" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, 1, "dominionOfArgusEnd")
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

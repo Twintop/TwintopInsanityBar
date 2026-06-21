@@ -834,6 +834,7 @@ local function HavocConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HavocLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.havocDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -847,6 +848,7 @@ local function HavocConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = HavocLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.havocDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1247,6 +1249,7 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = VengeanceLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.vengeanceDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1260,6 +1263,7 @@ local function VengeanceConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = VengeanceLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.vengeanceDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1709,6 +1713,7 @@ local function DevourerConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DevourerLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.devourerDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

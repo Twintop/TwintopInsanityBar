@@ -403,5 +403,19 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 	return yCoord
 end
 
+---Forces a lazily-deferred tab's content to be constructed if it hasn't been already.
+---Used when an action on one tab depends on controls/closures created by another tab's
+---constructor (e.g. resetting bar text needs the Bar Text editor's ResetTableValues, which
+---only exists once that tab has been built). No-op if the tab is already built or unknown.
+---@param displayPanel table # The tab group parent frame (holds tabConstructors/tabsheets)
+---@param tabId string # The tab key to ensure is constructed
+function TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(displayPanel, tabId)
+	if displayPanel and displayPanel.tabConstructors and displayPanel.tabConstructors[tabId]
+		and displayPanel.tabsheets and displayPanel.tabsheets[tabId] then
+		displayPanel.tabConstructors[tabId](displayPanel.tabsheets[tabId].constructorFrame)
+		displayPanel.tabConstructors[tabId] = nil
+	end
+end
+
 
 TRB.Functions.OptionsUi.TabKeys = TRB.Functions.OptionsUi.Tabs.TabKeys

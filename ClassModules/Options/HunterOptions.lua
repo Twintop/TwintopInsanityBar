@@ -756,6 +756,7 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = BeastMasteryLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.beastMasteryDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -769,6 +770,7 @@ local function BeastMasteryConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = BeastMasteryLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.beastMasteryDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1184,6 +1186,7 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MarksmanshipLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.marksmanshipDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1197,6 +1200,7 @@ local function MarksmanshipConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MarksmanshipLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.marksmanshipDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1669,6 +1673,7 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = SurvivalLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.survivalDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1682,6 +1687,7 @@ local function SurvivalConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = SurvivalLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.survivalDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

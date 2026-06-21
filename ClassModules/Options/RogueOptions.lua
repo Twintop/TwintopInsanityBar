@@ -980,6 +980,7 @@ local function AssassinationConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = AssassinationLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.assassinationDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1006,6 +1007,7 @@ local function AssassinationConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = AssassinationLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.assassinationDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1019,6 +1021,7 @@ local function AssassinationConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = AssassinationLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.assassinationDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1553,6 +1556,7 @@ local function OutlawConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = OutlawLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.outlawDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1579,6 +1583,7 @@ local function OutlawConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = OutlawLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.outlawDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1592,6 +1597,7 @@ local function OutlawConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = OutlawLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.outlawDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2148,6 +2154,7 @@ local function SubtletyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = SubtletyLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.subtletyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2174,6 +2181,7 @@ local function SubtletyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = SubtletyLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.subtletyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2187,6 +2195,7 @@ local function SubtletyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = SubtletyLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.subtletyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

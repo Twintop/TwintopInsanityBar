@@ -692,8 +692,8 @@ local function UpdateCastingResourceFinal_Demonology()
 		casting.resource2Casting = spells.shadowOfDeath.resource
 	elseif casting.spellId == spells.handOfGuldan.id then
 		local mod = 0
-		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId]
-		if dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
+		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId] or talents.talents[spells.dominionOfArgus2.talentId] or talents.talents[spells.dominionOfArgus3.talentId]
+		if snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive and dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
 			mod = spells.demonicCalling.attributes.resourceMod
 		end
 		casting.resource2Spending = spells.handOfGuldan.resource + mod
@@ -752,11 +752,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			 -- Handle instant-cast spells that generate resources on cast success rather than cast start
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.summonDemonicTyrant.id then
-				print("tyrant")
-				if talents:IsTalentActive(spells.dominionOfArgus) then
-					print("yes")
+				if talents:IsTalentActive(spells.dominionOfArgus) or talents:IsTalentActive(spells.dominionOfArgus2) or talents:IsTalentActive(spells.dominionOfArgus3) then
 					local duration = spells.dominionOfArgus.duration
-					local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId]
+					local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId] or talents.talents[spells.dominionOfArgus2.talentId] or talents.talents[spells.dominionOfArgus3.talentId]
 					if dominionOfArgusTalent and dominionOfArgusTalent.currentRank > 1 then
 						duration = duration + math.min(dominionOfArgusTalent.currentRank - 1, 2) * spells.dominionOfArgus.attributes.durationMod
 					end
@@ -1240,8 +1238,24 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
+			-- Precompute Dominion of Argus end-of-buff timing threshold
+			local doaSnapshot = snapshotData.snapshots[spells.dominionOfArgus.id]
+			local doaActive = doaSnapshot ~= nil and doaSnapshot.buff.isActive
+			local doaEndMet = false
+			if doaActive then
+				local timeThreshold = 0
+				if specSettings.endOf.dominionOfArgus.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.dominionOfArgus.gcdsMax
+				elseif specSettings.endOf.dominionOfArgus.mode == "time" then
+					timeThreshold = specSettings.endOf.dominionOfArgus.timeMax
+				end
+				doaEndMet = doaSnapshot.buff.remaining <= timeThreshold
+			end
+
 			local conditionMap = {
-				dominionOfArgus = snapshotData.snapshots[spells.dominionOfArgus.id] ~= nil and snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive,
+				dominionOfArgusEnd = doaActive and doaEndMet,
+				dominionOfArgus = doaActive,
 				demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive,
 			}
 

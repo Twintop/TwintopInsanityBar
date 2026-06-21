@@ -839,6 +839,7 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = BrewmasterLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.brewmasterDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -852,6 +853,7 @@ local function BrewmasterConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = BrewmasterLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.brewmasterDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1371,6 +1373,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MistweaverLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.mistweaverDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1384,6 +1387,7 @@ local function MistweaverConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = MistweaverLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.mistweaverDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1745,6 +1749,7 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = WindwalkerLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.windwalkerDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1758,6 +1763,7 @@ local function WindwalkerConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = WindwalkerLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.windwalkerDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

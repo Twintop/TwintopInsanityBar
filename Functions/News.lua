@@ -12,11 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.7.1-release (2026-06-21)
+# 12.0.7.1-release (2026-06-22)
 ## Warlock
 ### Demonology
 
 - Fix Dominion of Argus detection.
+- Add End of Dominion of Argus support as a new Color Indicator.
+- Add new default bar text extry to track Dominion of Argus time remaining.
+
+---
 
 # 12.0.7.0-release (2026-06-16)
 ## General

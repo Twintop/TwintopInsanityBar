@@ -1350,6 +1350,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.powerWordBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.disciplineDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1378,6 +1379,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings()
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.powerWordBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.disciplineDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1393,6 +1395,7 @@ local function DisciplineConstructResetDefaultsPanel(parent)
 			spec.displayText.barText = DisciplineLoadDefaultBarTextSettings(true)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.powerWordBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.disciplineDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1830,6 +1833,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
 			spec.displayText.migrations.lightweaverBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.holyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1859,6 +1863,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
 			spec.displayText.migrations.lightweaverBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.holyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1875,6 +1880,7 @@ local function HolyConstructResetDefaultsPanel(parent)
 			spec.displayText.migrations = spec.displayText.migrations or {}
 			spec.displayText.migrations.holyWordBarTextSeeded = true
 			spec.displayText.migrations.lightweaverBarTextSeeded = true
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.holyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2343,6 +2349,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.shadowDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2369,6 +2376,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.shadowDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -2382,6 +2390,7 @@ local function ShadowConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = ShadowLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.shadowDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,

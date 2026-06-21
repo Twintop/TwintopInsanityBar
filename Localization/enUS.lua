@@ -2934,3 +2934,13 @@ L["WarlockAfflictionIndicatorShardInstabilityColor"] = "Shard Instability is act
 L["WarlockAfflictionBarTextVariable_shardInstabilityTime"] = "Time remaining on Shard Instability"
 L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"] = "Number of Shard Instability stacks"
 L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"] = "Maximum number of Shard Instability stacks"
+
+-- Warlock Demonology Dominion of Argus ending color indicator
+L["WarlockDemonologyCheckboxDominionOfArgusEnding"] = "Dominion of Argus Ending"
+L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"] = "Changes to this color when Dominion of Argus is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["WarlockDemonologyIndicatorDominionOfArgusEndColor"] = "Dominion of Argus is ending (as configured)"
+L["WarlockDemonologyHeaderEndOfDominionOfArgusConfiguration"] = "End of Dominion of Argus Configuration"
+L["WarlockDemonologyCheckboxDominionOfArgusGcds"] = "GCDs until Dominion of Argus ends"
+L["WarlockDemonologyDominionOfArgusGcds"] = "Dominion of Argus GCDs - 0.75sec Floor"
+L["WarlockDemonologyCheckboxDominionOfArgusTime"] = "Time until Dominion of Argus ends"
+L["WarlockDemonologyDominionOfArgusTime"] = "Dominion of Argus Time Remaining (sec)"

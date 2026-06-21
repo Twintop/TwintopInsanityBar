@@ -94,6 +94,8 @@ end
 ---@field public callDreadstalkers TRB.Classes.SpellBase
 ---@field public demonicCalling TRB.Classes.SpellBase
 ---@field public dominionOfArgus TRB.Classes.SpellBase
+---@field public dominionOfArgus2 TRB.Classes.SpellBase
+---@field public dominionOfArgus3 TRB.Classes.SpellBase
 ---@field public demonicCore TRB.Classes.SpellBase
 TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
@@ -151,9 +153,28 @@ function TRB.Classes.Warlock.DemonologySpells:New()
         isTalent = true,
         resourceMod = 1
     })
+    --1/4 ranks
     self.dominionOfArgus = TRB.Classes.SpellBase:New({
         id = 1276166,
+        talentId = 1276163,
+        isTalent = true,
+        duration = 15,
+        durationMod = 5,
+        resourceMod = 1
+    })
+    --2/4 and 3/4 ranks
+    self.dominionOfArgus2 = TRB.Classes.SpellBase:New({
+        id = 1276166,
         talentId = 1276190,
+        isTalent = true,
+        duration = 15,
+        durationMod = 5,
+        resourceMod = 1
+    })
+    --4/4 ranks
+    self.dominionOfArgus3 = TRB.Classes.SpellBase:New({
+        id = 1276166,
+        talentId = 1276222,
         isTalent = true,
         duration = 15,
         durationMod = 5,

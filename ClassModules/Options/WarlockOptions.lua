@@ -216,6 +216,8 @@ local function DemonologyLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("doaTime", "doa", classic, "CENTER", "CENTER"))
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
@@ -247,6 +249,9 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+		},
+		endOf = {
+			dominionOfArgus = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
@@ -341,9 +346,19 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					}
 				},
 				shared = {
-					nodeOrder = { "dominionOfArgus", "demonicCore" },
+					nodeOrder = { "dominionOfArgusEnd", "dominionOfArgus", "demonicCore" },
 					gradientOrder = {},
 					indicatorColors = {
+						dominionOfArgusEnd = {
+							color = "FFFF0000",
+							color2 = "FFFF0000",
+							gradientDirection = "disabled",
+							enabled = true,
+							targets = {
+								manaBar = { bar = true, border = false, background = false },
+								soulShardsBar = { bar = false, border = false, background = false },
+							},
+						},
 						dominionOfArgus = {
 							color = "FFFF00FF",
 							color2 = "FFFF00FF",
@@ -678,6 +693,7 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = AfflictionLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.afflictionDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -691,6 +707,7 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = AfflictionLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.afflictionDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1377,6 +1394,7 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DemonologyLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.demonologyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1390,6 +1408,7 @@ local function DemonologyConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DemonologyLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.demonologyDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1442,6 +1461,7 @@ local function DemonologyConstructIndicatorColorsPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 9, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
+			{ key = "dominionOfArgusEnd", label = L["WarlockDemonologyCheckboxDominionOfArgusEnding"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusEndColor"] },
 			{ key = "dominionOfArgus", label = L["WarlockDemonologyCheckboxDominionOfArgus"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusColor"] },
 			{ key = "demonicCore", label = L["WarlockDemonologyCheckboxDemonicCore"], tooltip = L["WarlockDemonologyIndicatorDemonicCoreTooltip"], colorLabel = L["WarlockDemonologyIndicatorDemonicCoreColor"] },
 		},
@@ -1450,6 +1470,18 @@ local function DemonologyConstructIndicatorColorsPanel(parent)
 			{ key = "soulShardsBar", label = L["BarNameSoulShardsBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Warlock_Demonology",
+		endOfConfigs = {
+			{
+				endOfKey = "dominionOfArgus",
+				sectionHeader = L["WarlockDemonologyHeaderEndOfDominionOfArgusConfiguration"],
+				gcdRadioLabel = L["WarlockDemonologyCheckboxDominionOfArgusGcds"],
+				gcdSliderLabel = L["WarlockDemonologyDominionOfArgusGcds"],
+				gcdSliderMax = 25,
+				timeRadioLabel = L["WarlockDemonologyCheckboxDominionOfArgusTime"],
+				timeSliderLabel = L["WarlockDemonologyDominionOfArgusTime"],
+				timeSliderMax = 25,
+			},
+		},
 	}))
 
 	yCoord = yCoord - 40
@@ -1564,6 +1596,7 @@ local function DestructionConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DestructionLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.destructionDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
@@ -1577,6 +1610,7 @@ local function DestructionConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			spec.displayText.barText = DestructionLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.destructionDisplayPanel, "barText")
 			controls.barTextFields.ResetTableValues(spec.displayText.barText)
 		end,
 		timeout = 0,
