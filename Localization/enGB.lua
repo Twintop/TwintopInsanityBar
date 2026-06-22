@@ -319,4 +319,5 @@ if locale == "enGB" then
     L["WarlockDemonologyIndicatorInfernalBoltTooltip"] = "Changes to this colour when Infernal Bolt is available to be cast."
     L["WarlockDemonologyIndicatorRuinationTooltip"] = "Changes to this colour when Ruination is available to be cast."
     L["WarlockDestructionIndicatorRuinationTooltip"] = "Changes to this colour when Ruination is available to be cast."
+    L["ComboPointCheckboxFiveOverrideTooltip"] = "When checked, the 5 Combo Points colour is used for the 5th Combo Point even when it would otherwise be the Penultimate or Final colour (e.g., when you have a maximum of 5 or 6 Combo Points). When unchecked, the Penultimate and Final colours take priority for the 5th Combo Point."
 end

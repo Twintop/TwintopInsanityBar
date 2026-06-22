@@ -1170,9 +1170,15 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
-									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
+									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
+									local finalActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2
+									local fiveActive = TRB.Data.character.maxResource2 >= 5 and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == 5) or (not specSettings.comboPoints.sameColor and x == 5))
+									if fiveActive and (cpFive.override or (not penultimateActive and not finalActive)) then
+										cpColor = cpFive
+									elseif penultimateActive then
 										cpColor = specSettings.colors.comboPoints.penultimate
-									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									elseif finalActive then
 										cpColor = specSettings.colors.comboPoints.final
 									end
 								end
@@ -1542,9 +1548,15 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
-									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
+									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
+									local finalActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2
+									local fiveActive = TRB.Data.character.maxResource2 >= 5 and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == 5) or (not specSettings.comboPoints.sameColor and x == 5))
+									if fiveActive and (cpFive.override or (not penultimateActive and not finalActive)) then
+										cpColor = cpFive
+									elseif penultimateActive then
 										cpColor = specSettings.colors.comboPoints.penultimate
-									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									elseif finalActive then
 										cpColor = specSettings.colors.comboPoints.final
 									end
 								end
@@ -1899,9 +1911,15 @@ local function UpdateResourceBar()
 							if snapshotData.attributes.resource2 >= x then
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
-									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
+									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
+									local finalActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2
+									local fiveActive = TRB.Data.character.maxResource2 >= 5 and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == 5) or (not specSettings.comboPoints.sameColor and x == 5))
+									if fiveActive and (cpFive.override or (not penultimateActive and not finalActive)) then
+										cpColor = cpFive
+									elseif penultimateActive then
 										cpColor = specSettings.colors.comboPoints.penultimate
-									elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									elseif finalActive then
 										cpColor = specSettings.colors.comboPoints.final
 									end
 								end

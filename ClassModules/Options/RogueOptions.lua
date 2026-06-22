@@ -190,6 +190,12 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
+				fiveComboPoints = {
+					color = "FF99FF00",
+					color2 = "FF99FF00",
+					gradientDirection = "disabled",
+					override = true
+				},
 				penultimate = {
 					color = "FFFF9900",
 					color2 = "FFFF9900",
@@ -497,6 +503,12 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFF00",
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
+				},
+				fiveComboPoints = {
+					color = "FF99FF00",
+					color2 = "FF99FF00",
+					gradientDirection = "disabled",
+					override = true
 				},
 				penultimate = {
 					color = "FFFF9900",
@@ -807,6 +819,12 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFFFF00",
 					gradientDirection = "disabled"
 				},
+				fiveComboPoints = {
+					color = "FF99FF00",
+					color2 = "FF99FF00",
+					gradientDirection = "disabled",
+					override = true
+				},
 				penultimate = {
 					color = "FFFF9900",
 					color2 = "FFFF9900",
@@ -1112,7 +1130,18 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.fiveComboPoints = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerFive"], spec.colors.comboPoints.fiveComboPoints, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local fiveComboPointsYCoord = yCoord
+	f = controls.colors.comboPoints.fiveComboPoints
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "fiveComboPoints")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveComboPoints, self)
+	end)
+
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -1130,6 +1159,16 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+	end)
+
+	controls.checkBoxes.fiveComboPointOverride = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_fiveComboPointOverride", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fiveComboPointOverride
+	f:SetPoint("TOPLEFT", oUi.xCoord, fiveComboPointsYCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointCheckboxFiveOverride"])
+	f.tooltip = L["ComboPointCheckboxFiveOverrideTooltip"]
+	f:SetChecked(spec.colors.comboPoints.fiveComboPoints.override)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.fiveComboPoints.override = self:GetChecked()
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1703,7 +1742,18 @@ local function OutlawConstructComboPointsBarPanel(parent)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.fiveComboPoints = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerFive"], spec.colors.comboPoints.fiveComboPoints, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local fiveComboPointsYCoord = yCoord
+	f = controls.colors.comboPoints.fiveComboPoints
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "fiveComboPoints")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveComboPoints, self)
+	end)
+
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -1721,6 +1771,16 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	end)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
+	end)
+
+	controls.checkBoxes.fiveComboPointOverride = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_fiveComboPointOverride", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fiveComboPointOverride
+	f:SetPoint("TOPLEFT", oUi.xCoord, fiveComboPointsYCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointCheckboxFiveOverride"])
+	f.tooltip = L["ComboPointCheckboxFiveOverrideTooltip"]
+	f:SetChecked(spec.colors.comboPoints.fiveComboPoints.override)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.fiveComboPoints.override = self:GetChecked()
 	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
@@ -2286,7 +2346,18 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
 	end)
 
-	yCoord = yCoord - 30		
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.fiveComboPoints = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerFive"], spec.colors.comboPoints.fiveComboPoints, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	local fiveComboPointsYCoord = yCoord
+	f = controls.colors.comboPoints.fiveComboPoints
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "fiveComboPoints")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.fiveComboPoints, self)
+	end)
+
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ComboPointColorPickerPenultimate"], spec.colors.comboPoints.penultimate, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.penultimate
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -2311,6 +2382,16 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "shadowTechniques")
 	end)]]
+
+	controls.checkBoxes.fiveComboPointOverride = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_fiveComboPointOverride", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.fiveComboPointOverride
+	f:SetPoint("TOPLEFT", oUi.xCoord, fiveComboPointsYCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointCheckboxFiveOverride"])
+	f.tooltip = L["ComboPointCheckboxFiveOverrideTooltip"]
+	f:SetChecked(spec.colors.comboPoints.fiveComboPoints.override)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.fiveComboPoints.override = self:GetChecked()
+	end)
 
 	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint

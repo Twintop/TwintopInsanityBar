@@ -2978,3 +2978,8 @@ L["WarlockDestructionCheckboxRuination"] = "Ruination"
 L["WarlockDestructionIndicatorRuinationTooltip"] = "Changes to this color when Ruination is available to be cast."
 L["WarlockDestructionIndicatorRuinationColor"] = "Ruination is available"
 L["WarlockDestructionBarTextVariable_ruinationTime"] = "Time remaining on the Ruination proc"
+
+-- Rogue 5 Combo Points color
+L["ComboPointColorPickerFive"] = "5 Combo Points"
+L["ComboPointCheckboxFiveOverride"] = "Override Penultimate/Final?"
+L["ComboPointCheckboxFiveOverrideTooltip"] = "When checked, the 5 Combo Points color is used for the 5th Combo Point even when it would otherwise be the Penultimate or Final color (e.g., when you have a maximum of 5 or 6 Combo Points). When unchecked, the Penultimate and Final colors take priority for the 5th Combo Point."
