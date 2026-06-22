@@ -2,8 +2,8 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.String = {}
 
-local abbrevData = {
-  breakpointData = {
+-- Western locales abbreviate on a 1,000-step scale: K=1e3, M=1e6, B=1e9, T=1e12.
+local westernBreakpointData = {
     {
       breakpoint = 1e15,
       abbreviation = "FOURTH_NUMBER_CAP_NO_SPACE",
@@ -76,7 +76,92 @@ local abbrevData = {
       significandDivisor = 1e1,
       fractionDivisor = 1e2,
     },
-  },
+}
+
+-- CJK locales (zhCN/zhTW/koKR) group by myriads on a 10,000-step scale: 万/萬/만 = 1e4,
+-- 亿/億/억 = 1e8, 兆/兆/조 = 1e12. Reuses the FIRST/SECOND/THIRD cap globals so the suffix
+-- still auto-localizes, but divides on the correct myriad scale (avoids the 10x error where
+-- e.g. 275,640 rendered as "275.6万" instead of "27.56万").
+local myriadBreakpointData = {
+    {
+      breakpoint = 1e15,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e12,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e14,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e11,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e13,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e10,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e12,
+      abbreviation = "THIRD_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e9,
+      fractionDivisor = 1e3,
+    },
+    {
+      breakpoint = 1e11,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e8,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e10,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e7,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e9,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e6,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e8,
+      abbreviation = "SECOND_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e5,
+      fractionDivisor = 1e3,
+    },
+    {
+      breakpoint = 1e7,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e4,
+      fractionDivisor = 1e0,
+    },
+    {
+      breakpoint = 1e6,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e3,
+      fractionDivisor = 1e1,
+    },
+    {
+      breakpoint = 1e5,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e2,
+      fractionDivisor = 1e2,
+    },
+    {
+      breakpoint = 1e4,
+      abbreviation = "FIRST_NUMBER_CAP_NO_SPACE",
+      significandDivisor = 1e1,
+      fractionDivisor = 1e3,
+    },
+}
+
+-- CJK clients use myriad (10,000) grouping for number caps; everyone else uses 1,000-step.
+local isMyriadLocale = ({ zhCN = true, zhTW = true, koKR = true })[GetLocale()] == true
+
+local abbrevData = {
+  breakpointData = isMyriadLocale and myriadBreakpointData or westernBreakpointData,
   locale = GetLocale()
 }
 
@@ -97,7 +182,6 @@ end]]
 
 ---Converts a number into a short notation following the pattern: 1000, 10.00k, 100.0k, 1000k, 10.00m, 100.0m, 1000m, 10.00b, 100.0b, 1000b
 ---As of Midnight, using built-in AbbreviateNumbers() method which means it returns capitals but in exchange can accept secrets.
----The old version has been kept as `_OLD()`
 ---@param num number
 ---@return string # Short notation output
 function TRB.Functions.String:ConvertToAbbreviatedNumber(num)
@@ -138,6 +222,36 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 			return negative .. BreakUpLargeNumbers(TRB.Functions.Number:RoundTo(num, 0, mode))
 		else
 			return negative .. BreakUpLargeNumbers(TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode))
+		end
+	end
+
+	-- CJK clients group by myriads (万/亿/兆) on a 10,000-step scale. Handle the capped tiers
+	-- here, then fall through to the shared sub-10,000 formatting below.
+	if isMyriadLocale then
+		if num >= 10^15 then
+			return string.format(negative .. "%.0f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^12, 0, mode))
+		elseif num >= 10^14 then
+			return string.format(negative .. "%.1f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^12, 1, mode))
+		elseif num >= 10^13 then
+			return string.format(negative .. "%.2f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^12, 2, mode))
+		elseif num >= 10^12 then
+			return string.format(negative .. "%.3f"..THIRD_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^12, 3, mode))
+		elseif num >= 10^11 then
+			return string.format(negative .. "%.0f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^8, 0, mode))
+		elseif num >= 10^10 then
+			return string.format(negative .. "%.1f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^8, 1, mode))
+		elseif num >= 10^9 then
+			return string.format(negative .. "%.2f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^8, 2, mode))
+		elseif num >= 10^8 then
+			return string.format(negative .. "%.3f"..SECOND_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^8, 3, mode))
+		elseif num >= 10^7 then
+			return string.format(negative .. "%.0f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^4, 0, mode))
+		elseif num >= 10^6 then
+			return string.format(negative .. "%.1f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^4, 1, mode))
+		elseif num >= 10^5 then
+			return string.format(negative .. "%.2f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^4, 2, mode))
+		elseif num >= 10^4 then
+			return string.format(negative .. "%.3f"..FIRST_NUMBER_CAP_NO_SPACE, TRB.Functions.Number:RoundTo(num / 10^4, 3, mode))
 		end
 	end
 
