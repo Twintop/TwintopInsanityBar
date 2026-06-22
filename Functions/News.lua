@@ -13,12 +13,16 @@ local content = [====[
 ---
 
 # 12.0.7.1-release (2026-06-22)
+## General
+
+- [#777](#777) Fix an issue where changing the health bar color type wouldn't be reflected until after a UI reload.
+- [#777](#777) Fix an issue where changing the shared font face would cause bar text to disappear until entering combat.
+
 ## Warlock
 ### Destruction
 
 - Add support for tracking Infernal Bolt and Ruination procs.
-- Add a bar text variables `$infernalBoltTime` and `$ruinationTime`.
-- Add a bar text icon variable for Ruination (`#ruination`).
+- Add a bar text variables `$infernalBoltTime` and `$ruinationTime` and icon (`#ruination`).
 - Add Color Indicators for Infernal Bolt and Ruination being available.
 - Add audio cues for when Infernal Bolt and Ruination become available.
 

@@ -705,14 +705,16 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 
 	---Triggers a resource bar update and optional change callback after a threshold color setting is modified.
 	local function triggerChange()
+		-- Run the callback first (e.g. UpdateHealthValues rebuilds the health color curve)
+		-- so the bar update below paints with the fresh color instead of the stale one.
+		if changeCallback then
+			changeCallback()
+		end
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 				TRB.Data.lookupDirty = true
 				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
-		end
-		if changeCallback then
-			changeCallback()
 		end
 	end
 
@@ -826,16 +828,16 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 				colorControls[thresholdKey] = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, colorLabel, colorSettings[thresholdKey], oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord2, gradientTooltip)
 				f = colorControls[thresholdKey]
 				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, nil, nil, classId, specId)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, nil, nil, classId, specId, changeCallback)
 				end)
 				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-						TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, colorSettings[thresholdKey], self, classId, specId)
+						TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, colorSettings[thresholdKey], self, classId, specId, changeCallback)
 				end)
 			else
 				colorControls[thresholdKey] = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, colorLabel, colorSettings[thresholdKey].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 				f = colorControls[thresholdKey]
 				f:SetScript("OnMouseDown", function(self, button, ...)
-					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, nil, nil, classId, specId)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, thresholdKey, nil, nil, classId, specId, changeCallback)
 				end)
 			end
 			yCoord2 = yCoord2 - 30
@@ -848,7 +850,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 		colorControls.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["CustomBarColorBorder"], displayName), borderColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 		f = colorControls.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "border", nil, nil, classId, specId)
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "border", nil, nil, classId, specId, changeCallback)
 		end)
 		yCoord2 = yCoord2 - 30
 	end
@@ -858,7 +860,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 		colorControls.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["CustomBarColorBackground"], displayName), bgColorValue, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord2)
 		f = colorControls.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "background", nil, nil, classId, specId)
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "background", nil, nil, classId, specId, changeCallback)
 		end)
 		yCoord2 = yCoord2 - 30
 	end

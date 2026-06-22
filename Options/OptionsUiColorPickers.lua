@@ -58,7 +58,8 @@ end
 ---@param frame Frame|table|nil # The frame(s) to update live, or nil for health-type updates
 ---@param classId integer? # Class ID for the panel being edited
 ---@param specId integer? # Spec ID for the panel being edited
-function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId)
+---@param onColorChanged function? # Optional callback run after the color is applied (e.g. UpdateHealthValues)
+function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frame, classId, specId, onColorChanged)
 	if button == "LeftButton" then
 		-- Handle both table format { color = "FFRRGGBB" } and direct string format "FFRRGGBB"
 		local colorValue = colorTable[key]
@@ -105,6 +106,12 @@ function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTabl
 					end
 				elseif frameType == "health" then
 					TRB.Functions.Character:UpdateHealthValues()
+				end
+
+				-- Run any caller-supplied refresh (e.g. UpdateHealthValues for threshold
+				-- pickers) before the bar update so the repaint uses the fresh color.
+				if onColorChanged then
+					onColorChanged()
 				end
 
 				-- Clear color caches and trigger resource bar update to apply correct spec colors
@@ -382,7 +389,8 @@ end
 ---@param swatch2 Button|BackdropTemplate # The second swatch frame (to update its texture)
 ---@param classId integer? # Class ID for the panel being edited
 ---@param specId integer? # Spec ID for the panel being edited
-function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, colorEntry, swatch2, classId, specId)
+---@param onColorChanged function? # Optional callback run after the color is applied (e.g. UpdateHealthValues)
+function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, colorEntry, swatch2, classId, specId, onColorChanged)
 	NormalizeGradientColorEntry(colorEntry)
 
 	if button == "LeftButton" and colorEntry.gradientDirection ~= "disabled" then
@@ -393,6 +401,9 @@ function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, 
 			colorEntry.color2 = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 
 			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+				if onColorChanged then
+					onColorChanged()
+				end
 				TRB.Data.cache.colors.gradient = {}
 				TRB.Data.cache.colors.bar = {}
 				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

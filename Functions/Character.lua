@@ -1277,24 +1277,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
+	-- Share the whole table by reference (like bar/comboPoints/manaBar) so primitive
+	-- fields such as `type` stay in sync with live edits, not just the sub-tables.
 	if s.healthBarColors then
-		specCache.settings.colors.healthBar.border = core.colors.healthBar.border
-		specCache.settings.colors.healthBar.background = core.colors.healthBar.background
-		specCache.settings.colors.healthBar.absorb = core.colors.healthBar.absorb
-		specCache.settings.colors.healthBar.incomingHeal = core.colors.healthBar.incomingHeal
-		specCache.settings.colors.healthBar.high = core.colors.healthBar.high
-		specCache.settings.colors.healthBar.medium = core.colors.healthBar.medium
-		specCache.settings.colors.healthBar.low = core.colors.healthBar.low
-		specCache.settings.colors.healthBar.type = core.colors.healthBar.type
+		specCache.settings.colors.healthBar = core.colors.healthBar
 	else
-		specCache.settings.colors.healthBar.border = spec.colors.healthBar.border
-		specCache.settings.colors.healthBar.background = spec.colors.healthBar.background
-		specCache.settings.colors.healthBar.absorb = spec.colors.healthBar.absorb
-		specCache.settings.colors.healthBar.incomingHeal = spec.colors.healthBar.incomingHeal
-		specCache.settings.colors.healthBar.high = spec.colors.healthBar.high
-		specCache.settings.colors.healthBar.medium = spec.colors.healthBar.medium
-		specCache.settings.colors.healthBar.low = spec.colors.healthBar.low
-		specCache.settings.colors.healthBar.type = spec.colors.healthBar.type
+		specCache.settings.colors.healthBar = spec.colors.healthBar
 	end
 
 	if spec.thresholds ~= nil then

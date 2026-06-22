@@ -1936,6 +1936,10 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			extraFont:Hide()
 		end
 	end
+
+	-- All font strings were just cleared to ""; mark lookup dirty so the next tick
+	-- repaints instead of early-outing (otherwise text stays blank out of combat).
+	TRB.Data.lookupDirty = true
 end
 
 ---Returns a string formatted time value based on settings for precision
