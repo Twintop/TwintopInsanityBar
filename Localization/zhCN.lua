@@ -2765,4 +2765,12 @@ if locale == "zhCN" then
 	L["HealthBarShowHealAbsorbTooltip"] = "勾选后，血条上方会显示一层半透明遮罩，代表你当前总计的治疗吸收护盾（该类减益效果会在治疗生效前预先吸收受到的治疗量）。"
 	L["HealthBarHealAbsorbMode"] = "治疗吸收显示模式"
 	L["HealthBarHealAbsorbModeTooltip"] = "控制治疗吸收数值在血条上的展示方式。"
+
+	-- Brewmaster Stagger text colors
+	L["MonkBrewmasterStaggerTextColorsHeader"] = "醉拳数值文字颜色"
+	L["MonkBrewmasterStaggerTextColorMode"] = "醉拳文字着色方式"
+	L["MonkBrewmasterStaggerTextColorModeBar"] = "跟随醉拳条当前颜色"
+	L["MonkBrewmasterStaggerTextColorModeCustom"] = "自定义颜色"
+	L["MonkBrewmasterStaggerTextColorModeNone"] = "不启用着色"
+	L["MonkBrewmasterStaggerTextColorCustom"] = "自定义醉拳文字颜色"
 end
