@@ -8157,6 +8157,36 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Backfill Warlock Demonology ruination indicator (Ruination available color).
+	-- Runs before defaults are merged in, so for users who already have a saved nodeOrder the new
+	-- entry must be appended here (index-based merge would otherwise drop it). Net-new independent
+	-- indicator (no paired "active" sibling), so it gets default visibility. Bottom priority.
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warlock and TwintopInsanityBarSettings.warlock.demonology then
+		local spec = TwintopInsanityBarSettings.warlock.demonology
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.ruination == nil then
+			spec.colors.shared.indicatorColors.ruination = {
+				color = "FFBBFFAA",
+				color2 = "FFBBFFAA",
+				gradientDirection = "disabled",
+				enabled = true,
+				targets = {
+					manaBar = { bar = false, border = true, background = false },
+					soulShardsBar = { bar = false, border = false, background = false },
+				},
+			}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "ruination" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "ruination")
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

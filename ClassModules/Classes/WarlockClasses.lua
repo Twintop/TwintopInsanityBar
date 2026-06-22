@@ -118,12 +118,14 @@ function TRB.Classes.Warlock.DemonologySpells:New()
     self.infernalBolt = TRB.Classes.SpellBase:New({
         id = 434506,
         isTalent = true,
-        resource = 3
+        resource = 3,
+        duration = 20
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
         isTalent = true,
-        resource = 1
+        resource = 1,
+        duration = 20
     })
     self.handOfGuldan = TRB.Classes.SpellBase:New({
         id = 105174,
@@ -231,7 +233,8 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 
 		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 
-		{ variable = "$infernalBolt", description = L["WarlockDemonologyBarTextVariable_infernalBolt"], printInSettings = true, color = false, logicType = "boolean", booleanCheck = true, logicOnly = true },
+		{ variable = "$infernalBoltTime", description = L["WarlockDemonologyBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$ruinationTime", description = L["WarlockDemonologyBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 	})
 end
 
@@ -242,6 +245,7 @@ end
 ---@field public soulFire TRB.Classes.SpellBase
 ---@field public infernalBolt TRB.Classes.SpellBase
 ---@field public chaosBolt TRB.Classes.SpellBase
+---@field public ruination TRB.Classes.SpellBase
 TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
 
@@ -268,12 +272,18 @@ function TRB.Classes.Warlock.DestructionSpells:New()
     self.infernalBolt = TRB.Classes.SpellBase:New({
         id = 434506,
         isTalent = true,
-        resource = 20
+        resource = 20,
+        duration = 20
     })
     self.chaosBolt = TRB.Classes.SpellBase:New({
         id = 116858,
         baseline = true,
         resource = -20
+    })
+    self.ruination = TRB.Classes.SpellBase:New({
+        id = 434635,
+        isTalent = true,
+        duration = 20
     })
 
     return self
@@ -294,6 +304,7 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#soulFire", icon = spells.soulFire.icon, description = spells.soulFire.name, printInSettings = true },
 		{ variable = "#infernalBolt", icon = spells.infernalBolt.icon, description = spells.infernalBolt.name, printInSettings = true },
 		{ variable = "#chaosBolt", icon = spells.chaosBolt.icon, description = spells.chaosBolt.name, printInSettings = true },
+		{ variable = "#ruination", icon = spells.ruination.icon, description = spells.ruination.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
@@ -311,7 +322,8 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
-		{ variable = "$infernalBolt", description = L["WarlockDestructionBarTextVariable_infernalBolt"], printInSettings = true, color = false, logicType = "boolean", booleanCheck = true, logicOnly = true },
+		{ variable = "$infernalBoltTime", description = L["WarlockDestructionBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$ruinationTime", description = L["WarlockDestructionBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 	})
 end
 

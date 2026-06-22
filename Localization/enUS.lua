@@ -2949,7 +2949,7 @@ L["WarlockDemonologyDominionOfArgusTime"] = "Dominion of Argus Time Remaining (s
 L["WarlockDestructionCheckboxInfernalBolt"] = "Infernal Bolt"
 L["WarlockDestructionIndicatorInfernalBoltTooltip"] = "Changes to this color when Infernal Bolt is available to be cast."
 L["WarlockDestructionIndicatorInfernalBoltColor"] = "Infernal Bolt is available"
-L["WarlockDestructionBarTextVariable_infernalBolt"] = "Whether Infernal Bolt is available to be cast (duration cannot be tracked)"
+L["WarlockDestructionBarTextVariable_infernalBoltTime"] = "Time remaining on the Infernal Bolt proc"
 
 -- Warlock Destruction Infernal Bolt audio cue
 L["WarlockAudioInfernalBolt"] = "Infernal Bolt"
@@ -2960,4 +2960,21 @@ L["WarlockAudioCheckboxInfernalBoltTooltip"] = "When checked, a sound will play 
 L["WarlockDemonologyCheckboxInfernalBolt"] = "Infernal Bolt"
 L["WarlockDemonologyIndicatorInfernalBoltTooltip"] = "Changes to this color when Infernal Bolt is available to be cast."
 L["WarlockDemonologyIndicatorInfernalBoltColor"] = "Infernal Bolt is available"
-L["WarlockDemonologyBarTextVariable_infernalBolt"] = "Whether Infernal Bolt is available to be cast (duration cannot be tracked)"
+L["WarlockDemonologyBarTextVariable_infernalBoltTime"] = "Time remaining on the Infernal Bolt proc"
+
+-- Warlock Ruination audio cue
+L["WarlockAudioRuination"] = "Ruination"
+L["WarlockAudioCheckboxRuination"] = "Play sound when Ruination procs?"
+L["WarlockAudioCheckboxRuinationTooltip"] = "When checked, a sound will play when a Ruination proc occurs. It will not play again until the current proc is consumed."
+
+-- Warlock Demonology Ruination color indicator
+L["WarlockDemonologyCheckboxRuination"] = "Ruination"
+L["WarlockDemonologyIndicatorRuinationTooltip"] = "Changes to this color when Ruination is available to be cast."
+L["WarlockDemonologyIndicatorRuinationColor"] = "Ruination is available"
+L["WarlockDemonologyBarTextVariable_ruinationTime"] = "Time remaining on the Ruination proc"
+
+-- Warlock Destruction Ruination color indicator
+L["WarlockDestructionCheckboxRuination"] = "Ruination"
+L["WarlockDestructionIndicatorRuinationTooltip"] = "Changes to this color when Ruination is available to be cast."
+L["WarlockDestructionIndicatorRuinationColor"] = "Ruination is available"
+L["WarlockDestructionBarTextVariable_ruinationTime"] = "Time remaining on the Ruination proc"

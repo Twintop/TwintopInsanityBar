@@ -98,6 +98,7 @@ local function FillSpecializationCache()
 		soulShardThreshold2Played = false,
 		demonicCorePlayed = false,
 		infernalBoltPlayed = false,
+		ruinationPlayed = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
@@ -105,6 +106,8 @@ local function FillSpecializationCache()
 	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore)
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_demonology.snapshotData.snapshots[spells.ruination.id] = TRB.Classes.Snapshot:New(spells.ruination)
 
 	specCache.warlock_demonology.barTextVariables = {
 		icons = {},
@@ -141,9 +144,12 @@ local function FillSpecializationCache()
 		soulShardThreshold1Played = false,
 		soulShardThreshold2Played = false,
 		infernalBoltPlayed = false,
+		ruinationPlayed = false,
 	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_destruction.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
+	---@type TRB.Classes.Snapshot
+	specCache.warlock_destruction.snapshotData.snapshots[spells.ruination.id] = TRB.Classes.Snapshot:New(spells.ruination)
 
 	specCache.warlock_destruction.barTextVariables = {
 		icons = {},
@@ -565,11 +571,46 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
-	-- Block F: Infernal Bolt ($infernalBolt) - logic-only active flag (proc has no trackable duration)
-	if not activeVars or activeVars["$infernalBolt"] then
+	-- Block F: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
+	if not activeVars or activeVars["$infernalBoltTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
-		lookupLogic["$infernalBolt"] = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
+		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
+
+		lookupLogic["$infernalBoltTime"] = _infernalBoltActive
+
+		if _infernalBoltActive then
+			local _infernalBoltTime = infernalBoltBuff.buff:GetRemainingTime(currentTime)
+			if lookupChanged(prevState, "$infernalBoltTime", _infernalBoltTime, nil) then
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(_infernalBoltTime)
+			end
+		else
+			if lookupChanged(prevState, "$infernalBoltTime", 0) then
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
+	end
+
+	-- Block G: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
+	if not activeVars or activeVars["$ruinationTime"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local currentTime = GetTime()
+		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
+		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
+
+		lookupLogic["$ruinationTime"] = _ruinationActive
+
+		if _ruinationActive then
+			local _ruinationTime = ruinationBuff.buff:GetRemainingTime(currentTime)
+			if lookupChanged(prevState, "$ruinationTime", _ruinationTime, nil) then
+				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(_ruinationTime)
+			end
+		else
+			if lookupChanged(prevState, "$ruinationTime", 0) then
+				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -664,11 +705,46 @@ local function RefreshLookupData_Destruction()
 		end
 	end
 
-	-- Block D: Infernal Bolt ($infernalBolt) - logic-only active flag (proc has no trackable duration)
-	if not activeVars or activeVars["$infernalBolt"] then
+	-- Block D: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
+	if not activeVars or activeVars["$infernalBoltTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
-		lookupLogic["$infernalBolt"] = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
+		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
+
+		lookupLogic["$infernalBoltTime"] = _infernalBoltActive
+
+		if _infernalBoltActive then
+			local _infernalBoltTime = infernalBoltBuff.buff:GetRemainingTime(currentTime)
+			if lookupChanged(prevState, "$infernalBoltTime", _infernalBoltTime, nil) then
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(_infernalBoltTime)
+			end
+		else
+			if lookupChanged(prevState, "$infernalBoltTime", 0) then
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
+	end
+
+	-- Block E: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
+	if not activeVars or activeVars["$ruinationTime"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local currentTime = GetTime()
+		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
+		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
+
+		lookupLogic["$ruinationTime"] = _ruinationActive
+
+		if _ruinationActive then
+			local _ruinationTime = ruinationBuff.buff:GetRemainingTime(currentTime)
+			if lookupChanged(prevState, "$ruinationTime", _ruinationTime, nil) then
+				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(_ruinationTime)
+			end
+		else
+			if lookupChanged(prevState, "$ruinationTime", 0) then
+				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+			end
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -808,10 +884,17 @@ local function UpdateSnapshot_Demonology()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Destruction()
+	local currentTime = GetTime()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
 end
 
 ---Processes soul shard threshold audio cues for any Warlock spec
@@ -913,8 +996,24 @@ local function HandleSpellEvents(self, event, ...)
 						end
 					end
 
-					-- Infernal Bolt proc has no aura/duration; just mark active (removal handled by GLOW_HIDE).
-					infernalBoltSnapshot.buff:InitializeCustomSimple(false)
+					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
+					infernalBoltSnapshot.buff:InitializeCustom(spells.infernalBolt.duration, GetTime(), false)
+				end
+			elseif spellId == spells.ruination.id then -- Ruination proc glows the Ruination button
+				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
+				if ruinationSnapshot ~= nil then
+					local wasActive = ruinationSnapshot.buff.isActive
+
+					if not wasActive then
+						local specSettings = TRB.Data.settings.warlock.demonology
+						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
+							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
+							snapshotData.audio.ruinationPlayed = true
+						end
+					end
+
+					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
+					ruinationSnapshot.buff:InitializeCustom(spells.ruination.duration, GetTime(), false)
 				end
 			end
 		elseif TRB.Data.character.specId == 3 then
@@ -932,8 +1031,24 @@ local function HandleSpellEvents(self, event, ...)
 						end
 					end
 
-					-- Infernal Bolt proc has no aura/duration; just mark active (removal handled by GLOW_HIDE).
-					infernalBoltSnapshot.buff:InitializeCustomSimple(false)
+					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
+					infernalBoltSnapshot.buff:InitializeCustom(spells.infernalBolt.duration, GetTime(), false)
+				end
+			elseif spellId == spells.ruination.id then -- Ruination proc glows the Ruination button
+				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
+				if ruinationSnapshot ~= nil then
+					local wasActive = ruinationSnapshot.buff.isActive
+
+					if not wasActive then
+						local specSettings = TRB.Data.settings.warlock.destruction
+						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
+							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
+							snapshotData.audio.ruinationPlayed = true
+						end
+					end
+
+					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
+					ruinationSnapshot.buff:InitializeCustom(spells.ruination.duration, GetTime(), false)
 				end
 			end
 		end
@@ -970,6 +1085,12 @@ local function HandleSpellEvents(self, event, ...)
 					infernalBoltSnapshot.buff:Reset()
 				end
 				snapshotData.audio.infernalBoltPlayed = false
+			elseif spellId == spells.ruination.id then -- Ruination proc ended
+				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
+				if ruinationSnapshot ~= nil then
+					ruinationSnapshot.buff:Reset()
+				end
+				snapshotData.audio.ruinationPlayed = false
 			end
 		elseif TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
@@ -979,6 +1100,12 @@ local function HandleSpellEvents(self, event, ...)
 					infernalBoltSnapshot.buff:Reset()
 				end
 				snapshotData.audio.infernalBoltPlayed = false
+			elseif spellId == spells.ruination.id then -- Ruination proc ended
+				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
+				if ruinationSnapshot ~= nil then
+					ruinationSnapshot.buff:Reset()
+				end
+				snapshotData.audio.ruinationPlayed = false
 			end
 		end
 	end
@@ -1330,6 +1457,7 @@ local function UpdateResourceBar()
 				dominionOfArgus = doaActive,
 				demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive,
 				infernalBolt = snapshotData.snapshots[spells.infernalBolt.id] ~= nil and snapshotData.snapshots[spells.infernalBolt.id].buff.isActive,
+				ruination = snapshotData.snapshots[spells.ruination.id] ~= nil and snapshotData.snapshots[spells.ruination.id].buff.isActive,
 			}
 
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
@@ -1412,6 +1540,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = {
 				infernalBolt = snapshots[spells.infernalBolt.id] ~= nil and snapshots[spells.infernalBolt.id].buff.isActive,
+				ruination = snapshots[spells.ruination.id] ~= nil and snapshots[spells.ruination.id].buff.isActive,
 			}
 
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
@@ -1586,6 +1715,7 @@ local function SwitchSpec()
 		lookup["#soulFire"] = spells.soulFire.icon
 		lookup["#infernalBolt"] = spells.infernalBolt.icon
 		lookup["#chaosBolt"] = spells.chaosBolt.icon
+		lookup["#ruination"] = spells.ruination.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1919,7 +2049,7 @@ do
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
-	demonology["$infernalBolt"] = function()
+	demonology["$infernalBoltTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.infernalBolt == nil then
 			return false
@@ -1927,16 +2057,32 @@ do
 		local snap = TRB.Data.snapshotData.snapshots[spells.infernalBolt.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
+	demonology["$ruinationTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.ruination == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.ruination.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	local destruction = {}
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
 	end
-	destruction["$infernalBolt"] = function()
+	destruction["$infernalBoltTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.infernalBolt == nil then
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.infernalBolt.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	destruction["$ruinationTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.ruination == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.ruination.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
 	specValidVars = { [1] = affliction, [2] = demonology, [3] = destruction }
