@@ -21,6 +21,10 @@ local content = [====[
 - [#777](#777) Fix an issue where changing the shared font face would cause bar text to disappear until entering combat.
 - Fix overlays to actually respect the setting to not overlap borders.
 
+### Localization
+
+- [#781](#781) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
 ## Monk
 ### Brewmaster
 
