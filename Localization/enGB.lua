@@ -327,4 +327,7 @@ if locale == "enGB" then
     L["MonkBrewmasterStaggerTextColorModeCustom"] = "Use a custom colour"
     L["MonkBrewmasterStaggerTextColorModeNone"] = "Don't use any colour"
     L["MonkBrewmasterStaggerTextColorCustom"] = "Custom Stagger text colour"
+
+    -- Warrior Protection Violent Outburst
+    L["WarriorIndicatorViolentOutburstTooltip"] = "Changes to this colour while a Violent Outburst proc is active, detected from Shield Slam's increased Rage generation."
 end

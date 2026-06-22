@@ -7,6 +7,11 @@ TRB.Functions.Aura = {}
 local auraCacheBuffer = {}
 ---@type table<number, {buff: TRB.Classes.SnapshotBuff, positionHint: string?}>
 local auraRequests = {}
+--- Persistent requests for auras that arrive a few UNIT_AURA batches after they are requested
+--- (e.g. a buff granted ~0.15s after the action that triggers it). Unlike auraRequests these
+--- survive across frames until matched, skipped out, or aged off.
+---@type {buff: TRB.Classes.SnapshotBuff, positionHint: string?, skipRemaining: integer, createdAt: number}[]
+local delayedAuraRequests = {}
 local auraCacheCleanupTime = 0
 local AURA_CACHE_MAX_DURATION = 1 -- seconds
 local auraCacheEnabled = false
@@ -56,6 +61,35 @@ local function ResolveAuraFromCandidates(candidates, positionHint)
 	return nil
 end
 
+---Processes persistent (delayed) aura requests against a player addedAuras batch. A delayed
+---request ignores aura batches in its own creation frame, then skips `skipRemaining` further
+---aura-adding batches, then binds to the matching aura. Used for auras that are applied a few
+---UNIT_AURA batches after the action that grants them.
+---@param candidates AuraData[] # info.addedAuras for this batch
+---@param currentTime number # GetTime() of this batch
+---@return boolean # true if at least one request resolved against this batch
+local function ProcessDelayedAuraRequests(candidates, currentTime)
+	local consumed = false
+	for i = #delayedAuraRequests, 1, -1 do
+		local req = delayedAuraRequests[i]
+		-- Ignore batches in the creation frame (e.g. the batch that removed the consumed buff).
+		if currentTime > req.createdAt then
+			if req.skipRemaining > 0 then
+				req.skipRemaining = req.skipRemaining - 1
+			else
+				local resolved = ResolveAuraFromCandidates(candidates, req.positionHint)
+				if resolved ~= nil then
+					req.buff:SetAuraInstanceId(resolved.auraInstanceID)
+					req.buff:RefreshWithSecretAuraData(resolved)
+					table.remove(delayedAuraRequests, i)
+					consumed = true
+				end
+			end
+		end
+	end
+	return consumed
+end
+
 ---Handles UNIT_AURA events
 ---@param self any
 ---@param event string
@@ -71,6 +105,11 @@ local function AuraUpdateEvent(self, event, unit, info)
 		wipe(TRB.Data.cache.values.resource)
 		wipe(TRB.Data.cache.values.castTime)
 		TRB.Data.lookupDirty = true
+		-- Generic per-class hook for logic that should run on player aura changes (e.g. tooltip
+		-- polling for procs). Optional; only classes that define it are notified.
+		if TRB.Functions.Class and TRB.Functions.Class.OnPlayerUnitAura then
+			TRB.Functions.Class:OnPlayerUnitAura(info)
+		end
 		--return
 	elseif unit ~= "player" then
 		return
@@ -114,6 +153,8 @@ local function AuraUpdateEvent(self, event, unit, info)
 		if unit == "player" then
 			-- Aura cache handling: if enabled and auras were added, try to match to a pending request
 			if auraCacheEnabled and #info.addedAuras > 0 then
+				local consumed = false
+				-- Same-frame requests (match only the batch in the request's own frame).
 				local request = auraRequests[currentTime]
 				if request ~= nil then
 					local resolved = ResolveAuraFromCandidates(info.addedAuras, request.positionHint)
@@ -121,11 +162,15 @@ local function AuraUpdateEvent(self, event, unit, info)
 						request.buff:SetAuraInstanceId(resolved.auraInstanceID)
 						request.buff:RefreshWithSecretAuraData(resolved)
 						auraRequests[currentTime] = nil
-					else
-						-- Could not resolve; buffer the full array for later pickup
-						auraCacheBuffer[currentTime] = info.addedAuras
+						consumed = true
 					end
-				else
+				end
+				-- Persistent (delayed) requests for auras applied a few batches later.
+				if ProcessDelayedAuraRequests(info.addedAuras, currentTime) then
+					consumed = true
+				end
+				if not consumed then
+					-- Could not resolve; buffer the full array for later pickup
 					auraCacheBuffer[currentTime] = info.addedAuras
 				end
 			end
@@ -276,6 +321,12 @@ local function AuraUpdateEvent(self, event, unit, info)
 				auraCacheBuffer[k] = nil
 			end
 		end
+		-- Age off delayed requests whose aura never arrived.
+		for i = #delayedAuraRequests, 1, -1 do
+			if currentTime - delayedAuraRequests[i].createdAt > AURA_CACHE_MAX_DURATION then
+				table.remove(delayedAuraRequests, i)
+			end
+		end
 	end
 end
 
@@ -302,6 +353,7 @@ function TRB.Functions.Aura:DisableUnitAuraCache()
 	auraCacheEnabled = false
 	auraCacheBuffer = {}
 	auraRequests = {}
+	delayedAuraRequests = {}
 end
 
 ---Gets an aura from the cache buffer by its timestamp, resolving the correct entry using the position hint
@@ -316,12 +368,28 @@ function TRB.Functions.Aura:GetFromAuraCacheBuffer(time, positionHint)
 	return ResolveAuraFromCandidates(candidates, positionHint)
 end
 
----Inserts an aura request into the request cache
+---Inserts an aura request into the request cache.
+---
+---By default the request matches only the addedAuras batch in its own frame (the cast frame).
+---Pass `skipBatches` to instead match a LATER batch: the request then persists across frames,
+---ignores aura batches in its creation frame, skips `skipBatches` further aura-adding batches,
+---and binds to the next one. Use this for auras applied a short time after their trigger (e.g.
+---a buff granted ~0.15s after the ability that grants it).
 ---@param time number
 ---@param buff TRB.Classes.SnapshotBuff
 ---@param positionHint string? # Resolution strategy: "first" picks the candidate appearing earliest in the buff list
-function TRB.Functions.Aura:InsertAuraRequest(time, buff, positionHint)
-	auraRequests[time] = { buff = buff, positionHint = positionHint }
+---@param skipBatches integer? # nil = same-frame match (default); a number enables delayed matching, skipping this many later aura-adding batches first
+function TRB.Functions.Aura:InsertAuraRequest(time, buff, positionHint, skipBatches)
+	if skipBatches ~= nil then
+		delayedAuraRequests[#delayedAuraRequests + 1] = {
+			buff = buff,
+			positionHint = positionHint,
+			skipRemaining = skipBatches,
+			createdAt = time,
+		}
+	else
+		auraRequests[time] = { buff = buff, positionHint = positionHint }
+	end
 end
 
 

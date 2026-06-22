@@ -12,6 +12,16 @@ local content = [====[
 
 ---
 
+# 12.0.7.2-release (2026-06-24)
+## Warrior
+### Protection
+
+- [#548](#548) Add support for tracking Violent Outburst procs, including a new bar text variable `$voTime` and icon (`#violentOutburst`).
+- [#548](#548) Add a Color Indicator and audio cue for Violent Outburst being active.
+- [#548](#548) Add support for tracking the Ignore Pain granted when Shield Slam consumes Violent Outburst.
+
+---
+
 # 12.0.7.1-release (2026-06-22)
 ## General
 

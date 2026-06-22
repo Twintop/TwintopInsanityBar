@@ -411,6 +411,7 @@ end
 ---@field public shieldCharge TRB.Classes.SpellBase
 ---@field public heavyRepercussions TRB.Classes.SpellBase
 ---@field public shieldSlam TRB.Classes.SpellBase
+---@field public violentOutburst TRB.Classes.SpellBase
 ---@field public ignorePain TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
@@ -533,6 +534,13 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		rangeCheck = false
 	})
 
+	self.violentOutburst = TRB.Classes.SpellBase:New({
+		id = 386478,
+		talentId = 386477,
+		isTalent = true,
+		duration = 30
+	})
+
 
 	return self
 end
@@ -553,7 +561,8 @@ function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
-		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true }
+		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },
+		{ variable = "#violentOutburst", icon = spells.violentOutburst.icon, description = spells.violentOutburst.name, printInSettings = true }
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$rage", description = L["WarriorProtectionBarTextVariable_rage"], printInSettings = true, color = false },
@@ -568,6 +577,9 @@ function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
 		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false },
 		{ variable = "$shieldBlockMaxCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"], printInSettings = true, color = false },
+
+		{ variable = "$voTime", description = L["WarriorProtectionBarTextVariable_voTime"], printInSettings = true, color = false },
+		{ variable = "$violentOutburstTime", description = "", printInSettings = false, color = false },
 	})
 end
 

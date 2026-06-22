@@ -792,7 +792,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			}
 			,
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "violentOutburst" },
 				gradientOrder = { "borderOvercap" },
 				indicatorColors = {
 					borderOvercap = {
@@ -800,6 +800,17 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						isGradient = true,
 						targets = { rageBar = { bar = false, border = true, background = false } },
+					},
+					violentOutburst = {
+						color = "FF00FF00",
+						enabled = true,
+						isGradient = false,
+						targets = {
+							rageBar = { bar = false, border = true, background = false },
+							defensivesIgnorePainTimeBar = { bar = false, border = false, background = false },
+							defensivesIgnorePainAbsorbBar = { bar = false, border = false, background = false },
+							defensivesShieldBlockBar = { bar = false, border = false, background = false },
+						},
 					},
 				},
 			}
@@ -828,6 +839,12 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 		audio = {
 			suddenDeath={
 				name = L["WarriorAudioSuddenDeathProc"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"]
+			},
+			violentOutburst={
+				name = L["WarriorAudioViolentOutburstProc"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
@@ -1880,7 +1897,9 @@ local function ProtectionConstructIndicatorColorsPanel(parent)
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
-		indicatorDefs = {},
+		indicatorDefs = {
+			{ key = "violentOutburst", label = L["WarriorIndicatorViolentOutburst"], tooltip = L["WarriorIndicatorViolentOutburstTooltip"], colorLabel = L["WarriorIndicatorViolentOutburstColor"] },
+		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["WarriorIndicatorBorderOvercap"], tooltip = L["WarriorIndicatorOvercapTooltip"], colorLabel = L["WarriorIndicatorOvercapColor"] },
 		},
@@ -2118,6 +2137,8 @@ local function ProtectionConstructAudioAndTrackingPanel(parent)
 
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+
+	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "violentOutburst", spec, classId, specId, yCoord, L["WarriorAudioCheckboxViolentOutburst"], L["WarriorAudioCheckboxViolentOutburstTooltip"])
 end
 
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)
@@ -2173,6 +2194,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ProtectionConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warrior", "protection", controls),
+		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, ProtectionConstructAudioAndTrackingPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ProtectionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ProtectionConstructResetDefaultsPanel },

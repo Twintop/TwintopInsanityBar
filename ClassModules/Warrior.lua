@@ -18,6 +18,17 @@ local eventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
+--- Lowest Rage value Shield Slam's tooltip has reported since the last gear/talent change.
+--- Acts as the floor/baseline; a Violent Outburst proc reads ~50% higher than this.
+---@type number?
+local protectionShieldSlamBaselineRage = nil
+
+--- Aura-adding UNIT_AURA batches to skip before binding the Ignore Pain that Shield Slam grants
+--- when it consumes Violent Outburst. The grant lands a couple of batches after the consume (the
+--- consume frame's batch only removes Violent Outburst), and the generic delayed-request system
+--- already ignores the consume frame, so 0 binds the next aura-adding batch. Bump if needed.
+local IGNORE_PAIN_GRANT_SKIP_BATCHES = 0
+
 --- Spell lookup for defensive node keys → spell objects. Populated in FillSpellData_Protection.
 ---@type table<string, table>
 local defensiveSpellsByKey = {}
@@ -173,6 +184,8 @@ local function FillSpecializationCache()
 	specCache.warrior_protection.snapshotData.snapshots[spells.shieldBlock.buffId] = TRB.Classes.Snapshot:New(spells.shieldBlock)]]
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_protection.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
+	---@type TRB.Classes.Snapshot
+	specCache.warrior_protection.snapshotData.snapshots[spells.violentOutburst.id] = TRB.Classes.Snapshot:New(spells.violentOutburst)
 end
 
 local function Setup_Arms()
@@ -664,6 +677,21 @@ local function RefreshLookupData_Protection()
 		lookup["$shieldBlockMaxCharges"] = shieldBlockMaxCharges
 	end
 
+	-- Block D: Violent Outburst ($voTime, $violentOutburstTime)
+	if not activeVars or activeVars["$voTime"] or activeVars["$violentOutburstTime"] then
+		local currentTime = GetTime()
+		local _voTime = snapshots[spells.violentOutburst.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$voTime"] = _voTime
+		lookupLogic["$violentOutburstTime"] = _voTime
+
+		if lookupChanged(prevState, "$voTime", _voTime) then
+			local formatted = TRB.Functions.BarText:TimerPrecision(_voTime)
+			lookup["$voTime"] = formatted
+			lookup["$violentOutburstTime"] = formatted
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -736,6 +764,20 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 					local duration = spells.heavyRepercussions.attributes.durationMod
 					snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				end
+
+				-- Shield Slam consumes an active Violent Outburst proc, which also grants Ignore
+				-- Pain. The grant does not land in this frame's UNIT_AURA batch (that one removes
+				-- Violent Outburst) but in a later batch ~0.15s afterward, so use a delayed aura
+				-- request that binds to the correct (later) batch.
+				local violentOutburst = snapshotData.snapshots[spells.violentOutburst.id]
+				if violentOutburst ~= nil and violentOutburst.buff.isActive then
+					violentOutburst.buff:Reset()
+					snapshotData.audio.violentOutburstCue = false
+
+					local ipBuff = snapshotData.snapshots[spells.ignorePain.id].buff
+					ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
+					TRB.Functions.Aura:InsertAuraRequest(currentTime, ipBuff, "first", IGNORE_PAIN_GRANT_SKIP_BATCHES)
+				end
 			end
 		end
 	end
@@ -762,12 +804,76 @@ end
 local spellEventFrame = CreateFrame("Frame")
 spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 
+--- Polls Shield Slam's tooltip to detect a Violent Outburst proc (Protection only).
+--- Establishes the baseline (lowest) Rage, then snapshots a 30s buff when the tooltip
+--- reads ~50% higher. Driven by UNIT_AURA so it only runs on buff gained/lost.
+local function DetectViolentOutburst()
+	if TRB.Data.character.specId ~= 3 then
+		return
+	end
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	if talents == nil or spells == nil or spells.violentOutburst == nil or spells.shieldSlam == nil then
+		return
+	end
+	if not talents:IsTalentActive(spells.violentOutburst) then
+		return
+	end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snap = snapshotData.snapshots[spells.violentOutburst.id]
+	if snap == nil then
+		return
+	end
+
+	local currentRage = TRB.Functions.String:ParseLastNumber(C_Spell.GetSpellDescription(spells.shieldSlam.id))
+	if currentRage == nil or currentRage <= 0 then
+		return
+	end
+
+	-- Only (re)establish the floor while the proc isn't active, so the inflated proc
+	-- value can never become the baseline.
+	if not snap.buff.isActive then
+		if protectionShieldSlamBaselineRage == nil or currentRage < protectionShieldSlamBaselineRage then
+			protectionShieldSlamBaselineRage = currentRage
+		end
+
+		-- Tolerant 50% check: integer Rage means a 15 base reads as 22 (1.467x), not 1.5x.
+		if protectionShieldSlamBaselineRage ~= nil and currentRage >= protectionShieldSlamBaselineRage * 1.4 then
+			snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
+			TRB.Data.lookupDirty = true
+
+			local specSettings = TRB.Data.settings.warrior.protection
+			if specSettings.audio.violentOutburst ~= nil and specSettings.audio.violentOutburst.enabled and not snapshotData.audio.violentOutburstCue then
+				PlaySoundFile(specSettings.audio.violentOutburst.sound, TRB.Data.settings.core.audio.channel.channel)
+				snapshotData.audio.violentOutburstCue = true
+			end
+		end
+	end
+end
+
+--- Generic player-aura hook invoked by Functions/Aura.lua on every player UNIT_AURA. Used to
+--- poll Shield Slam's tooltip for a Violent Outburst proc only when auras change.
+---@param info UnitAuraUpdateInfo?
+function TRB.Functions.Class:OnPlayerUnitAura(info)
+	DetectViolentOutburst()
+end
+
+-- Gear changes can alter Shield Slam's Rage generation, so rebuild the baseline when equipment
+-- changes. (UNIT_AURA-driven proc detection is handled centrally via OnPlayerUnitAura above.)
+local equipmentFrame = CreateFrame("Frame")
+equipmentFrame:SetScript("OnEvent", function(self, event)
+	protectionShieldSlamBaselineRage = nil
+	DetectViolentOutburst()
+end)
+
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	equipmentFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+	equipmentFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 end
 
 local function UpdateSnapshot()
@@ -845,6 +951,14 @@ local function UpdateSnapshot_Protection()
 	local wasShieldBlockActive = snapshots[spells.shieldBlock.id].buff.isActive
 	snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
 	if wasShieldBlockActive and not snapshots[spells.shieldBlock.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+
+	local wasViolentOutburstActive = snapshots[spells.violentOutburst.id].buff.isActive
+	snapshots[spells.violentOutburst.id].buff:GetRemainingTime(currentTime)
+	if wasViolentOutburstActive and not snapshots[spells.violentOutburst.id].buff.isActive then
+		-- Proc expired (or was consumed); allow the audio cue to fire on the next proc.
+		TRB.Data.snapshotData.audio.violentOutburstCue = false
 		TRB.Data.lookupDirty = true
 	end
 	--[[
@@ -1699,6 +1813,7 @@ local function UpdateResourceBar()
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
 				local conditionMap = {
 					borderOvercap = affectingCombat,
+					violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive,
 				}
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
@@ -1708,6 +1823,22 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
 							overcapIndicator = indicator
 							break
+						end
+					end
+				end
+
+				-- Boolean (non-gradient) indicators recolor the rage bar; last-writer-wins over
+				-- nodeOrder (index 1 = highest priority). An active override becomes the base color
+				-- any gradient overcap curve is then built from below.
+				if sharedColors and sharedColors.nodeOrder and indicatorColors then
+					for i = #sharedColors.nodeOrder, 1, -1 do
+						local key = sharedColors.nodeOrder[i]
+						local indicator = indicatorColors[key]
+						if indicator and indicator.enabled and not indicator.isGradient and conditionMap[key]
+							and indicator.targets and indicator.targets.rageBar then
+							if indicator.targets.rageBar.border then barBorderColor = indicator.color end
+							if indicator.targets.rageBar.bar then barColor = indicator.color end
+							if indicator.targets.rageBar.background then barBackgroundColor = indicator.color end
 						end
 					end
 				end
@@ -1859,12 +1990,16 @@ local function SwitchSpec()
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Protection
 		Bar:UpdateSanityCheckValues(specCache.warrior_protection.settings)
 		
+		-- Talent change reroutes through here; rebuild the Shield Slam Rage baseline.
+		protectionShieldSlamBaselineRage = nil
+
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ignorePain"] = spells.ignorePain.icon
 		lookup["#impendingVictory"] = spells.impendingVictory.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#suddenDeath"] = spells.suddenDeath.icon
+		lookup["#violentOutburst"] = spells.violentOutburst.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 		

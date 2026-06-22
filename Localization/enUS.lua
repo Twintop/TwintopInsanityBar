@@ -3000,3 +3000,12 @@ L["MonkBrewmasterStaggerTextColorModeBar"] = "Use the current Stagger bar color"
 L["MonkBrewmasterStaggerTextColorModeCustom"] = "Use a custom color"
 L["MonkBrewmasterStaggerTextColorModeNone"] = "Don't use any color"
 L["MonkBrewmasterStaggerTextColorCustom"] = "Custom Stagger text color"
+
+-- Warrior Protection Violent Outburst (proc detected from Shield Slam's Rage generation)
+L["WarriorIndicatorViolentOutburst"] = "Violent Outburst (proc)"
+L["WarriorIndicatorViolentOutburstTooltip"] = "Changes to this color while a Violent Outburst proc is active, detected from Shield Slam's increased Rage generation."
+L["WarriorIndicatorViolentOutburstColor"] = "Violent Outburst is active"
+L["WarriorAudioViolentOutburstProc"] = "Violent Outburst Proc"
+L["WarriorAudioCheckboxViolentOutburst"] = "Play audio cue when a Violent Outburst proc occurs"
+L["WarriorAudioCheckboxViolentOutburstTooltip"] = "Plays the selected sound when Shield Slam's Rage generation indicates a Violent Outburst proc has become available."
+L["WarriorProtectionBarTextVariable_voTime"] = "Time remaining on Violent Outburst proc"

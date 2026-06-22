@@ -637,23 +637,6 @@ local function CalculateResourceGain(resource)
 	return resource * modifier
 end
 
----Parses the first number from a localized string, handling international thousands
----separators: comma (1,234), period (1.234), space/NBSP/thin-space (1 234).
----@param str string|nil
----@return number|nil
-local function ParseFirstNumberFromString(str)
-	if not str then return nil end
-	-- Match: a digit, then any mix of digits and common thousands separators, ending with a digit.
-	-- Handles: 1234, 1,234 (en), 1.234 (de/es), 1 234 / NBSP (fr/ru)
-	local match = str:match("(%d[%d,%.%s\194\160]*%d)")
-	if match then
-		local digits = match:gsub("[^%d]", "")
-		return tonumber(digits)
-	end
-	-- Single-digit fallback
-	match = str:match("(%d+)")
-	return match and tonumber(match) or nil
-end
 
 ---Returns true if the player is currently inside an active M+ dungeon in the Voidbinding key range (2-11).
 ---@return boolean
@@ -1859,7 +1842,7 @@ local function UpdateSnapshot_Healers()
 
 		-- 2. Parse the healing value from Prayer of Mending's spell description.
 		local desc = C_Spell.GetSpellDescription(33076)
-		local currentHealing = ParseFirstNumberFromString(desc)
+		local currentHealing = TRB.Functions.String:ParseFirstNumber(desc)
 
 		if currentHealing and previousDescriptionHealing
 			and currentHealing ~= previousDescriptionHealing

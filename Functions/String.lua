@@ -170,6 +170,49 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 	end
 end
 
+---Parses a number from a localized string, locale-safe. Ignores UI color codes (so their
+---hex digits aren't mistaken for numbers) and strips international thousands separators:
+---comma (1,234), period (1.234), space/NBSP/thin-space (1 234).
+---@param str string?
+---@param wantLast boolean? # true returns the LAST number in the string, false/nil the FIRST
+---@return number?
+local function ParseNumberFromString(str, wantLast)
+	if not str then return nil end
+	-- Drop color codes so their hex digits aren't mistaken for numbers.
+	str = str:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+	-- Match: a digit, then any mix of digits and thousands separators, ending with a digit.
+	-- Handles: 1234, 1,234 (en), 1.234 (de/es), 1 234 / NBSP (fr/ru)
+	local match
+	for token in str:gmatch("%d[%d,%.%s\194\160]*%d") do
+		match = token
+		if not wantLast then break end
+	end
+	-- Single-digit fallback when no multi-digit run was found.
+	if not match then
+		for token in str:gmatch("%d") do
+			match = token
+			if not wantLast then break end
+		end
+	end
+	if not match then return nil end
+	return tonumber((match:gsub("[^%d]", "")))
+end
+
+---Parses the FIRST number from a localized string. See ParseNumberFromString for details.
+---@param str string?
+---@return number?
+function TRB.Functions.String:ParseFirstNumber(str)
+	return ParseNumberFromString(str, false)
+end
+
+---Parses the LAST number from a localized string (e.g. the resource value at the end of a
+---spell description tooltip). See ParseNumberFromString for details.
+---@param str string?
+---@return number?
+function TRB.Functions.String:ParseLastNumber(str)
+	return ParseNumberFromString(str, true)
+end
+
 ---Checks if the original string contains the substring provided
 ---@param original string
 ---@param sub string

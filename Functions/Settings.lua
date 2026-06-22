@@ -8187,6 +8187,44 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Backfill Warrior Protection violentOutburst indicator + audio (Violent Outburst proc).
+	-- Protection's shared indicator system already shipped, so an index-based merge would drop a
+	-- brand-new nodeOrder entry; append it here for users with a saved nodeOrder. Bottom priority.
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.protection then
+		local spec = TwintopInsanityBarSettings.warrior.protection
+		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
+		and spec.colors.shared.indicatorColors.violentOutburst == nil then
+			spec.colors.shared.indicatorColors.violentOutburst = {
+				color = "FF00FF00",
+				enabled = true,
+				isGradient = false,
+				targets = {
+					rageBar = { bar = false, border = true, background = false },
+					defensivesIgnorePainTimeBar = { bar = false, border = false, background = false },
+					defensivesIgnorePainAbsorbBar = { bar = false, border = false, background = false },
+					defensivesShieldBlockBar = { bar = false, border = false, background = false },
+				},
+			}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			local nodeOrder = spec.colors.shared.nodeOrder
+			local found = false
+			for _, v in ipairs(nodeOrder) do
+				if v == "violentOutburst" then found = true break end
+			end
+			if not found then
+				table.insert(nodeOrder, "violentOutburst")
+			end
+		end
+		if spec.audio and spec.audio.violentOutburst == nil then
+			spec.audio.violentOutburst = {
+				name = L["WarriorAudioViolentOutburstProc"],
+				enabled = false,
+				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName = L["LSMSoundAirHorn"]
+			}
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
