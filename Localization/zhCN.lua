@@ -2756,4 +2756,13 @@ if locale == "zhCN" then
 	L["ComboPointColorPickerFive"] = "5点连击点"
 	L["ComboPointCheckboxFiveOverride"] = "覆盖倒数/终结色"
 	L["ComboPointCheckboxFiveOverrideTooltip"] = "勾选后，第五个连击点强制使用5点连击配色，无视倒数、终结配色规则（适用于最大连击5点/6点天赋）；取消勾选时，倒数、终结配色优先级更高"
+
+	-- Heal Absorb Overlay
+	L["BarTextVariable_healAbsorb"] = "你当前全部治疗吸收护盾数值。"
+	L["HealAbsorbBarTexture"] = "治疗吸收盾材质"
+	L["HealthBarHealAbsorbColor"] = "治疗吸收盾颜色"
+	L["HealthBarShowHealAbsorb"] = "在血条上显示治疗吸收盾"
+	L["HealthBarShowHealAbsorbTooltip"] = "勾选后，血条上方会显示一层半透明遮罩，代表你当前总计的治疗吸收护盾（该类减益效果会在治疗生效前预先吸收受到的治疗量）。"
+	L["HealthBarHealAbsorbMode"] = "治疗吸收显示模式"
+	L["HealthBarHealAbsorbModeTooltip"] = "控制治疗吸收数值在血条上的展示方式。"
 end
