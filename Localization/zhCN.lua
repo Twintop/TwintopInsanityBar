@@ -2707,4 +2707,70 @@ if locale == "zhCN" then
 	L["WarlockAfflictionBarTextVariable_shardInstabilityTime"] = "碎片动荡剩余时间"
 	L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"] = "碎片动荡层数"
 	L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"] = "碎片动荡最大层数"
+	
+	-- Warlock Demonology Dominion of Argus ending color indicator
+	L["WarlockDemonologyCheckboxDominionOfArgusEnding"] = "阿古斯支配即将结束"
+	L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"] = "当阿古斯支配将在X个公共冷却周期内或指定固定时长后结束时，显示为此颜色。可在下方选项中选择计时方式。"
+	L["WarlockDemonologyIndicatorDominionOfArgusEndColor"] = "阿古斯支配即将结束（按设置）"
+	L["WarlockDemonologyHeaderEndOfDominionOfArgusConfiguration"] = "阿古斯支配结束提醒设置"
+	L["WarlockDemonologyCheckboxDominionOfArgusGcds"] = "按公共冷却周期倒计时"
+	L["WarlockDemonologyDominionOfArgusGcds"] = "阿古斯支配公共冷却计时下限：0.75秒"
+	L["WarlockDemonologyCheckboxDominionOfArgusTime"] = "按秒数倒计时"
+	L["WarlockDemonologyDominionOfArgusTime"] = "阿古斯支配剩余时长（秒）"
+	
+	-- Warlock Destruction Infernal Bolt color indicator
+	L["WarlockDestructionCheckboxInfernalBolt"] = "狱火箭"
+	L["WarlockDestructionIndicatorInfernalBoltTooltip"] = "狱火箭触发可施放时切换为此颜色"
+	L["WarlockDestructionIndicatorInfernalBoltColor"] = "狱火箭可用"
+	L["WarlockDestructionBarTextVariable_infernalBoltTime"] = "狱火箭触发剩余时间"
+
+	-- Warlock Destruction Infernal Bolt audio cue
+	L["WarlockAudioInfernalBolt"] = "狱火箭"
+	L["WarlockAudioCheckboxInfernalBolt"] = "狱火箭触发时播放提示音"
+	L["WarlockAudioCheckboxInfernalBoltTooltip"] = "勾选后，狱火箭触发会播放提示音，消耗本次触发前不会重复播放"
+	
+	-- Warlock Demonology Infernal Bolt color indicator
+	L["WarlockDemonologyCheckboxInfernalBolt"] = "狱火箭"
+	L["WarlockDemonologyIndicatorInfernalBoltTooltip"] = "狱火箭触发可施放时切换为此颜色"
+	L["WarlockDemonologyIndicatorInfernalBoltColor"] = "狱火箭可用"
+	L["WarlockDemonologyBarTextVariable_infernalBoltTime"] = "狱火箭触发剩余时间"
+	
+	-- Warlock Ruination audio cue
+	L["WarlockAudioRuination"] = "陨灭"
+	L["WarlockAudioCheckboxRuination"] = "陨灭触发时播放提示音"
+	L["WarlockAudioCheckboxRuinationTooltip"] = "勾选后，陨灭触发会播放提示音，消耗本次触发前不会重复播放"
+	
+	-- Warlock Demonology Ruination color indicator
+	L["WarlockDemonologyCheckboxRuination"] = "陨灭"
+	L["WarlockDemonologyIndicatorRuinationTooltip"] = "陨灭触发可施放时切换为此颜色"
+	L["WarlockDemonologyIndicatorRuinationColor"] = "陨灭可用"
+	L["WarlockDemonologyBarTextVariable_ruinationTime"] = "陨灭触发剩余时间"
+
+	-- Warlock Destruction Ruination color indicator
+	L["WarlockDestructionCheckboxRuination"] = "陨灭"
+	L["WarlockDestructionIndicatorRuinationTooltip"] = "陨灭触发可施放时切换为此颜色"
+	L["WarlockDestructionIndicatorRuinationColor"] = "陨灭可用"
+	L["WarlockDestructionBarTextVariable_ruinationTime"] = "陨灭触发剩余时间"
+
+	-- Rogue 5 Combo Points color
+	L["ComboPointColorPickerFive"] = "5点连击点"
+	L["ComboPointCheckboxFiveOverride"] = "覆盖倒数/终结色"
+	L["ComboPointCheckboxFiveOverrideTooltip"] = "勾选后，第五个连击点强制使用5点连击配色，无视倒数、终结配色规则（适用于最大连击5点/6点天赋）；取消勾选时，倒数、终结配色优先级更高"
+
+	-- Heal Absorb Overlay
+	L["BarTextVariable_healAbsorb"] = "你当前全部治疗吸收护盾数值。"
+	L["HealAbsorbBarTexture"] = "治疗吸收盾材质"
+	L["HealthBarHealAbsorbColor"] = "治疗吸收盾颜色"
+	L["HealthBarShowHealAbsorb"] = "在血条上显示治疗吸收盾"
+	L["HealthBarShowHealAbsorbTooltip"] = "勾选后，血条上方会显示一层半透明遮罩，代表你当前总计的治疗吸收护盾（该类减益效果会在治疗生效前预先吸收受到的治疗量）。"
+	L["HealthBarHealAbsorbMode"] = "治疗吸收显示模式"
+	L["HealthBarHealAbsorbModeTooltip"] = "控制治疗吸收数值在血条上的展示方式。"
+
+	-- Brewmaster Stagger text colors
+	L["MonkBrewmasterStaggerTextColorsHeader"] = "醉拳数值文字颜色"
+	L["MonkBrewmasterStaggerTextColorMode"] = "醉拳文字着色方式"
+	L["MonkBrewmasterStaggerTextColorModeBar"] = "跟随醉拳条当前颜色"
+	L["MonkBrewmasterStaggerTextColorModeCustom"] = "自定义颜色"
+	L["MonkBrewmasterStaggerTextColorModeNone"] = "不启用着色"
+	L["MonkBrewmasterStaggerTextColorCustom"] = "自定义醉拳文字颜色"
 end
