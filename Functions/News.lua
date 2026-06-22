@@ -19,6 +19,7 @@ local content = [====[
 - [#519](#519) Add a new bar text variable `$healAbsorb`. As this is a secret value, when used in bar text logic it will return only TRUE or FALSE and not the current value.
 - [#777](#777) Fix an issue where changing the health bar color type wouldn't be reflected until after a UI reload.
 - [#777](#777) Fix an issue where changing the shared font face would cause bar text to disappear until entering combat.
+- Fix overlays to actually respect the setting to not overlap borders.
 
 ## Monk
 ### Brewmaster
