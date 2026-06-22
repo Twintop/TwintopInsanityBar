@@ -68,6 +68,8 @@ local CORE_TEXTURE_KEYS = {
 	"absorbBarName",
 	"incomingHealBar",
 	"incomingHealBarName",
+	"healAbsorbBar",
+	"healAbsorbBarName",
 	"castingBar",
 	"castingBarName",
 }

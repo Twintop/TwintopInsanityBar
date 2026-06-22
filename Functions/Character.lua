@@ -162,6 +162,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 	snapshotData.attributes.absorb = UnitGetTotalAbsorbs("player")
 	snapshotData.attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
+	snapshotData.attributes.healAbsorb = UnitGetTotalHealAbsorbs("player")
 
 	-- Pre-format health display strings at event time, consuming secret values once.
 	-- The render tick copies these normal strings into lookup[] without reformatting.
@@ -170,6 +171,7 @@ function TRB.Functions.Character:UpdateHealthValues()
 	formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healthMax)
 	formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.absorb)
 	formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.incomingHeal)
+	formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healAbsorb)
 	-- healthPercent requires precision from settings
 	local healthPrecision = 1
 	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
@@ -367,7 +369,7 @@ local function CharacterChange(self, event, ...)
 			end
 			TRB.Data.lookupDirty = true
 		end
-	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" then
+	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
@@ -486,6 +488,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:RegisterEvent("UNIT_HEAL_PREDICTION")
+	characterChangeFrame:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:RegisterEvent("UNIT_STATS")
 	characterChangeFrame:RegisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -515,6 +518,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
+	characterChangeFrame:UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:UnregisterEvent("UNIT_STATS")
 	characterChangeFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")

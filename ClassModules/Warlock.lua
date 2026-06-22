@@ -2006,7 +2006,7 @@ do
 		["$comboPoints"] = true, ["$soulShards"] = true,
 		["$comboPointsMax"] = true, ["$soulShardsMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	local affliction = {}
 	for key, entry in pairs(shared) do

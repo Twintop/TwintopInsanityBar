@@ -3645,7 +3645,7 @@ local specValidVars
 do
 	local healthVars = {
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	local castingFn = function()
 		local c = TRB.Data.snapshotData.casting

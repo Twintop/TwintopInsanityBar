@@ -8242,6 +8242,9 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 			if type(settings.colors.healthBar.incomingHeal) == "table" and settings.colors.healthBar.incomingHeal.fullHeight == nil then
 				settings.colors.healthBar.incomingHeal.fullHeight = false
 			end
+			if type(settings.colors.healthBar.healAbsorb) == "table" and settings.colors.healthBar.healAbsorb.fullHeight == nil then
+				settings.colors.healthBar.healAbsorb.fullHeight = false
+			end
 		end
 	end
 
@@ -8443,6 +8446,7 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 		background = { color = "66000000" },
 		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
 		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
+		healAbsorb = { color = "CCCC4444", enabled = true, mode = "inset", fullHeight = false },
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -9142,6 +9146,8 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		absorbBarName="Solid",
 		incomingHealBar="Interface\\Buttons\\WHITE8X8",
 		incomingHealBarName="Solid",
+		healAbsorbBar="Interface\\Buttons\\WHITE8X8",
+		healAbsorbBarName="Solid",
 		castingBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
 		castingBarName=L["LSMStatusBarSmoother"],
 	}

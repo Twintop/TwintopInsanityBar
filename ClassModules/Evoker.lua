@@ -1698,7 +1698,7 @@ do
 		["$essenceRegenTime"] = essenceRegenFn,
 		["$comboPointsMax"] = true, ["$essenceMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 		["$essenceBurstTime"] = essenceBurstFn,
 		["$essenceBurstStacks"] = essenceBurstFn,
 	}

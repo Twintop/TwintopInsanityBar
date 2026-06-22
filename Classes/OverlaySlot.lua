@@ -327,13 +327,16 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay(force)
 		end
 
 		if isVertical then
-			local innerHeight = math.max(1, parent.height - 2 * parent.border)
-			local innerWidth = math.max(1, parent.width - 2 * parent.border)
-			self.appendedOverlayFrame:SetHeight(innerHeight)
-			self.appendedOverlayFrame:SetWidth(innerWidth)
+			-- Full bar dimension: the primary StatusBar fill spans the whole frame (border drawn over
+			-- its edge), so the overlay must match that scale. Subtracting the border here left a
+			-- border-width gap whenever the fill ratio was a secret value (no anchor correction).
+			local fillHeight = math.max(1, parent.height)
+			local fillWidth = math.max(1, parent.width)
+			self.appendedOverlayFrame:SetHeight(fillHeight)
+			self.appendedOverlayFrame:SetWidth(fillWidth)
 		else
-			local innerWidth = math.max(1, parent.width - 2 * parent.border)
-			self.appendedOverlayFrame:SetWidth(innerWidth)
+			local fillWidth = math.max(1, parent.width)
+			self.appendedOverlayFrame:SetWidth(fillWidth)
 		end
 	end
 end
@@ -392,15 +395,17 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 		end
 	end
 
-	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
+	-- Size = full bar dimension. The primary StatusBar fill spans the whole frame (border drawn over
+	-- its edge), so the overlay must match that full-frame scale. Subtracting the border here left a
+	-- border-width gap whenever the fill ratio was a secret value (no anchor correction available).
 	if isVertical then
-		local innerHeight = math.max(1, parent.height - 2 * parent.border)
-		local innerWidth = math.max(1, parent.width - 2 * parent.border)
-		overlayBar:SetHeight(innerHeight)
-		overlayBar:SetWidth(innerWidth)
+		local fillHeight = math.max(1, parent.height)
+		local fillWidth = math.max(1, parent.width)
+		overlayBar:SetHeight(fillHeight)
+		overlayBar:SetWidth(fillWidth)
 	else
-		local innerWidth = math.max(1, parent.width - 2 * parent.border)
-		overlayBar:SetWidth(innerWidth)
+		local fillWidth = math.max(1, parent.width)
+		overlayBar:SetWidth(fillWidth)
 	end
 
 	self.appendedClipFrame = clip
@@ -607,13 +612,16 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 			end
 
 			if isVertical then
-				local innerHeight = math.max(1, parent.height - 2 * parent.border)
-				local innerWidth = math.max(1, parent.width - 2 * parent.border)
-				self.insetOverlayFrame:SetHeight(innerHeight)
-				self.insetOverlayFrame:SetWidth(innerWidth)
+				-- Full bar dimension: the primary StatusBar fill spans the whole frame (border drawn
+				-- over its edge), so the overlay must match that scale. Subtracting the border here left
+				-- a border-width gap whenever the fill ratio was a secret value (no anchor correction).
+				local fillHeight = math.max(1, parent.height)
+				local fillWidth = math.max(1, parent.width)
+				self.insetOverlayFrame:SetHeight(fillHeight)
+				self.insetOverlayFrame:SetWidth(fillWidth)
 			else
-				local innerWidth = math.max(1, parent.width - 2 * parent.border)
-				self.insetOverlayFrame:SetWidth(innerWidth)
+				local fillWidth = math.max(1, parent.width)
+				self.insetOverlayFrame:SetWidth(fillWidth)
 			end
 		end
 	end
@@ -672,15 +680,17 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 		end
 	end
 
-	-- Size = full inner bar dimension so the fill ratio matches the primary bar's scale
+	-- Size = full bar dimension. The primary StatusBar fill spans the whole frame (border drawn over
+	-- its edge), so the overlay must match that full-frame scale. Subtracting the border here left a
+	-- border-width gap whenever the fill ratio was a secret value (no anchor correction available).
 	if isVertical then
-		local innerHeight = math.max(1, parent.height - 2 * parent.border)
-		local innerWidth = math.max(1, parent.width - 2 * parent.border)
-		overlayBar:SetHeight(innerHeight)
-		overlayBar:SetWidth(innerWidth)
+		local fillHeight = math.max(1, parent.height)
+		local fillWidth = math.max(1, parent.width)
+		overlayBar:SetHeight(fillHeight)
+		overlayBar:SetWidth(fillWidth)
 	else
-		local innerWidth = math.max(1, parent.width - 2 * parent.border)
-		overlayBar:SetWidth(innerWidth)
+		local fillWidth = math.max(1, parent.width)
+		overlayBar:SetWidth(fillWidth)
 	end
 
 	self.insetClipFrame = clip
