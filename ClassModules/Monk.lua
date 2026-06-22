@@ -2219,7 +2219,7 @@ do
 	end
 	local healthVars = {
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	-- Brewmaster
 	local brewmaster = {

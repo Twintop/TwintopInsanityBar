@@ -1665,6 +1665,17 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				end
 				incomingHealSlot:RefreshAppearance()
 			end
+
+			-- Apply heal absorb overlay appearance via named slot (if it exists)
+			local healAbsorbSlot = healthNode:GetOverlaySlot("healAbsorb")
+			if healAbsorbSlot then
+				healAbsorbSlot.texture = settings.textures.healAbsorbBar
+				if settings.colors.healthBar.healAbsorb then
+					healAbsorbSlot.color = settings.colors.healthBar.healAbsorb
+					healAbsorbSlot:SetFullHeight(settings.colors.healthBar.healAbsorb.fullHeight == true)
+				end
+				healAbsorbSlot:RefreshAppearance()
+			end
 		end
 	end
 
@@ -1720,7 +1731,9 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 
 		-- Compute the fill-axis inner dimension (width for horizontal fills, height for vertical fills)
 		local isVerticalFill = self:IsVerticalFill(healthNode.fillDirection)
-		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)) - 2 * (healthNode.border or 0))
+		-- Use the FULL bar dimension (not border-subtracted): the primary StatusBar fill spans the
+		-- whole frame with the border drawn over its edge, so the overlay must match that full scale.
+		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)))
 
 		if absorbMode == "appendedOverflow" then
 			absorbSlot:SetAppendedOverlayClipping(false)
@@ -1837,7 +1850,9 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 
 		-- Compute the fill-axis inner dimension (width for horizontal fills, height for vertical fills)
 		local isVerticalFill = self:IsVerticalFill(healthNode.fillDirection)
-		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)) - 2 * (healthNode.border or 0))
+		-- Use the FULL bar dimension (not border-subtracted): the primary StatusBar fill spans the
+		-- whole frame with the border drawn over its edge, so the overlay must match that full scale.
+		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)))
 
 		if incomingHealMode == "appendedOverflow" then
 			incomingHealSlot:SetAppendedOverlayClipping(false)
@@ -1910,7 +1925,126 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	end
 end
 
----Updates all health bar overlays (absorb shield, incoming heals).
+---Updates the healing absorb overlay on the health bar node.
+---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
+---Supports four display modes:
+---  "overlay" (default): fills from the left edge of the bar up to the healing absorb amount.
+---  "appended": visually appends the healing absorb region to the right of the current health fill,
+---              using a clip frame so it never extends past the bar's right boundary.
+---  "appendedOverflow": appended mode that can scale beyond the bar width when the heal absorb exceeds max health.
+---  "inset": reverse-fill heal absorb bar RIGHT-anchored to the health fill's RIGHT edge,
+---           filling leftward to show healing absorbs "eating into" visible health.
+---@param healthNode TRB.Classes.BarNode # The health bar node
+---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
+---@param settings table # The spec cache settings (specCacheSettings)
+function TRB.Functions.Bar:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshotData, settings)
+	if not healthNode then return end
+
+	local healAbsorbSlot = healthNode:GetOrCreateOverlaySlot("healAbsorb")
+
+	local healAbsorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.healAbsorb
+	if healAbsorbColorEntry then
+		healAbsorbSlot:SetFullHeight(healAbsorbColorEntry.fullHeight == true)
+	end
+	if not healAbsorbColorEntry or not healAbsorbColorEntry.enabled then
+		healAbsorbSlot:HideAll()
+		return
+	end
+
+	local healAbsorbMode = healAbsorbColorEntry.mode or "inset"
+	local healthMax = snapshotData.attributes.healthMax or 1
+	local healAbsorbAmount = snapshotData.attributes.healAbsorb or 0
+	local hasHealAbsorb = issecretvalue(healAbsorbAmount) or healAbsorbAmount > 0
+
+	-- Store for RefreshAppearance
+	healAbsorbSlot.texture = settings.textures.healAbsorbBar
+	healAbsorbSlot.color = healAbsorbColorEntry
+
+	if healAbsorbMode == "appended" or healAbsorbMode == "appendedOverflow" then
+		-- Appended mode: heal absorb bar anchored to health fill's leading edge, inside a clip frame
+		-- Overflow variant disables clipping and scales the overlay bar when heal absorb exceeds max health
+		healAbsorbSlot:HideOverlay()
+		healAbsorbSlot:HideInsetOverlay()
+		healAbsorbSlot:CreateAppendedOverlay()
+
+		-- Compute the fill-axis inner dimension (width for horizontal fills, height for vertical fills)
+		local isVerticalFill = self:IsVerticalFill(healthNode.fillDirection)
+		-- Use the FULL bar dimension (not border-subtracted): the primary StatusBar fill spans the
+		-- whole frame with the border drawn over its edge, so the overlay must match that full scale.
+		local innerFillDim = math.max(1, (isVerticalFill and (healthNode.height or 1) or (healthNode.width or 1)))
+
+		if healAbsorbMode == "appendedOverflow" then
+			healAbsorbSlot:SetAppendedOverlayClipping(false)
+			local healthMaxNum = (not issecretvalue(healthMax)) and healthMax or 1
+			local healAbsorbNum = (not issecretvalue(healAbsorbAmount)) and healAbsorbAmount or 0
+			if healAbsorbNum > healthMaxNum and healthMaxNum > 0 then
+				local overflowDim = innerFillDim * (healAbsorbNum / healthMaxNum)
+				healAbsorbSlot:SetAppendedOverlayWidth(overflowDim)
+				healAbsorbSlot:SetAppendedOverlayMinMax(0, healAbsorbAmount)
+			else
+				healAbsorbSlot:SetAppendedOverlayWidth(innerFillDim)
+				healAbsorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+			end
+		else
+			healAbsorbSlot:SetAppendedOverlayClipping(true)
+			healAbsorbSlot:SetAppendedOverlayWidth(innerFillDim)
+			healAbsorbSlot:SetAppendedOverlayMinMax(0, healthMax)
+		end
+		healAbsorbSlot:SetAppendedOverlayValue(healAbsorbAmount)
+		healAbsorbSlot:SetAppendedOverlayTexture(settings.textures.healAbsorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.healAbsorb then
+			healAbsorbSlot:SetAppendedOverlayColor(settings.colors.healthBar.healAbsorb.color)
+		end
+
+		if hasHealAbsorb then
+			healAbsorbSlot:ShowAppendedOverlay()
+		else
+			healAbsorbSlot:HideAppendedOverlay()
+		end
+	elseif healAbsorbMode == "inset" then
+		-- Inset mode: reverse-fill heal absorb bar RIGHT anchored to health fill's RIGHT,
+		-- fills leftward to show healing absorbs "eating into" the visible health.
+		healAbsorbSlot:HideOverlay()
+		healAbsorbSlot:HideAppendedOverlay()
+		healAbsorbSlot:CreateInsetOverlay()
+
+		healAbsorbSlot:SetInsetOverlayMinMax(0, healthMax)
+		healAbsorbSlot:SetInsetOverlayValue(healAbsorbAmount)
+		healAbsorbSlot:SetInsetOverlayTexture(settings.textures.healAbsorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.healAbsorb then
+			healAbsorbSlot:SetInsetOverlayColor(settings.colors.healthBar.healAbsorb.color)
+		end
+
+		if hasHealAbsorb then
+			healAbsorbSlot:ShowInsetOverlay()
+		else
+			healAbsorbSlot:HideInsetOverlay()
+		end
+	else
+		-- Overlay mode (default): fills from left edge
+		healAbsorbSlot:HideAppendedOverlay()
+		healAbsorbSlot:HideInsetOverlay()
+		healAbsorbSlot:CreateOverlay()
+
+		healAbsorbSlot:SetOverlayMinMax(0, healthMax)
+		healAbsorbSlot:SetOverlayValue(healAbsorbAmount)
+		healAbsorbSlot:SetOverlayTexture(settings.textures.healAbsorbBar)
+
+		if settings.colors.healthBar and settings.colors.healthBar.healAbsorb then
+			healAbsorbSlot:SetOverlayColor(settings.colors.healthBar.healAbsorb.color)
+		end
+
+		if hasHealAbsorb then
+			healAbsorbSlot:ShowOverlay()
+		else
+			healAbsorbSlot:HideOverlay()
+		end
+	end
+end
+
+---Updates all health bar overlays (absorb shield, incoming heals, healing absorbs).
 ---Wrapper that calls each individual overlay update function.
 ---@param healthNode TRB.Classes.BarNode # The health bar node
 ---@param snapshotData TRB.Classes.SnapshotData # The current snapshot data
@@ -1918,6 +2052,7 @@ end
 function TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
 	self:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, settings)
 	self:UpdateHealthBarIncomingHealOverlay(healthNode, snapshotData, settings)
+	self:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshotData, settings)
 end
 
 ---Updates the casting resource overlay on the primary resource bar node.

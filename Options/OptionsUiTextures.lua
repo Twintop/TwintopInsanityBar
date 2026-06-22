@@ -194,6 +194,14 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	yCoord = yCoord - 70
 
+	-- Row 2: Heal Absorb Overlay
+	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healAbsorbBar", L["HealAbsorbBarTexture"], L["StatusBarTextures"],
+		function(newValue)
+			OverlaySetValue("healAbsorb", newValue)
+		end)
+
+	yCoord = yCoord - 70
+
 	-- ===== BORDER TEXTURES SUBSECTION =====
 ---@diagnostic disable-next-line: param-type-mismatch
 	controls.borderTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)

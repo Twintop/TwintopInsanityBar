@@ -3921,7 +3921,7 @@ local specValidVars
 do
 	local healthVars = {
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	local sharedResourceVars = {
 		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,

@@ -287,6 +287,9 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateOverlayDropdowns(control
 		textures.incomingHealBar = newValue
 		textures.incomingHealBarName = newName
 		RefreshLsmDropdown(controls.incomingHealBar, newName)
+		textures.healAbsorbBar = newValue
+		textures.healAbsorbBarName = newName
+		RefreshLsmDropdown(controls.healAbsorbBar, newName)
 	end
 
 	TRB.Functions.Character:ResetCaches()

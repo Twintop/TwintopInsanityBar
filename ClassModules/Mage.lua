@@ -1474,7 +1474,7 @@ do
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
 		["$resourceMax"] = true, ["$manaMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	-- Arcane
 	local arcane = {}

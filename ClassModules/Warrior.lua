@@ -2190,7 +2190,7 @@ do
 		["$resourceMax"] = true, ["$rageMax"] = true,
 		["$casting"] = castingFn,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	-- Protection
 	local protection = {}

@@ -1480,7 +1480,7 @@ do
 		["$comboPoints"] = true, ["$holyPower"] = true,
 		["$comboPointsMax"] = true, ["$holyPowerMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 		["$divinePurposeActive"] = function()
 			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 			if spells == nil or spells.divinePurpose == nil then

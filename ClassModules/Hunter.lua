@@ -1992,7 +1992,7 @@ do
 		["$resourceMax"] = true, ["$focusMax"] = true,
 		["$casting"] = castingFn,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	-- Beast Mastery
 	local bm = {}

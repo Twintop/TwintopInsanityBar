@@ -578,6 +578,90 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		end
 	end)
 
+	-- Heal Absorb Display Mode dropdown
+	controls.dropDown.healAbsorbMode = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_HealAbsorbMode", parent, "WowStyle1DropdownTemplate")
+	controls.dropDown.healAbsorbMode:SetWidth(oUi.sliderWidth)
+	controls.dropDown.healAbsorbMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarHealAbsorbMode"], oUi.xCoord, yCoord)
+	controls.dropDown.healAbsorbMode.label.font:SetFontObject(GameFontNormal)
+	---@diagnostic disable-next-line: inject-field
+	controls.dropDown.healAbsorbMode.label.font.tooltip = L["HealthBarHealAbsorbModeTooltip"]
+
+	local function HealAbsorbModeIsSelected(value)
+		return value == spec.colors.healthBar.healAbsorb.mode
+	end
+
+	local function HealAbsorbModeGetDisplayName(value)
+		if value == "appended" then
+			return L["OverlayModeAppended"]
+		elseif value == "appendedOverflow" then
+			return L["OverlayModeAppendedOverflow"]
+		elseif value == "inset" then
+			return L["OverlayModeInset"]
+		else
+			return L["OverlayModeOverlay"]
+		end
+	end
+
+	local function HealAbsorbModeSetSelected(newValue)
+		spec.colors.healthBar.healAbsorb.mode = newValue
+		controls.dropDown.healAbsorbMode:SetDefaultText(HealAbsorbModeGetDisplayName(newValue))
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end
+
+	local function HealAbsorbModeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(L["OverlayModeAppended"], HealAbsorbModeIsSelected, HealAbsorbModeSetSelected, "appended")
+		rootDescription:CreateRadio(L["OverlayModeAppendedOverflow"], HealAbsorbModeIsSelected, HealAbsorbModeSetSelected, "appendedOverflow")
+		rootDescription:CreateRadio(L["OverlayModeOverlay"], HealAbsorbModeIsSelected, HealAbsorbModeSetSelected, "overlay")
+		rootDescription:CreateRadio(L["OverlayModeInset"], HealAbsorbModeIsSelected, HealAbsorbModeSetSelected, "inset")
+	end
+
+	controls.dropDown.healAbsorbMode:SetupMenu(HealAbsorbModeGenerator)
+	controls.dropDown.healAbsorbMode:SetDefaultText(HealAbsorbModeGetDisplayName(spec.colors.healthBar.healAbsorb.mode))
+	controls.dropDown.healAbsorbMode:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
+
+	yCoord = yCoord - 10
+	-- Heal Absorb Overlay color picker
+	controls.colors.healAbsorb = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["HealthBarHealAbsorbColor"], spec.colors.healthBar.healAbsorb.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controls.colors.healAbsorb:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.healthBar, controls.colors, "healAbsorb", "health")
+	end)
+
+	local healAbsorbCheckboxY = yCoord - 20
+	controls.checkBoxes.showHealAbsorb = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_showHealAbsorb", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.showHealAbsorb
+	f:SetPoint("TOPLEFT", oUi.xCoord2, healAbsorbCheckboxY)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowHealAbsorb"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["HealthBarShowHealAbsorbTooltip"]
+	f:SetChecked(spec.colors.healthBar.healAbsorb.enabled)
+	controls.checkBoxes.showHealAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
+		parent,
+		"TwintopResourceBar_" .. namePrefix .. "_showHealAbsorbFullHeight",
+		oUi.xCoord2,
+		healAbsorbCheckboxY,
+		spec.colors.healthBar.healAbsorb.fullHeight == true,
+		function(self)
+			spec.colors.healthBar.healAbsorb.fullHeight = self:GetChecked()
+			TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classId, specId)
+		end
+	)
+	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showHealAbsorbFullHeight, spec.colors.healthBar.healAbsorb.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.healthBar.healAbsorb.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showHealAbsorbFullHeight, spec.colors.healthBar.healAbsorb.enabled)
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end
+	end)
+
 	return yCoord - 30
 end
 

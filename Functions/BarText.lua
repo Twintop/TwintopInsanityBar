@@ -311,6 +311,7 @@ local defaultSecretBarTextVariables = {
 	["$healthPercent"] = true,
 	["$absorb"] = true,
 	["$incomingHeal"] = true,
+	["$healAbsorb"] = true,
 }
 
 ---@param variable string|nil
@@ -484,6 +485,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false, secret = true },
 		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true },
 		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true },
+		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true },
 
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
@@ -1437,6 +1439,10 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--$incomingHeal
 	lookupLogic["$incomingHeal"] = snapshotData.attributes.incomingHeal or 0
 	lookup["$incomingHeal"] = formatted.incomingHeal or ""
+
+	--$healAbsorb
+	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
+	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
 	-- Secondary stat display strings – pre-formatted at event time in UpdateSecondaryStatsSnapshot
 	local fmtHaste      = formatted.haste      or ""

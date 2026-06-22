@@ -2983,3 +2983,12 @@ L["WarlockDestructionBarTextVariable_ruinationTime"] = "Time remaining on the Ru
 L["ComboPointColorPickerFive"] = "5 Combo Points"
 L["ComboPointCheckboxFiveOverride"] = "Override Penultimate/Final?"
 L["ComboPointCheckboxFiveOverrideTooltip"] = "When checked, the 5 Combo Points color is used for the 5th Combo Point even when it would otherwise be the Penultimate or Final color (e.g., when you have a maximum of 5 or 6 Combo Points). When unchecked, the Penultimate and Final colors take priority for the 5th Combo Point."
+
+-- Heal Absorb Overlay
+L["BarTextVariable_healAbsorb"] = "Your current total healing absorb amount."
+L["HealAbsorbBarTexture"] = "Heal Absorb Overlay Texture"
+L["HealthBarHealAbsorbColor"] = "Heal Absorb Overlay"
+L["HealthBarShowHealAbsorb"] = "Show heal absorb overlay on Health Bar"
+L["HealthBarShowHealAbsorbTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar representing your current total healing absorb amount (debuffs that consume incoming healing before it lands)."
+L["HealthBarHealAbsorbMode"] = "Heal Absorb Display Mode"
+L["HealthBarHealAbsorbModeTooltip"] = "Controls how the healing absorb amount is displayed on the Health Bar."

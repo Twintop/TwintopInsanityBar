@@ -2431,7 +2431,7 @@ do
 		["$comboPointsMax"] = true,
 		["$inStealth"] = function() return IsStealthed() end,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
 end

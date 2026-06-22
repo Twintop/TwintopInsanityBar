@@ -1725,7 +1725,7 @@ do
 			return false
 		end,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
-		["$absorb"] = true, ["$incomingHeal"] = true,
+		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
 	local blood = {}
 	for k, v in pairs(shared) do blood[k] = v end

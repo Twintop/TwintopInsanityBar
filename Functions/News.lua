@@ -15,6 +15,8 @@ local content = [====[
 # 12.0.7.1-release (2026-06-22)
 ## General
 
+- [#519](#519) Add support for displaying healing absorbs (debuffs that consume incoming healing, such as Necrotic Wounds) as a new overlay on the Health Bar. This is distinct from the existing absorb overlay, which represents damage-absorbing shields.
+- [#519](#519) Add a new bar text variable `$healAbsorb`. As this is a secret value, when used in bar text logic it will return only TRUE or FALSE and not the current value.
 - [#777](#777) Fix an issue where changing the health bar color type wouldn't be reflected until after a UI reload.
 - [#777](#777) Fix an issue where changing the shared font face would cause bar text to disappear until entering combat.
 
@@ -26,7 +28,7 @@ local content = [====[
 ### Destruction
 
 - Add support for tracking Infernal Bolt and Ruination procs.
-- Add a bar text variables `$infernalBoltTime` and `$ruinationTime` and icon (`#ruination`).
+- Add new bar text variables `$infernalBoltTime` and `$ruinationTime` and icon (`#ruination`).
 - Add Color Indicators for Infernal Bolt and Ruination being available.
 - Add audio cues for when Infernal Bolt and Ruination become available.
 
@@ -34,9 +36,9 @@ local content = [====[
 
 - Fix Dominion of Argus detection.
 - Add End of Dominion of Argus support as a new Color Indicator.
-- Add new default bar text extry to track Dominion of Argus time remaining.
+- Add new default bar text entry to track Dominion of Argus time remaining.
 - Add support for tracking Infernal Bolt and Ruination procs.
-- Add a bar text variables `$infernalBoltTime` and `$ruinationTime`.
+- Add new bar text variables `$infernalBoltTime` and `$ruinationTime`.
 - Add Color Indicators for Infernal Bolt and Ruination being available.
 - Add audio cues for when Infernal Bolt and Ruination become available.
 
