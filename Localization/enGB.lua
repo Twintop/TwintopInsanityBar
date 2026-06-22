@@ -320,4 +320,11 @@ if locale == "enGB" then
     L["WarlockDemonologyIndicatorRuinationTooltip"] = "Changes to this colour when Ruination is available to be cast."
     L["WarlockDestructionIndicatorRuinationTooltip"] = "Changes to this colour when Ruination is available to be cast."
     L["ComboPointCheckboxFiveOverrideTooltip"] = "When checked, the 5 Combo Points colour is used for the 5th Combo Point even when it would otherwise be the Penultimate or Final colour (e.g., when you have a maximum of 5 or 6 Combo Points). When unchecked, the Penultimate and Final colours take priority for the 5th Combo Point."
+    -- Brewmaster Stagger text colours
+    L["MonkBrewmasterStaggerTextColorsHeader"] = "Stagger Text Colours"
+    L["MonkBrewmasterStaggerTextColorMode"] = "Stagger Text Colour Mode"
+    L["MonkBrewmasterStaggerTextColorModeBar"] = "Use the current Stagger bar colour"
+    L["MonkBrewmasterStaggerTextColorModeCustom"] = "Use a custom colour"
+    L["MonkBrewmasterStaggerTextColorModeNone"] = "Don't use any colour"
+    L["MonkBrewmasterStaggerTextColorCustom"] = "Custom Stagger text colour"
 end
