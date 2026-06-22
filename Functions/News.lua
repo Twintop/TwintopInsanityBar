@@ -20,6 +20,11 @@ local content = [====[
 - [#777](#777) Fix an issue where changing the health bar color type wouldn't be reflected until after a UI reload.
 - [#777](#777) Fix an issue where changing the shared font face would cause bar text to disappear until entering combat.
 
+## Monk
+### Brewmaster
+
+- [#775](#775) Allow the color of `$stagger` and `$staggerPercent` text to be configured independently of the bar color.
+
 ## Rogue
 
 - [#779](#779) Add a new "5 Combo Points" color option for the 5th Combo Point, with a checkbox to control whether it overrides the Penultimate/Final color when you have a maximum of 5 or 6 Combo Points.

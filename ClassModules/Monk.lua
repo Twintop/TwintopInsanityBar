@@ -424,14 +424,31 @@ local function RefreshLookupData_Brewmaster()
 			staggerColor = Color:ConvertColorDecimalToHex(r, g, b, a)
 		end
 
+		-- Stagger text color mode: "bar" uses the stagger bar color, "custom" a fixed color, "none" no coloring
+		local staggerTextColors = specSettings.colors and specSettings.colors.text and specSettings.colors.text.stagger
+		local staggerTextMode = staggerTextColors and staggerTextColors.mode or "bar"
+		if staggerTextMode == "custom" then
+			staggerColor = staggerTextColors.color
+		elseif staggerTextMode == "none" then
+			staggerColor = nil
+		end
+
 		lookupLogic["$stagger"] = _stagger
 		lookupLogic["$staggerPercent"] = _staggerPercent
 
 		if lookupChanged(prevState, "$stagger", _stagger, staggerColor, true) then
-			lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
+			if staggerColor then
+				lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
+			else
+				lookup["$stagger"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger)
+			end
 		end
 		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor, true) then
-			lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
+			if staggerColor then
+				lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
+			else
+				lookup["$staggerPercent"] = string.format("%.1f", _staggerPercent * 100)
+			end
 		end
 	end
 

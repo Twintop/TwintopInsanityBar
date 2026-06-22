@@ -2992,3 +2992,11 @@ L["HealthBarShowHealAbsorb"] = "Show heal absorb overlay on Health Bar"
 L["HealthBarShowHealAbsorbTooltip"] = "When checked, a semi-transparent overlay will be displayed on the Health Bar representing your current total healing absorb amount (debuffs that consume incoming healing before it lands)."
 L["HealthBarHealAbsorbMode"] = "Heal Absorb Display Mode"
 L["HealthBarHealAbsorbModeTooltip"] = "Controls how the healing absorb amount is displayed on the Health Bar."
+
+-- Brewmaster Stagger text colors
+L["MonkBrewmasterStaggerTextColorsHeader"] = "Stagger Text Colors"
+L["MonkBrewmasterStaggerTextColorMode"] = "Stagger Text Color Mode"
+L["MonkBrewmasterStaggerTextColorModeBar"] = "Use the current Stagger bar color"
+L["MonkBrewmasterStaggerTextColorModeCustom"] = "Use a custom color"
+L["MonkBrewmasterStaggerTextColorModeNone"] = "Don't use any color"
+L["MonkBrewmasterStaggerTextColorCustom"] = "Custom Stagger text color"

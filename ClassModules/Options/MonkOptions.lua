@@ -196,6 +196,10 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					color = "FFFF0000",
 					enabled = true
 				},
+				stagger = { -- How $stagger/$staggerPercent text is colored ("bar"|"custom"|"none")
+					mode = "bar",
+					color = "FFFFFFFF"
+				},
 			},
 			bar = {
 				border = {
@@ -1241,6 +1245,68 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.text.overcap.enabled = self:GetChecked()
 	end)
+
+	-- Stagger text color section
+	local staggerText = spec.colors.text.stagger
+
+	yCoord = yCoord - 40
+	controls.staggerTextColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MonkBrewmasterStaggerTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	local staggerModeLabels = {
+		bar = L["MonkBrewmasterStaggerTextColorModeBar"],
+		custom = L["MonkBrewmasterStaggerTextColorModeCustom"],
+		none = L["MonkBrewmasterStaggerTextColorModeNone"]
+	}
+
+	controls.dropDown = controls.dropDown or {}
+	controls.dropDown.staggerTextColorMode = CreateFrame("DropdownButton", "TwintopResourceBar_Monk_Brewmaster_StaggerTextColorMode", parent, "WowStyle1DropdownTemplate")
+	local staggerModeDropdown = controls.dropDown.staggerTextColorMode
+	staggerModeDropdown:SetWidth(oUi.sliderWidth)
+	staggerModeDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MonkBrewmasterStaggerTextColorMode"], oUi.xCoord, yCoord)
+	staggerModeDropdown.label.font:SetFontObject(GameFontNormal)
+
+	controls.colors.text.staggerCustom = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["MonkBrewmasterStaggerTextColorCustom"], staggerText.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord-30)
+	f = controls.colors.text.staggerCustom
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		-- staggerText.color is a direct hex string, so address it with key "color"
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, staggerText, { color = controls.colors.text.staggerCustom }, "color")
+	end)
+
+	local function StaggerModeUpdateSwatch()
+		if staggerText.mode == "custom" then
+			controls.colors.text.staggerCustom:Show()
+		else
+			controls.colors.text.staggerCustom:Hide()
+		end
+	end
+
+	local function StaggerModeIsSelected(value)
+		return value == staggerText.mode
+	end
+
+	local function StaggerModeSetSelected(newValue)
+		staggerText.mode = newValue
+		staggerModeDropdown:SetDefaultText(staggerModeLabels[newValue])
+		StaggerModeUpdateSwatch()
+		TRB.Data.lookupDirty = true
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	local function StaggerModeGenerator(dropdown, rootDescription)
+		rootDescription:CreateRadio(staggerModeLabels.bar, StaggerModeIsSelected, StaggerModeSetSelected, "bar")
+		rootDescription:CreateRadio(staggerModeLabels.custom, StaggerModeIsSelected, StaggerModeSetSelected, "custom")
+		rootDescription:CreateRadio(staggerModeLabels.none, StaggerModeIsSelected, StaggerModeSetSelected, "none")
+	end
+
+	staggerModeDropdown:SetupMenu(StaggerModeGenerator)
+	staggerModeDropdown:SetDefaultText(staggerModeLabels[staggerText.mode] or staggerModeLabels.bar)
+	staggerModeDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	StaggerModeUpdateSwatch()
+
+	yCoord = yCoord - 60
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
 end
