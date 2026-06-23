@@ -587,11 +587,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					casting.resourceRaw = casting.resourceRaw + ((spells.lightningBolt.overload) * 2)
 					casting.resourceFinal = casting.resourceFinal + ((spells.lightningBolt.overload) * 2)
 				end]]
-				
-				if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive then
-					casting.resourceRaw = casting.resourceRaw + spells.lightningBolt.overload
-					casting.resourceFinal = casting.resourceFinal + spells.lightningBolt.overload
-				end
 			elseif spellId == spells.lavaBurst.id then
 				FillSnapshotDataCasting(spells.lavaBurst)
 			elseif spellId == spells.elementalBlast.id then
@@ -607,11 +602,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshots[spells.chainLightning.id].attributes.hasStruckTargets = false
 				elseif currentTime > (snapshots[spells.chainLightning.id].attributes.hitTime + (Character:GetCurrentGCDTime(true) * 4) + TRB.Data.character.latency) then
 					snapshots[spells.chainLightning.id].attributes.targetsHit = 1
-				end
-
-				if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive and spellId == spells.chainLightning.id then
-					snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.chainLightning.overload
-					snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.chainLightning.overload
 				end
 
 				snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw * snapshots[spells.chainLightning.id].attributes.targetsHit

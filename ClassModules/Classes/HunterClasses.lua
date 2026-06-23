@@ -83,7 +83,7 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         id = 268877,
         talentId = 115939,
         isTalent = true,
-        duration = 8
+        duration = 10
     })
     self.killCommand = TRB.Classes.SpellThreshold:New({
         id = 34026,
