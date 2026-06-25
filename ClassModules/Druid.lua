@@ -58,7 +58,6 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			twwSeason1SetBonusCount = 0
 		}
 	}
 	
@@ -109,6 +108,9 @@ local function FillSpecializationCache()
 		maxResource2 = 5,
 		pandemicModifier = 1.0,
 		effects = {
+		},
+		items = {
+			midnightSeason2SetBonusCount = 0
 		}
 	}
 	
@@ -119,6 +121,9 @@ local function FillSpecializationCache()
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
 	specCache.druid_feral.snapshotData.attributes.clearcastingActive = false
+	specCache.druid_feral.snapshotData.attributes.berserkComboPointsSpent = 0
+	specCache.druid_feral.snapshotData.attributes.berserkWindowActive = false
+	specCache.druid_feral.snapshotData.attributes.berserkPreviousComboPoints = 0
 	specCache.druid_feral.snapshotData.audio = {
 		apexPredatorsCravingCue = false,
 		comboPointThreshold1Played = false,
@@ -143,6 +148,8 @@ local function FillSpecializationCache()
 	specCache.druid_feral.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] = TRB.Classes.Snapshot:New(spells.incarnationAvatarOfAshamane)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
+	---@type TRB.Classes.Snapshot
+	specCache.druid_feral.snapshotData.snapshots[spells.berserkAftermath.id] = TRB.Classes.Snapshot:New(spells.berserkAftermath)
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
@@ -989,6 +996,20 @@ local function RefreshLookupData_Feral()
 		lookup["$clearcastingActive"] = ""
 	end
 
+	-- Block E: Berserk Aftermath / Midnight S2 2pc ($berserkAftermathTime, $berserkAftermath)
+	if not activeVars or activeVars["$berserkAftermathTime"] or activeVars["$berserkAftermath"] then
+		local berserkAftermathBuff = snapshotData.snapshots[spells.berserkAftermath.id].buff
+		local _berserkAftermathTime = berserkAftermathBuff:GetRemainingTime()
+
+		lookupLogic["$berserkAftermathTime"] = _berserkAftermathTime
+		lookupLogic["$berserkAftermath"] = berserkAftermathBuff.isActive or false
+		lookup["$berserkAftermath"] = ""
+
+		if lookupChanged(prevState, "$berserkAftermathTime", _berserkAftermathTime) then
+			lookup["$berserkAftermathTime"] = TRB.Functions.BarText:TimerPrecision(_berserkAftermathTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1409,10 +1430,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			local has4pc = (TRB.Data.character.items and TRB.Data.character.items.midnightSeason2SetBonusCount or 0) >= 4
+			local fourPieceBonus = has4pc and spells.midnightSeason2SetBonus.attributes.fourPieceDuration or 0
 			if spellId == spells.berserk.castId then
-				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration, currentTime)
+				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration + fourPieceBonus, currentTime)
+				snapshotData.attributes.berserkComboPointsSpent = 0
 			elseif spellId == spells.incarnationAvatarOfAshamane.castId or spellId == spells.incarnationAvatarOfAshamane.attributes.castId2 then
-				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration, currentTime)
+				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration + fourPieceBonus, currentTime)
+				snapshotData.attributes.berserkComboPointsSpent = 0
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -1533,10 +1558,34 @@ end
 local function UpdateSnapshot_Feral()
 	UpdateSnapshot()
 	UpdateBerserkIncomingComboPoints()
-	
-	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
-	--[[local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local currentTime = GetTime()]]
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local currentTime = GetTime()
+
+	-- Midnight S2 2pc: accumulate combo points spent during Berserk/Avatar of Ashamane and, when
+	-- the window ends, spawn berserkAftermath for 1s per spent combo point (1296605, manually tracked).
+	if (TRB.Data.character.items and TRB.Data.character.items.midnightSeason2SetBonusCount or 0) >= 2 then
+		local windowActive = snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
+		local currentCp = snapshotData.attributes.comboPoints or 0
+		local previousCp = snapshotData.attributes.berserkPreviousComboPoints or currentCp
+
+		if windowActive then
+			if currentCp < previousCp then
+				snapshotData.attributes.berserkComboPointsSpent = (snapshotData.attributes.berserkComboPointsSpent or 0) + (previousCp - currentCp)
+			end
+		elseif snapshotData.attributes.berserkWindowActive then
+			local spent = snapshotData.attributes.berserkComboPointsSpent or 0
+			if spent > 0 then
+				snapshotData.snapshots[spells.berserkAftermath.id].buff:InitializeCustom(spent, currentTime)
+			end
+			snapshotData.attributes.berserkComboPointsSpent = 0
+		end
+
+		snapshotData.attributes.berserkWindowActive = windowActive
+		snapshotData.attributes.berserkPreviousComboPoints = currentCp
+	end
+	snapshotData.snapshots[spells.berserkAftermath.id].buff:GetRemainingTime(currentTime)
 
 	local currentApcCost = spells.ferociousBiteMinimum:GetPrimaryResourceCost(true) or 0
 	if currentApcCost > 0 then
@@ -2479,6 +2528,7 @@ local function UpdateResourceBar()
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
 						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
+						berserkAftermath = snapshots[spells.berserkAftermath.id].buff.isActive,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
 					}
@@ -3339,6 +3389,7 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
+		lookup["#berserkAftermath"] = spells.berserkAftermath.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
@@ -3737,10 +3788,22 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 		
 		SetupSharedSettingsForSpec()
-		
+
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
 			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
 		end
+
+		-- Midnight S2 set bonus detection (re-runs on equipment change via PLAYER_EQUIPMENT_CHANGED -> CheckCharacter)
+		local setBonus = spells.midnightSeason2SetBonus
+		local setCount = 0
+		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 1), setBonus.attributes.headId) then setCount = setCount + 1 end
+		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 3), setBonus.attributes.shoulderId) then setCount = setCount + 1 end
+		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 5), setBonus.attributes.chestId) then setCount = setCount + 1 end
+		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 10), setBonus.attributes.handId) then setCount = setCount + 1 end
+		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 7), setBonus.attributes.legId) then setCount = setCount + 1 end
+
+		TRB.Data.character.items = TRB.Data.character.items or {}
+		TRB.Data.character.items.midnightSeason2SetBonusCount = setCount
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "guardian"
 		TRB.Data.character.compositeKey = "druid_guardian"
@@ -3914,6 +3977,8 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.clearcastingActive = false
+		snapshotData.attributes.berserkComboPointsSpent = 0
+		snapshotData.attributes.berserkWindowActive = false
 	end
 end
 
@@ -3979,12 +4044,20 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 	end
+	local berserkAftermathFeralFn = function()
+		local spells = TRB.Data.spellsData.spells
+		if spells == nil or spells.berserkAftermath == nil then return false end
+		local snap = TRB.Data.snapshotData.snapshots[spells.berserkAftermath.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	---@type table<string, boolean|function>
 	local feral = {
 		["$berserkTime"] = berserkFeralFn, ["$incarnationTime"] = berserkFeralFn,
 		["$incarnationTicks"] = incarnFeralBuffFn,
 		["$incarnationTickTime"] = incarnFeralBuffFn,
 		["$incarnationNextCp"] = incarnFeralBuffFn,
+		["$berserkAftermathTime"] = berserkAftermathFeralFn,
+		["$berserkAftermath"] = berserkAftermathFeralFn,
 		["$inStealth"] = function() return IsStealthed() end,
 		["$ravageActive"] = function()
 			local spells = TRB.Data.spellsData.spells

@@ -390,6 +390,8 @@ end
 ---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
+---@field public berserkAftermath TRB.Classes.SpellBase
+---@field public midnightSeason2SetBonus TRB.Classes.SpellBase
 TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
@@ -528,6 +530,19 @@ function TRB.Classes.Druid.FeralSpells:New()
 		rangeCheck = false,
         category = "defensive"
     })
+    -- Midnight Season 2 2pc damage buff, manually tracked (1s per combo point spent during Berserk/Avatar of Ashamane)
+    self.berserkAftermath = TRB.Classes.SpellBase:New({
+        id = 1296605
+    })
+    -- Midnight Season 2 set bonus (4pc extends Berserk/Avatar of Ashamane by fourPieceDuration, 2pc grants berserkAftermath)
+    self.midnightSeason2SetBonus = TRB.Classes.SpellBase:New({
+        headId = 271528,
+        shoulderId = 271526,
+        chestId = 271531,
+        handId = 271529,
+        legId = 271527,
+        fourPieceDuration = 10
+    })
 
     return self
 end
@@ -545,6 +560,7 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
+		{ variable = "#berserkAftermath", icon = spells.berserkAftermath.icon, description = spells.berserkAftermath.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBiteMinimum.icon, description = spells.ferociousBiteMinimum.name, printInSettings = true },
@@ -583,6 +599,9 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$incarnationTicks", description = L["DruidFeralBarTextVariable_incarnationTicks"], printInSettings = true, color = false },
 		{ variable = "$incarnationTickTime", description = L["DruidFeralBarTextVariable_incarnationTickTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationNextCp", description = L["DruidFeralBarTextVariable_incarnationNextCp"], printInSettings = true, color = false },
+
+		{ variable = "$berserkAftermathTime", description = L["DruidFeralBarTextVariable_berserkAftermathTime"], printInSettings = true, color = false },
+		{ variable = "$berserkAftermath", description = L["DruidFeralBarTextVariable_berserkAftermath"], printInSettings = true, color = false, logicType = "boolean", booleanCheck = true, logicOnly = true },
 
 		{ variable = "$clearcastingActive", description = L["DruidFeralBarTextVariable_clearcastingActive"], printInSettings = true, color = false },
 	})
