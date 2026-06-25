@@ -12,6 +12,31 @@ local content = [====[
 
 ---
 
+# 12.1.0.0-beta01 (2026-06-26)
+## Druid
+### Feral
+
+- Add support for detecting the Midnight Season 2 set bonus.
+- 4-Piece: Account for the additional 10 seconds of duration granted to Berserk / Incarnation: Avatar of Ashamane.
+- 2-Piece: Add tracking for the damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$berserkAftermathTime`, a logic variable `$berserkAftermath`, and an icon (`#berserkAftermath`).
+
+## Hunter
+### Beast Mastery
+
+- Update Beast Cleave's duration to 10 seconds.
+
+## Priest
+### Shadow
+
+- Improved Voidform no longer generates Insanity.
+
+## Shaman
+### Elemental
+
+- Power of the Maelstrom no longer grants bonus Maelstrom from Lightning Bolt and Chain Lightning.
+
+---
+
 # 12.0.7.2-release (2026-06-24)
 ## General
 ### Localization
