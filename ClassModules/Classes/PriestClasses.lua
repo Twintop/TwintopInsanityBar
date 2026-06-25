@@ -676,8 +676,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	self.ancientMadness = TRB.Classes.SpellBase:New({
 		id = 1231346,
 		isTalent = true,
-		durationMod = 3,
-		durationPerCastMod = 0.75
+		durationMod = 1.5,
+		maxCasts = 5
 	})
 	self.voidVolley = TRB.Classes.SpellBase:New({
 		id = 1242173,

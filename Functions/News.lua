@@ -28,7 +28,8 @@ local content = [====[
 ## Priest
 ### Shadow
 
-- Improved Voidform no longer generates Insanity.
+- Improved Voidform no longer grants bonus Insanity.
+- Update Ancient Madness's extension behavior for Voidform.
 
 ## Shaman
 ### Elemental

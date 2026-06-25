@@ -1536,10 +1536,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				casting.resourceRaw = spells.voidform.resource
 				casting.spellId = spells.voidform.id
 				casting.icon = spells.voidform.icon
-
-				if talents:IsTalentActive(spells.improvedVoidform) then
-					casting.resourceRaw = casting.resourceRaw + spells.improvedVoidform.resource
-				end				
 			elseif spellId == spells.mindgames.id then
 				casting.startTime = currentTime
 				casting.resourceRaw = spells.mindgames.resource
@@ -1653,9 +1649,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
 				end
 
-				if snapshots[spells.voidform.id].buff.isActive and talents:IsTalentActive(spells.ancientMadness) then
-					local mod = spells.ancientMadness.attributes.durationPerCastMod ^ (snapshots[spells.voidform.id].buff.attributes["swmCasts"] or 0)
-					local increasedDuration = mod * spells.ancientMadness.attributes.durationMod
+				if snapshots[spells.voidform.id].buff.isActive and talents:IsTalentActive(spells.ancientMadness) and snapshots[spells.voidform.id].buff.attributes["swmCasts"] < spells.ancientMadness.attributes.maxCasts then
+					local increasedDuration = spells.ancientMadness.attributes.durationMod
 					snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(increasedDuration)
 					snapshots[spells.voidform.id].buff.attributes["swmCasts"] = snapshots[spells.voidform.id].buff.attributes["swmCasts"] + 1
 				end
