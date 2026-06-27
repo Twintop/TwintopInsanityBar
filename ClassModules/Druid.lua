@@ -149,7 +149,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
 	---@type TRB.Classes.Snapshot
-	specCache.druid_feral.snapshotData.snapshots[spells.berserkAftermath.id] = TRB.Classes.Snapshot:New(spells.berserkAftermath)
+	specCache.druid_feral.snapshotData.snapshots[spells.halazzisFury.id] = TRB.Classes.Snapshot:New(spells.halazzisFury)
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
@@ -996,17 +996,15 @@ local function RefreshLookupData_Feral()
 		lookup["$clearcastingActive"] = ""
 	end
 
-	-- Block E: Berserk Aftermath / Midnight S2 2pc ($berserkAftermathTime, $berserkAftermath)
-	if not activeVars or activeVars["$berserkAftermathTime"] or activeVars["$berserkAftermath"] then
-		local berserkAftermathBuff = snapshotData.snapshots[spells.berserkAftermath.id].buff
-		local _berserkAftermathTime = berserkAftermathBuff:GetRemainingTime()
+	-- Block E: Halazzi's Fury / Midnight S2 2pc ($halazzisFuryTime)
+	if not activeVars or activeVars["$halazzisFuryTime"] then
+		local halazzisFuryBuff = snapshotData.snapshots[spells.halazzisFury.id].buff
+		local _halazzisFuryTime = halazzisFuryBuff:GetRemainingTime()
 
-		lookupLogic["$berserkAftermathTime"] = _berserkAftermathTime
-		lookupLogic["$berserkAftermath"] = berserkAftermathBuff.isActive or false
-		lookup["$berserkAftermath"] = ""
+		lookupLogic["$halazzisFuryTime"] = _halazzisFuryTime
 
-		if lookupChanged(prevState, "$berserkAftermathTime", _berserkAftermathTime) then
-			lookup["$berserkAftermathTime"] = TRB.Functions.BarText:TimerPrecision(_berserkAftermathTime)
+		if lookupChanged(prevState, "$halazzisFuryTime", _halazzisFuryTime) then
+			lookup["$halazzisFuryTime"] = TRB.Functions.BarText:TimerPrecision(_halazzisFuryTime)
 		end
 	end
 
@@ -1564,7 +1562,7 @@ local function UpdateSnapshot_Feral()
 	local currentTime = GetTime()
 
 	-- Midnight S2 2pc: accumulate combo points spent during Berserk/Avatar of Ashamane and, when
-	-- the window ends, spawn berserkAftermath for 1s per spent combo point (1296605, manually tracked).
+	-- the window ends, spawn halazzisFury for 1s per spent combo point (1301600, manually tracked).
 	if (TRB.Data.character.items and TRB.Data.character.items.midnightSeason2SetBonusCount or 0) >= 2 then
 		local windowActive = snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 		local currentCp = snapshotData.attributes.comboPoints or 0
@@ -1577,7 +1575,7 @@ local function UpdateSnapshot_Feral()
 		elseif snapshotData.attributes.berserkWindowActive then
 			local spent = snapshotData.attributes.berserkComboPointsSpent or 0
 			if spent > 0 then
-				snapshotData.snapshots[spells.berserkAftermath.id].buff:InitializeCustom(spent, currentTime)
+				snapshotData.snapshots[spells.halazzisFury.id].buff:InitializeCustom(spent, currentTime)
 			end
 			snapshotData.attributes.berserkComboPointsSpent = 0
 		end
@@ -1585,7 +1583,7 @@ local function UpdateSnapshot_Feral()
 		snapshotData.attributes.berserkWindowActive = windowActive
 		snapshotData.attributes.berserkPreviousComboPoints = currentCp
 	end
-	snapshotData.snapshots[spells.berserkAftermath.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.halazzisFury.id].buff:GetRemainingTime(currentTime)
 
 	local currentApcCost = spells.ferociousBiteMinimum:GetPrimaryResourceCost(true) or 0
 	if currentApcCost > 0 then
@@ -2528,7 +2526,7 @@ local function UpdateResourceBar()
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
 						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
-						berserkAftermath = snapshots[spells.berserkAftermath.id].buff.isActive,
+						halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
 					}
@@ -3389,7 +3387,7 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
-		lookup["#berserkAftermath"] = spells.berserkAftermath.icon
+		lookup["#halazzisFury"] = spells.halazzisFury.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
@@ -4044,10 +4042,10 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 	end
-	local berserkAftermathFeralFn = function()
+	local halazzisFuryFeralFn = function()
 		local spells = TRB.Data.spellsData.spells
-		if spells == nil or spells.berserkAftermath == nil then return false end
-		local snap = TRB.Data.snapshotData.snapshots[spells.berserkAftermath.id]
+		if spells == nil or spells.halazzisFury == nil then return false end
+		local snap = TRB.Data.snapshotData.snapshots[spells.halazzisFury.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
 	---@type table<string, boolean|function>
@@ -4056,8 +4054,7 @@ do
 		["$incarnationTicks"] = incarnFeralBuffFn,
 		["$incarnationTickTime"] = incarnFeralBuffFn,
 		["$incarnationNextCp"] = incarnFeralBuffFn,
-		["$berserkAftermathTime"] = berserkAftermathFeralFn,
-		["$berserkAftermath"] = berserkAftermathFeralFn,
+		["$halazzisFuryTime"] = halazzisFuryFeralFn,
 		["$inStealth"] = function() return IsStealthed() end,
 		["$ravageActive"] = function()
 			local spells = TRB.Data.spellsData.spells

@@ -8226,12 +8226,12 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
-	-- Add berserkAftermath (Midnight S2 2pc) indicator at the bottom of the Feral priority list for existing users
+	-- Add halazzisFury (Midnight S2 2pc) indicator at the bottom of the Feral priority list for existing users
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
 		local spec = TwintopInsanityBarSettings.druid.feral
 		if spec.colors and spec.colors.shared and spec.colors.shared.indicatorColors
-		and spec.colors.shared.indicatorColors.berserkAftermath == nil then
-			spec.colors.shared.indicatorColors.berserkAftermath = {
+		and spec.colors.shared.indicatorColors.halazzisFury == nil then
+			spec.colors.shared.indicatorColors.halazzisFury = {
 				color = "FF00FFFF",
 				color2 = "FF00FFFF",
 				gradientDirection = "disabled",
@@ -8244,10 +8244,10 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			local nodeOrder = spec.colors.shared.nodeOrder
 			local found = false
 			for _, v in ipairs(nodeOrder) do
-				if v == "berserkAftermath" then found = true break end
+				if v == "halazzisFury" then found = true break end
 			end
 			if not found then
-				table.insert(nodeOrder, "berserkAftermath")
+				table.insert(nodeOrder, "halazzisFury")
 			end
 		end
 	end

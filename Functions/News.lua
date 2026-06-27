@@ -18,7 +18,7 @@ local content = [====[
 
 - Add support for detecting the Midnight Season 2 set bonus.
 - 4-Piece: Account for the additional 10 seconds of duration granted to Berserk / Incarnation: Avatar of Ashamane.
-- 2-Piece: Add tracking for the damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$berserkAftermathTime`, a logic variable `$berserkAftermath`, and an icon (`#berserkAftermath`).
+- 2-Piece: Add tracking for the Halazzi's Fury damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$halazzisFuryTime` and an icon (`#halazzisFury`).
 
 ## Hunter
 ### Beast Mastery

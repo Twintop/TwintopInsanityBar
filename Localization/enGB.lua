@@ -331,6 +331,6 @@ if locale == "enGB" then
     -- Warrior Protection Violent Outburst
     L["WarriorIndicatorViolentOutburstTooltip"] = "Changes to this colour while a Violent Outburst proc is active, detected from Shield Slam's increased Rage generation."
 
-    -- Druid Feral Midnight Season 2 set bonus (Berserk Aftermath)
-    L["DruidFeralIndicatorBerserkAftermathTooltip"] = "Changes to this colour while the Midnight Season 2 (2pc) damage buff is active after Berserk / Avatar of Ashamane ends."
+    -- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
+    L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this colour while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
 end

@@ -889,7 +889,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					"ravage",
 					"clearcasting",
 					"borderStealth",
-					"berserkAftermath",
+					"halazzisFury",
 				},
 				gradientOrder = {
 					"maxBite",
@@ -930,7 +930,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 							energyBar = { bar = false, border = true, background = false },
 						},
 					},
-					berserkAftermath = {
+					halazzisFury = {
 						color = "FF00FFFF",
 						color2 = "FF00FFFF",
 						gradientDirection = "disabled",
@@ -2239,7 +2239,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 			{ key = "ravage",        label = L["DruidFeralCheckboxRavage"],        tooltip = L["DruidFeralIndicatorRavageTooltip"],          colorLabel = L["DruidFeralIndicatorRavageColor"] },
 			{ key = "clearcasting",  label = L["DruidFeralCheckboxClearcasting"],  tooltip = L["DruidFeralIndicatorClearcastingTooltip"],    colorLabel = L["DruidFeralIndicatorClearcastingColor"] },
 			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
-			{ key = "berserkAftermath", label = L["DruidFeralCheckboxBerserkAftermath"], tooltip = L["DruidFeralIndicatorBerserkAftermathTooltip"], colorLabel = L["DruidFeralIndicatorBerserkAftermathColor"] },
+			{ key = "halazzisFury", label = L["DruidFeralCheckboxHalazzisFury"], tooltip = L["DruidFeralIndicatorHalazzisFuryTooltip"], colorLabel = L["DruidFeralIndicatorHalazzisFuryColor"] },
 		},
 		gradientDefs = {
 			{ key = "maxBite",       label = L["DruidFeralCheckboxMaxBite"],        tooltip = L["DruidFeralIndicatorMaxBiteTooltip"],         colorLabel = L["DruidFeralIndicatorMaxBiteColor"] },

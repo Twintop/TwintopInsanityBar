@@ -3010,9 +3010,8 @@ L["WarriorAudioCheckboxViolentOutburst"] = "Play audio cue when a Violent Outbur
 L["WarriorAudioCheckboxViolentOutburstTooltip"] = "Plays the selected sound when Shield Slam's Rage generation indicates a Violent Outburst proc has become available."
 L["WarriorProtectionBarTextVariable_voTime"] = "Time remaining on Violent Outburst proc"
 
--- Druid Feral Midnight Season 2 set bonus (Berserk Aftermath)
-L["DruidFeralCheckboxBerserkAftermath"] = "Berserk Aftermath (Set 2pc)"
-L["DruidFeralIndicatorBerserkAftermathTooltip"] = "Changes to this color while the Midnight Season 2 (2pc) damage buff is active after Berserk / Avatar of Ashamane ends."
-L["DruidFeralIndicatorBerserkAftermathColor"] = "Berserk Aftermath buff is active"
-L["DruidFeralBarTextVariable_berserkAftermathTime"] = "Time remaining on the Berserk Aftermath (Set 2pc) damage buff"
-L["DruidFeralBarTextVariable_berserkAftermath"] = "Is the Berserk Aftermath (Set 2pc) damage buff active? LOGIC VARIABLE ONLY!"
+-- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
+L["DruidFeralCheckboxHalazzisFury"] = "Halazzi's Fury (Set 2pc)"
+L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this color while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
+L["DruidFeralIndicatorHalazzisFuryColor"] = "Halazzi's Fury buff is active"
+L["DruidFeralBarTextVariable_halazzisFuryTime"] = "Time remaining on the Halazzi's Fury (Set 2pc) damage buff"
