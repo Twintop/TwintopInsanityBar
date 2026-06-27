@@ -2773,4 +2773,13 @@ if locale == "zhCN" then
 	L["MonkBrewmasterStaggerTextColorModeCustom"] = "自定义颜色"
 	L["MonkBrewmasterStaggerTextColorModeNone"] = "不启用着色"
 	L["MonkBrewmasterStaggerTextColorCustom"] = "自定义醉拳文字颜色"
+
+	-- Warrior Protection Violent Outburst (proc detected from Shield Slam's Rage generation)
+	L["WarriorIndicatorViolentOutburst"] = "怒意迸发（触发）"
+	L["WarriorIndicatorViolentOutburstTooltip"] = "怒意迸发触发生效时切换为此颜色，通过盾牌猛击的怒气生成增益检测触发。"
+	L["WarriorIndicatorViolentOutburstColor"] = "怒意迸发已激活"
+	L["WarriorAudioViolentOutburstProc"] = "怒意迸发触发"
+	L["WarriorAudioCheckboxViolentOutburst"] = "怒意迸发触发时播放音效"
+	L["WarriorAudioCheckboxViolentOutburstTooltip"] = "当盾牌猛击的怒气生成判定怒意迸发触发可用时，播放选中的音效。"
+	L["WarriorProtectionBarTextVariable_voTime"] = "怒意迸发触发剩余时间"
 end
