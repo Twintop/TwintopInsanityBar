@@ -17,6 +17,7 @@ local content = [====[
 ### Localization
 
 - [#777](#777) Add an alternate number formatting method for CJK locales (zhCN/zhTW/koKR) that groups by myriads on a 10,000-step scale.
+- [#782](#782) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
 
 ## Death Knight
 
