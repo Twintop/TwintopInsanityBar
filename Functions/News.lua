@@ -12,11 +12,15 @@ local content = [====[
 
 ---
 
-# 12.0.7.2-release (2026-06-24)
+# 12.0.7.2-release (2026-06-28)
 ## General
 ### Localization
 
 - [#777](#777) Add an alternate number formatting method for CJK locales (zhCN/zhTW/koKR) that groups by myriads on a 10,000-step scale.
+
+## Death Knight
+
+- Add an option to disable showing the Rune recharge progress.
 
 ## Warrior
 ### Protection

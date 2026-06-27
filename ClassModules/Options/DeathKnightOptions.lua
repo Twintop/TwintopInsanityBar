@@ -346,7 +346,8 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFCCCCCC",
 					gradientDirection = "disabled"
 				},
-				sortRunes = true
+				sortRunes = true,
+				cooldownEnabled = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
@@ -565,7 +566,8 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFCCCCCC",
 					gradientDirection = "disabled"
 				},
-				sortRunes = true
+				sortRunes = true,
+				cooldownEnabled = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
@@ -766,7 +768,8 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFCCCCCC",
 					gradientDirection = "disabled"
 				},
-				sortRunes = true
+				sortRunes = true,
+				cooldownEnabled = true
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
@@ -1025,6 +1028,16 @@ local function BloodConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
 	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -1547,6 +1560,16 @@ local function FrostConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
 	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
@@ -1978,6 +2001,16 @@ local function UnholyConstructRunesBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
 	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.cooldown
 	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
