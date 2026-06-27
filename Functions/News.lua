@@ -22,6 +22,11 @@ local content = [====[
 
 - Add an option to disable showing the Rune recharge progress.
 
+## Warlock
+### Demonology
+
+- Add a new dedicated overlay color for the Soul Shard that will be refunded when Hand of Gul'dan finishes casting while Dominion of Argus is active.
+
 ## Warrior
 ### Protection
 

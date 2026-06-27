@@ -3011,3 +3011,6 @@ L["WarriorAudioCheckboxViolentOutburstTooltip"] = "Plays the selected sound when
 L["WarriorProtectionBarTextVariable_voTime"] = "Time remaining on Violent Outburst proc"
 L["DeathKnightRunesCheckboxShowCooldown"] = "Show Rune cooldown progress?"
 L["DeathKnightRunesCheckboxShowCooldownTooltip"] = "When checked, Runes that are on cooldown display their partial regeneration progress. When unchecked, Runes only show as fully ready or empty."
+L["WarlockSoulShardsColorPickerRefunding"] = "Refunded Soul Shard (Dominion of Argus)"
+L["WarlockSoulShardsRefundingOverlayCheckbox"] = "Use the Refunded Soul Shard color?"
+L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own color. When unchecked, it uses the Spending Overlay color instead."

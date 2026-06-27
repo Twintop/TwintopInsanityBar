@@ -330,4 +330,8 @@ if locale == "enGB" then
 
     -- Warrior Protection Violent Outburst
     L["WarriorIndicatorViolentOutburstTooltip"] = "Changes to this colour while a Violent Outburst proc is active, detected from Shield Slam's increased Rage generation."
+
+    -- Warlock Demonology Dominion of Argus refund
+    L["WarlockSoulShardsRefundingOverlayCheckbox"] = "Use the Refunded Soul Shard colour?"
+    L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own colour. When unchecked, it uses the Spending Overlay colour instead."
 end

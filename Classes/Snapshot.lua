@@ -1288,6 +1288,7 @@ end
 ---@field public resourceFinal number
 ---@field public resource2Casting number
 ---@field public resource2Spending number
+---@field public resource2Refunding number
 ---@field public icon string
 ---@field public spellKey string?
 ---@field public gcdLockRemaining number
@@ -1314,6 +1315,7 @@ function TRB.Classes.SnapshotCasting:Reset()
 	self.resourceFinal = 0
 	self.resource2Casting = 0
 	self.resource2Spending = 0
+	self.resource2Refunding = 0
 	self.icon = ""
 	self.spellKey = nil
 	self.gcdLockRemaining = 0

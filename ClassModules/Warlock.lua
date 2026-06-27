@@ -758,6 +758,7 @@ local function UpdateCastingResourceFinal_Affliction()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.seedOfCorruption.id then
 		casting.resource2Spending = spells.seedOfCorruption.resource
@@ -775,6 +776,7 @@ local function UpdateCastingResourceFinal_Demonology()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.shadowBolt.id then
 		casting.resource2Casting = spells.shadowBolt.resource
@@ -791,6 +793,7 @@ local function UpdateCastingResourceFinal_Demonology()
 		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId] or talents.talents[spells.dominionOfArgus2.talentId] or talents.talents[spells.dominionOfArgus3.talentId]
 		if snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive and dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
 			mod = spells.demonicCalling.attributes.resourceMod
+			casting.resource2Refunding = mod -- Dominion of Argus refunds 1 Soul Shard on Hand of Gul'dan
 		end
 		casting.resource2Spending = spells.handOfGuldan.resource + mod
 	elseif casting.spellId == spells.summonFelguard.id then
@@ -812,6 +815,7 @@ local function UpdateCastingResourceFinal_Destruction()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.incinerate.id then
 		if talents:IsTalentActive(spells.diabolicEmbers) then
@@ -1185,6 +1189,17 @@ local function UpdateResourceBar()
 		-- whole shard via a passive power update) splits a single-shard prediction across
 		-- two adjacent nodes.
 		local overlayBaseline = math.floor(normalizedResource2)
+		-- Dominion of Argus refund: the leftmost shard of Hand of Gul'dan's full cost (just
+		-- below the spending overlay) survives the cast, so mark it with the refunding overlay.
+		local refundingShards = math.abs(snapshotData.casting.resource2Refunding or 0)
+		local refundingSettings = specCacheSettings.colors.comboPoints.refunding
+		local refundingNodeIndex = nil
+		if refundingShards > 0 then
+			local idx = overlayBaseline - spendingShards
+			if idx >= 1 then
+				refundingNodeIndex = idx
+			end
+		end
 
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
@@ -1207,6 +1222,16 @@ local function UpdateResourceBar()
 				end
 			end
 
+			-- The refund node sits below the spend overlay and always draws an overlay; when the
+			-- refunding color is enabled it uses that color, otherwise it falls back to spending.
+			local nodeSpendingSettings = spendingSettings
+			if refundingNodeIndex ~= nil and x == refundingNodeIndex then
+				overlayAmount = -refundingShards
+				if refundingSettings and refundingSettings.enabled then
+					nodeSpendingSettings = refundingSettings
+				end
+			end
+
 			if barGroups and barGroups.secondary then
 				local shardNode = barGroups.secondary:GetNode(x)
 				if shardNode then
@@ -1216,7 +1241,7 @@ local function UpdateResourceBar()
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
 					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeSpendingSettings, castingTexture)
 					end
 				end
 			end
