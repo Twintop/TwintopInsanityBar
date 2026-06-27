@@ -310,7 +310,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
 ---@field public isMountedAny boolean? # Show when the player is mounted (any mount)
 ---@field public isMountedGround boolean? # Show when the player is on a ground mount (mounted + not flying)
----@field public isSkyriding boolean? # Show when the player is skyriding
+---@field public isSkyriding boolean? # Show when mounted on a skyriding-capable mount in a skyriding-enabled area
 ---@field public isSteadyFlight boolean? # Show when the player is on a steady flight mount (non-skyriding, flying)
 ---@field public inGroup boolean? # Show when the player is in a group (party or raid)
 ---@field public inRaid boolean? # Show when the player is in a raid group
@@ -337,7 +337,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isMountedGround boolean? # Hide when the player is on a ground mount (mounted + not flying)
 ---@field public isMountedFlying boolean? # Hide when the player is on a flying mount (non-skyriding, flying)
 ---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
----@field public isSkyriding boolean? # Hide when the player is skyriding
+---@field public isSkyriding boolean? # Hide when mounted on a skyriding-capable mount in a skyriding-enabled area
 ---@field public isDruidHumanoidForm boolean? # Hide when the Druid player is in humanoid form
 ---@field public isDruidTravelFormAny boolean? # Hide when the Druid player is in any travel form variant
 ---@field public isDruidStagForm boolean? # Hide when the Druid player is in stag/ground travel form

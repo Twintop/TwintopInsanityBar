@@ -15,7 +15,7 @@ TRB.Functions = TRB.Functions or {}
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
 ---@field isMountedFlying boolean # Whether the player is on a non-skyriding mount and actively flying
----@field isSkyriding boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
 ---@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
 ---@field inRaid boolean # Whether the player is in a raid group
@@ -98,7 +98,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local canSkyriding = TRB.Data.character.isSkyriding or false
 	local isMountedGround = isMountedAny and not isFlying
-	local isSkyriding = isMountedAny and canSkyriding and isFlying
+	local isSkyriding = isMountedAny and canSkyriding
 	local isSteadyFlight = isMountedAny and not canSkyriding and isFlying
 	local isMountedFlying = isSteadyFlight
 	local onTaxi = TRB.Data.character.onTaxi
