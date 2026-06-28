@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.0.7.3-release (2026-06-29)
+## General
+
+- [#784](#784 - @EricaPomme) Fix threshold flickering when bar is anchored to Cooldown Manager frames.
+
+---
+
 # 12.0.7.2-release (2026-06-28)
 ## General
 ### Localization
