@@ -1009,14 +1009,6 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			if self:IsRenderTransitionActive() then
 				SetBarGroupsAlpha(0)
 			end
-
-			-- Redraw thresholds to match new bar dimensions
-			local thresholds = primaryNode:GetThresholds()
-			if thresholds and #thresholds > 0 then
-				for _, threshold in ipairs(thresholds) do
-					TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
-				end
-			end
 		end
 	end
 
@@ -1056,28 +1048,14 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			end
 		end
 
-		-- Redraw thresholds on secondary nodes to match new bar dimensions
-		for i = 1, barGroups.secondary.maxNodes do
-			local node = barGroups.secondary:GetNode(i)
-			if node then
-				local thresholds = node:GetThresholds()
-				if thresholds and #thresholds > 0 then
-					for _, threshold in ipairs(thresholds) do
-						TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, layoutSettings)
-					end
-				end
-			end
-		end
 	elseif barGroups.secondary then
 		-- No combo point settings for this spec/configuration - hide the secondary bar
 		barGroups.secondary:Hide()
 	end
 
-	-- Clear threshold color cache so AdjustThresholdDisplay recalculates colors correctly
+	-- Clear RGBA memoization cache so AdjustThresholdDisplay recalculates colors correctly
 	-- This fixes a bug where moving the bar caused threshold colors to reset and stay wrong
-	-- Also clear colors cache in general
 	if TRB.Data.cache and TRB.Data.cache.values then
-		wipe(TRB.Data.cache.values.threshold)
 		TRB.Functions.Character:ResetColorCaches()
 	end
 
