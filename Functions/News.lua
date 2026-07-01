@@ -17,6 +17,16 @@ local content = [====[
 
 - [#784](#784 - @EricaPomme) Fix threshold flickering when bar is anchored to Cooldown Manager frames.
 
+## Paladin
+### Holy
+
+- Add `$holyPowerPlusCasting` bar text variable, showing current Holy Power plus the amount coming from the active cast.
+
+## Warlock
+
+- Add `$castingShards` and `$castingSoulShards` as synonyms for `$castingFragments`, and fix all three to reflect Soul Shard spending (not just generation) as a negative value.
+- Add `$soulShardsPlusCasting` bar text variable, showing current Soul Shards plus the net amount from the active cast (generation or spending).
+
 ---
 
 # 12.0.7.2-release (2026-06-28)

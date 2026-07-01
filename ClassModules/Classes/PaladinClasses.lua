@@ -63,6 +63,8 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$holyPowerPlusCasting", description = L["PaladinHolyBarTextVariable_holyPowerPlusCasting"], printInSettings = true, color = false },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false },
 		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
 		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
