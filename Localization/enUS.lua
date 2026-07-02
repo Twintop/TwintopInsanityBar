@@ -3014,3 +3014,7 @@ L["DeathKnightRunesCheckboxShowCooldownTooltip"] = "When checked, Runes that are
 L["WarlockSoulShardsColorPickerRefunding"] = "Refunded Soul Shard (Dominion of Argus)"
 L["WarlockSoulShardsRefundingOverlayCheckbox"] = "Use the Refunded Soul Shard color?"
 L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own color. When unchecked, it uses the Spending Overlay color instead."
+
+-- Bar Visibility Conditions (granular skyriding/steady flight options)
+L["ShowBarVisibilityConditionIsSkyridingFlying"] = "Skyriding (Flying Only)"
+L["ShowBarVisibilityConditionIsSteadyFlightFlying"] = "Steady Flight (Flying Only)"
