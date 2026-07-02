@@ -15,12 +15,12 @@ local content = [====[
 # 12.0.7.3-release (2026-07-03)
 ## General
 
-- [#783](#783 - @misterwiki) Enhance bar visibility options to allow bars to be shown or hidden always when Skyriding or in Steady Flight, or, when actively in flight in either mode.
-- [#784](#784 - @EricaPomme) Fix threshold flickering when bar is anchored to Cooldown Manager frames.
+- [#783 - @misterwiki](#783) Enhance bar visibility options to allow bars to be shown or hidden always when Skyriding or in Steady Flight, or, when actively in flight in either mode.
+- [#784 - @EricaPomme](#784) Fix threshold flickering when bar is anchored to Cooldown Manager frames.
 
 ### Localization
 
-- [#787](#787 - @MOSS099) Updated translations for Simplified Chinese (zhCN).
+- [#787 - @MOSS099](#787) Updated translations for Simplified Chinese (zhCN).
 
 ## Paladin
 ### Holy
