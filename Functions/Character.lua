@@ -31,6 +31,11 @@ local cachedResourcePercentPrecision = nil
 local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
+local function UpdateSkyridingState()
+	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
+	TRB.Data.character.isSkyriding = canGlide or false
+end
+
 --TODO: Move this somewhere else.
 ---Fallback implementation that hides all bar groups. Class modules override this with spec-specific visibility logic.
 ---@param force boolean|nil If true, force-hide even if normally shown
@@ -413,6 +418,7 @@ local function CharacterChange(self, event, ...)
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
 				TRB.Data.character.isMounted = IsMounted()
+				UpdateSkyridingState()
 				local isMounted = TRB.Data.character.isMounted
 
 				if isMounted then
@@ -427,8 +433,7 @@ local function CharacterChange(self, event, ...)
 			end)
 		end)
 	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
-		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
-		TRB.Data.character.isSkyriding = canGlide or false
+		UpdateSkyridingState()
 
 		if TRB.Data.character.isMounted then
 			-- Keep flight polling running while mounted
@@ -541,9 +546,9 @@ function TRB.Functions.Character:DisableCharacterChange()
 	TRB.Functions.Character:StopFlightPolling()
 end
 
--- Flight state polling for non-skyriding mounts.
+-- Flight state polling for mounted flight transitions.
 -- IsFlying() changes without any event when transitioning between ground and air,
--- so we poll at a short interval while mounted on a non-skyriding mount.
+-- so we poll at a short interval while mounted.
 local flightPollTicker = nil
 local lastKnownIsFlying = nil
 
@@ -912,8 +917,7 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 
 	-- Phase 2 visibility state
-	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
-	TRB.Data.character.isSkyriding = canGlide or false
+	UpdateSkyridingState()
 
 	local _, instanceType = GetInstanceInfo()
 	TRB.Data.character.instanceType = instanceType or "none"

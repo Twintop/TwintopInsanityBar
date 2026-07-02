@@ -14,9 +14,11 @@ TRB.Functions = TRB.Functions or {}
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
----@field isMountedFlying boolean # Whether the player is on a non-skyriding mount and actively flying
----@field isSkyriding boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
----@field isSteadyFlight boolean # Whether the player is on a non-skyriding mount and actively flying
+---@field isMountedFlying boolean # Whether the player is mounted and in real (non-gliding) flight (Hide-list alias of isSteadyFlight)
+---@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
+---@field isSkyridingFlying boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isSteadyFlight boolean # Whether the player is mounted and in real (non-gliding) flight; IsFlying() is false while skyriding-gliding
+---@field isSteadyFlightFlying boolean # Whether the player is mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
 ---@field inRaid boolean # Whether the player is in a raid group
 ---@field inInstance boolean # Whether the player is in any instance (dungeon, raid, scenario, arena, battleground)
@@ -58,7 +60,9 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.isMountedGround = params.isMountedGround or false
 	self.isMountedFlying = params.isMountedFlying or false
 	self.isSkyriding = params.isSkyriding or false
+	self.isSkyridingFlying = params.isSkyridingFlying or false
 	self.isSteadyFlight = params.isSteadyFlight or false
+	self.isSteadyFlightFlying = params.isSteadyFlightFlying or false
 	self.inGroup = params.inGroup or false
 	self.inRaid = params.inRaid or false
 	self.inInstance = params.inInstance or false
@@ -95,11 +99,14 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	end
 
 	local isFlying = IsFlying()
+	local isGliding = C_PlayerInfo.GetGlidingInfo() or false
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local canSkyriding = TRB.Data.character.isSkyriding or false
-	local isMountedGround = isMountedAny and not isFlying
-	local isSkyriding = isMountedAny and canSkyriding and isFlying
-	local isSteadyFlight = isMountedAny and not canSkyriding and isFlying
+	local isMountedGround = isMountedAny and not isFlying and not isGliding
+	local isSkyriding = isMountedAny and canSkyriding
+	local isSkyridingFlying = isMountedAny and canSkyriding and isFlying
+	local isSteadyFlight = isMountedAny and isFlying
+	local isSteadyFlightFlying = isMountedAny and isFlying
 	local isMountedFlying = isSteadyFlight
 	local onTaxi = TRB.Data.character.onTaxi
 	if onTaxi == nil then
@@ -144,7 +151,9 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		isMountedGround = isMountedGround,
 		isMountedFlying = isMountedFlying,
 		isSkyriding = isSkyriding,
+		isSkyridingFlying = isSkyridingFlying,
 		isSteadyFlight = isSteadyFlight,
+		isSteadyFlightFlying = isSteadyFlightFlying,
 		inGroup = IsInGroup() or false,
 		inRaid = IsInRaid() or false,
 		inInstance = inInstance,
@@ -233,7 +242,7 @@ end
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
----  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, hasTarget, inGroup, inRaid,
+---  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, isSkyridingFlying, isSteadyFlight, isSteadyFlightFlying, hasTarget, inGroup, inRaid,
 ---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
 ---  Druid shapeshift form,
 ---  per-bar visibility settings, talent gates, maxResource2.
@@ -283,6 +292,12 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 		return true
 	end
 	if conditions.isSkyriding == true and context.isSkyriding then
+		return true
+	end
+	if conditions.isSkyridingFlying == true and context.isSkyridingFlying then
+		return true
+	end
+	if conditions.isSteadyFlightFlying == true and context.isSteadyFlightFlying then
 		return true
 	end
 	if conditions.inVehicle == true and context.inVehicle then
@@ -372,7 +387,13 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 	if conditions.isSkyriding and context.isSkyriding then
 		return true
 	end
+	if conditions.isSkyridingFlying and context.isSkyridingFlying then
+		return true
+	end
 	if conditions.isSteadyFlight and context.isSteadyFlight then
+		return true
+	end
+	if conditions.isSteadyFlightFlying and context.isSteadyFlightFlying then
 		return true
 	end
 	if conditions.inGroup and context.inGroup then

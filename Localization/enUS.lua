@@ -3020,3 +3020,7 @@ L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"] = "Current Soul Shar
 L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"] = "Current Soul Shards Plus Casting"
 L["PaladinHolyBarTextVariable_holyPowerPlusCasting"] = "Current Holy Power Plus Casting"
 L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own color. When unchecked, it uses the Spending Overlay color instead."
+
+-- Bar Visibility Conditions (granular skyriding/steady flight options)
+L["ShowBarVisibilityConditionIsSkyridingFlying"] = "Skyriding (Flying Only)"
+L["ShowBarVisibilityConditionIsSteadyFlightFlying"] = "Steady Flight (Flying Only)"
