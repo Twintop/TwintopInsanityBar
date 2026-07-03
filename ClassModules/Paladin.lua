@@ -423,6 +423,21 @@ local function RefreshLookupData_Holy()
 		end
 	end
 
+	-- Block E: Holy Power Plus Casting ($holyPowerPlusCasting, $comboPointsPlusCasting)
+	if not activeVars or activeVars["$holyPowerPlusCasting"] or activeVars["$comboPointsPlusCasting"] then
+		local holyPowerPlusCastingColor = sharedSettings.colors.text.casting.color
+		local holyPowerPlusCasting = snapshotData.attributes.resource2 + castingHolyPower
+
+		lookupLogic["$holyPowerPlusCasting"] = holyPowerPlusCasting
+		lookupLogic["$comboPointsPlusCasting"] = holyPowerPlusCasting
+
+		if lookupChanged(prevState, "$holyPowerPlusCasting", holyPowerPlusCasting, holyPowerPlusCastingColor) then
+			local f = string.format("|c%s%.0f|r", holyPowerPlusCastingColor, holyPowerPlusCasting)
+			lookup["$holyPowerPlusCasting"] = f
+			lookup["$comboPointsPlusCasting"] = f
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1514,6 +1529,8 @@ do
 		local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingHolyPower"]
 		return value ~= nil and not issecretvalue(value) and value ~= 0
 	end
+	holy["$holyPowerPlusCasting"] = true
+	holy["$comboPointsPlusCasting"] = true
 	specValidVars = { [1] = holy, [2] = shared, [3] = shared }
 end
 

@@ -2773,4 +2773,25 @@ if locale == "zhCN" then
 	L["MonkBrewmasterStaggerTextColorModeCustom"] = "自定义颜色"
 	L["MonkBrewmasterStaggerTextColorModeNone"] = "不启用着色"
 	L["MonkBrewmasterStaggerTextColorCustom"] = "自定义醉拳文字颜色"
+
+	-- Warrior Protection Violent Outburst (proc detected from Shield Slam's Rage generation)
+	L["WarriorIndicatorViolentOutburst"] = "怒意迸发（触发）"
+	L["WarriorIndicatorViolentOutburstTooltip"] = "怒意迸发触发生效时切换为此颜色，通过盾牌猛击的怒气生成增益检测触发。"
+	L["WarriorIndicatorViolentOutburstColor"] = "怒意迸发已激活"
+	L["WarriorAudioViolentOutburstProc"] = "怒意迸发触发"
+	L["WarriorAudioCheckboxViolentOutburst"] = "怒意迸发触发时播放音效"
+	L["WarriorAudioCheckboxViolentOutburstTooltip"] = "当盾牌猛击的怒气生成判定怒意迸发触发可用时，播放选中的音效。"
+	L["WarriorProtectionBarTextVariable_voTime"] = "怒意迸发触发剩余时间"
+	L["DeathKnightRunesCheckboxShowCooldown"] = "显示符文冷却进度？"
+	L["DeathKnightRunesCheckboxShowCooldownTooltip"] = "勾选后，冷却中的符文会显示部分恢复进度；取消勾选后，符文仅显示为完全就绪或未就绪状态。"
+	L["WarlockSoulShardsColorPickerRefunding"] = "返还的灵魂碎片（阿古斯支配）"
+	L["WarlockSoulShardsRefundingOverlayCheckbox"] = "使用返还灵魂碎片的专属颜色？"
+	
+	-- Soul Shards / Holy Power Plus Casting (current resource projected forward, including incoming from the active cast)
+	L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"] = "当前灵魂碎片（含施法预获取）"
+	L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"] = "当前灵魂碎片（含施法预获取）"
+	L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"] = "当前灵魂碎片（含施法预获取）"
+	L["PaladinHolyBarTextVariable_holyPowerPlusCasting"] = "当前神圣能量（含施法预获取）"
+	L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "勾选后，由古尔丹之手返还的灵魂碎片（满级阿古斯支配生效期间）将使用专属颜色；取消勾选后，将使用消耗覆盖颜色。"
+
 end

@@ -37,11 +37,43 @@ local content = [====[
 
 ---
 
-# 12.0.7.2-release (2026-06-24)
+# 12.0.7.3-release (2026-07-03)
+## General
+
+- [#783 - @misterwiki](#783) Enhance bar visibility options to allow bars to be shown or hidden always when Skyriding or in Steady Flight, or, when actively in flight in either mode.
+- [#784 - @EricaPomme](#784) Fix threshold flickering when bar is anchored to Cooldown Manager frames.
+
+### Localization
+
+- [#787 - @MOSS099](#787) Updated translations for Simplified Chinese (zhCN).
+
+## Paladin
+### Holy
+
+- Add `$holyPowerPlusCasting` bar text variable, showing current Holy Power plus the amount coming from the active cast.
+
+## Warlock
+
+- Add `$castingShards` and `$castingSoulShards` as synonyms for `$castingFragments`, and fix all three to reflect Soul Shard spending (not just generation) as a negative value.
+- Add `$soulShardsPlusCasting` bar text variable, showing current Soul Shards plus the net amount from the active cast (generation or spending).
+
+---
+
+# 12.0.7.2-release (2026-06-28)
 ## General
 ### Localization
 
 - [#777](#777) Add an alternate number formatting method for CJK locales (zhCN/zhTW/koKR) that groups by myriads on a 10,000-step scale.
+- [#782](#782) Updated translations for Simplified Chinese (zhCN) by M.O.S.S! Thank you so much for your help!
+
+## Death Knight
+
+- Add an option to disable showing the Rune recharge progress.
+
+## Warlock
+### Demonology
+
+- Add a new dedicated overlay color for the Soul Shard that will be refunded when Hand of Gul'dan finishes casting while Dominion of Argus is active.
 
 ## Warrior
 ### Protection

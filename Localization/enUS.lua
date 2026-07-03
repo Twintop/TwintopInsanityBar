@@ -3009,6 +3009,21 @@ L["WarriorAudioViolentOutburstProc"] = "Violent Outburst Proc"
 L["WarriorAudioCheckboxViolentOutburst"] = "Play audio cue when a Violent Outburst proc occurs"
 L["WarriorAudioCheckboxViolentOutburstTooltip"] = "Plays the selected sound when Shield Slam's Rage generation indicates a Violent Outburst proc has become available."
 L["WarriorProtectionBarTextVariable_voTime"] = "Time remaining on Violent Outburst proc"
+L["DeathKnightRunesCheckboxShowCooldown"] = "Show Rune cooldown progress?"
+L["DeathKnightRunesCheckboxShowCooldownTooltip"] = "When checked, Runes that are on cooldown display their partial regeneration progress. When unchecked, Runes only show as fully ready or empty."
+L["WarlockSoulShardsColorPickerRefunding"] = "Refunded Soul Shard (Dominion of Argus)"
+L["WarlockSoulShardsRefundingOverlayCheckbox"] = "Use the Refunded Soul Shard color?"
+
+-- Soul Shards / Holy Power Plus Casting (current resource projected forward, including incoming from the active cast)
+L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"] = "Current Soul Shards Plus Casting"
+L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"] = "Current Soul Shards Plus Casting"
+L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"] = "Current Soul Shards Plus Casting"
+L["PaladinHolyBarTextVariable_holyPowerPlusCasting"] = "Current Holy Power Plus Casting"
+L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own color. When unchecked, it uses the Spending Overlay color instead."
+
+-- Bar Visibility Conditions (granular skyriding/steady flight options)
+L["ShowBarVisibilityConditionIsSkyridingFlying"] = "Skyriding (Flying Only)"
+L["ShowBarVisibilityConditionIsSteadyFlightFlying"] = "Steady Flight (Flying Only)"
 
 -- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
 L["DruidFeralCheckboxHalazzisFury"] = "Halazzi's Fury (Set 2pc)"

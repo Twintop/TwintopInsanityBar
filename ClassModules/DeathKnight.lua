@@ -784,6 +784,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local cpBorderColor = specSettings.colors.comboPoints.border.color
 	local cpBaseColor = specSettings.colors.comboPoints.base
 	local cpCooldownColor = specSettings.colors.comboPoints.cooldown
+	local cpCooldownEnabled = specSettings.colors.comboPoints.cooldownEnabled
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -817,15 +818,17 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		local runeColor = runeBarColors.bar
 		local runeBackgroundColor = runeBarColors.background
 
-		if not rune.ready and not (runeTargets and runeTargets.bar) then
+		if cpCooldownEnabled and not rune.ready and not (runeTargets and runeTargets.bar) then
 			runeColor = cpCooldownColor
 		end
-		
+
+		-- When cooldown display is off, runes are binary: full when ready, empty otherwise
+		local runeValue = cpCooldownEnabled and rune.percentage or (rune.ready and 1 or 0)
 
 		if barGroups and barGroups.secondary then
 			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
-				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, rune.percentage, 1)
+				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, runeValue, 1)
 				if runeGradientResults.border then
 					runeNode:SetBorderColorCurve(runeGradientResults.border)
 				else

@@ -302,6 +302,13 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
 				casting = TRB.Functions.Settings:DefaultSecondaryCastingOverlayColor(true),
 				spending = TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(true),
+				refunding = {
+					color = "FF33CC33",
+					color2 = "FF33CC33",
+					gradientDirection = "disabled",
+					enabled = true,
+					fullHeight = false
+				},
 				second = {
 					color = "FF8788EE",
 					color2 = "FF8788EE",
@@ -1260,6 +1267,30 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceSoulShards"])
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverlayOptions(parent, controls, spec, 9, 2, yCoord, L["ResourceSoulShards"])
 
+	controls.colors.comboPoints.refunding = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["WarlockSoulShardsColorPickerRefunding"], spec.colors.comboPoints.refunding, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.refunding
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "refunding")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.refunding, self)
+	end)
+
+	controls.checkBoxes.refundingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Demonology_Checkbox_RefundingOverlay", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.refundingOverlayEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsRefundingOverlayCheckbox"])
+	f.tooltip = L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"]
+	f:SetChecked(spec.colors.comboPoints.refunding.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.refunding.enabled = self:GetChecked()
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end)
+
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)

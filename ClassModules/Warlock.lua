@@ -370,15 +370,20 @@ local function RefreshLookupData_Affliction()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Casting Soul Shard Fragments ($castingFragments)
-	if not activeVars or activeVars["$castingFragments"] then
+	-- Block C: Casting Soul Shard Fragments ($castingFragments, $castingShards, $castingSoulShards)
+	if not activeVars or activeVars["$castingFragments"] or activeVars["$castingShards"] or activeVars["$castingSoulShards"] then
 		local castingFragmentsColor = sharedSettings.colors.text.casting.color
-		local castingFragments = snapshotData.casting.resource2Casting or 0
+		local castingFragments = (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
 
 		lookupLogic["$castingFragments"] = castingFragments
+		lookupLogic["$castingShards"] = castingFragments
+		lookupLogic["$castingSoulShards"] = castingFragments
 
 		if lookupChanged(prevState, "$castingFragments", castingFragments, castingFragmentsColor) then
-			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+			local f = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+			lookup["$castingFragments"] = f
+			lookup["$castingShards"] = f
+			lookup["$castingSoulShards"] = f
 		end
 	end
 
@@ -418,6 +423,21 @@ local function RefreshLookupData_Affliction()
 
 		if lookupChanged(prevState, "$shardInstabilityMaxStacks", spells.shardInstability.maxStacks) then
 			lookup["$shardInstabilityMaxStacks"] = string.format("%.0f", spells.shardInstability.maxStacks)
+		end
+	end
+
+	-- Block E: Soul Shards Plus Casting ($soulShardsPlusCasting, $comboPointsPlusCasting)
+	if not activeVars or activeVars["$soulShardsPlusCasting"] or activeVars["$comboPointsPlusCasting"] then
+		local soulShardsPlusCastingColor = sharedSettings.colors.text.casting.color
+		local soulShardsPlusCasting = snapshotData.attributes.resource2 + (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
+
+		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
+		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
+
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
+			lookup["$soulShardsPlusCasting"] = f
+			lookup["$comboPointsPlusCasting"] = f
 		end
 	end
 
@@ -499,15 +519,20 @@ local function RefreshLookupData_Demonology()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
-	-- Block C: Casting Soul Shard Fragments ($castingFragments)
-	if not activeVars or activeVars["$castingFragments"] then
+	-- Block C: Casting Soul Shard Fragments ($castingFragments, $castingShards, $castingSoulShards)
+	if not activeVars or activeVars["$castingFragments"] or activeVars["$castingShards"] or activeVars["$castingSoulShards"] then
 		local castingFragmentsColor = sharedSettings.colors.text.casting.color
-		local castingFragments = snapshotData.casting.resource2Casting or 0
+		local castingFragments = (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
 
 		lookupLogic["$castingFragments"] = castingFragments
+		lookupLogic["$castingShards"] = castingFragments
+		lookupLogic["$castingSoulShards"] = castingFragments
 
 		if lookupChanged(prevState, "$castingFragments", castingFragments, castingFragmentsColor) then
-			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+			local f = string.format("|c%s%.1f|r", castingFragmentsColor, castingFragments)
+			lookup["$castingFragments"] = f
+			lookup["$castingShards"] = f
+			lookup["$castingSoulShards"] = f
 		end
 	end
 
@@ -613,6 +638,21 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
+	-- Block H: Soul Shards Plus Casting ($soulShardsPlusCasting, $comboPointsPlusCasting)
+	if not activeVars or activeVars["$soulShardsPlusCasting"] or activeVars["$comboPointsPlusCasting"] then
+		local soulShardsPlusCastingColor = sharedSettings.colors.text.casting.color
+		local soulShardsPlusCasting = snapshotData.attributes.resource2 + (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
+
+		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
+		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
+
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
+			lookup["$soulShardsPlusCasting"] = f
+			lookup["$comboPointsPlusCasting"] = f
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -620,7 +660,7 @@ end
 local function RefreshLookupData_Destruction()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_destruction"].settings
-	local castingFragments = snapshotData.casting.resource2Casting or 0
+	local castingFragments = (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
 
 	-- Side-effect: other systems depend on manaRegen being current
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
@@ -693,15 +733,20 @@ local function RefreshLookupData_Destruction()
 		end
 	end
 
-	-- Block C: Casting Soul Shard Fragments ($castingFragments)
-	if not activeVars or activeVars["$castingFragments"] then
+	-- Block C: Casting Soul Shard Fragments ($castingFragments, $castingShards, $castingSoulShards)
+	if not activeVars or activeVars["$castingFragments"] or activeVars["$castingShards"] or activeVars["$castingSoulShards"] then
 		local castingFragmentsColor = sharedSettings.colors.text.casting.color
 		local normalizedCastingFragments = castingFragments / TRB.Data.resource2Factor
 
 		lookupLogic["$castingFragments"] = normalizedCastingFragments
+		lookupLogic["$castingShards"] = normalizedCastingFragments
+		lookupLogic["$castingSoulShards"] = normalizedCastingFragments
 
 		if lookupChanged(prevState, "$castingFragments", normalizedCastingFragments, castingFragmentsColor) then
-			lookup["$castingFragments"] = string.format("|c%s%.1f|r", castingFragmentsColor, normalizedCastingFragments)
+			local f = string.format("|c%s%.1f|r", castingFragmentsColor, normalizedCastingFragments)
+			lookup["$castingFragments"] = f
+			lookup["$castingShards"] = f
+			lookup["$castingSoulShards"] = f
 		end
 	end
 
@@ -747,6 +792,21 @@ local function RefreshLookupData_Destruction()
 		end
 	end
 
+	-- Block F: Soul Shards Plus Casting ($soulShardsPlusCasting, $comboPointsPlusCasting)
+	if not activeVars or activeVars["$soulShardsPlusCasting"] or activeVars["$comboPointsPlusCasting"] then
+		local soulShardsPlusCastingColor = sharedSettings.colors.text.casting.color
+		local soulShardsPlusCasting = (snapshotData.attributes.resource2Modified + castingFragments) / TRB.Data.resource2Factor
+
+		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
+		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
+
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+			local f = string.format("|c%s%.1f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
+			lookup["$soulShardsPlusCasting"] = f
+			lookup["$comboPointsPlusCasting"] = f
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -758,6 +818,7 @@ local function UpdateCastingResourceFinal_Affliction()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.seedOfCorruption.id then
 		casting.resource2Spending = spells.seedOfCorruption.resource
@@ -775,6 +836,7 @@ local function UpdateCastingResourceFinal_Demonology()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.shadowBolt.id then
 		casting.resource2Casting = spells.shadowBolt.resource
@@ -791,6 +853,7 @@ local function UpdateCastingResourceFinal_Demonology()
 		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId] or talents.talents[spells.dominionOfArgus2.talentId] or talents.talents[spells.dominionOfArgus3.talentId]
 		if snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive and dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
 			mod = spells.demonicCalling.attributes.resourceMod
+			casting.resource2Refunding = mod -- Dominion of Argus refunds 1 Soul Shard on Hand of Gul'dan
 		end
 		casting.resource2Spending = spells.handOfGuldan.resource + mod
 	elseif casting.spellId == spells.summonFelguard.id then
@@ -812,6 +875,7 @@ local function UpdateCastingResourceFinal_Destruction()
 	casting.resourceFinal = casting.resourceRaw
 	casting.resource2Casting = 0
 	casting.resource2Spending = 0
+	casting.resource2Refunding = 0
 
 	if casting.spellId == spells.incinerate.id then
 		if talents:IsTalentActive(spells.diabolicEmbers) then
@@ -1185,6 +1249,17 @@ local function UpdateResourceBar()
 		-- whole shard via a passive power update) splits a single-shard prediction across
 		-- two adjacent nodes.
 		local overlayBaseline = math.floor(normalizedResource2)
+		-- Dominion of Argus refund: the leftmost shard of Hand of Gul'dan's full cost (just
+		-- below the spending overlay) survives the cast, so mark it with the refunding overlay.
+		local refundingShards = math.abs(snapshotData.casting.resource2Refunding or 0)
+		local refundingSettings = specCacheSettings.colors.comboPoints.refunding
+		local refundingNodeIndex = nil
+		if refundingShards > 0 then
+			local idx = overlayBaseline - spendingShards
+			if idx >= 1 then
+				refundingNodeIndex = idx
+			end
+		end
 
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
@@ -1207,6 +1282,16 @@ local function UpdateResourceBar()
 				end
 			end
 
+			-- The refund node sits below the spend overlay and always draws an overlay; when the
+			-- refunding color is enabled it uses that color, otherwise it falls back to spending.
+			local nodeSpendingSettings = spendingSettings
+			if refundingNodeIndex ~= nil and x == refundingNodeIndex then
+				overlayAmount = -refundingShards
+				if refundingSettings and refundingSettings.enabled then
+					nodeSpendingSettings = refundingSettings
+				end
+			end
+
 			if barGroups and barGroups.secondary then
 				local shardNode = barGroups.secondary:GetNode(x)
 				if shardNode then
@@ -1216,7 +1301,7 @@ local function UpdateResourceBar()
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 
 					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeSpendingSettings, castingTexture)
 					end
 				end
 			end
@@ -2003,8 +2088,17 @@ do
 			local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingFragments"]
 			return value ~= nil and not issecretvalue(value) and value ~= 0
 		end,
+		["$castingShards"] = function()
+			local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingShards"]
+			return value ~= nil and not issecretvalue(value) and value ~= 0
+		end,
+		["$castingSoulShards"] = function()
+			local value = TRB.Data.lookupLogic and TRB.Data.lookupLogic["$castingSoulShards"]
+			return value ~= nil and not issecretvalue(value) and value ~= 0
+		end,
 		["$comboPoints"] = true, ["$soulShards"] = true,
 		["$comboPointsMax"] = true, ["$soulShardsMax"] = true,
+		["$comboPointsPlusCasting"] = true, ["$soulShardsPlusCasting"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}

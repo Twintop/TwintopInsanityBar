@@ -137,7 +137,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	}
 
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
+	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 	local conditionLabels = {
 		inCombat = L["ShowBarVisibilityConditionInCombat"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
@@ -146,7 +146,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
 		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
 		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+		isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
 		isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
+		isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
 		inGroup = L["ShowBarVisibilityConditionInGroup"],
 		inRaid = L["ShowBarVisibilityConditionInRaidGroup"],
 		inInstance = L["ShowBarVisibilityConditionInInstance"],
@@ -167,7 +169,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		},
 		{
 			title = L["ShowBarVisibilityGroupMounting"],
-			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSteadyFlight" },
+			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupSocial"],
@@ -193,12 +195,14 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
-	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSkyriding", "inVehicle", "inPetBattle", "onTaxi" }
+	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi" }
 	local hideConditionLabels = {
 		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
 		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
 		isMountedFlying = L["ShowBarVisibilityConditionIsSteadyFlight"],
+		isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
 		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+		isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
 		inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
 		onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
@@ -210,7 +214,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		},
 		{
 			title = L["ShowBarVisibilityGroupMounting"],
-			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isMountedFlying" },
+			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isMountedFlying", "isSteadyFlightFlying" },
 		},
 	}
 	if isDruidVisibilityPanel then
