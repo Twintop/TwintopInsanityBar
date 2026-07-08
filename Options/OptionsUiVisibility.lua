@@ -63,6 +63,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	if customBars == nil then
 		customBars = {}
 	end
+	-- Castbar is intentionally NOT included here: its on-screen visibility is driven entirely by
+	-- active cast state (see Functions/Castbar.lua), not the displayBar/BarVisibility system that
+	-- this panel configures. It has its own "Enable Cast Bar" toggle on the dedicated Cast Bar tab.
 	if extraThresholdTypes == nil then
 		extraThresholdTypes = {}
 	end

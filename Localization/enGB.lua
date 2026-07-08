@@ -334,4 +334,20 @@ if locale == "enGB" then
     -- Warlock Demonology Dominion of Argus refund
     L["WarlockSoulShardsRefundingOverlayCheckbox"] = "Use the Refunded Soul Shard colour?"
     L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul Shard refunded by Hand of Gul'dan (while Dominion of Argus is active at max rank) uses its own colour. When unchecked, it uses the Spending Overlay colour instead."
+
+    -- Castbar (colour overrides)
+    L["CastbarColorsHeader"] = "Cast Bar Fill Colours"
+    L["CastbarColorCast"] = "Cast Colour"
+    L["CastbarColorChannel"] = "Channel Colour"
+    L["CastbarColorUninterruptible"] = "Uninterruptible Colour"
+    L["CastbarColorEmpowerFill"] = "Empower Fill Colour"
+    L["CastbarColorLatency"] = "Latency Overlay Colour"
+    L["CastbarLatencyEnableTooltip"] = "Shows a coloured zone at the end of the cast representing your latency, i.e. the window where queuing your next spell is safe."
+    L["CastbarColorPushback"] = "Pushback Overlay Colour"
+    L["CastbarPushbackEnableTooltip"] = "Shows a coloured zone representing cast time added by pushback (delays from taking damage while casting)."
+    L["CastbarColorTick"] = "Channel Tick Colour"
+    L["CastbarEmpowerHeader"] = "Empower Stage Colours"
+    L["CastbarColorEmpowerBase"] = "Base Stage Colour"
+    L["CastbarColorEmpowerPenultimate"] = "Penultimate Stage Colour"
+    L["CastbarColorEmpowerFinal"] = "Final Stage Colour"
 end

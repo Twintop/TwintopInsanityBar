@@ -15,6 +15,14 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 	end
 	TRB.Data.lookupDirty = true
 
+	-- Drive the castbar bar type (independent of the class-specific resource routing below). Wrapped in
+	-- pcall so a bug in this newer code path can never abort this shared event handler and take the
+	-- pre-existing resource-bar cast tracking below down with it.
+	local castbarOk, castbarErr = pcall(TRB.Functions.Castbar.OnSpellCastEvent, TRB.Functions.Castbar, event, spellId)
+	if not castbarOk then
+		geterrorhandler()(castbarErr)
+	end
+
 	-- Cache the GCD duration from the dummy GCD spell (61304) on every cast start / instant succeed.
 	-- GetTotalDuration() returns the full GCD length in seconds while the GCD is active (0 otherwise).
 	-- This replaces haste-based GCD math since haste is now a secret value.
@@ -92,6 +100,7 @@ function TRB.Functions.SpellCast:EnableSpellCast()
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
@@ -107,6 +116,7 @@ function TRB.Functions.SpellCast:DisableSpellCast()
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
 	spellCastFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")

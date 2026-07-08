@@ -719,6 +719,7 @@ local resourceTypeNames = {
 	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
 	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
 	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
+	Castbar = TRB.Localization["ResourceCastbar"],
 }
 
 ---Reads a spec's bar-group configuration (GetSpecConfiguration) without requiring it to be
@@ -738,7 +739,18 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
 		return nil
 	end
-	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	local config = classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	-- Castbar is an all-spec bar not declared per-spec; expose it so it is a valid anchor target and
+	-- bar-text container for every spec. Copy so we never mutate a class factory's returned table.
+	if type(config) == "table" and config.castbar == nil then
+		local merged = {}
+		for k, v in pairs(config) do
+			merged[k] = v
+		end
+		merged.castbar = { maxNodes = 1, isPrimary = false, resourceType = "Castbar" }
+		return merged
+	end
+	return config
 end
 
 ---Returns the localized display name for a resource-type token (as used in
@@ -1533,6 +1545,12 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- A brand new spec stub is just {} with no displayText at all.
 			local savedSpec = settings[className][specName]
 			local isNewSpec = not savedSpec or type(savedSpec) ~= "table" or savedSpec.displayText == nil
+
+			-- Castbar is an all-spec bar not declared in any class's LoadDefaultSettings; inject its
+			-- defaults into every spec's default table so the merge below carries them into saved vars.
+			-- className/specName are the lowercase settings-tree keys, used to pick that spec's built-in
+			-- channel tick profiles (most specs have none).
+			TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName)
 
 			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, savedSpec or {})
 

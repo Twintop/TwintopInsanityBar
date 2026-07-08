@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.0.7.4-release (2026-07-07)
+## General
+
+- Add a new **Cast Bar** that can be enabled for any spec (it is hidden by default). It supports the same size, anchoring, texture, color, and bar text options as every other bar, plus:
+	- Standard casts, channeled spells, and empowered casts.
+	- Latency and pushback (cast delays from taking damage) shown as bar overlays, with matching `$castLatency` and `$castPushback` bar text.
+	- Channel tick markers driven by a per-spell tick-rate list (built-in defaults plus a user-editable list). Both channel styles are handled: fixed tick count where the channel shrinks with haste (e.g. Mind Flay), and fixed channel duration where the tick rate accelerates with haste and ends on a partial tick (e.g. Void Torrent), including carrying a partial tick into a chained channel.
+	- Empower stage threshold lines and per-stage fill colors (base/penultimate/final, mimicking Combo Points).
+	- New bar text variables: `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castPushback`, `$castSpellName`, `$castSpellId`; the existing `#casting` icon continues to represent the currently casting spell.
+
+---
+
 # 12.0.7.3-release (2026-07-03)
 ## General
 

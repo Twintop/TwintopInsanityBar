@@ -691,6 +691,13 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	-- Castbar is an all-spec bar not created by any class's CreateForSpec, so lazily create its BarGroup
+	-- here (the universal post-CreateForSpec choke point). ApplyCustomBarGroups* then handle it
+	-- generically like any other registered custom bar.
+	if barGroups.castbar == nil then
+		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
+	end
+
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.backdrop)
@@ -3726,7 +3733,15 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 
 	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
-	config.shouldInitiallyShow = barIsVisible
+	local shouldInitiallyShow = barIsVisible
+	-- Castbar's on-screen visibility is driven entirely by active cast state (Functions/Castbar.lua),
+	-- not the displayBar system it has no entry in, so always construct it hidden. barIsVisible stays
+	-- true (IsBarVisible defaults true with no displayBar entry) so its layout space is still reserved
+	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
+	if barKey == "castbar" and not inEditMode then
+		shouldInitiallyShow = false
+	end
+	config.shouldInitiallyShow = shouldInitiallyShow
 
 	self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, applyAppearance)
 

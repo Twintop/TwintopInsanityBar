@@ -1,0 +1,250 @@
+---@diagnostic disable: undefined-field, undefined-global
+local _, TRB = ...
+TRB.Functions = TRB.Functions or {}
+TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
+TRB.Functions.OptionsUi.Castbar = TRB.Functions.OptionsUi.Castbar or {}
+local oUi = TRB.Data.constants.optionsUi
+local L = TRB.Localization
+
+-- ============================================================================
+-- Castbar options panel (single central tab, injected into every spec by BuildTabGroup)
+-- ============================================================================
+
+---Builds a color swatch bound to colorTable[key].color, persisting + live-updating via ColorOnMouseDown.
+---@param parent Frame
+---@param controlsTbl table # Swatch storage keyed by `key` (for refresh)
+---@param colorTable table # The parent color table
+---@param key string # Field within colorTable
+---@param label string
+---@param yCoord number
+---@param classId integer
+---@param specId integer
+---@return Frame swatch
+local function ColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId)
+	local entry = colorTable[key]
+	local value = (type(entry) == "table" and entry.color) or entry or "FFFFFFFF"
+	local f = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, label, value, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controlsTbl[key] = f
+	f:SetScript("OnMouseDown", function(self, button)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId)
+	end)
+	return f
+end
+
+---Builds a checkbox bound to a getter/setter.
+---@param parent Frame
+---@param name string # Unique global frame name
+---@param label string
+---@param tooltip string?
+---@param yCoord number
+---@param getFn fun():boolean
+---@param setFn fun(checked:boolean)
+---@return CheckButton
+local function CheckboxRow(parent, name, label, tooltip, yCoord, getFn, setFn)
+	local cb = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
+	cb:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(cb:GetName() .. "Text"):SetText(label)
+	cb.tooltip = tooltip
+	cb:SetChecked(getFn() and true or false)
+	cb:SetScript("OnClick", function(self)
+		setFn(self:GetChecked() and true or false)
+	end)
+	return cb
+end
+
+---Composes a human-readable summary of the configured tick profiles.
+---@param tickProfiles table<integer, table>
+---@return string
+local function ComposeTickSummary(tickProfiles)
+	if type(tickProfiles) ~= "table" then
+		return L["CastbarTickRatesEmpty"]
+	end
+	local ids = {}
+	for id in pairs(tickProfiles) do
+		ids[#ids + 1] = id
+	end
+	if #ids == 0 then
+		return L["CastbarTickRatesEmpty"]
+	end
+	table.sort(ids)
+	local lines = {}
+	for _, id in ipairs(ids) do
+		local p = tickProfiles[id]
+		local spellName = ""
+		local info = C_Spell.GetSpellInfo(id)
+		if info and info.name then spellName = info.name end
+		if p.mode == "fixedCount" then
+			lines[#lines + 1] = string.format("%d %s: %s, %.2fs, %d ticks%s", id, spellName,
+				L["CastbarTickModeFixedCountShort"], p.baseDuration or 0, p.tickCount or 0, p.chains and (" +" .. L["CastbarTickChainsShort"]) or "")
+		else
+			lines[#lines + 1] = string.format("%d %s: %s, %.2fs, %.2fs/tick%s", id, spellName,
+				L["CastbarTickModeFixedRateShort"], p.baseDuration or 0, p.baseTickRate or 0, p.chains and (" +" .. L["CastbarTickChainsShort"]) or "")
+		end
+	end
+	return table.concat(lines, "\n")
+end
+
+---Constructs the castbar options panel for a spec.
+---@param parent Frame # The tab's scroll child
+---@param classId integer
+---@param specId integer
+function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local classNameLower, specNameLower = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local spec = TRB.Data.settings[classNameLower] and TRB.Data.settings[classNameLower][specNameLower]
+	if spec == nil then
+		return
+	end
+	local compositeKey = classNameLower .. "_" .. specNameLower
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	interfaceSettingsFrame.controls[compositeKey] = interfaceSettingsFrame.controls[compositeKey] or {}
+	local controls = interfaceSettingsFrame.controls[compositeKey]
+	controls.colors = controls.colors or {}
+	controls.castbar = controls.castbar or {}
+	local cc = controls.castbar
+	cc.fill = {}
+	cc.overlay = {}
+	cc.empower = {}
+
+	local castbarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("castbar")
+	local barSettings = spec.bars and spec.bars.castbar
+	local colors = spec.colors and spec.colors.bars and spec.colors.bars.castbar
+	if castbarDef == nil or barSettings == nil or colors == nil then
+		return
+	end
+
+	local namePrefix = "TwintopResourceBar_" .. compositeKey .. "_castbar"
+	local yCoord = 5
+
+	-- Simple opt-in toggle. The castbar is not part of the displayBar/BarVisibility system: when
+	-- enabled it shows automatically while actively casting/channeling/empowering, and hides otherwise.
+	CheckboxRow(parent, namePrefix .. "_enable", L["CastbarEnable"], L["CastbarEnableTooltip"], yCoord,
+		function() return barSettings.enabled end, function(v) barSettings.enabled = v end)
+	yCoord = yCoord - 40
+
+	-- Dimensions / anchoring (reuses the shared custom-bar dimensions generator)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"])
+	yCoord = yCoord - 40
+
+	-- Fill colors
+	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "channel", L["CastbarColorChannel"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "uninterruptible", L["CastbarColorUninterruptible"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
+	yCoord = yCoord - 40
+
+	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch
+	controls.castbarOverlaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarOverlaysHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	colors.latency = colors.latency or { color = "80FF0000", enabled = true }
+	CheckboxRow(parent, namePrefix .. "_latencyEnable", L["CastbarLatencyEnable"], L["CastbarLatencyEnableTooltip"], yCoord,
+		function() return colors.latency.enabled end, function(v) colors.latency.enabled = v end)
+	ColorRow(parent, cc.overlay, colors, "latency", L["CastbarColorLatency"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	colors.pushback = colors.pushback or { color = "80FF00FF", enabled = true }
+	CheckboxRow(parent, namePrefix .. "_pushbackEnable", L["CastbarPushbackEnable"], L["CastbarPushbackEnableTooltip"], yCoord,
+		function() return colors.pushback.enabled end, function(v) colors.pushback.enabled = v end)
+	ColorRow(parent, cc.overlay, colors, "pushback", L["CastbarColorPushback"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	colors.tick = colors.tick or { color = "FFFFFFFF", enabled = true }
+	CheckboxRow(parent, namePrefix .. "_tickEnable", L["CastbarTickEnable"], L["CastbarTickEnableTooltip"], yCoord,
+		function() return colors.tick.enabled end, function(v) colors.tick.enabled = v end)
+	ColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
+	yCoord = yCoord - 40
+
+	-- Empower stage colors (mimic Combo Points: base / penultimate / final)
+	controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.fill, colors, "empowerFill", L["CastbarColorEmpowerFill"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, penultimate = { color = "FFFFCC00" }, final = { color = "FFFF3000" } }
+	ColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.empower, colors.empowerStages, "penultimate", L["CastbarColorEmpowerPenultimate"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.empower, colors.empowerStages, "final", L["CastbarColorEmpowerFinal"], yCoord, classId, specId)
+	yCoord = yCoord - 40
+
+	--[[
+	-- Tick-rate editor (built-in table + editable list)
+	barSettings.tickProfiles = barSettings.tickProfiles or {}
+	controls.castbarTickSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTickRatesHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 24
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["CastbarTickRatesHelp"], oUi.xCoord, yCoord, 700, 30)
+	yCoord = yCoord - 40
+
+	local summaryLabel = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, ComposeTickSummary(barSettings.tickProfiles), oUi.xCoord, yCoord, 700, 160, nil, "LEFT")
+	local function RefreshSummary()
+		summaryLabel.font:SetText(ComposeTickSummary(barSettings.tickProfiles))
+	end
+	yCoord = yCoord - 170
+
+	-- Add / edit form
+	local spellIdBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, "", 10, 90, 20, oUi.xCoord + 90, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["CastbarTickAddSpellId"], oUi.xCoord, yCoord - 4, 85, 20)
+	yCoord = yCoord - 28
+	local durationBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, "", 6, 90, 20, oUi.xCoord + 90, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["CastbarTickBaseDuration"], oUi.xCoord, yCoord - 4, 85, 20)
+	yCoord = yCoord - 28
+	local countBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, "", 4, 90, 20, oUi.xCoord + 90, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["CastbarTickCount"], oUi.xCoord, yCoord - 4, 85, 20)
+	yCoord = yCoord - 28
+	local rateBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, "", 6, 90, 20, oUi.xCoord + 90, yCoord)
+	TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["CastbarTickBaseRate"], oUi.xCoord, yCoord - 4, 85, 20)
+	yCoord = yCoord - 30
+
+	local fixedCountChecked = { value = true }
+	CheckboxRow(parent, namePrefix .. "_tickMode", L["CastbarTickModeFixedCount"], L["CastbarTickModeFixedCountTooltip"], yCoord,
+		function() return fixedCountChecked.value end, function(v) fixedCountChecked.value = v end)
+	yCoord = yCoord - 26
+	local chainsChecked = { value = false }
+	CheckboxRow(parent, namePrefix .. "_tickChains", L["CastbarTickChains"], L["CastbarTickChainsTooltip"], yCoord,
+		function() return chainsChecked.value end, function(v) chainsChecked.value = v end)
+	yCoord = yCoord - 26
+	local firstTickChecked = { value = false }
+	CheckboxRow(parent, namePrefix .. "_tickFirst", L["CastbarTickFirstAtStart"], L["CastbarTickFirstAtStartTooltip"], yCoord,
+		function() return firstTickChecked.value end, function(v) firstTickChecked.value = v end)
+	yCoord = yCoord - 30
+
+	local addButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["CastbarTickAdd"], oUi.xCoord, yCoord, 120, 22)
+	addButton:SetScript("OnClick", function()
+		local id = tonumber(spellIdBox:GetText())
+		if id == nil or id <= 0 then return end
+		local duration = tonumber(durationBox:GetText()) or 0
+		local profile = {
+			mode = fixedCountChecked.value and "fixedCount" or "fixedRate",
+			baseDuration = duration,
+			chains = chainsChecked.value,
+			firstTickAtStart = firstTickChecked.value,
+		}
+		if fixedCountChecked.value then
+			profile.tickCount = math.floor(tonumber(countBox:GetText()) or 0)
+		else
+			profile.baseTickRate = tonumber(rateBox:GetText()) or 0
+		end
+		barSettings.tickProfiles[id] = profile
+		RefreshSummary()
+	end)
+
+	local removeButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["CastbarTickRemove"], oUi.xCoord + 130, yCoord, 120, 22)
+	removeButton:SetScript("OnClick", function()
+		local id = tonumber(spellIdBox:GetText())
+		if id ~= nil then
+			barSettings.tickProfiles[id] = nil
+			RefreshSummary()
+		end
+	end)
+	yCoord = yCoord - 30]]
+
+	return yCoord
+end

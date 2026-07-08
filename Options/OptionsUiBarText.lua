@@ -886,6 +886,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		}
 	end
 
+	-- Castbar is an all-spec bar not covered by the per-class/spec chain above; add it as a bar text
+	-- anchor target for every spec (and the global bar text panel) here, just before Screen.
+	relativeToFrame[L["CastBar"]] = "CastBar"
+	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["CastBar"])
+
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then
 		for _, containerAnchor in ipairs(containerAnchorOptions) do

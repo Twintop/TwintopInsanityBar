@@ -394,6 +394,9 @@ _, _, TRB.Data.character.raceId = UnitRace("player")
 -- Register built-in bar types
 TRB.Classes.BarTypeRegistry:GetInstance():RegisterBuiltInTypes()
 
+-- Global player cast/channel/empower state model for the castbar bar type.
+TRB.Data.castbar = TRB.Classes.Castbar:New()
+
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields
 TRB.Data.spellsData = {}

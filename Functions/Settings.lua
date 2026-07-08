@@ -8707,6 +8707,136 @@ function TRB.Functions.Settings:DefaultStaggerBarColors()
 	}
 end
 
+---Gets default Castbar bar dimensions (single node, full width; wider/taller default than a generic bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	-- Castbars sit below the health bar by default so they never overlap the primary resource bar.
+	dims.relativeTo = "BOTTOM"
+	dims.relativeToName = L["PositionBelowMiddle"]
+	dims.anchor.barKey = "health"
+	dims.anchor.anchorPoint = "BOTTOM"
+	dims.anchor.attachPoint = "TOP"
+	return dims
+end
+
+-- Built-in channel tick profiles, keyed by [className][specName] using the lowercase settings-tree keys
+-- (e.g. settings.priest.shadow). Only specs that actually have channeled spells worth tick markers get an
+-- entry; every other spec intentionally has none and is seeded with an empty profile set. Users can still
+-- add their own per spec via the castbar options tick-rate list. Each profile drives tick placement:
+--   mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
+--   mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
+-- baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
+---@type table<string, table<string, table<integer, TRB.Classes.Settings.CastbarTickProfile>>>
+local castbarTickProfilesBySpec = {
+	priest = {
+		shadow = {
+			-- Mind Flay: constant tick count, duration shrinks with haste.
+			[15407] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = false, chains = true },
+			-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
+			[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 0.5, firstTickAtStart = false, chains = true },
+		},
+	},
+}
+
+---Gets a fresh copy of the built-in channel tick profiles for one spec, or an empty table when the spec
+---has no built-in channeled spells. Returns a DeepCopy so each spec's saved settings own their tables
+---(the shared source table is never handed out or mutated).
+---@param className string? # Lowercase class name matching the settings tree (e.g. "priest")
+---@param specName string? # Lowercase spec name matching the settings tree (e.g. "shadow")
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Functions.Settings:DefaultCastbarTickProfilesForSpec(className, specName)
+	local byClass = className and castbarTickProfilesBySpec[className]
+	local profiles = byClass and specName and byClass[specName]
+	if type(profiles) ~= "table" then
+		return {}
+	end
+	return TRB.Functions.Table:DeepCopy(profiles)
+end
+
+---Gets the default Castbar bar settings (dimensions + behavior flags + per-spec tick profiles)
+---@param classic boolean?
+---@param className string? # Lowercase class name, for the per-spec tick profile lookup
+---@param specName string? # Lowercase spec name, for the per-spec tick profile lookup
+---@return TRB.Classes.Settings.CastbarBar
+function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, specName)
+	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
+	-- Simple opt-in flag (not tied to the displayBar/BarVisibility system): when true, the castbar
+	-- shows automatically while casting/channeling/empowering and hides otherwise. No user-configurable
+	-- always/never/conditions apply, since a castbar only ever makes sense while something is casting.
+	settings.enabled = false
+	settings.showTicks = true
+	settings.showLatency = true
+	settings.showPushback = true
+	settings.showEmpowerStages = true
+	settings.tickProfiles = self:DefaultCastbarTickProfilesForSpec(className, specName)
+	return settings
+end
+
+---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel`, `empowerFill`, and
+---`uninterruptible` recolor the fill per state. Overlay colors (latency/pushback) and tick lines are
+---separate. Empower stage colors mimic Combo Points (base/penultimate/final), mapped to the LIVE stage
+---count at render time so the last stage is always `final`, the second-to-last `penultimate`.
+---@return table
+function TRB.Functions.Settings:DefaultCastbarBarColors()
+	return {
+		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
+		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
+		empowerFill = { color = "FFC8B0FF", color2 = "FFC8B0FF", gradientDirection = "disabled" },
+		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		latency = { color = "80FF0000", enabled = true },
+		pushback = { color = "80FF00FF", enabled = true },
+		tick = { color = "FFFFFFFF", enabled = true },
+		empowerStages = {
+			base = { color = "FFC8B0FF" },
+			penultimate = { color = "FFFFCC00" },
+			final = { color = "FFFF3000" }
+		}
+	}
+end
+
+---Central injector: adds castbar defaults (bars/colors/textures) to a spec's default settings table so
+---the standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
+---Deliberately does NOT touch displayBar: the castbar's on-screen visibility is driven entirely by
+---active cast state (Functions/Castbar.lua), not the displayBar/BarVisibility system.
+---@param specDefaults table # A single spec's default settings table (from a class's LoadDefaultSettings)
+---@param className string? # Lowercase class name, for the per-spec tick profile lookup
+---@param specName string? # Lowercase spec name, for the per-spec tick profile lookup
+---@param classic boolean?
+function TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName, classic)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+
+	-- Dimensions + behavior under bars.castbar
+	specDefaults.bars = specDefaults.bars or {}
+	if specDefaults.bars.castbar == nil then
+		specDefaults.bars.castbar = self:DefaultCastbarBarSettings(classic, className, specName)
+	end
+
+	-- Colors under colors.bars.castbar
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	if specDefaults.colors.bars.castbar == nil then
+		specDefaults.colors.bars.castbar = self:DefaultCastbarBarColors()
+	end
+
+	-- Flat texture keys castbarBar / castbarBorder / castbarBackground
+	specDefaults.textures = specDefaults.textures or {}
+	if specDefaults.textures.castbarBar == nil then
+		local tex = self:DefaultCustomBarTextures()
+		specDefaults.textures.castbarBar = tex.bar
+		specDefaults.textures.castbarBarName = tex.barName
+		specDefaults.textures.castbarBorder = tex.border
+		specDefaults.textures.castbarBorderName = tex.borderName
+		specDefaults.textures.castbarBackground = tex.background
+		specDefaults.textures.castbarBackgroundName = tex.backgroundName
+	end
+end
+
 ---Gets default Warrior Defensives bar dimensions
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.SecondaryBar

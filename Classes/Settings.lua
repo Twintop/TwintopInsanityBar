@@ -223,6 +223,31 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeToName string # @deprecated Display label for legacy relativeTo
 ---@field public fullWidth boolean # @deprecated Use anchor.matchWidth instead
 
+---How a channel's tick markers scale with haste.
+---@alias trbCastbarTickMode
+---| '"fixedCount"' # Tick count stays constant; channel duration shrinks with haste (e.g. Mind Flay)
+---| '"fixedRate"'  # Channel duration is fixed; tick rate scales with haste, final partial tick (e.g. Void Torrent)
+
+---A built-in or user-configured channel tick profile, stored per spellId under CastbarBar.tickProfiles.
+---baseDuration/baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
+---@class TRB.Classes.Settings.CastbarTickProfile
+---@field public mode trbCastbarTickMode
+---@field public baseDuration number # Unhasted channel duration in seconds
+---@field public tickCount integer? # fixedCount only: number of ticks across the channel
+---@field public baseTickRate number? # fixedRate only: unhasted seconds between ticks
+---@field public firstTickAtStart boolean? # Whether a tick also lands at t=0
+---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
+
+---Castbar bar settings: SecondaryBar dimensions plus the castbar's behavior flags and per-spell tick
+---profiles. Visibility is driven by active cast state (not displayBar), so `enabled` is a simple opt-in.
+---@class TRB.Classes.Settings.CastbarBar : TRB.Classes.Settings.SecondaryBar
+---@field public enabled boolean # Opt-in: show the castbar while casting/channeling/empowering
+---@field public showTicks boolean # Draw channel tick lines
+---@field public showLatency boolean # Draw the latency safe-zone overlay
+---@field public showPushback boolean # Draw the pushback overlay
+---@field public showEmpowerStages boolean # Draw empower stage boundary lines
+---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
+
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
 ---@field public barText TRB.Classes.Settings.DisplayTextEntry[]

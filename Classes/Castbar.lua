@@ -1,0 +1,538 @@
+---@diagnostic disable: undefined-field, undefined-global
+local _, TRB = ...
+TRB.Classes = TRB.Classes or {}
+
+--[[
+	Castbar: player cast/channel/empower state model for the castbar bar type.
+	Holds the currently-active cast timeline in Lua-known times (GetTime based), a cached
+	lookup of the casting spell's data, computed channel tick fractions (with chaining carry),
+	and empower stage boundaries. It is presentation-agnostic: Functions/Castbar.lua renders it.
+
+	Timing is best-effort under secret values. Casts/empowers expose real start/end times via
+	UnitCastingInfo/UnitChannelInfo; channels frequently return secret times, so channel duration
+	is reconstructed from a per-spell tick profile scaled by the GCD-inferred haste multiplier.
+]]
+
+---@alias trbCastbarState
+---| '"none"'    # Nothing casting
+---| '"cast"'    # Standard cast (fills up)
+---| '"channel"' # Channel (depletes)
+---| '"empower"' # Empowered cast (fills up through stages)
+
+---@class TRB.Classes.CastbarSpell
+---@field public id integer
+---@field public name string
+---@field public iconId integer
+---@field public icon string # Inline |T...|t texture string
+
+---@class TRB.Classes.CastbarTick
+---@field public fraction number # Position along the timeline, 0 (start) .. 1 (end)
+---@field public partial boolean # True for a final partial tick that lands short of a full interval
+
+---@class TRB.Classes.Castbar
+---@field public state trbCastbarState
+---@field public spellId integer?
+---@field public spell TRB.Classes.CastbarSpell?
+---@field public startTime number? # GetTime() seconds when the cast began
+---@field public endTime number? # GetTime() seconds when the cast completes
+---@field public duration number # endTime - startTime (seconds)
+---@field public latency number # Latency captured at cast start (seconds)
+---@field public pushback number # Accumulated pushback delay (seconds)
+---@field public notInterruptible boolean
+---@field public reconstructed boolean # True when channel timing was reconstructed from GCD+profile (times not authoritative)
+---@field public ticks TRB.Classes.CastbarTick[] # Channel tick positions
+---@field public tickInterval number? # Hasted tick interval (seconds), for chaining carry
+---@field public empowerStages integer # Number of empower stages (0 if not an empower)
+---@field public empowerStageFractions number[] # Cumulative fraction at each stage completion (max line at chargeDuration/duration)
+---@field public empowerChargeDuration number # Empower charge time to reach max (seconds), excluding the hold-at-max tail
+---@field public empowerHoldDuration number # Empower hold-at-max window (seconds) appended after the charge portion
+TRB.Classes.Castbar = {}
+TRB.Classes.Castbar.__index = TRB.Classes.Castbar
+
+-- Base (unhasted) global cooldown length. Haste is inferred as baseGcd / currentGcdDuration.
+local BASE_GCD = 1.5
+
+-- Shared spell-data cache across instances: spellId -> TRB.Classes.CastbarSpell
+local spellCache = {}
+
+-- Chaining carry: when a chainable channel ends mid-tick, the leftover phase is stored here so the
+-- next channel of the same spell places its first tick after only the remaining phase (partial tick).
+---@type { spellId: integer, phaseRemaining: number, expireTime: number }?
+local chainCarry = nil
+
+-- Grace window (seconds) during which a channel-end carry remains valid for the next channel.
+local CHAIN_CARRY_GRACE = 1.0
+
+---Creates a new Castbar model
+---@return TRB.Classes.Castbar
+function TRB.Classes.Castbar:New()
+	local self = {}
+	setmetatable(self, TRB.Classes.Castbar)
+	self:Reset()
+	return self
+end
+
+---Resets the model to the idle (nothing casting) state
+function TRB.Classes.Castbar:Reset()
+	self.state = "none"
+	self.spellId = nil
+	self.spell = nil
+	self.startTime = nil
+	self.endTime = nil
+	self.duration = 0
+	self.latency = 0
+	self.pushback = 0
+	self.notInterruptible = false
+	self.reconstructed = false
+	self.ticks = {}
+	self.tickInterval = nil
+	self.empowerStages = 0
+	self.empowerStageFractions = {}
+	self.empowerChargeDuration = 0
+	self.empowerHoldDuration = 0
+end
+
+---Returns cached spell data for a spellId, populating the cache on first use.
+---@param spellId integer?
+---@return TRB.Classes.CastbarSpell?
+function TRB.Classes.Castbar:GetSpellData(spellId)
+	if spellId == nil or spellId == 0 or issecretvalue(spellId) then
+		return nil
+	end
+	local cached = spellCache[spellId]
+	if cached then
+		return cached
+	end
+	local info = C_Spell.GetSpellInfo(spellId)
+	if info == nil then
+		return nil
+	end
+	local iconId = info.iconID or 134400 -- fallback to question mark icon
+	---@type TRB.Classes.CastbarSpell
+	local data = {
+		id = info.spellID or spellId,
+		name = info.name or "",
+		iconId = iconId,
+		icon = string.format("|T%s:0|t", iconId)
+	}
+	spellCache[spellId] = data
+	return data
+end
+
+---Infers the current haste multiplier (>= 1.0) from the whitelisted GCD spell duration cached on the
+---snapshot (see Functions/SpellCast.lua). At >100% haste the GCD floors at 0.75s, so this saturates
+---near 2.0; that is an accepted best-effort limit for channel tick reconstruction.
+---@return number
+function TRB.Classes.Castbar:GetHasteMultiplier()
+	local gcd = BASE_GCD
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes and snapshotData.attributes.gcdDuration then
+		local g = snapshotData.attributes.gcdDuration
+		if type(g) == "number" and g > 0 then
+			gcd = g
+		end
+	end
+	local mult = BASE_GCD / gcd
+	if mult < 1.0 then mult = 1.0 end
+	return mult
+end
+
+---Reads player cast timing from UnitCastingInfo, returning seconds. Values may be secret.
+---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible
+local function ReadCastingInfo()
+	local _, _, _, startMS, endMS, _, _, notInterruptible, spellId = UnitCastingInfo("player")
+	if spellId == nil then
+		return nil, nil, nil, false
+	end
+	local startTime, endTime
+	if startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS) then
+		startTime = startMS / 1000
+		endTime = endMS / 1000
+	end
+	return spellId, startTime, endTime, notInterruptible == true
+end
+
+---Reads player channel/empower timing from UnitChannelInfo, returning seconds. Values may be secret.
+---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, boolean isEmpowered, integer numStages
+local function ReadChannelInfo()
+	local _, _, _, startMS, endMS, _, notInterruptible, spellId, isEmpowered, numStages = UnitChannelInfo("player")
+	local startTime, endTime
+	if startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS) then
+		startTime = startMS / 1000
+		endTime = endMS / 1000
+	end
+	local stages = 0
+	if not issecretvalue(numStages) and type(numStages) == "number" then
+		stages = numStages
+	end
+	return spellId, startTime, endTime, notInterruptible == true, isEmpowered == true, stages
+end
+
+---Begins tracking a standard cast. Reads real timing from UnitCastingInfo when available.
+---@param spellId integer? # Spell id from the event (authoritative name/icon source)
+function TRB.Classes.Castbar:StartCast(spellId)
+	local infoSpellId, startTime, endTime, notInterruptible = ReadCastingInfo()
+	local resolvedId = spellId
+	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
+		resolvedId = infoSpellId
+	end
+
+	self:Reset()
+	self.state = "cast"
+	self.spellId = (not issecretvalue(resolvedId)) and resolvedId or nil
+	self.spell = self:GetSpellData(self.spellId)
+	self.notInterruptible = notInterruptible
+	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+
+	local now = GetTime()
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		self.startTime = startTime
+		self.endTime = endTime
+		self.reconstructed = false
+	else
+		-- No readable timing: fall back to a GCD-length window so the bar still animates.
+		self.startTime = now
+		self.endTime = now + BASE_GCD
+		self.reconstructed = true
+	end
+	self.duration = self.endTime - self.startTime
+end
+
+---Begins tracking a channel. Uses real timing when UnitChannelInfo exposes it, otherwise reconstructs
+---the duration from the tick profile scaled by GCD-inferred haste. Computes tick fractions (with chaining).
+---@param spellId integer? # Channel spell id resolved by the caller (may be nil if secret)
+---@param profile table? # Tick profile { mode, baseDuration, tickCount?, baseTickRate?, firstTickAtStart?, chains? }
+function TRB.Classes.Castbar:StartChannel(spellId, profile)
+	local infoSpellId, startTime, endTime, notInterruptible = ReadChannelInfo()
+	local resolvedId = spellId
+	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
+		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
+	end
+
+	self:Reset()
+	self.state = "channel"
+	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
+	self.spell = self:GetSpellData(self.spellId)
+	self.notInterruptible = notInterruptible
+
+	local now = GetTime()
+	local haste = self:GetHasteMultiplier()
+
+	-- Determine the channel duration. Prefer authoritative timing; else reconstruct from the profile.
+	local duration
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		self.startTime = startTime
+		self.endTime = endTime
+		self.reconstructed = false
+		duration = endTime - startTime
+	elseif profile and profile.baseDuration and profile.baseDuration > 0 then
+		if profile.mode == "fixedCount" then
+			-- Flavor 1 (e.g. Mind Flay): duration shrinks with haste, tick count stays constant.
+			duration = profile.baseDuration / haste
+		else
+			-- Flavor 2 (e.g. Void Torrent): duration is fixed, tick rate scales with haste.
+			duration = profile.baseDuration
+		end
+		self.startTime = now
+		self.endTime = now + duration
+		self.reconstructed = true
+	else
+		-- Unknown channel: single GCD-length window, no ticks.
+		duration = BASE_GCD / haste
+		self.startTime = now
+		self.endTime = now + duration
+		self.reconstructed = true
+	end
+	self.duration = duration
+
+	self:ComputeChannelTicks(profile, haste)
+end
+
+---Computes channel tick fractions for the active channel and stores them on self.ticks.
+---Honors the two haste flavors and applies any pending chaining carry as a shortened first interval.
+---@param profile table?
+---@param haste number
+function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
+	self.ticks = {}
+	self.tickInterval = nil
+	if profile == nil or self.duration == nil or self.duration <= 0 then
+		return
+	end
+
+	local duration = self.duration
+	local interval
+	if profile.mode == "fixedCount" then
+		local count = profile.tickCount or 0
+		if count <= 0 then return end
+		interval = duration / count
+	else
+		local baseRate = profile.baseTickRate or 0
+		if baseRate <= 0 then return end
+		interval = baseRate / haste
+	end
+	if interval == nil or interval <= 0 then
+		return
+	end
+	self.tickInterval = interval
+
+	-- Consume a valid chaining carry (same spell, within grace window): the first interval is shortened
+	-- by the phase left over when the previous channel ended, modeling a carried partial tick.
+	local firstOffset = interval
+	if profile.chains and chainCarry ~= nil and self.spellId ~= nil
+		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
+		local rem = chainCarry.phaseRemaining
+		if rem > 0 and rem < interval then
+			firstOffset = rem
+		end
+	end
+	chainCarry = nil
+
+	-- Optional tick at t=0 (some channels tick on cast).
+	if profile.firstTickAtStart then
+		self.ticks[#self.ticks + 1] = { fraction = 0, partial = false }
+	end
+
+	local t = firstOffset
+	local guard = 0
+	while t < duration - 0.0001 and guard < 100 do
+		self.ticks[#self.ticks + 1] = { fraction = t / duration, partial = false }
+		t = t + interval
+		guard = guard + 1
+	end
+
+	-- Final tick lands exactly at the channel end. It is a partial tick when the last full interval
+	-- did not divide the duration evenly (flavor 2 / Void Torrent style).
+	local lastFull = t - interval
+	local remainder = duration - lastFull
+	local isPartial = remainder > 0.0001 and remainder < interval - 0.0001
+	self.ticks[#self.ticks + 1] = { fraction = 1, partial = isPartial }
+end
+
+---Begins tracking an empowered cast. Reads stage count and per-stage durations (best-effort under
+---secret values), computing cumulative stage boundary fractions for threshold placement.
+---@param spellId integer?
+function TRB.Classes.Castbar:StartEmpower(spellId)
+	local infoSpellId, startTime, endTime, notInterruptible, _, numStages = ReadChannelInfo()
+	local resolvedId = spellId
+	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
+		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
+	end
+
+	self:Reset()
+	self.state = "empower"
+	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
+	self.spell = self:GetSpellData(self.spellId)
+	self.notInterruptible = notInterruptible
+	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+
+	local now = GetTime()
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		self.startTime = startTime
+		self.endTime = endTime
+		self.reconstructed = false
+	else
+		self.startTime = now
+		self.endTime = now + BASE_GCD
+		self.reconstructed = true
+	end
+
+	-- endTime from UnitChannelInfo is when the FINAL (max) empower stage is reached; the charge portion
+	-- is startTime..endTime. Blizzard's cast bar then extends through the hold-at-max window (you may keep
+	-- holding at max before releasing), so the visible timeline is charge + hold. Including the hold here
+	-- is what makes the stage lines and the total time match the default bar: every stage completion
+	-- (including max) lands inside the bar, and the tail past the max line is the hold zone.
+	self.empowerChargeDuration = self.endTime - self.startTime
+	local hold = 0
+	if GetUnitEmpowerHoldAtMaxTime then
+		local h = GetUnitEmpowerHoldAtMaxTime("player")
+		if type(h) == "number" and not issecretvalue(h) and h > 0 then
+			hold = h / 1000
+		end
+	end
+	self.empowerHoldDuration = hold
+	self.endTime = self.endTime + hold
+	self.duration = self.endTime - self.startTime
+
+	-- numStages from UnitChannelInfo is the authoritative empower stage count (matches Blizzard's cast
+	-- bar): a line is drawn at each of the N stage completions. With the hold tail the max completion is
+	-- interior (not at the bar's end), so all N lines are visible.
+	self.empowerStages = numStages or 0
+	self:ComputeEmpowerStages()
+end
+
+---Computes cumulative empower stage-completion fractions along the full (charge + hold-at-max) timeline.
+---Uses GetUnitEmpowerStageDuration when it returns non-secret values; otherwise divides the charge
+---portion evenly (empower stages are equal-duration in game time). One line is placed at each of the
+---N = empowerStages completions; the N-th (max) line sits at chargeDuration/duration, so whenever there
+---is a hold-at-max tail it lands short of 1.0 and stays visible, with the region past it being the hold.
+function TRB.Classes.Castbar:ComputeEmpowerStages()
+	self.empowerStageFractions = {}
+	local numStages = self.empowerStages or 0
+	if numStages <= 0 or self.duration == nil or self.duration <= 0 then
+		return
+	end
+	local chargeDuration = self.empowerChargeDuration or self.duration
+
+	-- Try authoritative per-stage durations first. Query every stage (0 .. numStages-1); the running sum
+	-- after the last stage equals the charge duration (time to reach max).
+	local cumulative = 0
+	local ok = true
+	local fractions = {}
+	for i = 0, numStages - 1 do
+		local d = GetUnitEmpowerStageDuration("player", i)
+		if d == nil or issecretvalue(d) or type(d) ~= "number" or d < 0 then
+			ok = false
+			break
+		end
+		cumulative = cumulative + d / 1000
+		fractions[i + 1] = math.min(1, cumulative / self.duration)
+	end
+
+	if ok then
+		self.empowerStageFractions = fractions
+	else
+		-- Even-division fallback: equal-duration stages put the i-th of numStages completions at
+		-- i/numStages of the CHARGE portion; scale by chargeDuration/duration so the hold tail is
+		-- preserved past the final (max) line.
+		local scale = chargeDuration / self.duration
+		for i = 1, numStages do
+			self.empowerStageFractions[i] = math.min(1, (i / numStages) * scale)
+		end
+	end
+end
+
+---Records pushback for a standard cast after UNIT_SPELLCAST_DELAYED by re-reading the (later) end time.
+function TRB.Classes.Castbar:Delayed()
+	if self.state ~= "cast" then
+		return
+	end
+	local _, startTime, endTime = ReadCastingInfo()
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		if self.endTime then
+			local delta = endTime - self.endTime
+			if delta > 0 then
+				self.pushback = self.pushback + delta
+			end
+		end
+		self.startTime = startTime
+		self.endTime = endTime
+		self.duration = endTime - startTime
+	end
+end
+
+---Records pushback for a channel after UNIT_SPELLCAST_CHANNEL_UPDATE (damage shortens channels).
+function TRB.Classes.Castbar:ChannelUpdate()
+	if self.state ~= "channel" then
+		return
+	end
+	local _, startTime, endTime = ReadChannelInfo()
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		if self.endTime then
+			local delta = self.endTime - endTime
+			if delta > 0 then
+				self.pushback = self.pushback + delta
+			end
+		end
+		self.startTime = startTime
+		self.endTime = endTime
+		self.duration = endTime - startTime
+	end
+end
+
+---Stops the active cast. For chainable channels that end mid-interval, stores the leftover tick phase
+---so a subsequent channel of the same spell can place its first tick after only the remaining phase.
+---@param profile table? # The active channel's tick profile (for chain carry eligibility)
+function TRB.Classes.Castbar:Stop(profile)
+	if self.state == "channel" and profile and profile.chains and self.spellId ~= nil
+		and self.tickInterval and self.tickInterval > 0 and self.startTime ~= nil then
+		local now = GetTime()
+		local elapsed = now - self.startTime
+		if elapsed > 0 then
+			-- Phase already served within the current interval, and the phase remaining until the
+			-- next tick would have fired. The remaining phase carries into the next channel.
+			local served = elapsed % self.tickInterval
+			local phaseRemaining = self.tickInterval - served
+			if phaseRemaining <= 0 or phaseRemaining >= self.tickInterval then
+				phaseRemaining = 0
+			end
+			chainCarry = {
+				spellId = self.spellId,
+				phaseRemaining = phaseRemaining,
+				expireTime = now + CHAIN_CARRY_GRACE
+			}
+		end
+	end
+	self:Reset()
+end
+
+---Whether a cast/channel/empower is currently being tracked.
+---@return boolean
+function TRB.Classes.Castbar:IsActive()
+	return self.state ~= "none"
+end
+
+---Returns the timeline progress at a point in time.
+---@param now number? # GetTime() seconds; defaults to GetTime()
+---@return number elapsed # Seconds elapsed (clamped >= 0)
+---@return number remaining # Seconds remaining (clamped >= 0)
+---@return number duration # Total duration (seconds)
+---@return number fillFraction # Bar fill 0..1, oriented per state (cast/empower grow, channel depletes)
+function TRB.Classes.Castbar:GetProgress(now)
+	now = now or GetTime()
+	if self.startTime == nil or self.endTime == nil or self.duration <= 0 then
+		return 0, 0, 0, 0
+	end
+	local elapsed = now - self.startTime
+	if elapsed < 0 then elapsed = 0 end
+	if elapsed > self.duration then elapsed = self.duration end
+	local remaining = self.duration - elapsed
+	local progress = elapsed / self.duration
+	local fill
+	if self.state == "channel" then
+		fill = 1 - progress -- channels deplete
+	else
+		fill = progress -- casts/empowers fill up
+	end
+	return elapsed, remaining, self.duration, fill
+end
+
+---Returns the fraction (0..1) at which the latency "safe zone" begins, measured from the cast END.
+---For casts this marks the window where queuing the next spell is safe; nil when latency is 0.
+---@return number?
+function TRB.Classes.Castbar:GetLatencyFraction()
+	if self.latency == nil or self.latency <= 0 or self.duration == nil or self.duration <= 0 then
+		return nil
+	end
+	local frac = self.latency / self.duration
+	if frac > 1 then frac = 1 end
+	return frac
+end
+
+---Returns the pushback fraction (0..1) of the total duration, or nil when there is no pushback.
+---@return number?
+function TRB.Classes.Castbar:GetPushbackFraction()
+	if self.pushback == nil or self.pushback <= 0 or self.duration == nil or self.duration <= 0 then
+		return nil
+	end
+	local frac = self.pushback / self.duration
+	if frac > 1 then frac = 1 end
+	return frac
+end
+
+---Returns the current empower stage index (1-based) reached at a point in time, or 0 if none.
+---@param now number?
+---@return integer
+function TRB.Classes.Castbar:GetCurrentEmpowerStage(now)
+	if self.state ~= "empower" or #self.empowerStageFractions == 0 then
+		return 0
+	end
+	now = now or GetTime()
+	local _, _, _, fill = self:GetProgress(now)
+	local stage = 0
+	for i = 1, #self.empowerStageFractions do
+		if fill >= self.empowerStageFractions[i] - 0.0001 then
+			stage = i
+		end
+	end
+	return stage
+end

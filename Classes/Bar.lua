@@ -1503,6 +1503,22 @@ function TRB.Classes.BarTypeRegistry:Has(key)
 	return self.definitions[key] ~= nil
 end
 
+---Appends the castbar definition to a customBars list if registered and not already present.
+---Used by the shared options generators so the all-spec castbar appears everywhere without per-class wiring.
+---@param list TRB.Classes.BarTypeDefinition[]
+function TRB.Classes.BarTypeRegistry:AppendCastbar(list)
+	local def = self.definitions.castbar
+	if def == nil then
+		return
+	end
+	for _, d in ipairs(list) do
+		if d.key == "castbar" then
+			return
+		end
+	end
+	list[#list + 1] = def
+end
+
 ---Gets the bar types that a spec uses based on its GetSpecConfiguration
 ---@param classId integer
 ---@param specId integer
@@ -1537,7 +1553,13 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 			end
 		end
 	end
-	
+
+	-- Castbar is available to every spec (not declared per-spec in GetSpecConfiguration), so always
+	-- include it when registered.
+	if self.definitions.castbar then
+		result.castbar = self.definitions.castbar
+	end
+
 	return result
 end
 
@@ -1827,6 +1849,31 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultBoneShieldBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Castbar (available to all specs, hidden by default). Timer-driven (cast/channel/empower);
+	-- its fill value/min/max and per-state color are managed by the castbar render path, not the
+	-- generic snapshot-value path, so minMaxMode is "custom" and colorCurveType is nil.
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "castbar",
+		displayName = L["ResourceCastbar"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "castbar",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultCastbarBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
