@@ -42,6 +42,8 @@ TRB.Classes = TRB.Classes or {}
 ---@field public reconstructed boolean # True when channel timing was reconstructed from GCD+profile (times not authoritative)
 ---@field public ticks TRB.Classes.CastbarTick[] # Channel tick positions
 ---@field public tickInterval number? # Hasted tick interval (seconds), for chaining carry
+---@field public chains boolean # Whether the active channel's profile allows chain carry
+---@field public chainFirstOffset number? # Carried-in first tick offset (seconds) applied to this channel
 ---@field public empowerStages integer # Number of empower stages (0 if not an empower)
 ---@field public empowerStageFractions number[] # Cumulative fraction at each stage completion (max line at chargeDuration/duration)
 ---@field public empowerChargeDuration number # Empower charge time to reach max (seconds), excluding the hold-at-max tail
@@ -62,6 +64,38 @@ local chainCarry = nil
 
 -- Grace window (seconds) during which a channel-end carry remains valid for the next channel.
 local CHAIN_CARRY_GRACE = 1.0
+
+---Banks the leftover tick phase of the model's active chainable channel into chainCarry so the next
+---channel of the same spell (within the grace window) starts with the carried partial tick. Anchored to
+---the channel's first-tick offset, which itself may have been carried in (chain of chains).
+---@param model TRB.Classes.Castbar
+local function StoreChainCarry(model)
+	if model.state ~= "channel" or not model.chains or model.spellId == nil
+		or model.tickInterval == nil or model.tickInterval <= 0 or model.startTime == nil then
+		return
+	end
+	local now = GetTime()
+	local elapsed = now - model.startTime
+	if elapsed <= 0 then
+		return
+	end
+	-- Time of this channel's first tick; later ticks follow every tickInterval after it.
+	local anchor = model.chainFirstOffset or model.tickInterval
+	local phaseRemaining
+	if elapsed < anchor then
+		phaseRemaining = anchor - elapsed
+	else
+		phaseRemaining = model.tickInterval - ((elapsed - anchor) % model.tickInterval)
+	end
+	if phaseRemaining <= 0 or phaseRemaining >= model.tickInterval then
+		return
+	end
+	chainCarry = {
+		spellId = model.spellId,
+		phaseRemaining = phaseRemaining,
+		expireTime = now + CHAIN_CARRY_GRACE
+	}
+end
 
 ---Creates a new Castbar model
 ---@return TRB.Classes.Castbar
@@ -86,6 +120,8 @@ function TRB.Classes.Castbar:Reset()
 	self.reconstructed = false
 	self.ticks = {}
 	self.tickInterval = nil
+	self.chains = false
+	self.chainFirstOffset = nil
 	self.empowerStages = 0
 	self.empowerStageFractions = {}
 	self.empowerChargeDuration = 0
@@ -209,11 +245,24 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
 	end
 
+	-- Chained channel: WoW fires CHANNEL_START for the new channel while the old one is still active
+	-- (no CHANNEL_STOP in between), so bank the old channel's leftover tick phase before resetting.
+	StoreChainCarry(self)
+
 	self:Reset()
 	self.state = "channel"
 	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
 	self.notInterruptible = notInterruptible
+	self.chains = (profile ~= nil and profile.chains) == true
+
+	-- Consume a pending carry (same spell, within grace): persisted on the model so tick recomputes
+	-- from CHANNEL_UPDATE keep the carried layout instead of resetting to a fresh cadence.
+	if self.chains and chainCarry ~= nil and self.spellId ~= nil
+		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
+		self.chainFirstOffset = chainCarry.phaseRemaining
+	end
+	chainCarry = nil
 
 	local now = GetTime()
 	local haste = self:GetHasteMultiplier()
@@ -275,17 +324,12 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	end
 	self.tickInterval = interval
 
-	-- Consume a valid chaining carry (same spell, within grace window): the first interval is shortened
-	-- by the phase left over when the previous channel ended, modeling a carried partial tick.
+	-- First interval: shortened by a carried-in partial tick when this channel was chained. Reading the
+	-- model field (set once in StartChannel) keeps the layout stable across CHANNEL_UPDATE recomputes.
 	local firstOffset = interval
-	if profile.chains and chainCarry ~= nil and self.spellId ~= nil
-		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
-		local rem = chainCarry.phaseRemaining
-		if rem > 0 and rem < interval then
-			firstOffset = rem
-		end
+	if self.chainFirstOffset ~= nil and self.chainFirstOffset > 0 and self.chainFirstOffset < interval then
+		firstOffset = self.chainFirstOffset
 	end
-	chainCarry = nil
 
 	-- Optional tick at t=0 (some channels tick on cast).
 	if profile.firstTickAtStart then
@@ -439,29 +483,10 @@ function TRB.Classes.Castbar:ChannelUpdate()
 	end
 end
 
----Stops the active cast. For chainable channels that end mid-interval, stores the leftover tick phase
----so a subsequent channel of the same spell can place its first tick after only the remaining phase.
----@param profile table? # The active channel's tick profile (for chain carry eligibility)
-function TRB.Classes.Castbar:Stop(profile)
-	if self.state == "channel" and profile and profile.chains and self.spellId ~= nil
-		and self.tickInterval and self.tickInterval > 0 and self.startTime ~= nil then
-		local now = GetTime()
-		local elapsed = now - self.startTime
-		if elapsed > 0 then
-			-- Phase already served within the current interval, and the phase remaining until the
-			-- next tick would have fired. The remaining phase carries into the next channel.
-			local served = elapsed % self.tickInterval
-			local phaseRemaining = self.tickInterval - served
-			if phaseRemaining <= 0 or phaseRemaining >= self.tickInterval then
-				phaseRemaining = 0
-			end
-			chainCarry = {
-				spellId = self.spellId,
-				phaseRemaining = phaseRemaining,
-				expireTime = now + CHAIN_CARRY_GRACE
-			}
-		end
-	end
+---Stops the active cast. For chainable channels ending mid-interval, banks the leftover tick phase so a
+---chained channel of the same spell (within the grace window) starts with the carried partial tick.
+function TRB.Classes.Castbar:Stop()
+	StoreChainCarry(self)
 	self:Reset()
 end
 

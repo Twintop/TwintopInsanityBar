@@ -245,6 +245,23 @@ end
 -- Setup (once per cast) and teardown
 -- ============================================================================
 
+---Returns the latency overlay fraction actually shown for the current cast (0 when disabled by settings,
+---hidden for channels, or when latency is zero). Shared by the latency and pushback overlay placement so
+---the pushback region sits flush against the latency zone.
+---@param model TRB.Classes.Castbar
+---@param barSettings table?
+---@param colors table?
+---@return number
+local function GetShownLatencyFraction(model, barSettings, colors)
+	if model.state == "channel" then
+		return 0
+	end
+	if not (colors and colors.latency and colors.latency.enabled and barSettings and barSettings.showLatency ~= false) then
+		return 0
+	end
+	return model:GetLatencyFraction() or 0
+end
+
 ---Places the static overlays and threshold lines for the freshly-started cast/channel/empower.
 ---@param model TRB.Classes.Castbar
 function TRB.Functions.Castbar:SetupOverlays(model)
@@ -258,14 +275,14 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 	local tickThickness = (barSettings and barSettings.border and barSettings.border >= 2) and 2 or 1
 
 	-- Latency zone: the final `latency` window of a standard cast/empower (safe-to-queue region).
-	if colors and colors.latency and colors.latency.enabled and barSettings and barSettings.showLatency ~= false then
-		local latFrac = model:GetLatencyFraction()
-		if latFrac and model.state ~= "channel" then
-			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.latency.color, true)
-			pool.latency:SetColorTexture(r, g, b, a)
-			PlaceRegion(pool.latency, node, 1 - latFrac, 1, isVertical)
-			pool.latency:Show()
-		end
+	local latFrac = GetShownLatencyFraction(model, barSettings, colors)
+	if latFrac > 0 then
+		-- latFrac > 0 implies colors.latency exists (see GetShownLatencyFraction).
+		---@diagnostic disable-next-line: need-check-nil
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.latency.color, true)
+		pool.latency:SetColorTexture(r, g, b, a)
+		PlaceRegion(pool.latency, node, 1 - latFrac, 1, isVertical)
+		pool.latency:Show()
 	end
 
 	-- Channel ticks.
@@ -314,8 +331,10 @@ function TRB.Functions.Castbar:UpdatePushbackOverlay(model)
 	local isVertical = TRB.Functions.Bar:IsVerticalFill(node.fillDirection)
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.pushback.color, true)
 	pool.pushback:SetColorTexture(r, g, b, a)
-	-- Pushback is the added time at the trailing end of the timeline.
-	PlaceRegion(pool.pushback, node, 1 - pbFrac, 1, isVertical)
+	-- Pushback sits flush against the inner edge of the latency zone (or the bar end when no latency
+	-- overlay is shown), since latency always occupies the final stretch of the timeline.
+	local outer = 1 - GetShownLatencyFraction(model, barSettings, colors)
+	PlaceRegion(pool.pushback, node, math.max(0, outer - pbFrac), outer, isVertical)
 	pool.pushback:Show()
 end
 
@@ -508,19 +527,19 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		model:ChannelUpdate()
 		if isRunning then
-			self:UpdatePushbackOverlay(model)
-			-- Channel end shifted: reposition ticks against the new duration.
+			-- Channel end shifted: reposition ticks first (SetupOverlays hides ALL overlays, pushback
+			-- included), then place the pushback overlay on top of the fresh layout.
 			local profile = self:GetTickProfile(barSettings, model.spellId)
 			if profile then
 				model:ComputeChannelTicks(profile, model:GetHasteMultiplier())
 				self:SetupOverlays(model)
 			end
+			self:UpdatePushbackOverlay(model)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
-		-- Preserve chain carry for channels before resetting.
-		local profile = (model.state == "channel") and self:GetTickProfile(barSettings, model.spellId) or nil
-		model:Stop(profile)
+		-- Chain carry (when eligible) is banked inside Stop from state the model already tracks.
+		model:Stop()
 		self:EndRender()
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		-- A successful instant cast produces no bar; only tear down if the tracked cast finished.

@@ -175,6 +175,20 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	ColorRow(parent, cc.empower, colors.empowerStages, "final", L["CastbarColorEmpowerFinal"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
+	-- Timer text precision (castbar-specific, independent of the shared timer precision settings)
+	controls.castbarTimerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTimersHeader"], oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+	controls.castbarTimerPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarTimerPrecision"], 0, 3, barSettings.timerPrecision, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.castbarTimerPrecision:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		barSettings.timerPrecision = value
+		TRB.Data.lookupDirty = true
+	end)
+	yCoord = yCoord - 60
+
 	--[[
 	-- Tick-rate editor (built-in table + editable list)
 	barSettings.tickProfiles = barSettings.tickProfiles or {}

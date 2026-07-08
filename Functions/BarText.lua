@@ -508,6 +508,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false },
 		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false },
 		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false },
 		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false },
 		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false },
 		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false },
@@ -1398,11 +1399,17 @@ end
 ---castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
 ---resource-prediction path. Values default to empty/zero when nothing is casting. Called from
 ---RefreshLookupDataBase so castbar variables flow through the single, shared bar text render pipeline.
-function TRB.Functions.BarText:RefreshCastbarLookupData()
+---Timers format with the castbar's own timerPrecision setting (independent of the shared timer
+---precision); all values, including $castLatency, are seconds ($castLatencyMs is whole milliseconds).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for bars.castbar.timerPrecision)
+function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
 	local lookupLogic = TRB.Data.lookupLogic
+	---@diagnostic disable-next-line: undefined-field
+	local precision = (settings and settings.bars and settings.bars.castbar and settings.bars.castbar.timerPrecision) or 1
+	local timerFormat = "%." .. precision .. "f"
 
 	local castbar = TRB.Data.castbar
 	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
@@ -1425,15 +1432,17 @@ function TRB.Functions.BarText:RefreshCastbarLookupData()
 			end
 		end
 	end
-	lookup["$castTime"] = TRB.Functions.BarText:TimerPrecision(castTime)
-	lookup["$castTimeRemaining"] = TRB.Functions.BarText:TimerPrecision(castRemaining)
-	lookup["$castLatency"] = string.format("%d", math.floor(castLatency * 1000 + 0.5)) -- milliseconds
-	lookup["$castPushback"] = TRB.Functions.BarText:TimerPrecision(castPushback)
+	lookup["$castTime"] = string.format(timerFormat, castTime)
+	lookup["$castTimeRemaining"] = string.format(timerFormat, castRemaining)
+	lookup["$castLatency"] = string.format(timerFormat, castLatency)
+	lookup["$castLatencyMs"] = string.format("%d", math.floor(castLatency * 1000 + 0.5))
+	lookup["$castPushback"] = string.format(timerFormat, castPushback)
 	lookup["$castSpellName"] = castSpellName
 	lookup["$castSpellId"] = tostring(castSpellId)
 	lookupLogic["$castTime"] = castTime
 	lookupLogic["$castTimeRemaining"] = castRemaining
-	lookupLogic["$castLatency"] = castLatency * 1000
+	lookupLogic["$castLatency"] = castLatency
+	lookupLogic["$castLatencyMs"] = castLatency * 1000
 	lookupLogic["$castPushback"] = castPushback
 	lookupLogic["$castSpellId"] = castSpellId
 end
@@ -1603,7 +1612,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
 	-- them independently of this class-driven (combat/isTracking-gated) refresh.
-	TRB.Functions.BarText:RefreshCastbarLookupData()
+	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
