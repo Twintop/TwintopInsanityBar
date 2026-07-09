@@ -973,35 +973,9 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 
 	snapshotData.attributes.haste = UnitSpellHaste("player")
 
-	-- Try to immediately read the new GCD duration. If we're mid-GCD, GetTotalDuration()
-	-- returns the real value and we can update right away. Otherwise we fall back to the
-	-- deferred path (actioned on next cast in SpellCastEvent).
-	local oldGcd = snapshotData.attributes.gcdDuration or 1.5
-	local immediateGcd
-	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
-	if durationObj then
-		local totalDuration = durationObj:GetTotalDuration()
-		if not issecretvalue(totalDuration) and totalDuration > 0 then
-			immediateGcd = totalDuration
-		end
-	end
-
-	if immediateGcd and immediateGcd ~= oldGcd then
-		snapshotData.attributes.gcdDuration = immediateGcd
-		snapshotData:RecalculateHastedCooldowns(oldGcd, immediateGcd, GetTime())
-		snapshotData.attributes.pendingGcdRecalc = nil
-
-		local displayGcd = immediateGcd
-		if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
-		snapshotData.formatted.gcd = string.format("%.2f", displayGcd)
-		snapshotData.formatted.gcdRaw = displayGcd
-	else
-		-- Flag deferred haste recalc — actioned on next GCD observation in SpellCastEvent.
-		snapshotData.attributes.pendingGcdRecalc = {
-			time = GetTime(),
-			oldGcd = oldGcd,
-		}
-	end
+	-- Try to immediately read the new GCD; if unreadable or unchanged, UpdateGCD queues a
+	-- deferred recalc actioned on the next cast event.
+	snapshotData:UpdateGCD(GetTime())
 
 	snapshotData.attributes.crit = GetCritChance()
 	snapshotData.attributes.mastery = GetMasteryEffect()
@@ -1037,7 +1011,7 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
 
 	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
-	-- Uses cached GCD duration from SpellCastEvent instead of haste math (haste is secret)
+	-- Uses cached GCD duration from SnapshotData:UpdateGCD instead of haste math (haste is secret)
 	local _gcd = snapshotData.attributes.gcdDuration or 1.5
 	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
 	formatted.gcd = string.format("%.2f", _gcd)

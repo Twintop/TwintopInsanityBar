@@ -15,45 +15,22 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 	end
 	TRB.Data.lookupDirty = true
 
+	-- Refresh the cached GCD duration first: these events all begin a new GCD, and the castbar
+	-- bridge below reads the cache (GetHasteMultiplier) when laying out channel ticks.
+	if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SUCCEEDED"
+		or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if snapshotData then
+			snapshotData:UpdateGCD()
+		end
+	end
+
 	-- Drive the castbar bar type (independent of the class-specific resource routing below). Wrapped in
 	-- pcall so a bug in this newer code path can never abort this shared event handler and take the
 	-- pre-existing resource-bar cast tracking below down with it.
 	local castbarOk, castbarErr = pcall(TRB.Functions.Castbar.OnSpellCastEvent, TRB.Functions.Castbar, event, spellId)
 	if not castbarOk then
 		geterrorhandler()(castbarErr)
-	end
-
-	-- Cache the GCD duration from the dummy GCD spell (61304) on every cast start / instant succeed.
-	-- GetTotalDuration() returns the full GCD length in seconds while the GCD is active (0 otherwise).
-	-- This replaces haste-based GCD math since haste is now a secret value.
-	if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local durationObj = C_Spell.GetSpellCooldownDuration(61304)
-		if durationObj then
-			local totalDuration = durationObj:GetTotalDuration()
-			if not issecretvalue(totalDuration) and totalDuration > 0 then
-				local snapshotData = TRB.Data.snapshotData
-				if snapshotData then
-					local oldGcd = snapshotData.attributes.gcdDuration or 1.5
-
-					snapshotData.attributes.gcdDuration = totalDuration
-
-					-- Process deferred haste recalc if pending (flagged by UpdateSecondaryStatsSnapshot)
-					local pending = snapshotData.attributes.pendingGcdRecalc
-					if pending and oldGcd ~= totalDuration then
-						snapshotData:RecalculateHastedCooldowns(pending.oldGcd, totalDuration, pending.time)
-						snapshotData.attributes.pendingGcdRecalc = nil
-					end
-
-					-- Update formatted GCD display (clamped to 0.75 – 1.5)
-					local displayGcd = totalDuration
-					if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
-					snapshotData.formatted.gcd = string.format("%.2f", displayGcd)
-					snapshotData.formatted.gcdRaw = displayGcd
-
-					TRB.Data.lookupDirty = true
-				end
-			end
-		end
 	end
 
 	if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP"

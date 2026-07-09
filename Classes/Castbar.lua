@@ -151,7 +151,7 @@ function TRB.Classes.Castbar:GetSpellData(spellId)
 end
 
 ---Infers the current haste multiplier (>= 1.0) from the whitelisted GCD spell duration cached on the
----snapshot (see Functions/SpellCast.lua). At >100% haste the GCD floors at 0.75s, so this saturates
+---snapshot (see TRB.Classes.SnapshotData:UpdateGCD). At >100% haste the GCD floors at 0.75s, so this saturates
 ---near 2.0; that is an accepted best-effort limit for channel tick reconstruction.
 ---@return number
 function TRB.Classes.Castbar:GetHasteMultiplier()
@@ -164,7 +164,6 @@ function TRB.Classes.Castbar:GetHasteMultiplier()
 		end
 	end
 	local mult = BASE_GCD / gcd
-	if mult < 1.0 then mult = 1.0 end
 	return mult
 end
 
