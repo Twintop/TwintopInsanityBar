@@ -8770,7 +8770,9 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.showLatency = true
 	settings.showPushback = true
 	settings.showEmpowerStages = true
-	settings.timerPrecision = 1
+	settings.castTimePrecision = 1
+	settings.durationPrecision = 1
+	settings.latencyPrecision = 1
 	settings.tickProfiles = self:DefaultCastbarTickProfilesForSpec(className, specName)
 	return settings
 end

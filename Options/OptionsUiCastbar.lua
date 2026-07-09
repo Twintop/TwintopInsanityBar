@@ -178,13 +178,33 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	-- Timer text precision (castbar-specific, independent of the shared timer precision settings)
 	controls.castbarTimerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTimersHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	controls.castbarTimerPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarTimerPrecision"], 0, 3, barSettings.timerPrecision, 1, 0,
+	controls.castbarCastTimePrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarCastTimePrecision"], 0, 3, barSettings.castTimePrecision, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.castbarTimerPrecision:SetScript("OnValueChanged", function(self, value)
+	controls.castbarCastTimePrecision:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
-		barSettings.timerPrecision = value
+		barSettings.castTimePrecision = value
+		TRB.Data.lookupDirty = true
+	end)
+	yCoord = yCoord - 60
+	controls.castbarDurationPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarDurationPrecision"], 0, 3, barSettings.durationPrecision, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.castbarDurationPrecision:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		barSettings.durationPrecision = value
+		TRB.Data.lookupDirty = true
+	end)
+	yCoord = yCoord - 60
+	controls.castbarLatencyPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarLatencyPrecision"], 0, 3, barSettings.latencyPrecision, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.castbarLatencyPrecision:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		barSettings.latencyPrecision = value
 		TRB.Data.lookupDirty = true
 	end)
 	yCoord = yCoord - 60

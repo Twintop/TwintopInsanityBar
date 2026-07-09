@@ -248,6 +248,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
 	self.notInterruptible = notInterruptible
+	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 	self.chains = (profile ~= nil and profile.chains) == true
 
 	-- Consume a pending carry (same spell, within grace): the leftover until the previous channel's next
@@ -299,11 +300,11 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self:ComputeChannelTicks(profile, haste)
 end
 
----Computes channel tick fractions (0 = channel start .. 1 = channel end) and stores them on self.ticks.
----Ticks fire at n*tickRate from the start (n = 0, 1, ...) and sit at fraction (tickRate*n)/duration. The
----rate comes from the nominal (un-chained) length, so a chain-extended duration simply fits one more tick
----rather than stretching the spacing. The bar fills as the channel progresses, so no mirroring is needed:
----the moving edge passes each tick as its event fires.
+---Computes channel tick positions (fraction 0..1 along the bar) and stores them on self.ticks. The tick
+---rate comes from the nominal (un-chained) length, so a chain-extended duration fits one more tick rather
+---than stretching the spacing. Raw t/duration fractions place any partial interval at the channel-start side
+---of the right-to-left depleting bar -- correct for a chained fixedCount's carried tick, but fixedRate's
+---partial belongs at the channel end, so only fixedRate fractions are mirrored.
 ---@param profile table?
 ---@param haste number
 function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
@@ -334,15 +335,21 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	end
 	self.tickInterval = tickRate
 
-	-- Ticks at n*tickRate from the channel start, each at fraction (tickRate*n)/duration. A chained channel
-	-- is longer than nominal, so one extra tick fits before the end.
+	-- fixedRate's partial belongs at the channel-end side; raw fractions put it at the start, so mirror (a chained fixedCount's carried partial correctly stays at the start).
+	local mirror = profile.mode ~= "fixedCount"
+
+	-- Ticks at n*tickRate from the channel start; a chain-extended duration simply fits one more tick.
 	local n = 0
 	while n < 1000 do
 		local t = tickRate * n
 		if t >= duration - 0.0001 then
 			break
 		end
-		self.ticks[#self.ticks + 1] = { fraction = t / duration }
+		local fraction = t / duration
+		if mirror then
+			fraction = 1 - fraction
+		end
+		self.ticks[#self.ticks + 1] = { fraction = fraction }
 		n = n + 1
 	end
 end
@@ -459,19 +466,14 @@ function TRB.Classes.Castbar:Delayed()
 	end
 end
 
----Records pushback for a channel after UNIT_SPELLCAST_CHANNEL_UPDATE (damage shortens channels).
+---Re-reads channel timing after UNIT_SPELLCAST_CHANNEL_UPDATE (e.g. a chain nudging the end time out).
+---Pushback never applies to a channel, so this only updates timing -- it does not accumulate pushback.
 function TRB.Classes.Castbar:ChannelUpdate()
 	if self.state ~= "channel" then
 		return
 	end
 	local _, startTime, endTime = ReadChannelInfo()
 	if startTime ~= nil and endTime ~= nil and endTime > startTime then
-		if self.endTime then
-			local delta = self.endTime - endTime
-			if delta > 0 then
-				self.pushback = self.pushback + delta
-			end
-		end
 		self.startTime = startTime
 		self.endTime = endTime
 		self.duration = endTime - startTime
@@ -516,8 +518,9 @@ function TRB.Classes.Castbar:GetProgress(now)
 	return elapsed, remaining, self.duration, fill
 end
 
----Returns the fraction (0..1) at which the latency "safe zone" begins, measured from the cast END.
----For casts this marks the window where queuing the next spell is safe; nil when latency is 0.
+---Returns the fraction (0..1) of the timeline the latency "safe zone" occupies, measured from the END.
+---Marks the window where queuing the next spell is safe; SetupOverlays draws it on the bar's ending side
+---(fraction 1 for casts/empowers, fraction 0 for depleting channels). Nil when latency is 0.
 ---@return number?
 function TRB.Classes.Castbar:GetLatencyFraction()
 	if self.latency == nil or self.latency <= 0 or self.duration == nil or self.duration <= 0 then

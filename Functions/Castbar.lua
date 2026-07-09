@@ -245,17 +245,15 @@ end
 -- Setup (once per cast) and teardown
 -- ============================================================================
 
----Returns the latency overlay fraction actually shown for the current cast (0 when disabled by settings,
----hidden for channels, or when latency is zero). Shared by the latency and pushback overlay placement so
+---Returns the latency overlay fraction actually shown for the current cast/channel (0 when disabled by
+---settings or when latency is zero). SetupOverlays draws the zone on the bar's ending side (high-fraction
+---end for casts/empowers, low-fraction end for depleting channels). Also feeds cast pushback placement so
 ---the pushback region sits flush against the latency zone.
 ---@param model TRB.Classes.Castbar
 ---@param barSettings table?
 ---@param colors table?
 ---@return number
 local function GetShownLatencyFraction(model, barSettings, colors)
-	if model.state == "channel" then
-		return 0
-	end
 	if not (colors and colors.latency and colors.latency.enabled and barSettings and barSettings.showLatency ~= false) then
 		return 0
 	end
@@ -274,19 +272,24 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 	local isVertical = TRB.Functions.Bar:IsVerticalFill(node.fillDirection)
 	local tickThickness = (barSettings and barSettings.border and barSettings.border >= 2) and 2 or 1
 
-	-- Latency zone: the final `latency` window of a standard cast/empower (safe-to-queue region).
+	-- Latency zone: the final `latency` window (safe-to-queue region), drawn on the bar's ending side. A
+	-- cast/empower grows L->R and ends at fraction 1, so its zone is [1-latFrac, 1]; a channel depletes
+	-- toward fraction 0, so its ending-side zone is [0, latFrac].
 	local latFrac = GetShownLatencyFraction(model, barSettings, colors)
 	if latFrac > 0 then
 		-- latFrac > 0 implies colors.latency exists (see GetShownLatencyFraction).
 		---@diagnostic disable-next-line: need-check-nil
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.latency.color, true)
 		pool.latency:SetColorTexture(r, g, b, a)
-		PlaceRegion(pool.latency, node, 1 - latFrac, 1, isVertical)
+		if model.state == "channel" then
+			PlaceRegion(pool.latency, node, 0, latFrac, isVertical)
+		else
+			PlaceRegion(pool.latency, node, 1 - latFrac, 1, isVertical)
+		end
 		pool.latency:Show()
 	end
 
-	-- Channel ticks sit at each tick's progress fraction (see ComputeChannelTicks). The bar fills as the
-	-- channel progresses, so the moving edge passes each tick as its event fires -- no mirroring needed.
+	-- Channel ticks sit at each tick's bar fraction (see ComputeChannelTicks, which mirrors fixedRate for depletion).
 	if colors and colors.tick and colors.tick.enabled ~= false and barSettings and barSettings.showTicks ~= false
 		and model.state == "channel" and model.ticks then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.tick.color, true)
@@ -528,14 +531,13 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		model:ChannelUpdate()
 		if isRunning then
-			-- Channel end shifted: reposition ticks first (SetupOverlays hides ALL overlays, pushback
-			-- included), then place the pushback overlay on top of the fresh layout.
+			-- Channel end shifted (e.g. a chain): recompute ticks when we have a profile, then re-place
+			-- overlays so the latency zone reflects the new duration. Channels carry no pushback overlay.
 			local profile = self:GetTickProfile(barSettings, model.spellId)
 			if profile then
 				model:ComputeChannelTicks(profile, model:GetHasteMultiplier())
-				self:SetupOverlays(model)
 			end
-			self:UpdatePushbackOverlay(model)
+			self:SetupOverlays(model)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
