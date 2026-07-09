@@ -10,48 +10,6 @@ local L = TRB.Localization
 -- Castbar options panel (single central tab, injected into every spec by BuildTabGroup)
 -- ============================================================================
 
----Builds a color swatch bound to colorTable[key].color, persisting + live-updating via ColorOnMouseDown.
----@param parent Frame
----@param controlsTbl table # Swatch storage keyed by `key` (for refresh)
----@param colorTable table # The parent color table
----@param key string # Field within colorTable
----@param label string
----@param yCoord number
----@param classId integer
----@param specId integer
----@return Frame swatch
-local function ColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId)
-	local entry = colorTable[key]
-	local value = (type(entry) == "table" and entry.color) or entry or "FFFFFFFF"
-	local f = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, label, value, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	controlsTbl[key] = f
-	f:SetScript("OnMouseDown", function(self, button)
-		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId)
-	end)
-	return f
-end
-
----Builds a checkbox bound to a getter/setter.
----@param parent Frame
----@param name string # Unique global frame name
----@param label string
----@param tooltip string?
----@param yCoord number
----@param getFn fun():boolean
----@param setFn fun(checked:boolean)
----@return CheckButton
-local function CheckboxRow(parent, name, label, tooltip, yCoord, getFn, setFn)
-	local cb = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
-	cb:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(cb:GetName() .. "Text"):SetText(label)
-	cb.tooltip = tooltip
-	cb:SetChecked(getFn() and true or false)
-	cb:SetScript("OnClick", function(self)
-		setFn(self:GetChecked() and true or false)
-	end)
-	return cb
-end
-
 ---Composes a human-readable summary of the configured tick profiles.
 ---@param tickProfiles table<integer, table>
 ---@return string
@@ -121,7 +79,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 
 	-- Simple opt-in toggle. The castbar is not part of the displayBar/BarVisibility system: when
 	-- enabled it shows automatically while actively casting/channeling/empowering, and hides otherwise.
-	CheckboxRow(parent, namePrefix .. "_enable", L["CastbarEnable"], L["CastbarEnableTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enable", L["CastbarEnable"], L["CastbarEnableTooltip"], yCoord,
 		function() return barSettings.enabled end, function(v) barSettings.enabled = v end)
 	yCoord = yCoord - 40
 
@@ -132,52 +90,52 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	-- Fill colors
 	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "channel", L["CastbarColorChannel"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "channel", L["CastbarColorChannel"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "uninterruptible", L["CastbarColorUninterruptible"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "uninterruptible", L["CastbarColorUninterruptible"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
 	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch
 	controls.castbarOverlaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarOverlaysHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 	colors.latency = colors.latency or { color = "80FF0000", enabled = true }
-	CheckboxRow(parent, namePrefix .. "_latencyEnable", L["CastbarLatencyEnable"], L["CastbarLatencyEnableTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_latencyEnable", L["CastbarLatencyEnable"], L["CastbarLatencyEnableTooltip"], yCoord,
 		function() return colors.latency.enabled end, function(v) colors.latency.enabled = v end)
-	ColorRow(parent, cc.overlay, colors, "latency", L["CastbarColorLatency"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "latency", L["CastbarColorLatency"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	colors.pushback = colors.pushback or { color = "80FF00FF", enabled = true }
-	CheckboxRow(parent, namePrefix .. "_pushbackEnable", L["CastbarPushbackEnable"], L["CastbarPushbackEnableTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_pushbackEnable", L["CastbarPushbackEnable"], L["CastbarPushbackEnableTooltip"], yCoord,
 		function() return colors.pushback.enabled end, function(v) colors.pushback.enabled = v end)
-	ColorRow(parent, cc.overlay, colors, "pushback", L["CastbarColorPushback"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "pushback", L["CastbarColorPushback"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	colors.tick = colors.tick or { color = "FFFFFFFF", enabled = true }
-	CheckboxRow(parent, namePrefix .. "_tickEnable", L["CastbarTickEnable"], L["CastbarTickEnableTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickEnable", L["CastbarTickEnable"], L["CastbarTickEnableTooltip"], yCoord,
 		function() return colors.tick.enabled end, function(v) colors.tick.enabled = v end)
-	ColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
 	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as reached)
 	controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	CheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
 		function() return barSettings.empowerSegmentedFill end, function(v) barSettings.empowerSegmentedFill = v end)
 	yCoord = yCoord - 30
 	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
-	ColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
 	-- Timer text precision (castbar-specific, independent of the shared timer precision settings)
@@ -243,15 +201,15 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	yCoord = yCoord - 30
 
 	local fixedCountChecked = { value = true }
-	CheckboxRow(parent, namePrefix .. "_tickMode", L["CastbarTickModeFixedCount"], L["CastbarTickModeFixedCountTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickMode", L["CastbarTickModeFixedCount"], L["CastbarTickModeFixedCountTooltip"], yCoord,
 		function() return fixedCountChecked.value end, function(v) fixedCountChecked.value = v end)
 	yCoord = yCoord - 26
 	local chainsChecked = { value = false }
-	CheckboxRow(parent, namePrefix .. "_tickChains", L["CastbarTickChains"], L["CastbarTickChainsTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickChains", L["CastbarTickChains"], L["CastbarTickChainsTooltip"], yCoord,
 		function() return chainsChecked.value end, function(v) chainsChecked.value = v end)
 	yCoord = yCoord - 26
 	local firstTickChecked = { value = false }
-	CheckboxRow(parent, namePrefix .. "_tickFirst", L["CastbarTickFirstAtStart"], L["CastbarTickFirstAtStartTooltip"], yCoord,
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickFirst", L["CastbarTickFirstAtStart"], L["CastbarTickFirstAtStartTooltip"], yCoord,
 		function() return firstTickChecked.value end, function(v) firstTickChecked.value = v end)
 	yCoord = yCoord - 30
 

@@ -589,6 +589,26 @@ function TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, text, posX, posY,
 	return f
 end
 
+---Builds a checkbox bound to a getter/setter.
+---@param parent Frame
+---@param name string # Unique global frame name
+---@param label string
+---@param tooltip string?
+---@param yCoord number
+---@param getFn fun():boolean
+---@param setFn fun(checked:boolean)
+---@return CheckButton
+function TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, name, label, tooltip, yCoord, getFn, setFn)
+	local cb = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
+	cb:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(cb:GetName() .. "Text"):SetText(label)
+	cb.tooltip = tooltip
+	cb:SetChecked(getFn() and true or false)
+	cb:SetScript("OnClick", function(self)
+		setFn(self:GetChecked() and true or false)
+	end)
+	return cb
+end
 
 ---Enables or disables a ChatConfigCheckButton checkbox and grays out its label text when disabled.
 ---@param checkbox CheckButton # The checkbox frame to toggle

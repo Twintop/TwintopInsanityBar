@@ -211,6 +211,27 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, descripti
 	return f
 end
 
+---Builds a color swatch bound to colorTable[key].color, persisting + live-updating via ColorOnMouseDown.
+---@param parent Frame
+---@param controlsTbl table # Swatch storage keyed by `key` (for refresh)
+---@param colorTable table # The parent color table
+---@param key string # Field within colorTable
+---@param label string
+---@param yCoord number
+---@param classId integer
+---@param specId integer
+---@return Frame swatch
+function TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId)
+	local entry = colorTable[key]
+	local value = (type(entry) == "table" and entry.color) or entry or "FFFFFFFF"
+	local f = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, label, value, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	controlsTbl[key] = f
+	f:SetScript("OnMouseDown", function(self, button)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId)
+	end)
+	return f
+end
+
 local gradientDirectionCycle = { "disabled", "horizontal", "vertical" }
 local gradientDirectionAbbrevLabels = {
 	disabled = L["GradientDirectionDisabledAbbrev"],
