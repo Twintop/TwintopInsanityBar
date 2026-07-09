@@ -162,17 +162,19 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	ColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
-	-- Empower stage colors (mimic Combo Points: base / penultimate / final)
+	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as reached)
 	controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.fill, colors, "empowerFill", L["CastbarColorEmpowerFill"], yCoord, classId, specId)
-	yCoord = yCoord - 30
-	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, penultimate = { color = "FFFFCC00" }, final = { color = "FFFF3000" } }
+	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
 	ColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "penultimate", L["CastbarColorEmpowerPenultimate"], yCoord, classId, specId)
+	ColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	ColorRow(parent, cc.empower, colors.empowerStages, "final", L["CastbarColorEmpowerFinal"], yCoord, classId, specId)
+	ColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
+	yCoord = yCoord - 30
+	ColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
 	-- Timer text precision (castbar-specific, independent of the shared timer precision settings)

@@ -19,7 +19,7 @@ local content = [====[
 - Standard casts, channeled spells, and empowered casts.
 - Latency and pushback shown as bar overlays, with matching `$castLatency`/`$castLatencyMs` and `$castPushback` bar text.
 - Channel tick markers driven by a per-spell tick-rate list (built-in defaults plus a user-editable list). Both channel styles are handled: fixed tick count where the channel shrinks with haste (e.g. Mind Flay), and fixed channel duration where the tick rate accelerates with haste and ends on a partial tick (e.g. Void Torrent), including carrying a partial tick into a chained channel.
-- Empower stage threshold lines and per-stage fill colors (base/penultimate/final, mimicking Combo Points).
+- Empower stage threshold lines and absolute per-level fill colors: a Base color while charging toward Level I, then distinct colors for empower Levels I through IV.
 - New bar text variables: `$castTime`, `$castTimeRemaining`, `$castLatency` (seconds), `$castLatencyMs` (milliseconds), `$castPushback`, `$castSpellName`, `$castSpellId`; the existing `#casting` icon continues to represent the currently casting spell.
 
 ---

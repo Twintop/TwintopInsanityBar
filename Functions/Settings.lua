@@ -8777,16 +8777,15 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	return settings
 end
 
----Gets the default Castbar colors. `bar` is the standard-cast fill; `channel`, `empowerFill`, and
----`uninterruptible` recolor the fill per state. Overlay colors (latency/pushback) and tick lines are
----separate. Empower stage colors mimic Combo Points (base/penultimate/final), mapped to the LIVE stage
----count at render time so the last stage is always `final`, the second-to-last `penultimate`.
+---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel` and `uninterruptible`
+---recolor the fill per state. Overlay colors (latency/pushback) and tick lines are separate. Empower
+---fill uses absolute per-level colors: `base` while charging toward Level I, then `level1`..`level4` as
+---each empower level is reached (mapped from GetCurrentEmpowerStage at render time; game max is 4).
 ---@return table
 function TRB.Functions.Settings:DefaultCastbarBarColors()
 	return {
 		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
 		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
-		empowerFill = { color = "FFC8B0FF", color2 = "FFC8B0FF", gradientDirection = "disabled" },
 		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
@@ -8795,8 +8794,10 @@ function TRB.Functions.Settings:DefaultCastbarBarColors()
 		tick = { color = "FFFFFFFF", enabled = true },
 		empowerStages = {
 			base = { color = "FFC8B0FF" },
-			penultimate = { color = "FFFFCC00" },
-			final = { color = "FFFF3000" }
+			level1 = { color = "FFFFCC00" },
+			level2 = { color = "FFFFAA00" },
+			level3 = { color = "FFFF6600" },
+			level4 = { color = "FFFF3000" }
 		}
 	}
 end

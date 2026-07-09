@@ -220,22 +220,19 @@ local function ApplyStateFillColor(node, colors, model)
 		Color:ApplyFillColor(node, colors.channel or colors.bar)
 	elseif model.state == "empower" then
 		local stageColors = colors.empowerStages
+		-- GetCurrentEmpowerStage returns the absolute empower level reached: 0 while charging toward Level I,
+		-- then 1..N as each level threshold is crossed. Color maps directly: stage 0 -> base, stage N ->
+		-- levelN (clamped to the game's max of 4 empower levels).
 		local stage = model:GetCurrentEmpowerStage()
-		-- One line is drawn per stage completion (empowerStages of them, including the max line before the
-		-- hold-at-max zone), so GetCurrentEmpowerStage returns 0..empowerStages. Max empower and the hold
-		-- that follows are stage == empowerStages; the level just below it is the penultimate.
-		local maxStage = model.empowerStages or 0
 		local entry
-		if stageColors and stage > 0 and maxStage > 0 then
-			if stage >= maxStage then
-				entry = stageColors.final
-			elseif stage == maxStage - 1 then
-				entry = stageColors.penultimate
-			else
+		if stageColors then
+			if stage <= 0 then
 				entry = stageColors.base
+			else
+				entry = stageColors["level" .. math.min(stage, 4)]
 			end
 		end
-		Color:ApplyFillColor(node, entry or colors.empowerFill or colors.bar)
+		Color:ApplyFillColor(node, entry or colors.bar)
 	else
 		Color:ApplyFillColor(node, colors.bar)
 	end
