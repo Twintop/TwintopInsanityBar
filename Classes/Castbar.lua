@@ -81,7 +81,7 @@ local function StoreChainCarry(model)
 	-- Ticks occur at multiples of tickInterval from the channel start, so the leftover until the next tick
 	-- is one interval minus how far into the current interval we are. This leftover lengthens the next
 	-- (chained) channel by one extra tick.
-	local remaining = model.tickInterval - (elapsed % model.tickInterval)
+	local remaining = model.tickInterval - ((elapsed - (model.chainCarry or 0)) % model.tickInterval)
 	if remaining <= 0 or remaining >= model.tickInterval then
 		return
 	end
