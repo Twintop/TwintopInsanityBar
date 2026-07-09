@@ -8733,9 +8733,9 @@ local castbarTickProfilesBySpec = {
 	priest = {
 		shadow = {
 			-- Mind Flay: constant tick count, duration shrinks with haste.
-			[15407] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = false, chains = true },
+			[15407] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 6, firstTickAtStart = false, chains = true },
 			-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
-			[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 0.5, firstTickAtStart = false, chains = true },
+			[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 1, firstTickAtStart = true },
 		},
 	},
 }

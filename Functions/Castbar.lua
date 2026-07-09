@@ -285,14 +285,15 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 		pool.latency:Show()
 	end
 
-	-- Channel ticks.
+	-- Channel ticks sit at each tick's progress fraction (see ComputeChannelTicks). The bar fills as the
+	-- channel progresses, so the moving edge passes each tick as its event fires -- no mirroring needed.
 	if colors and colors.tick and colors.tick.enabled ~= false and barSettings and barSettings.showTicks ~= false
 		and model.state == "channel" and model.ticks then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.tick.color, true)
 		for i, tick in ipairs(model.ticks) do
-			if tick.fraction > 0 and tick.fraction < 1.0001 then
+			if tick.fraction >= -0.0001 and tick.fraction < 1.0001 then
 				local t = GetTickTexture(pool, node, i)
-				t:SetColorTexture(r, g, b, tick.partial and (a * 0.6) or a)
+				t:SetColorTexture(r, g, b, a)
 				PlaceLine(t, node, tick.fraction, isVertical, tickThickness)
 				t:Show()
 			end

@@ -26,8 +26,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public icon string # Inline |T...|t texture string
 
 ---@class TRB.Classes.CastbarTick
----@field public fraction number # Position along the timeline, 0 (start) .. 1 (end)
----@field public partial boolean # True for a final partial tick that lands short of a full interval
+---@field public fraction number # Position along the bar, 0 (start) .. 1 (end)
 
 ---@class TRB.Classes.Castbar
 ---@field public state trbCastbarState
@@ -41,9 +40,9 @@ TRB.Classes = TRB.Classes or {}
 ---@field public notInterruptible boolean
 ---@field public reconstructed boolean # True when channel timing was reconstructed from GCD+profile (times not authoritative)
 ---@field public ticks TRB.Classes.CastbarTick[] # Channel tick positions
----@field public tickInterval number? # Hasted tick interval (seconds), for chaining carry
+---@field public tickInterval number? # Tick rate (seconds between ticks), derived from the nominal channel length
 ---@field public chains boolean # Whether the active channel's profile allows chain carry
----@field public chainFirstOffset number? # Carried-in first tick offset (seconds) applied to this channel
+---@field public chainCarry number? # Carried leftover (seconds) that lengthens this chained channel by one tick
 ---@field public empowerStages integer # Number of empower stages (0 if not an empower)
 ---@field public empowerStageFractions number[] # Cumulative fraction at each stage completion (max line at chargeDuration/duration)
 ---@field public empowerChargeDuration number # Empower charge time to reach max (seconds), excluding the hold-at-max tail
@@ -79,20 +78,16 @@ local function StoreChainCarry(model)
 	if elapsed <= 0 then
 		return
 	end
-	-- Time of this channel's first tick; later ticks follow every tickInterval after it.
-	local anchor = model.chainFirstOffset or model.tickInterval
-	local phaseRemaining
-	if elapsed < anchor then
-		phaseRemaining = anchor - elapsed
-	else
-		phaseRemaining = model.tickInterval - ((elapsed - anchor) % model.tickInterval)
-	end
-	if phaseRemaining <= 0 or phaseRemaining >= model.tickInterval then
+	-- Ticks occur at multiples of tickInterval from the channel start, so the leftover until the next tick
+	-- is one interval minus how far into the current interval we are. This leftover lengthens the next
+	-- (chained) channel by one extra tick.
+	local remaining = model.tickInterval - (elapsed % model.tickInterval)
+	if remaining <= 0 or remaining >= model.tickInterval then
 		return
 	end
 	chainCarry = {
 		spellId = model.spellId,
-		phaseRemaining = phaseRemaining,
+		phaseRemaining = remaining,
 		expireTime = now + CHAIN_CARRY_GRACE
 	}
 end
@@ -121,7 +116,7 @@ function TRB.Classes.Castbar:Reset()
 	self.ticks = {}
 	self.tickInterval = nil
 	self.chains = false
-	self.chainFirstOffset = nil
+	self.chainCarry = nil
 	self.empowerStages = 0
 	self.empowerStageFractions = {}
 	self.empowerChargeDuration = 0
@@ -256,11 +251,11 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.notInterruptible = notInterruptible
 	self.chains = (profile ~= nil and profile.chains) == true
 
-	-- Consume a pending carry (same spell, within grace): persisted on the model so tick recomputes
-	-- from CHANNEL_UPDATE keep the carried layout instead of resetting to a fresh cadence.
+	-- Consume a pending carry (same spell, within grace): the leftover until the previous channel's next
+	-- tick lengthens this channel by one tick (see the duration adjustment below).
 	if self.chains and chainCarry ~= nil and self.spellId ~= nil
 		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
-		self.chainFirstOffset = chainCarry.phaseRemaining
+		self.chainCarry = chainCarry.phaseRemaining
 	end
 	chainCarry = nil
 
@@ -294,11 +289,22 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	end
 	self.duration = duration
 
+	-- A chained channel runs longer than nominal by the carried leftover. Authoritative timing already
+	-- reflects this (its end time gets nudged out by CHANNEL_UPDATE); a reconstructed duration does not, so
+	-- lengthen it here so the extra tick fits.
+	if self.reconstructed and self.chainCarry ~= nil and self.chainCarry > 0 then
+		self.duration = self.duration + self.chainCarry
+		self.endTime = self.startTime + self.duration
+	end
+
 	self:ComputeChannelTicks(profile, haste)
 end
 
----Computes channel tick fractions for the active channel and stores them on self.ticks.
----Honors the two haste flavors and applies any pending chaining carry as a shortened first interval.
+---Computes channel tick fractions (0 = channel start .. 1 = channel end) and stores them on self.ticks.
+---Ticks fire at n*tickRate from the start (n = 0, 1, ...) and sit at fraction (tickRate*n)/duration. The
+---rate comes from the nominal (un-chained) length, so a chain-extended duration simply fits one more tick
+---rather than stretching the spacing. The bar fills as the channel progresses, so no mirroring is needed:
+---the moving edge passes each tick as its event fires.
 ---@param profile table?
 ---@param haste number
 function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
@@ -309,47 +315,37 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	end
 
 	local duration = self.duration
-	local interval
+
+	-- Tick rate (seconds between ticks). For fixed-count, derive it from the NOMINAL (un-chained) length so
+	-- a chain-extended duration doesn't stretch the spacing -- the extra length just fits one more tick.
+	local tickRate
 	if profile.mode == "fixedCount" then
 		local count = profile.tickCount or 0
 		if count <= 0 then return end
-		interval = duration / count
+		local nominal = duration - (self.chainCarry or 0)
+		if nominal <= 0 then nominal = duration end
+		tickRate = nominal / count
 	else
 		local baseRate = profile.baseTickRate or 0
 		if baseRate <= 0 then return end
-		interval = baseRate / haste
+		tickRate = baseRate / haste
 	end
-	if interval == nil or interval <= 0 then
+	if tickRate <= 0 then
 		return
 	end
-	self.tickInterval = interval
+	self.tickInterval = tickRate
 
-	-- First interval: shortened by a carried-in partial tick when this channel was chained. Reading the
-	-- model field (set once in StartChannel) keeps the layout stable across CHANNEL_UPDATE recomputes.
-	local firstOffset = interval
-	if self.chainFirstOffset ~= nil and self.chainFirstOffset > 0 and self.chainFirstOffset < interval then
-		firstOffset = self.chainFirstOffset
+	-- Ticks at n*tickRate from the channel start, each at fraction (tickRate*n)/duration. A chained channel
+	-- is longer than nominal, so one extra tick fits before the end.
+	local n = 0
+	while n < 1000 do
+		local t = tickRate * n
+		if t >= duration - 0.0001 then
+			break
+		end
+		self.ticks[#self.ticks + 1] = { fraction = t / duration }
+		n = n + 1
 	end
-
-	-- Optional tick at t=0 (some channels tick on cast).
-	if profile.firstTickAtStart then
-		self.ticks[#self.ticks + 1] = { fraction = 0, partial = false }
-	end
-
-	local t = firstOffset
-	local guard = 0
-	while t < duration - 0.0001 and guard < 100 do
-		self.ticks[#self.ticks + 1] = { fraction = t / duration, partial = false }
-		t = t + interval
-		guard = guard + 1
-	end
-
-	-- Final tick lands exactly at the channel end. It is a partial tick when the last full interval
-	-- did not divide the duration evenly (flavor 2 / Void Torrent style).
-	local lastFull = t - interval
-	local remainder = duration - lastFull
-	local isPartial = remainder > 0.0001 and remainder < interval - 0.0001
-	self.ticks[#self.ticks + 1] = { fraction = 1, partial = isPartial }
 end
 
 ---Begins tracking an empowered cast. Reads stage count and per-stage durations (best-effort under
@@ -483,10 +479,10 @@ function TRB.Classes.Castbar:ChannelUpdate()
 	end
 end
 
----Stops the active cast. For chainable channels ending mid-interval, banks the leftover tick phase so a
----chained channel of the same spell (within the grace window) starts with the carried partial tick.
+---Stops the active cast. Does NOT bank a chain carry: a natural channel end has no in-progress partial
+---tick, and an interrupt/cancel breaks the cadence. True chains (a new CHANNEL_START arriving while still
+---channeling, with no CHANNEL_STOP between) bank their carry in StartChannel instead.
 function TRB.Classes.Castbar:Stop()
-	StoreChainCarry(self)
 	self:Reset()
 end
 
