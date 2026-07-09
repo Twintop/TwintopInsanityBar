@@ -246,6 +246,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public showLatency boolean # Draw the latency safe-zone overlay
 ---@field public showPushback boolean # Draw the pushback overlay
 ---@field public showEmpowerStages boolean # Draw empower stage boundary lines
+---@field public empowerSegmentedFill boolean # Fill each empower level's segment in its own color at once (vs. recoloring the whole bar)
 ---@field public castTimePrecision integer # Decimal places (0-3) for $castTimeRemaining
 ---@field public durationPrecision integer # Decimal places (0-3) for $castTime
 ---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback

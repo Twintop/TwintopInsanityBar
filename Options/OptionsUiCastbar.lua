@@ -165,6 +165,9 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as reached)
 	controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
+	CheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
+		function() return barSettings.empowerSegmentedFill end, function(v) barSettings.empowerSegmentedFill = v end)
+	yCoord = yCoord - 30
 	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
 	ColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
 	yCoord = yCoord - 30

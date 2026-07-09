@@ -83,7 +83,7 @@ local function GetOverlayPool(node)
 	if pool and pool.frame == frame then
 		return pool
 	end
-	pool = { frame = frame, ticks = {}, empower = {} }
+	pool = { frame = frame, ticks = {}, empower = {}, segments = {} }
 	pool.latency = frame:CreateTexture(nil, "OVERLAY")
 	pool.latency:SetColorTexture(1, 0, 0, 0.5)
 	pool.latency:Hide()
@@ -188,6 +188,18 @@ local function GetEmpowerTexture(pool, node, i)
 	return pool.empower[i]
 end
 
+---Returns a pooled empower segment-fill texture at index i, creating it on demand. Sits at ARTWORK --
+---above the bar background but below the OVERLAY latency/pushback/tick/boundary overlays, so those still
+---render on top of the segment fills.
+local function GetSegmentTexture(pool, node, i)
+	if pool.segments[i] == nil then
+		local t = node.frame:CreateTexture(nil, "ARTWORK")
+		t:SetDrawLayer("ARTWORK", 1)
+		pool.segments[i] = t
+	end
+	return pool.segments[i]
+end
+
 ---Hides all pooled overlay textures.
 local function HideOverlays(pool)
 	if pool == nil then return end
@@ -195,6 +207,7 @@ local function HideOverlays(pool)
 	if pool.pushback then pool.pushback:Hide() end
 	for _, t in ipairs(pool.ticks) do t:Hide() end
 	for _, t in ipairs(pool.empower) do t:Hide() end
+	for _, t in ipairs(pool.segments) do t:Hide() end
 end
 
 -- ============================================================================
@@ -205,7 +218,8 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param colors table
 ---@param model TRB.Classes.Castbar
-local function ApplyStateFillColor(node, colors, model)
+---@param barSettings table? # Castbar settings; when empowerSegmentedFill is set the empower fill is blanked
+local function ApplyStateFillColor(node, colors, model, barSettings)
 	local Color = TRB.Functions.Color
 	if colors == nil then return end
 
@@ -219,6 +233,12 @@ local function ApplyStateFillColor(node, colors, model)
 	if model.state == "channel" then
 		Color:ApplyFillColor(node, colors.channel or colors.bar)
 	elseif model.state == "empower" then
+		-- Segmented-fill mode: blank the main fill so DrawEmpowerSegments can paint each level's segment in
+		-- its own color; there is no single advancing fill color to apply here.
+		if barSettings and barSettings.empowerSegmentedFill then
+			Color:ApplyFillColor(node, "00000000")
+			return
+		end
 		local stageColors = colors.empowerStages
 		-- GetCurrentEmpowerStage returns the absolute empower level reached: 0 while charging toward Level I,
 		-- then 1..N as each level threshold is crossed. Color maps directly: stage 0 -> base, stage N ->
@@ -235,6 +255,51 @@ local function ApplyStateFillColor(node, colors, model)
 		Color:ApplyFillColor(node, entry or colors.bar)
 	else
 		Color:ApplyFillColor(node, colors.bar)
+	end
+end
+
+---Draws the per-level empower segment fills (segmented-fill mode). The main bar fill is blanked in this
+---mode; each segment between empower thresholds fills in its own level color up to the live progress.
+---Boundaries are {0} + empowerStageFractions + {1.0}: segment 0 is `base`, segment k is `levelN` (clamped
+---to 4) -- the same stage->color mapping as ApplyStateFillColor's single-color path. Redrawn every frame.
+---@param node TRB.Classes.BarNode
+---@param colors table
+---@param model TRB.Classes.Castbar
+---@param fill number # Current timeline fill fraction (0..1)
+local function DrawEmpowerSegments(node, colors, model, fill)
+	local pool = GetOverlayPool(node)
+	local stageColors = colors and colors.empowerStages
+	local fractions = model.empowerStageFractions
+	local n = fractions and #fractions or 0
+	if stageColors == nil or n == 0 then
+		-- Fractions not computed yet: nothing to segment, so clear any leftover segment textures.
+		for _, t in ipairs(pool.segments) do t:Hide() end
+		return
+	end
+
+	local isVertical = TRB.Functions.Bar:IsVerticalFill(node.fillDirection)
+	local drawn = 0
+	-- N+1 segments (k = 0..n): [0,f1], [f1,f2], ..., [fn,1.0]. Each fills from its start to min(fill, end).
+	for k = 0, n do
+		local a = (k == 0) and 0 or fractions[k]
+		local b = (k == n) and 1 or fractions[k + 1]
+		if b > a and fill > a + 0.0001 then
+			local entry = (k == 0) and stageColors.base or stageColors["level" .. math.min(k, 4)]
+			local color = (type(entry) == "table" and entry.color) or entry
+			if color then
+				drawn = drawn + 1
+				local t = GetSegmentTexture(pool, node, drawn)
+				local cr, cg, cb, ca = TRB.Functions.Color:GetRGBAFromString(color, true)
+				t:SetColorTexture(cr, cg, cb, ca)
+				PlaceRegion(t, node, a, math.min(fill, b), isVertical)
+				t:Show()
+			end
+		end
+	end
+	-- Hide any pooled segment textures not used this frame (e.g. earlier stages once fill passes them is
+	-- fine -- they stay drawn; this only trims the tail beyond the highest-index segment drawn).
+	for i = drawn + 1, #pool.segments do
+		pool.segments[i]:Hide()
 	end
 end
 
@@ -349,12 +414,13 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param colors table?
 ---@param model TRB.Classes.Castbar
-function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model)
+---@param barSettings table?
+function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, barSettings)
 	if self._renderedFrame ~= node.frame then
 		-- New/rebuilt node frame: (re)place the static overlays and per-state fill color on it.
 		self._renderedFrame = node.frame
 		node:SetMinMax(0, 1)
-		ApplyStateFillColor(node, colors, model)
+		ApplyStateFillColor(node, colors, model, barSettings)
 		self:SetupOverlays(model)
 	end
 	-- Keep the shared fade fields synced to 1 so anything that consults them stays consistent, but we
@@ -388,7 +454,7 @@ function TRB.Functions.Castbar:BeginRender()
 
 	node:SetValue(0)
 	self._renderedFrame = nil -- force ApplyVisibleState to (re)place overlays for this fresh cast
-	self:ApplyVisibleState(group, node, colors, model)
+	self:ApplyVisibleState(group, node, colors, model, barSettings)
 
 	-- Mark visibility dirty so the next ProcessBars pass re-evaluates and (via its castbar-active check)
 	-- keeps isTracking true — that's what makes the shared, class-driven UpdateResourceBarText keep
@@ -456,14 +522,18 @@ castbarFrame:SetScript("OnUpdate", function()
 		if not TRB.Functions.Bar:IsRenderTransitionActive() then
 			local _, barSettings, colors = self:GetActiveSettings()
 			if self:IsEnabled(barSettings) then
-				self:ApplyVisibleState(group, node, colors, model)
+				self:ApplyVisibleState(group, node, colors, model, barSettings)
 
 				local _, _, _, fill = model:GetProgress(now)
 				node:SetValue(fill)
 
-				-- Empower fill color advances with the current stage.
+				-- Empower fill advances with the current stage. In segmented mode the main fill is blanked
+				-- and each level's segment fills to the live progress in its own color instead.
 				if model.state == "empower" then
-					ApplyStateFillColor(node, colors, model)
+					ApplyStateFillColor(node, colors, model, barSettings)
+					if barSettings and barSettings.empowerSegmentedFill then
+						DrawEmpowerSegments(node, colors, model, fill)
+					end
 				end
 			end
 		end

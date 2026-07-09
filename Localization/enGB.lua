@@ -346,9 +346,10 @@ if locale == "enGB" then
     L["CastbarPushbackEnableTooltip"] = "Shows a coloured zone representing cast time added by pushback (delays from taking damage while casting)."
     L["CastbarColorTick"] = "Channel Tick Colour"
     L["CastbarEmpowerHeader"] = "Empower Level Colours"
-    L["CastbarColorEmpowerBase"] = "Base Colour (before Level I)"
+    L["CastbarColorEmpowerBase"] = "Base Colour"
     L["CastbarColorEmpowerLevel1"] = "Level I Colour"
     L["CastbarColorEmpowerLevel2"] = "Level II Colour"
     L["CastbarColorEmpowerLevel3"] = "Level III Colour"
     L["CastbarColorEmpowerLevel4"] = "Level IV Colour"
+    L["CastbarEmpowerSegmentedFillTooltip"] = "Instead of the whole bar changing to the current empower level's colour, fill each level's segment in its own colour as the cast charges."
 end

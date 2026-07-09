@@ -8770,6 +8770,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.showLatency = true
 	settings.showPushback = true
 	settings.showEmpowerStages = true
+	settings.empowerSegmentedFill = false
 	settings.castTimePrecision = 1
 	settings.durationPrecision = 1
 	settings.latencyPrecision = 1
