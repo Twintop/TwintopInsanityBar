@@ -230,7 +230,10 @@ end
 ---Gets built-in castbar channel tick profiles for Discipline, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Penance
+		[64843] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = true },
+	}
 end
 
 
@@ -516,7 +519,10 @@ end
 ---Gets built-in castbar channel tick profiles for Holy, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Divine Hymn
+		[64843] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = true },
+	}
 end
 
 
@@ -1007,6 +1013,8 @@ function TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles()
 		[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, firstTickAtStart = false, chains = true },
 		-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
 		[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 1, firstTickAtStart = true },
+		-- Mind Flay: Insanity
+		[391403] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false, chains = true },
 	}
 end
 

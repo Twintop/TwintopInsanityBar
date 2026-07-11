@@ -188,7 +188,10 @@ end
 ---Gets built-in castbar channel tick profiles for Havoc, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Eye Beam
+		[198013] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+	}
 end
 
 

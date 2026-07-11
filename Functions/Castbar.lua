@@ -18,8 +18,8 @@ castbarFrame:Hide()
 local isRunning = false
 -- GetTime() of the most recent cast end while a fade-out (fadeDelay/fadeDuration) is in progress.
 local fadeOutStart = nil
--- Whether we currently have the default Blizzard cast bar hidden (reparented to the hidden holder).
-local blizzardCastbarDisabled = false
+-- Whether the OnShow re-assert hook has been installed on PlayerCastingBarFrame.
+local blizzardCastbarHookInstalled = false
 -- Permanently-hidden holder frame the Blizzard cast bar gets reparented under, and its original
 -- parent for restoring. Reparenting is taint-safe (C-side only, no Blizzard Lua runs), unlike SetUnit.
 local blizzardCastbarHolder = nil
@@ -57,7 +57,7 @@ end
 
 ---Hides or restores the default Blizzard cast bar per the active spec's settings: hidden while
 ---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (not Never Show).
----Checked only on load/spec/talent changes and when the relevant options are toggled.
+---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow.
 ---@param settings table? # Composed spec settings to evaluate; defaults to the active display settings (pass explicitly during spec activation, before the composite key is stamped)
 function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	if PlayerCastingBarFrame == nil then
@@ -69,10 +69,12 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	local barSettings = settings and settings.bars and settings.bars.castbar
 	local visibility = self:GetVisibilitySettings(settings)
 	local shouldDisable = barSettings ~= nil and barSettings.disableBlizzardCastbar == true and self:IsEnabled(visibility)
-	if shouldDisable == blizzardCastbarDisabled then
+	-- Blizzard re-parents the cast bar back to UIParent on spec/talent changes (Edit Mode relayout),
+	-- so compare actual parentage rather than a cached flag.
+	local currentlyDisabled = blizzardCastbarHolder ~= nil and PlayerCastingBarFrame:GetParent() == blizzardCastbarHolder
+	if shouldDisable == currentlyDisabled then
 		return
 	end
-	blizzardCastbarDisabled = shouldDisable
 	if shouldDisable then
 		if blizzardCastbarHolder == nil then
 			blizzardCastbarHolder = CreateFrame("Frame")
@@ -80,6 +82,13 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 		end
 		blizzardCastbarOriginalParent = PlayerCastingBarFrame:GetParent()
 		PlayerCastingBarFrame:SetParent(blizzardCastbarHolder)
+		-- Catch future re-parents: re-evaluate whenever the Blizzard bar becomes visible again.
+		if not blizzardCastbarHookInstalled then
+			blizzardCastbarHookInstalled = true
+			PlayerCastingBarFrame:HookScript("OnShow", function()
+				TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+			end)
+		end
 	else
 		PlayerCastingBarFrame:SetParent(blizzardCastbarOriginalParent or UIParent)
 	end
@@ -731,13 +740,26 @@ castbarFrame:SetScript("OnUpdate", function()
 			local duration = (visibility and visibility.fadeDuration) or 0
 			local elapsed = GetTime() - fadeOutStart
 			local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
+			local fadeAlpha
 			if elapsed < delay then
 				-- Hold the finished bar at active alpha for the fade delay.
-				group.containerFrame:SetAlpha(activeAlpha)
-				return
+				fadeAlpha = activeAlpha
 			elseif duration > 0 and elapsed < delay + duration then
-				local t = (elapsed - delay) / duration
-				group.containerFrame:SetAlpha(activeAlpha + (idleAlpha - activeAlpha) * t)
+				fadeAlpha = activeAlpha + (idleAlpha - activeAlpha) * ((elapsed - delay) / duration)
+			end
+			if fadeAlpha ~= nil then
+				-- Self-heal like the active render: transitions/HideResourceBar hide every group and only
+				-- ProcessBars entries get restored, so re-assert visibility each frame while fading.
+				if not TRB.Functions.Bar:IsRenderTransitionActive() then
+					group.targetAlpha = fadeAlpha
+					group.currentAlpha = fadeAlpha
+					if not group.isVisible then
+						group:Show()
+						TRB.Functions.BarVisibility:MarkDirty()
+					end
+					node:Show()
+					group.containerFrame:SetAlpha(fadeAlpha)
+				end
 				return
 			end
 			fadeOutStart = nil
