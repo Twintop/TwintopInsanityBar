@@ -926,22 +926,6 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 			if issecretvalue(channelId) then channelId = nil end
 		end
 		local profile = self:ResolveTickProfile(barSettings, channelId)
-		-- TEMP DIAGNOSTIC (remove after Penance verification): does the Harsh Discipline buff survive
-		-- into CHANNEL_START processing, and what tick count resolved?
-		do
-			local base = self:GetTickProfile(barSettings, channelId)
-			local talents = TRB.Data.talents and TRB.Data.talents.talents or nil
-			local hdSnapshot = TRB.Data.snapshotData and TRB.Data.snapshotData.snapshots and TRB.Data.snapshotData.snapshots[373183]
-			print(string.format("TRB castbar diag: channel=%s baseTicks=%s effectiveTicks=%s castigationRank=%s harshDiscRank=%s hdSnapshotActive=%s hdSnapshotStacks=%s hdAuraScan=%s",
-				tostring(channelId),
-				tostring(base and base.tickCount),
-				tostring(profile and profile.tickCount),
-				tostring(talents and talents[193134] and talents[193134].currentRank),
-				tostring(talents and talents[373180] and talents[373180].currentRank),
-				tostring(hdSnapshot ~= nil and hdSnapshot.buff.isActive),
-				tostring(hdSnapshot ~= nil and hdSnapshot.buff.applications),
-				tostring(TRB.Functions.Aura:FindBuffById(373183) ~= nil)))
-		end
 		model:StartChannel(channelId, profile)
 		self:BeginRender()
 	elseif event == "UNIT_SPELLCAST_EMPOWER_START" then

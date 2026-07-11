@@ -1393,7 +1393,6 @@ local function UpdateResourceBar()
 				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 				
-				print(spells.raptorStrike:IsUsable(), spells.raptorSwipe:IsUsable())
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					-- Create threshold on-demand if missing
