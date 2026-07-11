@@ -791,6 +791,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		anyShowing = true
 	end
 
+	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
+	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
+	-- changes, spec swaps, or reconstructions.
+	TRB.Functions.Castbar:EnsureIdleState()
+
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every
 	-- variable is recomputed on the next RefreshLookupData pass.

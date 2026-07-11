@@ -1393,6 +1393,7 @@ local function UpdateResourceBar()
 				local resourceFrame = primaryNode:GetFrame()
 				local thresholds = primaryNode:GetThresholds()
 				
+				print(spells.raptorStrike:IsUsable(), spells.raptorSwipe:IsUsable())
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 					-- Create threshold on-demand if missing
@@ -1411,6 +1412,27 @@ local function UpdateResourceBar()
 					local snapshot = snapshots[spell.id]
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.id == spells.raptorStrike.id then
+							if spells.raptorSwipe:IsUsable() then
+								showThreshold = false
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = frameLevels.thresholdUnder
+							end
+						elseif spell.id == spells.raptorSwipe.id then
+							if spells.raptorStrike:IsUsable() then
+								showThreshold = false
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = frameLevels.thresholdUnder
+							end
+						else
+							showThreshold = false
+						end
 					elseif resourceAmount == 0 then
 						showThreshold = false
 					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected

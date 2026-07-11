@@ -352,4 +352,8 @@ if locale == "enGB" then
     L["CastbarColorEmpowerLevel3"] = "Level III Colour"
     L["CastbarColorEmpowerLevel4"] = "Level IV Colour"
     L["CastbarEmpowerSegmentedFillTooltip"] = "Instead of the whole bar changing to the current empower level's colour, fill each level's segment in its own colour as the cast charges."
+    L["CopyMenuSection_castbarColors"] = "Cast Bar Fill Colours"
+    L["CopyMenuSection_castbarEmpower"] = "Cast Bar Empower Level Colours"
+    L["CheckboxUseGlobalTooltip_CastbarColors"] = "When checked, the global settings for cast bar fill colours will be used."
+    L["CheckboxUseGlobalTooltip_CastbarEmpower"] = "When checked, the global settings for empower level colours will be used."
 end

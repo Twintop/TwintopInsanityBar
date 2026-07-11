@@ -7,8 +7,25 @@ local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
 -- ============================================================================
--- Castbar options panel (single central tab, injected into every spec by BuildTabGroup)
+-- Castbar options panel (single central tab, injected into every spec by BuildTabGroup,
+-- plus the global core-scope version hosted on the top-level Castbar screen)
 -- ============================================================================
+
+-- Specs with empowered abilities; only these (and the Global panel) get the Empower Level Colors section.
+local empowerSpecs = {
+	monk = { windwalker = true },
+	evoker = { devastation = true, preservation = true, augmentation = true },
+}
+
+---Whether the given spec uses empowered abilities (drives the Empower Level Colors section).
+---@param classId integer
+---@param specId integer
+---@return boolean
+function TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local byClass = className ~= nil and empowerSpecs[className] or nil
+	return (byClass ~= nil and specName ~= nil and byClass[specName]) == true
+end
 
 ---Composes a human-readable summary of the configured tick profiles.
 ---@param tickProfiles table<integer, table>
@@ -42,24 +59,81 @@ local function ComposeTickSummary(tickProfiles)
 	return table.concat(lines, "\n")
 end
 
----Constructs the castbar options panel for a spec.
+-- Global-panel edits to value-copied primitives (precisions, empowerSegmentedFill) reach the active
+-- spec's merged cache only via a re-fill when its use-global flag is set.
+local function RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+	if not isGlobalPanel then
+		return
+	end
+	local char = TRB.Data.character
+	if char ~= nil and char.className ~= nil and char.specName ~= nil and TRB.Data.specCache[char.compositeKey] ~= nil then
+		TRB.Functions.Character:FillSpecializationCacheSettings(char.className, char.specName)
+	end
+end
+
+-- Builds one castbar section's global-settings row: a "Use global settings" checkbox with shortcut
+-- link and Copy... button on spec panels, or a bulk all-specs toggle (with Copy...) on the Global panel.
+---@return number yCoord
+local function BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, settingKey, yCoord)
+	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
+	if classId ~= nil then
+		yCoord = yCoord - 30
+		local classToken = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+		controls.checkBoxes = controls.checkBoxes or {}
+		local cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
+		cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
+		getglobal(cb:GetName() .. 'Text'):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
+		getglobal(cb:GetName() .. 'Text'):SetTextColor(100/255, 225/255, 200/255)
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(cb, "castbar", "castbar")
+		cb.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
+		cb:SetChecked(TRB.Data.settings.core.global[classNameLower][specName][settingKey])
+		cb:SetScript("OnClick", function(self)
+			TRB.Data.settings.core.global[classNameLower][specName][settingKey] = self:GetChecked()
+			TRB.Functions.Character:FillSpecializationCacheSettings(classNameLower, specName)
+
+			if TRB.Frames.barGroups ~= nil then
+				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
+		end)
+		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(cb, classId, specId, settingKey)
+	else
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
+	end
+	return yCoord
+end
+
+---Constructs the castbar options panel for a spec, or the global (core-scope) version when
+---classId/specId are nil.
 ---@param parent Frame # The tab's scroll child
----@param classId integer
----@param specId integer
-function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
+---@param classId integer?
+---@param specId integer?
+---@param showEmpower boolean? # Whether to build the Empower Level Colors section
+function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId, showEmpower)
 	if parent == nil then
 		return
 	end
-	local classNameLower, specNameLower = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
-	local spec = TRB.Data.settings[classNameLower] and TRB.Data.settings[classNameLower][specNameLower]
+	local isGlobalPanel = classId == nil
+	local classNameLower, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local spec, controlsKey
+	if isGlobalPanel then
+		spec = TRB.Data.settings.core
+		controlsKey = "castbarGlobal"
+	else
+		spec = TRB.Data.settings[classNameLower] and TRB.Data.settings[classNameLower][specName]
+		controlsKey = classNameLower .. "_" .. specName
+	end
 	if spec == nil then
 		return
 	end
-	local compositeKey = classNameLower .. "_" .. specNameLower
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	interfaceSettingsFrame.controls[compositeKey] = interfaceSettingsFrame.controls[compositeKey] or {}
-	local controls = interfaceSettingsFrame.controls[compositeKey]
+	interfaceSettingsFrame.controls[controlsKey] = interfaceSettingsFrame.controls[controlsKey] or {}
+	local controls = interfaceSettingsFrame.controls[controlsKey]
 	controls.colors = controls.colors or {}
 	controls.castbar = controls.castbar or {}
 	local cc = controls.castbar
@@ -74,21 +148,20 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 		return
 	end
 
-	local namePrefix = "TwintopResourceBar_" .. compositeKey .. "_castbar"
+	local namePrefix = "TwintopResourceBar_" .. controlsKey .. "_castbar"
 	local yCoord = 5
 
-	-- Simple opt-in toggle. The castbar is not part of the displayBar/BarVisibility system: when
-	-- enabled it shows automatically while actively casting/channeling/empowering, and hides otherwise.
-	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enable", L["CastbarEnable"], L["CastbarEnableTooltip"], yCoord,
-		function() return barSettings.enabled end, function(v) barSettings.enabled = v end)
-	yCoord = yCoord - 40
+	-- Enabling/visibility lives on each spec's Visibility tab (displayBar.castbar); this panel only
+	-- configures appearance.
 
-	-- Dimensions / anchoring (reuses the shared custom-bar dimensions generator)
-	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"])
+	-- Dimensions / anchoring (reuses the shared custom-bar dimensions generator, which also builds
+	-- the castbarDimensions use-global / bulk-toggle row)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"], "castbarDimensions")
 	yCoord = yCoord - 40
 
 	-- Fill colors
 	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
+	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarColors", yCoord)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
 	yCoord = yCoord - 30
@@ -103,6 +176,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 
 	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch
 	controls.castbarOverlaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarOverlaysHeader"], oUi.xCoord, yCoord)
+	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarOverlays", yCoord)
 	yCoord = yCoord - 30
 	colors.latency = colors.latency or { color = "80FF0000", enabled = true }
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_latencyEnable", L["CastbarLatencyEnable"], L["CastbarLatencyEnableTooltip"], yCoord,
@@ -120,56 +194,62 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
-	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as reached)
-	controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
-		function() return barSettings.empowerSegmentedFill end, function(v) barSettings.empowerSegmentedFill = v end)
-	yCoord = yCoord - 30
-	colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
-	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
-	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
-	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
-	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
-	yCoord = yCoord - 40
+	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as
+	-- reached). Only built for specs with empowered abilities (and the Global panel).
+	if showEmpower then
+		controls.castbarEmpowerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarEmpowerHeader"], oUi.xCoord, yCoord)
+		yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarEmpower", yCoord)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
+			function() return barSettings.empowerSegmentedFill end,
+			function(v)
+				barSettings.empowerSegmentedFill = v
+				RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+			end)
+		yCoord = yCoord - 30
+		colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
+		yCoord = yCoord - 40
+	end
 
-	-- Timer text precision (castbar-specific, independent of the shared timer precision settings)
+	-- Additional settings: Blizzard cast bar handling + timer text precision (castbar-specific,
+	-- independent of the shared timer precision settings)
 	controls.castbarTimerSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTimersHeader"], oUi.xCoord, yCoord)
+	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarText", yCoord)
 	yCoord = yCoord - 30
-	controls.castbarCastTimePrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarCastTimePrecision"], 0, 3, barSettings.castTimePrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.castbarCastTimePrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		barSettings.castTimePrecision = value
-		TRB.Data.lookupDirty = true
-	end)
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardCastbar", L["CastbarDisableBlizzard"], L["CastbarDisableBlizzardTooltip"], yCoord,
+		function() return barSettings.disableBlizzardCastbar end,
+		function(v)
+			barSettings.disableBlizzardCastbar = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+			TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+		end)
+	yCoord = yCoord - 40
+	local function BuildPrecisionSlider(label, settingKey, xCoord, y)
+		local slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, label, 0, 3, barSettings[settingKey], 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, xCoord, y)
+		slider:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			barSettings[settingKey] = value
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+			TRB.Data.lookupDirty = true
+		end)
+		return slider
+	end
+	controls.castbarCastTimePrecision = BuildPrecisionSlider(L["CastbarCastTimePrecision"], "castTimePrecision", oUi.xCoord, yCoord)
+	controls.castbarDurationPrecision = BuildPrecisionSlider(L["CastbarDurationPrecision"], "durationPrecision", oUi.xCoord2, yCoord)
 	yCoord = yCoord - 60
-	controls.castbarDurationPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarDurationPrecision"], 0, 3, barSettings.durationPrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.castbarDurationPrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		barSettings.durationPrecision = value
-		TRB.Data.lookupDirty = true
-	end)
-	yCoord = yCoord - 60
-	controls.castbarLatencyPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarLatencyPrecision"], 0, 3, barSettings.latencyPrecision, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.castbarLatencyPrecision:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		barSettings.latencyPrecision = value
-		TRB.Data.lookupDirty = true
-	end)
+	controls.castbarLatencyPrecision = BuildPrecisionSlider(L["CastbarLatencyPrecision"], "latencyPrecision", oUi.xCoord, yCoord)
 	yCoord = yCoord - 60
 
 	--[[

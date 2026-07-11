@@ -62,7 +62,12 @@ local function NewSpecGlobalDefaults()
 		thresholdColors = false,
 		healthBarColors = false,
 		precision = false,
-		textures = false
+		textures = false,
+		castbarDimensions = false,
+		castbarColors = false,
+		castbarOverlays = false,
+		castbarEmpower = false,
+		castbarText = false
 	}
 end
 
@@ -178,6 +183,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					resourceConditionOperator = ">=",
 					resourceConditionValue = 0
 				},
+				castbar = TRB.Functions.Settings:DefaultCastbarVisibility(),
 			},
 			overcap = {
 				mode = "relative",
@@ -187,6 +193,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+			bars = {
+				castbar = TRB.Functions.Settings:DefaultCastbarBarSettings(classic),
+			},
 			precision = {
 				health = 1,
 				secondary = 2,
@@ -221,6 +230,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					},
 				},
 				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				bars = {
+					castbar = TRB.Functions.Settings:DefaultCastbarBarColors(),
+				},
 				threshold = {
 					under = {
 						color = "FFFFFFFF"
@@ -8730,6 +8742,12 @@ end
 -- baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
 ---@type table<string, table<string, table<integer, TRB.Classes.Settings.CastbarTickProfile>>>
 local castbarTickProfilesBySpec = {
+	hunter = {
+		survival = {
+		-- Mongoose Bite: fixed 3s channel, tick rate accelerates with haste, partial final tick.
+			[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
+		},
+	},
 	priest = {
 		shadow = {
 			-- Mind Flay: constant tick count, duration shrinks with haste.
@@ -8755,6 +8773,32 @@ function TRB.Functions.Settings:DefaultCastbarTickProfilesForSpec(className, spe
 	return TRB.Functions.Table:DeepCopy(profiles)
 end
 
+---Gets the default Castbar visibility entry (displayBar.castbar). Uses castbar-specific show conditions
+---(casting/channeling/empowered) instead of the standard environment conditions; alwaysShow keeps the
+---empty bar frame on screen while idle, neverShow fully disables castbar processing.
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultCastbarVisibility()
+	return {
+		neverShow = false,
+		alwaysShow = false,
+		conditions = {
+			casting = true,
+			channeling = true,
+			empowered = true
+		},
+		hideConditions = {
+			inVehicle = false
+		},
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0,
+		fadeDelay = 0.1,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
 ---Gets the default Castbar bar settings (dimensions + behavior flags + per-spec tick profiles)
 ---@param classic boolean?
 ---@param className string? # Lowercase class name, for the per-spec tick profile lookup
@@ -8762,10 +8806,6 @@ end
 ---@return TRB.Classes.Settings.CastbarBar
 function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, specName)
 	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
-	-- Simple opt-in flag (not tied to the displayBar/BarVisibility system): when true, the castbar
-	-- shows automatically while casting/channeling/empowering and hides otherwise. No user-configurable
-	-- always/never/conditions apply, since a castbar only ever makes sense while something is casting.
-	settings.enabled = false
 	settings.showTicks = true
 	settings.showLatency = true
 	settings.showPushback = true
@@ -8774,6 +8814,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.castTimePrecision = 1
 	settings.durationPrecision = 1
 	settings.latencyPrecision = 1
+	settings.disableBlizzardCastbar = true
 	settings.tickProfiles = self:DefaultCastbarTickProfilesForSpec(className, specName)
 	return settings
 end
@@ -8803,10 +8844,8 @@ function TRB.Functions.Settings:DefaultCastbarBarColors()
 	}
 end
 
----Central injector: adds castbar defaults (bars/colors/textures) to a spec's default settings table so
----the standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
----Deliberately does NOT touch displayBar: the castbar's on-screen visibility is driven entirely by
----active cast state (Functions/Castbar.lua), not the displayBar/BarVisibility system.
+---Central injector: adds castbar defaults (bars/colors/textures/displayBar) to a spec's default settings
+---table so the standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
 ---@param specDefaults table # A single spec's default settings table (from a class's LoadDefaultSettings)
 ---@param className string? # Lowercase class name, for the per-spec tick profile lookup
 ---@param specName string? # Lowercase spec name, for the per-spec tick profile lookup
@@ -8827,6 +8866,12 @@ function TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, s
 	specDefaults.colors.bars = specDefaults.colors.bars or {}
 	if specDefaults.colors.bars.castbar == nil then
 		specDefaults.colors.bars.castbar = self:DefaultCastbarBarColors()
+	end
+
+	-- Visibility under displayBar.castbar (BarVisibility-style entry with castbar-specific conditions)
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	if specDefaults.displayBar.castbar == nil then
+		specDefaults.displayBar.castbar = self:DefaultCastbarVisibility()
 	end
 
 	-- Flat texture keys castbarBar / castbarBorder / castbarBackground

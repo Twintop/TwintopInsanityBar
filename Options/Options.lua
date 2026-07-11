@@ -642,6 +642,32 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
+---Constructs the top-level Castbar options panel: global (core-scope) castbar settings in a tabbed
+---screen like Global Options, but with no profile dropdown (the castbar has no separate profile scope).
+local function ConstructCastbarOptionsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.castbarGlobal or {}
+	interfaceSettingsFrame.controls.castbarGlobal = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.castbarPanel = CreateFrame("Frame", "TwintopResourceBar_Options_CastbarPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("castbar", L["ResourceCastbar"], interfaceSettingsFrame.castbarPanel)
+
+	local parent = interfaceSettingsFrame.castbarPanel
+
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	local tabDefinitions = {
+		{ "castbar", L["TabCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, true)
+		end },
+	}
+
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
+end
+
 -- Localized labels for the profile/nav catalogs. Identity comes from
 -- TRB.Data.specRegistry; this table only keeps literal localization lookups.
 local PROFILE_LABELS_BY_CLASS = {
@@ -2008,6 +2034,7 @@ function TRB.Options:ConstructOptionsPanel()
 	Settings.RegisterAddOnCategory(TRB.Details.addonCategory.main)
 
 	ConstructGlobalOptionsPanel()
+	ConstructCastbarOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 

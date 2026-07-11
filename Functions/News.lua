@@ -15,12 +15,16 @@ local content = [====[
 # 12.0.7.4-release (2026-07-07)
 ## General
 
-- Add a new **Cast Bar** that can be enabled for any spec (it is hidden by default). It supports the same size, anchoring, texture, color, and bar text options as every other bar, plus:
+- Add a new **Cast Bar** for every spec, shown while casting by default. It supports the same size, anchoring, texture, color, and bar text options as every other bar, plus:
+- The Cast Bar is configured on each specialization's **Visibility** tab alongside the other bars, with cast-specific show conditions: **Casting**, **Channeling**, and **Empowered** (the Empowered option only appears for specializations with empowered abilities and on the global panel), plus **Always Show** (keeps the empty bar frame on screen between casts) and **Never Show** (fully disables Cast Bar processing). An **In Vehicle** hard-hide condition, active/inactive alpha, and fade controls are also available; by default the bar lingers for 0.1 seconds after a cast completes.
+- A new **Disable Blizzard Cast Bar** option (on by default) in the Cast Bar tab's **Additional Settings** section hides the default Blizzard cast bar while Twintop's Cast Bar is enabled for the current specialization, re-evaluated on login, specialization switch, talent changes, and when the relevant options are toggled. The section (formerly **Timer Text**) also houses the three timer precision sliders, now in a more compact two-column layout.
 - Standard casts, channeled spells, and empowered casts.
 - Latency and pushback shown as bar overlays, with matching `$castLatency`/`$castLatencyMs` and `$castPushback` bar text.
 - Channel tick markers driven by a per-spell tick-rate list (built-in defaults plus a user-editable list). Both channel styles are handled: fixed tick count where the channel shrinks with haste (e.g. Mind Flay), and fixed channel duration where the tick rate accelerates with haste and ends on a partial tick (e.g. Void Torrent), including carrying a partial tick into a chained channel.
 - Empower stage threshold lines and absolute per-level fill colors: a Base color while charging toward Level I, then distinct colors for empower Levels I through IV. Optionally fill each level's segment in its own color simultaneously -- instead of recoloring the whole bar -- via **Fill Each Empower Level Separately**.
 - New bar text variables: `$castTime`, `$castTimeRemaining`, `$castLatency` (seconds), `$castLatencyMs` (milliseconds), `$castPushback`, `$castSpellName`, `$castSpellId`; the existing `#casting` icon continues to represent the currently casting spell.
+- A new top-level **Cast Bar** entry in the options window holds global versions of every Cast Bar section: Position and Size, Fill Colors, Overlays, Empower Level Colors, and Additional Settings. Each specialization can opt into the global settings per section via **Use global settings**, toggle a section on for all specializations at once, and copy any section between Global Options, specializations, and profiles via the **Copy...** button.
+- The Empower Level Colors section is only shown for specializations with empowered abilities (Windwalker Monk and all three Evoker specializations), plus the global Cast Bar screen.
 
 ---
 

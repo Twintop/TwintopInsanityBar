@@ -16,6 +16,11 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public healthBarColors boolean
 ---@field public precision boolean
 ---@field public textures boolean
+---@field public castbarDimensions boolean
+---@field public castbarColors boolean
+---@field public castbarOverlays boolean
+---@field public castbarEmpower boolean
+---@field public castbarText boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
@@ -239,9 +244,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
 
 ---Castbar bar settings: SecondaryBar dimensions plus the castbar's behavior flags and per-spell tick
----profiles. Visibility is driven by active cast state (not displayBar), so `enabled` is a simple opt-in.
+---profiles. Visibility/enabling lives in displayBar.castbar (castbar-specific show/hide conditions).
 ---@class TRB.Classes.Settings.CastbarBar : TRB.Classes.Settings.SecondaryBar
----@field public enabled boolean # Opt-in: show the castbar while casting/channeling/empowering
 ---@field public showTicks boolean # Draw channel tick lines
 ---@field public showLatency boolean # Draw the latency safe-zone overlay
 ---@field public showPushback boolean # Draw the pushback overlay
@@ -250,6 +254,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public castTimePrecision integer # Decimal places (0-3) for $castTimeRemaining
 ---@field public durationPrecision integer # Decimal places (0-3) for $castTime
 ---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback
+---@field public disableBlizzardCastbar boolean # Detach the default Blizzard cast bar while the addon castbar is enabled
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
 
 ---@class TRB.Classes.Settings.DisplayText

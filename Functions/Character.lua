@@ -1077,6 +1077,9 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData.attributes.isTracking = false
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
+	-- The single point where a spec's composed settings become active (login, spec switch, talent
+	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
+	TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(cache.settings)
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1401,6 +1404,74 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.bars = spec.colors.bars
 	end
 
+	-- Castbar global sections: compose a merged castbar view when any castbar use-global flag is set.
+	-- Sub-tables (anchor, color entries, empowerStages) are shared by reference with their source so
+	-- live edits propagate; primitive fields (width, precisions, etc.) are value-copied, so option
+	-- handlers that edit them core-side re-run this fill for the active spec.
+	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText
+	if anyCastbarGlobal and core.bars and core.bars.castbar and spec.bars and spec.bars.castbar then
+		local coreBar = core.bars.castbar
+		local mergedBar = {}
+		for k, v in pairs(spec.bars.castbar) do
+			mergedBar[k] = v
+		end
+		if s.castbarDimensions then
+			mergedBar.width = coreBar.width
+			mergedBar.height = coreBar.height
+			mergedBar.border = coreBar.border
+			mergedBar.xPos = coreBar.xPos
+			mergedBar.yPos = coreBar.yPos
+			mergedBar.anchor = coreBar.anchor
+			mergedBar.fillDirection = coreBar.fillDirection
+		end
+		if s.castbarEmpower then
+			mergedBar.empowerSegmentedFill = coreBar.empowerSegmentedFill
+		end
+		if s.castbarText then
+			mergedBar.castTimePrecision = coreBar.castTimePrecision
+			mergedBar.durationPrecision = coreBar.durationPrecision
+			mergedBar.latencyPrecision = coreBar.latencyPrecision
+			mergedBar.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
+		end
+		-- Wrap bars in a shallow copy so spec.bars itself is never mutated
+		local mergedBars = {}
+		for k, v in pairs(spec.bars) do
+			mergedBars[k] = v
+		end
+		mergedBars.castbar = mergedBar
+		specCache.settings.bars = mergedBars
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars.castbar
+		local specColors = spec.colors and spec.colors.bars and spec.colors.bars.castbar
+		if coreColors and specColors then
+			local mergedColors = {}
+			for k, v in pairs(specColors) do
+				mergedColors[k] = v
+			end
+			if s.castbarColors then
+				mergedColors.bar = coreColors.bar
+				mergedColors.channel = coreColors.channel
+				mergedColors.uninterruptible = coreColors.uninterruptible
+				mergedColors.border = coreColors.border
+				mergedColors.background = coreColors.background
+			end
+			if s.castbarOverlays then
+				mergedColors.latency = coreColors.latency
+				mergedColors.pushback = coreColors.pushback
+				mergedColors.tick = coreColors.tick
+			end
+			if s.castbarEmpower then
+				mergedColors.empowerStages = coreColors.empowerStages
+			end
+			local mergedColorBars = {}
+			for k, v in pairs(spec.colors.bars) do
+				mergedColorBars[k] = v
+			end
+			mergedColorBars.castbar = mergedColors
+			specCache.settings.colors.bars = mergedColorBars
+		end
+	end
+
 	if s.displayBar then
 		-- Create a deep copy to avoid modifying the global displayBar object
 		specCache.settings.displayBar = {}
@@ -1448,6 +1519,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
+	-- Blizzard cast bar handling depends on the composed active-spec settings, which only become
+	-- valid/refreshed here — the initial login fill lands after PLAYER_ENTERING_WORLD fires.
+	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
+		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+	end
 end
 
 --- Mapping from lowercase className to PascalCase options module key
