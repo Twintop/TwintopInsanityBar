@@ -157,7 +157,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	-- Dimensions / anchoring (reuses the shared custom-bar dimensions generator, which also builds
 	-- the castbarDimensions use-global / bulk-toggle row)
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"], "castbarDimensions")
-	yCoord = yCoord - 40
+	yCoord = yCoord - 60
 
 	-- Fill colors
 	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
@@ -178,17 +178,17 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	controls.castbarOverlaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarOverlaysHeader"], oUi.xCoord, yCoord)
 	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarOverlays", yCoord)
 	yCoord = yCoord - 30
-	colors.latency = colors.latency or { color = "80FF0000", enabled = true }
+	colors.latency = colors.latency
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_latencyEnable", L["CastbarLatencyEnable"], L["CastbarLatencyEnableTooltip"], yCoord,
 		function() return colors.latency.enabled end, function(v) colors.latency.enabled = v end)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "latency", L["CastbarColorLatency"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	colors.pushback = colors.pushback or { color = "80FF00FF", enabled = true }
+	colors.pushback = colors.pushback
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_pushbackEnable", L["CastbarPushbackEnable"], L["CastbarPushbackEnableTooltip"], yCoord,
 		function() return colors.pushback.enabled end, function(v) colors.pushback.enabled = v end)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "pushback", L["CastbarColorPushback"], yCoord, classId, specId)
 	yCoord = yCoord - 30
-	colors.tick = colors.tick or { color = "FFFFFFFF", enabled = true }
+	colors.tick = colors.tick
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickEnable", L["CastbarTickEnable"], L["CastbarTickEnableTooltip"], yCoord,
 		function() return colors.tick.enabled end, function(v) colors.tick.enabled = v end)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
@@ -206,8 +206,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 				barSettings.empowerSegmentedFill = v
 				RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 			end)
-		yCoord = yCoord - 30
-		colors.empowerStages = colors.empowerStages or { base = { color = "FFC8B0FF" }, level1 = { color = "FFFFCC00" }, level2 = { color = "FFFFAA00" }, level3 = { color = "FFFF6600" }, level4 = { color = "FFFF3000" } }
+		colors.empowerStages = colors.empowerStages
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
 		yCoord = yCoord - 30
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)

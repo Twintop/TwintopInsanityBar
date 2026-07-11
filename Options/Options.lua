@@ -643,7 +643,7 @@ local function ConstructGlobalOptionsPanel()
 end
 
 ---Constructs the top-level Castbar options panel: global (core-scope) castbar settings in a tabbed
----screen like Global Options, but with no profile dropdown (the castbar has no separate profile scope).
+---screen like Global Options, including the same core-scope (Global) profile dropdown.
 local function ConstructCastbarOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.castbarGlobal or {}
@@ -658,6 +658,9 @@ local function ConstructCastbarOptionsPanel()
 	local parent = interfaceSettingsFrame.castbarPanel
 
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.profileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_Castbar")
 
 	local tabDefinitions = {
 		{ "castbar", L["TabCastbar"], oUi.tabWidth.small, function(scrollChild)

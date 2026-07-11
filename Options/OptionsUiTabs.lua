@@ -325,14 +325,22 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 		end
 		if not hasCastbar then
 			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			tabDefinitions[#tabDefinitions + 1] = {
+			-- Insert immediately after the Health tab; append if the panel has none.
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "healthBar" then
+					insertIndex = i + 1
+					break
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
 				"castbar",
 				TRB.Localization["TabCastbar"],
 				oUi.tabWidth.small,
 				function(scrollChild)
 					TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, cId, sId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(cId, sId))
 				end
-			}
+			})
 		end
 	end
 

@@ -3025,7 +3025,7 @@ L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "When checked, the Soul 
 L["ShowBarVisibilityConditionIsSkyridingFlying"] = "Skyriding (Flying Only)"
 L["ShowBarVisibilityConditionIsSteadyFlightFlying"] = "Steady Flight (Flying Only)"
 
--- Castbar
+-- Cast Bar
 L["ResourceCastbar"] = "Cast Bar"
 L["TabCastbar"] = "Cast Bar"
 L["BarTextVariableCastTime"] = "Total cast/channel time of the current cast, in seconds"
@@ -3104,3 +3104,4 @@ L["CastbarDisableBlizzardTooltip"] = "When checked, the default Blizzard cast ba
 L["PriestDisciplineBarTextVariable_harshDisciplineTime"] = "Time remaining on the Harsh Discipline buff"
 L["PriestDisciplineBarTextVariable_harshDisciplineStacks"] = "Current stacks of Harsh Discipline. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
 L["PriestDisciplineBarTextVariable_harshDisciplineMaxStacks"] = "Maximum stacks of Harsh Discipline"
+L["ProfileDropdownButtonGlobalFormat"] = "Global Profile: %s"
