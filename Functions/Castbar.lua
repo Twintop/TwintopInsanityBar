@@ -168,6 +168,99 @@ function TRB.Functions.Castbar:GetTickProfile(barSettings, spellId)
 	return profiles[spellId]
 end
 
+---A talent/buff-conditional bonus-tick rule for a channeled spell, registered per spec in
+---TRB.Data.castbarTickModifiersRegistry (code data, not settings; keyed "class_spec" like the profiles
+---registry). bonusTicks: a number is a flat bonus whenever the talent is active; a table is the TOTAL
+---bonus keyed by talent rank (unmapped ranks resolve to 0). Bonuses only apply to fixedCount profiles.
+---@class TRB.Classes.CastbarTickModifier
+---@field public talentId integer # Talent (definition spellId) gating this rule, checked via the TRB.Data.talents cache
+---@field public buffId integer? # When set, the player must also have this buff when the channel starts (checked against the spec's tracked snapshot when one exists, else a live aura scan)
+---@field public bonusTicks number|table<integer, number>
+
+-- Modifier rules are static code data; each spec's getter result is cached after the first lookup
+-- (false = spec has no registered modifiers).
+---@type table<string, table<integer, TRB.Classes.CastbarTickModifier[]>|false>
+local tickModifiersCache = {}
+
+---Returns the active spec's tick modifier rules for a spellId, or nil when none are registered.
+---@param spellId integer
+---@return TRB.Classes.CastbarTickModifier[]?
+local function GetTickModifiers(spellId)
+	local character = TRB.Data.character
+	local key = character and character.compositeKey
+	if key == nil then
+		return nil
+	end
+	local rules = tickModifiersCache[key]
+	if rules == nil then
+		local registry = TRB.Data.castbarTickModifiersRegistry
+		local getter = registry and registry[key]
+		rules = type(getter) == "function" and getter() or false
+		tickModifiersCache[key] = rules
+	end
+	return rules and rules[spellId] or nil
+end
+
+---Evaluates one modifier rule against live talent/buff state.
+---@param rule TRB.Classes.CastbarTickModifier
+---@return number # Bonus tick count this rule contributes (0 when its conditions aren't met)
+local function EvaluateTickModifier(rule)
+	local talents = TRB.Data.talents
+	local talent = talents and talents.talents and talents.talents[rule.talentId] or nil
+	if talent == nil or not talent:IsActive() then
+		return 0
+	end
+	if rule.buffId ~= nil then
+		-- Prefer the spec's tracked snapshot (handles secret aura data via instance-id binding);
+		-- fall back to a live aura scan for buffs no spec module tracks.
+		local snapshotData = TRB.Data.snapshotData
+		local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[rule.buffId]
+		if snapshot ~= nil then
+			if not snapshot.buff.isActive then
+				return 0
+			end
+		elseif TRB.Functions.Aura:FindBuffById(rule.buffId) == nil then
+			return 0
+		end
+	end
+	local bonus = rule.bonusTicks
+	if type(bonus) == "table" then
+		return bonus[talent.currentRank] or 0
+	end
+	return bonus or 0
+end
+
+---Resolves the effective tick profile for a channel start: the saved baseline profile adjusted by any
+---registered talent/buff-conditional bonus ticks. Returns a copy when a bonus applies -- saved settings
+---are never mutated. Call once per channel start and reuse via model.profile: buff-gated bonuses (e.g.
+---a buff consumed by this very cast) must not be re-evaluated mid-channel.
+---@param barSettings table?
+---@param spellId integer?
+---@return table?
+function TRB.Functions.Castbar:ResolveTickProfile(barSettings, spellId)
+	local profile = self:GetTickProfile(barSettings, spellId)
+	if profile == nil then
+		return nil
+	end
+	local rules = GetTickModifiers(spellId)
+	if rules == nil or profile.mode ~= "fixedCount" or (profile.tickCount or 0) <= 0 then
+		return profile
+	end
+	local bonus = 0
+	for _, rule in ipairs(rules) do
+		bonus = bonus + EvaluateTickModifier(rule)
+	end
+	if bonus == 0 then
+		return profile
+	end
+	local effective = {}
+	for k, v in pairs(profile) do
+		effective[k] = v
+	end
+	effective.tickCount = profile.tickCount + bonus
+	return effective
+end
+
 -- ============================================================================
 -- Overlay / threshold-line texture pool (fraction-positioned, on the node frame)
 -- ============================================================================
@@ -832,7 +925,23 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 			channelId = select(8, UnitChannelInfo("player"))
 			if issecretvalue(channelId) then channelId = nil end
 		end
-		local profile = self:GetTickProfile(barSettings, channelId)
+		local profile = self:ResolveTickProfile(barSettings, channelId)
+		-- TEMP DIAGNOSTIC (remove after Penance verification): does the Harsh Discipline buff survive
+		-- into CHANNEL_START processing, and what tick count resolved?
+		do
+			local base = self:GetTickProfile(barSettings, channelId)
+			local talents = TRB.Data.talents and TRB.Data.talents.talents or nil
+			local hdSnapshot = TRB.Data.snapshotData and TRB.Data.snapshotData.snapshots and TRB.Data.snapshotData.snapshots[373183]
+			print(string.format("TRB castbar diag: channel=%s baseTicks=%s effectiveTicks=%s castigationRank=%s harshDiscRank=%s hdSnapshotActive=%s hdSnapshotStacks=%s hdAuraScan=%s",
+				tostring(channelId),
+				tostring(base and base.tickCount),
+				tostring(profile and profile.tickCount),
+				tostring(talents and talents[193134] and talents[193134].currentRank),
+				tostring(talents and talents[373180] and talents[373180].currentRank),
+				tostring(hdSnapshot ~= nil and hdSnapshot.buff.isActive),
+				tostring(hdSnapshot ~= nil and hdSnapshot.buff.applications),
+				tostring(TRB.Functions.Aura:FindBuffById(373183) ~= nil)))
+		end
 		model:StartChannel(channelId, profile)
 		self:BeginRender()
 	elseif event == "UNIT_SPELLCAST_EMPOWER_START" then
@@ -845,11 +954,11 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		model:ChannelUpdate()
 		if isRunning then
-			-- Channel end shifted (e.g. a chain): recompute ticks when we have a profile, then re-place
-			-- overlays so the latency zone reflects the new duration. Channels carry no pushback overlay.
-			local profile = self:GetTickProfile(barSettings, model.spellId)
-			if profile then
-				model:ComputeChannelTicks(profile, model:GetHasteMultiplier())
+			-- Channel end shifted (e.g. a chain): recompute ticks from the profile resolved at channel
+			-- start (buff-gated bonuses must not re-evaluate mid-channel -- the buff may have been consumed
+			-- by this very cast), then re-place overlays so the latency zone reflects the new duration.
+			if model.profile then
+				model:ComputeChannelTicks(model.profile, model:GetHasteMultiplier())
 			end
 			self:SetupOverlays(model)
 		end

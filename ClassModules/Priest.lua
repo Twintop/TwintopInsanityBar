@@ -240,6 +240,8 @@ local function FillSpecializationCache()
 	specCache.priest_discipline.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.harshDiscipline.id] = TRB.Classes.Snapshot:New(spells.harshDiscipline)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -859,6 +861,28 @@ local function RefreshLookupData_Discipline()
 		end
 	end
 
+	-- Block F: Harsh Discipline ($harshDisciplineTime, $harshDisciplineStacks, $harshDisciplineMaxStacks)
+	if not activeVars or activeVars["$harshDisciplineTime"] or activeVars["$harshDisciplineStacks"] or activeVars["$harshDisciplineMaxStacks"] then
+		local currentTime = GetTime()
+		local harshDisciplineBuff = snapshots[spells.harshDiscipline.id]
+		local _harshDisciplineActive = (harshDisciplineBuff ~= nil and harshDisciplineBuff.buff.isActive) or false
+		local _harshDisciplineStacks = (_harshDisciplineActive and (harshDisciplineBuff.buff.applications or 0)) or 0
+		local _harshDisciplineTime = (harshDisciplineBuff ~= nil and harshDisciplineBuff.buff:GetRemainingTime(currentTime)) or 0
+		local _harshDisciplineMaxStacks = spells.harshDiscipline.maxStacks or 0
+		lookupLogic["$harshDisciplineTime"] = _harshDisciplineTime
+		lookupLogic["$harshDisciplineStacks"] = _harshDisciplineStacks
+		lookupLogic["$harshDisciplineMaxStacks"] = _harshDisciplineMaxStacks
+		if lookupChanged(prevState, "$harshDisciplineTime", _harshDisciplineTime) then
+			lookup["$harshDisciplineTime"] = TRB.Functions.BarText:TimerPrecision(_harshDisciplineTime)
+		end
+		if lookupChanged(prevState, "$harshDisciplineStacks", _harshDisciplineStacks) then
+			lookup["$harshDisciplineStacks"] = string.format("%.0f", _harshDisciplineStacks)
+		end
+		if lookupChanged(prevState, "$harshDisciplineMaxStacks", _harshDisciplineMaxStacks) then
+			lookup["$harshDisciplineMaxStacks"] = string.format("%.0f", _harshDisciplineMaxStacks)
+		end
+	end
+
 	--[[lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$entropicRiftTime"] = entropicRiftTime]]
@@ -1308,6 +1332,21 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				-- approach to avoid C_Timer.After(0) callback ordering issues.
 				snapshotData.attributes.evangelismCastTime = GetTime()
 			elseif spellId == spells.powerWordRadiance.id then
+				-- Harsh Discipline: each Radiance grants a stack (timer refreshed on gain) empowering the next Penance.
+				if talents:IsTalentActive(spells.harshDiscipline) then
+					local hdBuff = snapshots[spells.harshDiscipline.id].buff
+					hdBuff:AddStackOrInitializeCustom(spells.harshDiscipline.duration, currentTime, true)
+					hdBuff.updateFromSecret = true
+					if hdBuff.auraInstanceId == nil then
+						local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
+						if bufferEntry ~= nil then
+							hdBuff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+							hdBuff:RefreshWithSecretAuraData(bufferEntry)
+						else
+							TRB.Functions.Aura:InsertAuraRequest(currentTime, hdBuff)
+						end
+					end
+				end
 				-- Defer by one frame so the Evangelism timestamp is recorded regardless
 				-- of which SUCCEEDED event fires first within the same frame.
 				local castTime = currentTime
@@ -3655,6 +3694,10 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.powerWordRadiance.id].cooldown.charges > 0
 	end
+	local harshDisciplineFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.harshDiscipline.id].buff.isActive
+	end
 	local discipline = {
 		["$resource"] = false, ["$mana"] = false,
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
@@ -3701,6 +3744,9 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
 		end,
+		["$harshDisciplineTime"] = harshDisciplineFn,
+		["$harshDisciplineStacks"] = harshDisciplineFn,
+		["$harshDisciplineMaxStacks"] = true,
 	}
 	for k, v in pairs(healthVars) do discipline[k] = v end
 	-- Holy

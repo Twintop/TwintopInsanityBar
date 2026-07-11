@@ -276,7 +276,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				},
 				barText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic),
 				migrations = {
-					healthBarText = true
+					healthBarText = true,
+					castBarText = true
 				}
 			},
 			global = {
@@ -8239,6 +8240,23 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			}
 		end
 	end
+
+	-- Insert default Cast Bar entries into the global bar text list. Existing users never get new
+	-- default barText entries via merge (saved lists win), so insert them here once, gated by flag.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.barText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
+		not TwintopInsanityBarSettings.core.displayText.migrations.castBarText then
+
+		local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+		for x = 1, #castBarTextSettings do
+			table.insert(TwintopInsanityBarSettings.core.displayText.barText, castBarTextSettings[x])
+		end
+
+		TwintopInsanityBarSettings.core.displayText.migrations.castBarText = true
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -9841,6 +9859,106 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
+
+	local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+
+	for x = 1, #castBarTextSettings do
+		table.insert(textSettings, castBarTextSettings[x])
+	end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+
+---Returns default bar text for the Cast Bar
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			text = "#casting $castSpellName",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		},
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			text = "{$castTime>0}[$castTimeRemaining / $castTime]",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionBottomRight"],
+			guid = TRB.Functions.String:Guid(),
+			text = "$castLatencyMs",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFF0000" },
+			position = {
+				xPos = -2,
+				yPos = 2,
+				relativeTo = "BOTTOMRIGHT",
+				relativeToName = L["PositionBottomRight"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		}
+	}
+
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 

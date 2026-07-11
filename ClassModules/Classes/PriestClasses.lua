@@ -97,6 +97,7 @@ end
 ---@field public lightsPromise TRB.Classes.SpellBase
 ---@field public brightPupil TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
+---@field public harshDiscipline TRB.Classes.SpellBase
 ---@field public masterTheDarkness TRB.Classes.SpellBase
 --[[---@field public atonement TRB.Classes.SpellBase
 ---@field public shadowCovenant TRB.Classes.SpellBase
@@ -135,6 +136,14 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 	self.evangelism = TRB.Classes.SpellBase:New({
 		id = 472433,
 		isTalent = true
+	})
+	self.harshDiscipline = TRB.Classes.SpellBase:New({
+		id = 373183,
+		talentId = 373180,
+		isTalent = true,
+		isBuff = true,
+		duration = 30,
+		maxStacks = 2
 	})
 	--[[self.atonement = TRB.Classes.SpellBase:New({
 		id = 194384,
@@ -193,6 +202,7 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 		{ variable = "#voidShield", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = true },
 		{ variable = "#masterTheDarkness", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = false },
+		{ variable = "#harshDiscipline", icon = spells.harshDiscipline.icon, description = spells.harshDiscipline.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PriestDisciplineBarTextVariable_mana"], printInSettings = true, color = false },
@@ -224,6 +234,10 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
 		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
+
+		{ variable = "$harshDisciplineTime", description = L["PriestDisciplineBarTextVariable_harshDisciplineTime"], printInSettings = true, color = false },
+		{ variable = "$harshDisciplineStacks", description = L["PriestDisciplineBarTextVariable_harshDisciplineStacks"], printInSettings = true, color = false },
+		{ variable = "$harshDisciplineMaxStacks", description = L["PriestDisciplineBarTextVariable_harshDisciplineMaxStacks"], printInSettings = true, color = false },
 	})
 end
 
@@ -231,8 +245,30 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles()
 	return {
+		-- Penance: 3 bolts baseline over 2s; Castigation/Harsh Discipline bolts come from tick modifiers.
+		[47757] = { mode = "fixedCount", baseDuration = 2, tickCount = 3, firstTickAtStart = true },
+		[47758] = { mode = "fixedCount", baseDuration = 2, tickCount = 3, firstTickAtStart = true },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers()
+	return {
 		-- Penance
-		[64843] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = true },
+		[47757] = {
+			-- Castigation: +1 bolt while talented
+			{ talentId = 193134, bonusTicks = 1 },
+			-- Harsh Discipline: Penance after Power Word: Radiance fires +1 bolt per talent rank
+			{ talentId = 373180, buffId = 373183, bonusTicks = { 1, 2 } },
+		},
+		[47758] = {
+			-- Castigation: +1 bolt while talented
+			{ talentId = 193134, bonusTicks = 1 },
+			-- Harsh Discipline: Penance after Power Word: Radiance fires +1 bolt per talent rank
+			{ talentId = 373180, buffId = 373183, bonusTicks = { 1, 2 } },
+		},
 	}
 end
 
@@ -1272,3 +1308,7 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers

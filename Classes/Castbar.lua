@@ -41,6 +41,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public reconstructed boolean # True when channel timing was reconstructed from GCD+profile (times not authoritative)
 ---@field public ticks TRB.Classes.CastbarTick[] # Channel tick positions
 ---@field public tickInterval number? # Tick rate (seconds between ticks), derived from the nominal channel length
+---@field public profile table? # Tick profile resolved at channel start (baseline + conditional bonus ticks); reused for mid-channel recomputes
 ---@field public chains boolean # Whether the active channel's profile allows chain carry
 ---@field public chainCarry number? # Carried leftover (seconds) that lengthens this chained channel by one tick
 ---@field public empowerStages integer # Number of empower stages (0 if not an empower)
@@ -115,6 +116,7 @@ function TRB.Classes.Castbar:Reset()
 	self.reconstructed = false
 	self.ticks = {}
 	self.tickInterval = nil
+	self.profile = nil
 	self.chains = false
 	self.chainCarry = nil
 	self.empowerStages = 0
@@ -231,7 +233,7 @@ end
 ---Begins tracking a channel. Uses real timing when UnitChannelInfo exposes it, otherwise reconstructs
 ---the duration from the tick profile scaled by GCD-inferred haste. Computes tick fractions (with chaining).
 ---@param spellId integer? # Channel spell id resolved by the caller (may be nil if secret)
----@param profile table? # Tick profile { mode, baseDuration, tickCount?, baseTickRate?, firstTickAtStart?, chains? }
+---@param profile table? # Resolved tick profile { mode, baseDuration, tickCount?, baseTickRate?, firstTickAtStart?, chains? }; kept on the model so recomputes don't re-evaluate conditional bonuses
 function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	local infoSpellId, startTime, endTime, notInterruptible = ReadChannelInfo()
 	local resolvedId = spellId
@@ -250,6 +252,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.notInterruptible = notInterruptible
 	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 	self.chains = (profile ~= nil and profile.chains) == true
+	self.profile = profile
 
 	-- Consume a pending carry (same spell, within grace): the leftover until the previous channel's next
 	-- tick lengthens this channel by one tick (see the duration adjustment below).
