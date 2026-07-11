@@ -30,7 +30,12 @@ local content = [====[
 ## Hunter
 ### Survival
 
+- (WIP) Add support for Raptor Swipe as its own threshold line.
 
+## Priest
+### Discipline
+
+- Add new bar text variables for Harsh Discipline tracking: `$harshDisciplineTime`, `$harshDisciplineStacks`, and `$harshDisciplineMaxStacks`, and icon `#harshDiscipline`.
 
 ---
 
