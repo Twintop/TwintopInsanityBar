@@ -86,6 +86,12 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Affliction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 ---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
 ---@field public shadowBolt TRB.Classes.SpellBase
 ---@field public demonbolt TRB.Classes.SpellBase
@@ -246,6 +252,12 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Demonology, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public incinerate TRB.Classes.SpellBase
@@ -339,6 +351,12 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Destruction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 --[[
     BarGroups Factory for Warlock
@@ -417,3 +435,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles

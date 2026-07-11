@@ -8733,44 +8733,23 @@ function TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 	return dims
 end
 
--- Built-in channel tick profiles, keyed by [className][specName] using the lowercase settings-tree keys
--- (e.g. settings.priest.shadow). Only specs that actually have channeled spells worth tick markers get an
--- entry; every other spec intentionally has none and is seeded with an empty profile set. Users can still
--- add their own per spec via the castbar options tick-rate list. Each profile drives tick placement:
---   mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
---   mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
--- baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
----@type table<string, table<string, table<integer, TRB.Classes.Settings.CastbarTickProfile>>>
-local castbarTickProfilesBySpec = {
-	hunter = {
-		survival = {
-		-- Mongoose Bite: fixed 3s channel, tick rate accelerates with haste, partial final tick.
-			[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
-		},
-	},
-	priest = {
-		shadow = {
-			-- Mind Flay: constant tick count, duration shrinks with haste.
-			[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, firstTickAtStart = false, chains = true },
-			-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
-			[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 1, firstTickAtStart = true },
-		},
-	},
-}
-
----Gets a fresh copy of the built-in channel tick profiles for one spec, or an empty table when the spec
----has no built-in channeled spells. Returns a DeepCopy so each spec's saved settings own their tables
----(the shared source table is never handed out or mutated).
+---Gets the built-in channel tick profiles for one spec from TRB.Data.castbarTickProfilesRegistry
+---(populated by the class files, keyed "class_spec" like barTextVariablesRegistry), or an empty table
+---when the spec has no built-in channeled spells. Getters return fresh tables, so each spec's saved
+---settings own their copies. Each profile drives tick placement:
+---  mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
+---  mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
+---baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
 ---@param className string? # Lowercase class name matching the settings tree (e.g. "priest")
 ---@param specName string? # Lowercase spec name matching the settings tree (e.g. "shadow")
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Functions.Settings:DefaultCastbarTickProfilesForSpec(className, specName)
-	local byClass = className and castbarTickProfilesBySpec[className]
-	local profiles = byClass and specName and byClass[specName]
-	if type(profiles) ~= "table" then
+	local registry = TRB.Data.castbarTickProfilesRegistry
+	local getter = registry and className and specName and registry[className .. "_" .. specName]
+	if type(getter) ~= "function" then
 		return {}
 	end
-	return TRB.Functions.Table:DeepCopy(profiles)
+	return getter()
 end
 
 ---Gets the default Castbar visibility entry (displayBar.castbar). Uses castbar-specific show conditions

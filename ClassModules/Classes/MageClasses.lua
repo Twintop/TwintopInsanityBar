@@ -50,6 +50,12 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Arcane, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
 ---@field fireBlast TRB.Classes.SpellBase
@@ -116,6 +122,12 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Fire, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
 ---@field icicles TRB.Classes.SpellBase
@@ -162,6 +174,12 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Frost, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -337,3 +355,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles

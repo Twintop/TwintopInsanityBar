@@ -178,6 +178,12 @@ function TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Beast Mastery, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
@@ -344,6 +350,12 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Marksmanship, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public killCommand TRB.Classes.SpellBase
@@ -485,6 +497,15 @@ function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Survival, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
+	return {
+		-- Boomstick: constant tick count, duration shrinks with haste.
+		[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
+	}
+end
+
 
 --[[
     BarGroups Factory for Hunter
@@ -568,3 +589,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["hunter_beastMastery"] = TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["hunter_survival"] = TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["hunter_survival"] = TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["hunter_beastMastery"] = TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles

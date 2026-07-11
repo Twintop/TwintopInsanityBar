@@ -175,6 +175,12 @@ function TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Brewmaster, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
 ---@field public risingSunKick TRB.Classes.SpellBase
@@ -270,6 +276,12 @@ function TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MonkMistweaverBarTextVariable_casting"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Mistweaver, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -495,6 +507,12 @@ function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Windwalker, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 --[[
     BarGroups Factory for Monk
@@ -651,3 +669,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles

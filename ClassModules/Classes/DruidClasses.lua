@@ -373,6 +373,12 @@ function TRB.Classes.Druid.BalanceSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Balance, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Druid.BalanceSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Druid.FeralSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
@@ -588,6 +594,12 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Feral, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public berserk TRB.Classes.SpellBase
@@ -726,6 +738,12 @@ function TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Guardian, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells, TRB.Classes.Druid.DruidBaseSpells
 ---@field public efflorescence TRB.Classes.SpellBase
@@ -820,6 +838,12 @@ function TRB.Classes.Druid.RestorationSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$efflorescenceTime", description = L["DruidRestorationBarTextVariable_efflorescenceTime"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 --[[
@@ -1104,3 +1128,10 @@ TRB.Data.barTextVariablesRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSp
 TRB.Data.barTextVariablesRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles

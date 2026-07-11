@@ -321,6 +321,12 @@ function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Assassination, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Rogue.OutlawSpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
@@ -585,6 +591,12 @@ function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Outlaw, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Rogue.SubtletySpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public shadowTechniques TRB.Classes.SpellBase
@@ -797,6 +809,12 @@ function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Subtlety, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 --[[
     BarGroups Factory for Rogue
@@ -874,3 +892,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles

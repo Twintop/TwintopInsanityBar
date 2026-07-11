@@ -123,6 +123,12 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Blood, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DeathKnight.BloodSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.DeathKnight.FrostSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field breathOfSindragosa TRB.Classes.SpellThreshold
@@ -200,6 +206,12 @@ function TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCacheEntry
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Frost, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DeathKnight.FrostSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field epidemic TRB.Classes.SpellThreshold
@@ -265,6 +277,12 @@ function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false },
 		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Unholy, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DeathKnight.UnholySpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -367,3 +385,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["deathknight_blood"] = TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["deathknight_frost"] = TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["deathknight_unholy"] = TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["deathknight_blood"] = TRB.Classes.DeathKnight.BloodSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["deathknight_frost"] = TRB.Classes.DeathKnight.FrostSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["deathknight_unholy"] = TRB.Classes.DeathKnight.UnholySpells.GetCastbarTickProfiles

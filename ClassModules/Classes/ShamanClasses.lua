@@ -217,6 +217,12 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Elemental, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maelstromWeapon TRB.Classes.SpellBase
@@ -281,6 +287,12 @@ function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Enhancement, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Shaman.RestorationSpells : TRB.Classes.Healer.HealerSpells
 ---@field public ascendance TRB.Classes.SpellBase
@@ -332,6 +344,12 @@ function TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables(specCacheEntr
 		
 		{ variable = "$ascendanceTime", description = L["ShamanRestorationBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -484,3 +502,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles

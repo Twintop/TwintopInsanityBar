@@ -227,6 +227,12 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Discipline, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
 ---@field public flashHeal TRB.Classes.Priest.HolyWordSpell
@@ -505,6 +511,12 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Holy, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -987,6 +999,17 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Shadow, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles()
+	return {
+		-- Mind Flay: constant tick count, duration shrinks with haste.
+		[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, firstTickAtStart = false, chains = true },
+		-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
+		[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 1, firstTickAtStart = true },
+	}
+end
+
 
 --[[
     BarGroups Factory for Priest
@@ -1235,3 +1258,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles

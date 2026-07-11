@@ -71,6 +71,12 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Holy, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field flashOfLight TRB.Classes.SpellBase
@@ -126,6 +132,12 @@ function TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Protection, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field divinePurpose TRB.Classes.SpellBase
@@ -173,6 +185,12 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Retribution, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -252,3 +270,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles
