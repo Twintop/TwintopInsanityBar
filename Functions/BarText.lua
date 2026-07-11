@@ -1435,13 +1435,13 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 			end
 		end
 	end
-	lookup["$castTime"] = string.format(durationFormat, castTime)
-	lookup["$castTimeRemaining"] = string.format(castTimeFormat, castRemaining)
-	lookup["$castLatency"] = string.format(latencyFormat, castLatency)
-	lookup["$castLatencyMs"] = string.format("%d", math.floor(castLatency * 1000 + 0.5))
-	lookup["$castPushback"] = string.format(latencyFormat, castPushback)
+	lookup["$castTime"] = castTime > 0 and string.format(durationFormat, castTime) or ""
+	lookup["$castTimeRemaining"] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
+	lookup["$castLatency"] = castTime > 0 and string.format(latencyFormat, castLatency) or ""
+	lookup["$castLatencyMs"] = castTime > 0 and string.format("%d", math.floor(castLatency * 1000 + 0.5)) or ""
+	lookup["$castPushback"] = castTime > 0 and string.format(latencyFormat, castPushback) or ""
 	lookup["$castSpellName"] = castSpellName
-	lookup["$castSpellId"] = tostring(castSpellId)
+	lookup["$castSpellId"] = castTime > 0 and tostring(castSpellId) or ""
 	lookupLogic["$castTime"] = castTime
 	lookupLogic["$castTimeRemaining"] = castRemaining
 	lookupLogic["$castLatency"] = castLatency
