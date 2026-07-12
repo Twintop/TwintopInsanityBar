@@ -196,7 +196,35 @@ function TRB.Functions.Castbar:GetNode()
 	return group and group:GetNode(1) or nil
 end
 
----Resolves a channel tick profile for a spellId from the castbar settings (built-in + user edits).
+-- Built-in tick profiles are static code data (the global set plus the active spec's registered set),
+-- resolved from code -- NOT persisted -- so edits to the definitions always take effect on reload. Each
+-- spec's resolved table is cached after the first lookup (keyed by compositeKey, like tickModifiersCache).
+---@type table<string, table<integer, TRB.Classes.Settings.CastbarTickProfile>>
+local tickProfilesCache = {}
+
+---Returns the active spec's built-in tick profiles keyed by spellId (global profiles overlaid with the
+---spec's own, spec winning on collision), or nil when no character/spec context is available.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>?
+local function GetBuiltInTickProfiles()
+	local character = TRB.Data.character
+	local key = character and character.compositeKey
+	if key == nil then
+		return nil
+	end
+	local profiles = tickProfilesCache[key]
+	if profiles == nil then
+		profiles = TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
+		local registry = TRB.Data.castbarTickProfilesRegistry
+		local getter = registry and registry[key]
+		if type(getter) == "function" then
+			TRB.Functions.Table:Merge(profiles, getter())
+		end
+		tickProfilesCache[key] = profiles
+	end
+	return profiles
+end
+
+---Resolves a channel tick profile for a spellId from the active spec's built-in code data.
 ---@param barSettings table?
 ---@param spellId integer?
 ---@return table?
@@ -204,8 +232,8 @@ function TRB.Functions.Castbar:GetTickProfile(barSettings, spellId)
 	if barSettings == nil or spellId == nil or issecretvalue(spellId) then
 		return nil
 	end
-	local profiles = barSettings.tickProfiles
-	if type(profiles) ~= "table" then
+	local profiles = GetBuiltInTickProfiles()
+	if profiles == nil then
 		return nil
 	end
 	return profiles[spellId]
@@ -568,7 +596,7 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 	HideOverlays(pool)
 
 	local isVertical = TRB.Functions.Bar:IsVerticalFill(node.fillDirection)
-	local tickThickness = (barSettings and barSettings.border and barSettings.border >= 2) and 2 or 1
+	local tickThickness = (barSettings and barSettings.tickWidth) or 1
 
 	-- Latency zone: the final `latency` window (safe-to-queue region), drawn on the bar's ending side. A
 	-- cast/empower grows L->R and ends at fraction 1, so its zone is [1-latFrac, 1]; a channel depletes

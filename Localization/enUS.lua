@@ -3107,3 +3107,4 @@ L["PriestDisciplineBarTextVariable_harshDisciplineMaxStacks"] = "Maximum stacks 
 L["ProfileDropdownButtonGlobalFormat"] = "Global Profile: %s"
 L["CastbarMergeTradeskill"] = "Merge Bulk Crafting"
 L["CastbarMergeTradeskillTooltip"] = "When checked, bulk profession crafting (e.g. Create All) shows as a single channel-style bar covering all queued crafts, with tick marks at each craft, instead of one cast bar per item."
+L["CastbarTickWidth"] = "Channel Tick Width"

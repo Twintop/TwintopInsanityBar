@@ -510,7 +510,12 @@ end
 ---Gets built-in castbar channel tick profiles for Windwalker, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Spinning Crane Kick
+		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
+		-- Crackling Jade Lightning
+		[117952] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true, chains = true },
+	}
 end
 
 

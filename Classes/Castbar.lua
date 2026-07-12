@@ -125,6 +125,7 @@ function TRB.Classes.Castbar:Reset()
 	self.startTime = nil
 	self.endTime = nil
 	self.duration = 0
+	self.nominalDuration = 0
 	self.latency = 0
 	self.pushback = 0
 	self.notInterruptible = false
@@ -310,6 +311,11 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 		self.reconstructed = true
 	end
 	self.duration = duration
+	-- Nominal (un-extended) length captured before any chain extension. Drives the tick RATE so a
+	-- chain-extended duration doesn't stretch spacing; a later CHANNEL_UPDATE grows self.duration but leaves
+	-- this untouched. Uses the authoritative channel-start duration, so the rate never depends on the
+	-- unreliable GCD-inferred haste.
+	self.nominalDuration = duration
 
 	-- A chained channel runs longer than nominal by the carried leftover. Authoritative timing already
 	-- reflects this (its end time gets nudged out by CHANNEL_UPDATE); a reconstructed duration does not, so
@@ -322,11 +328,20 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self:ComputeChannelTicks(profile, haste)
 end
 
----Computes channel tick positions (fraction 0..1 along the bar) and stores them on self.ticks. The tick
----rate comes from the nominal (un-chained) length, so a chain-extended duration fits one more tick rather
----than stretching the spacing. Raw t/duration fractions place any partial interval at the channel-start side
----of the right-to-left depleting bar -- correct for a chained fixedCount's carried tick, but fixedRate's
----partial belongs at the channel end, so only fixedRate fractions are mirrored.
+---Computes channel tick positions (fraction 0..1 along the depleting bar) and stores them on self.ticks.
+---A tick firing at elapsed time t sits at bar fraction 1 - t/duration (the fill edge's spot when it fires),
+---so fraction 1 is the channel START (full bar) and fraction 0 the END.
+---
+---The tick interval R is derived from the NOMINAL (un-extended, channel-start) fixedCount duration -- never
+---from self.duration or the unreliable GCD-inferred haste. firstTickAtStart is the game's "tick zero": a
+---mark lands at t=0. A FRESH tick-zero channel fires tickCount ticks across [0, nominal] (count-1 intervals);
+---a fresh non-tick-zero one fires them at R, 2R, ..., nominal.
+---
+---A CHAINED recast (verified from combat log) re-fires tick-zero immediately AND resumes the previous
+---channel's rhythm at the carried leftover -- pattern [0, carry, carry+R, carry+2R, ...] -- while the game
+---reports the longer channel via CHANNEL_UPDATE (self.duration grows, nominal does not). We fill that longer
+---duration at R; only a chained TICK-ZERO channel (CJL) adds a final partial-tick mark, since its extra
+---tick lands just past the reported end. Non-tick-zero chained channels (Mind Flay/Sear) get no end mark.
 ---@param profile table?
 ---@param haste number
 function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
@@ -335,44 +350,57 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	if profile == nil or self.duration == nil or self.duration <= 0 then
 		return
 	end
+	if haste == nil or haste <= 0 then
+		haste = 1
+	end
 
 	local duration = self.duration
+	local firstAtStart = profile.firstTickAtStart == true
 
-	-- Tick rate (seconds between ticks). For fixed-count, derive it from the NOMINAL (un-chained) length so
-	-- a chain-extended duration doesn't stretch the spacing -- the extra length just fits one more tick.
 	local tickRate
 	if profile.mode == "fixedCount" then
 		local count = profile.tickCount or 0
 		if count <= 0 then return end
-		local nominal = duration - (self.chainCarry or 0)
-		if nominal <= 0 then nominal = duration end
-		tickRate = nominal / count
+		-- tick-zero channels span [0, nominal] with a tick at each end, so there are count-1 intervals;
+		-- otherwise the count ticks land at R, 2R, ..., nominal.
+		local intervals = firstAtStart and (count - 1) or count
+		if intervals < 1 then intervals = 1 end
+		-- Rate from the NOMINAL (un-extended, channel-start) length so a chain-extended duration doesn't
+		-- stretch spacing, and so it never depends on the unreliable GCD-inferred haste.
+		local nominal = self.nominalDuration
+		if nominal == nil or nominal <= 0 or nominal > duration then nominal = duration end
+		tickRate = nominal / intervals
 	else
 		local baseRate = profile.baseTickRate or 0
 		if baseRate <= 0 then return end
 		tickRate = baseRate / haste
 	end
-	if tickRate <= 0 then
-		return
-	end
+	if tickRate <= 0 then return end
 	self.tickInterval = tickRate
 
-	-- fixedRate's partial belongs at the channel-end side; raw fractions put it at the start, so mirror (a chained fixedCount's carried partial correctly stays at the start).
-	local mirror = profile.mode ~= "fixedCount"
-
-	-- Ticks at n*tickRate from the channel start; a chain-extended duration simply fits one more tick.
-	local n = 0
-	while n < 1000 do
-		local t = tickRate * n
-		if t >= duration - 0.0001 then
-			break
-		end
-		local fraction = t / duration
-		if mirror then
-			fraction = 1 - fraction
-		end
+	-- A chained recast re-fires the game's tick-zero immediately (a mark at t=0) AND resumes the previous
+	-- channel's rhythm at the carried leftover (self.chainCarry) -- see the real combat-log pattern
+	-- [0, carry, carry+R, carry+2R, ...]. A fresh cast has no carry: tick-zero is the rhythm's own start, so
+	-- the rhythm begins at t=0; a non-tick-zero cast starts one interval in.
+	local carry = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or 0
+	if firstAtStart then
+		self.ticks[#self.ticks + 1] = { fraction = 1 }
+	end
+	local t = carry > 0 and carry or tickRate
+	local lastT = nil
+	while t <= duration + 0.0001 do
+		local fraction = 1 - t / duration
+		if fraction < 0 then fraction = 0 elseif fraction > 1 then fraction = 1 end
 		self.ticks[#self.ticks + 1] = { fraction = fraction }
-		n = n + 1
+		lastT = t
+		t = t + tickRate
+		if #self.ticks >= 1000 then break end
+	end
+	-- Only a CHAINED tick-zero channel (CJL) fires one extra tick that lands just past the reported end;
+	-- mark it as a partial tick at the channel end. Non-tick-zero channels (Mind Flay/Sear) have no such
+	-- tick, so the rhythm above is complete -- never add a spurious end mark for them.
+	if firstAtStart and carry > 0 and (lastT == nil or (duration - lastT) > 0.0001) then
+		self.ticks[#self.ticks + 1] = { fraction = 0 }
 	end
 end
 

@@ -8751,23 +8751,20 @@ function TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 	return dims
 end
 
----Gets the built-in channel tick profiles for one spec from TRB.Data.castbarTickProfilesRegistry
----(populated by the class files, keyed "class_spec" like barTextVariablesRegistry), or an empty table
----when the spec has no built-in channeled spells. Getters return fresh tables, so each spec's saved
----settings own their copies. Each profile drives tick placement:
+---Gets built-in channel tick profiles that apply to every spec/class (abilities castable regardless of
+---spec, e.g. Recuperate). Returns a fresh table each call. This is static CODE data, not persisted into
+---settings -- TRB.Functions.Castbar:GetTickProfile resolves it (overlaid with the active spec's registered
+---set from TRB.Data.castbarTickProfilesRegistry) at render time, so edits here take effect on reload.
+---Each profile drives tick placement:
 ---  mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
 ---  mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
 ---baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
----@param className string? # Lowercase class name matching the settings tree (e.g. "priest")
----@param specName string? # Lowercase spec name matching the settings tree (e.g. "shadow")
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Functions.Settings:DefaultCastbarTickProfilesForSpec(className, specName)
-	local registry = TRB.Data.castbarTickProfilesRegistry
-	local getter = registry and className and specName and registry[className .. "_" .. specName]
-	if type(getter) ~= "function" then
-		return {}
-	end
-	return getter()
+function TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
+	return {
+		-- Recuperate: one tick per second for 10 seconds
+		[1231418] = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
+	}
 end
 
 ---Gets the default Castbar visibility entry (displayBar.castbar). Uses castbar-specific show conditions
@@ -8796,14 +8793,17 @@ function TRB.Functions.Settings:DefaultCastbarVisibility()
 	}
 end
 
----Gets the default Castbar bar settings (dimensions + behavior flags + per-spec tick profiles)
+---Gets the default Castbar bar settings (dimensions + behavior flags). Built-in tick profiles are NOT
+---stored here -- they are static code data resolved at render time by TRB.Functions.Castbar:GetTickProfile.
+---tickProfiles stays an empty table, reserved for future user-authored per-spell overrides.
 ---@param classic boolean?
----@param className string? # Lowercase class name, for the per-spec tick profile lookup
----@param specName string? # Lowercase spec name, for the per-spec tick profile lookup
+---@param className string? # Accepted for signature compatibility; no longer used (tick profiles are code data)
+---@param specName string? # Accepted for signature compatibility; no longer used (tick profiles are code data)
 ---@return TRB.Classes.Settings.CastbarBar
 function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, specName)
 	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
 	settings.showTicks = true
+	settings.tickWidth = 1
 	settings.showLatency = true
 	settings.showPushback = true
 	settings.showEmpowerStages = true
@@ -8813,7 +8813,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.latencyPrecision = 1
 	settings.disableBlizzardCastbar = true
 	settings.mergeTradeskill = true
-	settings.tickProfiles = self:DefaultCastbarTickProfilesForSpec(className, specName)
+	settings.tickProfiles = {}
 	return settings
 end
 

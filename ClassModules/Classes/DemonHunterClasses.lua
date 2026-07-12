@@ -340,7 +340,10 @@ end
 ---Gets built-in castbar channel tick profiles for Vengeance, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Fel Devastation
+		[212084] = { mode = "fixedCount", baseDuration = 2, tickCount = 12, firstTickAtStart = false },
+	}
 end
 
 
@@ -495,7 +498,10 @@ end
 ---Gets built-in castbar channel tick profiles for Devourer, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Void Ray
+		[473728] = { mode = "fixedCount", baseDuration = 3, tickCount = 20, firstTickAtStart = false },
+	}
 end
 
 

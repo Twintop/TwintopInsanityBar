@@ -17,6 +17,7 @@ local content = [====[
 ### Cast Bar
 
 - Bulk profession crafting (e.g. **Create All**) now shows as one merged, channel-style bar covering the whole queue, its total time computed from the remaining items and the single craft cast time. Tick marks at each craft boundary; `$castSpellName` shows progress as `Recipe Name 3 / 10`. Controlled by the new **Merge Bulk Crafting** option (on by default).
+- Add a **Channel Tick Width** option to set the pixel thickness of channel tick marks and empower stage boundary lines (default 1px), mirroring the threshold line width control.
 
 ---
 

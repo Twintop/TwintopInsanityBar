@@ -194,6 +194,16 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "tick", L["CastbarColorTick"], yCoord, classId, specId)
 	yCoord = yCoord - 40
 
+	-- Tick / empower boundary line thickness (mirrors the threshold line width control).
+	controls.castbarTickWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarTickWidth"], 1, 10, barSettings.tickWidth, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.castbarTickWidth:SetScript("OnValueChanged", function(sliderFrame, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+		barSettings.tickWidth = value
+		RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+	end)
+	yCoord = yCoord - 60
+
 	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as
 	-- reached). Only built for specs with empowered abilities (and the Global panel).
 	if showEmpower then

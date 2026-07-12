@@ -247,6 +247,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---profiles. Visibility/enabling lives in displayBar.castbar (castbar-specific show/hide conditions).
 ---@class TRB.Classes.Settings.CastbarBar : TRB.Classes.Settings.SecondaryBar
 ---@field public showTicks boolean # Draw channel tick lines
+---@field public tickWidth number # Width in pixels of channel tick and empower stage boundary lines
 ---@field public showLatency boolean # Draw the latency safe-zone overlay
 ---@field public showPushback boolean # Draw the pushback overlay
 ---@field public showEmpowerStages boolean # Draw empower stage boundary lines
