@@ -19,6 +19,11 @@ castbarFrame:Hide()
 local isRunning = false
 -- GetTime() of the most recent cast end while a fade-out (fadeDelay/fadeDuration) is in progress.
 local fadeOutStart = nil
+-- Latency makes the server fire the natural end-of-cast STOP a beat before GetTime() reaches endTime
+-- (the "safe to queue" window shown as the latency zone), so the fill would otherwise freeze a few
+-- percent short and fade from there. On a natural finish we keep advancing the fill to done across the
+-- fade instead. { from, to, remaining }; nil when no completion is animating. See CaptureCompletion.
+local fillComplete = nil
 -- Whether the OnShow re-assert hook has been installed on PlayerCastingBarFrame.
 local blizzardCastbarHookInstalled = false
 -- Permanently-hidden holder frame the Blizzard cast bar gets reparented under, and its original
@@ -721,6 +726,7 @@ function TRB.Functions.Castbar:BeginRender()
 	end
 	local model = TRB.Data.castbar
 	fadeOutStart = nil
+	fillComplete = nil
 
 	node:SetValue(0)
 	self._renderedFrame = nil -- force ApplyVisibleState to (re)place overlays for this fresh cast
@@ -749,6 +755,7 @@ function TRB.Functions.Castbar:EndRender()
 	local node = self:GetNode()
 	self._renderedFrame = nil
 	fadeOutStart = nil
+	fillComplete = nil
 	if node then
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
@@ -761,6 +768,32 @@ function TRB.Functions.Castbar:EndRender()
 	TRB.Functions.BarVisibility:MarkDirty()
 	isRunning = false
 	castbarFrame:Hide()
+end
+
+---Captures a fill-completion animation for a natural cast/channel finish, so the fade-out advances the
+---fill the rest of the way to "done" (cast/tradeskill -> full, channel -> empty) instead of freezing it
+---a few percent short. Latency makes the STOP event land inside the timeline's ending latency window, so
+---only a stop within that window (plus jitter margin) counts as a finish -- a cast aborted well before
+---the end (interrupt/cancel) fails the check and keeps its frozen fill. Empower is excluded: its release
+---is deliberate and the fill at release reflects the stage reached, so it must not snap to full. Call
+---with the model still active, before Stop().
+---@param model TRB.Classes.Castbar
+function TRB.Functions.Castbar:CaptureCompletion(model)
+	fillComplete = nil
+	if model.state ~= "cast" and model.state ~= "channel" then
+		return
+	end
+	local _, remaining, _, fill = model:GetProgress()
+	-- A genuine finish lands within the end-of-timeline latency window; anything with more time left was
+	-- cut short. The margin covers latency jitter between cast start (when model.latency was sampled) and now.
+	if remaining > (model.latency or 0) + 0.2 then
+		return
+	end
+	fillComplete = {
+		from = fill,
+		to = (model.state == "channel") and 0 or 1,
+		remaining = remaining
+	}
 end
 
 ---Begins the post-cast fade-out honoring fadeDelay/fadeDuration, resting at the idle alpha (Always Show /
@@ -872,6 +905,7 @@ castbarFrame:SetScript("OnUpdate", function()
 		if self:IsForceHidden(visibility) then
 			idleAlpha = 0
 			fadeOutStart = nil
+			fillComplete = nil
 		end
 
 		if fadeOutStart ~= nil and self:IsEnabled(visibility) then
@@ -890,6 +924,16 @@ castbarFrame:SetScript("OnUpdate", function()
 				-- Self-heal like the active render: transitions/HideResourceBar hide every group and only
 				-- ProcessBars entries get restored, so re-assert visibility each frame while fading.
 				if not TRB.Functions.Bar:IsRenderTransitionActive() then
+					-- Keep advancing the fill to done across the hold/fade so a latency-early STOP doesn't
+					-- leave it frozen short. Move at the cast's own pace (remaining time) when the visible
+					-- window allows; otherwise compress into that window so it still reaches the end on screen.
+					if fillComplete ~= nil then
+						local window = delay + duration
+						local span = fillComplete.remaining
+						if window > 0 and window < span then span = window end
+						local ct = (span > 0) and math.min(1, elapsed / span) or 1
+						node:SetValue(fillComplete.from + (fillComplete.to - fillComplete.from) * ct)
+					end
 					group.targetAlpha = fadeAlpha
 					group.currentAlpha = fadeAlpha
 					if not group.isVisible then
@@ -902,6 +946,7 @@ castbarFrame:SetScript("OnUpdate", function()
 				return
 			end
 			fadeOutStart = nil
+			fillComplete = nil
 		end
 
 		if idleAlpha > 0 then
@@ -1020,6 +1065,11 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		-- through the inter-cast gap (an INTERRUPTED cancels the whole merge like any other cast).
 		if event == "UNIT_SPELLCAST_STOP" and model.tradeskill and model:TradeskillCastStopped() then
 			return
+		end
+		-- A natural finish (not an interrupt) advances the fill to done across the fade; capture it
+		-- from the still-active model before Stop() wipes the timeline. INTERRUPTED keeps its frozen fill.
+		if event ~= "UNIT_SPELLCAST_INTERRUPTED" then
+			self:CaptureCompletion(model)
 		end
 		-- Chain carry (when eligible) is banked inside Stop from state the model already tracks.
 		model:Stop()
