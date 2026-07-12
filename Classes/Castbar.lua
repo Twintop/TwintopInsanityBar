@@ -11,6 +11,10 @@ TRB.Classes = TRB.Classes or {}
 	Timing is best-effort under secret values. Casts/empowers expose real start/end times via
 	UnitCastingInfo/UnitChannelInfo; channels frequently return secret times, so channel duration
 	is reconstructed from a per-spell tick profile scaled by the GCD-inferred haste multiplier.
+
+	Bulk crafting (professions "Create All") merges the run of individual craft casts into one
+	channel-shaped timeline: total time = single craft cast time * queued count, re-extrapolated from
+	real elapsed time as each craft starts, with tick lines at the craft boundaries.
 ]]
 
 ---@alias trbCastbarState
@@ -48,6 +52,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field public empowerStageFractions number[] # Cumulative fraction at each stage completion (max line at chargeDuration/duration)
 ---@field public empowerChargeDuration number # Empower charge time to reach max (seconds), excluding the hold-at-max tail
 ---@field public empowerHoldDuration number # Empower hold-at-max window (seconds) appended after the charge portion
+---@field public tradeskill boolean # Bulk crafting merge active: repeated craft casts shown as one channel
+---@field public tradeskillTotal integer # Total crafts queued in the merge
+---@field public tradeskillRemaining integer # Crafts not yet completed (including the one in flight)
+---@field public tradeskillWaitUntil number? # Grace deadline while between crafts (nil while a craft cast is in flight)
 TRB.Classes.Castbar = {}
 TRB.Classes.Castbar.__index = TRB.Classes.Castbar
 
@@ -64,6 +72,13 @@ local chainCarry = nil
 
 -- Grace window (seconds) during which a channel-end carry remains valid for the next channel.
 local CHAIN_CARRY_GRACE = 1.0
+
+-- Grace window (seconds, plus latency) for the next craft cast of a bulk-crafting merge to start after
+-- the previous one stops; past it the merge is considered halted (out of reagents, window closed, etc).
+local TRADESKILL_RESUME_GRACE = 1.0
+
+-- Craft-boundary tick lines get unreadably dense on large queues; skip drawing them past this count.
+local TRADESKILL_MAX_TICKS = 40
 
 ---Banks the leftover tick phase of the model's active chainable channel into chainCarry so the next
 ---channel of the same spell (within the grace window) starts with the carried partial tick. Anchored to
@@ -123,6 +138,10 @@ function TRB.Classes.Castbar:Reset()
 	self.empowerStageFractions = {}
 	self.empowerChargeDuration = 0
 	self.empowerHoldDuration = 0
+	self.tradeskill = false
+	self.tradeskillTotal = 0
+	self.tradeskillRemaining = 0
+	self.tradeskillWaitUntil = nil
 end
 
 ---Returns cached spell data for a spellId, populating the cache on first use.
@@ -357,6 +376,102 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	end
 end
 
+---Begins tracking a bulk-crafting run as one merged channel-style bar: the queued craft casts display as
+---a single depleting channel whose total time is the single craft cast time * queued count. The estimate
+---self-corrects as each craft starts (see ContinueTradeskill).
+---@param spellId integer? # Recipe cast spell id from the event
+---@param count integer # Number of crafts queued (> 1)
+function TRB.Classes.Castbar:StartTradeskill(spellId, count)
+	local infoSpellId, startTime, endTime, notInterruptible = ReadCastingInfo()
+	local resolvedId = spellId
+	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
+		resolvedId = infoSpellId
+	end
+
+	self:Reset()
+	self.state = "channel"
+	self.spellId = (resolvedId ~= nil and not issecretvalue(resolvedId)) and resolvedId or nil
+	self.spell = self:GetSpellData(self.spellId)
+	self.notInterruptible = notInterruptible
+	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+	self.tradeskill = true
+	self.tradeskillTotal = count
+	self.tradeskillRemaining = count
+
+	local now = GetTime()
+	local castDuration
+	if startTime ~= nil and endTime ~= nil and endTime > startTime then
+		castDuration = endTime - startTime
+		self.startTime = startTime
+		self.reconstructed = false
+	else
+		castDuration = BASE_GCD
+		self.startTime = now
+		self.reconstructed = true
+	end
+	self.duration = castDuration * count
+	self.endTime = self.startTime + self.duration
+	self:ComputeTradeskillTicks()
+end
+
+---Advances the merged bulk-crafting bar when the next individual craft cast starts: re-extrapolates the
+---total duration from real elapsed time over the completed fraction, absorbing the inter-cast gaps.
+function TRB.Classes.Castbar:ContinueTradeskill()
+	if not self.tradeskill or self.startTime == nil then
+		return
+	end
+	self.tradeskillWaitUntil = nil
+	local completed = self.tradeskillTotal - self.tradeskillRemaining
+	if completed > 0 then
+		local elapsed = GetTime() - self.startTime
+		if elapsed > 0 then
+			self.duration = elapsed * self.tradeskillTotal / completed
+			self.endTime = self.startTime + self.duration
+		end
+	end
+	self:ComputeTradeskillTicks()
+end
+
+---Marks one craft of the merged bulk-crafting bar as completed (its individual UNIT_SPELLCAST_STOP).
+---@return boolean # true when crafts remain (keep the merged bar running through the gap), false when done
+function TRB.Classes.Castbar:TradeskillCastStopped()
+	if not self.tradeskill then
+		return false
+	end
+	self.tradeskillRemaining = self.tradeskillRemaining - 1
+	if self.tradeskillRemaining <= 0 then
+		return false
+	end
+	-- The next craft's START normally arrives within a fraction of a second; if it never comes (out of
+	-- reagents, profession window closed, crafting stopped), the per-frame updater tears the bar down.
+	self.tradeskillWaitUntil = GetTime() + TRADESKILL_RESUME_GRACE + (self.latency or 0)
+	return true
+end
+
+---Returns the 1-based index of the craft currently in progress in a merged bulk-crafting bar (during the
+---gap after a completed craft this is already the upcoming one), clamped to the total. 0 when not merging.
+---@return integer
+function TRB.Classes.Castbar:GetTradeskillIndex()
+	if not self.tradeskill or self.tradeskillTotal <= 0 then
+		return 0
+	end
+	return math.min(self.tradeskillTotal - self.tradeskillRemaining + 1, self.tradeskillTotal)
+end
+
+---Places a tick line at each craft boundary of the merged bulk-crafting bar. The bar depletes, so the
+---i-th boundary is crossed when the fill edge reaches 1 - i/total (same mirroring as fixedRate channels).
+function TRB.Classes.Castbar:ComputeTradeskillTicks()
+	self.ticks = {}
+	self.tickInterval = nil
+	local total = self.tradeskillTotal
+	if not self.tradeskill or total <= 1 or total > TRADESKILL_MAX_TICKS then
+		return
+	end
+	for i = 1, total - 1 do
+		self.ticks[#self.ticks + 1] = { fraction = 1 - (i / total) }
+	end
+end
+
 ---Begins tracking an empowered cast. Reads stage count and per-stage durations (best-effort under
 ---secret values), computing cumulative stage boundary fractions for threshold placement.
 ---@param spellId integer?
@@ -472,7 +587,8 @@ end
 ---Re-reads channel timing after UNIT_SPELLCAST_CHANNEL_UPDATE (e.g. a chain nudging the end time out).
 ---Pushback never applies to a channel, so this only updates timing -- it does not accumulate pushback.
 function TRB.Classes.Castbar:ChannelUpdate()
-	if self.state ~= "channel" then
+	-- A bulk-crafting merge is channel-shaped but not a real channel; UnitChannelInfo has nothing for it.
+	if self.state ~= "channel" or self.tradeskill then
 		return
 	end
 	local _, startTime, endTime = ReadChannelInfo()

@@ -255,6 +255,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public durationPrecision integer # Decimal places (0-3) for $castTime
 ---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback
 ---@field public disableBlizzardCastbar boolean # Detach the default Blizzard cast bar while the addon castbar is enabled
+---@field public mergeTradeskill boolean # Merge bulk crafting's repeated craft casts into one channel-style bar
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
 
 ---@class TRB.Classes.Settings.DisplayText

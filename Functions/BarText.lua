@@ -1434,6 +1434,11 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 				lookup["#casting"] = castbar.spell.icon
 			end
 		end
+		-- Bulk crafting merge: append the craft progress so $castSpellName reads "Recipe Name 3 / 10".
+		if castbar.tradeskill and castbar.tradeskillTotal > 1 then
+			local progress = string.format("%d / %d", castbar:GetTradeskillIndex(), castbar.tradeskillTotal)
+			castSpellName = castSpellName ~= "" and (castSpellName .. " " .. progress) or progress
+		end
 	end
 	lookup["$castTime"] = castTime > 0 and string.format(durationFormat, castTime) or ""
 	lookup["$castTimeRemaining"] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""

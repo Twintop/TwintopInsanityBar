@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.4-alpha02 (2026-07-13)
+## General
+### Cast Bar
+
+- Bulk profession crafting (e.g. **Create All**) now shows as one merged, channel-style bar covering the whole queue, its total time computed from the remaining items and the single craft cast time. Tick marks at each craft boundary; `$castSpellName` shows progress as `Recipe Name 3 / 10`. Controlled by the new **Merge Bulk Crafting** option (on by default).
+
+---
+
 # 12.0.7.4-alpha01 (2026-07-12)
 ## General
 

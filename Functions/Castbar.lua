@@ -9,6 +9,7 @@ TRB.Functions.Castbar = {}
 	Functions/SpellCast.lua), places the static overlays/threshold lines (latency, pushback,
 	channel ticks, empower stages) once per cast, and runs a dedicated per-frame updater for a
 	smooth fill and the show/hide fade. Bar text values are exposed separately by Functions/BarText.
+	Also hooks the C_TradeSkillUI craft calls to merge bulk crafting into one channel-style bar.
 ]]
 
 -- Dedicated per-frame frame: drives the smooth fill + self-healing visibility while a cast is active.
@@ -24,6 +25,43 @@ local blizzardCastbarHookInstalled = false
 -- parent for restoring. Reparenting is taint-safe (C-side only, no Blizzard Lua runs), unlike SetUnit.
 local blizzardCastbarHolder = nil
 local blizzardCastbarOriginalParent = nil
+
+-- Bulk crafting: the queued craft count (numCasts, argument 2 of every C_TradeSkillUI craft call) is
+-- captured here and consumed by the next tradeskill UNIT_SPELLCAST_START. Timestamped so a queue whose
+-- cast never starts (e.g. missing reagents) can't leak onto a later, unrelated craft.
+local pendingCraftCount = nil
+local pendingCraftTime = 0
+local PENDING_CRAFT_WINDOW = 5.0
+
+local function OnCraftQueued(_, numCasts)
+	local count = tonumber(numCasts)
+	pendingCraftCount = (count ~= nil and count > 0) and math.floor(count) or nil
+	pendingCraftTime = GetTime()
+end
+
+for _, craftFunction in ipairs({ "CraftRecipe", "CraftSalvage", "CraftEnchant" }) do
+	if type(C_TradeSkillUI[craftFunction]) == "function" then
+		hooksecurefunc(C_TradeSkillUI, craftFunction, OnCraftQueued)
+	end
+end
+
+---Takes (and clears) the pending bulk-craft count, if still fresh.
+---@return integer?
+local function ConsumePendingCraftCount()
+	local count = pendingCraftCount
+	pendingCraftCount = nil
+	if count ~= nil and GetTime() - pendingCraftTime <= PENDING_CRAFT_WINDOW then
+		return count
+	end
+	return nil
+end
+
+---Whether the player's active cast is a tradeskill (profession craft) cast.
+---@return boolean
+local function IsTradeskillCast()
+	local isTradeSkill = select(6, UnitCastingInfo("player"))
+	return not issecretvalue(isTradeSkill) and isTradeSkill == true
+end
 
 ---Returns the active spec's settings, castbar bar settings, and castbar colors (or nils).
 ---@return table? settings, table? barSettings, table? colors
@@ -790,6 +828,14 @@ castbarFrame:SetScript("OnUpdate", function()
 			return
 		end
 
+		-- Bulk crafting halted early (no next craft within the grace window after a craft completed:
+		-- out of reagents, profession window closed, crafting stopped): end the merged bar.
+		if model.tradeskillWaitUntil ~= nil and now > model.tradeskillWaitUntil then
+			model:Stop()
+			self:BeginFadeOut()
+			return
+		end
+
 		-- Yield to an active render transition: it deliberately hides ALL bars briefly during a
 		-- reconstruction. We simply re-assert on the next frame after it ends, so the castbar isn't
 		-- left permanently hidden (which is exactly what happened before: the transition hides + zeroes
@@ -914,6 +960,28 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 	end
 
 	if event == "UNIT_SPELLCAST_START" then
+		-- Bulk crafting: merge the run of individual craft casts into one channel-style bar whose total
+		-- time is queued items * single craft cast time (self-correcting as each craft starts).
+		if barSettings and barSettings.mergeTradeskill ~= false and IsTradeskillCast() then
+			local queued = ConsumePendingCraftCount()
+			-- Same-recipe check: a different craft started during the grace gap must not be absorbed
+			-- into the old merge (unknown/secret ids pass, favoring continuation).
+			local sameRecipe = model.spellId == nil or spellId == nil or issecretvalue(spellId) or spellId == model.spellId
+			if queued == nil and model.tradeskill and sameRecipe then
+				-- Next craft of the active merge: advance the shared timeline and re-place the overlays
+				-- (boundary ticks + latency zone) for the re-extrapolated duration.
+				model:ContinueTradeskill()
+				if isRunning then self:SetupOverlays(model) end
+				return
+			end
+			if queued ~= nil and queued > 1 then
+				if RejectDisallowedType("channel") then return end
+				model:StartTradeskill(spellId, queued)
+				self:BeginRender()
+				return
+			end
+			-- Single craft (queued 1/unknown): fall through to the standard cast path.
+		end
 		if RejectDisallowedType("cast") then return end
 		model:StartCast(spellId)
 		self:BeginRender()
@@ -948,6 +1016,11 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		-- One craft of a bulk-crafting merge finished with more queued: keep the merged bar running
+		-- through the inter-cast gap (an INTERRUPTED cancels the whole merge like any other cast).
+		if event == "UNIT_SPELLCAST_STOP" and model.tradeskill and model:TradeskillCastStopped() then
+			return
+		end
 		-- Chain carry (when eligible) is banked inside Stop from state the model already tracks.
 		model:Stop()
 		self:BeginFadeOut()

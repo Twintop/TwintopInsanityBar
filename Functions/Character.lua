@@ -1432,6 +1432,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.durationPrecision = coreBar.durationPrecision
 			mergedBar.latencyPrecision = coreBar.latencyPrecision
 			mergedBar.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
+			mergedBar.mergeTradeskill = coreBar.mergeTradeskill
 		end
 		-- Wrap bars in a shallow copy so spec.bars itself is never mutated
 		local mergedBars = {}

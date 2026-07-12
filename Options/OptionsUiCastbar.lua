@@ -231,6 +231,13 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 			TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
 		end)
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_mergeTradeskill", L["CastbarMergeTradeskill"], L["CastbarMergeTradeskillTooltip"], yCoord,
+		function() return barSettings.mergeTradeskill end,
+		function(v)
+			barSettings.mergeTradeskill = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+		end)
 	yCoord = yCoord - 40
 	local function BuildPrecisionSlider(label, settingKey, xCoord, y)
 		local slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, label, 0, 3, barSettings[settingKey], 1, 0,

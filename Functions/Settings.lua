@@ -8812,6 +8812,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.durationPrecision = 1
 	settings.latencyPrecision = 1
 	settings.disableBlizzardCastbar = true
+	settings.mergeTradeskill = true
 	settings.tickProfiles = self:DefaultCastbarTickProfilesForSpec(className, specName)
 	return settings
 end
