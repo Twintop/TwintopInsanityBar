@@ -99,10 +99,6 @@ end
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public harshDiscipline TRB.Classes.SpellBase
 ---@field public masterTheDarkness TRB.Classes.SpellBase
---[[---@field public atonement TRB.Classes.SpellBase
----@field public shadowCovenant TRB.Classes.SpellBase
----@field public entropicRift TRB.Classes.SpellBase
----@field public depthOfShadows TRB.Classes.SpellBase]]
 TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
@@ -145,31 +141,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
 		duration = 30,
 		maxStacks = 2
 	})
-	--[[self.atonement = TRB.Classes.SpellBase:New({
-		id = 194384,
-		isTalent = true,
-		isBuff = true,
-		isFriend = true,
-		isSelfInitializeAllowed = true,
-		duration = 15
-	})
-	self.shadowCovenant = TRB.Classes.SpellBase:New({
-		id = 322105,
-		talentId = 314867,
-		isTalent = true
-	})
 
 	-- Voidweaver
-	self.entropicRift = TRB.Classes.SpellBase:New({
-		id = 450193,
-		talentId = 447444,
-		isTalent = true,
-		duration = 8
-	})
-	self.depthOfShadows = TRB.Classes.SpellBase:New({
-		id = 451308,
-		isTalent = true
-	})]]
 	
 	self.masterTheDarkness = TRB.Classes.SpellBase:New({
 		id = 1253593,
@@ -589,15 +562,6 @@ end
 ---@field public maddeningTentacles TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
---[[
----@field public powerSurge TRB.Classes.SpellBase
----@field public misery TRB.Classes.SpellBase
----@field public shatteredPsyche TRB.Classes.SpellBase
----@field public idolOfYoggSaron TRB.Classes.SpellBase
----@field public thingFromBeyond TRB.Classes.SpellBase
----@field public horrificVisions TRB.Classes.SpellBase
----@field public subservientShadows TRB.Classes.SpellBase
----@field public depthOfShadows TRB.Classes.SpellBase]]
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
@@ -659,28 +623,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		baseline = true
 	})
 
-	-- Priest Talent Abilities			
-	--[[
-	self.massDispel = TRB.Classes.SpellBase:New({
-		id = 32375,
-		isTalent = true
-	})
-	self.twistOfFate = TRB.Classes.SpellBase:New({
-		id = 390978,
-		isTalent = true
-	})
-	self.powerSurge = TRB.Classes.SpellBase:New({
-		id = 453113,
-		talentId = 453109,
-		isTalent = true,
-		resourcePerTick = 10,
-		tickRate = 5,
-		hasTicks = true
-	})
-	self.powerInfusion = TRB.Classes.SpellBase:New({
-		id = 10060,
-		isTalent = true
-	})]]
+	-- Priest Talent Abilities
+
 	-- Shadow Talent Abilities			
 	self.shadowWordMadness = TRB.Classes.SpellThreshold:New({
 		id = 335467,
@@ -758,75 +702,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		id = 375981,
 		isTalent = true
 	})
-	--[[self.shadowyApparition = TRB.Classes.SpellBase:New({
-		id = 341491,
-		isTalent = true
-	})
-	self.auspiciousSpirits = TRB.Classes.SpellBase:New({
-		id = 155271,
-		idSpawn = 341263,
-		idImpact = 413231,
-		resource = 1,
-		targetChance = function(num)
-			if num == 0 then
-				return 0
-			else
-				return 0.8*(num^(-0.8))
-			end
-		end,
-		isTalent = true
-	})
-	self.misery = TRB.Classes.SpellBase:New({
-		id = 238558,
-		isTalent = true
-	})
-	self.hallucinations = TRB.Classes.SpellBase:New({
-		id = 280752,
-		resource = 4,
-		isTalent = true
-	})
-	self.shatteredPsyche = TRB.Classes.SpellBase:New({
-		id = 391092,
-		isTalent = true,
-		---@type TRB.Classes.BuffCustomProperty[]
-		customPropertyDefinitions = {
-			TRB.Classes.BuffCustomProperty:New(1, "integer", "crit", 1)
-		}
-	})
-	self.subservientShadows = TRB.Classes.SpellBase:New({
-		id = 1228516,
-		isTalent = true,
-		modPercent = 1.2
-	})
-	self.idolOfYoggSaron = TRB.Classes.SpellBase:New({
-		id = 373276,
-		talentId = 373273,
-		isTalent = true,
-		requiredStacks = 25
-	})
-	self.thingFromBeyond = TRB.Classes.SpellBase:New({
-		id = 373277,
-		isTalent = true,
-		duration = 20
-	})
-	self.horrificVisions = TRB.Classes.SpellBase:New({
-		id = 1243069,
-		debuffId = 1243069,
-		duration = 30,
-		maxStacks = 99,
-		stackResourceTriggers = {
-			[50] = {
-				resource = 1,
-				duration = 3,
-				ticks = 4
-			},
-			[100] = {
-				resource = 1,
-				duration = 3,
-				ticks = 12
-			}
-		}
-	})]]
 
 	-- Archon
 	self.halo = TRB.Classes.SpellBase:New({
@@ -867,13 +742,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		pauseDuration = 20,
 		durationMod = 1
 	})
-	--[[self.resonantEnergy = TRB.Classes.SpellBase:New({
-		id = 453845,
-		debuffId = 453850,
-		isTalent = true,
-		duration = 8,
-		maxStacks = 5
-	})]]
 
 	-- Voidweaver
 	self.voidTorrent = TRB.Classes.SpellBase:New({
@@ -904,10 +772,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		duration = 1,
 		maxExtensions = 3
 	})
-	--[[self.depthOfShadows = TRB.Classes.SpellBase:New({
-		id = 451308,
-		isTalent = true
-	})]]
 
 	-- PvP Talents
 	self.mindgames = TRB.Classes.SpellBase:New({
@@ -939,9 +803,6 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#entropicRift", icon = spells.entropicRift.icon, description = spells.entropicRift.name, printInSettings = true },
 
 		{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
-				
-		--[[{ variable = "#hv", icon = spells.horrificVisions.icon, description = spells.horrificVisions.name, printInSettings = true },
-		{ variable = "#horrificVisions", icon = spells.horrificVisions.icon, description = spells.horrificVisions.name, printInSettings = false },]]
 
 		{ variable = "#mDev", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = true },
 		{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = false },
@@ -962,15 +823,6 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
 		{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
-		--[[																												
-		
-		{ variable = "#sp", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = true },
-		{ variable = "#shatteredPsyche", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
-		{ variable = "#mm", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
-		{ variable = "#mindMelt", icon = spells.shatteredPsyche.icon, description = spells.shatteredPsyche.name, printInSettings = false },
-		
-		{ variable = "#tfb", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = true },
-		{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },]]
 		
 		{ variable = "#vf", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = true },
 		{ variable = "#voidform", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = false },
@@ -983,9 +835,6 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "#vt", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = true },
 		{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = false },
-		
-		--[[{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
-		{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },]]
 
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
@@ -1013,28 +862,6 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$shadowWordMadnessUsable", description = L["PriestShadowBarTextVariable_shadowWordMadnessUsable"], printInSettings = true, color = false },
 
-		--[[{ variable = "$siTime", description = L["PriestShadowBarTextVariable_siTime"], printInSettings = true, color = false },
-		
-		{ variable = "$mindBlastCharges", description = L["PriestShadowBarTextVariable_mindBlastCharges"], printInSettings = true, color = false },
-		{ variable = "$mindBlastMaxCharges", description = L["PriestShadowBarTextVariable_mindBlastMaxCharges"], printInSettings = true, color = false },
-
-		{ variable = "$spTime", description = L["PriestShadowBarTextVariable_spTime"], printInSettings = true, color = false },
-		{ variable = "$mmTime", description = L["PriestShadowBarTextVariable_spTime"], printInSettings = false, color = false },
-		{ variable = "$spStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = true, color = false },
-		{ variable = "$mmStacks", description = L["PriestShadowBarTextVariable_spStacks"], printInSettings = false, color = false },
-		{ variable = "$spCrit", description = L["PriestShadowBarTextVariable_spCrit"], printInSettings = true, color = false },
-
-
-		{ variable = "$ysTime", description = L["PriestShadowBarTextVariable_ysTime"], printInSettings = true, color = false },
-		{ variable = "$ysStacks", description = L["PriestShadowBarTextVariable_ysStacks"], printInSettings = true, color = false },
-		{ variable = "$ysRemainingStacks", description = L["PriestShadowBarTextVariable_ysRemainingStacks"], printInSettings = true, color = false },
-		{ variable = "$tfbTime", description = L["PriestShadowBarTextVariable_tfbTime"], printInSettings = true, color = false },
-
-		{ variable = "$reTime", description = L["PriestShadowBarTextVariable_reTime"], printInSettings = true, color = false },
-		{ variable = "$reStacks", description = L["PriestShadowBarTextVariable_reStacks"], printInSettings = true, color = false },
-
-		{ variable = "$voidVolleyTime", description = L["PriestShadowBarTextVariable_voidVolleyTime"], printInSettings = true }]]
-
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
@@ -1045,12 +872,12 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles()
 	return {
-		-- Mind Flay: constant tick count, duration shrinks with haste.
-		[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, firstTickAtStart = false, chains = true },
-		-- Void Torrent: fixed 3s channel, tick rate accelerates with haste, partial final tick.
+		-- Mind Flay
+		[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, chains = true },
+		-- Void Torrent
 		[263165] = { mode = "fixedRate", baseDuration = 3.0, baseTickRate = 1, firstTickAtStart = true },
 		-- Mind Flay: Insanity
-		[391403] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false, chains = true },
+		[391403] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, chains = true },
 	}
 end
 

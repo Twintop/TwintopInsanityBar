@@ -1421,15 +1421,26 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 						SustainedPotencyStack()
 
+						-- Death wipes the tracked buffs; pending pulses must not re-arm them.
+						local deathCountAtCast = Character:GetDeathCount()
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								SustainedPotencyStack()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								SustainedPotencyStack()
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+									if Character:GetDeathCount() ~= deathCountAtCast then
+										return
+									end
 									SustainedPotencyStack()
 								end)
 							end
@@ -1656,15 +1667,22 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 					--TODO: Clean this up into something more automated
 					if talents:IsTalentActive(spells.powerSurge) then
-
+						-- Death wipes the tracked buffs; pending pulses must not re-arm them.
+						local deathCountAtCast = Character:GetDeathCount()
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 								end
 								SustainedPotencyStack()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 								end
@@ -1672,6 +1690,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
 								end
@@ -1700,7 +1721,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 			elseif spellId == spells.tentacleSlam.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) and talents:IsTalentActive(spells.maddeningTentacles) then
+					local deathCountAtCast = Character:GetDeathCount()
 					C_Timer.After((spells.tentacleSlam.attributes.delay), function()
+						if Character:GetDeathCount() ~= deathCountAtCast then
+							return
+						end
 						snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime+spells.tentacleSlam.attributes.delay)
 					end)
 				end

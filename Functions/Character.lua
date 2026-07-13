@@ -345,6 +345,9 @@ function TRB.Functions.Character:UpdateOvercapColor()
 	snapshotData.attributes.overcapColor = UnitPowerPercent("player", TRB.Data.resource, true, curve)
 end
 
+-- Incremented on PLAYER_DEAD; deferred buff re-arms compare against it to skip firing after a death.
+local deathCount = 0
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -457,6 +460,7 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	elseif event == "PLAYER_DEAD" then
+		deathCount = deathCount + 1
 		-- All buffs are lost on death. Reset any manually-tracked (isCustom) buff
 		-- snapshots so they don't show stale timers after the player dies.
 		local snapshotData = TRB.Data.snapshotData
@@ -484,6 +488,12 @@ end
 
 local characterChangeFrame = CreateFrame("Frame")
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
+
+---Returns the session count of player deaths. Deferred buff re-arms capture this at schedule time to detect an intervening death.
+---@return integer
+function TRB.Functions.Character:GetDeathCount()
+	return deathCount
+end
 
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
@@ -1423,6 +1433,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.yPos = coreBar.yPos
 			mergedBar.anchor = coreBar.anchor
 			mergedBar.fillDirection = coreBar.fillDirection
+		end
+		if s.castbarOverlays then
+			mergedBar.tickWidth = coreBar.tickWidth
+			mergedBar.tickLatencyWidth = coreBar.tickLatencyWidth
 		end
 		if s.castbarEmpower then
 			mergedBar.empowerSegmentedFill = coreBar.empowerSegmentedFill

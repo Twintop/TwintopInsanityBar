@@ -188,6 +188,9 @@ end
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
+---@field public quickDraw TRB.Classes.SpellBase
+---@field public doubleTap TRB.Classes.SpellBase
+---@field public volley TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
 ---@field public invigoratingPulse TRB.Classes.SpellBase
@@ -246,6 +249,25 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         resource = 1,
         shots = 7,
         duration = 2, --On cast then every 1/3 sec, hasted
+        isTalent = true
+    })
+    -- Quick Draw: Rapid Fire fires 3 more shots over the same channel
+    self.quickDraw = TRB.Classes.SpellBase:New({
+        id = 459794,
+        bonusShots = 3,
+        isTalent = true
+    })
+    -- Double Tap: Trueshot and Volley buff the next Rapid Fire to fire 80% more shots
+    self.doubleTap = TRB.Classes.SpellBase:New({
+        id = 260402,
+        talentId = 473370,
+        shotsMultiplier = 1.8,
+        duration = 15,
+        isTalent = true
+    })
+    -- Volley: applies Double Tap, alongside Trueshot
+    self.volley = TRB.Classes.SpellBase:New({
+        id = 260243,
         isTalent = true
     })
     self.trueshot = TRB.Classes.SpellBase:New({
@@ -330,6 +352,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
 		{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
+		{ variable = "#doubleTap", icon = spells.doubleTap.icon, description = spells.doubleTap.name, printInSettings = true },
 		{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = spells.explosiveShot.name, printInSettings = true },
 		{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
 		{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
@@ -347,13 +370,33 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false },
 
 		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
+		{ variable = "$doubleTapTime", description = L["HunterMarksmanshipBarTextVariable_doubleTapTime"], printInSettings = true, color = false },
 	})
 end
 
 ---Gets built-in castbar channel tick profiles for Marksmanship, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Rapid Fire: 7 shots baseline over 2s, one on cast then every 1/3s; Quick Draw and Double Tap
+		-- shots come from tick modifiers.
+		[257044] = { mode = "fixedCount", baseDuration = 2, tickCount = 7, firstTickAtStart = true },
+    }
+end
+
+---Gets built-in castbar tick modifiers for Marksmanship (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers()
+	return {
+		-- Rapid Fire
+		[257044] = {
+			-- Quick Draw: +3 shots while talented, over the same channel
+			{ talentId = 459794, bonusTicks = 3 },
+			-- Double Tap: Trueshot/Volley buff this Rapid Fire into 80% more shots
+			{ talentId = 473370, buffId = 260402, tickMultiplier = 1.8 },
+		},
+	}
 end
 
 
@@ -595,3 +638,7 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["hunter_survival"] = TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["hunter_beastMastery"] = TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers

@@ -239,14 +239,17 @@ function TRB.Functions.Castbar:GetTickProfile(barSettings, spellId)
 	return profiles[spellId]
 end
 
----A talent/buff-conditional bonus-tick rule for a channeled spell, registered per spec in
+---A talent/buff-conditional tick rule for a channeled spell, registered per spec in
 ---TRB.Data.castbarTickModifiersRegistry (code data, not settings; keyed "class_spec" like the profiles
 ---registry). bonusTicks: a number is a flat bonus whenever the talent is active; a table is the TOTAL
----bonus keyed by talent rank (unmapped ranks resolve to 0). Bonuses only apply to fixedCount profiles.
+---bonus keyed by talent rank (unmapped ranks resolve to 0). tickMultiplier scales the count instead of
+---adding to it (e.g. Double Tap's 80% more shots). Every rule's flat bonus lands before any multiplier, so
+---a multiplier scales the count the other talents already built. Rules only apply to fixedCount profiles.
 ---@class TRB.Classes.CastbarTickModifier
 ---@field public talentId integer # Talent (definition spellId) gating this rule, checked via the TRB.Data.talents cache
 ---@field public buffId integer? # When set, the player must also have this buff when the channel starts (checked against the spec's tracked snapshot when one exists, else a live aura scan)
----@field public bonusTicks number|table<integer, number>
+---@field public bonusTicks (number|table<integer, number>)? # Flat bonus ticks; omit on a multiplier-only rule
+---@field public tickMultiplier number? # Multiplies the tick count (post-bonus), rounded to a whole tick
 
 -- Modifier rules are static code data; each spec's getter result is cached after the first lookup
 -- (false = spec has no registered modifiers).
@@ -274,12 +277,13 @@ end
 
 ---Evaluates one modifier rule against live talent/buff state.
 ---@param rule TRB.Classes.CastbarTickModifier
----@return number # Bonus tick count this rule contributes (0 when its conditions aren't met)
+---@return number # Flat bonus ticks this rule contributes (0 when its conditions aren't met)
+---@return number # Tick count multiplier this rule contributes (1 when its conditions aren't met)
 local function EvaluateTickModifier(rule)
 	local talents = TRB.Data.talents
 	local talent = talents and talents.talents and talents.talents[rule.talentId] or nil
 	if talent == nil or not talent:IsActive() then
-		return 0
+		return 0, 1
 	end
 	if rule.buffId ~= nil then
 		-- Prefer the spec's tracked snapshot (handles secret aura data via instance-id binding);
@@ -288,23 +292,121 @@ local function EvaluateTickModifier(rule)
 		local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[rule.buffId]
 		if snapshot ~= nil then
 			if not snapshot.buff.isActive then
-				return 0
+				return 0, 1
 			end
 		elseif TRB.Functions.Aura:FindBuffById(rule.buffId) == nil then
-			return 0
+			return 0, 1
 		end
 	end
 	local bonus = rule.bonusTicks
 	if type(bonus) == "table" then
-		return bonus[talent.currentRank] or 0
+		bonus = bonus[talent.currentRank] or 0
 	end
-	return bonus or 0
+	return bonus or 0, rule.tickMultiplier or 1
 end
 
----Resolves the effective tick profile for a channel start: the saved baseline profile adjusted by any
----registered talent/buff-conditional bonus ticks. Returns a copy when a bonus applies -- saved settings
----are never mutated. Call once per channel start and reuse via model.profile: buff-gated bonuses (e.g.
----a buff consumed by this very cast) must not be re-evaluated mid-channel.
+-- Supercharged (charged) combo point slots, tracked because a finisher's charged point is already gone
+-- from GetUnitChargedPowerPoints by the time UNIT_SPELLCAST_CHANNEL_START fires: with two supercharged
+-- points the API reports the one left over, with one it reports none at all. Keeping the previous set (and
+-- when it last changed) lets a channel start tell "this cast just consumed one" apart from "there were
+-- none", which the live reading alone cannot do.
+---@type integer[]
+local chargedPoints = {}
+---@type integer[]
+local previousChargedPoints = {}
+local chargedPointsChangedAt = 0
+
+-- How recently the charged set must have changed for that change to be attributable to the cast starting
+-- now. The consuming update and CHANNEL_START arrive together; a GCD separates them from any earlier cast.
+local CHARGED_POINT_CONSUME_GRACE = 0.5
+
+---Reads the player's charged combo point slot indices, dropping any the game hides.
+---@return integer[]
+local function ReadChargedPoints()
+	local read = GetUnitChargedPowerPoints("player")
+	local indices = {}
+	if read ~= nil then
+		for i = 1, #read do
+			local index = read[i]
+			if index ~= nil and not issecretvalue(index) then
+				indices[#indices + 1] = index
+			end
+		end
+	end
+	return indices
+end
+
+local chargedPointsFrame = CreateFrame("Frame")
+chargedPointsFrame:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "player")
+chargedPointsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+chargedPointsFrame:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_ENTERING_WORLD" then
+		-- Charge events only fire on a change, so seed from the live state: a reload mid-charge would
+		-- otherwise leave the tracker blind until the next charge came along.
+		chargedPoints = ReadChargedPoints()
+		previousChargedPoints = chargedPoints
+		return
+	end
+	previousChargedPoints = chargedPoints
+	chargedPoints = ReadChargedPoints()
+	chargedPointsChangedAt = GetTime()
+end)
+
+---Counts charged slots that are filled by (and so spendable from) the given combo point count.
+---@param indices integer[]
+---@param comboPoints integer
+---@return integer
+local function CountSpendableChargedPoints(indices, comboPoints)
+	local count = 0
+	for i = 1, #indices do
+		if indices[i] <= comboPoints then
+			count = count + 1
+		end
+	end
+	return count
+end
+
+---Whether the finisher starting now spends a supercharged combo point. The live set answers this whenever
+---a charged point survives the cast; when it comes back empty, the previous set does -- but only if it
+---changed just now, which is what tells a point consumed by this cast apart from one spent long ago.
+---@param comboPoints integer
+---@return boolean
+local function SpendsChargedPoint(comboPoints)
+	if CountSpendableChargedPoints(ReadChargedPoints(), comboPoints) > 0 then
+		return true
+	end
+	if (GetTime() - chargedPointsChangedAt) > CHARGED_POINT_CONSUME_GRACE then
+		return false
+	end
+	return CountSpendableChargedPoints(previousChargedPoints, comboPoints) > 0
+end
+
+---Resolves a per-cast tick count for a profile whose count varies (tickCountSource) rather than being a
+---static tickCount. Read at channel start, which still sees the resource the finisher is about to spend.
+---@param profile table
+---@return integer? # Tick count for this cast, nil when the resource can't be read
+local function ResolveDynamicTickCount(profile)
+	if profile.tickCountSource ~= "comboPointsSpent" then
+		return nil
+	end
+	local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints, false)
+	if comboPoints == nil or issecretvalue(comboPoints) or comboPoints <= 0 then
+		return nil
+	end
+	-- A finisher consumes a single supercharged combo point, spending it as more than one point and so
+	-- ticking more than once, no matter how many are charged.
+	local bonusPerCharged = profile.bonusTicksPerChargedPoint or 0
+	if bonusPerCharged > 0 and SpendsChargedPoint(comboPoints) then
+		return comboPoints + bonusPerCharged
+	end
+	return comboPoints
+end
+
+---Resolves the effective tick profile for a channel start: the baseline profile with its per-cast tick
+---count resolved (when it has one) and any registered talent/buff-conditional bonus ticks applied.
+---Returns a copy when either applies -- the built-in profile is never mutated. Call once per channel start
+---and reuse via model.profile: the combo points a dynamic count reads, and buff-gated bonuses (e.g. a buff
+---consumed by this very cast), are both gone by the time the channel is underway.
 ---@param barSettings table?
 ---@param spellId integer?
 ---@return table?
@@ -313,22 +415,42 @@ function TRB.Functions.Castbar:ResolveTickProfile(barSettings, spellId)
 	if profile == nil then
 		return nil
 	end
-	local rules = GetTickModifiers(spellId)
-	if rules == nil or profile.mode ~= "fixedCount" or (profile.tickCount or 0) <= 0 then
-		return profile
+
+	-- An unreadable dynamic count leaves nothing to lay out: render the channel without tick marks.
+	local dynamicCount
+	if profile.tickCountSource ~= nil then
+		dynamicCount = ResolveDynamicTickCount(profile)
+		if dynamicCount == nil then
+			return nil
+		end
 	end
+
+	local baseCount = dynamicCount or profile.tickCount or 0
 	local bonus = 0
-	for _, rule in ipairs(rules) do
-		bonus = bonus + EvaluateTickModifier(rule)
+	local multiplier = 1
+	local rules = GetTickModifiers(spellId)
+	if rules ~= nil and profile.mode == "fixedCount" and baseCount > 0 then
+		for _, rule in ipairs(rules) do
+			local ruleBonus, ruleMultiplier = EvaluateTickModifier(rule)
+			bonus = bonus + ruleBonus
+			multiplier = multiplier * ruleMultiplier
+		end
 	end
-	if bonus == 0 then
+	if dynamicCount == nil and bonus == 0 and multiplier == 1 then
 		return profile
 	end
+
 	local effective = {}
 	for k, v in pairs(profile) do
 		effective[k] = v
 	end
-	effective.tickCount = profile.tickCount + bonus
+	-- Flat bonuses land first: a multiplier (e.g. Double Tap) scales the count the talents already built.
+	effective.tickCount = math.floor(((baseCount + bonus) * multiplier) + 0.5)
+	if dynamicCount ~= nil then
+		-- Only used to reconstruct the channel when the game reports secret times; the tick spacing itself
+		-- comes from the authoritative duration.
+		effective.baseDuration = (profile.baseTickRate or 0) * effective.tickCount
+	end
 	return effective
 end
 
@@ -619,11 +741,28 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 	if colors and colors.tick and colors.tick.enabled ~= false and barSettings and barSettings.showTicks ~= false
 		and model.state == "channel" and model.ticks then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.tick.color, true)
+		-- Latency-sized ticks (spell channels only): each mark spans one latency window toward the higher-time end.
+		local tickLatFrac = 0
+		if barSettings.tickLatencyWidth == true and not model.tradeskill then
+			tickLatFrac = model:GetLatencyFraction() or 0
+			-- Regions that would merge into a solid fill (latency window >= tick interval) degrade to plain lines.
+			local spacing = (model.tickInterval ~= nil and model.duration ~= nil and model.duration > 0) and (model.tickInterval / model.duration) or 0
+			if spacing <= 0 or tickLatFrac >= spacing then
+				tickLatFrac = 0
+			end
+		end
 		for i, tick in ipairs(model.ticks) do
 			if tick.fraction >= -0.0001 and tick.fraction < 1.0001 then
 				local t = GetTickTexture(pool, node, i)
 				t:SetColorTexture(r, g, b, a)
-				PlaceLine(t, node, tick.fraction, isVertical, tickThickness)
+				if tickLatFrac > 0 then
+					-- Ticks are stored in decreasing-fraction order; cap at the neighbor so a carried
+					-- partial tick's shortened gap can't overlap the region next to it.
+					local cap = (i > 1 and model.ticks[i - 1].fraction) or 1
+					PlaceRegion(t, node, tick.fraction, math.min(tick.fraction + tickLatFrac, cap, 1), isVertical)
+				else
+					PlaceLine(t, node, tick.fraction, isVertical, tickThickness)
+				end
 				t:Show()
 			end
 		end

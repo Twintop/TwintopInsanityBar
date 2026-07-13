@@ -233,13 +233,19 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"fixedCount"' # Tick count stays constant; channel duration shrinks with haste (e.g. Mind Flay)
 ---| '"fixedRate"'  # Channel duration is fixed; tick rate scales with haste, final partial tick (e.g. Void Torrent)
 
+---Where a fixedCount profile's tick count comes from when it varies per cast.
+---@alias trbCastbarTickCountSource
+---| '"comboPointsSpent"' # One tick per combo point the finisher consumes (e.g. Killing Spree)
+
 ---A built-in or user-configured channel tick profile, stored per spellId under CastbarBar.tickProfiles.
 ---baseDuration/baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
 ---@class TRB.Classes.Settings.CastbarTickProfile
 ---@field public mode trbCastbarTickMode
----@field public baseDuration number # Unhasted channel duration in seconds
+---@field public baseDuration number? # Unhasted channel duration in seconds; derived per cast (baseTickRate * tickCount) when tickCountSource is set
 ---@field public tickCount integer? # fixedCount only: number of ticks across the channel
----@field public baseTickRate number? # fixedRate only: unhasted seconds between ticks
+---@field public baseTickRate number? # fixedRate only: unhasted seconds between ticks. Also fixedCount with tickCountSource, where it only feeds the derived baseDuration
+---@field public tickCountSource trbCastbarTickCountSource? # fixedCount only: resolves tickCount at each channel start instead of using a static tickCount
+---@field public bonusTicksPerChargedPoint integer? # tickCountSource "comboPointsSpent" only: extra ticks when the finisher spends a supercharged combo point (one per cast, however many are charged)
 ---@field public firstTickAtStart boolean? # Whether a tick also lands at t=0
 ---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
 
@@ -248,6 +254,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.CastbarBar : TRB.Classes.Settings.SecondaryBar
 ---@field public showTicks boolean # Draw channel tick lines
 ---@field public tickWidth number # Width in pixels of channel tick and empower stage boundary lines
+---@field public tickLatencyWidth boolean # Widen channel tick marks to the latency fraction (toward higher time remaining) instead of fixed-width lines
 ---@field public showLatency boolean # Draw the latency safe-zone overlay
 ---@field public showPushback boolean # Draw the pushback overlay
 ---@field public showEmpowerStages boolean # Draw empower stage boundary lines

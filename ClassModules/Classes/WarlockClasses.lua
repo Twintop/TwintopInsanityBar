@@ -89,7 +89,12 @@ end
 ---Gets built-in castbar channel tick profiles for Affliction, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Drain Life
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },
+        -- Dark Harvest
+		[1257052] = { mode = "fixedCount", baseDuration = 3, tickCount = 4, firstTickAtStart = true },
+    }
 end
 
 ---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
@@ -255,7 +260,10 @@ end
 ---Gets built-in castbar channel tick profiles for Demonology, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Drain Life
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },
+    }
 end
 
 
@@ -354,7 +362,9 @@ end
 ---Gets built-in castbar channel tick profiles for Destruction, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Drain Life
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },}
 end
 
 

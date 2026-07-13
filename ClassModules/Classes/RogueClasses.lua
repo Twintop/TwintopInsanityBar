@@ -563,38 +563,18 @@ function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-
-		--[[{ variable = "$rtbCount", description = L["RogueOutlawBarTextVariable_rtbCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbTemporaryCount", description = L["RogueOutlawBarTextVariable_rtbTemporaryCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesTemporaryCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbAllCount", description = L["RogueOutlawBarTextVariable_rtbAllCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesAllCount", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbBuffTime", description = L["RogueOutlawBarTextVariable_rtbBuffTime"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesBuffTime", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbGoodBuff", description = L["RogueOutlawBarTextVariable_rtbGoodBuff"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesGoodBuff", description = "", printInSettings = false, color = false },
-
-		{ variable = "$broadsideTime", description = L["RogueOutlawBarTextVariable_broadsideTime"], printInSettings = true, color = false },
-		{ variable = "$buriedTreasureTime", description = L["RogueOutlawBarTextVariable_buriedTreasureTime"], printInSettings = true, color = false },
-		{ variable = "$grandMeleeTime", description = L["RogueOutlawBarTextVariable_grandMeleeTime"], printInSettings = true, color = false },
-		{ variable = "$ruthlessPrecisionTime", description = L["RogueOutlawBarTextVariable_ruthlessPrecisionTime"], printInSettings = true, color = false },
-		{ variable = "$skullAndCrossbonesTime", description = L["RogueOutlawBarTextVariable_skullAndCrossbonesTime"], printInSettings = true, color = false },
-		{ variable = "$trueBearingTime", description = L["RogueOutlawBarTextVariable_trueBearingTime"], printInSettings = true, color = false },
-
-		-- Proc
-		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
 	})
 end
 
 ---Gets built-in castbar channel tick profiles for Outlaw, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Killing Spree: one tick per combo point spent, 0.5s apart before haste. The game hastes the channel
+		-- to match, so the spacing falls out of its reported duration. A finisher also spends one supercharged
+		-- combo point when any are charged, as three points rather than one, adding two more ticks.
+		[51690] = { mode = "fixedCount", baseTickRate = 0.5, tickCountSource = "comboPointsSpent", bonusTicksPerChargedPoint = 2 },
+    }
 end
 
 
@@ -800,12 +780,6 @@ function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		--[[{ variable = "$shadowTechniquesCount", description = L["RogueSubtletyBarTextVariable_shadowTechniquesCount"], printInSettings = true, color = false },
-
-		{ variable = "$sodTime", description = L["RogueSubtletyBarTextVariable_sodTime"], printInSettings = true, color = false },
-		{ variable = "$symbolsOfDeathTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },]]
 	})
 end
 

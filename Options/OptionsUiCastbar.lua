@@ -203,6 +203,13 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 		RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 	end)
 	yCoord = yCoord - 60
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickLatencyWidth", L["CastbarTickLatencyWidth"], L["CastbarTickLatencyWidthTooltip"], yCoord,
+		function() return barSettings.tickLatencyWidth end,
+		function(v)
+			barSettings.tickLatencyWidth = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+		end)
+	yCoord = yCoord - 40
 
 	-- Empower fill colors: absolute per-level (base while charging toward Level I, then Level I..IV as
 	-- reached). Only built for specs with empowered abilities (and the Global panel).

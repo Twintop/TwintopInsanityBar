@@ -8804,6 +8804,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
 	settings.showTicks = true
 	settings.tickWidth = 1
+	settings.tickLatencyWidth = false
 	settings.showLatency = true
 	settings.showPushback = true
 	settings.showEmpowerStages = true

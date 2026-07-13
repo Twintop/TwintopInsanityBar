@@ -105,6 +105,8 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.doubleTap.id] = TRB.Classes.Snapshot:New(spells.doubleTap)
+	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
@@ -494,6 +496,18 @@ local function RefreshLookupData_Marksmanship()
 		end
 	end
 
+	-- Block C: Double Tap ($doubleTapTime)
+	if not activeVars or activeVars["$doubleTapTime"] then
+		local currentTime = GetTime()
+		local _doubleTapTime = snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$doubleTapTime"] = _doubleTapTime
+
+		if lookupChanged(prevState, "$doubleTapTime", _doubleTapTime) then
+			lookup["$doubleTapTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTapTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -689,6 +703,18 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					duration = duration + spells.cantMissWontMiss.duration
 				end
 				snapshotData.snapshots[spells.trueshot.id].buff:InitializeCustom(duration, currentTime)
+
+				if talents:IsTalentActive(spells.doubleTap) then
+					snapshotData.snapshots[spells.doubleTap.id].buff:InitializeCustom(spells.doubleTap.duration, currentTime)
+				end
+			elseif spellId == spells.volley.id then
+				if talents:IsTalentActive(spells.doubleTap) then
+					snapshotData.snapshots[spells.doubleTap.id].buff:InitializeCustom(spells.doubleTap.duration, currentTime)
+				end
+			elseif spellId == spells.rapidFire.id or spellId == spells.aimedShot.id then
+				-- Both spend Double Tap. The castbar has already read the buff by now: its channel-start
+				-- bridge runs ahead of this handler (see Functions/SpellCast.lua).
+				snapshotData.snapshots[spells.doubleTap.id].buff:Reset()
 			elseif spellId == spells.explosiveShot.id then
 				snapshotData.snapshots[spells.explosiveShot.id].cooldown:InitializeCustom(spells.explosiveShot.cooldown, currentTime)
 			end
@@ -752,6 +778,7 @@ local function UpdateSnapshot_Marksmanship()
 	local snapshots = snapshotData.snapshots
 
 	snapshots[spells.explosiveShot.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
 
 	if snapshotData.casting.spellId == spells.rapidFire.id then
 		local casting = snapshotData.casting
