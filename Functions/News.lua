@@ -19,10 +19,7 @@ local content = [====[
 - Bulk profession crafting (e.g. **Create All**) now shows as one merged, channel-style bar covering the whole queue, its total time computed from the remaining items and the single craft cast time. Tick marks at each craft boundary; `$castSpellName` shows progress as `Recipe Name 3 / 10`. Controlled by the new **Merge Bulk Crafting** option (on by default).
 - Add a **Channel Tick Width** option to set the pixel thickness of channel tick marks and empower stage boundary lines (default 1px), mirroring the threshold line width control.
 - Add a **Size Channel Ticks to Latency** option: channel tick marks widen to match the latency overlay's relative size, growing toward the higher time value (off by default).
-
-## Priest
-
-- Fix Power Surge's delayed Halo pulses (and Tentacle Slam's delayed Screams of the Void extension) re-applying tracked buffs such as Mind Flay: Insanity and Sustained Potency after dying, leaving the bar colored as if the buff were still active.
+- Add tick data for many channeled abilities.
 
 ---
 
