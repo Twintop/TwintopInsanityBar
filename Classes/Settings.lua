@@ -249,6 +249,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public firstTickAtStart boolean? # Whether a tick also lands at t=0
 ---@field public skipTicks integer[]? # Rhythm ticks that never fire (1-based; tick 1 is the one at t=R, excluding any firstTickAtStart mark). Spacing still comes from the full rhythm, e.g. Demolish hits on 3 of a 4-tick rhythm
 ---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
+---@field public partialEndTick boolean? # Whether the channel fires one extra PARTIAL tick at its end, covering the phase left over after the last full beat (only ever visible when chaining pushes the end off the beat). Per-spell: Drain Life/Drain Soul/Malefic Grasp do, Mind Flay does not. Verify from a combat log; do not assume
 
 ---Castbar bar settings: SecondaryBar dimensions plus the castbar's behavior flags and per-spell tick
 ---profiles. Visibility/enabling lives in displayBar.castbar (castbar-specific show/hide conditions).

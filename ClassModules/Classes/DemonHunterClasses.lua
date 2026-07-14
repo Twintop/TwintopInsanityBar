@@ -193,6 +193,8 @@ function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
 		[198013] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
 		-- Abbysal Gaze
 		[452497] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		-- Illidan's Grasp
+		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
 	}
 end
 
@@ -345,6 +347,8 @@ function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
 	return {
 		-- Fel Devastation
 		[212084] = { mode = "fixedCount", baseDuration = 2, tickCount = 12, firstTickAtStart = false },
+		-- Illidan's Grasp
+		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
 	}
 end
 

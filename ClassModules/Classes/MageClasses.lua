@@ -56,6 +56,8 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
 	return {
 		-- Arcane Missiles
 		[5143] = { mode = "fixedCount", baseDuration = 2, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Kleptomania
+		[198100] = { mode = "fixedCount", baseDuration = 4, tickCount = 8 },
 	}
 end
 

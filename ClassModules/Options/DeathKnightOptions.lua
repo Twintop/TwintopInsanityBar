@@ -695,6 +695,9 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				},
 				raiseAlly = {
 					enabled = false
+				},
+				zombify = {
+					enabled = true
 				}
 			},
 			customThresholds = {}
@@ -2097,12 +2100,14 @@ local function UnholyConstructThresholdListPanel(parent)
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
 			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
 			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombify"],
 		},
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
 			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"],
 			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombifyTooltip"],
 		},
 	})
 end

@@ -139,7 +139,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         comboPoints = true,
         hasCooldown = true,
         isPvp = true,
-        category = "offensive"
+        category = "pvp"
     })
     self.dismantle = TRB.Classes.SpellThreshold:New({
         id = 207777,
@@ -147,7 +147,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "dismantle",
         hasCooldown = true,
         isPvp = true,
-        category = "utility"
+        category = "pvp"
     })
     self.echoingReprimand = TRB.Classes.SpellBase:New({
         id = 470671

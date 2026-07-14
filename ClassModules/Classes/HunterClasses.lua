@@ -546,6 +546,8 @@ function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
 	return {
 		-- Boomstick: constant tick count, duration shrinks with haste.
 		[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
+        -- Mending Bandage
+		[212640] = { mode = "fixedCount", baseDuration = 6.0, tickCount = 6 },
 	}
 end
 

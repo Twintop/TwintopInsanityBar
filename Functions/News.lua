@@ -27,6 +27,7 @@ local content = [====[
 - Add an **Uninterruptible Border Color**, coloring the border for the duration of a cast that cannot be interrupted.
 - A Color Indicator on the cast bar's fill or border now outranks the uninterruptible colors, which previously always won. The border and the fill both mark an uninterruptible cast now, so an indicator can claim one of them and the cast still reads as uninterruptible from the other.
 - Add bar text variables `$castInterruptible` and `$castUninterruptible`, both `false` while nothing is casting.
+- Fix a missing final tick mark on **Drain Life**, **Drain Soul**, and **Malefic Grasp**. Chaining these channels leaves them firing one extra partial tick as the channel closes, for reduced damage, and that tick was never drawn — leaving an unmarked sliver at the end of the bar. Channels without that behavior, such as Mind Flay, are unchanged.
 
 ## Druid
 

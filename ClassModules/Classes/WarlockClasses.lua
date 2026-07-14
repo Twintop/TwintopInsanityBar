@@ -91,9 +91,13 @@ end
 function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
 	return {
 		-- Drain Life
-		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },
         -- Dark Harvest
 		[1257052] = { mode = "fixedCount", baseDuration = 3, tickCount = 4, firstTickAtStart = true },
+        -- Drain Soul
+        [198590] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },
+        -- Malefic Grasp
+        [1261153] = { mode = "fixedCount", baseDuration = 4, tickCount = 4, chains = true, partialEndTick = true },
     }
 end
 
@@ -262,7 +266,7 @@ end
 function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
 	return {
 		-- Drain Life
-		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },
     }
 end
 
@@ -364,7 +368,7 @@ end
 function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
 	return {
 		-- Drain Life
-		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true },}
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },}
 end
 
 

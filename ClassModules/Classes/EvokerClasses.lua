@@ -161,7 +161,9 @@ end
 function TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
-		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = false, chains = true },
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, chains = true },
+		-- Emerald Communion
+		[370960] = { mode = "fixedCount", baseDuration = 5, tickCount = 6, firstTickAtStart = true },
 	}
 end
 

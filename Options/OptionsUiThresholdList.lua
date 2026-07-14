@@ -530,6 +530,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	local categoryLabels = {
 		offensive = L["ThresholdCategoryOffensive"],
 		defensive = L["ThresholdCategoryDefensive"],
+		pvp = L["ThresholdCategoryPvp"],
 		utility = L["ThresholdCategoryUtility"],
 		execute = L["ThresholdCategoryExecute"],
 		custom = L["ThresholdCategoryCustom"],

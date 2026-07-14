@@ -334,14 +334,18 @@ end
 ---
 ---The tick interval R is derived from the NOMINAL (un-extended, channel-start) fixedCount duration -- never
 ---from self.duration or the unreliable GCD-inferred haste. firstTickAtStart is the game's "tick zero": a
----mark lands at t=0. A FRESH tick-zero channel fires tickCount ticks across [0, nominal] (count-1 intervals);
----a fresh non-tick-zero one fires them at R, 2R, ..., nominal.
+---mark lands at t=0, on top of the rhythm below.
 ---
----A CHAINED recast (verified from combat log) re-fires tick-zero immediately AND resumes the previous
----channel's rhythm at the carried leftover -- pattern [0, carry, carry+R, carry+2R, ...] -- while the game
----reports the longer channel via CHANNEL_UPDATE (self.duration grows, nominal does not). We fill that longer
----duration at R; only a chained TICK-ZERO channel (CJL) adds a final partial-tick mark, since its extra
----tick lands just past the reported end. Non-tick-zero chained channels (Mind Flay/Sear) get no end mark.
+---The rhythm runs FORWARD from its first tick: one interval in, or the carried leftover phase on a chained
+---recast. A fresh channel's last beat lands on the channel end.
+---
+---profile.partialEndTick opts a spell into one extra tick at the channel end, covering the phase left over
+---after the last full beat (a PARTIAL tick, damage scaled to that fraction). This is per-spell behavior and
+---is NOT derivable -- Drain Life, Drain Soul and Malefic Grasp fire it, Mind Flay does not. Verify against a
+---combat log before setting it on a spell.
+---
+---fixedRate channels (Void Torrent) do NOT end on a tick -- fixed duration, hasted rate, final partial tick
+---is cut off -- so they stay anchored to the START and run forwards.
 ---@param profile table?
 ---@param haste number
 function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
@@ -378,11 +382,7 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	if tickRate <= 0 then return end
 	self.tickInterval = tickRate
 
-	-- A chained recast re-fires the game's tick-zero immediately (a mark at t=0) AND resumes the previous
-	-- channel's rhythm at the carried leftover (self.chainCarry) -- see the real combat-log pattern
-	-- [0, carry, carry+R, carry+2R, ...]. A fresh cast has no carry: tick-zero is the rhythm's own start, so
-	-- the rhythm begins at t=0; a non-tick-zero cast starts one interval in.
-	local carry = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or 0
+	-- Tick zero: a mark at t=0 (full bar), on top of the rhythm below.
 	if firstAtStart then
 		self.ticks[#self.ticks + 1] = { fraction = 1 }
 	end
@@ -397,25 +397,35 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 		end
 	end
 
-	local t = carry > 0 and carry or tickRate
-	local index = 1
-	local lastT = nil
+	-- Collect the rhythm's tick times, then place them. The rhythm starts one interval in, or -- on a chained
+	-- recast -- at the leftover phase carried from the channel it interrupted. A fresh channel's last beat
+	-- lands on the channel end (its duration is a whole number of intervals), so it needs nothing more.
+	local times = {}
+	local t = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or tickRate
 	while t <= duration + 0.0001 do
-		if skip == nil or not skip[index] then
-			local fraction = 1 - t / duration
+		times[#times + 1] = t
+		t = t + tickRate
+		if #times >= 1000 then break end
+	end
+
+	-- Opt-in per profile: some channels fire one extra tick as they close, covering only the phase left over
+	-- after the last full beat -- a PARTIAL tick, dealing damage scaled to that fraction. It only ever appears
+	-- when chaining pushes the channel end off the beat; a fresh cast ends on a beat and adds nothing. Whether
+	-- a channel does this is per-spell and cannot be derived: Drain Life/Drain Soul/Malefic Grasp do, Mind Flay
+	-- does not. Set partialEndTick from a combat log; never assume.
+	if profile.partialEndTick == true then
+		local last = times[#times]
+		if last == nil or (duration - last) > 0.0001 then
+			times[#times + 1] = duration
+		end
+	end
+
+	for i, time in ipairs(times) do
+		if skip == nil or not skip[i] then
+			local fraction = 1 - time / duration
 			if fraction < 0 then fraction = 0 elseif fraction > 1 then fraction = 1 end
 			self.ticks[#self.ticks + 1] = { fraction = fraction }
 		end
-		lastT = t
-		t = t + tickRate
-		index = index + 1
-		if index >= 1000 then break end
-	end
-	-- Only a CHAINED tick-zero channel (CJL) fires one extra tick that lands just past the reported end;
-	-- mark it as a partial tick at the channel end. Non-tick-zero channels (Mind Flay/Sear) have no such
-	-- tick, so the rhythm above is complete -- never add a spurious end mark for them.
-	if firstAtStart and carry > 0 and (lastT == nil or (duration - lastT) > 0.0001) then
-		self.ticks[#self.ticks + 1] = { fraction = 0 }
 	end
 end
 

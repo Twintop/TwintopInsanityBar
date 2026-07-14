@@ -216,6 +216,7 @@ end
 ---@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field epidemic TRB.Classes.SpellThreshold
 ---@field raiseAlly TRB.Classes.SpellThreshold
+---@field zombify TRB.Classes.SpellThreshold
 TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
 
@@ -239,6 +240,16 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
         category = "utility",
         isTalent = false,
         baseline = true
+    })
+
+    self.zombify = TRB.Classes.SpellThreshold:New({
+        id = 210128,
+        talentId = 207289,
+        primaryResourceType = Enum.PowerType.RunicPower,
+        settingKey = "zombify",
+        isPvp = true,
+        category = "pvp",
+        isTalent = true
     })
 
     return self

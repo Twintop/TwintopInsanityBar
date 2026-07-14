@@ -198,29 +198,21 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaPercent", description = L["ShamanElementalBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false },
 
-		--[[{ variable = "$ifStacks", description = L["ShamanElementalBarTextVariable_ifStacks"], printInSettings = true, color = false },
-		{ variable = "$ifMaelstrom", description = L["ShamanElementalBarTextVariable_ifMaelstrom"], printInSettings = true, color = false },
-		{ variable = "$ifTime", description = L["ShamanElementalBarTextVariable_ifTime"], printInSettings = true, color = false },
-
-		{ variable = "$skStacks", description = L["ShamanElementalBarTextVariable_skStacks"], printInSettings = true, color = false },
-		{ variable = "$skTime", description = L["ShamanElementalBarTextVariable_skTime"], printInSettings = true, color = false },]]
-
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
 		{ variable = "$earthShockUsable", description = L["ShamanElementalBarTextVariable_earthShockUsable"], printInSettings = true, color = false },
 		{ variable = "$elementalBlastUsable", description = L["ShamanElementalBarTextVariable_elementalBlastUsable"], printInSettings = true, color = false },
 		{ variable = "$earthquakeUsable", description = L["ShamanElementalBarTextVariable_earthquakeUsable"], printInSettings = true, color = false },
-
-		--[[{ variable = "$eogsTime", description = L["ShamanElementalBarTextVariable_eogsTime"], printInSettings = true, color = false },
-
-		{ variable = "$pfTime", description = L["ShamanElementalBarTextVariable_pfTime"], printInSettings = true, color = false }]]
 	})
 end
 
 ---Gets built-in castbar channel tick profiles for Elemental, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
 end
 
 
@@ -290,7 +282,10 @@ end
 ---Gets built-in castbar channel tick profiles for Enhancement, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
 end
 
 
@@ -349,7 +344,10 @@ end
 ---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
 end
 
 
