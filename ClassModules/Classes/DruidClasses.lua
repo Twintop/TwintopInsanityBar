@@ -376,7 +376,23 @@ end
 ---Gets built-in castbar channel tick profiles for Balance, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Druid.BalanceSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
+		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Balance (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers()
+	return {
+		-- Convoke the Spirits
+		[391528] = {
+			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
+			{ talentId = 393991, bonusTicks = -4, bonusDuration = -1 },
+		},
+	}
 end
 
 
@@ -597,7 +613,23 @@ end
 ---Gets built-in castbar channel tick profiles for Feral, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
+		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Feral (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers()
+	return {
+		-- Convoke the Spirits
+		[391528] = {
+			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
+			{ talentId = 391548, bonusTicks = -4, bonusDuration = -1 },
+		},
+	}
 end
 
 
@@ -741,7 +773,23 @@ end
 ---Gets built-in castbar channel tick profiles for Guardian, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
+		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Guardian (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers()
+	return {
+		-- Convoke the Spirits
+		[391528] = {
+			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
+			{ talentId = 393414, bonusTicks = -4, bonusDuration = -1 },
+		},
+	}
 end
 
 
@@ -846,7 +894,22 @@ function TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles()
 	return {
 		-- Tranquility
 		[740] = { mode = "fixedCount", baseDuration = 6, tickCount = 6 },
+		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
+		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
     }
+end
+
+---Gets built-in castbar tick modifiers for Restoration (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers()
+	return {
+		-- Convoke the Spirits
+		[391528] = {
+			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
+			{ talentId = 393371, bonusTicks = -4, bonusDuration = -1 },
+		},
+	}
 end
 
 --[[
@@ -1138,3 +1201,10 @@ TRB.Data.castbarTickProfilesRegistry["druid_balance"] = TRB.Classes.Druid.Balanc
 TRB.Data.castbarTickProfilesRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers

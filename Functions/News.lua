@@ -28,6 +28,10 @@ local content = [====[
 - A Color Indicator on the cast bar's fill or border now outranks the uninterruptible colors, which previously always won. The border and the fill both mark an uninterruptible cast now, so an indicator can claim one of them and the cast still reads as uninterruptible from the other.
 - Add bar text variables `$castInterruptible` and `$castUninterruptible`, both `false` while nothing is casting.
 
+## Druid
+
+- Add cast bar channel tick marks for **Convoke the Spirits** for every specialization, accounting for the shorter, fewer-tick channel **Cenarius' Guidance** grants.
+
 ## Hunter
 ### Marksmanship
 

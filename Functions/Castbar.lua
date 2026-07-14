@@ -245,10 +245,14 @@ end
 ---bonus keyed by talent rank (unmapped ranks resolve to 0). tickMultiplier scales the count instead of
 ---adding to it (e.g. Double Tap's 80% more shots). Every rule's flat bonus lands before any multiplier, so
 ---a multiplier scales the count the other talents already built. Rules only apply to fixedCount profiles.
+---bonusDuration shortens/lengthens the channel alongside its tick change (e.g. Cenarius' Guidance takes
+---Convoke to 3s/12 ticks); it only feeds the reconstructed duration, since authoritative channel timing
+---already reflects the talent.
 ---@class TRB.Classes.CastbarTickModifier
 ---@field public talentId integer # Talent (definition spellId) gating this rule, checked via the TRB.Data.talents cache
 ---@field public buffId integer? # When set, the player must also have this buff when the channel starts (checked against the spec's tracked snapshot when one exists, else a live aura scan)
----@field public bonusTicks (number|table<integer, number>)? # Flat bonus ticks; omit on a multiplier-only rule
+---@field public bonusTicks (number|table<integer, number>)? # Flat bonus ticks (may be negative); omit on a multiplier-only rule
+---@field public bonusDuration (number|table<integer, number>)? # Flat unhasted seconds added to baseDuration (may be negative); a table is the TOTAL bonus keyed by talent rank
 ---@field public tickMultiplier number? # Multiplies the tick count (post-bonus), rounded to a whole tick
 
 -- Modifier rules are static code data; each spec's getter result is cached after the first lookup
@@ -279,11 +283,12 @@ end
 ---@param rule TRB.Classes.CastbarTickModifier
 ---@return number # Flat bonus ticks this rule contributes (0 when its conditions aren't met)
 ---@return number # Tick count multiplier this rule contributes (1 when its conditions aren't met)
+---@return number # Flat bonus duration in seconds this rule contributes (0 when its conditions aren't met)
 local function EvaluateTickModifier(rule)
 	local talents = TRB.Data.talents
 	local talent = talents and talents.talents and talents.talents[rule.talentId] or nil
 	if talent == nil or not talent:IsActive() then
-		return 0, 1
+		return 0, 1, 0
 	end
 	if rule.buffId ~= nil then
 		-- Prefer the spec's tracked snapshot (handles secret aura data via instance-id binding);
@@ -292,17 +297,21 @@ local function EvaluateTickModifier(rule)
 		local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[rule.buffId]
 		if snapshot ~= nil then
 			if not snapshot.buff.isActive then
-				return 0, 1
+				return 0, 1, 0
 			end
 		elseif TRB.Functions.Aura:FindBuffById(rule.buffId) == nil then
-			return 0, 1
+			return 0, 1, 0
 		end
 	end
 	local bonus = rule.bonusTicks
 	if type(bonus) == "table" then
 		bonus = bonus[talent.currentRank] or 0
 	end
-	return bonus or 0, rule.tickMultiplier or 1
+	local bonusDuration = rule.bonusDuration
+	if type(bonusDuration) == "table" then
+		bonusDuration = bonusDuration[talent.currentRank] or 0
+	end
+	return bonus or 0, rule.tickMultiplier or 1, bonusDuration or 0
 end
 
 -- Supercharged (charged) combo point slots, tracked because a finisher's charged point is already gone
@@ -428,15 +437,17 @@ function TRB.Functions.Castbar:ResolveTickProfile(barSettings, spellId)
 	local baseCount = dynamicCount or profile.tickCount or 0
 	local bonus = 0
 	local multiplier = 1
+	local durationBonus = 0
 	local rules = GetTickModifiers(spellId)
 	if rules ~= nil and profile.mode == "fixedCount" and baseCount > 0 then
 		for _, rule in ipairs(rules) do
-			local ruleBonus, ruleMultiplier = EvaluateTickModifier(rule)
+			local ruleBonus, ruleMultiplier, ruleDuration = EvaluateTickModifier(rule)
 			bonus = bonus + ruleBonus
 			multiplier = multiplier * ruleMultiplier
+			durationBonus = durationBonus + ruleDuration
 		end
 	end
-	if dynamicCount == nil and bonus == 0 and multiplier == 1 then
+	if dynamicCount == nil and bonus == 0 and multiplier == 1 and durationBonus == 0 then
 		return profile
 	end
 
@@ -450,6 +461,10 @@ function TRB.Functions.Castbar:ResolveTickProfile(barSettings, spellId)
 		-- Only used to reconstruct the channel when the game reports secret times; the tick spacing itself
 		-- comes from the authoritative duration.
 		effective.baseDuration = (profile.baseTickRate or 0) * effective.tickCount
+	elseif durationBonus ~= 0 and profile.baseDuration ~= nil then
+		-- Talents that shorten the channel along with its ticks (e.g. Cenarius' Guidance). Only reached on a
+		-- reconstructed channel; authoritative timing already reflects the talent.
+		effective.baseDuration = math.max(profile.baseDuration + durationBonus, 0)
 	end
 	return effective
 end
