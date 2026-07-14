@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.7.4-alpha03 (2026-07-14)
+## General
+### Cast Bar
+
+- Show the **Empower Level Colors** section and **Empowered** visibility condition for Blood Death Knight, which now has an empowered ability.
+
+## Hunter
+### Marksmanship
+
+- Add new bar text variables for Double Tap tracking: `$doubleTapTime`, and icon `#doubleTap`.
+
+---
+
 # 12.0.7.4-alpha02 (2026-07-13)
 ## General
 ### Cast Bar

@@ -13,6 +13,7 @@ local L = TRB.Localization
 
 -- Specs with empowered abilities; only these (and the Global panel) get the Empower Level Colors section.
 local empowerSpecs = {
+	deathknight = { blood = true },
 	monk = { windwalker = true },
 	evoker = { devastation = true, preservation = true, augmentation = true },
 }
