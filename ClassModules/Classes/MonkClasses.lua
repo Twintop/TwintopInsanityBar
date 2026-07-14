@@ -179,6 +179,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles()
 	return {
+		-- Spinning Crane Kick
+		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 8, tickCount = 8, chains = true },
 		-- Crackling Jade Lightning
@@ -287,6 +289,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles()
 	return {
+		-- Spinning Crane Kick
+		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 12, tickCount = 12, chains = true },
 		-- Crackling Jade Lightning

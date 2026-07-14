@@ -570,9 +570,7 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
 	return {
-		-- Killing Spree: one tick per combo point spent, 0.5s apart before haste. The game hastes the channel
-		-- to match, so the spacing falls out of its reported duration. A finisher also spends one supercharged
-		-- combo point when any are charged, as three points rather than one, adding two more ticks.
+		-- Killing Spree
 		[51690] = { mode = "fixedCount", baseTickRate = 0.5, tickCountSource = "comboPointsSpent", bonusTicksPerChargedPoint = 2 },
     }
 end

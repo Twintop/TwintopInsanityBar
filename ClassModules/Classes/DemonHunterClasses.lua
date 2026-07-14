@@ -191,6 +191,8 @@ function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
 	return {
 		-- Eye Beam
 		[198013] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		-- Abbysal Gaze
+		[452497] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
 	}
 end
 

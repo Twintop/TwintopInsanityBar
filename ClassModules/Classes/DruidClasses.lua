@@ -843,7 +843,10 @@ end
 ---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Tranquility
+		[740] = { mode = "fixedCount", baseDuration = 6, tickCount = 6 },
+    }
 end
 
 --[[
