@@ -356,4 +356,7 @@ if locale == "enGB" then
     L["CopyMenuSection_castbarEmpower"] = "Cast Bar Empower Level Colours"
     L["CheckboxUseGlobalTooltip_CastbarColors"] = "When checked, the global settings for cast bar fill colours will be used."
     L["CheckboxUseGlobalTooltip_CastbarEmpower"] = "When checked, the global settings for empower level colours will be used."
+    L["BarElementBarChanneled"] = "Bar (Channelled)"
+    L["BarElementChanneledTick"] = "Channelled Tick Colour"
+    L["CastbarColorUninterruptibleBorder"] = "Uninterruptible Border Colour"
 end

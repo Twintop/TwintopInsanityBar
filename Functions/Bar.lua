@@ -2040,6 +2040,33 @@ function TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, set
 	self:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshotData, settings)
 end
 
+---Renders the health bar for this frame: value, fill curve, border/background, and the overlays. The
+---border and background honor any indicator targeting them (resolved by Color:ApplyIndicatorColors earlier
+---in the same spec update): a flat indicator settles the color, and a gradient indicator can then turn it
+---into a resource-threshold curve. The fill is already a health-threshold curve, so it isn't a target.
+---Called by every spec's update in place of the health block each one used to carry.
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param snapshotData TRB.Classes.SnapshotData
+---@param settings table # The spec cache settings (specCacheSettings)
+function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
+	local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+
+	if healthNode then
+		local Color = TRB.Functions.Color
+		local healthColors = settings.colors.healthBar
+		local indicators = Color:GetResolvedIndicators("healthBar")
+		healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+		healthNode:SetValue(snapshotData.attributes.health or 0)
+		healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "border",
+			(indicators and indicators.border) or healthColors.border.color)
+		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
+			(indicators and indicators.background) or healthColors.background.color)
+	end
+
+	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
+end
+
 ---Updates the casting resource overlay on the primary resource bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
 ---When castingAmount > 0, uses an appended overlay (resource gain, extends rightward)

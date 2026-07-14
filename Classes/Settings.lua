@@ -247,6 +247,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public tickCountSource trbCastbarTickCountSource? # fixedCount only: resolves tickCount at each channel start instead of using a static tickCount
 ---@field public bonusTicksPerChargedPoint integer? # tickCountSource "comboPointsSpent" only: extra ticks when the finisher spends a supercharged combo point (one per cast, however many are charged)
 ---@field public firstTickAtStart boolean? # Whether a tick also lands at t=0
+---@field public skipTicks integer[]? # Rhythm ticks that never fire (1-based; tick 1 is the one at t=R, excluding any firstTickAtStart mark). Spacing still comes from the full rhythm, e.g. Demolish hits on 3 of a 4-tick rhythm
 ---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
 
 ---Castbar bar settings: SecondaryBar dimensions plus the castbar's behavior flags and per-spell tick

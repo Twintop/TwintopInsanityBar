@@ -170,6 +170,8 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "uninterruptible", L["CastbarColorUninterruptible"], yCoord, classId, specId)
 	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "uninterruptibleBorder", L["CastbarColorUninterruptibleBorder"], yCoord, classId, specId)
+	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)

@@ -1655,15 +1655,7 @@ local function UpdateResourceBar()
 		local healthVisSettings = formSpecCacheSettings.displayBar and formSpecCacheSettings.displayBar.health
 		if healthVisSettings ~= nil and not healthVisSettings.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(formSpecCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(formSpecCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, formSpecCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, formSpecCacheSettings)
 		elseif barGroups and barGroups.health and not isInEditMode then
 			barGroups.health:Hide()
 		end
@@ -2086,7 +2078,6 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
 				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 				-- Precompute eclipse end timing threshold
 				local eclipseActive = snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive
@@ -2119,26 +2110,7 @@ local function UpdateResourceBar()
 				local barColorMap = { astralPowerBar = astralPowerBarColors, comboPoints = comboPointColors }
 
 				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Find active gradient indicators
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -2470,7 +2442,6 @@ local function UpdateResourceBar()
 					barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 					local isStealthed = IsStealthed()
 
@@ -2488,26 +2459,7 @@ local function UpdateResourceBar()
 					local barColorMap = { energyBar = energyBarColors, comboPoints = comboPointColors }
 
 					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Apply gradient indicators
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -3048,7 +3000,6 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
 				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 				local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 
@@ -3063,26 +3014,7 @@ local function UpdateResourceBar()
 				local barColorMap = { rageBar = rageBarColors, comboPoints = comboPointColors }
 
 				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Apply gradient indicators
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -3187,7 +3119,6 @@ local function UpdateResourceBar()
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 					local clearcastingActive = snapshotData.attributes.clearcastingActive
 
@@ -3203,26 +3134,7 @@ local function UpdateResourceBar()
 					local barColorMap = { manaBar = manaBarColors, comboPoints = comboPointColors }
 
 					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Read final colors
 					barColor = manaBarColors.bar

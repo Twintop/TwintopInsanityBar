@@ -14,14 +14,29 @@ local content = [====[
 
 # 12.0.7.4-alpha03 (2026-07-14)
 ## General
+### Color Indicators
+
+- Add the **Health Bar** and **Cast Bar** as Color Indicator targets for every specialization, alongside its own bars.
+- Health Bar: **Border** and **Background**. Its fill is left alone, driven as it is by the health thresholds.
+- Cast Bar: **Bar (Hardcast)**, **Bar (Channeled)**, **Border**, **Background**, and **Channeled Tick Color**. The tick color is offered only for specializations whose channeled abilities draw tick marks.
+- **Gradient Colors (Secrets)** can target the **Border** and **Background** of both bars as well, colored by the specialization's own resource just as they already color, say, a Stagger bar border from Energy. The remaining elements can't take a color curve: the health bar's fill is already one, the cast bar's fill is driven per cast state, and the channel ticks are drawn lines rather than a bar color.
+
 ### Cast Bar
 
 - Show the **Empower Level Colors** section and **Empowered** visibility condition for Blood Death Knight, which now has an empowered ability.
+- Add an **Uninterruptible Border Color**, coloring the border for the duration of a cast that cannot be interrupted.
+- A Color Indicator on the cast bar's fill or border now outranks the uninterruptible colors, which previously always won. The border and the fill both mark an uninterruptible cast now, so an indicator can claim one of them and the cast still reads as uninterruptible from the other.
+- Add bar text variables `$castInterruptible` and `$castUninterruptible`, both `false` while nothing is casting.
 
 ## Hunter
 ### Marksmanship
 
 - Add new bar text variables for Double Tap tracking: `$doubleTapTime`, and icon `#doubleTap`.
+
+## Warrior
+### Arms and Protection
+
+- Add cast bar channel tick marks for **Demolish**, which lands its three hits on an unevenly spaced rhythm.
 
 ---
 

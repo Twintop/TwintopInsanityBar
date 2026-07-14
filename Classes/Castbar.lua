@@ -386,15 +386,30 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	if firstAtStart then
 		self.ticks[#self.ticks + 1] = { fraction = 1 }
 	end
+
+	-- Some channels hit on only a subset of their rhythm (e.g. Demolish lands 3 hits on a 4-tick rhythm,
+	-- skipping the 3rd). Spacing still comes from the full rhythm, so only the mark is suppressed.
+	local skip = nil
+	if profile.skipTicks ~= nil then
+		skip = {}
+		for _, index in ipairs(profile.skipTicks) do
+			skip[index] = true
+		end
+	end
+
 	local t = carry > 0 and carry or tickRate
+	local index = 1
 	local lastT = nil
 	while t <= duration + 0.0001 do
-		local fraction = 1 - t / duration
-		if fraction < 0 then fraction = 0 elseif fraction > 1 then fraction = 1 end
-		self.ticks[#self.ticks + 1] = { fraction = fraction }
+		if skip == nil or not skip[index] then
+			local fraction = 1 - t / duration
+			if fraction < 0 then fraction = 0 elseif fraction > 1 then fraction = 1 end
+			self.ticks[#self.ticks + 1] = { fraction = fraction }
+		end
 		lastT = t
 		t = t + tickRate
-		if #self.ticks >= 1000 then break end
+		index = index + 1
+		if index >= 1000 then break end
 	end
 	-- Only a CHAINED tick-zero channel (CJL) fires one extra tick that lands just past the reported end;
 	-- mark it as a partial tick at the channel end. Non-tick-zero channels (Mind Flay/Sear) have no such

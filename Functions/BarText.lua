@@ -512,6 +512,12 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false },
 		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false },
 		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false },
+		-- Booleans default to logic-only (they'd render nothing); these read out as "true"/"false" text like
+		-- $inCombat does, so both types are stated rather than inferred.
+		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false,
+			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false,
+			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
 	}
 	if additionalValues then
 		for _, v in ipairs(additionalValues) do
@@ -1417,8 +1423,11 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	local castbar = TRB.Data.castbar
 	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
 	local castSpellName, castSpellId = "", 0
+	local isCasting, notInterruptible = false, false
 	if castbar and castbar:IsActive() then
 		local _, remaining, duration = castbar:GetProgress()
+		isCasting = true
+		notInterruptible = castbar.notInterruptible == true
 		castTime = duration or 0
 		castRemaining = remaining or 0
 		castLatency = castbar.latency or 0
@@ -1447,12 +1456,20 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	lookup["$castPushback"] = castTime > 0 and string.format(latencyFormat, castPushback) or ""
 	lookup["$castSpellName"] = castSpellName
 	lookup["$castSpellId"] = castTime > 0 and tostring(castSpellId) or ""
+	-- With nothing casting BOTH read false, rather than $castInterruptible being vacuously true.
+	local interruptible = isCasting and not notInterruptible
+	local uninterruptible = isCasting and notInterruptible
+	lookup["$castInterruptible"] = tostring(interruptible)
+	lookup["$castUninterruptible"] = tostring(uninterruptible)
 	lookupLogic["$castTime"] = castTime
 	lookupLogic["$castTimeRemaining"] = castRemaining
 	lookupLogic["$castLatency"] = castLatency
 	lookupLogic["$castLatencyMs"] = castLatency * 1000
 	lookupLogic["$castPushback"] = castPushback
 	lookupLogic["$castSpellId"] = castSpellId
+	-- Stored as strings, matching how $inCombat feeds the conditional engine.
+	lookupLogic["$castInterruptible"] = tostring(interruptible)
+	lookupLogic["$castUninterruptible"] = tostring(uninterruptible)
 end
 
 ---Refreshes the baseline lookup data with the current values.

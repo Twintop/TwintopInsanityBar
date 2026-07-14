@@ -601,6 +601,8 @@ end
 -- ============================================================================
 
 ---Applies the fill color for the current cast state (and empower stage), honoring uninterruptible.
+---An indicator claiming the fill outranks the uninterruptible color: the uninterruptible border still
+---marks the cast, so nothing is lost by letting the indicator through.
 ---@param node TRB.Classes.BarNode
 ---@param colors table
 ---@param model TRB.Classes.Castbar
@@ -610,15 +612,9 @@ local function ApplyStateFillColor(node, colors, model, barSettings)
 	if colors == nil then return end
 
 	-- Empowered casts always use the empower stage colors, even when uninterruptible: stage progression
-	-- is the point of the bar, so it should never be flattened to a plain "can't interrupt" color.
-	if model.notInterruptible and colors.uninterruptible and model.state ~= "empower" then
-		Color:ApplyFillColor(node, colors.uninterruptible)
-		return
-	end
-
-	if model.state == "channel" then
-		Color:ApplyFillColor(node, colors.channel or colors.bar)
-	elseif model.state == "empower" then
+	-- is the point of the bar, so it should never be flattened to a plain "can't interrupt" color. For the
+	-- same reason indicators don't claim the empower fill either.
+	if model.state == "empower" then
 		-- Segmented-fill mode: blank the main fill so DrawEmpowerSegments can paint each level's segment in
 		-- its own color; there is no single advancing fill color to apply here.
 		if barSettings and barSettings.empowerSegmentedFill then
@@ -639,9 +635,52 @@ local function ApplyStateFillColor(node, colors, model, barSettings)
 			end
 		end
 		Color:ApplyFillColor(node, entry or colors.bar)
-	else
-		Color:ApplyFillColor(node, colors.bar)
+		return
 	end
+
+	local isChannel = model.state == "channel"
+	local indicators = Color:GetResolvedIndicators("castbar")
+	local entry = indicators and indicators[isChannel and "channel" or "bar"]
+	if entry == nil and model.notInterruptible then
+		entry = colors.uninterruptible
+	end
+	if entry == nil then
+		entry = isChannel and (colors.channel or colors.bar) or colors.bar
+	end
+	Color:ApplyFillColor(node, entry)
+end
+
+---Applies the border and background colors for the current cast. A flat indicator targeting either one wins;
+---failing that the border falls back to the uninterruptible border while the cast can't be interrupted, then
+---to the configured colors. Whatever color that settles on, a gradient (secret-value) indicator targeting
+---the element then turns it into a resource-threshold curve.
+---Unlike the resource bars, the cast bar has no per-frame color push of its own -- its border/background
+---are otherwise only set by ApplyCustomBarGroupsAppearance on a settings change -- so this is what lets an
+---indicator (or an uninterruptible cast) recolor it while it is on screen. The setters cache, so calling
+---this every frame costs nothing when the color hasn't moved.
+---@param node TRB.Classes.BarNode
+---@param colors table?
+---@param model TRB.Classes.Castbar? # Omitted for the idle bar, which is never uninterruptible
+local function ApplyBorderAndBackgroundColor(node, colors, model)
+	if colors == nil then return end
+	local Color = TRB.Functions.Color
+	local indicators = Color:GetResolvedIndicators("castbar")
+
+	local border = indicators and indicators.border
+	if border == nil and model ~= nil and model.notInterruptible and model.state ~= "empower"
+		and colors.uninterruptibleBorder then
+		border = colors.uninterruptibleBorder.color
+	end
+	if border == nil and colors.border then
+		border = colors.border.color
+	end
+	Color:ApplyResolvedBorderOrBackground(node, "castbar", "border", border)
+
+	local background = indicators and indicators.background
+	if background == nil and colors.background then
+		background = colors.background.color
+	end
+	Color:ApplyResolvedBorderOrBackground(node, "castbar", "background", background)
 end
 
 ---Draws the per-level empower segment fills (segmented-fill mode). The main bar fill is blanked in this
@@ -740,7 +779,10 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 	-- Channel ticks sit at each tick's bar fraction (see ComputeChannelTicks, which mirrors fixedRate for depletion).
 	if colors and colors.tick and colors.tick.enabled ~= false and barSettings and barSettings.showTicks ~= false
 		and model.state == "channel" and model.ticks then
-		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.tick.color, true)
+		-- The empower stage lines below deliberately keep the configured tick color: the indicator target is
+		-- scoped to channel ticks, and empower lines only borrow that color for want of one of their own.
+		local indicators = TRB.Functions.Color:GetResolvedIndicators("castbar")
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString((indicators and indicators.tick) or colors.tick.color, true)
 		-- Latency-sized ticks (spell channels only): each mark spans one latency window toward the higher-time end.
 		local tickLatFrac = 0
 		if barSettings.tickLatencyWidth == true and not model.tradeskill then
@@ -820,13 +862,19 @@ end
 ---@param barSettings table?
 ---@param visibility table? # displayBar.castbar entry; supplies activeAlpha
 function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
-	if self._renderedFrame ~= node.frame then
-		-- New/rebuilt node frame: (re)place the static overlays and per-state fill color on it.
+	-- The fill color and the overlay textures are only worth rebuilding when something they depend on moves:
+	-- a new node frame, or an indicator flipping mid-cast (which the version stamp reports).
+	local indicatorVersion = TRB.Functions.Color:GetResolvedIndicatorVersion()
+	if self._renderedFrame ~= node.frame or self._renderedIndicatorVersion ~= indicatorVersion then
 		self._renderedFrame = node.frame
+		self._renderedIndicatorVersion = indicatorVersion
 		node:SetMinMax(0, 1)
 		ApplyStateFillColor(node, colors, model, barSettings)
 		self:SetupOverlays(model)
 	end
+	-- Not version-gated: a gradient indicator is a curve over a secret resource value, so its color moves
+	-- with the resource, not with the indicator flipping on and off.
+	ApplyBorderAndBackgroundColor(node, colors, model)
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we
 	-- drive the actual container alpha directly rather than through UpdateFade.
@@ -856,18 +904,23 @@ end
 
 ---Applies the idle (no active cast) visible state: empty fill, no overlays, resting at idleAlpha.
 ---Used for Always Show and non-zero inactive alpha; re-asserted per frame so it self-heals after
----render transitions the same way the active render does.
+---render transitions the same way the active render does. The border/background still track their
+---indicators here -- the bar is on screen, so an indicator targeting it should show.
 ---@param group TRB.Classes.BarGroup
 ---@param node TRB.Classes.BarNode
 ---@param idleAlpha number # 0..1
-function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha)
+---@param colors table?
+function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
 	if self._renderedFrame ~= nil then
 		self._renderedFrame = nil
+		self._renderedIndicatorVersion = nil
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
 	end
 	node:SetMinMax(0, 1)
 	node:SetValue(0)
+	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
+	ApplyBorderAndBackgroundColor(node, colors, nil)
 	group.targetAlpha = idleAlpha
 	group.currentAlpha = idleAlpha
 	if not group.isVisible then
@@ -896,7 +949,9 @@ function TRB.Functions.Castbar:BeginRender()
 	fillComplete = nil
 
 	node:SetValue(0)
-	self._renderedFrame = nil -- force ApplyVisibleState to (re)place overlays for this fresh cast
+	-- Force ApplyVisibleState to (re)place the colors and overlays for this fresh cast
+	self._renderedFrame = nil
+	self._renderedIndicatorVersion = nil
 	if self:IsForceHidden(visibility) then
 		-- Hard-hide condition active (e.g. In Vehicle): keep tracking but stay hidden; the per-frame
 		-- updater reveals the bar mid-cast if the condition clears.
@@ -921,6 +976,7 @@ function TRB.Functions.Castbar:EndRender()
 	local group = self:GetGroup()
 	local node = self:GetNode()
 	self._renderedFrame = nil
+	self._renderedIndicatorVersion = nil
 	fadeOutStart = nil
 	fillComplete = nil
 	if node then
@@ -1119,10 +1175,11 @@ castbarFrame:SetScript("OnUpdate", function()
 		if idleAlpha > 0 then
 			-- Keep running: the idle display must self-heal against render transitions.
 			if not TRB.Functions.Bar:IsRenderTransitionActive() then
-				self:ApplyIdleState(group, node, idleAlpha)
+				self:ApplyIdleState(group, node, idleAlpha, colors)
 			end
 		else
 			self._renderedFrame = nil
+			self._renderedIndicatorVersion = nil
 			ApplyHiddenState(group)
 			isRunning = false
 			castbarFrame:Hide()

@@ -2077,7 +2077,6 @@ local function UpdateResourceBar()
 			-- Build indicator condition map (shared across primary and secondary bar blocks)
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 			local conditionMap = {
 				surgeOfLight = snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive,
@@ -2090,26 +2089,7 @@ local function UpdateResourceBar()
 			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
-						if indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -2169,15 +2149,7 @@ local function UpdateResourceBar()
 			-- Update health bar
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Update utility bar (Angelic Feather charges)
@@ -2299,6 +2271,11 @@ local function UpdateResourceBar()
 			local holyWordsBarColors = { bar = nil, border = nil, background = nil }
 			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
 			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
+
+			-- Holy's own bars are resolved by the node-aware walk below, not the shared resolver: several of
+			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
+			-- have no such nuance, so they still resolve the standard way.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			if nodeOrder and indicatorColors then
@@ -2422,15 +2399,7 @@ local function UpdateResourceBar()
 			-- Update health bar
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Update utility bar (Angelic Feather charges)
@@ -2620,8 +2589,55 @@ local function UpdateResourceBar()
 		local overcapCurvesMana = {}
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Build indicator condition map
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			-- Precompute voidformEnd timing threshold
+			local voidformActive = snapshots[spells.voidform.id].buff.isActive
+			local voidformEndMet = false
+			if voidformActive then
+				local timeLeft = snapshots[spells.voidform.id].buff.remaining
+				local timeThreshold = 0
+				if specSettings.endOf.voidform.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
+				elseif specSettings.endOf.voidform.mode == "time" then
+					timeThreshold = specSettings.endOf.voidform.timeMax
+				end
+				voidformEndMet = timeLeft <= timeThreshold
+			end
+
+			local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
+
+			local conditionMap = {
+				instantMindBlast = snapshotData.attributes.shadowyInsightActive,
+				voidformEnd = voidformActive and voidformEndMet,
+				mindDevourer = spells.shadowWordMadness:IsFree(),
+				entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
+				borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
+				shadowWordMadnessUsable = swmUsable,
+				voidform = voidformActive,
+				borderOvercap = affectingCombat,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
+			local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 
@@ -2630,72 +2646,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base
-				local barBackgroundColor = specSettings.colors.bar.background.color
-
-				-- Build indicator condition map
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-				-- Precompute voidformEnd timing threshold
-				local voidformActive = snapshots[spells.voidform.id].buff.isActive
-				local voidformEndMet = false
-				if voidformActive then
-					local timeLeft = snapshots[spells.voidform.id].buff.remaining
-					local timeThreshold = 0
-					if specSettings.endOf.voidform.mode == "gcd" then
-						local gcd = Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
-					elseif specSettings.endOf.voidform.mode == "time" then
-						timeThreshold = specSettings.endOf.voidform.timeMax
-					end
-					voidformEndMet = timeLeft <= timeThreshold
-				end
-
-				local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
 				local isCasting = snapshotData.casting.resourceFinal ~= 0
-
-				local conditionMap = {
-					instantMindBlast = snapshotData.attributes.shadowyInsightActive,
-					voidformEnd = voidformActive and voidformEndMet,
-					mindDevourer = spells.shadowWordMadness:IsFree(),
-					entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
-					borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-					shadowWordMadnessUsable = swmUsable,
-					voidform = voidformActive,
-					borderOvercap = affectingCombat,
-				}
-
-				-- Color targets: barKey -> elementKey -> current color
-				-- insanityBar targets
-				local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				-- manaBar targets
-				local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
-				local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
-
-				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
 
 				-- Find active gradient indicators (separate priority group, always override flat colors when active)
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -2934,15 +2885,7 @@ local function UpdateResourceBar()
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 
 		-- Update mana bar (Shadow only)

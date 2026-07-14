@@ -1271,8 +1271,23 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Arms()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local conditionMap = {
+				borderOvercap = affectingCombat,
+			}
+			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 				local currentResource = snapshotData.attributes.resource
@@ -1399,15 +1414,6 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local conditionMap = {
-					borderOvercap = affectingCombat,
-				}
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1452,15 +1458,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1470,10 +1468,50 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Fury()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local zeroStackTargets
+			local zeroStackActive = false
+			do
+				local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
+				local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
+				wwBuff:GetRemainingTime(currentTime)
+				local whirlwindStacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
+				if whirlwindStacks < 0 then whirlwindStacks = 0 end
+				if whirlwindStacks > 4 then whirlwindStacks = 4 end
+				zeroStackActive = whirlwindStacks == 0 and affectingCombat == true
+				zeroStackTargets = zeroStackInd and zeroStackInd.enabled and zeroStackActive
+					and zeroStackInd.targets and zeroStackInd.targets.rageBar or nil
+				if zeroStackTargets then
+					if zeroStackTargets.bar then
+						barColor = zeroStackInd.color
+					end
+					if zeroStackTargets.border then
+						barBorderColor = zeroStackInd.color
+					end
+					if zeroStackTargets.background then
+						barBackgroundColor = zeroStackInd.color
+					end
+				end
+			end
+			local conditionMap = {
+				borderOvercap = affectingCombat,
+				zeroStackBackground = zeroStackActive,
+			}
+			-- The rage bar is colored bespoke above; the resolver is here for the shared health/cast bar.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1591,39 +1629,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
-				local barColor = specSettings.colors.bar.base
-
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local zeroStackTargets
-				do
-					local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
-					local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
-					wwBuff:GetRemainingTime(currentTime)
-					local whirlwindStacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
-					if whirlwindStacks < 0 then whirlwindStacks = 0 end
-					if whirlwindStacks > 4 then whirlwindStacks = 4 end
-					zeroStackTargets = zeroStackInd and zeroStackInd.enabled and whirlwindStacks == 0 and affectingCombat
-						and zeroStackInd.targets and zeroStackInd.targets.rageBar or nil
-					if zeroStackTargets then
-						if zeroStackTargets.bar then
-							barColor = zeroStackInd.color
-						end
-						if zeroStackTargets.border then
-							barBorderColor = zeroStackInd.color
-						end
-						if zeroStackTargets.background then
-							barBackgroundColor = zeroStackInd.color
-						end
-					end
-				end
-				local conditionMap = {
-					borderOvercap = affectingCombat,
-				}
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1674,15 +1679,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1692,10 +1689,26 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Protection()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local conditionMap = {
+				borderOvercap = affectingCombat,
+				violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive,
+			}
+			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1805,16 +1818,6 @@ local function UpdateResourceBar()
 					end
 				end
 				
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local conditionMap = {
-					borderOvercap = affectingCombat,
-					violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive,
-				}
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1880,15 +1883,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

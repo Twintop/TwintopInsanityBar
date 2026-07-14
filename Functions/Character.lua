@@ -1467,6 +1467,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				mergedColors.bar = coreColors.bar
 				mergedColors.channel = coreColors.channel
 				mergedColors.uninterruptible = coreColors.uninterruptible
+				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
 				mergedColors.border = coreColors.border
 				mergedColors.background = coreColors.background
 			end

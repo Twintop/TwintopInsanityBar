@@ -8819,15 +8819,18 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 end
 
 ---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel` and `uninterruptible`
----recolor the fill per state. Overlay colors (latency/pushback) and tick lines are separate. Empower
----fill uses absolute per-level colors: `base` while charging toward Level I, then `level1`..`level4` as
----each empower level is reached (mapped from GetCurrentEmpowerStage at render time; game max is 4).
+---recolor the fill per state, and `uninterruptibleBorder` recolors the border for that same state, so an
+---uninterruptible cast still reads as one when an indicator has claimed the fill (and vice versa).
+---Overlay colors (latency/pushback) and tick lines are separate. Empower fill uses absolute per-level
+---colors: `base` while charging toward Level I, then `level1`..`level4` as each empower level is reached
+---(mapped from GetCurrentEmpowerStage at render time; game max is 4).
 ---@return table
 function TRB.Functions.Settings:DefaultCastbarBarColors()
 	return {
 		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
 		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
 		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
+		uninterruptibleBorder = { color = "FF666666" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
 		latency = { color = "80FF0000", enabled = true },

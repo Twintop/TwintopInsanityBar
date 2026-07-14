@@ -215,7 +215,10 @@ end
 ---Gets built-in castbar channel tick profiles for Arms, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
+		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
+	}
 end
 
 
@@ -598,7 +601,10 @@ end
 ---Gets built-in castbar channel tick profiles for Protection, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles()
-	return {}
+	return {
+		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
+		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
+	}
 end
 
 
