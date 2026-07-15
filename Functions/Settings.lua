@@ -8762,6 +8762,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
 	return {
+		-- Cannibalize
+		[20578] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
 		-- Recuperate: one tick per second for 10 seconds
 		[1231418] = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
 	}

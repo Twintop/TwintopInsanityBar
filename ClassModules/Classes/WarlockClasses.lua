@@ -368,7 +368,23 @@ end
 function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
 	return {
 		-- Drain Life
-		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },}
+		[234153] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, chains = true, partialEndTick = true },
+        -- Channel Demonfire
+		[196447] = { mode = "fixedCount", baseDuration = 3, tickCount = 15 },
+    }
+end
+
+---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers()
+	return {
+		-- Channel Demonfire
+		[196447] = {
+			-- Raging Demonfirre: +2 bolt while talented
+			{ talentId = 387166, bonusTicks = 2 },
+		},
+	}
 end
 
 
@@ -455,3 +471,7 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers
