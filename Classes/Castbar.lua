@@ -125,7 +125,6 @@ function TRB.Classes.Castbar:Reset()
 	self.startTime = nil
 	self.endTime = nil
 	self.duration = 0
-	self.nominalDuration = 0
 	self.latency = 0
 	self.pushback = 0
 	self.notInterruptible = false
@@ -311,11 +310,6 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 		self.reconstructed = true
 	end
 	self.duration = duration
-	-- Nominal (un-extended) length captured before any chain extension. Drives the tick RATE so a
-	-- chain-extended duration doesn't stretch spacing; a later CHANNEL_UPDATE grows self.duration but leaves
-	-- this untouched. Uses the authoritative channel-start duration, so the rate never depends on the
-	-- unreliable GCD-inferred haste.
-	self.nominalDuration = duration
 
 	-- A chained channel runs longer than nominal by the carried leftover. Authoritative timing already
 	-- reflects this (its end time gets nudged out by CHANNEL_UPDATE); a reconstructed duration does not, so

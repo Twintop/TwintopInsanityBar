@@ -63,11 +63,11 @@ local function NewSpecGlobalDefaults()
 		healthBarColors = false,
 		precision = false,
 		textures = false,
-		castbarDimensions = false,
-		castbarColors = false,
-		castbarOverlays = false,
-		castbarEmpower = false,
-		castbarText = false
+		castbarDimensions = true,
+		castbarColors = true,
+		castbarOverlays = true,
+		castbarEmpower = true,
+		castbarText = true
 	}
 end
 
@@ -8852,7 +8852,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
 	settings.showTicks = true
 	settings.tickWidth = 1
-	settings.tickLatencyWidth = false
+	settings.tickLatencyWidth = true
 	settings.showLatency = true
 	settings.showPushback = true
 	settings.showEmpowerStages = true
@@ -8863,6 +8863,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.disableBlizzardCastbar = true
 	settings.mergeTradeskill = true
 	settings.tickProfiles = {}
+	settings.height = 30
 	return settings
 end
 
@@ -9923,12 +9924,15 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 		table.insert(textSettings, extraTextSettings[x])
 	end
 
+	textSettings = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+
+	-- We don't want to apply shared font defaults to cast bar text settings because they have their own defaults that are different from the global defaults
 	local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 
 	for x = 1, #castBarTextSettings do
 		table.insert(textSettings, castBarTextSettings[x])
 	end
-	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+	return textSettings
 end
 
 ---Returns default bar text for the Cast Bar
@@ -9939,7 +9943,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 		{
 			useDefaultFontColor = true,
 			useDefaultFontFace = true,
-			useDefaultFontSize = true,
+			useDefaultFontSize = false,
 			useDefaultFontOutline = true,
 			useDefaultFontShadow = true,
 			enabled = true,
@@ -9952,13 +9956,13 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize = 16,
+			fontSize = 18,
 			fontOutline = "OUTLINE",
 			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
-				xPos = 4,
+				xPos = 6,
 				yPos = 0,
 				relativeTo = "LEFT",
 				relativeToName = L["PositionLeft"],
@@ -9977,7 +9981,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			guid = TRB.Functions.String:Guid(),
 			constrainToParent = false,
 			maxWidthPercent = 100,
-			text = "{$castTime>0}[{$castPushback>0|1}[||cFFFF0000$castPushback||r +] $castTimeRemaining / $castTime]",
+			text = "{$castTime>0}[{$castPushback>0}[||cFFFF00FF$castPushback||r + ] $castTimeRemaining / $castTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
@@ -9999,7 +10003,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 		{
 			useDefaultFontColor = false,
 			useDefaultFontFace = true,
-			useDefaultFontSize = true,
+			useDefaultFontSize = false,
 			useDefaultFontOutline = true,
 			useDefaultFontShadow = true,
 			enabled = true,
@@ -10012,7 +10016,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize = 14,
+			fontSize = 10,
 			fontOutline = "OUTLINE",
 			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
@@ -10028,7 +10032,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 		}
 	}
 
-	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+	return textSettings
 end
 
 ---Returns default bar text for a secondary mana bar (used by DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
