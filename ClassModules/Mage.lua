@@ -399,7 +399,9 @@ local function ConstructResourceBar(settings)
 				barGroups.secondary:ShowNodes(fireBlastNodeCount)
 
 				local fireBlastColors = settings.colors.bars and settings.colors.bars.fireBlastCharges
-				for i = 1, fireBlastNodeCount do
+				-- Style every slot, not just the visible count: charge count lags on spec switch, so higher nodes would render texture-less when shown later.
+				local fireBlastMaxNodes = barGroups.secondary.maxNodes or fireBlastNodeCount
+				for i = 1, fireBlastMaxNodes do
 					local node = barGroups.secondary:GetNode(i)
 					if node then
 						node:SetTextures(

@@ -771,6 +771,9 @@ end
 ---@param count integer?
 function TRB.Classes.BarGroup:ShowNodes(count)
 	count = count or self.nodeCount
+	-- Never show past nodeCount: ApplyLayout only positions those nodes, so extras would render stacked at the container origin.
+	count = math.min(count, self.nodeCount)
+
 	for i = 1, self.maxNodes do
 		if self.nodes[i] then
 			if i <= count then

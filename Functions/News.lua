@@ -38,6 +38,11 @@ local content = [====[
 
 - Add new bar text variables for Double Tap tracking: `$doubleTapTime`, and icon `#doubleTap`.
 
+## Mage
+### Fire
+
+- Fix an issue where switching to Fire from Arcane or Frost would cause the Fire Blast bar to not show all of the charges. 
+
 ## Warrior
 ### Arms and Protection
 
