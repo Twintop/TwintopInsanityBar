@@ -8833,8 +8833,8 @@ function TRB.Functions.Settings:DefaultCastbarVisibility()
 		},
 		activeAlpha = 100,
 		inactiveAlpha = 0,
-		fadeDuration = 0,
-		fadeDelay = 0.1,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
 		resourceConditionType = "none",
 		resourceConditionOperator = ">=",
 		resourceConditionValue = 0

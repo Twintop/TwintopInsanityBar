@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.5-release (2026-07-15)
+## General
+### Cast Bar
+
+- Adjust default Cast Bar fade delay and duration to be a bit smoother.
+
+---
+
 # 12.0.7.4-release (2026-07-15)
 ## General
 ### Bar Text
