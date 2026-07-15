@@ -301,6 +301,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public name string
 ---@field public text string
 ---@field public guid string
+---@field public constrainToParent boolean # Clamp the text width to the bound frame (ignored when bound to Screen)
+---@field public maxWidthPercent number # Max text width as a percentage (0-100) of the bound frame's width
 ---@field public position TRB.Classes.Settings.DisplayTextPosition
 
 ---@class TRB.Classes.Settings.DisplayTextPosition

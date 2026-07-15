@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.7.4-alpha04 (2026-07-15)
+## General
+### Bar Text
+
+- Add a **Prevent Text Overflow** toggle to each bar text area: the text is clamped to the width of the bar it is bound to and truncated with an ellipsis instead of spilling past the bar's edges. No effect when bound to Screen.
+- Adds a **Maximum Text Width** slider (a percentage of the bound bar's width, default 100%) shown when the toggle is on; for example, 50% with left-anchored text stops the text at the bar's midpoint.
+
+---
+
 # 12.0.7.4-alpha03 (2026-07-14)
 ## General
 ### Color Indicators

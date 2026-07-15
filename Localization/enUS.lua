@@ -3120,3 +3120,7 @@ L["BarTextVariableCastUninterruptible"] = "Whether the spell you are currently c
 L["ThresholdCategoryPvp"] = "PvP"
 L["DeathKnightUnholyThresholdCheckboxZombify"] = "Zombify"
 L["DeathKnightUnholyThresholdCheckboxZombifyTooltip"] = "This will show the vertical line on the bar denoting how much Runic Power is required to use Zombify."
+L["ConstrainBarTextWidth"] = "Prevent Text Overflow"
+L["ConstrainBarTextWidthTooltip"] = "When checked, this bar text is clamped to the width of the bar it is bound to and truncated with an ellipsis instead of spilling outside the bar. Has no effect when bound to Screen."
+L["MaxBarTextWidthPercent"] = "Maximum Text Width (%)"
+L["MaxBarTextWidthPercentTooltip"] = "The maximum width of this bar text, as a percentage of the bound bar's width. For example, at 50% with the text anchored to the left, the text will not extend past the middle of the bar."

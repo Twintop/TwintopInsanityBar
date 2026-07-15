@@ -535,6 +535,37 @@ local function TryUpdateText(frame, text)
 	frame.font:SetText(text)
 end
 
+---Applies (or clears) the per-entry text width constraint on a bar text font string.
+---When the entry opts in and isn't bound to Screen, the font is clamped to a percentage
+---of the bound frame's width and truncated with an ellipsis; otherwise it auto-sizes.
+---Memoized on the font so it can be called every refresh (to track live bound-bar resizes)
+---without redundant SetWidth calls, which would force text relayout each tick.
+---@param font FontString The bar text font string
+---@param entry table The bar text entry (DisplayTextEntry)
+---@param relativeToFrame Frame? The frame the entry is bound to
+local function ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
+	local targetWidth = 0
+	local wrap = true
+	if entry.constrainToParent and relativeToFrame ~= nil and relativeToFrame ~= UIParent then
+		local frameWidth = relativeToFrame:GetWidth() or 0
+		local maxWidth = frameWidth * ((entry.maxWidthPercent or 100) / 100)
+		if maxWidth > 0 then
+			targetWidth = maxWidth
+			wrap = false
+		end
+	end
+
+---@diagnostic disable-next-line: inject-field
+	if font.trbConstrainWidth ~= targetWidth or font.trbConstrainWrap ~= wrap then
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWidth = targetWidth
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWrap = wrap
+		font:SetWordWrap(wrap)
+		font:SetWidth(targetWidth)
+	end
+end
+
 ---Scans the input string for logic symbols and returns their positions and levels
 ---@param input string
 ---@return table
@@ -1751,6 +1782,18 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				local e = displayText.barText[i]
 				local isScreenText = e.position.relativeToFrame == "UIParent"
 
+				-- Re-apply the width constraint against the bound bar's live width so the clamp
+				-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
+				-- refreshText gate below so it still updates when only the bar width changed; memoized,
+				-- so it's a no-op unless the width actually changed.
+				if e.constrainToParent and textFrames[i] ~= nil then
+---@diagnostic disable-next-line: undefined-field
+					local entryFont = textFrames[i].font
+					if entryFont ~= nil then
+						ApplyBarTextWidthConstraint(entryFont, e, textFrames[i]:GetParent())
+					end
+				end
+
 				-- Screen-bound text is always processed; other text only when refreshText is true.
 				-- visibilityRefresh forces processing for all entries after a hidden→visible transition.
 				if refreshText or isScreenText or visibilityRefresh then
@@ -1877,6 +1920,7 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	if relativeToFrame ~= nil and entry.enabled and isEnabled then
 		font:ClearAllPoints()
 		font:SetPoint(entry.position.relativeTo, relativeToFrame, entry.position.relativeTo, entry.position.xPos, entry.position.yPos)
+		ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
 		textFrames[entryIndex]:SetParent(relativeToFrame)
 		textFrames[entryIndex]:ClearAllPoints()
 		textFrames[entryIndex]:SetAllPoints(font)
@@ -2013,6 +2057,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				font:SetText("")
 				font:ClearAllPoints()
 				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
+				ApplyBarTextWidthConstraint(font, e, relativeToFrame)
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
 				textFrames[frameCount]:SetAllPoints(font)
