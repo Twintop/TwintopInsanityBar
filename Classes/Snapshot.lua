@@ -55,6 +55,56 @@ function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(oldGcd, newGcd, cha
 	end
 end
 
+---Reads the GCD length from dummy GCD spell 61304 (haste is secret) and updates the cached duration, formatted strings, and pending haste recalc
+---@param statChangeTime number? # GetTime() of a stat change; when set, an unreadable or unchanged reading queues pendingGcdRecalc instead of writing
+---@return boolean # True when the cached GCD duration was written
+function TRB.Classes.SnapshotData:UpdateGCD(statChangeTime)
+	local oldGcd = self.attributes.gcdDuration or 1.5
+
+	-- GetTotalDuration() returns the full GCD length in seconds while a GCD is active (0 otherwise)
+	local newGcd
+	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
+	if durationObj then
+		local totalDuration = durationObj:GetTotalDuration()
+		if not issecretvalue(totalDuration) and totalDuration > 0 then
+			newGcd = totalDuration
+		end
+	end
+
+	if statChangeTime ~= nil then
+		-- Stat-change path: an unreadable or unchanged GCD may predate the stat change, so defer to the next cast event
+		if newGcd == nil or newGcd == oldGcd then
+			self.attributes.pendingGcdRecalc = { time = statChangeTime, oldGcd = oldGcd }
+			return false
+		end
+		self.attributes.gcdDuration = newGcd
+		self:RecalculateHastedCooldowns(oldGcd, newGcd, statChangeTime)
+		self.attributes.pendingGcdRecalc = nil
+	else
+		-- Cast-event path: any valid reading is authoritative for the GCD that just started
+		if newGcd == nil then
+			return false
+		end
+		self.attributes.gcdDuration = newGcd
+
+		-- Process deferred haste recalc if pending; leave it pending on an unchanged reading
+		local pending = self.attributes.pendingGcdRecalc
+		if pending and oldGcd ~= newGcd then
+			self:RecalculateHastedCooldowns(pending.oldGcd, newGcd, pending.time)
+			self.attributes.pendingGcdRecalc = nil
+		end
+	end
+
+	-- Update formatted GCD display (clamped to 0.75 – 1.5)
+	local displayGcd = newGcd
+	if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
+	self.formatted.gcd = string.format("%.2f", displayGcd)
+	self.formatted.gcdRaw = displayGcd
+
+	TRB.Data.lookupDirty = true
+	return true
+end
+
 ---@class TRB.Classes.Snapshot
 ---@field public spell TRB.Classes.SpellBase?
 ---@field public buff TRB.Classes.SnapshotBuff

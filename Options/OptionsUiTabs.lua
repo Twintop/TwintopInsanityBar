@@ -5,6 +5,26 @@ TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
 TRB.Functions.OptionsUi.Tabs = TRB.Functions.OptionsUi.Tabs or {}
 local oUi = TRB.Data.constants.optionsUi
 
+-- Reverse map (namePrefix -> {classId, specId}) so the all-spec castbar tab can be injected centrally
+-- in BuildTabGroup without per-class wiring. Built lazily from the spec registry and cached.
+local castbarSpecByNamePrefix = nil
+local function GetCastbarSpecMap()
+	if castbarSpecByNamePrefix ~= nil then
+		return castbarSpecByNamePrefix
+	end
+	castbarSpecByNamePrefix = {}
+	local byIds = TRB.Data.specRegistryByIds
+	if type(byIds) == "table" then
+		for classId, byClass in pairs(byIds) do
+			for specId in pairs(byClass) do
+				local cn, sn = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+				castbarSpecByNamePrefix[cn .. "_" .. sn] = { classId = classId, specId = specId }
+			end
+		end
+	end
+	return castbarSpecByNamePrefix
+end
+
 ---Creates a scroll frame container with a child frame for scrollable options content.
 ---@param name string # Global frame name for the scroll frame
 ---@param parent Frame # The parent frame
@@ -224,6 +244,16 @@ function TRB.Functions.OptionsUi.Tabs:CreateTab(name, displayText, id, parent, w
 	return tab
 end
 
+---Switches to a specific tab by key for a panel identified by its tab-group name prefix.
+---@param namePrefix string The tab-group name prefix (e.g., "Global", "Castbar", "Priest_shadow")
+---@param tabKey string The tab key to switch to (e.g., "barText", "barDisplay")
+function TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(namePrefix, tabKey)
+	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. tabKey]
+	if tab then
+		TRB.Functions.OptionsUi.Tabs.SwitchTab(tab, tab.id)
+	end
+end
+
 ---Switches to a specific tab by key for a given class/spec's options panel.
 ---@param classId integer
 ---@param specId integer
@@ -236,10 +266,7 @@ function TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(classId, specId, ta
 		local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 		namePrefix = className .. "_" .. specName
 	end
-	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. tabKey]
-	if tab then
-		TRB.Functions.OptionsUi.Tabs.SwitchTab(tab, tab.id)
-	end
+	TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(namePrefix, tabKey)
 end
 
 ---Switches to the Bar Text tab for a given class/spec. Convenience wrapper around SwitchToTabByClassSpec.
@@ -283,6 +310,37 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 			def[3] = def.width
 			def[4] = def.constructor
 			def[5] = def.isManualScrollFrame
+		end
+	end
+
+	-- Inject the all-spec castbar tab once for real spec panels (resolved from namePrefix).
+	local castbarSpec = GetCastbarSpecMap()[namePrefix]
+	if castbarSpec then
+		local hasCastbar = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "castbar" then
+				hasCastbar = true
+				break
+			end
+		end
+		if not hasCastbar then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			-- Insert immediately after the Health tab; append if the panel has none.
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "healthBar" then
+					insertIndex = i + 1
+					break
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"castbar",
+				TRB.Localization["TabCastbar"],
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, cId, sId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(cId, sId))
+				end
+			})
 		end
 	end
 

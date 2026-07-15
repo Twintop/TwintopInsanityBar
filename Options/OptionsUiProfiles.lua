@@ -36,34 +36,39 @@ local function GetProfileList(scope, className, specName)
 	return Profiles:GetSpecListFromCache(className, specName)
 end
 
+-- Built dropdowns per scope key, so a refresh reaches every dropdown for that
+-- scope (e.g. the core dropdowns on both Global Options and Cast Bar).
+local dropdownRegistry = {}
+
 ---@param scope "spec"|"core"
 ---@param className string?
 ---@param specName string?
 ---@return string
-local function GetProfileDropdownFrameName(scope, className, specName)
-	local namePrefix = "TwintopResourceBar_ProfileDropdown"
+local function GetProfileDropdownScopeKey(scope, className, specName)
 	if scope == "spec" then
-		return namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
+		return tostring(className) .. "_" .. tostring(specName)
 	end
-	return namePrefix .. "_Core"
+	return "Core"
 end
 
 ---@param scope "spec"|"core"
 ---@param className string?
 ---@param specName string?
 function TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope(scope, className, specName)
-	local dropdown = _G[GetProfileDropdownFrameName(scope, className, specName)]
-	if dropdown == nil then
+	local dropdowns = dropdownRegistry[GetProfileDropdownScopeKey(scope, className, specName)]
+	if dropdowns == nil then
 		return
 	end
-	if dropdown.UpdateButtonText then
-		dropdown:UpdateButtonText()
-	end
-	if dropdown.SetupMenu and dropdown.GeneratorFunction then
-		dropdown:SetupMenu(dropdown.GeneratorFunction)
-	end
-	if dropdown.RefreshLayout then
-		dropdown:RefreshLayout()
+	for _, dropdown in pairs(dropdowns) do
+		if dropdown.UpdateButtonText then
+			dropdown:UpdateButtonText()
+		end
+		if dropdown.SetupMenu and dropdown.GeneratorFunction then
+			dropdown:SetupMenu(dropdown.GeneratorFunction)
+		end
+		if dropdown.RefreshLayout then
+			dropdown:RefreshLayout()
+		end
 	end
 end
 
@@ -76,31 +81,25 @@ end
 ---@param className string? # required when scope=="spec"
 ---@param specName string? # required when scope=="spec"
 ---@param specLabel string? # localized label used in popup text for spec scope
+---@param frameNameSuffix string? # distinguishes extra dropdowns for the same scope (e.g. "_Castbar")
 ---@return DropdownButton dropdown
-function TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord, scope, className, specName, specLabel)
+function TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord, scope, className, specName, specLabel, frameNameSuffix)
 	TRB.Functions.OptionsUi.ProfilePopups:EnsureRegistered()
 
-	local namePrefix = "TwintopResourceBar_ProfileDropdown"
-	if scope == "spec" then
-		namePrefix = namePrefix .. "_" .. tostring(className) .. "_" .. tostring(specName)
-	else
-		namePrefix = namePrefix .. "_Core"
-	end
+	local scopeKey = GetProfileDropdownScopeKey(scope, className, specName)
+	local frameName = "TwintopResourceBar_ProfileDropdown_" .. scopeKey .. (frameNameSuffix or "")
 
-	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	local dropdown = CreateFrame("DropdownButton", frameName, parent, "WowStyle1DropdownTemplate")
 	dropdown:ClearAllPoints()
 	dropdown:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5, yCoord)
 	dropdown:SetWidth(240)
 
+	dropdownRegistry[scopeKey] = dropdownRegistry[scopeKey] or {}
+	dropdownRegistry[scopeKey][frameName] = dropdown
+
 	local function RefreshDropdown()
-		if dropdown.UpdateButtonText then
-			dropdown:UpdateButtonText()
-		end
-		-- Re-register the generator so the next open rebuilds the menu with
-		-- the latest cached profile list.
-		if dropdown.SetupMenu and dropdown.GeneratorFunction then
-			dropdown:SetupMenu(dropdown.GeneratorFunction)
-		end
+		-- Refresh every dropdown for this scope so siblings stay in sync.
+		TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope(scope, className, specName)
 	end
 
 	local function MakeBaseData()
@@ -269,10 +268,11 @@ function TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord, s
 	dropdown.GeneratorFunction = Generator
 	dropdown:SetupMenu(Generator)
 
-	-- Apply the inline button label ("Profile: {name}") using the active name.
+	-- Apply the inline button label ("Profile: {name}" / "Global Profile: {name}") using the active name.
 	local function UpdateButtonText()
 		local activeName = GetActiveProfileName(scope, className, specName)
-		local text = string.format(L["ProfileDropdownButtonFormat"], activeName)
+		local labelFormat = (scope == "core") and L["ProfileDropdownButtonGlobalFormat"] or L["ProfileDropdownButtonFormat"]
+		local text = string.format(labelFormat, activeName)
 		if type(dropdown.SetDefaultText) == "function" then
 			dropdown:SetDefaultText(text)
 		elseif dropdown.Text ~= nil and type(dropdown.Text.SetText) == "function" then

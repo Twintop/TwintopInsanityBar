@@ -27,6 +27,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune1Time}[$rune1Time]",
 			fontSize = 14,
@@ -55,6 +57,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune2Time}[$rune2Time]",
 			fontSize = 14,
@@ -83,6 +87,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune3Time}[$rune3Time]",
 			fontSize = 14,
@@ -111,6 +117,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune4Time}[$rune4Time]",
 			fontSize = 14,
@@ -139,6 +147,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune5Time}[$rune5Time]",
 			fontSize = 14,
@@ -167,6 +177,8 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$rune6Time}[$rune6Time]",
 			fontSize = 14,
@@ -214,6 +226,8 @@ local function BloodLoadDefaultBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = true,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "$boneShieldStacks",
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -695,6 +709,9 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 				},
 				raiseAlly = {
 					enabled = false
+				},
+				zombify = {
+					enabled = true
 				}
 			},
 			customThresholds = {}
@@ -2097,12 +2114,14 @@ local function UnholyConstructThresholdListPanel(parent)
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
 			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
 			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombify"],
 		},
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
 			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"],
 			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombifyTooltip"],
 		},
 	})
 end

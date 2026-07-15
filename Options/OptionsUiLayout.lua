@@ -1471,7 +1471,7 @@ end
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
 ---@param primaryResourceString string # Primary resource name for "relative to" label
 ---@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, primaryResourceString)
+function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, primaryResourceString, useGlobalSettingKey)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
@@ -1482,11 +1482,54 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		return yCoord
 	end
 
+	-- On the Global panel (classId == nil) the edited table is core-scope; value-copied fields
+	-- (width/height/border/fillDirection) only reach the active spec's cache via a re-fill when its
+	-- use-global flag is set, so refresh the cache before applying layout.
+	local function RefreshActiveSpecCacheForGlobalEdit()
+		local char = TRB.Data.character
+		if classId == nil and char ~= nil and char.className ~= nil and char.specName ~= nil and TRB.Data.specCache[char.compositeKey] ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(char.className, char.specName)
+		end
+	end
+
 	local displayName = barTypeDef.displayName
 
 	-- Section header
 	local headerText = string.format(L["SecondaryPositionAndSize"], displayName)
 	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+
+	-- Optional "Use global settings" row (spec panels) / bulk all-specs toggle (Global panel)
+	if useGlobalSettingKey ~= nil then
+		local settingKeyUpper = useGlobalSettingKey:gsub("^%l", string.upper)
+		if classId ~= nil and specId ~= nil then
+			yCoord = yCoord - 30
+			local lowerClassName = string.lower(className)
+			controls.checkBoxes = controls.checkBoxes or {}
+			controls.checkBoxes["useGlobal" .. settingKeyUpper] = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_" .. useGlobalSettingKey, parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes["useGlobal" .. settingKeyUpper]
+			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+			local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(useGlobalSettingKey)
+			getglobal(f:GetName() .. 'Text'):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
+			getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, settingDef and settingDef.tabKey or "resourceBar", settingDef and settingDef.categoryKey or nil)
+			f.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
+			f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey])
+			f:SetScript("OnClick", function(self, ...)
+				TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey] = self:GetChecked()
+				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(useGlobalSettingKey)
+			end)
+			TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, useGlobalSettingKey)
+		else
+			yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, useGlobalSettingKey, yCoord)
+		end
+	end
 
 	-- Width slider
 	yCoord = yCoord - 40
@@ -1510,6 +1553,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		controls[barTypeDef.key .. "Border"]:SetMinMaxValues(0, maxBorderSize)
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 
+		RefreshActiveSpecCacheForGlobalEdit()
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
@@ -1532,6 +1576,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		controls[barTypeDef.key .. "Border"].MaxLabel:SetText(tostring(maxBorderSize))
 		controls[barTypeDef.key .. "Border"].EditBox:SetText(tostring(borderSize))
 
+		RefreshActiveSpecCacheForGlobalEdit()
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
@@ -1585,6 +1630,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		barSettings.border = value
 
+		RefreshActiveSpecCacheForGlobalEdit()
 		if TRB.Frames.barGroups ~= nil then
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
@@ -1826,6 +1872,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 				TRB.Functions.BarText:CreateBarTextFrames()
 			end
 
+			RefreshActiveSpecCacheForGlobalEdit()
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 			end

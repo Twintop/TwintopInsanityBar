@@ -1005,10 +1005,45 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Brewmaster()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
+			local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
+			local invokeNiuzaoEndMet = false
+
+			if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
+				local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.invokeNiuzao.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
+				elseif specSettings.endOf.invokeNiuzao.mode == "time" then
+					timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
+				end
+				invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
+			end
+
+			local conditionMap = {
+				invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
+				invokeNiuzao = invokeNiuzaoActive,
+				borderOvercap = affectingCombat,
+			}
+			local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { energyBar = energyBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1082,56 +1117,6 @@ local function UpdateResourceBar()
 								end
 							else
 								snapshotData.audio.thresholdCues[spell.settingKey] = false
-							end
-						end
-					end
-
-					local barBorderColor = specSettings.colors.bar.border.color
-					local barColor = specSettings.colors.bar.base
-					local barBackgroundColor = specSettings.colors.bar.background.color
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
-					local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
-					local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
-					local invokeNiuzaoEndMet = false
-
-					if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
-						local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.invokeNiuzao.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
-						elseif specSettings.endOf.invokeNiuzao.mode == "time" then
-							timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
-						end
-						invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
-					end
-
-					local conditionMap = {
-						invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
-						invokeNiuzao = invokeNiuzaoActive,
-						borderOvercap = affectingCombat,
-					}
-					local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local barColorMap = { energyBar = energyBarColors }
-
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
 							end
 						end
 					end
@@ -1360,15 +1345,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1378,47 +1355,32 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Mistweaver()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local conditionMap = {
+				vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive),
+				heartOfTheJadeSerpent = false,
+				heartOfTheJadeSerpentReady = false,
+			}
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { manaBar = manaBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border.color
-					local barBackgroundColor = specSettings.colors.bar.background.color
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-					local conditionMap = {
-						vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive),
-						heartOfTheJadeSerpent = false,
-						heartOfTheJadeSerpentReady = false,
-					}
-					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local barColorMap = { manaBar = manaBarColors }
-
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					primaryNode:SetBorderColor(manaBarColors.border)
@@ -1430,15 +1392,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1457,7 +1411,6 @@ local function UpdateResourceBar()
 		local danceOfChiJiActive = snapshotData.attributes.danceOfChiJiActive == true
 		local sharedColors = specSettings.colors.shared
 		local indicatorColors = sharedColors and sharedColors.indicatorColors
-		local nodeOrder = sharedColors and sharedColors.nodeOrder
 		local gradientOrder = sharedColors and sharedColors.gradientOrder
 		local conditionMap = {
 			heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady,
@@ -1481,27 +1434,8 @@ local function UpdateResourceBar()
 			chiBar = chiBarColors,
 		}
 
-		if nodeOrder and indicatorColors then
-			for i = #nodeOrder, 1, -1 do
-				local key = nodeOrder[i]
-				local indicator = indicatorColors[key]
-				if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-					for barKey, elements in pairs(indicator.targets) do
-						local targetColors = barColorMap[barKey]
-						if targetColors and elements then
-							for elemKey, isTargeted in pairs(elements) do
-								if isTargeted then
-									targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-									if barKey == "chiBar" then
-										chiBarOverrides[elemKey] = true
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		end
+		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
+			{ chiBar = chiBarOverrides })
 
 		local overcapIndicator = nil
 		if gradientOrder and indicatorColors then
@@ -1722,15 +1656,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 

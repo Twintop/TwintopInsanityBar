@@ -139,7 +139,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         comboPoints = true,
         hasCooldown = true,
         isPvp = true,
-        category = "offensive"
+        category = "pvp"
     })
     self.dismantle = TRB.Classes.SpellThreshold:New({
         id = 207777,
@@ -147,7 +147,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "dismantle",
         hasCooldown = true,
         isPvp = true,
-        category = "utility"
+        category = "pvp"
     })
     self.echoingReprimand = TRB.Classes.SpellBase:New({
         id = 470671
@@ -319,6 +319,12 @@ function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEnt
 		-- Proc
 		{ variable = "$blindsideTime", description = L["RogueAssassinationBarTextVariable_blindsideTime"], printInSettings = true, color = false },]]
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Assassination, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -557,32 +563,16 @@ function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-
-		--[[{ variable = "$rtbCount", description = L["RogueOutlawBarTextVariable_rtbCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbTemporaryCount", description = L["RogueOutlawBarTextVariable_rtbTemporaryCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesTemporaryCount", description = "", printInSettings = false, color = false },
-
-		{ variable = "$rtbAllCount", description = L["RogueOutlawBarTextVariable_rtbAllCount"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesAllCount", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbBuffTime", description = L["RogueOutlawBarTextVariable_rtbBuffTime"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesBuffTime", description = "", printInSettings = false, color = false },
-		
-		{ variable = "$rtbGoodBuff", description = L["RogueOutlawBarTextVariable_rtbGoodBuff"], printInSettings = true, color = false },
-		{ variable = "$rollTheBonesGoodBuff", description = "", printInSettings = false, color = false },
-
-		{ variable = "$broadsideTime", description = L["RogueOutlawBarTextVariable_broadsideTime"], printInSettings = true, color = false },
-		{ variable = "$buriedTreasureTime", description = L["RogueOutlawBarTextVariable_buriedTreasureTime"], printInSettings = true, color = false },
-		{ variable = "$grandMeleeTime", description = L["RogueOutlawBarTextVariable_grandMeleeTime"], printInSettings = true, color = false },
-		{ variable = "$ruthlessPrecisionTime", description = L["RogueOutlawBarTextVariable_ruthlessPrecisionTime"], printInSettings = true, color = false },
-		{ variable = "$skullAndCrossbonesTime", description = L["RogueOutlawBarTextVariable_skullAndCrossbonesTime"], printInSettings = true, color = false },
-		{ variable = "$trueBearingTime", description = L["RogueOutlawBarTextVariable_trueBearingTime"], printInSettings = true, color = false },
-
-		-- Proc
-		{ variable = "$opportunityTime", description = L["RogueOutlawBarTextVariable_opportunityTime"], printInSettings = true, color = false },]]
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Outlaw, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
+	return {
+		-- Killing Spree
+		[51690] = { mode = "fixedCount", baseTickRate = 0.5, tickCountSource = "comboPointsSpent", bonusTicksPerChargedPoint = 2 },
+    }
 end
 
 
@@ -788,13 +778,13 @@ function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		--[[{ variable = "$shadowTechniquesCount", description = L["RogueSubtletyBarTextVariable_shadowTechniquesCount"], printInSettings = true, color = false },
-
-		{ variable = "$sodTime", description = L["RogueSubtletyBarTextVariable_sodTime"], printInSettings = true, color = false },
-		{ variable = "$symbolsOfDeathTime", description = "", printInSettings = false, color = false },
-
-		{ variable = "$flagellationTime", description = L["RogueSubtletyBarTextVariable_flagellationTime"], printInSettings = true, color = false },]]
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Subtlety, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles()
+	return {}
 end
 
 
@@ -874,3 +864,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles

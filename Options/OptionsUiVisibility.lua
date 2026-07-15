@@ -228,6 +228,47 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
+	-- Castbar-specific condition profile: show conditions are cast states (not environment), the only
+	-- hard-hide condition is In Vehicle, and resource/health thresholds don't apply. Empowered is only
+	-- offered on the global panel and on specs with empowered abilities.
+	local castbarConditionKeys = { "casting", "channeling" }
+	if classId == nil or TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId) then
+		table.insert(castbarConditionKeys, "empowered")
+	end
+	local castbarConditionLabels = {
+		casting = L["ShowBarVisibilityConditionCasting"],
+		channeling = L["ShowBarVisibilityConditionChanneling"],
+		empowered = L["ShowBarVisibilityConditionEmpowered"],
+	}
+	local castbarProfile = {
+		showKeys = castbarConditionKeys,
+		showLabels = castbarConditionLabels,
+		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = castbarConditionKeys } },
+		hideKeys = { "inVehicle" },
+		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"] },
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle" } } },
+		supportsThresholds = false,
+	}
+	local standardProfile = {
+		showKeys = conditionKeys,
+		showLabels = conditionLabels,
+		showGroups = conditionGroups,
+		hideKeys = hideConditionKeys,
+		hideLabels = hideConditionLabels,
+		hideGroups = hideConditionGroups,
+		supportsThresholds = true,
+	}
+
+	---Returns the condition profile (show/hide keys, labels, groups) for a bar entry.
+	---@param barEntry table?
+	---@return table profile
+	local function GetProfileForEntry(barEntry)
+		if barEntry ~= nil and barEntry.isCastbar then
+			return castbarProfile
+		end
+		return standardProfile
+	end
+
 	-- Labels for resource/health threshold condition types (used in dropdown and summary)
 	-- Ordered array so dropdown items render in a deterministic, logical order.
 	local baseThresholdTypes = {
@@ -245,6 +286,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	local function GetThresholdTypesForBarEntry(barEntry)
+		if barEntry ~= nil and barEntry.isCastbar then
+			return {}
+		end
 		local types = {}
 		for _, tt in ipairs(baseThresholdTypes) do
 			table.insert(types, tt)
@@ -279,8 +323,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Builds a localized summary string describing the show side of a visibility entry.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar (see GetProfileForEntry)
 	---@return string displayName The show summary display text
-	local function GetShowVisibilityDisplayName(entry)
+	local function GetShowVisibilityDisplayName(entry, profile)
 		if entry.neverShow then
 			return L["ShowBarVisibilityNever"]
 		end
@@ -295,14 +340,14 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return L["ShowBarVisibilityAlways"]
 		end
 		local selectedLabels = {}
-		for _, key in ipairs(conditionKeys) do
+		for _, key in ipairs(profile.showKeys) do
 			if conditions[key] then
-				table.insert(selectedLabels, conditionLabels[key])
+				table.insert(selectedLabels, profile.showLabels[key])
 			end
 		end
 		-- Include resource/health threshold as an additional condition in the summary
 		local ct = entry.resourceConditionType
-		if ct ~= nil and ct ~= "none" and thresholdTypeDefinitions[ct] ~= nil then
+		if profile.supportsThresholds and ct ~= nil and ct ~= "none" and thresholdTypeDefinitions[ct] ~= nil then
 			table.insert(selectedLabels, thresholdTypeDefinitions[ct].label)
 		end
 		return GetConditionDisplayName(selectedLabels)
@@ -310,8 +355,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Counts selected options in the show-condition dropdown.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar
 	---@return number selectedCount The number of selected show options
-	local function GetShowVisibilitySelectedCount(entry)
+	local function GetShowVisibilitySelectedCount(entry, profile)
 		if entry.neverShow or entry.alwaysShow then
 			return 1
 		end
@@ -322,14 +368,14 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 
 		local selectedCount = 0
-		for _, key in ipairs(conditionKeys) do
+		for _, key in ipairs(profile.showKeys) do
 			if conditions[key] then
 				selectedCount = selectedCount + 1
 			end
 		end
 
 		local ct = entry.resourceConditionType
-		if ct ~= nil and ct ~= "none" then
+		if profile.supportsThresholds and ct ~= nil and ct ~= "none" then
 			selectedCount = selectedCount + 1
 		end
 
@@ -338,12 +384,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Counts selected options in the hard-hide dropdown.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar
 	---@return number selectedCount The number of selected hide options
-	local function GetHideVisibilitySelectedCount(entry)
+	local function GetHideVisibilitySelectedCount(entry, profile)
 		local selectedCount = 0
 		local hideConditions = entry.hideConditions
 		if hideConditions ~= nil then
-			for _, key in ipairs(hideConditionKeys) do
+			for _, key in ipairs(profile.hideKeys) do
 				if hideConditions[key] == true then
 					selectedCount = selectedCount + 1
 				end
@@ -361,39 +408,42 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Builds the compact show summary used in the visibility table.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar
 	---@return string displayName The table display text
-	local function GetShowVisibilityTableDisplayName(entry)
+	local function GetShowVisibilityTableDisplayName(entry, profile)
 		if entry.neverShow then
 			return L["BarVisibilityTableShowNeverShown"]
 		end
 		if entry.alwaysShow then
 			return L["ShowBarVisibilityAlways"]
 		end
-		return GetSelectedCountDisplayName(GetShowVisibilitySelectedCount(entry))
+		return GetSelectedCountDisplayName(GetShowVisibilitySelectedCount(entry, profile))
 	end
 
 	---Builds the compact hard-hide summary used in the visibility table.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar
 	---@return string displayName The table display text
-	local function GetHideVisibilityTableDisplayName(entry)
-		return GetSelectedCountDisplayName(GetHideVisibilitySelectedCount(entry))
+	local function GetHideVisibilityTableDisplayName(entry, profile)
+		return GetSelectedCountDisplayName(GetHideVisibilitySelectedCount(entry, profile))
 	end
 
 	---Builds a localized summary string describing the hard-hide side of a visibility entry.
 	---@param entry table The visibility settings entry
+	---@param profile table The condition profile for the bar
 	---@return string displayName The hide summary display text
 	---@return number selectedCount The number of selected hide conditions
-	local function GetHideVisibilityDisplayName(entry)
+	local function GetHideVisibilityDisplayName(entry, profile)
 		local selectedLabels = {}
 		local hideConditions = entry.hideConditions
 		if hideConditions ~= nil then
-			for _, key in ipairs(hideConditionKeys) do
+			for _, key in ipairs(profile.hideKeys) do
 				if hideConditions[key] == true then
-					table.insert(selectedLabels, hideConditionLabels[key])
+					table.insert(selectedLabels, profile.hideLabels[key])
 				end
 			end
 		end
-		return GetConditionDisplayName(selectedLabels), GetHideVisibilitySelectedCount(entry)
+		return GetConditionDisplayName(selectedLabels), GetHideVisibilitySelectedCount(entry, profile)
 	end
 
 	local dropdownOriginalSetText = setmetatable({}, { __mode = "k" })
@@ -473,6 +523,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
+		-- Never Show toggles change whether the Blizzard cast bar should be detached.
+		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
 	end
 
 	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
@@ -520,7 +572,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@param entry table The visibility settings entry to read/write conditions on
 	---@param thresholdTypesForBar table[] The threshold condition types available for the selected bar
 	---@param onChange function Callback invoked after any condition is toggled
-	local function BuildShowVisibilityDropdownItems(rootDescription, entry, thresholdTypesForBar, onChange)
+	---@param profile table The condition profile for the bar
+	local function BuildShowVisibilityDropdownItems(rootDescription, entry, thresholdTypesForBar, onChange, profile)
 		if rootDescription.SetScrollMode then
 			rootDescription:SetScrollMode(400)
 		end
@@ -553,7 +606,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			end
 		)
 
-		for _, group in ipairs(conditionGroups) do
+		for _, group in ipairs(profile.showGroups) do
 			local groupTitle = group.title
 			local groupKeys = group.keys
 			rootDescription:CreateDivider()
@@ -561,7 +614,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			for _, key in ipairs(groupKeys) do
 				local capturedKey = key
 				local checkbox = rootDescription:CreateCheckbox(
-					conditionLabels[capturedKey],
+					profile.showLabels[capturedKey],
 					function()
 						return entry.conditions and entry.conditions[capturedKey] or false
 					end,
@@ -577,6 +630,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				)
 				checkbox:SetEnabled(function() return not entry.neverShow and not entry.alwaysShow end)
 			end
+		end
+
+		-- Bars without threshold support (castbar) get no threshold section at all.
+		if #thresholdTypesForBar == 0 then
+			return
 		end
 
 		local thresholdHeader = L["BarVisibilityThresholdHeader"]
@@ -612,21 +670,22 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@param rootDescription table The root menu description to add items to
 	---@param entry table The visibility settings entry to read/write hide conditions on
 	---@param onChange function Callback invoked after any condition is toggled
-	local function BuildHideVisibilityDropdownItems(rootDescription, entry, onChange)
+	---@param profile table The condition profile for the bar
+	local function BuildHideVisibilityDropdownItems(rootDescription, entry, onChange, profile)
 		if rootDescription.SetScrollMode then
 			rootDescription:SetScrollMode(400)
 		end
 
 		entry.hideConditions = entry.hideConditions or TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 
-		for groupIndex, group in ipairs(hideConditionGroups) do
+		for groupIndex, group in ipairs(profile.hideGroups) do
 			local groupTitle = group.title
 			local groupKeys = group.keys
 			rootDescription:CreateTitle(groupTitle)
 			for _, key in ipairs(groupKeys) do
 				local capturedKey = key
 				rootDescription:CreateCheckbox(
-					hideConditionLabels[capturedKey],
+					profile.hideLabels[capturedKey],
 					function()
 						return entry.hideConditions and entry.hideConditions[capturedKey] == true
 					end,
@@ -637,7 +696,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 					end
 				)
 			end
-			if groupIndex < #hideConditionGroups then
+			if groupIndex < #profile.hideGroups then
 				rootDescription:CreateDivider()
 			end
 		end
@@ -712,6 +771,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
+	-- Cast bar: self-driven render (Functions/Castbar.lua) configured through the same visibility entries
+	if spec.displayBar and spec.displayBar.castbar ~= nil then
+		table.insert(barEntries, {
+			key = "castbar",
+			displayBarKey = "castbar",
+			label = L["BarVisibilityBarNameCastbar"],
+			globalLabel = L["BarVisibilityBarNameCastbar"],
+			isCustomBar = false,
+			isCastbar = true,
+			isGlobal = (classId ~= nil and coreDisplayBar["castbar"] ~= nil),
+		})
+	end
+
 	-- Create the LibScrollingTable for bar selection
 	local columns = {
 		{
@@ -775,8 +847,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local showText = ""
 			local hideText = ""
 			if visSettings then
-				showText = GetShowVisibilityTableDisplayName(visSettings)
-				hideText = GetHideVisibilityTableDisplayName(visSettings)
+				local profile = GetProfileForEntry(entry)
+				showText = GetShowVisibilityTableDisplayName(visSettings, profile)
+				hideText = GetHideVisibilityTableDisplayName(visSettings, profile)
 			end
 			local rowData = {
 				cols = {
@@ -996,10 +1069,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 		-- Determine if this bar needs the appearance refresh (custom bars)
 		local refreshFunc = barEntry.isCustomBar and RefreshVisibilityAndAppearance or RefreshVisibilitySettings
+		local profile = GetProfileForEntry(barEntry)
 
 		-- Visibility dropdowns
 		local function OnVisibilityChange()
-			local displayText = GetShowVisibilityDisplayName(visSettings)
+			local displayText = GetShowVisibilityDisplayName(visSettings, profile)
 			controls.dropDown.selectedBarVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedBarVisibility:SetText(displayText)
 			ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
@@ -1015,7 +1089,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 
 		local function OnHideVisibilityChange()
-			local displayText = GetHideVisibilityDisplayName(visSettings)
+			local displayText = GetHideVisibilityDisplayName(visSettings, profile)
 			controls.dropDown.selectedHideVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedHideVisibility:SetText(displayText)
 			refreshFunc()
@@ -1030,27 +1104,32 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 
 		local function VisibilityGenerator(dropdown, rootDescription)
-			BuildShowVisibilityDropdownItems(rootDescription, visSettings, GetThresholdTypesForBarEntry(barEntry), OnVisibilityChange)
+			BuildShowVisibilityDropdownItems(rootDescription, visSettings, GetThresholdTypesForBarEntry(barEntry), OnVisibilityChange, profile)
 		end
 
 		local function HideVisibilityGenerator(dropdown, rootDescription)
-			BuildHideVisibilityDropdownItems(rootDescription, visSettings, OnHideVisibilityChange)
+			BuildHideVisibilityDropdownItems(rootDescription, visSettings, OnHideVisibilityChange, profile)
 		end
 
 		controls.dropDown.selectedBarVisibility:SetupMenu(VisibilityGenerator)
-		UpdateDropdownDisplayText(controls.dropDown.selectedBarVisibility, function() return GetShowVisibilityDisplayName(visSettings) end)
+		UpdateDropdownDisplayText(controls.dropDown.selectedBarVisibility, function() return GetShowVisibilityDisplayName(visSettings, profile) end)
 		controls.dropDown.selectedHideVisibility:SetupMenu(HideVisibilityGenerator)
 		UpdateDropdownDisplayText(controls.dropDown.selectedHideVisibility, function()
-			local displayText = GetHideVisibilityDisplayName(visSettings)
+			local displayText = GetHideVisibilityDisplayName(visSettings, profile)
 			return displayText
 		end)
 
-		-- Smooth checkbox
-		controls.checkBoxes.selectedSmooth:SetChecked(visSettings.smooth)
-		controls.checkBoxes.selectedSmooth:SetScript("OnClick", function(self, ...)
-			visSettings.smooth = self:GetChecked()
-			refreshFunc()
-		end)
+		-- Smooth checkbox (hidden for the castbar: its fill is timeline-driven, not resource-driven)
+		if barEntry.isCastbar then
+			controls.checkBoxes.selectedSmooth:Hide()
+		else
+			controls.checkBoxes.selectedSmooth:Show()
+			controls.checkBoxes.selectedSmooth:SetChecked(visSettings.smooth)
+			controls.checkBoxes.selectedSmooth:SetScript("OnClick", function(self, ...)
+				visSettings.smooth = self:GetChecked()
+				refreshFunc()
+			end)
+		end
 
 		-- Alpha sliders -- set scripts BEFORE values so SetValue doesn't write to the old entry
 		controls.sliders.selectedActiveAlpha:SetScript("OnValueChanged", function(self, value)

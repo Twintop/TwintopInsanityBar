@@ -212,6 +212,15 @@ function TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Arms, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles()
+	return {
+		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
+		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
+	}
+end
+
 
 ---@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public improvedWhirlwind TRB.Classes.SpellBase
@@ -406,6 +415,12 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Fury, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles()
+	return {}
+end
+
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public enduringDefenses TRB.Classes.SpellBase
 ---@field public shieldCharge TRB.Classes.SpellBase
@@ -583,6 +598,15 @@ function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Protection, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles()
+	return {
+		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
+		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
+	}
+end
+
 
 --[[
     BarGroups Factory for Warrior
@@ -707,3 +731,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles

@@ -185,6 +185,19 @@ function TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables(specCacheEntry
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Havoc, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
+	return {
+		-- Eye Beam
+		[198013] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		-- Abbysal Gaze
+		[452497] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		-- Illidan's Grasp
+		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
+	}
+end
+
 
 ---@class TRB.Classes.DemonHunter.VengeanceSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public soulFragments TRB.Classes.SpellBase
@@ -326,6 +339,17 @@ function TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables(specCacheE
 		{ variable = "$voidMetaTime", description = "", printInSettings = false, color = false },
 		{ variable = "$voidMetamorphosisTime", description = "", printInSettings = false, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Vengeance, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
+	return {
+		-- Fel Devastation
+		[212084] = { mode = "fixedCount", baseDuration = 2, tickCount = 12, firstTickAtStart = false },
+		-- Illidan's Grasp
+		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
+	}
 end
 
 
@@ -475,6 +499,15 @@ function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEn
 		{ variable = "$collapsingStarsUsable", description = "", printInSettings = false, color = false },
 		{ variable = "$rollingTormentFury", description = L["DemonHunterDevourerBarTextVariable_rollingTormentFury"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Devourer, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
+	return {
+		-- Void Ray
+		[473728] = { mode = "fixedCount", baseDuration = 3, tickCount = 20, firstTickAtStart = false },
+	}
 end
 
 
@@ -643,3 +676,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["demonhunter_vengeance"] = TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["demonhunter_devourer"] = TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["demonhunter_vengeance"] = TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["demonhunter_devourer"] = TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles

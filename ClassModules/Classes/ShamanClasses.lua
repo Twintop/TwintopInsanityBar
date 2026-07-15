@@ -198,23 +198,21 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaPercent", description = L["ShamanElementalBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false },
 
-		--[[{ variable = "$ifStacks", description = L["ShamanElementalBarTextVariable_ifStacks"], printInSettings = true, color = false },
-		{ variable = "$ifMaelstrom", description = L["ShamanElementalBarTextVariable_ifMaelstrom"], printInSettings = true, color = false },
-		{ variable = "$ifTime", description = L["ShamanElementalBarTextVariable_ifTime"], printInSettings = true, color = false },
-
-		{ variable = "$skStacks", description = L["ShamanElementalBarTextVariable_skStacks"], printInSettings = true, color = false },
-		{ variable = "$skTime", description = L["ShamanElementalBarTextVariable_skTime"], printInSettings = true, color = false },]]
-
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
 		{ variable = "$earthShockUsable", description = L["ShamanElementalBarTextVariable_earthShockUsable"], printInSettings = true, color = false },
 		{ variable = "$elementalBlastUsable", description = L["ShamanElementalBarTextVariable_elementalBlastUsable"], printInSettings = true, color = false },
 		{ variable = "$earthquakeUsable", description = L["ShamanElementalBarTextVariable_earthquakeUsable"], printInSettings = true, color = false },
-
-		--[[{ variable = "$eogsTime", description = L["ShamanElementalBarTextVariable_eogsTime"], printInSettings = true, color = false },
-
-		{ variable = "$pfTime", description = L["ShamanElementalBarTextVariable_pfTime"], printInSettings = true, color = false }]]
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Elemental, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
 end
 
 
@@ -281,6 +279,15 @@ function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Enhancement, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles()
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
+end
+
 
 ---@class TRB.Classes.Shaman.RestorationSpells : TRB.Classes.Healer.HealerSpells
 ---@field public ascendance TRB.Classes.SpellBase
@@ -332,6 +339,15 @@ function TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables(specCacheEntr
 		
 		{ variable = "$ascendanceTime", description = L["ShamanRestorationBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles()
+	return {
+		-- Lightning Lasso
+		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
+    }
 end
 
 
@@ -484,3 +500,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles

@@ -783,6 +783,19 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		end
 	end
 
+	-- The castbar isn't a ProcessBars entry (it manages its own visibility), but its anchored bar text
+	-- must keep updating through the shared render path while a cast is active — even when every other
+	-- bar is hidden or we're out of combat. Count it as "showing" so isTracking stays true (which is
+	-- what keeps each class's UpdateResourceBar calling UpdateResourceBarText) and BarText:Show runs.
+	if not anyShowing and TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive() then
+		anyShowing = true
+	end
+
+	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
+	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
+	-- changes, spec swaps, or reconstructions.
+	TRB.Functions.Castbar:EnsureIdleState()
+
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every
 	-- variable is recomputed on the next RefreshLookupData pass.

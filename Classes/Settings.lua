@@ -16,6 +16,11 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public healthBarColors boolean
 ---@field public precision boolean
 ---@field public textures boolean
+---@field public castbarDimensions boolean
+---@field public castbarColors boolean
+---@field public castbarOverlays boolean
+---@field public castbarEmpower boolean
+---@field public castbarText boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
@@ -223,6 +228,46 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeToName string # @deprecated Display label for legacy relativeTo
 ---@field public fullWidth boolean # @deprecated Use anchor.matchWidth instead
 
+---How a channel's tick markers scale with haste.
+---@alias trbCastbarTickMode
+---| '"fixedCount"' # Tick count stays constant; channel duration shrinks with haste (e.g. Mind Flay)
+---| '"fixedRate"'  # Channel duration is fixed; tick rate scales with haste, final partial tick (e.g. Void Torrent)
+
+---Where a fixedCount profile's tick count comes from when it varies per cast.
+---@alias trbCastbarTickCountSource
+---| '"comboPointsSpent"' # One tick per combo point the finisher consumes (e.g. Killing Spree)
+
+---A built-in or user-configured channel tick profile, stored per spellId under CastbarBar.tickProfiles.
+---baseDuration/baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
+---@class TRB.Classes.Settings.CastbarTickProfile
+---@field public mode trbCastbarTickMode
+---@field public baseDuration number? # Unhasted channel duration in seconds; derived per cast (baseTickRate * tickCount) when tickCountSource is set
+---@field public tickCount integer? # fixedCount only: number of ticks across the channel
+---@field public baseTickRate number? # fixedRate only: unhasted seconds between ticks. Also fixedCount with tickCountSource, where it only feeds the derived baseDuration
+---@field public tickCountSource trbCastbarTickCountSource? # fixedCount only: resolves tickCount at each channel start instead of using a static tickCount
+---@field public bonusTicksPerChargedPoint integer? # tickCountSource "comboPointsSpent" only: extra ticks when the finisher spends a supercharged combo point (one per cast, however many are charged)
+---@field public firstTickAtStart boolean? # Whether a tick also lands at t=0
+---@field public skipTicks integer[]? # Rhythm ticks that never fire (1-based; tick 1 is the one at t=R, excluding any firstTickAtStart mark). Spacing still comes from the full rhythm, e.g. Demolish hits on 3 of a 4-tick rhythm
+---@field public chains boolean? # Whether a leftover partial-tick phase carries into a chained channel of the same spell
+---@field public partialEndTick boolean? # Whether the channel fires one extra PARTIAL tick at its end, covering the phase left over after the last full beat (only ever visible when chaining pushes the end off the beat). Per-spell: Drain Life/Drain Soul/Malefic Grasp do, Mind Flay does not. Verify from a combat log; do not assume
+
+---Castbar bar settings: SecondaryBar dimensions plus the castbar's behavior flags and per-spell tick
+---profiles. Visibility/enabling lives in displayBar.castbar (castbar-specific show/hide conditions).
+---@class TRB.Classes.Settings.CastbarBar : TRB.Classes.Settings.SecondaryBar
+---@field public showTicks boolean # Draw channel tick lines
+---@field public tickWidth number # Width in pixels of channel tick and empower stage boundary lines
+---@field public tickLatencyWidth boolean # Widen channel tick marks to the latency fraction (toward higher time remaining) instead of fixed-width lines
+---@field public showLatency boolean # Draw the latency safe-zone overlay
+---@field public showPushback boolean # Draw the pushback overlay
+---@field public showEmpowerStages boolean # Draw empower stage boundary lines
+---@field public empowerSegmentedFill boolean # Fill each empower level's segment in its own color at once (vs. recoloring the whole bar)
+---@field public castTimePrecision integer # Decimal places (0-3) for $castTimeRemaining
+---@field public durationPrecision integer # Decimal places (0-3) for $castTime
+---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback
+---@field public disableBlizzardCastbar boolean # Detach the default Blizzard cast bar while the addon castbar is enabled
+---@field public mergeTradeskill boolean # Merge bulk crafting's repeated craft casts into one channel-style bar
+---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
+
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
 ---@field public barText TRB.Classes.Settings.DisplayTextEntry[]
@@ -256,6 +301,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public name string
 ---@field public text string
 ---@field public guid string
+---@field public constrainToParent boolean # Clamp the text width to the bound frame (ignored when bound to Screen)
+---@field public maxWidthPercent number # Max text width as a percentage (0-100) of the bound frame's width
 ---@field public position TRB.Classes.Settings.DisplayTextPosition
 
 ---@class TRB.Classes.Settings.DisplayTextPosition
