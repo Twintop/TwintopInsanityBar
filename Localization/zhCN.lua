@@ -2794,4 +2794,7 @@ if locale == "zhCN" then
 	L["PaladinHolyBarTextVariable_holyPowerPlusCasting"] = "当前神圣能量（含施法预获取）"
 	L["WarlockSoulShardsRefundingOverlayCheckboxTooltip"] = "勾选后，由古尔丹之手返还的灵魂碎片（满级阿古斯支配生效期间）将使用专属颜色；取消勾选后，将使用消耗覆盖颜色。"
 
+	-- Bar Visibility Conditions (granular skyriding/steady flight options)
+	L["ShowBarVisibilityConditionIsSkyridingFlying"] = "驭龙术（仅飞行状态）"
+	L["ShowBarVisibilityConditionIsSteadyFlightFlying"] = "平稳飞行（仅飞行状态）"
 end
