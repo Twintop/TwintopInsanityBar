@@ -16,79 +16,45 @@ local content = [====[
 ## General
 ### Bar Text
 
-- Add a **Prevent Text Overflow** toggle to each bar text area: the text is clamped to the width of the bar it is bound to and truncated with an ellipsis instead of spilling past the bar's edges. No effect when bound to Screen.
-- Adds a **Maximum Text Width** slider (a percentage of the bound bar's width, default 100%) shown when the toggle is on; for example, 50% with left-anchored text stops the text at the bar's midpoint.
-
----
-
-# 12.0.7.4-alpha03 (2026-07-14)
-## General
-### Color Indicators
-
-- Add the **Health Bar** and **Cast Bar** as Color Indicator targets for every specialization, alongside its own bars.
-- Health Bar: **Border** and **Background**. Its fill is left alone, driven as it is by the health thresholds.
-- Cast Bar: **Bar (Hardcast)**, **Bar (Channeled)**, **Border**, **Background**, and **Channeled Tick Color**. The tick color is offered only for specializations whose channeled abilities draw tick marks.
-- **Gradient Colors (Secrets)** can target the **Border** and **Background** of both bars as well, colored by the specialization's own resource just as they already color, say, a Stagger bar border from Energy. The remaining elements can't take a color curve: the health bar's fill is already one, the cast bar's fill is driven per cast state, and the channel ticks are drawn lines rather than a bar color.
+- Add a Prevent Text Overflow toggle: clamp bar text to its bound bar's width, truncating with an ellipsis instead of overflowing. No effect when bound to Screen.
+- Add a Maximum Text Width slider (percentage of the bound bar's width, default 100%), shown when the toggle is on.
 
 ### Cast Bar
 
-- Show the **Empower Level Colors** section and **Empowered** visibility condition for Blood Death Knight, which now has an empowered ability.
-- Add an **Uninterruptible Border Color**, coloring the border for the duration of a cast that cannot be interrupted.
-- A Color Indicator on the cast bar's fill or border now outranks the uninterruptible colors, which previously always won. The border and the fill both mark an uninterruptible cast now, so an indicator can claim one of them and the cast still reads as uninterruptible from the other.
-- Add bar text variables `$castInterruptible` and `$castUninterruptible`, both `false` while nothing is casting.
-- Fix a missing final tick mark on **Drain Life**, **Drain Soul**, and **Malefic Grasp**. Chaining these channels leaves them firing one extra partial tick as the channel closes, for reduced damage, and that tick was never drawn — leaving an unmarked sliver at the end of the bar. Channels without that behavior, such as Mind Flay, are unchanged.
+- Add a new Cast Bar for every specialization, covering standard, channeled, and empowered casts, with the same size, anchor, texture, color, and bar text options as every other bar.
+- Visibility conditions (Casting, Channeling, Empowered, Always, Never), In Vehicle hide, active/inactive alpha, and fade.
+- Latency and pushback overlays, with a Channel Tick Width control and optional Size Channel Ticks to Latency.
+- Channel tick markers from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels.
+- Empower stage lines and per-level fill colors, with optional Fill Each Empower Level Separately (Windwalker Monk, Evoker, Blood Death Knight).
+- Uninterruptible Border Color while a cast can't be interrupted.
+- Bulk profession crafting (e.g. Create All) merged into one channel-style bar, with per-craft ticks and `$castSpellName` progress; toggle Merge Bulk Crafting.
+- Bar text variables `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, `$castSpellId`, `$castInterruptible`, `$castUninterruptible`, and the `#casting` icon.
+- Top-level Cast Bar options with global versions of every section, a Global Profile selector, per-spec follow-global, and Copy... between scopes.
 
-## Druid
+### Color Indicators
 
-- Add cast bar channel tick marks for **Convoke the Spirits** for every specialization, accounting for the shorter, fewer-tick channel **Cenarius' Guidance** grants.
+- Add the Health Bar and Cast Bar as Color Indicator targets for every specialization.
+- Health Bar: Border and Background.
+- Cast Bar: Bar (Hardcast), Bar (Channeled), Border, Background, and Channeled Tick Color; an indicator on the fill or border outranks the uninterruptible colors.
+- Gradient Colors (Secrets) can target either bar's Border and Background.
+
+### Localization
+
+- [#788 - @MOSS099](#788) Updated translations for Simplified Chinese (zhCN).
 
 ## Hunter
 ### Marksmanship
 
 - Add new bar text variables for Double Tap tracking: `$doubleTapTime`, and icon `#doubleTap`.
 
+### Survival
+
+- Add support for Raptor Swipe as its own threshold line.
+
 ## Mage
 ### Fire
 
-- Fix an issue where switching to Fire from Arcane or Frost would cause the Fire Blast bar to not show all of the charges. 
-
-## Warrior
-### Arms and Protection
-
-- Add cast bar channel tick marks for **Demolish**, which lands its three hits on an unevenly spaced rhythm.
-
----
-
-# 12.0.7.4-alpha02 (2026-07-13)
-## General
-### Cast Bar
-
-- Bulk profession crafting (e.g. **Create All**) now shows as one merged, channel-style bar covering the whole queue, its total time computed from the remaining items and the single craft cast time. Tick marks at each craft boundary; `$castSpellName` shows progress as `Recipe Name 3 / 10`. Controlled by the new **Merge Bulk Crafting** option (on by default).
-- Add a **Channel Tick Width** option to set the pixel thickness of channel tick marks and empower stage boundary lines (default 1px), mirroring the threshold line width control.
-- Add a **Size Channel Ticks to Latency** option: channel tick marks widen to match the latency overlay's relative size, growing toward the higher time value (off by default).
-- Add tick data for many channeled abilities.
-
----
-
-# 12.0.7.4-alpha01 (2026-07-12)
-## General
-
-- Rename the profile dropdown on the Global Options screen to **Global Profile: NAME**, from **Profile: NAME**, to distinguish it from the per-specialization profile dropdowns.
-
-### Cast Bar
-
-- Add a new **Cast Bar** for every specialization, covering standard, channeled, and empowered casts, with the same size, anchoring, texture, color, and bar text options as every other bar.
-- Per-specialization visibility on the **Visibility** tab: **Casting**, **Channeling**, **Empowered**, **Always Show**, or **Never Show**, plus an **In Vehicle** hard-hide, active/inactive alpha, and fade controls. By default the bar shows while casting and lingers 0.25 seconds after a cast ends.
-- Latency and pushback shown as bar overlays, with matching bar text variables.
-- Channel tick markers, driven by a user-editable per-spell tick rate list with built-in defaults. Handles fixed-tick-count (Mind Flay) and fixed-duration (Void Torrent) channels, including chained ones.
-- Empower stage threshold lines and per-level fill colors (a Base charging color, then Levels I through IV), with optional **Fill Each Empower Level Separately**. Only shown for specializations with empowered abilities (Windwalker Monk, Evoker) and the global Cast Bar screen.
-- Bar text variables `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, and `$castSpellId`; the `#casting` icon shows the casting spell.
-- A top-level **Cast Bar** options entry with global versions of every section and a **Global Profile** selector. Sections can follow global settings per specialization (or all at once) and be copied between Global Options, specializations, and profiles via **Copy...**.
-
-## Hunter
-### Survival
-
-- (WIP) Add support for Raptor Swipe as its own threshold line.
+- Fix an issue where switching to Fire from Arcane or Frost would cause the Fire Blast bar to not show all of the charges.
 
 ## Priest
 ### Discipline
