@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.7.4-alpha04 (2026-07-15)
+# 12.0.7.4-release (2026-07-15)
 ## General
 ### Bar Text
 
