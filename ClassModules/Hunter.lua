@@ -740,6 +740,26 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
+
+local function HunterEvent(self, event, ...)
+	if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		local spellId, rSpellId = ...
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			if spellId == spells.raptorStrike.id then
+				if rSpellId == nil or rSpellId ~= spells.raptorSwipe.id then
+					snapshotData.attributes.raptorStrikeOverride = false
+				else
+					snapshotData.attributes.raptorStrikeOverride = true
+				end
+			end
+		end
+	end
+end
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HunterEvent)
+
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 
@@ -1373,7 +1393,7 @@ local function UpdateResourceBar()
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 						if spell.id == spells.raptorStrike.id then
-							if spells.raptorSwipe:IsUsable() then
+							if snapshotData.attributes.raptorStrikeOverride then
 								showThreshold = false
 							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1381,8 +1401,8 @@ local function UpdateResourceBar()
 								thresholdColor = specCacheSettings.colors.threshold.under.color
 								frameLevel = frameLevels.thresholdUnder
 							end
-						elseif spell.id == spells.raptorSwipe.id then
-							if spells.raptorStrike:IsUsable() then
+						elseif spell.id == spells.raptorSwipe.id and (talents:IsTalentActive(spells.raptorSwipeTalent1) or talents:IsTalentActive(spells.raptorSwipeTalent2) or talents:IsTalentActive(spells.raptorSwipeTalent3)) then
+							if not snapshotData.attributes.raptorStrikeOverride then
 								showThreshold = false
 							elseif isUsable then
 								thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1585,6 +1605,7 @@ local function SwitchSpec()
 	end
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
+	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 	if TRB.Data.character.specId == 1 then
 		specCache.hunter_beastMastery.talents:GetTalents()
@@ -1682,6 +1703,7 @@ local function SwitchSpec()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
+		spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 		if TRB.Data.barConstructedForSpec ~= "hunter_survival" then
 			talents = specCache.hunter_survival.talents
@@ -1952,6 +1974,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.raptorStrikeOverride = false
 	end
 end
 

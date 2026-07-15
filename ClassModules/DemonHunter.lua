@@ -1981,6 +1981,7 @@ local function SwitchSpec()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+	
 	if TRB.Data.character.specId == 1 then
 		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()

@@ -410,6 +410,9 @@ end
 ---@field public hatchetToss TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
 ---@field public raptorSwipe TRB.Classes.SpellThreshold
+---@field public raptorSwipeTalent1 TRB.Classes.SpellBase
+---@field public raptorSwipeTalent2 TRB.Classes.SpellBase
+---@field public raptorSwipeTalent3 TRB.Classes.SpellBase
 ---@field public flamefangPitch TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.SurvivalSpells.__index = TRB.Classes.Hunter.SurvivalSpells
@@ -460,12 +463,20 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     })
     self.raptorSwipe = TRB.Classes.SpellThreshold:New({
         id = 1262293,
-        talentId = 1259003,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "raptorSwipe",
-        isTalent = true,
         category = "offensive",
-        isSnowflake = true
+        isSnowflake = true,
+        rangeCheck = false
+    })
+    self.raptorSwipeTalent1 = TRB.Classes.SpellBase:New({
+        talentId = 1259003,
+    })
+    self.raptorSwipeTalent2 = TRB.Classes.SpellBase:New({
+        talentId = 1259017,
+    })
+    self.raptorSwipeTalent3 = TRB.Classes.SpellBase:New({
+        talentId = 1259019,
     })
     self.flamefangPitch = TRB.Classes.SpellThreshold:New({
         id = 1251592,
