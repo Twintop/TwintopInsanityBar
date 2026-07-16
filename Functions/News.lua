@@ -22,6 +22,10 @@ local content = [====[
 
 - Fix an issue with Warlock's channel tick markers logic being applied to all channeled ticks.
 
+### Localization
+
+- [#790 - @MOSS099](#790) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # 12.0.7.5-release (2026-07-15)
