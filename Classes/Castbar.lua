@@ -48,7 +48,9 @@ TRB.Classes = TRB.Classes or {}
 ---@field public profile table? # Tick profile resolved at channel start (baseline + conditional bonus ticks); reused for mid-channel recomputes
 ---@field public chains boolean # Whether the active channel's profile allows chain carry
 ---@field public chainCarry number? # Carried leftover (seconds, c0): time that remained until the interrupted channel's next tick
----@field public chainOldRate number? # The interrupted channel's tick rate (r0), so the carried leftover can be rescaled to this channel's haste
+---@field public chainOldRate number? # The interrupted channel's tick rate (r0), for computing the carried tick fraction and this channel's rescaled rate
+---@field public chainOldHaste number? # The interrupted channel's haste multiplier, so r0 can be rescaled by the haste ratio to this cast
+---@field public tickHaste number? # Haste multiplier used to compute this channel's tick rate; banked into the chain carry so a chained recast can rescale
 ---@field public firstTickOffset number? # Time (seconds from channel start) of this channel's first rhythm tick; the phase anchor for computing the next chain carry
 ---@field public empowerStages integer # Number of empower stages (0 if not an empower)
 ---@field public empowerStageFractions number[] # Cumulative fraction at each stage completion (max line at chargeDuration/duration)
@@ -69,7 +71,7 @@ local spellCache = {}
 
 -- Chaining carry: when a chainable channel ends mid-tick, the leftover phase (and the channel's tick rate)
 -- is stored here so the next channel of the same spell can place its first tick at the rescaled remainder.
----@type { spellId: integer, phaseRemaining: number, oldTickRate: number, expireTime: number }?
+---@type { spellId: integer, phaseRemaining: number, oldTickRate: number, oldHaste: number, expireTime: number }?
 local chainCarry = nil
 
 -- Grace window (seconds) during which a channel-end carry remains valid for the next channel.
@@ -108,6 +110,7 @@ local function StoreChainCarry(model)
 		spellId = model.spellId,
 		phaseRemaining = remaining,
 		oldTickRate = model.tickInterval,
+		oldHaste = model.tickHaste or 1,
 		expireTime = now + CHAIN_CARRY_GRACE
 	}
 end
@@ -139,6 +142,8 @@ function TRB.Classes.Castbar:Reset()
 	self.chains = false
 	self.chainCarry = nil
 	self.chainOldRate = nil
+	self.chainOldHaste = nil
+	self.tickHaste = nil
 	self.firstTickOffset = nil
 	self.empowerStages = 0
 	self.empowerStageFractions = {}
@@ -285,6 +290,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
 		self.chainCarry = chainCarry.phaseRemaining
 		self.chainOldRate = chainCarry.oldTickRate
+		self.chainOldHaste = chainCarry.oldHaste
 	end
 	chainCarry = nil
 
@@ -335,21 +341,23 @@ end
 ---so fraction 1 is the channel START (full bar) and fraction 0 the END.
 ---
 ---The tick interval R is derived from the NOMINAL (un-extended, channel-start) length: from the authoritative
----channel duration where it is un-stretched, falling back to GCD-inferred haste only on a chain (whose own
----duration is stretched by the carry). firstTickAtStart is the game's "tick zero": a mark lands at t=0, on top
----of the rhythm below. Each mode lays out its rhythm differently:
+---channel duration where it is un-stretched. On a chain (whose own duration is stretched by the carry) the rate
+---is instead carried from the interrupted channel and rescaled by the haste ratio -- never from the profile's
+---base length, which is talent-blind. firstTickAtStart is the game's "tick zero": a mark lands at t=0, on top of
+---the rhythm below. Each mode lays out its rhythm differently:
 ---
 ---fixedCount (Mind Flay): tick count is constant, duration shrinks with haste. Anchored to the END -- the
 ---final tick ALWAYS lands on the channel end, no exceptions. A chain-extended cast surfaces the carried
 ---leftover as an extra tick near the START, leaving a gap before it, rather than moving the last tick.
 ---
 ---pandemic (Drain Life/Drain Soul/Malefic Grasp): tick count is constant, duration shrinks with haste. Rate r1
----is the FRESH (channel-start) rate -- from the authoritative duration on a fresh cast, or GCD-inferred haste on
----a chain (whose own duration is stretched). Anchored to the START and runs FORWARD every r1. A chain recast
----happens a fraction p0 = c0/r0 before the interrupted channel's next tick (c0 = carried leftover, r0 = its
----rate), so the first (chain) tick lands p0*r1 in and the rhythm continues from there; a fresh cast starts one
----interval in. A final PARTIAL tick pins to the channel end if the last full beat falls short. Per-spell and NOT
----derivable -- Mind Flay (fixedCount) does not do it.
+---is the FRESH (channel-start) rate -- from the authoritative duration on a fresh cast; on a chain it is the
+---interrupted channel's rate r0 rescaled by the haste ratio (r1 = r0 * hasteOld / hasteNow), which keeps any
+---talent-shortened base intact. Anchored to the START and runs FORWARD every r1. A chain recast happens a
+---fraction p0 = c0/r0 before the interrupted channel's next tick (c0 = carried leftover, r0 = its rate), so the
+---first (chain) tick lands p0*r1 in and the rhythm continues from there; a fresh cast starts one interval in. A
+---final PARTIAL tick pins to the channel end if the last full beat falls short. Per-spell and NOT derivable --
+---Mind Flay (fixedCount) does not do it.
 ---
 ---fixedRate (Void Torrent): fixed duration, hasted rate. Anchored to the START, runs forwards, and its final
 ---partial tick is simply cut off at the channel end.
@@ -387,9 +395,16 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 		local intervals = firstAtStart and (count - 1) or count
 		if intervals < 1 then intervals = 1 end
 		-- r1 = the fresh (channel-start) tick rate. On a chain this channel's own duration is stretched by the
-		-- carried leftover, so it can't yield r1; derive it from GCD-inferred haste instead. A fresh cast's
+		-- carried leftover, so it can't yield r1. Instead reuse the interrupted channel's rate r0 -- which came
+		-- from its authoritative duration and so already reflects talents that shorten the base channel -- and
+		-- rescale it by the haste ratio (r1 = r0 * hasteOld / hasteNow). The ratio cancels the systematic bias in
+		-- GCD-inferred haste, so only a genuine haste change between the two casts moves the rate. A fresh cast's
 		-- authoritative duration IS the fresh length, so use it directly.
-		if self.chainCarry ~= nil and self.chainCarry > 0 then
+		if self.chainCarry ~= nil and self.chainCarry > 0 and self.chainOldRate ~= nil and self.chainOldRate > 0
+			and self.chainOldHaste ~= nil and self.chainOldHaste > 0 and haste > 0 then
+			tickRate = self.chainOldRate * self.chainOldHaste / haste
+		elseif self.chainCarry ~= nil and self.chainCarry > 0 then
+			-- No cached rate available (e.g. carry from before this ran): fall back to the profile base length.
 			tickRate = (profile.baseDuration / haste) / intervals
 		else
 			tickRate = duration / intervals
@@ -401,6 +416,8 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 	end
 	if tickRate <= 0 then return end
 	self.tickInterval = tickRate
+	-- Bank the haste this rate was computed at, so a chained recast can rescale the rate by the haste ratio.
+	self.tickHaste = haste
 
 	-- Tick zero: a mark at t=0 (full bar), on top of the rhythm below.
 	if firstAtStart then
