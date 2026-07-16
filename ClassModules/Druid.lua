@@ -1838,7 +1838,7 @@ local function UpdateResourceBar()
 							cpNode:SetBackgroundColorCurve(cpOverrides.backgroundCurve)
 						end
 						if cpOverrides and cpOverrides.borderCurve then
-							cpNode:SetBorderColorCurve(cpOverrides.borderCurve)
+							cpNode:SetBorderColorCurve(cpOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, cpOverrides.borderCurveSource, cpOverrides.borderCurvePowerType))
 						end
 					end
 				end
@@ -2123,7 +2123,7 @@ local function UpdateResourceBar()
 								if astralTargets.border then
 									local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.border, indicator.color)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result)
+									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									astralPowerBarColors.border = nil -- mark as applied
 								end
 								if astralTargets.bar then
@@ -2506,6 +2506,7 @@ local function UpdateResourceBar()
 							curve:AddPoint(maxBitePercent, CreateColor(mR, mG, mB, mA))
 							curve:AddPoint(overcapPercent, CreateColor(oR, oG, oB, oA))
 							curve:AddPoint(2.0, CreateColor(oR, oG, oB, oA))
+							Color:SetCurveThresholdMeta(curve, baseColor, { { x = maxBitePercent, color = maxBiteColor }, { x = overcapPercent, color = overcapColor }, { x = 2.0, color = overcapColor } })
 							cache[fullKey] = curve
 							return curve
 						end
@@ -2528,7 +2529,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										barColorCurveResult = result
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2539,7 +2540,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										barColorCurveResult = result
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2550,7 +2551,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										primaryNode:SetColorCurve(result)
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2570,15 +2571,21 @@ local function UpdateResourceBar()
 							if type(cpBase) == "table" then
 								cpBase = cpBase.color
 							end
+							local curve = nil
 							if mbTargets and ocTargets then
-								local curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
-								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
 							elseif mbTargets then
-								local curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
-								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
 							elseif ocTargets then
-								local curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
+								curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
+							end
+							if curve then
 								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								-- Keep the border's source curve so end caps can derive their companion curve at apply time
+								if elem == "border" then
+									comboPointColors.borderCurveSource = curve
+									comboPointColors.borderCurvePowerType = displayResourceType
+								end
 							end
 						end
 					end
@@ -2692,7 +2699,7 @@ local function UpdateResourceBar()
 
 							-- Apply border: use curve override if available, otherwise flat color
 							if comboPointOverrides and comboPointOverrides.borderCurve then
-								cpNode:SetBorderColorCurve(comboPointOverrides.borderCurve)
+								cpNode:SetBorderColorCurve(comboPointOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, comboPointOverrides.borderCurveSource, comboPointOverrides.borderCurvePowerType))
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
@@ -3027,7 +3034,7 @@ local function UpdateResourceBar()
 								if rageTargets.border then
 									local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.border, indicator.color)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result)
+									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									rageBarColors.border = nil
 								end
 								if rageTargets.bar then

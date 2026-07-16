@@ -247,20 +247,31 @@ end
 ---Sets the border color from a curve result
 ---@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
-function TRB.Classes.BarNode:SetBorderColorCurve(colorResult)
+---@param endCapColorResult any? # Companion result from TRB.Functions.Color:EvaluateEndCapCurve, for useBorderColorExceptDefault
+function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
 	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
 	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
 
-	-- Curve results are indicator-driven (inherently non-default), so a border-following
-	-- end cap always tracks them.
+	-- Curve-driven borders are built with the DEFAULT border color as their base, and the secret
+	-- result can't be compared. useBorderColorExceptDefault therefore needs the companion curve
+	-- result (same thresholds, based at the cap's own color); without one the cap keeps its own
+	-- color. Plain useBorderColor follows the border's curve directly.
 	local config = self.endCapConfig
 	if config and config.useBorderColor then
 		local endCapSlot = self.overlaySlots.endCap
 		if endCapSlot then
-			endCapSlot:SetEndCapColorResult(colorResult)
+			if config.useBorderColorExceptDefault then
+				if endCapColorResult ~= nil then
+					endCapSlot:SetEndCapColorResult(endCapColorResult)
+				else
+					endCapSlot:SetEndCapColor(config.color)
+				end
+			else
+				endCapSlot:SetEndCapColorResult(colorResult)
+			end
 		end
 	end
 end

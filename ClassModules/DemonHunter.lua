@@ -1192,7 +1192,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1391,7 +1391,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1523,7 +1523,7 @@ local function UpdateResourceBar()
 							-- Border: gradient > flat indicator > default
 							if sfOvercapCurves.border then
 								local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.border)
-								cpNode:SetBorderColorCurve(borderResult)
+								cpNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(cpNode, sfOvercapCurves.border))
 							else
 								cpNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 							end
@@ -1723,7 +1723,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1839,7 +1839,7 @@ local function UpdateResourceBar()
 						-- Border: gradient > flat indicator > default
 						if sfOvercapCurves.border then
 							local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.border)
-							sfNode:SetBorderColorCurve(borderResult)
+							sfNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(sfNode, sfOvercapCurves.border))
 						else
 							sfNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 						end

@@ -917,7 +917,7 @@ local function UpdateResourceBar()
 
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
@@ -1023,7 +1023,7 @@ local function UpdateResourceBar()
 
 					if manaOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.border)
-						manaNode:SetBorderColorCurve(borderColorResult)
+						manaNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(manaNode, manaOvercapCurves.border))
 					else
 						manaNode:SetBorderColor(manaBarColors.border)
 					end

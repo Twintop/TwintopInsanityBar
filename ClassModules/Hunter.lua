@@ -1034,7 +1034,7 @@ local function UpdateResourceBar()
 
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1248,7 +1248,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1464,7 +1464,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if focusOvercapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, focusOvercapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, focusOvercapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1529,7 +1529,7 @@ local function UpdateResourceBar()
 
 							if tipOfTheSpearOvercapCurves.border then
 								local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, tipOfTheSpearOvercapCurves.border)
-								stackNode:SetBorderColorCurve(borderColorResult)
+								stackNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(stackNode, tipOfTheSpearOvercapCurves.border))
 							else
 								stackNode:SetBorderColor(cpBorderColor)
 							end

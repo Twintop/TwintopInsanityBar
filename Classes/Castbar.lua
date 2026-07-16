@@ -292,12 +292,13 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 		self.reconstructed = false
 		duration = endTime - startTime
 	elseif profile and profile.baseDuration and profile.baseDuration > 0 then
-		if profile.mode == "fixedCount" then
-			-- Flavor 1 (e.g. Mind Flay): duration shrinks with haste, tick count stays constant.
-			duration = profile.baseDuration / haste
-		else
-			-- Flavor 2 (e.g. Void Torrent): duration is fixed, tick rate scales with haste.
+		if profile.mode == "fixedRate" then
+			-- fixedRate (e.g. Void Torrent): duration is fixed, tick rate scales with haste.
 			duration = profile.baseDuration
+		else
+			-- fixedCount (e.g. Mind Flay) and pandemic (e.g. Drain Life): duration shrinks with haste, tick
+			-- count stays constant.
+			duration = profile.baseDuration / haste
 		end
 		self.startTime = now
 		self.endTime = now + duration
@@ -326,20 +327,23 @@ end
 ---A tick firing at elapsed time t sits at bar fraction 1 - t/duration (the fill edge's spot when it fires),
 ---so fraction 1 is the channel START (full bar) and fraction 0 the END.
 ---
----The tick interval R is derived from the NOMINAL (un-extended, channel-start) fixedCount duration -- never
----from self.duration or the unreliable GCD-inferred haste. firstTickAtStart is the game's "tick zero": a
----mark lands at t=0, on top of the rhythm below.
+---The tick interval R is derived from the NOMINAL (un-extended, channel-start) length -- never from
+---self.duration or the unreliable GCD-inferred haste. firstTickAtStart is the game's "tick zero": a mark lands
+---at t=0, on top of the rhythm below. Each mode lays out its rhythm differently:
 ---
----The rhythm runs FORWARD from its first tick: one interval in, or the carried leftover phase on a chained
----recast. A fresh channel's last beat lands on the channel end.
+---fixedCount (Mind Flay): tick count is constant, duration shrinks with haste. Anchored to the END -- the
+---final tick ALWAYS lands on the channel end, no exceptions. A chain-extended cast surfaces the carried
+---leftover as an extra tick near the START, leaving a gap before it, rather than moving the last tick.
 ---
----profile.partialEndTick opts a spell into one extra tick at the channel end, covering the phase left over
----after the last full beat (a PARTIAL tick, damage scaled to that fraction). This is per-spell behavior and
----is NOT derivable -- Drain Life, Drain Soul and Malefic Grasp fire it, Mind Flay does not. Verify against a
----combat log before setting it on a spell.
+---pandemic (Drain Life/Drain Soul/Malefic Grasp): tick count is constant, duration shrinks with haste, and
+---the rate spans the FULL (chain-extended) duration. Anchored to the START -- the rhythm runs FORWARD from its
+---first tick (one interval in, or the leftover phase carried from a chained recast, which places the carryover
+---tick), then fires one extra PARTIAL tick at the very end covering the phase left over after the last full
+---beat. Only appears when chaining; a fresh cast ends on a beat and adds nothing. Per-spell and NOT derivable
+--- -- Mind Flay (fixedCount) does not do it.
 ---
----fixedRate channels (Void Torrent) do NOT end on a tick -- fixed duration, hasted rate, final partial tick
----is cut off -- so they stay anchored to the START and run forwards.
+---fixedRate (Void Torrent): fixed duration, hasted rate. Anchored to the START, runs forwards, and its final
+---partial tick is simply cut off at the channel end.
 ---@param profile table?
 ---@param haste number
 function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
@@ -363,11 +367,19 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 		-- otherwise the count ticks land at R, 2R, ..., nominal.
 		local intervals = firstAtStart and (count - 1) or count
 		if intervals < 1 then intervals = 1 end
-		-- Rate from the NOMINAL (un-extended, channel-start) length so a chain-extended duration doesn't
-		-- stretch spacing, and so it never depends on the unreliable GCD-inferred haste.
-		local nominal = self.nominalDuration
-		if nominal == nil or nominal <= 0 or nominal > duration then nominal = duration end
+		-- Rate from the NOMINAL (un-extended, channel-start) length so a chain-extended duration doesn't stretch
+		-- the (end-anchored) spacing. A chain adds exactly the carried leftover, so subtract it back out.
+		local nominal = duration - (self.chainCarry or 0)
+		if nominal <= 0 or nominal > duration then nominal = duration end
 		tickRate = nominal / intervals
+	elseif profile.mode == "pandemic" then
+		local count = profile.tickCount or 0
+		if count <= 0 then return end
+		local intervals = firstAtStart and (count - 1) or count
+		if intervals < 1 then intervals = 1 end
+		-- Rate over the FULL (chain-extended) duration: pandemic rolls the interrupted channel's leftover onto
+		-- this channel, spreading the beats across the whole extended duration and closing with a partial tick.
+		tickRate = duration / intervals
 	else
 		local baseRate = profile.baseTickRate or 0
 		if baseRate <= 0 then return end
@@ -391,26 +403,45 @@ function TRB.Classes.Castbar:ComputeChannelTicks(profile, haste)
 		end
 	end
 
-	-- Collect the rhythm's tick times, then place them. The rhythm starts one interval in, or -- on a chained
-	-- recast -- at the leftover phase carried from the channel it interrupted. A fresh channel's last beat
-	-- lands on the channel end (its duration is a whole number of intervals), so it needs nothing more.
+	-- Collect the rhythm's tick times. Each mode places them differently:
 	local times = {}
-	local t = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or tickRate
-	while t <= duration + 0.0001 do
-		times[#times + 1] = t
-		t = t + tickRate
-		if #times >= 1000 then break end
-	end
-
-	-- Opt-in per profile: some channels fire one extra tick as they close, covering only the phase left over
-	-- after the last full beat -- a PARTIAL tick, dealing damage scaled to that fraction. It only ever appears
-	-- when chaining pushes the channel end off the beat; a fresh cast ends on a beat and adds nothing. Whether
-	-- a channel does this is per-spell and cannot be derived: Drain Life/Drain Soul/Malefic Grasp do, Mind Flay
-	-- does not. Set partialEndTick from a combat log; never assume.
-	if profile.partialEndTick == true then
+	if profile.mode == "fixedCount" then
+		-- End-anchored: the final tick ALWAYS lands exactly on the channel end -- no exceptions. Step backwards
+		-- from the end by one interval at a time, so a chain-extended duration surfaces the carried leftover as
+		-- an extra tick near the START (with a gap before it) instead of dragging the last tick off the end.
+		local t = duration
+		while t > 0.0001 and #times < 1000 do
+			times[#times + 1] = t
+			t = t - tickRate
+		end
+		-- Reverse to ascending order so skipTicks (1-based from the earliest beat) still indexes correctly.
+		local n = #times
+		for i = 1, math.floor(n / 2) do
+			times[i], times[n - i + 1] = times[n - i + 1], times[i]
+		end
+	elseif profile.mode == "pandemic" then
+		-- Start-anchored: the rhythm runs FORWARD from its first tick -- one interval in, or (on a chained
+		-- recast) the leftover phase carried from the interrupted channel, which places the carryover tick.
+		-- Then it fires one extra tick as it closes: a PARTIAL tick covering only the phase left over after the
+		-- last full beat (damage scaled to that fraction). It only ever appears when chaining pushes the end off
+		-- the beat; a fresh cast ends on a beat and adds nothing. This is per-spell and not derivable -- Drain
+		-- Life/Drain Soul/Malefic Grasp do it, Mind Flay (fixedCount) does not.
+		local t = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or tickRate
+		while t <= duration + 0.0001 and #times < 1000 do
+			times[#times + 1] = t
+			t = t + tickRate
+		end
 		local last = times[#times]
 		if last == nil or (duration - last) > 0.0001 then
 			times[#times + 1] = duration
+		end
+	else
+		-- fixedRate: start-anchored, running forwards; fixed duration with a hasted rate, so the final partial
+		-- tick is simply cut off at the channel end.
+		local t = (self.chainCarry ~= nil and self.chainCarry > 0) and self.chainCarry or tickRate
+		while t <= duration + 0.0001 and #times < 1000 do
+			times[#times + 1] = t
+			t = t + tickRate
 		end
 	end
 

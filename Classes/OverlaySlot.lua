@@ -895,14 +895,20 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force)
 		-- below is honored and the band is centered on the cross axis. The band extends backward into
 		-- the fill; the overshoot slides it back toward the fill start when the raw edge is inside
 		-- the border zone.
+		--
+		-- edgeNudge pushes the band's leading edge a half-pixel further in the growth direction. The
+		-- bar renders at a fractional effective scale (non-integer widths), so the fill's leading edge
+		-- lands on a sub-pixel boundary; the band frame rounds to a different boundary, leaving a thin
+		-- fill sliver past the cap. Half a pixel toward the leading edge closes that seam.
+		local edgeNudge = 0.5
 		if fillDirection == "rightLeft" then
-			self.endCapFrame:SetPoint("LEFT", fillTexture, "LEFT", overshoot, 0)
+			self.endCapFrame:SetPoint("LEFT", fillTexture, "LEFT", overshoot - edgeNudge, 0)
 		elseif fillDirection == "bottomTop" then
-			self.endCapFrame:SetPoint("TOP", fillTexture, "TOP", 0, -overshoot)
+			self.endCapFrame:SetPoint("TOP", fillTexture, "TOP", 0, -overshoot + edgeNudge)
 		elseif fillDirection == "topBottom" then
-			self.endCapFrame:SetPoint("BOTTOM", fillTexture, "BOTTOM", 0, overshoot)
+			self.endCapFrame:SetPoint("BOTTOM", fillTexture, "BOTTOM", 0, overshoot - edgeNudge)
 		else -- leftRight
-			self.endCapFrame:SetPoint("RIGHT", fillTexture, "RIGHT", -overshoot, 0)
+			self.endCapFrame:SetPoint("RIGHT", fillTexture, "RIGHT", -overshoot + edgeNudge, 0)
 		end
 
 		-- Fill axis = the configured cap width. CROSS axis subtracts the border on both sides

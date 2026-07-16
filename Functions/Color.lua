@@ -315,6 +315,76 @@ end
 TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
+-- Threshold metadata for built ColorCurves, keyed weakly by the curve object. Lets an end cap
+-- following "only non-default border colors" rebuild the same step curve based at its own color
+-- (the curve's base IS the default border color, and evaluated results are secret).
+local curveThresholdMeta = setmetatable({}, { __mode = "k" })
+
+---Records the base color and above-zero step points of a built ColorCurve so a companion curve can be derived.
+---@param curve any # The ColorCurve object
+---@param baseColor string # The color the curve uses at/below 0 (the live border color it was built from)
+---@param points { x: number, color: string }[] # Step points above 0, in ascending x order
+function TRB.Functions.Color:SetCurveThresholdMeta(curve, baseColor, points)
+	if curve == nil or points == nil then
+		return
+	end
+	local key = ""
+	for _, point in ipairs(points) do
+		key = key .. "_" .. tostring(point.x) .. ":" .. tostring(point.color)
+	end
+	curveThresholdMeta[curve] = { baseColor = baseColor, key = key, points = points }
+end
+
+---Evaluates the end cap companion for a curve-driven border, preserving the pre-Midnight
+---"only non-default border colors" semantics against a secret resource: below the threshold the
+---border shows the curve's base color, so the cap shows its own color when that base IS the bar's
+---configured (default) border color, and follows the base when an indicator overrode it; at/above
+---the threshold the cap follows the indicator color. Returns nil when the node's cap doesn't follow
+---non-default border colors, or the border curve carries no threshold metadata.
+---@param node TRB.Classes.BarNode?
+---@param borderCurve any # The ColorCurve the border result was evaluated from
+---@param powerType Enum.PowerType? # Power type to evaluate against (default: TRB.Data.resource)
+---@return any? # Evaluated secret color result for the end cap, or nil
+function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
+	local config = node ~= nil and node.endCapConfig or nil
+	if config == nil or config.useBorderColor ~= true or config.useBorderColorExceptDefault ~= true then
+		return nil
+	end
+	local meta = borderCurve ~= nil and curveThresholdMeta[borderCurve] or nil
+	if meta == nil then
+		return nil
+	end
+	local resource = powerType or TRB.Data.resource
+	if resource == nil then
+		return nil
+	end
+
+	-- The curve base only counts as "default" when it matches the bar's configured border color;
+	-- anything else is an indicator override the cap must follow (same comparison the static
+	-- SetBorderColor path makes).
+	local capBaseColor = config.color
+	if meta.baseColor ~= nil and meta.baseColor ~= config.defaultBorderColor then
+		capBaseColor = meta.baseColor
+	end
+
+	local cache = TRB.Data.cache.stepColorCurves
+	local fullKey = "endCap_" .. tostring(capBaseColor) .. meta.key
+	local curve = cache[fullKey]
+	if curve == nil then
+		curve = C_CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+		local baseR, baseG, baseB, baseA = self:GetRGBAFromString(capBaseColor, true)
+		curve:AddPoint(0, CreateColor(baseR, baseG, baseB, baseA))
+		for _, point in ipairs(meta.points) do
+			local r, g, b, a = self:GetRGBAFromString(point.color, true)
+			curve:AddPoint(point.x, CreateColor(r, g, b, a))
+		end
+		cache[fullKey] = curve
+	end
+
+	return UnitPowerPercent("player", resource, true, curve)
+end
+
 ---Creates and caches a Step ColorCurve that transitions from belowColor to aboveColor at the given threshold
 ---@param cacheKey string # Unique key for caching (e.g., specName + color combination)
 ---@param belowColor string # ARGB hex color string for below threshold
@@ -346,7 +416,8 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 		curve:AddPoint(0, belowColorObj)
 		curve:AddPoint(thresholdPercent, aboveColorObj)
 		curve:AddPoint(2.0, aboveColorObj) -- Extend beyond 100% to handle overflow
-		
+
+		self:SetCurveThresholdMeta(curve, belowColor, { { x = thresholdPercent, color = aboveColor }, { x = 2.0, color = aboveColor } })
 		cache[fullKey] = curve
 	end
 	
@@ -455,6 +526,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 	colorCurve:AddPoint(0, belowColorObj)
 	colorCurve:AddPoint(thresholdPercent, aboveColorObj)
 
+	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
 	return colorCurve
 end
@@ -911,7 +983,7 @@ function TRB.Functions.Color:ApplyResolvedBorderOrBackground(node, barKey, eleme
 	if curve ~= nil then
 		local colorResult = UnitPowerPercent("player", TRB.Data.resource, true, curve)
 		if element == "border" then
-			node:SetBorderColorCurve(colorResult)
+			node:SetBorderColorCurve(colorResult, self:EvaluateEndCapCurve(node, curve))
 		else
 			node:SetBackgroundColorCurve(colorResult)
 		end

@@ -1110,7 +1110,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					if energyBarOvercapCurves.border ~= nil then
-						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border))
+						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border), Color:EvaluateEndCapCurve(primaryNode, energyBarOvercapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1185,7 +1185,7 @@ local function UpdateResourceBar()
 							end
 							
 							if comboPointsOvercapCurves.border ~= nil then
-								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border))
+								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border), Color:EvaluateEndCapCurve(cpNode, comboPointsOvercapCurves.border))
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
@@ -1480,7 +1480,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					if energyBarOvercapCurves.border ~= nil then
-						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border))
+						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border), Color:EvaluateEndCapCurve(primaryNode, energyBarOvercapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1554,7 +1554,7 @@ local function UpdateResourceBar()
 							end
 							
 							if comboPointsOvercapCurves.border ~= nil then
-								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border))
+								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border), Color:EvaluateEndCapCurve(cpNode, comboPointsOvercapCurves.border))
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
@@ -1834,7 +1834,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					if energyBarOvercapCurves.border ~= nil then
-						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border))
+						primaryNode:SetBorderColorCurve(EvaluateOvercapCurve(energyBarOvercapCurves.border), Color:EvaluateEndCapCurve(primaryNode, energyBarOvercapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1920,7 +1920,7 @@ local function UpdateResourceBar()
 							end
 							
 							if comboPointsOvercapCurves.border ~= nil then
-								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border))
+								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border), Color:EvaluateEndCapCurve(cpNode, comboPointsOvercapCurves.border))
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end

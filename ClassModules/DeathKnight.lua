@@ -732,7 +732,7 @@ local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 
 	if overcapCurves.border then
 		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-		primaryNode:SetBorderColorCurve(borderColorResult)
+		primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 	else
 		primaryNode:SetBorderColor(runicPowerBarColors.border)
 	end
@@ -807,7 +807,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 			if runeNode then
 				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, runeValue, 1)
 				if runeGradientResults.border then
-					runeNode:SetBorderColorCurve(runeGradientResults.border)
+					runeNode:SetBorderColorCurve(runeGradientResults.border, Color:EvaluateEndCapCurve(runeNode, runeGradientCurves.border))
 				else
 					runeNode:SetBorderColor(runeBorderColor)
 				end

@@ -1157,7 +1157,7 @@ local function UpdateResourceBar()
 
 					if energyOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, energyOvercapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1289,7 +1289,7 @@ local function UpdateResourceBar()
 						-- Border: gradient > flat indicator > default
 						if stOvercapCurves.border then
 							local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, stOvercapCurves.border)
-							staggerNode:SetBorderColorCurve(borderResult)
+							staggerNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(staggerNode, stOvercapCurves.border))
 						else
 							staggerNode:SetBorderColor(stBorderOverride or cpBorderColor)
 						end
@@ -1583,7 +1583,7 @@ local function UpdateResourceBar()
 
 					if energyOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, energyOvercapCurves.border))
 					else
 						primaryNode:SetBorderColor(energyBarColors.border)
 					end
@@ -1631,7 +1631,7 @@ local function UpdateResourceBar()
 
 							if chiOvercapCurves.border then
 								local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, chiOvercapCurves.border)
-								chiNode:SetBorderColorCurve(borderColorResult)
+								chiNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(chiNode, chiOvercapCurves.border))
 							else
 								chiNode:SetBorderColor(cpBorderColor)
 							end
