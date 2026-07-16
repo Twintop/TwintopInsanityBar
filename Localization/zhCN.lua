@@ -2897,4 +2897,12 @@ if locale == "zhCN" then
 	L["ConstrainBarTextWidthTooltip"] = "勾选后施法条文本宽度会限制在绑定进度条宽度内，超出部分以省略号截断；绑定至屏幕时无效果。"
 	L["MaxBarTextWidthPercent"] = "文本最大宽度百分比"
 	L["MaxBarTextWidthPercentTooltip"] = "施法条文本最大宽度占绑定进度条宽度的百分比。例如设置50%且文本左对齐时，文字不会延伸至进度条中点以外。"
+	L["EndCap"] = "前端标记"
+	L["EndCapWidth"] = "前端标记宽度"
+	L["CheckboxEndCapEnabled"] = "启用前端标记"
+	L["CheckboxEndCapEnabledTooltip"] = "在进度条填充起始端，显示自定义宽高、颜色的前端标记。"
+	L["CheckboxEndCapUseBorderColor"] = "同步边框颜色"
+	L["CheckboxEndCapUseBorderColorTooltip"] = "前端标记颜色将跟随当前进度条边框色。"
+	L["CheckboxEndCapUseBorderColorExceptDefault"] = "仅非默认边框色生效"
+	L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "仅边框颜色不是基础默认色时，才替换前端标记颜色。"
 end
