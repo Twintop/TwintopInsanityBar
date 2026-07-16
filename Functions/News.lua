@@ -14,13 +14,13 @@ local content = [====[
 
 # 12.0.7.6-release (2026-07-16)
 ## General
-### Bar End Caps
 
 - [#443](#443) Restore Bar End Caps: a configurable width and color overlay at the leading edge of a bar's fill, on every bar except secret cast-count bars.
-
-### Color Indicators
-
 - Add Bar End Cap as a Color Indicator target on every bar that has one. This takes priority over the cap's "Use Current Border Color" option, if enabled.
+
+### Cast Bar
+
+- Fix an issue with Warlock's channel tick markers logic being applied to all channeled ticks.
 
 ---
 
