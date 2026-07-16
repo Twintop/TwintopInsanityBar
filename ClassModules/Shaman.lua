@@ -782,6 +782,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "maelstromBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1004,6 +1005,7 @@ local function UpdateResourceBar()
 
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
+					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 
 					local manaOvercapCurves = {}
 					if overcapIndicator and overcapIndicator.targets then
@@ -1094,6 +1096,7 @@ local function UpdateResourceBar()
 
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				
@@ -1220,6 +1223,7 @@ local function UpdateResourceBar()
 								stackNode:SetBorderColor(cpBorderColor)
 								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+								Bar:ApplyEndCapIndicator(stackNode, "maelstromWeaponBar")
 							end
 						end
 					else
@@ -1271,6 +1275,7 @@ local function UpdateResourceBar()
 								stackNode:SetBorderColor(cpBorderColor)
 								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+								Bar:ApplyEndCapIndicator(stackNode, "maelstromWeaponBar")
 							end
 						end
 					end
@@ -1366,6 +1371,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)

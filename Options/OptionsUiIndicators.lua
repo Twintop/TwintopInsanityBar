@@ -22,6 +22,7 @@ local defaultElementDefs = {
 	{ key = "bar", label = L["BarElementBar"] },
 	{ key = "border", label = L["BarElementBorder"] },
 	{ key = "background", label = L["BarElementBackground"] },
+	{ key = "endCap", label = L["EndCap"] },
 }
 
 ---Whether this spec registers channel tick profiles of its own, which is what makes the cast bar draw
@@ -52,6 +53,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		{ key = "channel", label = L["BarElementBarChanneled"] },
 		{ key = "border", label = L["BarElementBorder"] },
 		{ key = "background", label = L["BarElementBackground"] },
+		{ key = "endCap", label = L["EndCap"] },
 	}
 	if SpecHasCastbarTickProfiles(classId, specId) then
 		castbarElements[#castbarElements + 1] = { key = "tick", label = L["BarElementChanneledTick"] }
@@ -69,6 +71,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 			elements = {
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
 			}
 		},
 		{

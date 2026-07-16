@@ -823,6 +823,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 				else
 					runeNode:SetBackgroundColorFromString(runeBackgroundColor)
 				end
+				Bar:ApplyEndCapIndicator(runeNode, "runesBar")
 			end
 		end
 	end
@@ -1017,6 +1018,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1119,6 +1121,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1216,6 +1219,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0

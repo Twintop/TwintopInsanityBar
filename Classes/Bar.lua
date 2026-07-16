@@ -29,6 +29,7 @@ local barNodeCounter = 0
 ---@field public fillDirection trbFillDirection? # Current fill direction for this node
 ---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
 ---@field public endCapConfig table? # Active end cap config: { color, width, useBorderColor, useBorderColorExceptDefault, defaultBorderColor }; nil when disabled
+---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -231,8 +232,9 @@ function TRB.Classes.BarNode:SetBorderColor(colorString)
 
 	-- End cap border-follow: track the live border color, except when it is at the
 	-- configured default and useBorderColorExceptDefault asks to keep the cap's own color.
+	-- Skipped while a Color Indicator owns the cap this frame (that takes priority).
 	local config = self.endCapConfig
-	if config and config.useBorderColor then
+	if config and config.useBorderColor and not self.endCapIndicatorActive then
 		local endCapSlot = self.overlaySlots.endCap
 		if endCapSlot then
 			if config.useBorderColorExceptDefault and colorString == config.defaultBorderColor then
@@ -259,8 +261,9 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
 	-- result can't be compared. useBorderColorExceptDefault therefore needs the companion curve
 	-- result (same thresholds, based at the cap's own color); without one the cap keeps its own
 	-- color. Plain useBorderColor follows the border's curve directly.
+	-- Skipped while a Color Indicator owns the cap this frame (that takes priority).
 	local config = self.endCapConfig
-	if config and config.useBorderColor then
+	if config and config.useBorderColor and not self.endCapIndicatorActive then
 		local endCapSlot = self.overlaySlots.endCap
 		if endCapSlot then
 			if config.useBorderColorExceptDefault then
@@ -455,10 +458,30 @@ function TRB.Classes.BarNode:GetOverlaySlot(slotName)
 end
 
 ---Applies end cap settings to this node's "endCap" overlay slot, creating it on first enable.
+---Safe to call every frame: a field-value guard skips the work when nothing changed, so Druid can
+---re-apply the current form's cap config per frame (the primary bar switches which form's settings it
+---uses on shapeshift, and the cap config must follow) without per-frame churn. The guard compares field
+---values, not the table reference, so live options edits (which mutate the entry in place) still apply.
 ---@param endCapEntry TRB.Classes.Settings.EndCapColorEntry? # The bar's end cap settings entry
 ---@param defaultBorderColor string? # The bar's configured base border color, for useBorderColorExceptDefault comparisons
 function TRB.Classes.BarNode:ApplyEndCap(endCapEntry, defaultBorderColor)
-	if endCapEntry == nil or endCapEntry.enabled ~= true then
+	local enabled = endCapEntry ~= nil and endCapEntry.enabled == true
+	local entryColor = endCapEntry and endCapEntry.color
+	local entryWidth = endCapEntry and endCapEntry.width
+	local entryUseBC = endCapEntry and endCapEntry.useBorderColor == true
+	local entryUseBCED = endCapEntry and endCapEntry.useBorderColorExceptDefault == true
+	if self._ecEnabled == enabled and self._ecColor == entryColor and self._ecWidth == entryWidth
+		and self._ecUseBC == entryUseBC and self._ecUseBCED == entryUseBCED and self._ecDefaultBorder == defaultBorderColor then
+		return
+	end
+	self._ecEnabled = enabled
+	self._ecColor = entryColor
+	self._ecWidth = entryWidth
+	self._ecUseBC = entryUseBC
+	self._ecUseBCED = entryUseBCED
+	self._ecDefaultBorder = defaultBorderColor
+
+	if not enabled then
 		self.endCapConfig = nil
 		local slot = self:GetOverlaySlot("endCap")
 		if slot then
@@ -468,18 +491,48 @@ function TRB.Classes.BarNode:ApplyEndCap(endCapEntry, defaultBorderColor)
 	end
 
 	self.endCapConfig = {
-		color = endCapEntry.color,
-		width = endCapEntry.width,
-		useBorderColor = endCapEntry.useBorderColor == true,
-		useBorderColorExceptDefault = endCapEntry.useBorderColorExceptDefault == true,
+		color = entryColor,
+		width = entryWidth,
+		useBorderColor = entryUseBC,
+		useBorderColorExceptDefault = entryUseBCED,
 		defaultBorderColor = defaultBorderColor
 	}
 
 	local slot = self:GetOrCreateOverlaySlot("endCap")
 	slot:CreateEndCap()
-	slot:SetEndCapWidth(endCapEntry.width or 2)
-	slot:SetEndCapColor(endCapEntry.color)
+	slot:SetEndCapWidth(entryWidth or 2)
+	slot:SetEndCapColor(entryColor)
 	slot:ShowEndCap()
+end
+
+---Applies an indicator-owned color to this node's end cap for the current frame. Color Indicator targets
+---on the end cap take priority over the useBorderColor follow (and the cap's own color). Pass both nil when
+---no indicator targets the cap this frame: the cap reverts to its own color, unless useBorderColor is on, in
+---which case the border-follow (run earlier this frame via SetBorderColor) already settled it.
+---@param flatColor string? # Flat indicator color (ARGB hex), or nil
+---@param gradientResult any? # Evaluated gradient ColorCurve result, or nil
+function TRB.Classes.BarNode:ApplyEndCapIndicator(flatColor, gradientResult)
+	local config = self.endCapConfig
+	if config == nil then
+		return
+	end
+	local slot = self.overlaySlots.endCap
+	if slot == nil then
+		return
+	end
+
+	if gradientResult ~= nil then
+		slot:SetEndCapColorResult(gradientResult)
+		self.endCapIndicatorActive = true
+	elseif flatColor ~= nil then
+		slot:SetEndCapColor(flatColor)
+		self.endCapIndicatorActive = true
+	elseif self.endCapIndicatorActive then
+		self.endCapIndicatorActive = false
+		if not config.useBorderColor then
+			slot:SetEndCapColor(config.color)
+		end
+	end
 end
 
 ---Sets the frame level for the node

@@ -1053,6 +1053,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 					
 					local thresholds = primaryNode:GetThresholds()
 					local nodeResourceFrame = primaryNode:GetFrame()
@@ -1306,6 +1307,7 @@ local function UpdateResourceBar()
 								staggerNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
+						Bar:ApplyEndCapIndicator(staggerNode, "staggerBar")
 
 						-- Update Stagger thresholds on the BarNode (use discrete colors, configurable positions)
 						local staggerThresholds = staggerNode:GetThresholds()
@@ -1381,6 +1383,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					primaryNode:SetBorderColor(manaBarColors.border)
@@ -1491,6 +1494,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 
 					local thresholds = primaryNode:GetThresholds()
 					local nodeResourceFrame = primaryNode:GetFrame()
@@ -1649,6 +1653,7 @@ local function UpdateResourceBar()
 							else
 								chiNode:SetBackgroundColorFromString(cpBackgroundColor)
 							end
+							Bar:ApplyEndCapIndicator(chiNode, "chiBar")
 						end
 					end
 				end

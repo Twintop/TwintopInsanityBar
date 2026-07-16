@@ -897,6 +897,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1105,6 +1106,7 @@ local function UpdateResourceBar()
 
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1369,6 +1371,7 @@ local function UpdateResourceBar()
 				local barBorderColor = focusBarColors.border
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1547,6 +1550,7 @@ local function UpdateResourceBar()
 							else
 								stackNode:SetBackgroundColorFromString(cpBackgroundColor)
 							end
+							Bar:ApplyEndCapIndicator(stackNode, "tipOfTheSpearBar")
 						end
 					end
 				end

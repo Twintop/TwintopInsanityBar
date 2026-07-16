@@ -1417,6 +1417,9 @@ local function VengeanceConstructIndicatorColorsPanel(parent)
 			{ key = "furyBar", label = L["BarNameFuryBar"] },
 			{ key = "soulFragmentsBar", label = L["BarNameSoulFragmentsBar"] },
 		},
+		excludedElements = {
+			soulFragmentsBar = { endCap = true },
+		},
 		gradientExcludedElements = {
 			soulFragmentsBar = { bar = true },
 		},

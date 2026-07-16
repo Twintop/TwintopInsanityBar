@@ -837,7 +837,7 @@ local fillElements = {
 }
 
 -- Cast bar elements, in a fixed order so the change check below can compare without allocating.
-local castbarElements = { "bar", "channel", "border", "background", "tick" }
+local castbarElements = { "bar", "channel", "border", "background", "tick", "endCap" }
 local previousCastbar = {}
 
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
@@ -910,6 +910,21 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 					end
 				end
 			end
+		end
+	end
+
+	-- Stash each spec bar's resolved flat end cap color globally, keyed by barKey, so a node can resolve
+	-- its own end cap indicator from (node, barKey) alone without the spec threading its color map through.
+	-- Only the active spec's bars are keyed here, and its barKeys are unique, so there's no cross-spec
+	-- collision. Set per key each call (nil when no flat indicator targets the cap) so stale colors clear.
+	if barColorMap ~= nil then
+		local barEndCaps = resolved.barEndCaps
+		if barEndCaps == nil then
+			barEndCaps = {}
+			resolved.barEndCaps = barEndCaps
+		end
+		for barKey, colors in pairs(barColorMap) do
+			barEndCaps[barKey] = colors.endCap
 		end
 	end
 
@@ -994,4 +1009,32 @@ function TRB.Functions.Color:ApplyResolvedBorderOrBackground(node, barKey, eleme
 			node:SetBackgroundColorFromString(baseColor)
 		end
 	end
+end
+
+---Applies a shared bar's end cap indicator color (flat or gradient), taking priority over the cap's
+---useBorderColor follow. Mirrors ApplyResolvedBorderOrBackground: a flat indicator resolves to a color
+---string up front (in resolvedIndicators[barKey].endCap), while a gradient builds a step curve from the
+---cap's own color up to the indicator color here. Reverts to the cap's own color when nothing targets it.
+---@param node TRB.Classes.BarNode
+---@param barKey string # "healthBar" or "castbar"
+function TRB.Functions.Color:ApplyResolvedEndCap(node, barKey)
+	local config = node ~= nil and node.endCapConfig or nil
+	if config == nil then
+		return
+	end
+
+	local gradient = self:GetResolvedGradient()
+	if gradient ~= nil and TRB.Data.resource ~= nil then
+		local targets = gradient.targets and gradient.targets[barKey]
+		if targets and targets.endCap then
+			local curve = self:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, config.color, gradient.color)
+			if curve ~= nil then
+				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
+				return
+			end
+		end
+	end
+
+	local indicators = self:GetResolvedIndicators(barKey)
+	node:ApplyEndCapIndicator(indicators and indicators.endCap or nil, nil)
 end

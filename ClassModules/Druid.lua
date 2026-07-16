@@ -1651,6 +1651,17 @@ local function UpdateResourceBar()
 		end
 	end
 
+	-- Keep the primary bar's end cap config in sync with the current form: shapeshifting changes which
+	-- form's spec settings drive the bar, so re-apply the form's end cap each frame. ApplyEndCap self-
+	-- guards on field values, so this is a no-op when the form (and thus the config) has not changed.
+	if barGroups and barGroups.primary then
+		local formPrimaryNode = barGroups.primary:GetNode(1)
+		local formBarColors = formSpecCacheSettings.colors and formSpecCacheSettings.colors.bar
+		if formPrimaryNode and formBarColors then
+			formPrimaryNode:ApplyEndCap(formBarColors.endCap, formBarColors.border.color)
+		end
+	end
+
 	local function UpdateHealthBarGeneric()
 		local healthVisSettings = formSpecCacheSettings.displayBar and formSpecCacheSettings.displayBar.health
 		if healthVisSettings ~= nil and not healthVisSettings.neverShow then
@@ -1840,6 +1851,7 @@ local function UpdateResourceBar()
 						if cpOverrides and cpOverrides.borderCurve then
 							cpNode:SetBorderColorCurve(cpOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, cpOverrides.borderCurveSource, cpOverrides.borderCurvePowerType))
 						end
+						Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
 					end
 				end
 			end
@@ -1885,6 +1897,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "astralPowerBar")
 
 				local barColor = specSettings.colors.bar.base
 				-- Use simple colors when in non-native form
@@ -2182,6 +2195,7 @@ local function UpdateResourceBar()
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
+					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 					TRB.Functions.Color:ApplyFillColor(manaNode, specSettings.colors.bars.mana.bar)
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
@@ -2207,6 +2221,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -2703,6 +2718,7 @@ local function UpdateResourceBar()
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
+							Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
 						end
 					end
 				end
@@ -2769,6 +2785,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -3097,6 +3114,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				local barBorderColor = formSpecSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base

@@ -696,6 +696,7 @@ local function ApplyBorderAndBackgroundColor(node, colors, model)
 		background = colors.background.color
 	end
 	Color:ApplyResolvedBorderOrBackground(node, "castbar", "background", background)
+	Color:ApplyResolvedEndCap(node, "castbar")
 end
 
 ---Draws the per-level empower segment fills (segmented-fill mode). The main bar fill is blanked in this

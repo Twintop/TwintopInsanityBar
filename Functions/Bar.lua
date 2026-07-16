@@ -2071,9 +2071,38 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 			(indicators and indicators.border) or healthColors.border.color)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
 			(indicators and indicators.background) or healthColors.background.color)
+		Color:ApplyResolvedEndCap(healthNode, "healthBar")
 	end
 
 	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
+end
+
+---Applies a spec-owned bar's end cap indicator color (flat or gradient) for the current frame, taking
+---priority over the cap's useBorderColor follow. Call once per end-cap-bearing node each frame, after
+---ApplyIndicatorColors has run for that bar. Everything is resolved from global indicator state, so the
+---caller only needs the node and its indicator target key -- no color map or gradient threading.
+---@param node TRB.Classes.BarNode
+---@param barKey string # The indicator target key for this bar (e.g. "insanityBar", "runesBar")
+function TRB.Functions.Bar:ApplyEndCapIndicator(node, barKey)
+	if node == nil or node.endCapConfig == nil then
+		return
+	end
+	local Color = TRB.Functions.Color
+
+	local gradient = Color:GetResolvedGradient()
+	if gradient ~= nil and TRB.Data.resource ~= nil then
+		local targets = gradient.targets and gradient.targets[barKey]
+		if targets and targets.endCap then
+			local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
+			if curve ~= nil then
+				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
+				return
+			end
+		end
+	end
+
+	local barEndCaps = TRB.Data.resolvedIndicators.barEndCaps
+	node:ApplyEndCapIndicator(barEndCaps and barEndCaps[barKey] or nil, nil)
 end
 
 ---Updates the casting resource overlay on the primary resource bar node.

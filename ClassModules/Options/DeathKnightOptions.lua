@@ -1365,6 +1365,9 @@ local function BloodConstructIndicatorColorsPanel(parent)
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
 			{ key = "boneShield", label = L["ResourceBoneShield"] },
 		},
+		excludedElements = {
+			["boneShield"] = { endCap = true },
+		},
 		gradientExcludedElements = {
 			["boneShield"] = { bar = true },
 		},

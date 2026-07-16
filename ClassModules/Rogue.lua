@@ -938,6 +938,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 				end
 				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
@@ -1199,6 +1200,7 @@ local function UpdateResourceBar()
 							else
 								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 							end
+							Bar:ApplyEndCapIndicator(cpNode, "comboPointsBar")
 						end
 					end
 				end
@@ -1251,6 +1253,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 				end
 				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
@@ -1568,6 +1571,7 @@ local function UpdateResourceBar()
 							else
 								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 							end
+							Bar:ApplyEndCapIndicator(cpNode, "comboPointsBar")
 						end
 					end
 				end
@@ -1622,6 +1626,7 @@ local function UpdateResourceBar()
 				if primaryNode then
 					nodeResourceFrame = primaryNode:GetFrame()
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 				end
 
 				local thresholds = {}
@@ -1934,6 +1939,7 @@ local function UpdateResourceBar()
 							else
 								cpNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 							end
+							Bar:ApplyEndCapIndicator(cpNode, "comboPointsBar")
 						end
 					end
 				end

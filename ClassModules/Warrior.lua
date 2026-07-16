@@ -1093,6 +1093,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 						else
 							defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 						end
+						Bar:ApplyEndCapIndicator(defensiveNode, defensiveBarTargetKey)
 					end
 				end
 				
@@ -1229,6 +1230,7 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			else
 				node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 			end
+			Bar:ApplyEndCapIndicator(node, "whirlwindBar")
 		end
 	end
 end
@@ -1300,6 +1302,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
 				
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1522,6 +1525,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1719,6 +1723,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
