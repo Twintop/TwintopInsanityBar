@@ -678,6 +678,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 
 	-- End cap (not offered on secret cast-count bars, whose highest node is unknowable)
 	if not barTypeDef.usesSecretValue and colorSettings.endCap then
+		yCoord = yCoord + 30
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colorSettings, namePrefix, "endCap_" .. barTypeDef.key, L["EndCap"], classId, specId)
 	end
 
@@ -874,7 +875,9 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 
 	-- End cap (not offered on secret cast-count bars, whose highest node is unknowable)
 	if not barTypeDef.usesSecretValue and colorSettings.endCap then
+		yCoord = yCoord + 50
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colorSettings, namePrefix, "endCap_" .. barTypeDef.key, L["EndCap"], classId, specId)
+		yCoord = yCoord - 30
 	end
 
 	return yCoord
