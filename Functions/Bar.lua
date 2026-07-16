@@ -1431,6 +1431,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.border,
 				settings.textures.background
 			)
+			primaryNode:ApplyEndCap(settings.colors.bar.endCap, settings.colors.bar.border.color)
 			TRB.Functions.Color:ApplyFillColor(primaryNode, settings.colors.bar.base)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
@@ -1585,6 +1586,12 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				else
 					node:SetMinMax(0, 1)
 				end
+				if isVengeance or isFireMage then
+					-- Stepped secret counts: the highest progressed node is unknowable, so no end cap
+					node:ApplyEndCap(nil)
+				else
+					node:ApplyEndCap(effectiveSettings.colors.comboPoints.endCap, effectiveSettings.colors.comboPoints.border.color)
+				end
 				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, effectiveSettings.colors.comboPoints.base)
@@ -1607,6 +1614,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
+				node:ApplyEndCap(whirlwindColors.endCap, whirlwindColors.border.color)
 				node:SetBorderColor(whirlwindColors.border.color)
 				node:SetBackgroundColorFromString(whirlwindColors.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, whirlwindColors.nodeColors.charge1)
@@ -1624,6 +1632,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.healthBorder,
 				settings.textures.healthBackground
 			)
+			healthNode:ApplyEndCap(settings.colors.healthBar.endCap, settings.colors.healthBar.border.color)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
@@ -3869,7 +3878,12 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			-- newly-added or partially-migrated custom bars.
 			local defaultBarColors = barTypeDef:GetDefaultColors() or {}
 			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
-			
+
+			-- Propagate the definition's end cap policy to the group for the visibility sweep
+			if barTypeDef.endCapMode then
+				barGroup.endCapMode = barTypeDef.endCapMode
+			end
+
 			-- Apply to all nodes (use enabled count for multi-node bars with per-node enable)
 			local nodeCount = barTypeDef.maxNodes or 1
 			if barTypeDef.nodeColors and barColors then
@@ -3902,16 +3916,62 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 						barColorEntry = barColors.bar or defaultBarColors.bar
 					end
 				
+					-- End caps are meaningless on secret cast-count bars (the highest node is unknowable)
+					if barTypeDef.usesSecretValue then
+						node:ApplyEndCap(nil)
+					else
+						node:ApplyEndCap(barColors.endCap or defaultBarColors.endCap, borderColor)
+					end
+
 					-- Apply colors with fallbacks
 					node:SetBorderColor(borderColor)
 					node:SetBackgroundColorFromString(backgroundColor)
 					if barColorEntry then
 						TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 					end
-					
+
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
+		end
+	end
+end
+
+---Updates end cap visibility across a multi-node group after a node value change.
+---"highest" mode shows the cap only on the highest node with any fill; "all" leaves every cap shown
+---(empty nodes self-hide via the clip anchor). Single-node groups need no sweep.
+---@param node TRB.Classes.BarNode
+local function UpdateGroupEndCapVisibility(node)
+	local group = node.group
+	if group == nil or group.maxNodes <= 1 or node.endCapConfig == nil then
+		return
+	end
+	if (group.endCapMode or "highest") ~= "highest" then
+		return
+	end
+
+	-- Highest node with any fill; a secret value makes the answer unknowable, so hide every cap
+	local highest = 0
+	for i = group.nodeCount, 1, -1 do
+		local groupNode = group.nodes[i]
+		if groupNode then
+			local value = groupNode.frame:GetValue()
+			if issecretvalue(value) then
+				highest = 0
+				break
+			end
+			if value ~= nil and value > 0 then
+				highest = i
+				break
+			end
+		end
+	end
+
+	for i = 1, group.maxNodes do
+		local groupNode = group.nodes[i]
+		local slot = groupNode and groupNode.overlaySlots and groupNode.overlaySlots.endCap
+		if slot then
+			slot:SetEndCapShown(i == highest)
 		end
 	end
 end
@@ -3979,6 +4039,8 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
+
+		UpdateGroupEndCapVisibility(node)
 	end
 end
 

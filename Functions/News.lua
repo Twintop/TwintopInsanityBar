@@ -12,6 +12,19 @@ local content = [====[
 
 ---
 
+# 12.0.7.6-release (2026-07-15)
+## General
+### Bar End Caps
+
+- Add Bar End Caps ([#443](#443)): an overlay of configurable width and color at the leading edge of a bar's fill, anchored to the fill itself so it tracks secret resource values.
+- Available on the main resource bar, combo point-style bars, the Health Bar, the Cast Bar, and custom bars (Mana, Stagger, Holy Words, Defensives, Whirlwind, Lightweaver, Ebon Might, and utility bars).
+- Multi-node linear resources (Combo Points, Holy Power, Essence, Chi, Holy Words, and similar) show the cap only on the highest progressed node; Death Knight Runes and Warrior Defensives show it on every active node.
+- Use Current Border Color option follows live border color changes from Color Indicators, with an Only Non-Default Border Colors variant.
+- Not available on secret cast-count bars (Bone Shield, Fire Blast Charges, Vengeance Soul Fragments), where the highest progressed node cannot be determined.
+- Pre-Midnight end cap settings are migrated onto the main resource bar automatically.
+
+---
+
 # 12.0.7.5-release (2026-07-15)
 ## General
 ### Cast Bar

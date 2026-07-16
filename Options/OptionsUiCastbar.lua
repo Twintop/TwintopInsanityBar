@@ -175,6 +175,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_castbar", "endCapCastbar", L["EndCap"], classId, specId)
 	yCoord = yCoord - 40
 
 	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch

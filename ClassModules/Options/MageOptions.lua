@@ -698,6 +698,8 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Arcane_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 1)
 end
 
 local function ArcaneConstructHealthBarPanel(parent)
@@ -1407,6 +1409,8 @@ local function FrostConstructIciclesBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 3)
 end
 
 local function FrostConstructHealthBarPanel(parent)

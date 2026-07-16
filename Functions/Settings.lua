@@ -8303,6 +8303,33 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 
 		TwintopInsanityBarSettings.core.displayText.migrations.castBarText = true
 	end
+
+	-- Pre-Midnight end caps (colors.endCap.base) were orphaned when the feature was purged in 12.0.0.
+	-- Resurrect those prefs into the new per-bar location (colors.bar.endCap), then drop the orphan;
+	-- the orphan's removal makes this naturally idempotent.
+	if TwintopInsanityBarSettings ~= nil then
+		local endCapClassNames = { "deathknight", "demonhunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior" }
+		for _, className in ipairs(endCapClassNames) do
+			local classTable = TwintopInsanityBarSettings[className]
+			if type(classTable) == "table" then
+				for _, spec in pairs(classTable) do
+					if type(spec) == "table" and type(spec.colors) == "table" and type(spec.colors.endCap) == "table" then
+						local legacy = spec.colors.endCap.base
+						if type(legacy) == "table" and type(spec.colors.bar) == "table" and spec.colors.bar.endCap == nil then
+							spec.colors.bar.endCap = {
+								color = legacy.color,
+								enabled = legacy.enabled,
+								width = legacy.width,
+								useBorderColor = legacy.useBorderColor,
+								useBorderColorExceptDefault = legacy.useBorderColorExceptDefault
+							}
+						end
+						spec.colors.endCap = nil
+					end
+				end
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -8554,6 +8581,18 @@ function TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(enabled)
 	}
 end
 
+---Gets the default end cap settings entry for a bar
+---@return TRB.Classes.Settings.EndCapColorEntry
+function TRB.Functions.Settings:DefaultEndCapColorEntry()
+	return {
+		color = "FFFFFFFF",
+		enabled = false,
+		width = 2,
+		useBorderColor = false,
+		useBorderColorExceptDefault = false
+	}
+end
+
 --- Gets the default health bar color configuration including border, background, absorb, incoming heal, and step-based thresholds.
 ---@return table # Health bar color settings with low/medium/high color steps and overlay defaults
 function TRB.Functions.Settings:DefaultHealthBarColors()
@@ -8563,6 +8602,7 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
 		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
 		healAbsorb = { color = "CCCC4444", enabled = true, mode = "inset", fullHeight = false },
+		endCap = self:DefaultEndCapColorEntry(),
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -8631,7 +8671,8 @@ function TRB.Functions.Settings:DefaultManaBarColors()
 	return {
 		bar = { color = "FF0000FF", color2 = "FF0000FF", gradientDirection = "disabled" },
 		border = { color = "FF0000AA" },
-		background = { color = "66000000" }
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
 	}
 end
 
@@ -8727,7 +8768,8 @@ function TRB.Functions.Settings:DefaultCustomBarColors(barColor, borderColor, ba
 	return {
 		bar = { color = barColor or "FF0000FF", color2 = barColor or "FF0000FF", gradientDirection = "disabled" },
 		border = { color = borderColor or "FF0000AA" },
-		background = { color = backgroundColor or "66000000" }
+		background = { color = backgroundColor or "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
 	}
 end
 
@@ -8776,6 +8818,7 @@ function TRB.Functions.Settings:DefaultStaggerBarColors()
 	return {
 		border = { color = "FF000066" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		type = "step",
 		low = { color = "FF00FF00", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -8885,6 +8928,7 @@ function TRB.Functions.Settings:DefaultCastbarBarColors()
 		latency = { color = "80FF0000", enabled = true },
 		pushback = { color = "80FF00FF", enabled = true },
 		tick = { color = "FFFFFFFF", enabled = true },
+		endCap = self:DefaultEndCapColorEntry(),
 		empowerStages = {
 			base = { color = "FFC8B0FF" },
 			level1 = { color = "FFFFCC00" },
@@ -8935,6 +8979,23 @@ function TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, s
 		specDefaults.textures.castbarBorderName = tex.borderName
 		specDefaults.textures.castbarBackground = tex.background
 		specDefaults.textures.castbarBackgroundName = tex.backgroundName
+	end
+end
+
+---Central injector: adds end cap defaults to a spec's primary bar and combo point color tables so the
+---standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
+---Custom bars get theirs from their Default*BarColors functions instead.
+---@param specDefaults table # A single spec's default settings table (from a class's LoadDefaultSettings)
+function TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
+	if type(specDefaults) ~= "table" or type(specDefaults.colors) ~= "table" then
+		return
+	end
+
+	if type(specDefaults.colors.bar) == "table" and specDefaults.colors.bar.endCap == nil then
+		specDefaults.colors.bar.endCap = self:DefaultEndCapColorEntry()
+	end
+	if type(specDefaults.colors.comboPoints) == "table" and specDefaults.colors.comboPoints.endCap == nil then
+		specDefaults.colors.comboPoints.endCap = self:DefaultEndCapColorEntry()
 	end
 end
 
@@ -9000,6 +9061,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	return {
 		border = { color = "FFC21807" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeOrder = { "ignorePain", "ignorePainAbsorb", "shieldBlock" },
 		nodeColors = {
 			ignorePain = { color = "FFFFD000", color2 = "FFFFD000", gradientDirection = "disabled", enabled = true },
@@ -9070,6 +9132,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarColors()
 	return {
 		border = { color = "FF000099" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" },
 		nodeColors = {
 			holyWordSerenity = { color = "FF00DDDD", color2 = "FF00DDDD", gradientDirection = "disabled", enabled = true },
@@ -9156,6 +9219,7 @@ function TRB.Functions.Settings:DefaultWhirlwindBarColors()
 	return {
 		border = { color = "FFFFD300" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		sameColor = false,
 		nodeColors = {
 			charge1 = { color = "FFFFFFAA", color2 = "FFFFFFAA", gradientDirection = "disabled" },
@@ -9176,6 +9240,7 @@ function TRB.Functions.Settings:DefaultUtilityBarColors()
 	return {
 		border = { color = "FF888888" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeColors = {
 			charge1 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
 			charge2 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
@@ -9245,6 +9310,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 	return {
 		border = { color = "FF4466CC" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		sameColor = false,
 		nodeColors = {
 			charge1 = { color = "FF88CCFF", color2 = "FF88CCFF", gradientDirection = "disabled" },

@@ -335,6 +335,8 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
         6,
         false -- not primary
     )
+    -- Runes recharge independently, so an enabled end cap appears on every rune
+    barGroups.secondary.endCapMode = "all"
 
     -- Health bar (1 node)
     barGroups.health = TRB.Classes.BarGroup:New(

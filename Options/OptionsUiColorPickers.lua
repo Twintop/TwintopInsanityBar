@@ -211,6 +211,126 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, descripti
 	return f
 end
 
+---Builds the full end cap option block for one bar: enable checkbox + color swatch,
+---border-follow checkboxes, and a width slider. Mutates parentColorTable.endCap live.
+---@param parent Frame # The parent options panel frame
+---@param controls table # Controls table with checkBoxes/colors subtables
+---@param yCoord number # Current layout Y coordinate
+---@param parentColorTable table # Table containing the endCap entry (e.g. spec.colors.bar)
+---@param namePrefix string # Unique frame-name prefix including the bar identity (e.g. "rogue_assassination_ComboPoints")
+---@param controlKey string # Key prefix for storing controls (e.g. "endCapComboPoints")
+---@param swatchLabel string? # Color swatch label; defaults to L["EndCap"]
+---@param classId integer? # Class ID for the panel being edited, nil for global
+---@param specId integer? # Spec ID for the panel being edited, nil for global
+---@return number yCoord # The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, parentColorTable, namePrefix, controlKey, swatchLabel, classId, specId)
+	local endCapSettings = parentColorTable.endCap
+	if endCapSettings == nil then
+		return yCoord
+	end
+
+	local Primitives = TRB.Functions.OptionsUi.Primitives
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.colors = controls.colors or {}
+
+	-- Recomposes the active spec's cached settings, then re-applies bar appearance so endcap
+	-- changes render immediately (the renderer reads the composed cache, not the raw table)
+	local function RefreshEndCaps()
+		if not TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+			return
+		end
+		local className, specName
+		if classId ~= nil and specId ~= nil then
+			className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+		else
+			className, specName = TRB.Data.character.className, TRB.Data.character.specName
+		end
+		if className ~= nil and specName ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+		end
+		local specCacheEntry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+		if TRB.Frames.barGroups ~= nil and specCacheEntry ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(specCacheEntry.settings, TRB.Frames.barGroups)
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	local function RefreshSubControlStates()
+		Primitives:ToggleColorPickerEnabled(controls.colors[controlKey], endCapSettings.enabled)
+		Primitives:ToggleSliderEnabled(controls.sliders[controlKey .. "Width"], endCapSettings.enabled)
+		Primitives:ToggleCheckboxEnabled(controls.checkBoxes[controlKey .. "UseBorderColor"], endCapSettings.enabled)
+		Primitives:ToggleCheckboxEnabled(controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"], endCapSettings.enabled and endCapSettings.useBorderColor == true)
+	end
+
+	-- Enable checkbox + color swatch on one row
+	yCoord = yCoord - 30
+	local fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes[controlKey .. "Enabled"] = fCheckbox
+	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapEnabled"])
+---@diagnostic disable-next-line: inject-field
+	fCheckbox.tooltip = L["CheckboxEndCapEnabledTooltip"]
+	fCheckbox:SetChecked(endCapSettings.enabled == true)
+	fCheckbox:SetScript("OnClick", function(self, ...)
+		endCapSettings.enabled = self:GetChecked()
+		RefreshSubControlStates()
+		RefreshEndCaps()
+	end)
+
+	-- The swatch proxy keys the color entry as "endCap" for ColorOnMouseDown while the
+	-- shared controls table keeps the panel-unique controlKey.
+	local swatchProxy = {}
+	local fSwatch = self:BuildColorPicker(parent, swatchLabel or L["EndCap"], endCapSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	swatchProxy.endCap = fSwatch
+	controls.colors[controlKey] = fSwatch
+	fSwatch:SetScript("OnMouseDown", function(_, button, ...)
+		self:ColorOnMouseDown(button, parentColorTable, swatchProxy, "endCap", nil, nil, classId, specId, RefreshEndCaps)
+	end)
+
+	-- Border-follow checkboxes (indented, gated on enabled)
+	yCoord = yCoord - 20
+	fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapUseBorderColor", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes[controlKey .. "UseBorderColor"] = fCheckbox
+	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
+	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColor"])
+---@diagnostic disable-next-line: inject-field
+	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorTooltip"]
+	fCheckbox:SetChecked(endCapSettings.useBorderColor == true)
+	fCheckbox:SetScript("OnClick", function(self, ...)
+		endCapSettings.useBorderColor = self:GetChecked()
+		RefreshSubControlStates()
+		RefreshEndCaps()
+	end)
+
+	yCoord = yCoord - 20
+	fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapUseBorderColorExceptDefault", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"] = fCheckbox
+	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 40, yCoord)
+	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColorExceptDefault"])
+---@diagnostic disable-next-line: inject-field
+	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"]
+	fCheckbox:SetChecked(endCapSettings.useBorderColorExceptDefault == true)
+	fCheckbox:SetScript("OnClick", function(self, ...)
+		endCapSettings.useBorderColorExceptDefault = self:GetChecked()
+		RefreshEndCaps()
+	end)
+
+	-- Width slider
+	--yCoord = yCoord - 20
+	controls.sliders = controls.sliders or {}
+	controls.sliders[controlKey .. "Width"] = Primitives:BuildSlider(parent, L["EndCapWidth"], 1, 50, endCapSettings.width or 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.sliders[controlKey .. "Width"]:SetScript("OnValueChanged", function(self, value)
+		value = Primitives:EditBoxSetTextMinMax(self, value)
+		endCapSettings.width = value
+		RefreshEndCaps()
+	end)
+
+	RefreshSubControlStates()
+
+	return yCoord
+end
+
 ---Builds a color swatch bound to colorTable[key].color, persisting + live-updating via ColorOnMouseDown.
 ---@param parent Frame
 ---@param controlsTbl table # Swatch storage keyed by `key` (for refresh)

@@ -150,6 +150,11 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
 
+---@class TRB.Classes.Settings.EndCapColorEntry : TRB.Classes.Settings.ColorEnabledEntry
+---@field public width integer # Fill-axis width of the end cap band in pixels
+---@field public useBorderColor boolean # When true, the cap tracks the bar's live border color
+---@field public useBorderColorExceptDefault boolean # When true, only non-default border colors override the cap color
+
 ---@class TRB.Classes.Settings.ColorThresholdEntry : TRB.Classes.Settings.ColorEntry
 ---@field public threshold number
 
@@ -184,6 +189,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public background TRB.Classes.Settings.ColorEntry
 ---@field public absorb TRB.Classes.Settings.HealthBarOverlayColorEntry
 ---@field public incomingHeal TRB.Classes.Settings.HealthBarOverlayColorEntry
+---@field public endCap TRB.Classes.Settings.EndCapColorEntry?
 ---@field public type trbBarColorType
 ---@field public low TRB.Classes.Settings.ColorThresholdEntry
 ---@field public medium TRB.Classes.Settings.ColorThresholdEntry

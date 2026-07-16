@@ -1077,6 +1077,8 @@ local function BloodConstructRunesBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Blood_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 1)
 end
 
 local function BloodConstructHealthBarPanel(parent)
@@ -1609,6 +1611,8 @@ local function FrostConstructRunesBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 2)
 end
 
 local function FrostConstructHealthBarPanel(parent)
@@ -2050,6 +2054,8 @@ local function UnholyConstructRunesBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Unholy_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 3)
 end
 
 local function UnholyConstructHealthBarPanel(parent)

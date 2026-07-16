@@ -1816,6 +1816,8 @@ local function DevourerConstructSoulFragmentsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DemonHunter_Devourer_ComboPoints", "endCapComboPoints", L["EndCap"], 12, 3)
 end
 
 local function DevourerConstructHealthBarPanel(parent)

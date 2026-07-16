@@ -359,4 +359,9 @@ if locale == "enGB" then
     L["BarElementBarChanneled"] = "Bar (Channelled)"
     L["BarElementChanneledTick"] = "Channelled Tick Colour"
     L["CastbarColorUninterruptibleBorder"] = "Uninterruptible Border Colour"
+    L["CheckboxEndCapEnabledTooltip"] = "This will show an end cap of the configured width and colour at the leading edge of this bar's fill."
+    L["CheckboxEndCapUseBorderColor"] = "Use current border colour"
+    L["CheckboxEndCapUseBorderColorTooltip"] = "This will override the end cap's colour with whatever the current bar border colour is."
+    L["CheckboxEndCapUseBorderColorExceptDefault"] = "Only non-default border colours"
+    L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "This will only override the end cap's colour if the border colour is anything other than the base colour."
 end

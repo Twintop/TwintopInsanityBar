@@ -1583,6 +1583,8 @@ local function DisciplineConstructPowerWordsPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Priest_Discipline_ComboPoints", "endCapComboPoints", L["EndCap"], 5, 1)
 end
 
 local function DisciplineConstructHealthBarPanel(parent)

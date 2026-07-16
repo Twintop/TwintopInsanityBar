@@ -27,6 +27,8 @@ local barNodeCounter = 0
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
 ---@field public _gradientActive boolean? # Whether a gradient is currently applied to the fill texture
 ---@field public fillDirection trbFillDirection? # Current fill direction for this node
+---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
+---@field public endCapConfig table? # Active end cap config: { color, width, useBorderColor, useBorderColorExceptDefault, defaultBorderColor }; nil when disabled
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -92,6 +94,14 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 ---@diagnostic disable-next-line: redundant-parameter
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
+
+	-- Refresh the end cap's fill-edge border correction (signature-memoized no-op when unchanged)
+	if self.endCapConfig then
+		local endCapSlot = self.overlaySlots.endCap
+		if endCapSlot then
+			endCapSlot:ReanchorEndCap()
+		end
+	end
 end
 
 ---Sets the StatusBar value using a DurationObject for secret-safe animation.
@@ -105,6 +115,13 @@ function TRB.Classes.BarNode:SetTimerDuration(durationObject, interpolation, dir
 	direction = direction or Enum.StatusBarTimerDirection.ElapsedTime
 	self.frame:SetTimerDuration(durationObject, interpolation, direction)
 	self.hasTimerDuration = true
+
+	if self.endCapConfig then
+		local endCapSlot = self.overlaySlots.endCap
+		if endCapSlot then
+			endCapSlot:ReanchorEndCap()
+		end
+	end
 end
 
 ---Clears any active DurationObject-driven animation, restoring normal SetValue behavior.
@@ -211,6 +228,20 @@ end
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
 	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.name .. "_border", colorString)
+
+	-- End cap border-follow: track the live border color, except when it is at the
+	-- configured default and useBorderColorExceptDefault asks to keep the cap's own color.
+	local config = self.endCapConfig
+	if config and config.useBorderColor then
+		local endCapSlot = self.overlaySlots.endCap
+		if endCapSlot then
+			if config.useBorderColorExceptDefault and colorString == config.defaultBorderColor then
+				endCapSlot:SetEndCapColor(config.color)
+			else
+				endCapSlot:SetEndCapColor(colorString)
+			end
+		end
+	end
 end
 
 ---Sets the border color from a curve result
@@ -222,6 +253,16 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult)
 	end
 	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
 	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
+
+	-- Curve results are indicator-driven (inherently non-default), so a border-following
+	-- end cap always tracks them.
+	local config = self.endCapConfig
+	if config and config.useBorderColor then
+		local endCapSlot = self.overlaySlots.endCap
+		if endCapSlot then
+			endCapSlot:SetEndCapColorResult(colorResult)
+		end
+	end
 end
 
 ---Sets the background color
@@ -402,6 +443,34 @@ function TRB.Classes.BarNode:GetOverlaySlot(slotName)
 	return self.overlaySlots[slotName]
 end
 
+---Applies end cap settings to this node's "endCap" overlay slot, creating it on first enable.
+---@param endCapEntry TRB.Classes.Settings.EndCapColorEntry? # The bar's end cap settings entry
+---@param defaultBorderColor string? # The bar's configured base border color, for useBorderColorExceptDefault comparisons
+function TRB.Classes.BarNode:ApplyEndCap(endCapEntry, defaultBorderColor)
+	if endCapEntry == nil or endCapEntry.enabled ~= true then
+		self.endCapConfig = nil
+		local slot = self:GetOverlaySlot("endCap")
+		if slot then
+			slot:HideEndCap()
+		end
+		return
+	end
+
+	self.endCapConfig = {
+		color = endCapEntry.color,
+		width = endCapEntry.width,
+		useBorderColor = endCapEntry.useBorderColor == true,
+		useBorderColorExceptDefault = endCapEntry.useBorderColorExceptDefault == true,
+		defaultBorderColor = defaultBorderColor
+	}
+
+	local slot = self:GetOrCreateOverlaySlot("endCap")
+	slot:CreateEndCap()
+	slot:SetEndCapWidth(endCapEntry.width or 2)
+	slot:SetEndCapColor(endCapEntry.color)
+	slot:ShowEndCap()
+end
+
 ---Sets the frame level for the node
 ---@param level integer
 function TRB.Classes.BarNode:SetFrameLevel(level)
@@ -523,6 +592,7 @@ end
 ---@field public fadeDuration number # Seconds for fade transition (0 = instant)
 ---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
+---@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node) or "all" (independent nodes, e.g. DK runes)
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
 
@@ -573,6 +643,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 			nodeName = self.name .. "_Node"
 		end
 		self.nodes[i] = TRB.Classes.BarNode:New(self.containerFrame, nodeName, self.maxNodes > 1 and i or 0)
+		self.nodes[i].group = self
 	end
 
 	return self
@@ -600,6 +671,7 @@ function TRB.Classes.BarGroup:SetMaxNodes(newMaxNodes)
 				nodeName = self.name .. "_Node"
 			end
 			self.nodes[i] = TRB.Classes.BarNode:New(self.containerFrame, nodeName, i)
+			self.nodes[i].group = self
 			-- Propagate smooth setting to newly created nodes
 			if self.smooth ~= nil then
 				self.nodes[i].smooth = self.smooth
@@ -823,6 +895,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 				settings.textures.comboPointsBackground
 			)
 			node:SetMinMax(0, 1)
+			node:ApplyEndCap(settings.colors.comboPoints.endCap, settings.colors.comboPoints.border.color)
 			node:SetBorderColor(settings.colors.comboPoints.border.color)
 			node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 			node:SetColor(settings.colors.comboPoints.base.color)
@@ -1188,7 +1261,8 @@ end
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
----@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color).
+---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Secret-count bars also get no end cap (the highest progressed node is unknowable).
+---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1250,6 +1324,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
 	return self
 end
@@ -1432,7 +1507,8 @@ function TRB.Classes.BarTypeDefinition:GetDefaultColors()
 	return {
 		bar = { color = "FF0000FF" },
 		border = { color = "FF000066" },
-		background = { color = "66000000" }
+		background = { color = "66000000" },
+		endCap = TRB.Functions.Settings:DefaultEndCapColorEntry()
 	}
 end
 
@@ -1620,6 +1696,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		isMultiNode = true,
 		isAmalgamation = true, -- Distinct buff types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 3, -- Ignore Pain (Time) + Ignore Pain (Absorb) + Shield Block
+		endCapMode = "all", -- Independent buff timers per node; every active node gets a cap
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (buff active or not)
 		hasSpacing = true,

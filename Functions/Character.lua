@@ -1470,6 +1470,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
 				mergedColors.border = coreColors.border
 				mergedColors.background = coreColors.background
+				mergedColors.endCap = coreColors.endCap
 			end
 			if s.castbarOverlays then
 				mergedColors.latency = coreColors.latency
@@ -1617,6 +1618,9 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- className/specName are the lowercase settings-tree keys, used to pick that spec's built-in
 			-- channel tick profiles (most specs have none).
 			TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName)
+
+			-- End caps are a universal per-bar setting; inject their defaults the same way
+			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
 
 			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, savedSpec or {})
 

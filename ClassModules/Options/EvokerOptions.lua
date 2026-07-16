@@ -1168,6 +1168,8 @@ local function DevastationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Devastation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 1)
 end
 
 local function DevastationConstructHealthBarPanel(parent)
@@ -1587,6 +1589,8 @@ local function PreservationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Preservation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 2)
 end
 
 local function PreservationConstructHealthBarPanel(parent)
@@ -2019,6 +2023,8 @@ local function AugmentationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Augmentation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 3)
 end
 
 local function AugmentationConstructHealthBarPanel(parent)
